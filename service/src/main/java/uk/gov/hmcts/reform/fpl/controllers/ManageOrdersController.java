@@ -51,13 +51,16 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
+        CaseData caseData = fixAndRetrieveCaseData(caseDetails);
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
-        data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(order, order.firstSection(), caseData));
+        data.putAll(
+            orderSectionAndQuestionsPrePopulator.prePopulate(
+                order, order.firstSection(), fixAndRetrieveCaseData(caseDetails))
+        );
 
         return respond(caseDetails);
     }
@@ -66,7 +69,7 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleSectionMidEvent(@PathVariable String section,
                                                                       @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
+        CaseData caseData = fixAndRetrieveCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
@@ -90,7 +93,7 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
+        CaseData caseData = fixAndRetrieveCaseData(caseDetails);
 
         data.putAll(sealedOrderHistoryService.generate(caseData));
 
@@ -106,6 +109,10 @@ public class ManageOrdersController extends CallbackController {
         GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
 
         publishEvent(new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument()));
+    }
+
+    private CaseData fixAndRetrieveCaseData(CaseDetails caseDetails) {
+        return manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
     }
 
 }
