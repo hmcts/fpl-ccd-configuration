@@ -457,7 +457,8 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public List<Representative> getRepresentativesByServedPreferenceAndRole(RepresentativeServingPreferences preference) {
+    public List<Representative> getRepresentativesByServedPreferenceAndRole(RepresentativeServingPreferences
+                                                                                    preference) {
         if (isNotEmpty(representatives)) {
             return representatives.stream()
                 .filter(Objects::nonNull)
