@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -39,6 +40,7 @@ public class SealedOrderHistoryService {
 
     private final IdentityService identityService;
     private final ChildrenService childrenService;
+    private final AppointedGuardianService appointedGuardianService;
     private final OrderCreationService orderCreationService;
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
     private final Time time;
@@ -63,6 +65,7 @@ public class SealedOrderHistoryService {
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
+            .specialGuardians(appointedGuardianService.getGuardiansNamesForTab(caseData))
             .document(sealedPdfOrder)
             .unsealedDocumentCopy(plainWordOrder)
             .build()));

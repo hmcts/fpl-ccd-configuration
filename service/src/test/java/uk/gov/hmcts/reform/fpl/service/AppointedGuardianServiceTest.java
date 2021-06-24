@@ -20,7 +20,7 @@ class AppointedGuardianServiceTest {
     @Test
     void shouldReturnDefaultLabelMessageIfNoRespondentsOrOthers() {
         CaseData caseData = CaseData.builder().appointedGuardianSelector(Selector.builder().build()).build();
-        String formattedLabel = underTest.getAppointedGuardiansLabel(caseData);
+        String formattedLabel = underTest.getGuardiansLabel(caseData);
         assertThat(formattedLabel).isEqualTo("No respondents or others to be given notice on the case");
     }
 
@@ -33,34 +33,61 @@ class AppointedGuardianServiceTest {
             + "Person 4: Other - Otto Otherman\n"
             + "Person 5: Other - Bob Bothers\n";
 
-        String label = underTest.getAppointedGuardiansLabel(caseData);
+        String label = underTest.getGuardiansLabel(caseData);
         assertThat(label).isEqualTo(expected);
     }
 
     @Test
     void shouldReturnEmptyStringIfNoRespondentsOrOthers() {
         CaseData caseData = CaseData.builder().appointedGuardianSelector(Selector.builder().build()).build();
-        String formattedNames = underTest.getAppointedGuardiansNames(caseData);
+        String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
         assertThat(formattedNames).isEmpty();
     }
 
     @Test
-    void shouldGetAppointedGuardiansNamesForOneRespondent() {
+    void shouldGetAppointedGuardiansNamesForDocumentWhenOneRespondent() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder().firstName("Remy").lastName("Respondent").build()).build()))
             .appointedGuardianSelector(Selector.builder().selected(List.of(0)).build())
             .build();
 
-        String formattedNames = underTest.getAppointedGuardiansNames(caseData);
+        String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
         assertThat(formattedNames).isEqualTo("Remy Respondent is");
     }
 
     @Test
-    void shouldGetOnlySelectedNamesFromBothRespondentsAndOthers() {
+    void shouldGetOnlySelectedNamesForDocumentWhenBothRespondentsAndOthersPresent() {
         CaseData caseData = getMultiplePeopleCaseData();
 
-        String formattedNames = underTest.getAppointedGuardiansNames(caseData);
+        String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
         assertThat(formattedNames).isEqualTo("Remy Respondent, Otto Otherman, Bob Bothers are");
+    }
+
+    @Test
+    void shouldReturnNullForTabWhenNoOneSelected() {
+        CaseData caseData = CaseData.builder().build();
+
+        String formattedNames = underTest.getGuardiansNamesForTab(caseData);
+        assertThat(formattedNames).isNull();
+    }
+
+    @Test
+    void shouldGetAppointedGuardiansNamesForTabWhenOneRespondent() {
+        CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().firstName("Remy").lastName("Respondent").build()).build()))
+            .appointedGuardianSelector(Selector.builder().selected(List.of(0)).build())
+            .build();
+
+        String formattedNames = underTest.getGuardiansNamesForTab(caseData);
+        assertThat(formattedNames).isEqualTo("Remy Respondent");
+    }
+
+    @Test
+    void shouldGetOnlySelectedNamesForTabWhenBothRespondentsAndOthersPresent() {
+        CaseData caseData = getMultiplePeopleCaseData();
+
+        String formattedNames = underTest.getGuardiansNamesForTab(caseData);
+        assertThat(formattedNames).isEqualTo("Remy Respondent, Otto Otherman, Bob Bothers");
     }
 
     private CaseData getMultiplePeopleCaseData() {

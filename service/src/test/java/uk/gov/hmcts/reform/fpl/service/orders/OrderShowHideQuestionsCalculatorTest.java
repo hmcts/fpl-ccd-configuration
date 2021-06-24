@@ -155,10 +155,10 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("appointedGuardian", "NO");
 
         Map<String, String> specialGuardianshipOrderQuestions = new HashMap<>(commonQuestions);
-        specialGuardianshipOrderQuestions.put("approvalDate", "YES");
+        specialGuardianshipOrderQuestions.put("approvalDate", "NO");
         specialGuardianshipOrderQuestions.put("furtherDirections", "YES");
         specialGuardianshipOrderQuestions.put("orderDetails", "NO");
-        specialGuardianshipOrderQuestions.put("approvalDateTime", "NO");
+        specialGuardianshipOrderQuestions.put("approvalDateTime", "YES");
         specialGuardianshipOrderQuestions.put("epoIncludePhrase", "NO");
         specialGuardianshipOrderQuestions.put("epoChildrenDescription", "NO");
         specialGuardianshipOrderQuestions.put("uploadOrderFile", "NO");

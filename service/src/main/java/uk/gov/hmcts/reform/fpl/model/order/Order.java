@@ -125,7 +125,7 @@ public enum Order {
         List.of(
             LINKED_TO_HEARING,
             APPROVER,
-            APPROVAL_DATE,
+            APPROVAL_DATE_TIME,
             ORDER_BY_CONSENT,
             APPOINTED_GUARDIAN,
             FURTHER_DIRECTIONS,

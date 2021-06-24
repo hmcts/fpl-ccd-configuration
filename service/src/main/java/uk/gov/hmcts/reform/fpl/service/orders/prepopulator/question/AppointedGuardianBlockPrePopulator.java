@@ -30,7 +30,7 @@ public class AppointedGuardianBlockPrePopulator implements QuestionBlockOrderPre
         return Map.of(
             "appointedGuardianSelector", appointedGuardianSelector,
             "appointedGuardians_label",
-            appointedGuardianService.getAppointedGuardiansLabel(caseData)
+            appointedGuardianService.getGuardiansLabel(caseData)
         );
     }
 }

@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import java.util.List;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -57,16 +59,17 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
     @Override
     public DocmosisParameters generate(CaseData caseData) {
-        ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()
             .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
             .orderType(GeneratedOrderType.SPECIAL_GUARDIANSHIP_ORDER)
-            .furtherDirections(manageOrdersEventData.getManageOrdersFurtherDirections())
+            .dateOfIssue(formatLocalDateTimeBaseUsingFormat(eventData.getManageOrdersApprovalDateTime(), DATE_TIME))
+            .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(getSpecialGuardianAppointeeMessage(caseData, selectedChildren.size()))
-            .orderByConsent(getOrderByConsentMessage(manageOrdersEventData))
+            .orderByConsent(getOrderByConsentMessage(eventData))
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .noticeHeader(NOTICE_HEADER)
@@ -76,7 +79,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
     private String getSpecialGuardianAppointeeMessage(CaseData caseData, int numOfChildren) {
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
-        String applicant = appointedGuardianService.getAppointedGuardiansNames(caseData);
+        String applicant = appointedGuardianService.getGuardiansNamesForDocument(caseData);
 
         return format("The Court orders %s appointed as Special Guardian for the %s.", applicant, childOrChildren);
     }

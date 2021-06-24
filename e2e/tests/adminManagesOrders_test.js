@@ -320,6 +320,37 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   });
 });
 
+Scenario('Create C43a special guardianship order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c43a);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDateTime(today);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectOrderByConsent()
+  await manageOrdersEventPage.selectGuardian([0])
+  await manageOrdersEventPage.enterFurtherDirections('Further special guardianship details.');
+  await manageOrdersEventPage.selectIsFinalOrder();
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 1,
+    orderType: 'Special guardianship order (C43A)',
+    orderTitle: orderTitle,
+    approvalDate: today,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+    specialGuardian: 'Joe Bloggs'
+  });
+});
+
 Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
@@ -340,7 +371,7 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 7,
+    orderIndex: 8,
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
@@ -365,6 +396,10 @@ function assertOrder(I, caseViewPage, order) {
     if (order.allocatedJudge.legalAdviserFullName) {
       I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.allocatedJudge.legalAdviserFullName);
     }
+  }
+
+  if (order.specialGuardian) {
+    I.seeInTab([orderElement, 'Special guardians'], order.specialGuardian);
   }
 
   I.seeInTab([orderElement, 'Children'], order.children);

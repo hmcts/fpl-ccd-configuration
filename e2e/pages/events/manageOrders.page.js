@@ -70,7 +70,7 @@ const section3 = {
     },
   },
   childSelector: {
-    selector: index => `#childSelector_option${index}`,
+    selector: index => `#childSelector_option${index}-SELECTED`,
   },
 };
 
@@ -155,6 +155,10 @@ const section4 = {
       yes: '#manageOrdersIsFinalOrder-Yes',
       no: '#manageOrdersIsFinalOrder-No',
     },
+  },
+  orderByConsent: '#manageOrdersIsByConsent-Yes',
+  guardianSelector: {
+    selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
   },
 };
 
@@ -353,6 +357,18 @@ const selectEnglandOffice= office => {
   I.selectOption(section4.englandOffices, office);
 };
 
+const selectOrderByConsent = () => {
+  I.click(section4.orderByConsent);
+};
+
+const selectGuardian = async (indexes = []) => {
+    indexes.forEach((selectorIndex) => {
+      I.checkOption(section4.guardianSelector.selector(selectorIndex));
+    });
+
+  await I.runAccessibilityTest();
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
@@ -360,6 +376,6 @@ module.exports = {
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
-  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate,
+  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, selectOrderByConsent, selectGuardian,
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
 };

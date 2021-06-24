@@ -7,18 +7,21 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AppointedGuardianService {
 
-    public String getAppointedGuardiansLabel(CaseData caseData) {
+    public String getGuardiansLabel(CaseData caseData) {
         List<Element<Respondent>> respondents = caseData.getAllRespondents();
         List<Element<Other>> others = caseData.getAllOthers();
         if (isEmpty(respondents) && isEmpty(others)) {
@@ -43,10 +46,31 @@ public class AppointedGuardianService {
         return builder.toString();
     }
 
-    public String getAppointedGuardiansNames(CaseData caseData) {
-
+    public String getGuardiansNamesForDocument(CaseData caseData) {
         StringBuilder builder = new StringBuilder();
-        boolean hasMultipleGuardiansGrammar = false;
+        List<String> selected = getSelectedApplicants(caseData);
+
+        selected.forEach(builder::append);
+        appendChildGrammarVerb(builder, selected.size() > 1);
+
+        return builder.toString();
+    }
+
+    public String getGuardiansNamesForTab(CaseData caseData) {
+        StringBuilder builder = new StringBuilder();
+        List<String> selected = getSelectedApplicants(caseData);
+
+        if (selected.isEmpty()) {
+            return null;
+        }
+
+        selected.forEach(builder::append);
+
+        return builder.toString();
+    }
+
+    private List<String> getSelectedApplicants(CaseData caseData) {
+        List<String> selectedApplicants = new ArrayList<>();
 
         Stream<String> respondentsNames = caseData.getAllRespondents().stream()
             .map(respondent -> respondent.getValue().getParty().getFullName());
@@ -57,7 +81,8 @@ public class AppointedGuardianService {
         List<String> respondentsAndOthersNames = Stream.concat(respondentsNames, othersNames).collect(
             Collectors.toList());
 
-        List<String> selected = caseData.getAppointedGuardianSelector().getSelected().stream()
+        List<String> selected = defaultIfNull(caseData.getAppointedGuardianSelector(), Selector.builder().build())
+            .getSelected().stream()
             .map(respondentsAndOthersNames::get)
             .collect(Collectors.toList());
 
@@ -65,16 +90,12 @@ public class AppointedGuardianService {
             String name = selected.get(i);
 
             if (i >= 1) {
-                hasMultipleGuardiansGrammar = true;
-                builder.append(String.format(", %s", name));
+                selectedApplicants.add(String.format(", %s", name));
             } else {
-                builder.append(String.format("%s", name));
+                selectedApplicants.add(String.format("%s", name));
             }
         }
-
-        appendChildGrammarVerb(builder, hasMultipleGuardiansGrammar);
-
-        return builder.toString();
+        return selectedApplicants;
     }
 
     private static void appendChildGrammarVerb(StringBuilder builder, boolean hasMultipleGuardiansGrammar) {
