@@ -25,8 +25,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 class OrderCreationServiceTest {
 
-    private static final Order ORDER = mock(Order.class);
-    private static final RenderFormat FORMAT = mock(RenderFormat.class);
     private static final byte[] BYTES = {1, 2, 3, 4, 5};
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = new DocmosisDocument("", BYTES);
     private static final Document UPLOADED_DOCUMENT = testDocument();
@@ -35,6 +33,8 @@ class OrderCreationServiceTest {
     private static final String DRAFT_FILE_NAME = "Preview order.pdf";
     private static final String MEDIA_TYPE = "mock/media_type";
 
+    private final Order order = mock(Order.class);
+    private final RenderFormat format = mock(RenderFormat.class);
     private final UploadDocumentService uploadService = mock(UploadDocumentService.class);
     private final OrderDocumentGenerator documentGenerator = mock(OrderDocumentGenerator.class);
     private final UploadedOrderDocumentGenerator uploadedOrderDocumentGenerator =
@@ -43,45 +43,46 @@ class OrderCreationServiceTest {
     private final OrderCreationService underTest = new OrderCreationService(
         documentGenerator, uploadedOrderDocumentGenerator, uploadService
     );
-    private static final CaseData CASE_DATA = CaseData.builder()
+    private final CaseData caseData = CaseData.builder()
         .manageOrdersEventData(ManageOrdersEventData.builder()
-            .manageOrdersType(ORDER)
+            .manageOrdersType(order)
             .build())
         .build();
 
+
     @Test
     void createDraftOrderDocument() {
-        when(documentGenerator.generate(ORDER, CASE_DATA, OrderStatus.DRAFT, FORMAT)).thenReturn(DOCMOSIS_DOCUMENT);
-        when(FORMAT.getMediaType()).thenReturn(MEDIA_TYPE);
+        when(documentGenerator.generate(order, caseData, OrderStatus.DRAFT, format)).thenReturn(DOCMOSIS_DOCUMENT);
+        when(format.getMediaType()).thenReturn(MEDIA_TYPE);
         when(uploadService.uploadDocument(BYTES, DRAFT_FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
-        assertThat(underTest.createOrderDocument(CASE_DATA, OrderStatus.DRAFT, FORMAT)).isEqualTo(DOCUMENT);
+        assertThat(underTest.createOrderDocument(caseData, OrderStatus.DRAFT, format)).isEqualTo(DOCUMENT);
     }
 
     @ParameterizedTest
     @EnumSource(value = OrderStatus.class, mode = EnumSource.Mode.EXCLUDE, names = "DRAFT")
     void createNonDraftOrderDocument(OrderStatus status) {
-        when(documentGenerator.generate(ORDER, CASE_DATA, status, FORMAT)).thenReturn(DOCMOSIS_DOCUMENT);
-        when(ORDER.fileName(FORMAT)).thenReturn(FILE_NAME);
-        when(FORMAT.getMediaType()).thenReturn(MEDIA_TYPE);
+        when(documentGenerator.generate(order, caseData, status, format)).thenReturn(DOCMOSIS_DOCUMENT);
+        when(order.fileName(format)).thenReturn(FILE_NAME);
+        when(format.getMediaType()).thenReturn(MEDIA_TYPE);
         when(uploadService.uploadDocument(BYTES, FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
-        assertThat(underTest.createOrderDocument(CASE_DATA, status, FORMAT)).isEqualTo(DOCUMENT);
+        assertThat(underTest.createOrderDocument(caseData, status, format)).isEqualTo(DOCUMENT);
         verifyNoInteractions(uploadedOrderDocumentGenerator);
     }
 
     @ParameterizedTest
     @EnumSource(value = OrderStatus.class, mode = EnumSource.Mode.EXCLUDE, names = "DRAFT")
     void createNonDraftOrderForUploadedDocument(OrderStatus status) {
-        when(uploadedOrderDocumentGenerator.generate(CASE_DATA, status, FORMAT))
-            .thenReturn(OrderDocumentGeneratorResult.builder().bytes(BYTES).renderFormat(FORMAT).build());
-        when(ORDER.fileName(FORMAT)).thenReturn(FILE_NAME);
-        when(ORDER.getSourceType()).thenReturn(OrderSourceType.MANUAL_UPLOAD);
-        when(FORMAT.getMediaType()).thenReturn(MEDIA_TYPE);
+        when(uploadedOrderDocumentGenerator.generate(caseData, status, format))
+            .thenReturn(OrderDocumentGeneratorResult.builder().bytes(BYTES).renderFormat(format).build());
+        when(order.fileName(format)).thenReturn(FILE_NAME);
+        when(order.getSourceType()).thenReturn(OrderSourceType.MANUAL_UPLOAD);
+        when(format.getMediaType()).thenReturn(MEDIA_TYPE);
 
         when(uploadService.uploadDocument(BYTES, FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
-        assertThat(underTest.createOrderDocument(CASE_DATA, status, FORMAT)).isEqualTo(DOCUMENT);
+        assertThat(underTest.createOrderDocument(caseData, status, format)).isEqualTo(DOCUMENT);
         verifyNoInteractions(documentGenerator);
     }
 
