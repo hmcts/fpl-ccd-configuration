@@ -1,4 +1,4 @@
-const {I} = inject();
+const { I } = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
@@ -348,8 +348,20 @@ const selectCafcassRegion = region => {
   I.click(`${section4.cafcassRegion.group}-${region}`);
 };
 
-const selectEnglandOffice= office => {
+const selectEnglandOffice = office => {
   I.selectOption(section4.englandOffices, office);
+};
+
+const linkApplication = (applicationToChoose) => {
+  I.see('Is there an application for the order on the system?');
+  I.dontSee('Applications');
+  I.checkOption('Yes', '#manageOrdersShouldLinkApplication');
+  I.see('Applications');
+  I.selectOption('Applications', applicationToChoose);
+};
+
+const confirmNoApplicationCanBeLinked = () => {
+  I.dontSee('Is there an application for the order on the system?');
 };
 
 module.exports = {
@@ -359,6 +371,6 @@ module.exports = {
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
-  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate,
+  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked,
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
 };

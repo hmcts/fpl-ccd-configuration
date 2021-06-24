@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
@@ -53,7 +54,7 @@ public class SealedOrderHistoryService {
         DocumentReference sealedPdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
 
-        pastOrders.add(element(identityService.generateId(), GeneratedOrder.builder()
+        GeneratedOrder.GeneratedOrderBuilder generatedOrderBuilder = GeneratedOrder.builder()
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
             .title(extraTitleGenerator.generate(caseData))
             .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
@@ -64,8 +65,13 @@ public class SealedOrderHistoryService {
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
             .document(sealedPdfOrder)
-            .unsealedDocumentCopy(plainWordOrder)
-            .build()));
+            .unsealedDocumentCopy(plainWordOrder);
+
+        Optional.ofNullable(manageOrdersEventData.getManageOrdersLinkedApplication())
+            .map(DynamicList::getValueCode)
+            .ifPresent(generatedOrderBuilder::linkedApplicationId);
+
+        pastOrders.add(element(identityService.generateId(), generatedOrderBuilder.build()));
 
         pastOrders.sort(legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc());
 
