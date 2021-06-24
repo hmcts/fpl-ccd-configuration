@@ -45,11 +45,11 @@ class OrderShowHideQuestionsCalculatorTest {
     private static Stream<Arguments> orderWithExpectedMap() {
         Map<String, String> commonQuestions = Map.of(
             "hearingDetails", "YES",
+            "linkApplication", "YES",
             "approver", "YES",
             "previewOrder", "YES");
 
         Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
-
         careOrderQuestions.put("furtherDirections", "YES");
         careOrderQuestions.put("approvalDate", "YES");
         careOrderQuestions.put("approvalDateTime", "NO");
@@ -65,6 +65,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         careOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         careOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        careOrderQuestions.put("isFinalOrder", "NO");
         careOrderQuestions.put("closeCase", "YES");
         careOrderQuestions.put("dischargeOfCareDetails", "NO");
 
@@ -106,6 +107,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         epoQuestions.put("closeCase", "NO");
+        epoQuestions.put("isFinalOrder", "NO");
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
         blankOrderQuestions.put("approvalDate", "YES");
@@ -125,6 +127,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         blankOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         blankOrderQuestions.put("closeCase", "NO");
+        blankOrderQuestions.put("isFinalOrder", "NO");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
         supervisionOrderQuestions.put("approvalDate", "YES");
@@ -144,6 +147,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         supervisionOrderQuestions.put("closeCase", "YES");
+        supervisionOrderQuestions.put("isFinalOrder", "NO");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
         appointmentOfChildrensGuardianQuestions.put("approvalDate", "YES");
@@ -163,6 +167,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         appointmentOfChildrensGuardianQuestions.put("closeCase", "NO");
+        appointmentOfChildrensGuardianQuestions.put("isFinalOrder", "NO");
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),
@@ -191,6 +196,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("orderDetails", "NO"),
                 Map.entry("whichChildren", "YES"),
                 Map.entry("hearingDetails", "NO"),
+                Map.entry("linkApplication", "NO"),
                 Map.entry("approvalDate", "YES"),
                 Map.entry("approvalDateTime", "NO"),
                 Map.entry("dischargeOfCareDetails", "NO"),
@@ -228,11 +234,13 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("orderDetails", "NO"),
                 Map.entry("whichChildren", "YES"),
                 Map.entry("hearingDetails", "NO"),
+                Map.entry("linkApplication", "NO"),
                 Map.entry("approvalDate", "YES"),
                 Map.entry("approvalDateTime", "NO"),
                 Map.entry("dischargeOfCareDetails", "NO"),
                 Map.entry("epoIncludePhrase", "NO"),
                 Map.entry("epoExpiryDate", "NO"),
+                Map.entry("isFinalOrder", "NO"),
                 Map.entry("epoTypeAndPreventRemoval", "NO"),
                 Map.entry("epoChildrenDescription", "NO"),
                 Map.entry("manageOrdersExclusionRequirementDetails", "NO"),

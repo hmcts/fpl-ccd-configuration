@@ -49,7 +49,7 @@ module.exports = {
           I.refreshPage();
         }
       }
-    }, 'ccd-case-event-trigger');
+    }, 'ccd-case-event-trigger', false);
   },
 
   async checkActionsAreAvailable(actions) {
