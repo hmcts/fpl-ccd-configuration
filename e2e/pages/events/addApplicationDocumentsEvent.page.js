@@ -14,9 +14,9 @@ module.exports = {
 
     await I.addAnotherElementToCollection('Documents');
     const index = await I.getActiveElementIndex();
+    await I.runAccessibilityTest();
 
     this.selectDocumentType(option, index);
-    await I.runAccessibilityTest();
     this.uploadFile(file, index);
 
     if (name) {
