@@ -43,7 +43,7 @@ class OrderCreationServiceTest {
     private final OrderCreationService underTest = new OrderCreationService(
         documentGenerator, uploadedOrderDocumentGenerator, uploadService
     );
-    private static final CaseData CASE_DATA = CaseData.builder()
+    private final CaseData caseData = CaseData.builder()
         .manageOrdersEventData(ManageOrdersEventData.builder()
             .manageOrdersType(ORDER)
             .build())
@@ -51,29 +51,29 @@ class OrderCreationServiceTest {
 
     @Test
     void createDraftOrderDocument() {
-        when(documentGenerator.generate(ORDER, CASE_DATA, OrderStatus.DRAFT, FORMAT)).thenReturn(DOCMOSIS_DOCUMENT);
+        when(documentGenerator.generate(ORDER, caseData, OrderStatus.DRAFT, FORMAT)).thenReturn(DOCMOSIS_DOCUMENT);
         when(FORMAT.getMediaType()).thenReturn(MEDIA_TYPE);
         when(uploadService.uploadDocument(BYTES, DRAFT_FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
-        assertThat(underTest.createOrderDocument(CASE_DATA, OrderStatus.DRAFT, FORMAT)).isEqualTo(DOCUMENT);
+        assertThat(underTest.createOrderDocument(caseData, OrderStatus.DRAFT, FORMAT)).isEqualTo(DOCUMENT);
     }
 
     @ParameterizedTest
     @EnumSource(value = OrderStatus.class, mode = EnumSource.Mode.EXCLUDE, names = "DRAFT")
     void createNonDraftOrderDocument(OrderStatus status) {
-        when(documentGenerator.generate(ORDER, CASE_DATA, status, FORMAT)).thenReturn(DOCMOSIS_DOCUMENT);
+        when(documentGenerator.generate(ORDER, caseData, status, FORMAT)).thenReturn(DOCMOSIS_DOCUMENT);
         when(ORDER.fileName(FORMAT)).thenReturn(FILE_NAME);
         when(FORMAT.getMediaType()).thenReturn(MEDIA_TYPE);
         when(uploadService.uploadDocument(BYTES, FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
-        assertThat(underTest.createOrderDocument(CASE_DATA, status, FORMAT)).isEqualTo(DOCUMENT);
+        assertThat(underTest.createOrderDocument(caseData, status, FORMAT)).isEqualTo(DOCUMENT);
         verifyNoInteractions(uploadedOrderDocumentGenerator);
     }
 
     @ParameterizedTest
     @EnumSource(value = OrderStatus.class, mode = EnumSource.Mode.EXCLUDE, names = "DRAFT")
     void createNonDraftOrderForUploadedDocument(OrderStatus status) {
-        when(uploadedOrderDocumentGenerator.generate(CASE_DATA, status, FORMAT))
+        when(uploadedOrderDocumentGenerator.generate(caseData, status, FORMAT))
             .thenReturn(OrderDocumentGeneratorResult.builder().bytes(BYTES).renderFormat(FORMAT).build());
         when(ORDER.fileName(FORMAT)).thenReturn(FILE_NAME);
         when(ORDER.getSourceType()).thenReturn(OrderSourceType.MANUAL_UPLOAD);
@@ -81,7 +81,7 @@ class OrderCreationServiceTest {
 
         when(uploadService.uploadDocument(BYTES, FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
-        assertThat(underTest.createOrderDocument(CASE_DATA, status, FORMAT)).isEqualTo(DOCUMENT);
+        assertThat(underTest.createOrderDocument(caseData, status, FORMAT)).isEqualTo(DOCUMENT);
         verifyNoInteractions(documentGenerator);
     }
 
