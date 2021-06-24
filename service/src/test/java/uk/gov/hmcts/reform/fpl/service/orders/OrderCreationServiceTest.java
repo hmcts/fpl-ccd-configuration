@@ -43,7 +43,7 @@ class OrderCreationServiceTest {
     private final OrderCreationService underTest = new OrderCreationService(
         documentGenerator, uploadedOrderDocumentGenerator, uploadService
     );
-    private static final CaseData CASE_DATA = CaseData.builder()
+    private final CaseData CASE_DATA = CaseData.builder()
         .manageOrdersEventData(ManageOrdersEventData.builder()
             .manageOrdersType(ORDER)
             .build())
