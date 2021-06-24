@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
@@ -43,7 +44,8 @@ public enum Order {
         "Section 31 Children Act 1989",
         "C21 - Blank order",
         IsFinalOrder.NO,
-        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
+        List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER,
+            APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
         DIGITAL,
@@ -51,8 +53,9 @@ public enum Order {
         "Section 44 Children Act 1989",
         "C23 - Emergency protection order",
         IsFinalOrder.NO,
-        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
-            EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+        List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN,
+            EPO_TYPE_AND_PREVENT_REMOVAL, EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE,
+            FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
     C32_CARE_ORDER(
         DIGITAL,
@@ -60,8 +63,8 @@ public enum Order {
         "Section 31 Children Act 1989",
         "C32 - Care order",
         IsFinalOrder.YES,
-        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER,
-            CLOSE_CASE)
+        List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER, CLOSE_CASE)
     ),
     C32B_DISCHARGE_OF_CARE_ORDER(
         DIGITAL,
@@ -69,8 +72,8 @@ public enum Order {
         "Section 39(1) Children Act 1989",
         "Discharge of care order (C32B)",
         IsFinalOrder.MAYBE,
-        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DISCHARGE_DETAILS, FURTHER_DIRECTIONS,
-            CLOSE_CASE, REVIEW_DRAFT_ORDER)
+        List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DISCHARGE_DETAILS,
+            FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(
         DIGITAL,
@@ -79,7 +82,7 @@ public enum Order {
         "Supervision order (C35A)",
         IsFinalOrder.YES,
         List.of(
-            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_MONTH, REVIEW_DRAFT_ORDER, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C33_INTERIM_CARE_ORDER(
@@ -89,8 +92,8 @@ public enum Order {
         "Interim care order (C33)",
         IsFinalOrder.NO,
         List.of(
-            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION, FURTHER_DIRECTIONS,
-            MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION,
+            FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
         DIGITAL,
@@ -99,7 +102,8 @@ public enum Order {
         "C47A - Appointment of a Children's Guardian",
         IsFinalOrder.NO,
         List.of(
-            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER)
     ),
     C35B_INTERIM_SUPERVISION_ORDER(
         DIGITAL,
@@ -109,6 +113,7 @@ public enum Order {
         IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING,
+            LINK_APPLICATION,
             APPROVER,
             APPROVAL_DATE,
             WHICH_CHILDREN,
@@ -124,6 +129,7 @@ public enum Order {
         IsFinalOrder.MAYBE,
         List.of(
             LINKED_TO_HEARING,
+            LINK_APPLICATION,
             APPROVER,
             APPROVAL_DATE_TIME,
             ORDER_BY_CONSENT,
@@ -389,18 +395,18 @@ public enum Order {
     private final String childrenAct;
     private final String historyTitle;
     private final IsFinalOrder isFinalOrder;
-    private final List<OrderQuestionBlock> questions;
+    private final List<OrderQuestionBlock> questionsBlocks;
 
     public String fileName(RenderFormat format) {
         return String.format("%s.%s", this.name().toLowerCase(), format.getExtension());
     }
 
     public OrderSection firstSection() {
-        return this.getQuestions().get(0).getSection();
+        return this.getQuestionsBlocks().get(0).getSection();
     }
 
     public Optional<OrderSection> nextSection(OrderSection currentSection) {
-        Set<OrderSection> sectionsForOrder = this.getQuestions()
+        Set<OrderSection> sectionsForOrder = this.getQuestionsBlocks()
             .stream()
             .map(OrderQuestionBlock::getSection)
             .collect(Collectors.toSet());

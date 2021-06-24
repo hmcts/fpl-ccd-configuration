@@ -50,5 +50,31 @@
     "PageFieldDisplayOrder": 4,
     "FieldShowCondition": "orderTempQuestions.hearingDetails=\"YES\" AND manageOrdersApprovedAtHearing=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersShouldLinkApplication",
+    "DisplayContext": "MANDATORY",
+    "PageID": "HearingDetails",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 5,
+    "FieldShowCondition": "orderTempQuestions.linkApplication=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersLinkedApplication",
+    "DisplayContext": "MANDATORY",
+    "PageID": "HearingDetails",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 6,
+    "FieldShowCondition": "manageOrdersShouldLinkApplication=\"Yes\"",
+    "ShowSummaryChangeOption": "Y"
   }
 ]

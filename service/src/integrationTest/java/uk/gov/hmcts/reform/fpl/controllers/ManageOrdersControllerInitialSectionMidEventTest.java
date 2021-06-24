@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 
@@ -38,7 +39,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
     }
 
     @Test
-    void shouldPrepopulateIssueDetailsSectionDataWhenCreatingBlankOrderForClosedCase() {
+    void shouldPrePopulateIssueDetailsSectionDataWhenCreatingBlankOrderForClosedCase() {
         CaseData caseData = CaseData.builder()
             .id(CCD_CASE_NUMBER)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
@@ -62,20 +63,20 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("appointedGuardian", "NO"),
-            Map.entry("orderIsByConsent", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("linkApplication", "NO"),
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
             Map.entry("closeCase", "NO")
         );
 
-        assertThat(response.getData()).containsAllEntriesOf(
-            Map.of("orderTempQuestions", expectedTempQuestions,
-                "manageOrdersState", "CLOSED",
-                "manageOrdersType", "C21_BLANK_ORDER"));
+        assertThat(response.getData())
+            .containsEntry("manageOrdersState", "CLOSED")
+            .containsEntry("manageOrdersType", "C21_BLANK_ORDER")
+            .extractingByKey("orderTempQuestions", MAP).containsAllEntriesOf(expectedTempQuestions);
     }
 
     @Test
