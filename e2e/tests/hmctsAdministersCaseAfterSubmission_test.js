@@ -27,7 +27,7 @@ BeforeSuite(async ({I}) => {
 
 Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
-Scenario('HMCTS admin enters FamilyMan reference number @f', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
+Scenario('HMCTS admin enters FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   await enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
   await I.completeEvent('Save and continue');
@@ -35,7 +35,7 @@ Scenario('HMCTS admin enters FamilyMan reference number @f', async ({I, caseView
   I.seeFamilyManNumber('mockCaseID');
 });
 
-Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing @f', async ({I, caseViewPage, enterOtherProceedingsEventPage, enterChildrenEventPage}) => {
+Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async ({I, caseViewPage, enterOtherProceedingsEventPage, enterChildrenEventPage}) => {
   const I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible = async (event, summary, description, I_doActionsOnEditPage = () => {}) => {
     await caseViewPage.goToNewActions(event);
     await I_doActionsOnEditPage();

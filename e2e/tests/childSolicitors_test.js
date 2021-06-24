@@ -15,7 +15,7 @@ BeforeSuite(async ({I}) => {
   solicitor1.details = await apiHelper.getUser(solicitor1);
   solicitor1.details.organisation = 'Private solicitors';
   solicitor2.details = await apiHelper.getUser(solicitor2);
-  solicitor2.details.organisation = 'London Borough Hillingdon';
+  solicitor2.details.organisation = 'Hillingdon'; // org search on aat does not like London Borough Hillingdon
 });
 
 Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
@@ -33,7 +33,7 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   await I.goToNextPage();
   enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);
   enterChildrenEventPage.enterChildrenMainRepresentation(solicitor1.details);
-  enterChildrenEventPage.enterRegisteredOrganisation(solicitor1.details);
+  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor1.details);
   await I.goToNextPage();
   enterChildrenEventPage.selectChildrenHaveSameRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveSameRepresentation.options.yes);
   await I.completeEvent('Save and continue');
@@ -47,6 +47,9 @@ Scenario('HMCTS assign a different solicitor for some of the children', async ({
 
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
   await I.goToNextPage();
+  enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);
+  enterChildrenEventPage.enterChildrenMainRepresentation(solicitor1.details);
+  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor1.details);
   await I.goToNextPage();
   enterChildrenEventPage.selectChildrenHaveSameRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveSameRepresentation.options.no);
 
@@ -87,6 +90,3 @@ function assertChild(I, idx, child, solicitor) {
     I.seeOrganisationInTab([childElement, 'Representative', 'Name'], solicitor.organisation);
   }
 }
-
-
-

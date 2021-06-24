@@ -1,5 +1,6 @@
 const { I } = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
+const output = require('codeceptjs').output;
 
 module.exports = {
   fields: function (index) {
@@ -201,9 +202,16 @@ module.exports = {
     I.fillField(this.fields().mainSolicitor.email, solicitor.email);
   },
 
-  enterRegisteredOrganisation(solicitor) {
+  async enterRegisteredOrganisation(solicitor) {
+    const numOfElements = await I.grabNumberOfVisibleElements('#organisation-selected-table');
+
+    if (numOfElements !== 0) {
+      output.debug('Clearing old solicitor info');
+      I.click('//*[@id="organisation-selected-table"]/tbody//a');
+    }
+
     I.fillField('#search-org-text', solicitor.organisation);
-    let selectedItem = `//*[@id="organisation-table"]/caption/h3[text()="${solicitor.organisation}"]/../../tbody//a`;
+    let selectedItem = `//*[@id="organisation-table"]/caption/h3[contains(text(),"${solicitor.organisation}")]/../../tbody//a`;
     I.click(selectedItem);
     //postcodeLookup.enterAddressManually(solicitor.regionalOfficeAddress);
   },
@@ -215,8 +223,8 @@ module.exports = {
   },
 
   async enterSpecificRegisteredOrganisation(index, solicitor) {
-    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => {
-      this.enterRegisteredOrganisation(solicitor);
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => {
+      await this.enterRegisteredOrganisation(solicitor);
     });
   },
 
