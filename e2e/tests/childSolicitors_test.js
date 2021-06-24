@@ -33,13 +33,13 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   await I.goToNextPage();
   enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);
   enterChildrenEventPage.enterChildrenMainRepresentation(solicitor1.details);
-  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor1.details);
+  enterChildrenEventPage.enterRegisteredOrganisation(solicitor1.details);
   await I.goToNextPage();
   enterChildrenEventPage.selectChildrenHaveSameRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveSameRepresentation.options.yes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  mandatoryWithMaxChildren.caseData.children1.forEach((element, index) => assertChild(I, index+1, element.value, solicitor1.details));
+  mandatoryWithMaxChildren.caseData.children1.forEach((element, index) => assertChild(I, index + 1, element.value, solicitor1.details));
 });
 
 Scenario('HMCTS assign a different solicitor for some of the children', async ({I, caseViewPage, enterChildrenEventPage}) => {
@@ -47,13 +47,10 @@ Scenario('HMCTS assign a different solicitor for some of the children', async ({
 
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
   await I.goToNextPage();
-  enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);
-  enterChildrenEventPage.enterChildrenMainRepresentation(solicitor1.details);
-  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor1.details);
   await I.goToNextPage();
   enterChildrenEventPage.selectChildrenHaveSameRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveSameRepresentation.options.no);
 
-  for (const [index,child] of children.entries()) {
+  for (const [index, child] of children.entries()) {
     await enterChildrenEventPage.selectChildUseMainRepresentation(enterChildrenEventPage.fields(index).childSolicitor.useMainSolicitor.options.yes, index, child.value.party);
   }
 
@@ -63,15 +60,14 @@ Scenario('HMCTS assign a different solicitor for some of the children', async ({
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
-  for (const [index,child] of children.entries()) {
-    assertChild(I, index+1, child.value, index==childWithDifferentSolicitorIdx?solicitor2.details:solicitor1.details);
+  for (const [index, child] of children.entries()) {
+    assertChild(I, index + 1, child.value, index === childWithDifferentSolicitorIdx ? solicitor2.details : solicitor1.details);
   }
 });
 
 async function setSpecificRepresentative(enterChildrenEventPage, idx, child, solicitor) {
   await enterChildrenEventPage.selectChildUseMainRepresentation(enterChildrenEventPage.fields(idx).childSolicitor.useMainSolicitor.options.no, idx, child);
-  await enterChildrenEventPage.enterChildrenSpecificRepresentation(idx, solicitor);
-  pause();
+  enterChildrenEventPage.enterChildrenSpecificRepresentation(idx, solicitor);
   await enterChildrenEventPage.enterSpecificRegisteredOrganisation(idx, solicitor);
 }
 
@@ -83,7 +79,7 @@ function assertChild(I, idx, child, solicitor) {
   I.seeInTab([childElement, 'Party', 'Date of birth'], moment(child.party.dateOfBirth, 'YYYY-MM-DD').format('D MMM YYYY'));
   I.seeInTab([childElement, 'Party', 'Gender'], child.party.gender);
 
-  if(solicitor) {
+  if (solicitor) {
     I.seeInTab([childElement, 'Representative', 'Representative\'s first name'], solicitor.forename);
     I.seeInTab([childElement, 'Representative', 'Representative\'s last name'], solicitor.surname);
     I.seeInTab([childElement, 'Representative', 'Email address'], solicitor.email);
