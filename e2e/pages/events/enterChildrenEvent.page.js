@@ -31,6 +31,11 @@ module.exports = {
             no: 'No',
           },
         },
+        specificSolicitor: {
+          firstName: `#childRepresentationDetails${index}_solicitor_firstName`,
+          lastName: `#childRepresentationDetails${index}_solicitor_lastName`,
+          email: `#childRepresentationDetails${index}_solicitor_email`,
+        },
       },
       child: {
         firstName: `#children1_${index}_party_firstName`,
@@ -177,11 +182,11 @@ module.exports = {
     }
   },
 
-  async selectAnyChildHasLegalRepresentation(answer) {
+  selectAnyChildHasLegalRepresentation(answer) {
     I.click(`${this.fields().mainSolicitor.childrenHaveLegalRepresentation.group}-${answer}`);
   },
 
-  async selectChildrenHaveSameRepresentation(answer) {
+  selectChildrenHaveSameRepresentation(answer) {
     I.click(`${this.fields().mainSolicitor.childrenHaveSameRepresentation.group}-${answer}`);
   },
 
@@ -190,17 +195,28 @@ module.exports = {
     I.click(`${this.fields(index).childSolicitor.useMainSolicitor.group}-${answer}`);
   },
 
-  async enterChildrenMainRepresentation(solicitor) {
+  enterChildrenMainRepresentation(solicitor) {
     I.fillField(this.fields().mainSolicitor.firstName, solicitor.forename);
     I.fillField(this.fields().mainSolicitor.lastName, solicitor.surname);
     I.fillField(this.fields().mainSolicitor.email, solicitor.email);
   },
 
   async enterRegisteredOrganisation(solicitor) {
+    pause();
     I.fillField('//input[@id="search-org-text"]', solicitor.organisation);
     let selectedItem = `//*[@id="organisation-table"]/caption/h3[text()="${solicitor.organisation}"]/../../tbody//a`;
     I.click(selectedItem);
     //postcodeLookup.enterAddressManually(solicitor.regionalOfficeAddress);
+  },
+
+  enterChildrenSpecificRepresentation(idx, solicitor) {
+    I.fillField(this.fields(idx).childSolicitor.specificSolicitor.firstName, solicitor.forename);
+    I.fillField(this.fields(idx).childSolicitor.specificSolicitor.lastName, solicitor.surname);
+    I.fillField(this.fields(idx).childSolicitor.specificSolicitor.email, solicitor.email);
+  },
+
+  async enterSpecificRegisteredOrganisation(index, solicitor) {
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => this.enterRegisteredOrganisation(solicitor));
   },
 
   async getActiveElementIndex() {
