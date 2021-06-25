@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.order.generated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
@@ -54,6 +55,7 @@ public class GeneratedOrder implements RemovableOrder {
     private final List<Element<Child>> children;
     private final String childrenDescription;
     private String removalReason;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String linkedApplicationId;
 
     @JsonIgnore
