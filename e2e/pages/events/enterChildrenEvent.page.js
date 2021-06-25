@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 const output = require('codeceptjs').output;
 
@@ -36,6 +36,10 @@ module.exports = {
           firstName: `#childRepresentationDetails${index}_solicitor_firstName`,
           lastName: `#childRepresentationDetails${index}_solicitor_lastName`,
           email: `#childRepresentationDetails${index}_solicitor_email`,
+        },
+        unregisteredOrganisation: {
+          name: `#childRepresentationDetails${index}_solicitor_unregisteredOrganisation_name`,
+          address: `#childRepresentationDetails${index}_solicitor_unregisteredOrganisation_address_address`,
         },
       },
       child: {
@@ -192,7 +196,7 @@ module.exports = {
   },
 
   async selectChildUseMainRepresentation(answer, index, child) {
-    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => I.see(`Child ${index+1} - ${child.firstName} ${child.lastName}`));
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => I.see(`Child ${index + 1} - ${child.firstName} ${child.lastName}`));
     I.click(`${this.fields(index).childSolicitor.useMainSolicitor.group}-${answer}`);
   },
 
@@ -213,18 +217,24 @@ module.exports = {
     I.fillField('#search-org-text', solicitor.organisation);
     let selectedItem = `//*[@id="organisation-table"]/caption/h3[contains(text(),"${solicitor.organisation}")]/../../tbody//a`;
     I.click(selectedItem);
-    //postcodeLookup.enterAddressManually(solicitor.regionalOfficeAddress);
   },
 
-  enterChildrenSpecificRepresentation(idx, solicitor) {
-    I.fillField(this.fields(idx).childSolicitor.specificSolicitor.firstName, solicitor.forename);
-    I.fillField(this.fields(idx).childSolicitor.specificSolicitor.lastName, solicitor.surname);
-    I.fillField(this.fields(idx).childSolicitor.specificSolicitor.email, solicitor.email);
+  enterChildrenSpecificRepresentation(index, solicitor) {
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.firstName, solicitor.forename);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.lastName, solicitor.surname);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.email, solicitor.email);
   },
 
   async enterSpecificRegisteredOrganisation(index, solicitor) {
     await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => {
       await this.enterRegisteredOrganisation(solicitor);
+    });
+  },
+
+  async enterSpecificUnregisteredOrganisation(index, solicitor) {
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => {
+      I.fillField(this.fields(index).childSolicitor.unregisteredOrganisation.name, solicitor.unregisteredOrganisation.name);
+      postcodeLookup.enterAddressManually(solicitor.unregisteredOrganisation.address);
     });
   },
 
