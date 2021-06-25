@@ -11,16 +11,6 @@ let caseId;
 
 Feature('Notice of change');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
-  solicitor1.details = await apiHelper.getUser(solicitor1);
-  solicitor1.details.organisation = 'Private solicitors';
-  solicitor2.details = await apiHelper.getUser(solicitor2);
-  solicitor2.details.organisation = 'London Borough Hillingdon';
-  solicitor3.details = await apiHelper.getUser(solicitor3);
-  solicitor3.details.organisation = 'Wiltshire County Council';
-});
-
 async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents); }
   if (!solicitor1.details) {
