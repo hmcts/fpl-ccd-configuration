@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl.docmosis.generator;
 
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -16,7 +19,6 @@ import java.util.UUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;

@@ -9,7 +9,10 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -87,16 +90,19 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
         .fullName("First Representative")
         .servingPreferences(POST)
+        .role(RepresentativeRole.BARRISTER)
         .address(testAddress())
         .build());
     private static final Element<Representative> REPRESENTATIVE_EMAIL = element(Representative.builder()
         .fullName("Third Representative")
+        .role(RepresentativeRole.BARRISTER)
         .servingPreferences(EMAIL)
         .email("third@representatives.com")
         .build());
     private static final Element<Representative> REPRESENTATIVE_DIGITAL = element(Representative.builder()
         .fullName("Second Representative")
         .servingPreferences(DIGITAL_SERVICE)
+        .role(RepresentativeRole.BARRISTER)
         .email("second@representatives.com")
         .build());
     private static final Respondent RESPONDENT_NOT_REPRESENTED = Respondent.builder()
@@ -264,7 +270,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyCtscWhenEnabled() throws NotificationClientException {
-        CaseData caseData = caseData().toBuilder().sendToCtsc("Yes").build();
+        CaseData caseData = caseData().toBuilder()
+            .sendToCtsc("Yes").build();
 
         postSubmittedEvent(caseData);
 
@@ -284,6 +291,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .orderCollection(wrapElements(GeneratedOrder.builder()
+                .others(List.of(element(Other.builder()
+                    .address(Address.builder().build())
+                    .build())))
                 .orderType("C32_CARE_ORDER")
                 .type(ORDER_TYPE)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -295,7 +305,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
                 .document(ORDER)
                 .build()))
             .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
-            .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
+            .representatives(List.of(REPRESENTATIVE_POST,
+                REPRESENTATIVE_DIGITAL,
+                REPRESENTATIVE_EMAIL))
             .build();
     }
 }
