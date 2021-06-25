@@ -20,7 +20,12 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.*;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ORDER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.OTHER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 
 class OrderTest {
 

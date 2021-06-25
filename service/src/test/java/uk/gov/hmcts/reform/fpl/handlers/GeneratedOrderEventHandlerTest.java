@@ -25,6 +25,9 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,9 +62,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
     HmctsAdminNotificationHandler.class, SendDocumentService.class})
 class GeneratedOrderEventHandlerTest {
 
-    private static final Set<String> EMAIL_REPS = Set.of("barney@rubble.com");
-    private static final Set<String> DIGITAL_REPS = Set.of(
-        "fred@flinstones.com");
+    private static final Set<String> EMAIL_REPS  = new HashSet<>(Arrays.asList("barney@rubble.com"));
+    private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList("fred@flinstones.com"));
+
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
@@ -109,8 +112,12 @@ class GeneratedOrderEventHandlerTest {
             caseData, event.getOrderDocument(), GENERATED_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
 
-        given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(EMAIL_REPS);
-        given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
+        given(representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, EMAIL)).willReturn(EMAIL_REPS);
+        given(representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, DIGITAL_SERVICE))
+            .willReturn(DIGITAL_REPS);
+        //TO DO FIX THIS WHEN ADDING TEST
+        given(representativesInbox.getOtherRepresentativesToBeNotified(any(), any(), any()))
+            .willReturn(new LinkedHashSet<>());
     }
 
     @Test
@@ -183,12 +190,14 @@ class GeneratedOrderEventHandlerTest {
 
         final GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
 
-        given(sendDocumentService.getStandardRecipients(caseData)).willReturn(List.of(representative, respondent));
+        given(sendDocumentService.getRecipientsExcludingOthers(caseData)).willReturn(Arrays.asList(representative,
+            respondent));
 
         underTest.sendOrderByPost(event);
 
         verify(sendDocumentService).sendDocuments(caseData, List.of(testDocument), List.of(representative, respondent));
-        verify(sendDocumentService).getStandardRecipients(caseData);
+        verify(sendDocumentService).getRecipientsExcludingOthers(caseData);
+        verify(sendDocumentService).getSelectedOtherRecipients(caseData, null);
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);

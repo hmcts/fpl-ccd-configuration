@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
@@ -40,8 +39,10 @@ public class RepresentativesInbox {
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        emails.addAll(getRespondentSolicitorEmails(caseData.getRespondents1(),
-            RepresentativeServingPreferences.DIGITAL_SERVICE));
+        LinkedHashSet<String> respondentEmails = getRespondentSolicitorEmails(caseData.getRespondents1(),
+            preference);
+
+        emails.addAll(respondentEmails);
 
         return emails;
     }
@@ -61,7 +62,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
         emails.addAll(getRespondentSolicitorEmails(caseData.getRespondents1(),
-            RepresentativeServingPreferences.DIGITAL_SERVICE));
+            preference));
 
         return emails;
     }

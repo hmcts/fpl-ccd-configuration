@@ -49,6 +49,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         careOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         careOrderQuestions.put("closeCase", "YES");
+        careOrderQuestions.put("whichOthers", "YES");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.put("furtherDirections", "YES");
@@ -65,6 +66,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         epoQuestions.put("closeCase", "NO");
+        epoQuestions.put("whichOthers", "YES");
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
         blankOrderQuestions.put("approvalDate", "YES");
@@ -81,6 +83,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         blankOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         blankOrderQuestions.put("closeCase", "NO");
+        blankOrderQuestions.put("whichOthers", "YES");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
         supervisionOrderQuestions.put("approvalDate", "YES");
@@ -97,6 +100,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         supervisionOrderQuestions.put("closeCase", "YES");
+        supervisionOrderQuestions.put("whichOthers", "YES");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
         appointmentOfChildrensGuardianQuestions.put("approvalDate", "YES");
@@ -113,6 +117,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         appointmentOfChildrensGuardianQuestions.put("closeCase", "NO");
+        appointmentOfChildrensGuardianQuestions.put("whichOthers", "YES");
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),

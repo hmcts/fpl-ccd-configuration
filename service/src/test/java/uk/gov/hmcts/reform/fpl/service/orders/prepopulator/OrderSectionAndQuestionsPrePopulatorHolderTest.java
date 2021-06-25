@@ -8,8 +8,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.*;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.*;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOthersBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetailsSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OtherDetailsSectionPrePopulator;
 
 import java.util.List;
 import java.util.Map;
@@ -17,8 +31,20 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.*;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.*;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ORDER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.OTHER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 
 @ExtendWith(MockitoExtension.class)
 class OrderSectionAndQuestionsPrePopulatorHolderTest {

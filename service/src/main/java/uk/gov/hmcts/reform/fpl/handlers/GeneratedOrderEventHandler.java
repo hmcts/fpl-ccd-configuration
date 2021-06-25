@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -42,7 +41,6 @@ public class GeneratedOrderEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final SendDocumentService sendDocumentService;
-    private final OthersService othersService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {

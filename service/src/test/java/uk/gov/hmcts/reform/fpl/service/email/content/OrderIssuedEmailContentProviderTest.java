@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
@@ -52,6 +53,9 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @MockBean
     private ChildrenService childrenService;
+
+    @MockBean
+    private OthersService othersService;
 
     @MockBean
     private OrderCreationService orderCreationService;
