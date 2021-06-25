@@ -178,17 +178,17 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   I.dontSeeInTab(['Email to say evidence will be late']);
   assertCorrespondence(I, 'HMCTS', 1, 'Email with evidence attached', 'Case evidence included');
 
-  assertConfidentialCorrespondence(I, 'local authority', 1, 'Correspondence document', 'Test notes');
-  assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
+  assertCorrespondence(I, 'local authority', 1, 'C2 supporting document', 'Supports the C2 application');
+  assertConfidentialCorrespondence(I, 'local authority',2, 'Correspondence document', 'Test notes');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
 
-  assertConfidentialCorrespondence(I, 'HMCTS', 1, 'Email to say evidence will be late', 'Evidence will be late');
-  assertCorrespondence(I, 'HMCTS', 2, 'Email with evidence attached', 'Case evidence included');
+  assertCorrespondence(I, 'HMCTS', 1, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialCorrespondence(I, 'HMCTS', 2, 'Email to say evidence will be late', 'Evidence will be late');
 
-  assertConfidentialCorrespondence(I, 'local authority', 1, 'Correspondence document', 'Test notes');
-  assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
+  assertCorrespondence(I, 'local authority', 1, 'C2 supporting document', 'Supports the C2 application');
+  assertConfidentialCorrespondence(I, 'local authority', 2, 'Correspondence document', 'Test notes');
 });
 
 Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {

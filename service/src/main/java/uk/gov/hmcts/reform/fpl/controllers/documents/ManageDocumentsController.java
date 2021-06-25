@@ -29,7 +29,11 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.nullsLast;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
@@ -172,10 +176,14 @@ public class ManageDocumentsController extends CallbackController {
                 currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
                     caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocuments());
 
-                confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
+                List<Element<SupportingEvidenceBundle>> sortedBundle = currentBundle.stream()
+                    .sorted(comparing(bundle -> bundle.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
+                    .collect(Collectors.toList());
+
+                confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, sortedBundle,
                     CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
 
-                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
+                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData));

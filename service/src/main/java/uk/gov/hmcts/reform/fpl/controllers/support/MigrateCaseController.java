@@ -14,15 +14,25 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
-import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.nullsLast;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 @Api
 @RestController
@@ -32,14 +42,15 @@ import java.util.UUID;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private final DocumentListService documentListService;
+    private final ConfidentialDocumentsSplitter confidentialDocuments;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-3093".equals(migrationId)) {
-            run3093(caseDetails);
+        if ("FPLA-2486".equals(migrationId)) {
+            run2486(caseDetails);
         }
 
         if ("FPLA-3175".equals(migrationId)) {
@@ -100,21 +111,37 @@ public class MigrateCaseController extends CallbackController {
             && documentToRemove.getValue().equals(document.getValue().getDocumentTitle()));
     }
 
-    private void run3093(CaseDetails caseDetails) {
-        final String familyManCaseNumber = "KH21C50008";
-        final UUID additionalApplicationBundleId = UUID.fromString("c7b47c00-4b7a-4dd8-8bce-140e41ab4bb0");
-        final UUID c2ApplicationId = UUID.fromString("30d385b9-bdc5-4145-aeb5-ffee5afd1f02");
-
+    private void run2486(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        validateFamilyManNumber("FPLA-3093", familyManCaseNumber, caseData);
+        if (isNotEmpty(caseData.getCorrespondenceDocuments())) {
+            log.info("Migration FPLA-2486: Updating correspondence documents for case reference: {}",
+                caseDetails.getId());
+            sortCorrespondenceDocuments(
+                caseData.getCorrespondenceDocuments(), caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
+        }
 
-        List<Element<AdditionalApplicationsBundle>> bundles = caseData.getAdditionalApplicationsBundle();
+        if (isNotEmpty(caseData.getCorrespondenceDocumentsLA())) {
+            log.info("Migration FPLA-2486: Updating LA correspondence documents for case reference: {}",
+                caseDetails.getId());
+            sortCorrespondenceDocuments(
+                caseData.getCorrespondenceDocumentsLA(), caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY);
+        }
+    }
 
-        validateAdditionalApplicationsBundles(additionalApplicationBundleId, c2ApplicationId, bundles);
+    private void sortCorrespondenceDocuments(List<Element<SupportingEvidenceBundle>> correspondenceDocuments,
+                                             CaseDetails caseDetails,
+                                             String fieldName) {
+        List<Element<SupportingEvidenceBundle>> sortedCorrespondenceDocuments = correspondenceDocuments.stream()
+            .sorted(comparing(bundle -> bundle.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
+            .collect(Collectors.toList());
 
-        bundles.removeIf(bundle -> additionalApplicationBundleId.equals(bundle.getId()));
-        caseDetails.getData().put("additionalApplicationsBundle", bundles);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        confidentialDocuments.updateConfidentialDocsInCaseDetails(
+            caseDetailsMap, sortedCorrespondenceDocuments, fieldName);
+
+        caseDetails.getData().put(fieldName + "NC", caseDetailsMap.get(fieldName + "NC"));
+        caseDetails.getData().put(fieldName, sortedCorrespondenceDocuments);
     }
 
     private void validateFamilyManNumber(String migrationId, String familyManCaseNumber, CaseData caseData) {
@@ -122,27 +149,6 @@ public class MigrateCaseController extends CallbackController {
             throw new AssertionError(String.format(
                 "Migration %s: Expected family man case number to be %s but was %s",
                 migrationId, familyManCaseNumber, caseData.getFamilyManCaseNumber()));
-        }
-    }
-
-    private void validateAdditionalApplicationsBundles(UUID additionalApplicationBundleId,
-                                                       UUID c2ApplicationId,
-                                                       List<Element<AdditionalApplicationsBundle>> bundles) {
-
-        Element<AdditionalApplicationsBundle> bundleElement = bundles.stream()
-            .filter(bundle -> additionalApplicationBundleId.equals(bundle.getId()))
-            .findFirst()
-            .orElseThrow(() -> new AssertionError(String.format(
-                "Migration FPLA-3093: Expected additional application bundle id to be %s but not found",
-                additionalApplicationBundleId
-            )));
-
-        C2DocumentBundle c2DocumentBundle = bundleElement.getValue().getC2DocumentBundle();
-
-        if (!Objects.equals(c2ApplicationId, c2DocumentBundle.getId())) {
-            throw new AssertionError(String.format(
-                "Migration FPLA-3093: Expected c2 bundle Id to be %s but not found", c2ApplicationId
-            ));
         }
     }
 

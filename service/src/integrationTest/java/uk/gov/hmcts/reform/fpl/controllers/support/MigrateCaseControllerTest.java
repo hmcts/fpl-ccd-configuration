@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,8 +12,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
-import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -210,101 +210,129 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla3093 {
-        String familyManNumber = "KH21C50008";
-        String migrationId = "FPLA-3093";
-        final UUID additionalApplicationBundleId = UUID.fromString("c7b47c00-4b7a-4dd8-8bce-140e41ab4bb0");
-        final UUID c2ApplicationId = UUID.fromString("30d385b9-bdc5-4145-aeb5-ffee5afd1f02");
-        UUID anotherBundleId = UUID.randomUUID();
-        UUID anotherC2ApplicationId = UUID.randomUUID();
+    class Fpla2486 {
+        String migrationId = "FPLA-2486";
+        String familyManNumber = "SA123456";
+        Long caseReference = 1234567812345678L;
+
+        final DocumentReference document = testDocumentReference();
 
         @Test
-        void shouldRemoveAdditionalApplicationBundle() {
-            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(
-                additionalApplicationBundleId, c2ApplicationId);
+        void shouldSortCorrespondenceDocuments() {
+            List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildCorrespondenceDocuments("HMCTS");
+            List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA = buildCorrespondenceDocuments("LA");
 
-            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
+            CaseDetails caseDetails = caseDetails(
+                correspondenceDocuments, correspondenceDocumentsLA, familyManNumber, migrationId);
 
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+            CaseData caseData = extractCaseData(response);
+            assertThat(caseData.getCorrespondenceDocuments())
+                .isEqualTo(List.of(
+                    correspondenceDocuments.get(2), correspondenceDocuments.get(1), correspondenceDocuments.get(0)));
 
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEmpty();
+            assertThat(caseData.getCorrespondenceDocumentsLA())
+                .isEqualTo(List.of(
+                    correspondenceDocumentsLA.get(2), correspondenceDocumentsLA.get(1),
+                    correspondenceDocumentsLA.get(0)));
+
+            List<Element<SupportingEvidenceBundle>> correspondenceDocumentsNC =
+                mapper.convertValue(response.getData().get("correspondenceDocumentsNC"), new TypeReference<>() {
+                });
+
+            assertThat(correspondenceDocumentsNC).isEqualTo(List.of(
+                correspondenceDocuments.get(2), correspondenceDocuments.get(1), correspondenceDocuments.get(0)));
         }
 
         @Test
-        void shouldThrowExceptionWhenAdditionalApplicationBundleIdIsNotFound() {
-            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(
-                anotherBundleId, c2ApplicationId);
+        void shouldSortCorrespondenceDocumentsWhenCorrespondenceDocumentsLAAreEmpty() {
+            List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildCorrespondenceDocuments("HMCTS");
+            CaseDetails caseDetails = caseDetails(correspondenceDocuments, List.of(), familyManNumber, migrationId);
 
-            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format(
-                    "Migration FPLA-3093: Expected additional application bundle id to be %s but not found",
-                    additionalApplicationBundleId));
+
+            assertThat(extractCaseData(response).getCorrespondenceDocuments())
+                .isEqualTo(List.of(
+                    correspondenceDocuments.get(2), correspondenceDocuments.get(1), correspondenceDocuments.get(0)));
+            assertThat(extractCaseData(response).getCorrespondenceDocumentsLA()).isEmpty();
+
+            List<Element<SupportingEvidenceBundle>> correspondenceDocumentsNC =
+                mapper.convertValue(response.getData().get("correspondenceDocumentsNC"), new TypeReference<>() {
+                });
+
+            assertThat(correspondenceDocumentsNC).isEqualTo(List.of(
+                correspondenceDocuments.get(2), correspondenceDocuments.get(1), correspondenceDocuments.get(0)));
         }
 
         @Test
-        void shouldThrowExceptionWhenC2ApplicationIdIsNotFound() {
-            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(
-                additionalApplicationBundleId, anotherC2ApplicationId);
+        void shouldSortCorrespondenceDocumentsLAWhenCorrespondenceDocumentsAreEmpty() {
+            List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA = buildCorrespondenceDocuments("LA");
+            CaseDetails caseDetails = caseDetails(List.of(), correspondenceDocumentsLA, familyManNumber, migrationId);
 
-            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format(
-                    "Migration FPLA-3093: Expected c2 bundle Id to be %s but not found", c2ApplicationId));
+            assertThat(extractCaseData(response).getCorrespondenceDocumentsLA())
+                .isEqualTo(List.of(correspondenceDocumentsLA.get(2), correspondenceDocumentsLA.get(1),
+                    correspondenceDocumentsLA.get(0)));
+            assertThat(extractCaseData(response).getCorrespondenceDocuments()).isEmpty();
         }
 
         @Test
-        void shouldThrowExceptionForIncorrectFamilyManNumber() {
-            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(
-                anotherBundleId, anotherC2ApplicationId);
+        void shouldNotThrowExceptionWhenCorrespondenceDocumentsAreEmpty() {
+            CaseDetails caseDetails = caseDetails(List.of(), List.of(), familyManNumber, migrationId);
 
-            String incorrectFamilyManNum = "12456";
-            CaseDetails caseDetails = caseDetails(bundles, incorrectFamilyManNum, migrationId);
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format(
-                    "Migration FPLA-3093: Expected family man case number to be %s but was %s",
-                    familyManNumber, incorrectFamilyManNum));
+            assertThat(extractCaseData(response).getCorrespondenceDocuments()).isEmpty();
+            assertThat(extractCaseData(response).getCorrespondenceDocumentsLA()).isEmpty();
         }
 
         @Test
-        void shouldNotRemoveAdditionalApplicationBundleForIncorrectMigrationId() {
-            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(
-                additionalApplicationBundleId, c2ApplicationId);
+        void shouldNotMigrateCaseForIncorrectMigrationId() {
+            List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildCorrespondenceDocuments("HMCTS");
+            List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA = buildCorrespondenceDocuments("LA");
 
             String incorrectMigrationId = "incorrect migration id";
-            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, incorrectMigrationId);
+            CaseDetails caseDetails = caseDetails(
+                correspondenceDocuments, correspondenceDocumentsLA, familyManNumber, incorrectMigrationId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEqualTo(bundles);
+            assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
+            assertThat(extractedCaseData.getCorrespondenceDocumentsLA()).isEqualTo(correspondenceDocumentsLA);
         }
 
-        private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
+        private List<Element<SupportingEvidenceBundle>> buildCorrespondenceDocuments(String uploadedBy) {
+            return List.of(element(SupportingEvidenceBundle.builder()
+                    .name("document1").document(document)
+                    .uploadedBy(uploadedBy)
+                    .dateTimeUploaded(now().minusDays(3)).build()),
+                element(SupportingEvidenceBundle.builder()
+                    .name("document2").document(document)
+                    .uploadedBy(uploadedBy)
+                    .dateTimeUploaded(now().minusDays(2)).build()),
+                element(SupportingEvidenceBundle.builder()
+                    .name("document3").document(document)
+                    .uploadedBy(uploadedBy)
+                    .dateTimeUploaded(now().minusDays(1)).build()));
+        }
+
+        private CaseDetails caseDetails(List<Element<SupportingEvidenceBundle>> correspondenceDocuments,
+                                        List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA,
                                         String familyManCaseNumber,
                                         String migrationId) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
                 .state(State.CASE_MANAGEMENT)
-                .additionalApplicationsBundle(additionalApplications)
+                .correspondenceDocuments(correspondenceDocuments)
+                .correspondenceDocumentsLA(correspondenceDocumentsLA)
+                .id(caseReference)
                 .familyManCaseNumber(familyManCaseNumber)
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
         }
-
-        private List<Element<AdditionalApplicationsBundle>> buildAdditionalApplicationsBundles(
-            UUID additionalApplicationBundleId,
-            UUID c2ApplicationId) {
-            return List.of(element(additionalApplicationBundleId,
-                AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundle(C2DocumentBundle.builder().id(c2ApplicationId).build()).build()));
-        }
-
     }
+
 }

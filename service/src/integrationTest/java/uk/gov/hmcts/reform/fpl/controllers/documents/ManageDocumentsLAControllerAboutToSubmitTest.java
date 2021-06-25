@@ -195,7 +195,17 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
     @Test
     void shouldPopulateCorrespondenceEvidenceCollection() {
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = List.of(
+            element(SupportingEvidenceBundle.builder()
+                .name("document1")
+                .dateTimeUploaded(now().minusDays(2))
+                .uploadedBy(USER)
+                .build()),
+            element(SupportingEvidenceBundle.builder()
+                .name("document2")
+                .dateTimeUploaded(now())
+                .uploadedBy(USER)
+                .build()));
 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
@@ -204,7 +214,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
-        assertThat(responseData.getCorrespondenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
+        assertThat(responseData.getCorrespondenceDocumentsLA())
+            .isEqualTo(List.of(furtherEvidenceBundle.get(1), furtherEvidenceBundle.get(0)));
         assertExpectedFieldsAreRemoved(responseData);
     }
 
