@@ -11,8 +11,6 @@ public enum OrderQuestionBlock {
     LINKED_TO_HEARING("hearingDetails", "Linked to hearing", OrderSection.HEARING_DETAILS,
         List.of("manageOrdersApprovedAtHearing", "manageOrdersApprovedAtHearingList",
             "manageOrdersApprovalDate", "manageOrdersApprovalDateTime", "judgeAndLegalAdvisor")),
-    LINK_APPLICATION("linkApplication", "Link application", OrderSection.HEARING_DETAILS,
-        List.of("manageOrdersShouldLinkApplication", "manageOrdersLinkedApplication")),
     APPROVER("approver", "Approver", OrderSection.ISSUING_DETAILS,
         List.of("judgeAndLegalAdvisor")),
     APPROVAL_DATE("approvalDate", "Approval Date", OrderSection.ISSUING_DETAILS,

@@ -60,6 +60,4 @@ public class ManageOrdersEventData {
     String manageOrdersCafcassRegion;
     EnglandOffices manageOrdersCafcassOfficesEngland;
     WalesOffices manageOrdersCafcassOfficesWales;
-    DynamicList manageOrdersLinkedApplication;
-
 }

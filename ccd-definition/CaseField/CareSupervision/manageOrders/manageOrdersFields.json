@@ -77,24 +77,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageOrdersShouldLinkApplication",
-    "Label": "Is there an application for the order on the system?",
-    "FieldType": "YesOrNo",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageOrdersLinkedApplication",
-    "Label": "Applications",
-    "FieldType": "DynamicList",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersApprovalDate",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Date",

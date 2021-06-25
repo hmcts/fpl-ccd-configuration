@@ -19,8 +19,6 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersNeedSealing",
             "judgeAndLegalAdvisor",
             "manageOrdersApprovalDate",
-            "manageOrdersShouldLinkApplication",
-            "manageOrdersLinkedApplication",
             "orderAppliesToAllChildren",
             "children_label",
             "childSelector",

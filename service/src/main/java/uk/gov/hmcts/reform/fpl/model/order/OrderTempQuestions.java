@@ -8,7 +8,6 @@ import lombok.Data;
 public class OrderTempQuestions {
 
     String hearingDetails;
-    String linkApplication;
     String approver;
     String approvalDate;
     String approvalDateTime;
@@ -29,5 +28,4 @@ public class OrderTempQuestions {
     String closeCase;
     String uploadOrderFile;
     String previewOrder;
-
 }

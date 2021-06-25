@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.orders.history;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -39,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 class SealedOrderHistoryServiceTest {
 
@@ -86,10 +83,6 @@ class SealedOrderHistoryServiceTest {
         ManageOrdersClosedCaseFieldGenerator.class);
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator =
         mock(SealedOrderHistoryExtraTitleGenerator.class);
-
-    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
-    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
-        Pair.of(LINKED_APPLICATION_ID, "My test application"));
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
@@ -254,11 +247,11 @@ class SealedOrderHistoryServiceTest {
         }
 
         @Test
-        void generateWithPreviousLegacyOrdersWithoutApprovalDate_WithLinkedApplication() {
+        void generateWithPreviousLegacyOrdersWithoutApprovalDate() {
             try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
                      Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
                 mockHelper(jalMock);
-                CaseData caseData = caseDataWithLinkedApplication()
+                CaseData caseData = caseData()
                     .orderCollection(newArrayList(
                         ORDER_APPROVED_LEGACY
                     )).build();
@@ -270,7 +263,7 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrderWithLinkedApplication().build()),
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
                         ORDER_APPROVED_LEGACY
                     )
                 ));
@@ -336,39 +329,7 @@ class SealedOrderHistoryServiceTest {
             PLAIN_WORD_DOCUMENT);
     }
 
-    private CaseData.CaseDataBuilder caseData() {
-        return startCommonCaseDataBuilder(startBuildingCommonEventData());
-    }
-
-    private CaseData.CaseDataBuilder caseDataWithLinkedApplication() {
-        return startCommonCaseDataBuilder(
-            startBuildingCommonEventData().manageOrdersLinkedApplication(SELECTED_LINKED_APPLICATION_LIST)
-        );
-    }
-
-    private CaseData.CaseDataBuilder startCommonCaseDataBuilder(
-        ManageOrdersEventData.ManageOrdersEventDataBuilder manageOrdersEventData) {
-        return CaseData.builder()
-            .allocatedJudge(JUDGE)
-            .judgeAndLegalAdvisor(JUDGE_AND_LEGAL_ADVISOR)
-            .manageOrdersEventData(manageOrdersEventData.build());
-    }
-
-    private ManageOrdersEventData.ManageOrdersEventDataBuilder startBuildingCommonEventData() {
-        return ManageOrdersEventData.builder()
-            .manageOrdersType(ORDER_TYPE)
-            .manageOrdersApprovalDate(APPROVAL_DATE);
-    }
-
     private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrder() {
-        return startCommonExpectedGeneratedOrderBuilder();
-    }
-
-    private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrderWithLinkedApplication() {
-        return startCommonExpectedGeneratedOrderBuilder().linkedApplicationId(LINKED_APPLICATION_ID.toString());
-    }
-
-    private GeneratedOrder.GeneratedOrderBuilder startCommonExpectedGeneratedOrderBuilder() {
         return GeneratedOrder.builder()
             .orderType(ORDER_TYPE.name())
             .type(ORDER_TYPE.getHistoryTitle())
@@ -391,4 +352,13 @@ class SealedOrderHistoryServiceTest {
             .thenReturn(TAB_JUDGE_AND_LEGAL_ADVISOR);
     }
 
+    private CaseData.CaseDataBuilder caseData() {
+        return CaseData.builder()
+            .allocatedJudge(JUDGE)
+            .judgeAndLegalAdvisor(JUDGE_AND_LEGAL_ADVISOR)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(ORDER_TYPE)
+                .manageOrdersApprovalDate(APPROVAL_DATE)
+                .build());
+    }
 }

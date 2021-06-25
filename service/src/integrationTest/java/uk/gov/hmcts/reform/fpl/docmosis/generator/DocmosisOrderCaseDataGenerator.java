@@ -29,7 +29,7 @@ public class DocmosisOrderCaseDataGenerator {
 
     public CaseData generateForOrder(final Order order) {
 
-        return order.getQuestionsBlocks().stream().reduce(
+        return order.getQuestions().stream().reduce(
             commonCaseData(order),
             this::addDataForQuestion,
             (v, v2) -> v2
@@ -51,7 +51,6 @@ public class DocmosisOrderCaseDataGenerator {
 
         switch (questionBlock) {
             case LINKED_TO_HEARING:
-            case LINK_APPLICATION:
             case REVIEW_DRAFT_ORDER:
             case CLOSE_CASE:
                 // Do Nothing - they won't modify the document

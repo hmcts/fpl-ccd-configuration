@@ -54,7 +54,6 @@ public class GeneratedOrder implements RemovableOrder {
     private final List<Element<Child>> children;
     private final String childrenDescription;
     private String removalReason;
-    private String linkedApplicationId;
 
     @JsonIgnore
     public boolean isRemovable() {
@@ -94,5 +93,4 @@ public class GeneratedOrder implements RemovableOrder {
     public boolean isNewVersion() {
         return Objects.nonNull(dateTimeIssued);
     }
-
 }
