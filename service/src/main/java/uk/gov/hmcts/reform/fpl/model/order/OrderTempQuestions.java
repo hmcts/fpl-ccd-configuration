@@ -8,9 +8,11 @@ import lombok.Data;
 public class OrderTempQuestions {
 
     String hearingDetails;
+    String linkApplication;
     String approver;
     String approvalDate;
     String approvalDateTime;
+    String cafcassJurisdictions;
     String whichChildren;
     String dischargeOfCareDetails;
     String c43Details;
@@ -21,6 +23,12 @@ public class OrderTempQuestions {
     String furtherDirections;
     String orderDetails;
     String isFinalOrder;
+    String manageOrdersExpiryDateWithMonth;
+    String manageOrdersExpiryDateWithEndOfProceedings;
+    String manageOrdersExclusionRequirementDetails;
+    String needSealing;
     String closeCase;
+    String uploadOrderFile;
     String previewOrder;
+
 }

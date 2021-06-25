@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -15,8 +16,10 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -34,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C47AAppointmentOfAChildr
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisCommonElementDecorator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHolder;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.UploadedOrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
@@ -73,8 +77,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     ManageOrderDocumentService.class,
     OrderMessageGenerator.class,
     OrderDetailsWithEndTypeGenerator.class,
+    UploadedOrderDocumentGenerator.class,
+    DocumentSealingService.class,
     DocmosisDocumentGeneratorService.class,
 })
+@MockBeans({@MockBean(DocumentDownloadService.class)})
 public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";
@@ -87,8 +94,6 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     private DocmosisDocumentGeneratorService generatorService;
     @MockBean
     private UploadDocumentService uploadDocumentService;
-    @MockBean
-    private DocumentDownloadService documentDownloadService;
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     @MockBean
@@ -119,6 +124,7 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static Stream<Arguments> allOrders() {
         return Stream.of(Order.values())
+            .filter(order -> order.getSourceType() == OrderSourceType.DIGITAL)
             .map(Arguments::of);
     }
 

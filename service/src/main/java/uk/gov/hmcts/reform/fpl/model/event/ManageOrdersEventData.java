@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 
 import java.time.LocalDate;
@@ -24,7 +25,11 @@ import java.util.List;
 @Jacksonized
 public class ManageOrdersEventData {
 
+    OrderOperation manageOrdersOperation;
+    OrderOperation manageOrdersOperationClosedState;
     OrderTempQuestions orderTempQuestions;
+    Order manageOrdersUploadType;
+    String manageOrdersUploadTypeOtherTitle;
     Order manageOrdersType;
     DynamicList manageOrdersApprovedAtHearingList;
     State manageOrdersState;
@@ -46,6 +51,8 @@ public class ManageOrdersEventData {
     String manageOrdersExclusionRequirement;
     String manageOrdersExclusionDetails;
     String manageOrdersWhoIsExcluded;
+    String manageOrdersNeedSealing;
+    DocumentReference manageOrdersUploadOrderFile;
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;
     LocalDate manageOrdersExclusionStartDate;
@@ -58,4 +65,6 @@ public class ManageOrdersEventData {
     String manageOrdersCafcassRegion;
     EnglandOffices manageOrdersCafcassOfficesEngland;
     WalesOffices manageOrdersCafcassOfficesWales;
+    DynamicList manageOrdersLinkedApplication;
+
 }

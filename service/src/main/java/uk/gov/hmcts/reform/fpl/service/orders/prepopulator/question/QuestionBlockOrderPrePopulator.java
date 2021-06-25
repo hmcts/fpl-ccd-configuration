@@ -10,4 +10,5 @@ public interface QuestionBlockOrderPrePopulator {
     OrderQuestionBlock accept();
 
     Map<String,Object> prePopulate(CaseData caseData);
+
 }
