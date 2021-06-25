@@ -98,10 +98,6 @@ public class RepresentativesInbox {
         return !isEmpty(other.getRepresentedBy());
     }
 
-    private boolean hasAddressAdded(Other other) {
-        return !isNull(other.getAddress().getPostcode());
-    }
-
     private LinkedHashSet<String> getRespondentSolicitorEmails(List<Element<Respondent>> respondents,
                                                                RepresentativeServingPreferences preference) {
         return nullSafeList(respondents).stream()

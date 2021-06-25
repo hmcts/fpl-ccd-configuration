@@ -6,9 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -32,6 +30,7 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
@@ -101,6 +100,8 @@ class SealedOrderHistoryServiceTest {
             when(child2.asLabel()).thenReturn(CHILD_2_FULLNAME);
             when(time.now()).thenReturn(NOW);
             when(identityService.generateId()).thenReturn(GENERATED_ORDER_UUID);
+            //remove when test added
+            when(othersService.getSelectedOthers(any())).thenReturn(null);
         }
 
         @Test
@@ -323,6 +324,8 @@ class SealedOrderHistoryServiceTest {
 
     private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrder() {
         return GeneratedOrder.builder()
+            .others(null)
+            .othersNotified(null)
             .orderType(ORDER_TYPE.name())
             .type(ORDER_TYPE.getHistoryTitle())
             .judgeAndLegalAdvisor(TAB_JUDGE_AND_LEGAL_ADVISOR)
