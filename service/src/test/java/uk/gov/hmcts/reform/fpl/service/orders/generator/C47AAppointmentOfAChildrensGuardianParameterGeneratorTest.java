@@ -78,7 +78,7 @@ class C47AAppointmentOfAChildrensGuardianParameterGeneratorTest {
     }
 
     private String buildOrderDetailsLabel(String region) {
-        return String.format("The court appoints Cafcass %s as a Children's Guardian for the child in the proceedings.",
+        return String.format("The court appoints Cafcass %s as a children's guardian for the child in the proceedings.",
             region);
     }
 }

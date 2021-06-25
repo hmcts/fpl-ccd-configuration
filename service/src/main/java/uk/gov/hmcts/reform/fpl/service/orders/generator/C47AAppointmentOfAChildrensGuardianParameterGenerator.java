@@ -40,7 +40,7 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
     private String buildOrderDetails(ManageOrdersEventData manageOrdersEventData) {
         String office = getCafcassOffice(manageOrdersEventData);
 
-        return String.format("The court appoints Cafcass %s as a Children's Guardian for the child in the"
+        return String.format("The court appoints Cafcass %s as a children's guardian for the child in the"
             + " proceedings.", office);
     }
 
