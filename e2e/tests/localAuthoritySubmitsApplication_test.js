@@ -665,7 +665,6 @@ Scenario('local authority submits application @create-case-with-mandatory-sectio
 });
 
 Scenario('HMCTS admin check the payment', async ({I, caseViewPage, paymentHistoryPage}) => {
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
   await paymentHistoryPage.checkPayment(feeToPay, applicant.pbaNumber);

@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -53,7 +54,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
     @MockBean(FeatureToggleService.class), @MockBean(ChildrenService.class), @MockBean(IdentityService.class),
     @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class),
-    @MockBean(ManageOrdersClosedCaseFieldGenerator.class)
+    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);
@@ -122,7 +123,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
 
         assertThat(laResponse)
@@ -140,7 +141,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
 
         assertThat(notifyRepResponse)
@@ -158,7 +159,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
 
         assertThat(emailRepResponse)
@@ -173,7 +174,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 

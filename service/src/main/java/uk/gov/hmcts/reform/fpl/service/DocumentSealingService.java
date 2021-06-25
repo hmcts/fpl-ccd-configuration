@@ -48,7 +48,7 @@ public class DocumentSealingService {
         return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFilename));
     }
 
-    private static byte[] sealDocument(byte[] binaries) {
+    public byte[] sealDocument(byte[] binaries) {
         byte[] seal = readBytes(SEAL);
 
         try (final PDDocument document = PDDocument.load(binaries)) {

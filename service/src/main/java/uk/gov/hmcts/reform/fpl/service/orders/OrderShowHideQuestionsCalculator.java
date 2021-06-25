@@ -16,16 +16,18 @@ import java.util.stream.Stream;
 public class OrderShowHideQuestionsCalculator {
 
     public Map<String, String> calculate(Order order) {
-        Set<OrderQuestionBlock> questions = Sets.newHashSet(order.getQuestions());
-        Set<OrderQuestionBlock> allQuestions = Stream.of(OrderQuestionBlock.values()).collect(Collectors.toSet());
+        Set<OrderQuestionBlock> questionsBlocks = Sets.newHashSet(order.getQuestionsBlocks());
+        Set<OrderQuestionBlock> allQuestionBlocks = Stream.of(OrderQuestionBlock.values()).collect(Collectors.toSet());
 
-        Map<String, String> questionMap = allQuestions.stream().collect(Collectors.toMap(
-            OrderQuestionBlock::getShowHideField, el -> questions.contains(el) ? "YES" : "NO",
+        Map<String, String> questionMap = allQuestionBlocks.stream().collect(Collectors.toMap(
+            OrderQuestionBlock::getShowHideField, el -> questionsBlocks.contains(el) ? "YES" : "NO",
             (o1, o2) -> o1, HashMap::new
         ));
 
         if (IsFinalOrder.MAYBE.equals(order.getIsFinalOrder())) {
             questionMap.put("isFinalOrder", "YES");
+        } else {
+            questionMap.put("isFinalOrder", "NO");
         }
 
         return questionMap;
