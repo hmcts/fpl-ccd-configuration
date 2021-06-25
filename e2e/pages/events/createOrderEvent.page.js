@@ -56,6 +56,13 @@ module.exports = {
       },
       selectorText: 'Yes',
     },
+    othersSelector: {
+      id: '#othersSelector_othersSelector',
+      selector: function (index) {
+        return `#othersSelector_option${index}`;
+      },
+      selectorText: 'Yes',
+    },
     careOrderSelector: {
       id: '#careOrderSelector_careOrderSelector',
       selector: function (index) {

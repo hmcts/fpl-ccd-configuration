@@ -1,6 +1,24 @@
 {
   "state": "GATEKEEPING",
   "caseData": {
+    "others": {
+      "firstOther": {
+        "DOB": null,
+        "name": "John Doe",
+        "gender": null,
+        "address": {},
+        "telephone": null,
+        "birthPlace": "Newry",
+        "detailsHidden": null,
+        "representedBy": [],
+        "childInformation": null,
+        "litigationIssues": null,
+        "detailsHiddenReason": null,
+        "genderIdentification": null,
+        "litigationIssuesDetails": null
+      },
+      "additionalOthers": []
+    },
     "caseName": "e2e test case",
     "orders": {
       "orderType": [
