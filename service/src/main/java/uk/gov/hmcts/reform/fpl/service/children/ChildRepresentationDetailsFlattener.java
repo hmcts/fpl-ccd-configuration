@@ -23,6 +23,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class ChildRepresentationDetailsFlattener {
 
     private static final int MAX_CHILDREN = 15;
+    private static final RespondentSolicitor BLANK_REPRESENTATIVE = RespondentSolicitor.builder().build();
 
     public Map<String, Object> serialise(List<Element<Child>> children, RespondentSolicitor mainRepresentative) {
         List<Element<Child>> safeCollection = defaultIfNull(children, new ArrayList<>());
@@ -45,10 +46,14 @@ public class ChildRepresentationDetailsFlattener {
         RespondentSolicitor childSolicitor = child.getRepresentative();
         boolean useMainSolicitor = Objects.equals(childSolicitor, mainRepresentative);
 
+        // ccd can send a blank representative instead of null even though it was set to null previously
+        // probably because the complex type is present but hidden in the UI on the previous page
+        boolean isCurrentSolicitorNull = null == childSolicitor || BLANK_REPRESENTATIVE.equals(childSolicitor);
+
         return ChildRepresentationDetails.builder()
             .childDescription(format("Child %d - %s", idx + 1, child.getParty().getFullName()))
-            .useMainSolicitor(null == childSolicitor ? null : YesNo.from(useMainSolicitor).getValue())
-            .solicitor(useMainSolicitor ? null : childSolicitor)
+            .useMainSolicitor(isCurrentSolicitorNull ? null : YesNo.from(useMainSolicitor).getValue())
+            .solicitor(useMainSolicitor || isCurrentSolicitorNull ? null : childSolicitor)
             .build();
     }
 }

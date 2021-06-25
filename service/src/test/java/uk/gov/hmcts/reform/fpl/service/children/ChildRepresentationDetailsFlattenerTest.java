@@ -145,6 +145,30 @@ class ChildRepresentationDetailsFlattenerTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    void testEmptyChildRepresentative() {
+        Map<String, Object> actual = underTest.serialise(
+            wrapElements(
+                Child.builder()
+                    .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
+                    .representative(RespondentSolicitor.builder().build())
+                    .build()
+            ),
+            mainRepresentative
+        );
+
+        ChildRepresentationDetails expectedChildRepresentationDetails = ChildRepresentationDetails.builder()
+            .childDescription("Child 1 - Michael Jackson")
+            .useMainSolicitor(null)
+            .solicitor(null)
+            .build();
+
+        Map<String, Object> expected = emptyRepresentation();
+        expected.put("childRepresentationDetails0", expectedChildRepresentationDetails);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
     private Map<String, Object> emptyRepresentation() {
         Map<String, Object> expected = new HashMap<>();
         expected.put("childRepresentationDetails0", null);
