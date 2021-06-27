@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -115,9 +114,6 @@ class GeneratedOrderEventHandlerTest {
         given(representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, EMAIL)).willReturn(EMAIL_REPS);
         given(representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REPS);
-        //TO DO FIX THIS WHEN ADDING TEST
-        given(representativesInbox.getOtherRepresentativesToBeNotified(any(), any(), any()))
-            .willReturn(new LinkedHashSet<>());
     }
 
     @Test

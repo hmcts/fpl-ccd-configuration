@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -32,13 +33,13 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 class SealedOrderHistoryServiceTest {
 
@@ -75,6 +76,10 @@ class SealedOrderHistoryServiceTest {
     private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
+    private final Other other1 = buildOther("First other");
+    private final Other other2 = buildOther("Second other");
+    private final UUID other1ID = UUID.randomUUID();
+    private final UUID other2ID = UUID.randomUUID();
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
     private final IdentityService identityService = mock(IdentityService.class);
@@ -102,8 +107,6 @@ class SealedOrderHistoryServiceTest {
             when(child2.asLabel()).thenReturn(CHILD_2_FULLNAME);
             when(time.now()).thenReturn(NOW);
             when(identityService.generateId()).thenReturn(GENERATED_ORDER_UUID);
-            //remove when test added
-            when(othersService.getSelectedOthers(any())).thenReturn(null);
         }
 
         @Test
@@ -114,6 +117,8 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -133,6 +138,8 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
                 when(manageOrdersClosedCaseFieldGenerator.generate(caseData)).thenReturn(
                     Map.of("somethingClose", "closeCaseValue")
                 );
@@ -156,6 +163,8 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -180,6 +189,8 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -203,6 +214,8 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -228,6 +241,8 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -253,6 +268,8 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -326,8 +343,8 @@ class SealedOrderHistoryServiceTest {
 
     private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrder() {
         return GeneratedOrder.builder()
-            .others(null)
-            .othersNotified(null)
+            .others(List.of(element(other1ID, other1), element(other2ID, other2)))
+            .othersNotified("First other, Second other")
             .orderType(ORDER_TYPE.name())
             .type(ORDER_TYPE.getHistoryTitle())
             .judgeAndLegalAdvisor(TAB_JUDGE_AND_LEGAL_ADVISOR)
@@ -352,5 +369,12 @@ class SealedOrderHistoryServiceTest {
                 .manageOrdersType(ORDER_TYPE)
                 .manageOrdersApprovalDate(APPROVAL_DATE)
                 .build());
+    }
+
+    private Other buildOther(String name) {
+        return Other.builder()
+            .name(name)
+            .address(testAddress())
+            .build();
     }
 }

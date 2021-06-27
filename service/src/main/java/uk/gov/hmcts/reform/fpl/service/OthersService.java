@@ -74,9 +74,9 @@ public class OthersService {
         if (useAllOthers(sendOrderToAllOthers)) {
             return others;
         } else {
-            //            if (isNull(selector) || isEmpty(selector.getSelected())) {
-            //                return null;
-            //            }
+            if (isNull(selector) || isEmpty(selector.getSelected())) {
+                return null;
+            }
             return selector.getSelected().stream()
                 .map(others::get)
                 .collect(toList());
