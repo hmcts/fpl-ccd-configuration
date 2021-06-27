@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -46,7 +47,10 @@ public class GeneratedOrderEventHandler {
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getOrderDocument();
-        final List<Element<Other>> othersSelected = caseData.getOrderCollection().get(0).getValue().getOthers();
+        List<Element<Other>> othersSelected = Collections.emptyList();
+        if (caseData.getOrderCollection().size() > 0) {
+            othersSelected = caseData.getOrderCollection().get(0).getValue().getOthers();
+        }
 
         issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument, GENERATED_ORDER);
         sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, othersSelected);
@@ -58,8 +62,11 @@ public class GeneratedOrderEventHandler {
     public void sendOrderByPost(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
-        final List<Element<Other>> othersSelected = caseData.getOrderCollection().get(0).getValue()
-            .getOthers();
+        List<Element<Other>> othersSelected = Collections.emptyList();
+        if (caseData.getOrderCollection().size() > 0) {
+            othersSelected = caseData.getOrderCollection().get(0).getValue()
+                .getOthers();
+        }
 
         final List<Recipient> otherRecipients = sendDocumentService.getSelectedOtherRecipients(caseData,
             othersSelected);

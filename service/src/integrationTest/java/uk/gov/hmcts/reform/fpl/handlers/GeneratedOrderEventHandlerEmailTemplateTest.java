@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
@@ -42,7 +44,9 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {
     IssuedOrderAdminNotificationHandler.class, OrderIssuedEmailContentProvider.class, FixedTimeConfiguration.class,
@@ -53,7 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans({
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
     @MockBean(FeatureToggleService.class), @MockBean(ChildrenService.class), @MockBean(IdentityService.class),
-    @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class),
+    @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
     @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
@@ -79,7 +83,13 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .lastName(RESPONDENT_LAST_NAME)
                 .build())
             .build()))
-        .orderCollection(wrapElements(ORDER))
+        .orderCollection(List.of(element(GeneratedOrder.builder()
+            .title(null)
+            .type("Care order")
+            .details("Some details")
+            .others(null)
+            .document(testDocumentReference())
+            .build())))
         .build();
 
     @Autowired

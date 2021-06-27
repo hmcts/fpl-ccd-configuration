@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
@@ -53,7 +54,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans({
     @MockBean(IdentityService.class), @MockBean(ChildrenService.class), @MockBean(OrderCreationService.class),
-    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
+    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(OthersService.class)
 })
 public class NoticeOfPlacementOrderUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 

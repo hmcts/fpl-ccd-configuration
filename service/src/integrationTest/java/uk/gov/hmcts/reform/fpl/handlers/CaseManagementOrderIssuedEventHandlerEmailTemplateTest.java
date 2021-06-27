@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -56,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans({
     @MockBean(CoreCaseDataService.class), @MockBean(IdentityService.class), @MockBean(ChildrenService.class),
     @MockBean(OrderCreationService.class), @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
+    @MockBean(OthersService.class),
     @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {

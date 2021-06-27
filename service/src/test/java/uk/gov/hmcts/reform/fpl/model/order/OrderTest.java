@@ -112,12 +112,12 @@ class OrderTest {
             Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C32_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
@@ -144,7 +144,7 @@ class OrderTest {
                 Arguments.of(order, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
                 Arguments.of(order, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
                 Arguments.of(order, ORDER_DETAILS, Optional.of(REVIEW)),
-                Arguments.of(order, REVIEW, Optional.empty()))
+                Arguments.of(order, REVIEW, Optional.of(OTHER_DETAILS)))
             );
     }
 }

@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,8 +49,8 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 @MockitoSettings(strictness = Strictness.LENIENT)
 class GeneratedOrderEventHandlerTest {
 
-    private static final Set<String> EMAIL_REPS = Set.of("barney@rubble.com");
-    private static final Set<String> DIGITAL_REPS = Set.of("fred@flinstones.com");
+    private static final Set<String> EMAIL_REPS = new HashSet<>(Arrays.asList("barney@rubble.com"));
+    private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList("fred@flinstones.com"));
     private static final Long CASE_ID = 12345L;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocumentReference TEST_DOCUMENT = mock(DocumentReference.class);
@@ -126,7 +128,7 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldNotBuildNotificationTemplateDataForEmailRepresentativesWhenEmailRepresentativesDoNotExist() {
-        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(Set.of());
+        given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, EMAIL)).willReturn(new HashSet<>());
 
         underTest.notifyParties(EVENT);
 
@@ -151,7 +153,7 @@ class GeneratedOrderEventHandlerTest {
 
         verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(TEST_DOCUMENT), recipients);
         verify(sendDocumentService).getRecipientsExcludingOthers(CASE_DATA);
-        verify(sendDocumentService).getSelectedOtherRecipients(CASE_DATA, null);
+        verify(sendDocumentService).getSelectedOtherRecipients(CASE_DATA, Collections.emptyList());
 
 
         verifyNoMoreInteractions(sendDocumentService);

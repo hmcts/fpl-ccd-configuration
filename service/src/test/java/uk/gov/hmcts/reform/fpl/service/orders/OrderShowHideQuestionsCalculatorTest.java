@@ -88,6 +88,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         dischargeOfCareQuestions.put("isFinalOrder", "YES");
+        dischargeOfCareQuestions.put("whichOthers", "YES");
         dischargeOfCareQuestions.put("closeCase", "YES");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
@@ -216,6 +217,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("cafcassJurisdictions", "NO"),
                 Map.entry("needSealing", "YES"),
                 Map.entry("uploadOrderFile", "YES"),
+                Map.entry("whichOthers", "YES"),
                 Map.entry("closeCase", "YES")
                 )
             ));
@@ -254,7 +256,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("cafcassJurisdictions", "NO"),
                 Map.entry("needSealing", "YES"),
                 Map.entry("uploadOrderFile", "YES"),
-                Map.entry("closeCase", "YES")
+                Map.entry("closeCase", "YES"),
+                Map.entry("whichOthers", "YES")
                 )
             ));
     }

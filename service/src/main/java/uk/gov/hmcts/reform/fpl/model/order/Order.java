@@ -422,7 +422,8 @@ public enum Order {
             UPLOAD_ORDER_FILE,
             NEED_SEALING,
             REVIEW_DRAFT_ORDER,
-            CLOSE_CASE
+            CLOSE_CASE,
+            WHICH_OTHERS
         );
     }
 }

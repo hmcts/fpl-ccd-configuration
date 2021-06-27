@@ -24,6 +24,8 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -81,6 +83,8 @@ public class EmailTemplateTest {
     @BeforeEach
     void lookupServiceSetUp() {
         when(inbox.getEmailsByPreference(any(), any())).thenReturn(Set.of("representative@example.com"));
+        when(inbox.getEmailsByPreferenceExcludingOthers(any(), any())).thenReturn(new HashSet<>(Arrays.asList(
+            "representative@example.com")));
         when(inboxLookupService.getRecipients(any())).thenReturn(Set.of("test@example.com"));
         when(hmctsCourtLookupConfiguration.getCourt(any()))
             .thenReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "court@test.com", COURT_CODE));
