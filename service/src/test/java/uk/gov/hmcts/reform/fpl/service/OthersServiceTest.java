@@ -3,11 +3,9 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,8 +14,12 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 @ExtendWith(SpringExtension.class)
 class OthersServiceTest {
@@ -167,6 +169,110 @@ class OthersServiceTest {
 
         assertThat(updatedOthers.getAdditionalOthers().get(0).getValue()).isEqualTo(others.get(0).getValue());
         assertThat(updatedOthers.getAdditionalOthers().get(1).getValue()).isEqualTo(others.get(1).getValue());
+    }
+
+    @Test
+    void shouldReturnAllOthersWhenUseAllOthers() {
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(buildOther("First other"))
+                .additionalOthers(List.of(element(buildOther("Second other"))))
+                .build())
+            .sendOrderToAllOthers("Yes")
+                .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers.get(0).getValue()).isEqualTo(caseData.getAllOthers().get(0).getValue());
+        assertThat(selectedOthers.get(1).getValue()).isEqualTo(caseData.getAllOthers().get(1).getValue());
+    }
+
+    @Test
+    void shouldReturnSelectedOthersOnly() {
+        int selectedOther = 1;
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(buildOther("First other"))
+                .additionalOthers(List.of(element(buildOther("Second other"))))
+                .build())
+            .othersSelector(Selector.builder().selected(List.of(selectedOther)).build())
+            .sendOrderToAllOthers("No")
+            .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers).containsExactly(caseData.getAllOthers().get(selectedOther));
+    }
+
+    @Test
+    void shouldReturnTrueWhenRepresented() {
+        Other other = buildOther("First other");
+        other.addRepresentative(UUID.randomUUID());
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(other)
+                .build())
+            .build();
+
+        boolean isRepresented = service.isRepresented(caseData.getAllOthers().get(0).getValue());
+
+        assertTrue(isRepresented);
+    }
+
+    @Test
+    void shouldReturnFalseWhenNotRepresented() {
+        Other other = buildOther("First other");
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(other)
+                .build())
+            .build();
+
+        boolean isRepresented = service.isRepresented(caseData.getAllOthers().get(0).getValue());
+
+        assertFalse(isRepresented);
+    }
+
+    @Test
+    void shouldReturnTrueWhenHasAddressAdded() {
+        Other other = buildOther("First other");
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(other)
+                .build())
+            .build();
+
+        boolean hasAddressAdded = service.hasAddressAdded(caseData.getAllOthers().get(0).getValue());
+
+        assertTrue(hasAddressAdded);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAddressIsNotPresent() {
+        Other other = Other.builder()
+            .name("First other")
+            .address(Address.builder().build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(other)
+                .build())
+            .build();
+
+        boolean hasAddressAdded = service.hasAddressAdded(caseData.getAllOthers().get(0).getValue());
+
+        assertFalse(hasAddressAdded);
+    }
+
+    private Other buildOther(String name) {
+        return Other.builder()
+            .name(name)
+            .address(testAddress())
+            .build();
     }
 
     private CaseData buildCaseDataWithOthers(Other firstOther,

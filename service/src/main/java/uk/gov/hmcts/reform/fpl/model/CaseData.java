@@ -456,19 +456,6 @@ public class CaseData {
         return emptyList();
     }
 
-    @JsonIgnore
-    public List<Representative> getRepresentativesByServedPreferenceAndRole(RepresentativeServingPreferences
-                                                                                    preference) {
-        if (isNotEmpty(representatives)) {
-            return representatives.stream()
-                .filter(Objects::nonNull)
-                .map(Element::getValue)
-                .filter(representative -> preference == representative.getServingPreferences())
-                .collect(toList());
-        }
-        return emptyList();
-    }
-
     private final List<Element<LegalRepresentative>> legalRepresentatives;
 
     // EPO Order
