@@ -33,10 +33,10 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "review",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.closeCase=\"YES\"",
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -46,9 +46,9 @@
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "PageID": "review",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.closeCase=\"YES\" AND manageOrdersCloseCase=\"Yes\"",
-    "ShowSummaryChangeOption": "N"
+    "FieldShowCondition": "manageOrdersCloseCase=\"Yes\"",
+    "ShowSummaryChangeOption": "Y"
   }
 ]

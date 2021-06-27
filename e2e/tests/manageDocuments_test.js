@@ -6,7 +6,7 @@ const api = require('../helpers/api_helper');
 
 const dateFormat = require('dateformat');
 const respondent = 'Joe Bloggs';
-const respondent1StatementsSection = 'Respondent 1 statements';
+const respondent1StatementsSection = 'Joe Bloggs statements';
 const expertReportsSection = 'Expert reports';
 const otherReportsSection = 'Other reports';
 

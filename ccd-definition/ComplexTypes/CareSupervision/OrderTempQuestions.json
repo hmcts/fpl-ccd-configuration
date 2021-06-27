@@ -47,6 +47,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
+    "ListElementCode": "dischargeOfCareDetails",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "whichChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
     "ListElementCode": "epoTypeAndPreventRemoval",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
@@ -101,10 +110,37 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
+    "ListElementCode": "isFinalOrder",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
     "ListElementCode": "closeCase",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "needSealing",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "needSealing=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "uploadOrderFile",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "uploadOrderFile=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -150,6 +186,15 @@
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "cafcassJurisdictions=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "linkApplication",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "linkApplication=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {

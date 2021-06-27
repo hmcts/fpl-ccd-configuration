@@ -1,0 +1,82 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "allocatedJudgeLabel",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "useAllocatedJudge",
+    "EventElementLabel": "Is this the judge issuing the order?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "judgeTitle",
+    "EventElementLabel": "Who is issuing the order?",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "otherTitle",
+    "EventElementLabel": "Title",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "judgeLastName",
+    "EventElementLabel": "Last name",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "judgeFullName",
+    "EventElementLabel": "Full name",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "judgeEmailAddress",
+    "EventElementLabel": "Email Address",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "ListElementCode": "legalAdvisorName",
+    "EventElementLabel": "Justices' Legal Adviser's full name",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  }
+]

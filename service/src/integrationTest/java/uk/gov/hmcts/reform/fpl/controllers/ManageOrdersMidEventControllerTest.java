@@ -9,21 +9,25 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
+import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,9 +36,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.singletonList;
 import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -64,11 +70,15 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
         Map.entry("hearingDetails", "YES"),
+        Map.entry("linkApplication", "NO"),
         Map.entry("approver", "YES"),
         Map.entry("previewOrder", "YES"),
         Map.entry("furtherDirections", "YES"),
         Map.entry("orderDetails", "NO"),
         Map.entry("whichChildren", "YES"),
+        Map.entry("needSealing", "NO"),
+        Map.entry("uploadOrderFile", "NO"),
+        Map.entry("dischargeOfCareDetails", "NO"),
         Map.entry("whichOthers", "YES"),
         Map.entry("closeCase", "YES"),
         Map.entry("approvalDate", "YES"),
@@ -80,7 +90,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
         Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
         Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-        Map.entry("cafcassJurisdictions", "NO")));
+        Map.entry("cafcassJurisdictions", "NO"),
+        Map.entry("isFinalOrder", "NO")
+    ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
 
@@ -139,22 +151,38 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 .startDate(now().plusDays(2))
                 .endDate(now().plusDays(2)).build());
 
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .id(UUID.randomUUID())
+            .applicationType(OtherApplicationType.C1_WITH_SUPPLEMENT)
+            .build();
+
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C32_CARE_ORDER)
                 .build())
             .hearingDetails(List.of(pastHearing, futureHearing))
+            .additionalApplicationsBundle(singletonList(element(
+                AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(otherApplicationsBundle)
+                    .build()
+            )))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         CaseData responseCaseData = extractCaseData(response);
 
-        assertThat(response.getData().get("hearingDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
-        assertThat(responseCaseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList())
+        assertThat(response.getData())
+            .containsEntry("hearingDetailsSectionSubHeader", "C32 - Care order");
+        ManageOrdersEventData manageOrdersEventData = responseCaseData.getManageOrdersEventData();
+        assertThat(manageOrdersEventData.getManageOrdersApprovedAtHearingList())
             .isEqualTo(
                 asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
             );
+        assertThat(manageOrdersEventData.getOrderTempQuestions().getLinkApplication()).isEqualTo("YES");
+        DynamicListAssert.assertThat(manageOrdersEventData.getManageOrdersLinkedApplication())
+            .hasSize(1)
+            .hasElement(otherApplicationsBundle.getId(), otherApplicationsBundle.toLabel());
     }
 
     @Test
@@ -428,11 +456,13 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
+            Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails","NO"),
+            Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("dischargeOfCareDetails", "NO"),
             Map.entry("whichOthers", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -441,10 +471,13 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("needSealing", "NO"),
+            Map.entry("uploadOrderFile", "NO"),
             Map.entry("closeCase", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-            Map.entry("manageOrdersExclusionRequirementDetails", "NO")
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+            Map.entry("isFinalOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -460,11 +493,13 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
+            Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails","NO"),
+            Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("dischargeOfCareDetails", "NO"),
             Map.entry("whichOthers", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -473,15 +508,33 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("needSealing", "NO"),
+            Map.entry("uploadOrderFile", "NO"),
             Map.entry("closeCase", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
-            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "YES")
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "YES"),
+            Map.entry("isFinalOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
+    @Test
+    void responseShouldHaveValuesChangedByBothTheCalculatorAndThePrePopulator() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C32_CARE_ORDER)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
+
+        assertThat(response.getData())
+            .extractingByKey("orderTempQuestions", MAP)
+            .containsEntry("hearingDetails", "YES")//Set by calculator
+            .containsEntry("linkApplication", "NO");//Set by pre-populator
+    }
 
     private CaseData buildCaseData() {
         return CaseData.builder()

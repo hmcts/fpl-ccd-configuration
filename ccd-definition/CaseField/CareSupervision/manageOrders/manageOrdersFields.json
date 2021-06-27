@@ -12,10 +12,39 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersOperationClosedState",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersOperationClosedState",
+    "Label": "What do you want to do?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageOrdersType",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ManageOrdersType",
     "Label": "Select order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersUploadType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersUploadType",
+    "Label": "Select order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersUploadTypeOtherTitle",
+    "FieldType": "Text",
+    "Label": " ",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -43,6 +72,24 @@
     "ID": "manageOrdersApprovedAtHearingList",
     "FieldType": "DynamicList",
     "Label": "Which hearing?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersShouldLinkApplication",
+    "Label": "Is there an application for the order on the system?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersLinkedApplication",
+    "Label": "Applications",
+    "FieldType": "DynamicList",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -93,6 +140,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersNeedSealing",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Do you need to seal the order?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersUploadOrderFile",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Document",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".doc,.docx,.pdf",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "orderPreview",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Document",
@@ -134,6 +200,25 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DateTime",
     "Label": "When does it end?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCareOrderIssuedDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "When was the care order issued?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCareOrderIssuedCourt",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HearingVenue",
+    "Label": "Which court issued the order?",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
@@ -181,6 +266,15 @@
     "FieldType": "Document",
     "SecurityClassification": "PUBLIC",
     "RegularExpression": ".doc,.docx,.pdf",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIsFinalOrder",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Is this a final order?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
   {

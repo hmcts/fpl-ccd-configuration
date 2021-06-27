@@ -1,25 +1,38 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {SDOIssuedContentProvider.class})
 class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
+    @MockBean
+    private EmailNotificationHelper helper;
+
     @Autowired
     private SDOIssuedContentProvider underTest;
+
+    @BeforeEach
+    void setUp() {
+        when(helper.getEldestChildLastName(any())).thenReturn("name");
+    }
 
     @Test
     void buildNotificationParameters() {
@@ -35,13 +48,13 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
                 .build()))
             .build();
 
+        when(helper.getSubjectLineLastName(caseData)).thenReturn("Smith");
 
         SDONotifyData actualData = underTest.buildNotificationParameters(caseData);
 
         SDONotifyData expectedData = SDONotifyData.builder()
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
-            .leadRespondentsName("Smith")
-            .respondentLastName("Smith")
+            .lastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .build();
 

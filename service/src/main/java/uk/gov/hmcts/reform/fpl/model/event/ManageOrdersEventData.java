@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 
 import java.time.LocalDate;
@@ -22,7 +23,11 @@ import java.time.LocalDateTime;
 @Jacksonized
 public class ManageOrdersEventData {
 
+    OrderOperation manageOrdersOperation;
+    OrderOperation manageOrdersOperationClosedState;
     OrderTempQuestions orderTempQuestions;
+    Order manageOrdersUploadType;
+    String manageOrdersUploadTypeOtherTitle;
     Order manageOrdersType;
     DynamicList manageOrdersApprovedAtHearingList;
     State manageOrdersState;
@@ -30,14 +35,19 @@ public class ManageOrdersEventData {
     LocalDateTime manageOrdersApprovalDateTime;
     LocalDateTime manageOrdersEndDateTime;
     String manageOrdersFurtherDirections;
+    String manageOrdersIsFinalOrder;
     String manageOrdersTitle;
     String manageOrdersDirections;
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
     String manageOrdersChildrenDescription;
+    String manageOrdersCareOrderIssuedCourt;
+    LocalDate manageOrdersCareOrderIssuedDate;
     String manageOrdersExclusionRequirement;
     String manageOrdersExclusionDetails;
     String manageOrdersWhoIsExcluded;
+    String manageOrdersNeedSealing;
+    DocumentReference manageOrdersUploadOrderFile;
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;
     LocalDate manageOrdersExclusionStartDate;
@@ -46,9 +56,10 @@ public class ManageOrdersEventData {
     LocalDate manageOrdersSetDateEndDate;
     LocalDateTime manageOrdersSetDateAndTimeEndDate;
     Integer manageOrdersSetMonthsEndDate;
-    String manageOrdersShowCloseCase;
     String manageOrdersCloseCase;
     String manageOrdersCafcassRegion;
     EnglandOffices manageOrdersCafcassOfficesEngland;
     WalesOffices manageOrdersCafcassOfficesWales;
+    DynamicList manageOrdersLinkedApplication;
+
 }

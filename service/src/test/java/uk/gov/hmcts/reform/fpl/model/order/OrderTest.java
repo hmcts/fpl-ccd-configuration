@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
@@ -35,6 +36,10 @@ class OrderTest {
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c21_blank_order.doc");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32_care_order.pdf");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32_care_order.doc");
+        assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo(
+            "c32b_discharge_of_care_order.pdf");
+        assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo(
+            "c32b_discharge_of_care_order.doc");
         assertThat(C35A_SUPERVISION_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c35a_supervision_order.pdf");
         assertThat(C35A_SUPERVISION_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c35a_supervision_order.doc");
         assertThat(C33_INTERIM_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c33_interim_care_order.pdf");
@@ -58,6 +63,7 @@ class OrderTest {
         assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C23_EMERGENCY_PROTECTION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C32B_DISCHARGE_OF_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C33_INTERIM_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35A_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35B_INTERIM_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
@@ -70,9 +76,19 @@ class OrderTest {
         assertThat(order.nextSection(currentSection)).isEqualTo(expectedNextSection);
     }
 
+    @ParameterizedTest
+    @MethodSource("sectionsWithNextForManualUploads")
+    void testNextSectionForManualUploads(Order order, OrderSection currentSection,
+                                         Optional<OrderSection> expectedNextSection) {
+        assertThat(order.nextSection(currentSection)).isEqualTo(expectedNextSection);
+    }
+
     @Test
     void checkCoverage() {
-        Set<Order> allOrders = Arrays.stream(Order.values()).collect(Collectors.toSet());
+        Set<Order> allOrders = Arrays.stream(Order.values())
+            .filter(order -> OrderSourceType.DIGITAL == order.getSourceType())
+            .collect(Collectors.toSet());
+
         Set<Order> testedOrders = sectionsWithNext()
             .map(arguments -> (Order) arguments.get()[0])
             .collect(Collectors.toSet());
@@ -96,6 +112,12 @@ class OrderTest {
             Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, REVIEW, Optional.empty()),
             Arguments.of(C32_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
@@ -113,5 +135,16 @@ class OrderTest {
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.of(OTHER_DETAILS))
         );
+    }
+
+    private static Stream<Arguments> sectionsWithNextForManualUploads() {
+        return Arrays.stream(Order.values())
+            .filter(order -> OrderSourceType.MANUAL_UPLOAD == order.getSourceType())
+            .flatMap(order -> Stream.of(
+                Arguments.of(order, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+                Arguments.of(order, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+                Arguments.of(order, ORDER_DETAILS, Optional.of(REVIEW)),
+                Arguments.of(order, REVIEW, Optional.empty()))
+            );
     }
 }

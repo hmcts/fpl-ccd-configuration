@@ -1,18 +1,17 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {OrderRemovalEmailContentProvider.class})
 class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderTest {
@@ -20,48 +19,39 @@ class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderT
     private static final Long CASE_ID = 12345L;
     private static final String FAKE_URL = "http://fake-url/cases/case-details/12345";
     private static final String REMOVAL_REASON = "removal reason test";
-    private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
+    private static final CaseData CASE_DATA = mock(CaseData.class);
 
     @Autowired
-    private OrderRemovalEmailContentProvider orderRemovalEmailContentProvider;
+    private OrderRemovalEmailContentProvider underTest;
+
+    @MockBean
+    private EmailNotificationHelper helper;
+
+    @BeforeEach
+    void setUp() {
+        when(CASE_DATA.getId()).thenReturn(CASE_ID);
+        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("Smith");
+    }
 
     @Test
     void shouldGetSDORemovedEmailNotificationParameters() {
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().lastName("Smith").build())
-                .build()))
-            .gatekeeperEmails(singletonList(element(EmailAddress.builder().email(GATEKEEPER_EMAIL_ADDRESS).build())))
-            .build();
-
+        final OrderRemovalTemplate actual = underTest.buildNotificationForOrderRemoval(CASE_DATA, REMOVAL_REASON);
         final OrderRemovalTemplate expectedTemplate = expectedTemplate();
 
-        assertThat(orderRemovalEmailContentProvider.buildNotificationForOrderRemoval(caseData, REMOVAL_REASON))
-            .usingRecursiveComparison()
-            .isEqualTo(expectedTemplate);
+        assertThat(actual).isEqualTo(expectedTemplate);
     }
 
     @Test
     void shouldGetCMORemovedEmailNotificationParameters() {
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().lastName("Smith").build())
-                .build()))
-            .build();
+        OrderRemovalTemplate actualTemplate = underTest.buildNotificationForOrderRemoval(CASE_DATA, REMOVAL_REASON);
+        OrderRemovalTemplate expectedTemplate = expectedTemplate();
 
-        final OrderRemovalTemplate expectedTemplate = expectedTemplate();
-
-        assertThat(orderRemovalEmailContentProvider.buildNotificationForOrderRemoval(caseData, REMOVAL_REASON))
-            .usingRecursiveComparison()
-            .isEqualTo(expectedTemplate);
+        assertThat(actualTemplate).isEqualTo(expectedTemplate);
     }
 
     private OrderRemovalTemplate expectedTemplate() {
         return OrderRemovalTemplate.builder()
-            .respondentLastName("Smith")
+            .lastName("Smith")
             .removalReason(REMOVAL_REASON)
             .caseReference(String.valueOf(CASE_ID))
             .caseUrl(FAKE_URL)

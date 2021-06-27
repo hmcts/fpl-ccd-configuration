@@ -11,6 +11,8 @@ public enum OrderQuestionBlock {
     LINKED_TO_HEARING("hearingDetails", "Linked to hearing", OrderSection.HEARING_DETAILS,
         List.of("manageOrdersApprovedAtHearing", "manageOrdersApprovedAtHearingList",
             "manageOrdersApprovalDate", "manageOrdersApprovalDateTime", "judgeAndLegalAdvisor")),
+    LINK_APPLICATION("linkApplication", "Link application", OrderSection.HEARING_DETAILS,
+        List.of("manageOrdersShouldLinkApplication", "manageOrdersLinkedApplication")),
     APPROVER("approver", "Approver", OrderSection.ISSUING_DETAILS,
         List.of("judgeAndLegalAdvisor")),
     APPROVAL_DATE("approvalDate", "Approval Date", OrderSection.ISSUING_DETAILS,
@@ -34,6 +36,8 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersCafcassRegion", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassOfficesWales")),
     DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersTitle", "manageOrdersDirections")),
+    DISCHARGE_DETAILS("dischargeOfCareDetails", "Order Details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersCareOrderIssuedDate", "manageOrdersCareOrderIssuedCourt")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
     MANAGE_ORDER_END_DATE_WITH_MONTH(
@@ -44,6 +48,10 @@ public enum OrderQuestionBlock {
         "manageOrdersExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithEndOfProceedings", "manageOrdersSetDateEndDate",
             "manageOrdersSetDateAndTimeEndDate")),
+    NEED_SEALING("needSealing", "Does needs sealing", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersNeedSealing")),
+    UPLOAD_ORDER_FILE("uploadOrderFile", "Order upload file", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersUploadOrderFile")),
     ICO_EXCLUSION(
         "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),

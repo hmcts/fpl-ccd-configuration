@@ -8,17 +8,26 @@ import lombok.Data;
 public class OrderTempQuestions {
 
     String hearingDetails;
+    String linkApplication;
     String approver;
     String approvalDate;
     String approvalDateTime;
+    String cafcassJurisdictions;
     String whichChildren;
+    String dischargeOfCareDetails;
     String epoTypeAndPreventRemoval;
     String epoIncludePhrase;
     String epoChildrenDescription;
     String epoExpiryDate;
     String furtherDirections;
     String orderDetails;
+    String isFinalOrder;
+    String manageOrdersExpiryDateWithMonth;
+    String manageOrdersExpiryDateWithEndOfProceedings;
+    String manageOrdersExclusionRequirementDetails;
+    String needSealing;
     String closeCase;
+    String uploadOrderFile;
     String previewOrder;
     String supervisionOrderExpiryDate;
     String whichOthers;

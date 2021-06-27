@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDate
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
@@ -58,6 +60,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
     @Mock
     private LinkedToHearingBlockPrePopulator linkedToHearingBlockPrePopulator;
+    @Mock
+    private LinkApplicationBlockPrePopulator linkApplicationBlockPrePopulator;
     @Mock
     private ApprovalDateBlockPrePopulator approvalDateBlockPrePopulator;
     @Mock
@@ -94,6 +98,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     void setUp() {
         questionPrepopulators = List.of(
             linkedToHearingBlockPrePopulator,
+            linkApplicationBlockPrePopulator,
             approvalDateBlockPrePopulator,
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
@@ -105,6 +110,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
         );
         questionBlockPrepopulatorMapping = Map.of(
             LINKED_TO_HEARING, linkedToHearingBlockPrePopulator,
+            LINK_APPLICATION, linkApplicationBlockPrePopulator,
             APPROVAL_DATE, approvalDateBlockPrePopulator,
             APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator,
             APPROVER, approverBlockPrePopulator,

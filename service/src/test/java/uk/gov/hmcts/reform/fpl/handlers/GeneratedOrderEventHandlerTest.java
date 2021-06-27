@@ -1,32 +1,29 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,221 +31,130 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_GUARDIAN;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, LookupTestConfig.class,
-    IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
-    HmctsAdminNotificationHandler.class, SendDocumentService.class})
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class GeneratedOrderEventHandlerTest {
 
-    private static final Set<String> EMAIL_REPS  = new HashSet<>(Arrays.asList("barney@rubble.com"));
-    private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList("fred@flinstones.com"));
+    private static final Set<String> EMAIL_REPS = Set.of("barney@rubble.com");
+    private static final Set<String> DIGITAL_REPS = Set.of("fred@flinstones.com");
+    private static final Long CASE_ID = 12345L;
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final DocumentReference TEST_DOCUMENT = mock(DocumentReference.class);
+    private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT);
+    private static final OrderIssuedNotifyData NOTIFY_DATA_WITH_CASE_URL = mock(OrderIssuedNotifyData.class);
+    private static final OrderIssuedNotifyData NOTIFY_DATA_WITHOUT_CASE_URL = mock(OrderIssuedNotifyData.class);
 
-    @MockBean
+    @Mock
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-
-    @MockBean
+    @Mock
     private InboxLookupService inboxLookupService;
-
-    @MockBean
+    @Mock
     private RepresentativeNotificationService representativeNotificationService;
-
-    @MockBean
+    @Mock
     private NotificationService notificationService;
-
-    @MockBean
+    @Mock
     private IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
-
-    @MockBean
+    @Mock
     private SendDocumentService sendDocumentService;
-
-    @MockBean
+    @Mock
     private RepresentativesInbox representativesInbox;
-
-    @Autowired
+    @InjectMocks
     private GeneratedOrderEventHandler underTest;
-
-    private CaseData caseData = caseData();
-
-    private final DocumentReference testDocument = DocumentReference.builder()
-        .filename("GeneratedOrder")
-        .url("url")
-        .binaryUrl("testUrl").build();
-
-    private final GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
 
     @BeforeEach
     void before() {
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
-            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
 
-        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, testDocument,
-            GENERATED_ORDER))
-            .willReturn(getExpectedParameters(BLANK_ORDER.getLabel(), true));
+        given(inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
+        )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(CASE_DATA, TEST_DOCUMENT, GENERATED_ORDER))
+            .willReturn(NOTIFY_DATA_WITH_CASE_URL);
 
         given(orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
-            caseData, event.getOrderDocument(), GENERATED_ORDER))
-            .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
+            CASE_DATA, EVENT.getOrderDocument(), GENERATED_ORDER
+        )).willReturn(NOTIFY_DATA_WITHOUT_CASE_URL);
 
-        given(representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, EMAIL)).willReturn(EMAIL_REPS);
-        given(representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, DIGITAL_SERVICE))
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
+        given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
+        given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REPS);
     }
 
     @Test
     void shouldNotifyPartiesOnOrderSubmission() {
-        underTest.notifyParties(event);
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
 
-        verify(issuedOrderAdminNotificationHandler).notifyAdmin(
-            caseData,
-            testDocument,
-            GENERATED_ORDER);
+        underTest.notifyParties(EVENT);
+
+        verify(issuedOrderAdminNotificationHandler).notifyAdmin(CASE_DATA, TEST_DOCUMENT, GENERATED_ORDER);
 
         verify(notificationService).sendEmail(
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            getExpectedParameters(BLANK_ORDER.getLabel(), true),
-            caseData.getId().toString());
+            NOTIFY_DATA_WITH_CASE_URL,
+            CASE_ID.toString()
+        );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
-            caseData.getId(),
-            getExpectedParameters(BLANK_ORDER.getLabel(), true),
+            CASE_ID,
+            NOTIFY_DATA_WITH_CASE_URL,
             DIGITAL_REPS,
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES);
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES
+        );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
-            caseData.getId(),
-            getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true),
+            CASE_ID,
+            NOTIFY_DATA_WITHOUT_CASE_URL,
             EMAIL_REPS,
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES
+        );
     }
 
     @Test
     void shouldNotBuildNotificationTemplateDataForEmailRepresentativesWhenEmailRepresentativesDoNotExist() {
-        CaseData caseData = caseData().toBuilder()
-            .representatives(List.of(
-                element(Representative.builder()
-                    .servingPreferences(DIGITAL_SERVICE)
-                    .fullName("Test user")
-                    .email("testuser@test.co.uk")
-                    .build())
-            )).build();
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(Set.of());
 
-        GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
-
-        underTest.notifyParties(event);
+        underTest.notifyParties(EVENT);
 
         verify(orderIssuedEmailContentProvider, never()).getNotifyDataWithoutCaseUrl(any(), any(), any());
 
         verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
-            any(), any(), anySet(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES));
+            any(), any(), anySet(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES)
+        );
     }
 
     @Test
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPost() {
-        final Representative representative = Representative.builder()
-            .fullName("First Representative")
-            .servingPreferences(POST)
-            .address(testAddress())
-            .build();
+        final Representative representative = mock(Representative.class);
+        final RespondentParty respondent = mock(RespondentParty.class);
+        final List<Recipient> recipients = List.of(representative, respondent);
 
-        final RespondentParty respondent = RespondentParty.builder()
-            .firstName("First")
-            .lastName("Respondent")
-            .address(testAddress())
-            .build();
-
-        final CaseData caseData = caseData().toBuilder()
-            .representatives(wrapElements(representative))
-            .respondents1(wrapElements(Respondent.builder().party(respondent).build()))
-            .build();
-
-        final GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
-
-        given(sendDocumentService.getRecipientsExcludingOthers(caseData)).willReturn(Arrays.asList(representative,
+        given(sendDocumentService.getSelectedOtherRecipients(CASE_DATA, null)).willReturn(recipients);
+        given(sendDocumentService.getRecipientsExcludingOthers(CASE_DATA)).willReturn(Arrays.asList(representative,
             respondent));
 
-        underTest.sendOrderByPost(event);
+        underTest.sendOrderByPost(EVENT);
 
-        verify(sendDocumentService).sendDocuments(caseData, List.of(testDocument), List.of(representative, respondent));
-        verify(sendDocumentService).getRecipientsExcludingOthers(caseData);
-        verify(sendDocumentService).getSelectedOtherRecipients(caseData, null);
+        verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(TEST_DOCUMENT), recipients);
+        verify(sendDocumentService).getRecipientsExcludingOthers(CASE_DATA);
+        verify(sendDocumentService).getSelectedOtherRecipients(CASE_DATA, null);
+
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);
-    }
-
-    private AllocatedJudgeTemplateForGeneratedOrder getOrderIssuedAllocatedJudgeParameters() {
-        return AllocatedJudgeTemplateForGeneratedOrder.builder()
-            .orderType("blank order (c21)")
-            .callout("^Jones, SACCCCCCCC5676576567, hearing 26 Aug 2020")
-            .caseUrl("null/case/\" + JURISDICTION + \"/\" + CASE_TYPE + \"/12345")
-            .respondentLastName("Smith")
-            .judgeTitle("Her Honour Judge")
-            .judgeName("Byrne")
-            .build();
-    }
-
-    private List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
-        return ImmutableList.of(
-            Representative.builder()
-                .email("barney@rubble.com")
-                .fullName("Barney Rubble")
-                .servingPreferences(EMAIL)
-                .positionInACase("Cafcass Solicitor")
-                .telephoneNumber("0717171718")
-                .role(CAFCASS_SOLICITOR)
-                .address(Address.builder()
-                    .addressLine1("160 Tooley St")
-                    .addressLine2("Tooley road")
-                    .addressLine3("Tooley")
-                    .postTown("Limerick")
-                    .postcode("SE1 2QH")
-                    .country("Ireland")
-                    .county("Galway")
-                    .build())
-                .build());
-    }
-
-    private List<Representative> getExpectedDigitalServedRepresentativesForAddingPartiesToCase() {
-        return ImmutableList.of(
-            Representative.builder()
-                .email("fred@flinstone.com")
-                .fullName("Fred Flinstone")
-                .servingPreferences(DIGITAL_SERVICE)
-                .positionInACase("Cafcass Guardian")
-                .telephoneNumber("0717171717")
-                .role(CAFCASS_GUARDIAN)
-                .address(Address.builder()
-                    .addressLine1("160 Tooley St")
-                    .addressLine2("Tooley road")
-                    .addressLine3("Tooley")
-                    .postTown("Limerick")
-                    .postcode("SE1 2QH")
-                    .country("Ireland")
-                    .county("Galway")
-                    .build())
-                .build());
     }
 }

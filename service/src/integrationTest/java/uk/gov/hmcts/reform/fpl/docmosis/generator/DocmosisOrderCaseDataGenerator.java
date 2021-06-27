@@ -29,7 +29,7 @@ public class DocmosisOrderCaseDataGenerator {
 
     public CaseData generateForOrder(final Order order) {
 
-        return order.getQuestions().stream().reduce(
+        return order.getQuestionsBlocks().stream().reduce(
             commonCaseData(order),
             this::addDataForQuestion,
             (v, v2) -> v2
@@ -51,6 +51,7 @@ public class DocmosisOrderCaseDataGenerator {
 
         switch (questionBlock) {
             case LINKED_TO_HEARING:
+            case LINK_APPLICATION:
             case REVIEW_DRAFT_ORDER:
             case CLOSE_CASE:
                 // Do Nothing - they won't modify the document
@@ -75,6 +76,13 @@ public class DocmosisOrderCaseDataGenerator {
                         .build())
                     .build())))
                     .childSelector(Selector.builder().selected(List.of(1)).build());
+            case DISCHARGE_DETAILS:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersCareOrderIssuedDate(LocalDate.of(2013, 10, 4))
+                        .manageOrdersCareOrderIssuedCourt("1")
+                        .build()
+                );
             case DETAILS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)

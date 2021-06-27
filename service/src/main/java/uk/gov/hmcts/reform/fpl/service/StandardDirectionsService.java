@@ -74,7 +74,7 @@ public class StandardDirectionsService {
     private List<Element<Direction>> getDirections(Optional<HearingBooking> hearingBooking) {
         LocalDateTime hearingStartDate = hearingBooking.map(HearingBooking::getStartDate).orElse(null);
 
-        return ordersLookupService.getStandardDirectionOrder().getDirections()
+        return ordersLookupService.getStandardDirectionOrder().getStandardDirections()
             .stream()
             .map(configuration -> constructDirectionForCCD(hearingStartDate, configuration))
             .collect(toList());
