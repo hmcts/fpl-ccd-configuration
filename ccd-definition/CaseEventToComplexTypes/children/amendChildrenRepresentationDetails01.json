@@ -1,0 +1,219 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "childDescription",
+    "FieldDisplayOrder": 0,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "useMainSolicitor",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.firstName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.lastName",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.email",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.organisation",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.organisation.OrganisationName",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL",
+    "EventElementLabel": " ",
+    "FieldShowCondition": "childRepresentationDetails1.solicitor.organisation.OrganisationName=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.signUpRequestHeader",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.signupRequestLabel",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.name",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "EventElementLabel": "Address",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.Country",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress",
+    "EventElementLabel": "Add the regional office managing this case",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.Country",
+    "DisplayContext": "OPTIONAL"
+  }
+
+]
