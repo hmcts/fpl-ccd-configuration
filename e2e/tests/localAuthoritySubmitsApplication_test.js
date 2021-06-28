@@ -150,6 +150,7 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
     'Add the allocation proposal in the Allocation proposal']);
 });
 
+
 Scenario('local authority enters children @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.enterChildren);

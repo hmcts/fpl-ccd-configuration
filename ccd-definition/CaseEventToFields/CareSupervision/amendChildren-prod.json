@@ -6,7 +6,7 @@
     "CaseFieldID": "children1",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
-    "PageID": 1,
+    "PageID": "childrenDetails",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   }

@@ -1,0 +1,329 @@
+{
+  "state": "SUBMITTED",
+  "caseData": {
+    "caseName": "e2e test case max children",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      },
+      {
+        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "John",
+            "dateOfBirth": "2016-09-02"
+          }
+        }
+      },
+      {
+        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "William",
+            "dateOfBirth": "2017-10-01"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Sarah",
+            "dateOfBirth": "2010-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b07",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Susy",
+            "dateOfBirth": "2012-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b06",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Manny",
+            "dateOfBirth": "2011-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b08",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Jenny",
+            "dateOfBirth": "2013-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b18",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Gemma",
+            "dateOfBirth": "2013-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b28",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Kelly",
+            "dateOfBirth": "2013-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b38",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Kendall",
+            "dateOfBirth": "2014-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b48",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Clivea",
+            "dateOfBirth": "2014-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b58",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Surimi",
+            "dateOfBirth": "2015-05-02"
+          }
+        }
+      },
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb4",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Belzarian",
+            "dateOfBirth": "2015-09-01"
+          }
+        }
+      },
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb5",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Yoshi",
+            "dateOfBirth": "2015-09-04"
+          }
+        }
+      },
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb6",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Mario",
+            "dateOfBirth": "2015-10-04"
+          }
+        }
+      }
+
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "applicants": [
+      {
+        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "value": {
+          "party": {
+            "email": {
+              "email": "applicant@email.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA0082848",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "John Smith",
+            "customerReference": "Example reference"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "respondents1": [
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          },
+          "legalRepresentation": "No"
+        }
+      },
+      {
+        "id": "2bfdecbf-26fa-429a-bcf3-0b5cba21a588",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "SE16 6BA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 20",
+              "AddressLine2": "Heron House 8"
+            },
+            "lastName": "Bloggs",
+            "firstName": "George",
+            "dateOfBirth": "1990-02-03",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "07000 654321"
+            },
+            "relationshipToChild": "Uncle"
+          },
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "displayAmountToPay": "Yes",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "documents_socialWorkOther": [],
+    "documents_checklist_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_threshold_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkCarePlan_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkStatement_document": {
+      "documentStatus": "Included in social work evidence template (SWET)"
+    },
+    "documents_socialWorkAssessment_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkChronology_document": {
+      "statusReason": "mock reason",
+      "documentStatus": "To follow"
+    },
+    "documents_socialWorkEvidenceTemplate_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    }
+  }
+}
