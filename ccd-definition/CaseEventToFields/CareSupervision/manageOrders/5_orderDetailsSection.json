@@ -263,7 +263,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "appointedGuardiansLabel",
+    "CaseFieldID": "appointedGuardians_label",
     "PageFieldDisplayOrder": 21,
     "DisplayContext": "READONLY",
     "PageID": "OrderDetails",
@@ -283,7 +283,7 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.appointedGuardian=\"YES\"",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",

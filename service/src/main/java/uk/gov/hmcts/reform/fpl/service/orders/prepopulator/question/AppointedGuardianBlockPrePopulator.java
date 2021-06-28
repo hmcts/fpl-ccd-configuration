@@ -29,7 +29,7 @@ public class AppointedGuardianBlockPrePopulator implements QuestionBlockOrderPre
             caseData.getAllRespondents().size() + caseData.getAllOthers().size());
         return Map.of(
             "appointedGuardianSelector", appointedGuardianSelector,
-            "appointedGuardiansLabel",
+            "appointedGuardians_label",
             appointedGuardianFormatter.getGuardiansLabel(caseData)
         );
     }

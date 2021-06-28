@@ -279,6 +279,29 @@ class SealedOrderHistoryServiceTest {
                 ));
             }
         }
+
+        @Test
+        void generateWithSpecialGuardians() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().build();
+                mockDocumentUpload(caseData);
+                mockExtraTitleGenerator(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Special guardians names");
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .specialGuardians("Special guardians names")
+                            .build())
+                    )
+                ));
+            }
+        }
     }
 
     @Nested

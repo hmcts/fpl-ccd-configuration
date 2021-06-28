@@ -33,7 +33,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     public static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.of(2021, 4, 20, 10, 0, 0);
     public static final String EXPECTED_APPROVAL_DATE_TIME = "20 April 2021, 10:00am";
     private static final String FURTHER_DIRECTIONS = "further directions";
-    private static final String ORDER_HEADER = "\n Warning \n";
+    private static final String ORDER_HEADER = "Warning \n";
     private static final String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
@@ -46,7 +46,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         + "It may be a criminal offence under the Child Abduction Act 1984 "
         + "to remove the child from the United Kingdom without leave of the court.\n"
         + "";
-    private static final String NOTICE_HEADER = "\n Notice \n";
+    private static final String NOTICE_HEADER = "Notice \n";
     private static final String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
         + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
         + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
@@ -209,7 +209,6 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-
     private String getOrderAppointmentMessageForChildWithSinglePersonResponsible() {
         return "The Court orders that Remmy Respondent is appointed as special guardian for the child.";
     }
@@ -234,7 +233,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     private C43aSpecialGuardianshipOrderDocmosisParameters.C43aSpecialGuardianshipOrderDocmosisParametersBuilder<?, ?>
-        expectedCommonParameters(Boolean isOrderByConsent) {
+    expectedCommonParameters(Boolean isOrderByConsent) {
         String orderByConsentContent = getOrderByConsentContent(isOrderByConsent);
 
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()

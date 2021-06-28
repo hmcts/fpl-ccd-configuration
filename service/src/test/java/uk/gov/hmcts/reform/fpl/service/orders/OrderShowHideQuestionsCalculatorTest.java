@@ -170,7 +170,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("epoExpiryDate", "NO");
         specialGuardianshipOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         specialGuardianshipOrderQuestions.put("cafcassJurisdictions", "NO");
-        specialGuardianshipOrderQuestions.put("whichChildren", "NO");
+        specialGuardianshipOrderQuestions.put("whichChildren", "YES");
         specialGuardianshipOrderQuestions.put("dischargeOfCareDetails", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
