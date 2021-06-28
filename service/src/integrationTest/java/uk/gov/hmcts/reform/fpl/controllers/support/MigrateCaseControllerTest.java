@@ -224,6 +224,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseDetails caseDetails = caseDetails(
                 correspondenceDocuments, correspondenceDocumentsLA, familyManNumber, migrationId);
+            caseDetails.getData().put("correspondenceDocumentsNC", correspondenceDocuments);
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
             CaseData caseData = extractCaseData(response);
@@ -248,6 +249,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldSortCorrespondenceDocumentsWhenCorrespondenceDocumentsLAAreEmpty() {
             List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildCorrespondenceDocuments("HMCTS");
             CaseDetails caseDetails = caseDetails(correspondenceDocuments, List.of(), familyManNumber, migrationId);
+            caseDetails.getData().put("correspondenceDocumentsNC", correspondenceDocuments);
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 

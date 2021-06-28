@@ -30,11 +30,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static java.util.Collections.reverseOrder;
-import static java.util.Comparator.comparing;
-import static java.util.Comparator.nullsLast;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
@@ -193,9 +189,8 @@ public class ManageDocumentsLAController extends CallbackController {
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA()
                     );
 
-                List<Element<SupportingEvidenceBundle>> sortedDocuments = updatedCorrespondenceDocuments.stream()
-                    .sorted(comparing(bundle -> bundle.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
-                    .collect(Collectors.toList());
+                List<Element<SupportingEvidenceBundle>> sortedDocuments
+                    = manageDocumentService.sortCorrespondenceDocumentsByUploadedDate(updatedCorrespondenceDocuments);
 
                 splitter.updateConfidentialDocsInCaseDetails(
                     caseDetailsMap, sortedDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY

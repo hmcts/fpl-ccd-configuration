@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,23 +18,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static java.util.Collections.reverseOrder;
-import static java.util.Comparator.comparing;
-import static java.util.Comparator.nullsLast;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 @Api
 @RestController
@@ -42,7 +38,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private final DocumentListService documentListService;
-    private final ConfidentialDocumentsSplitter confidentialDocuments;
+    private final ManageDocumentService manageDocumentService;
+    private final ObjectMapper mapper;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -132,16 +129,15 @@ public class MigrateCaseController extends CallbackController {
     private void sortCorrespondenceDocuments(List<Element<SupportingEvidenceBundle>> correspondenceDocuments,
                                              CaseDetails caseDetails,
                                              String fieldName) {
-        List<Element<SupportingEvidenceBundle>> sortedCorrespondenceDocuments = correspondenceDocuments.stream()
-            .sorted(comparing(bundle -> bundle.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
-            .collect(Collectors.toList());
+        List<Element<SupportingEvidenceBundle>> sortedDocuments
+            = manageDocumentService.sortCorrespondenceDocumentsByUploadedDate(correspondenceDocuments);
+        caseDetails.getData().put(fieldName, sortedDocuments);
 
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        confidentialDocuments.updateConfidentialDocsInCaseDetails(
-            caseDetailsMap, sortedCorrespondenceDocuments, fieldName);
-
-        caseDetails.getData().put(fieldName + "NC", caseDetailsMap.get(fieldName + "NC"));
-        caseDetails.getData().put(fieldName, sortedCorrespondenceDocuments);
+        List<Element<SupportingEvidenceBundle>> correspondenceDocumentsNC =
+            mapper.convertValue(caseDetails.getData().get(fieldName + "NC"), new TypeReference<>() {
+            });
+        caseDetails.getData().put(fieldName + "NC",
+            manageDocumentService.sortCorrespondenceDocumentsByUploadedDate(correspondenceDocumentsNC));
     }
 
     private void validateFamilyManNumber(String migrationId, String familyManCaseNumber, CaseData caseData) {
