@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 @Value
 @SuperBuilder(toBuilder = true)
 public class C43aSpecialGuardianshipOrderDocmosisParameters extends DocmosisParameters {
-    GeneratedOrderType orderType;
     String orderDetails;
     String furtherDirections;
     String orderByConsent;

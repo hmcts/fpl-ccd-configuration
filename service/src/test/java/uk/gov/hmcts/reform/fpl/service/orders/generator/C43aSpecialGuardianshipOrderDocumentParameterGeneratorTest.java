@@ -5,14 +5,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.AppointedGuardianService;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43aSpecialGuardianshipOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
@@ -56,7 +55,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     private ChildrenService childrenService;
 
     @Mock
-    private AppointedGuardianService appointedGuardianService;
+    private AppointedGuardianFormatter appointedGuardianFormatter;
 
     @InjectMocks
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator underTest;
@@ -78,7 +77,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -95,7 +94,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -112,7 +111,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -129,7 +128,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -146,7 +145,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -163,7 +162,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData))
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent, Randle Responde are");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -181,7 +180,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData))
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent, Randle Responde are");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -199,7 +198,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianService.getGuardiansNamesForDocument(caseData))
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17 are");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -239,7 +238,6 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()
             .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
             .dateOfIssue(EXPECTED_APPROVAL_DATE_TIME)
-            .orderType(GeneratedOrderType.SPECIAL_GUARDIANSHIP_ORDER)
             .furtherDirections(FURTHER_DIRECTIONS)
             .orderByConsent(orderByConsentContent)
             .orderHeader(ORDER_HEADER)

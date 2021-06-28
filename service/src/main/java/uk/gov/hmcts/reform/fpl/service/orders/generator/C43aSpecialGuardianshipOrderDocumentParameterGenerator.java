@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.AppointedGuardianService;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43aSpecialGuardianshipOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
@@ -26,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
     private final ChildrenService childrenService;
-    private final AppointedGuardianService appointedGuardianService;
+    private final AppointedGuardianFormatter appointedGuardianFormatter;
 
     private static String paragraphBreak = "\n \n";
     private static String ORDER_HEADER = "\n Warning \n";
@@ -65,7 +64,6 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()
             .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
-            .orderType(GeneratedOrderType.SPECIAL_GUARDIANSHIP_ORDER)
             .dateOfIssue(formatLocalDateTimeBaseUsingFormat(eventData.getManageOrdersApprovalDateTime(), DATE_TIME))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(getSpecialGuardianAppointeeMessage(caseData, selectedChildren.size()))
@@ -79,7 +77,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
     private String getSpecialGuardianAppointeeMessage(CaseData caseData, int numOfChildren) {
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
-        String applicant = appointedGuardianService.getGuardiansNamesForDocument(caseData);
+        String applicant = appointedGuardianFormatter.getGuardiansNamesForDocument(caseData);
 
         return format("The Court orders %s appointed as Special Guardian for the %s.", applicant, childOrChildren);
     }

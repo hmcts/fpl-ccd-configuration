@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.AppointedGuardianService;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -80,7 +80,7 @@ class SealedOrderHistoryServiceTest {
     private final Child child2 = mock(Child.class);
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
-    private final AppointedGuardianService appointedGuardianService = mock(AppointedGuardianService.class);
+    private final AppointedGuardianFormatter appointedGuardianFormatter = mock(AppointedGuardianFormatter.class);
     private final IdentityService identityService = mock(IdentityService.class);
     private final OrderCreationService orderCreationService = mock(OrderCreationService.class);
     private final Time time = mock(Time.class);
@@ -96,7 +96,7 @@ class SealedOrderHistoryServiceTest {
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
         childrenService,
-        appointedGuardianService,
+        appointedGuardianFormatter,
         orderCreationService,
         extraTitleGenerator,
         time,

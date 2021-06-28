@@ -19,7 +19,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AppointedGuardianService {
+public class AppointedGuardianFormatter {
 
     public String getGuardiansLabel(CaseData caseData) {
         List<Element<Respondent>> respondents = caseData.getAllRespondents();

@@ -13,9 +13,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-class AppointedGuardianServiceTest {
+class AppointedGuardianFormatterTest {
 
-    private final AppointedGuardianService underTest = new AppointedGuardianService();
+    private final AppointedGuardianFormatter underTest = new AppointedGuardianFormatter();
 
     @Test
     void shouldReturnDefaultLabelMessageIfNoRespondentsOrOthers() {
@@ -27,7 +27,7 @@ class AppointedGuardianServiceTest {
     @Test
     void shouldReturnFormattedLabelForMultipleRespondentsAndOthers() {
         CaseData caseData = getMultiplePeopleCaseData();
-        String expected = "Person 1: Respondent - Remy Respondent\n"
+        String expected = "Person 1: Respondent - Remy Respondy\n"
             + "Person 2: Respondent - Tony Stark\n"
             + "Person 3: Other - Ollie Otherworld\n"
             + "Person 4: Other - Otto Otherman\n"
@@ -47,12 +47,12 @@ class AppointedGuardianServiceTest {
     @Test
     void shouldGetAppointedGuardiansNamesForDocumentWhenOneRespondent() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
-            .party(RespondentParty.builder().firstName("Remy").lastName("Respondent").build()).build()))
+            .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build()))
             .appointedGuardianSelector(Selector.builder().selected(List.of(0)).build())
             .build();
 
         String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-        assertThat(formattedNames).isEqualTo("Remy Respondent is");
+        assertThat(formattedNames).isEqualTo("Remy Respondy is");
     }
 
     @Test
@@ -60,7 +60,7 @@ class AppointedGuardianServiceTest {
         CaseData caseData = getMultiplePeopleCaseData();
 
         String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-        assertThat(formattedNames).isEqualTo("Remy Respondent, Otto Otherman, Bob Bothers are");
+        assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers are");
     }
 
     @Test
@@ -74,12 +74,12 @@ class AppointedGuardianServiceTest {
     @Test
     void shouldGetAppointedGuardiansNamesForTabWhenOneRespondent() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
-            .party(RespondentParty.builder().firstName("Remy").lastName("Respondent").build()).build()))
+            .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build()))
             .appointedGuardianSelector(Selector.builder().selected(List.of(0)).build())
             .build();
 
         String formattedNames = underTest.getGuardiansNamesForTab(caseData);
-        assertThat(formattedNames).isEqualTo("Remy Respondent");
+        assertThat(formattedNames).isEqualTo("Remy Respondy");
     }
 
     @Test
@@ -87,12 +87,12 @@ class AppointedGuardianServiceTest {
         CaseData caseData = getMultiplePeopleCaseData();
 
         String formattedNames = underTest.getGuardiansNamesForTab(caseData);
-        assertThat(formattedNames).isEqualTo("Remy Respondent, Otto Otherman, Bob Bothers");
+        assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers");
     }
 
     private CaseData getMultiplePeopleCaseData() {
         return CaseData.builder().respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().firstName("Remy").lastName("Respondent").build()).build(),
+                .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
             Respondent.builder()
                 .party(RespondentParty.builder().firstName("Tony").lastName("Stark").build()).build()))
             .others(Others.builder()

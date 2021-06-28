@@ -46,6 +46,10 @@ public class DocmosisOrderCaseDataGenerator {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(order)
                 .build())
+            .respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder()
+                .firstName("Remy").lastName("Respondy").build()).build()))
+            .others(Others.builder().additionalOthers(wrapElements(
+                Other.builder().name("Otto Otherman").build())).build())
             .familyManCaseNumber("FamilyManCaseNumber113")
             .caseLocalAuthority(LA_CODE)
             .id(1234567890123456L);
@@ -166,11 +170,7 @@ public class DocmosisOrderCaseDataGenerator {
                         .build()
                 );
             case APPOINTED_GUARDIAN:
-                return builder.respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder()
-                    .firstName("Remy").lastName("Respo").build()).build()))
-                    .others(Others.builder().additionalOthers(wrapElements(
-                        Other.builder().name("Otto Others").build())).build())
-                    .appointedGuardianSelector(Selector.builder().selected(List.of(0, 1)).build());
+                return builder.appointedGuardianSelector(Selector.builder().selected(List.of(0, 1)).build());
             case ORDER_BY_CONSENT:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)

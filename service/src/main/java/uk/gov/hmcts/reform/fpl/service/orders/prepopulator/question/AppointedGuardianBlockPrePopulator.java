@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.AppointedGuardianService;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AppointedGuardianBlockPrePopulator implements QuestionBlockOrderPrePopulator {
 
-    private final AppointedGuardianService appointedGuardianService;
+    private final AppointedGuardianFormatter appointedGuardianFormatter;
 
     @Override
     public OrderQuestionBlock accept() {
@@ -30,7 +30,7 @@ public class AppointedGuardianBlockPrePopulator implements QuestionBlockOrderPre
         return Map.of(
             "appointedGuardianSelector", appointedGuardianSelector,
             "appointedGuardians_label",
-            appointedGuardianService.getGuardiansLabel(caseData)
+            appointedGuardianFormatter.getGuardiansLabel(caseData)
         );
     }
 }
