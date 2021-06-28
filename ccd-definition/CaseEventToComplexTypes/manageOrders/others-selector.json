@@ -89,5 +89,25 @@
     "EventElementLabel": " ",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option8",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option9",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
   }
 ]

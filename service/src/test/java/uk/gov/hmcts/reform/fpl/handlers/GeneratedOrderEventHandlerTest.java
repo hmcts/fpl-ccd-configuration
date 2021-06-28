@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -75,6 +76,8 @@ class GeneratedOrderEventHandlerTest {
     private RepresentativesInbox representativesInbox;
     @Mock
     private FeatureToggleService featureToggleService;
+    @Mock
+    private OthersService othersService;
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
 
@@ -97,6 +100,7 @@ class GeneratedOrderEventHandlerTest {
         given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REPS);
+        given(othersService.getSelectedOthers(CASE_DATA)).willReturn(Collections.emptyList());
     }
 
     @Test

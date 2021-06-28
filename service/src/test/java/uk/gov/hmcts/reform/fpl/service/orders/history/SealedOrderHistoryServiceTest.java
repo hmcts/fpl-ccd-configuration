@@ -415,11 +415,4 @@ class SealedOrderHistoryServiceTest {
         jalMock.when(() -> JudgeAndLegalAdvisorHelper.getJudgeForTabView(JUDGE_AND_LEGAL_ADVISOR, JUDGE))
             .thenReturn(TAB_JUDGE_AND_LEGAL_ADVISOR);
     }
-
-//    private Other buildOther(String name) {
-//        return Other.builder()
-//            .name(name)
-//            .address(testAddress())
-//            .build();
-//    }
 }

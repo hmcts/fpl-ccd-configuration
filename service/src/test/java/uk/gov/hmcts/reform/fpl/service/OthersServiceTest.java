@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ExtendWith(SpringExtension.class)
 class OthersServiceTest {
@@ -177,8 +177,8 @@ class OthersServiceTest {
     void shouldReturnAllOthersWhenUseAllOthers() {
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
-                .firstOther(buildOther("First other"))
-                .additionalOthers(List.of(element(buildOther("Second other"))))
+                .firstOther(testOther("First other"))
+                .additionalOthers(List.of(element(testOther("Second other"))))
                 .build())
             .sendOrderToAllOthers("Yes")
                 .build();
@@ -190,12 +190,52 @@ class OthersServiceTest {
     }
 
     @Test
+    void shouldReturnEmptyListWhenSelectorIsNull() {
+        CaseData caseData = CaseData.builder()
+            .sendOrderToAllOthers("No")
+            .othersSelector(null)
+            .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenSelectedIsEmpty() {
+        CaseData caseData = CaseData.builder()
+            .othersSelector(Selector.builder().selected(emptyList()).build())
+            .sendOrderToAllOthers("No")
+            .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers).isEmpty();
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenEmptyList() {
+        String label = service.getOthersLabel(List.of());
+        assertThat(label).isEqualTo("");
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenPopulatedList() {
+        List<Element<Other>> others = List.of(element(testOther("First other")),
+            element(testOther("Second other")));
+
+        String label = service.getOthersLabel(others);
+        assertThat(label).isEqualTo("Other 1: First other\n"
+            + "Other 2: Second other\n");
+    }
+
+    @Test
     void shouldReturnSelectedOthersOnly() {
         int selectedOther = 1;
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
-                .firstOther(buildOther("First other"))
-                .additionalOthers(List.of(element(buildOther("Second other"))))
+                .firstOther(testOther("First other"))
+                .additionalOthers(List.of(element(testOther("Second other"))))
                 .build())
             .othersSelector(Selector.builder().selected(List.of(selectedOther)).build())
             .sendOrderToAllOthers("No")
@@ -208,7 +248,7 @@ class OthersServiceTest {
 
     @Test
     void shouldReturnTrueWhenRepresented() {
-        Other other = buildOther("First other");
+        Other other = testOther("First other");
         other.addRepresentative(UUID.randomUUID());
 
         CaseData caseData = CaseData.builder()
@@ -224,7 +264,7 @@ class OthersServiceTest {
 
     @Test
     void shouldReturnFalseWhenNotRepresented() {
-        Other other = buildOther("First other");
+        Other other = testOther("First other");
 
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
@@ -239,7 +279,7 @@ class OthersServiceTest {
 
     @Test
     void shouldReturnTrueWhenHasAddressAdded() {
-        Other other = buildOther("First other");
+        Other other = testOther("First other");
 
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
@@ -268,13 +308,6 @@ class OthersServiceTest {
         boolean hasAddressAdded = service.hasAddressAdded(caseData.getAllOthers().get(0).getValue());
 
         assertFalse(hasAddressAdded);
-    }
-
-    private Other buildOther(String name) {
-        return Other.builder()
-            .name(name)
-            .address(testAddress())
-            .build();
     }
 
     private CaseData buildCaseDataWithOthers(Other firstOther,

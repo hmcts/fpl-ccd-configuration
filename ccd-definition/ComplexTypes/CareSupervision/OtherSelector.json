@@ -103,38 +103,6 @@
     "ElementLabel": "Other 10",
     "SecurityClassification": "Public",
     "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OthersSelector",
-    "ListElementCode": "option11Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Other 11",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OthersSelector",
-    "ListElementCode": "option12Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Other 12",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OthersSelector",
-    "ListElementCode": "option13Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Other 13",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OthersSelector",
-    "ListElementCode": "option14Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Other 14",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",

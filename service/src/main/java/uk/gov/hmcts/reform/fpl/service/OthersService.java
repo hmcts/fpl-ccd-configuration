@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,11 +64,6 @@ public class OthersService {
             .build();
     }
 
-    public List<Element<Other>> getSelectedOthers(CaseData caseData) {
-        return getSelectedOthers(caseData.getAllOthers(), caseData.getOthersSelector(),
-            caseData.getSendOrderToAllOthers());
-    }
-
     public String getOthersLabel(List<Element<Other>> others) {
         StringBuilder builder = new StringBuilder();
 
@@ -89,6 +85,11 @@ public class OthersService {
         return !isNull(other.getAddress().getPostcode());
     }
 
+    public List<Element<Other>> getSelectedOthers(CaseData caseData) {
+        return getSelectedOthers(caseData.getAllOthers(), caseData.getOthersSelector(),
+            caseData.getSendOrderToAllOthers());
+    }
+
     private List<Element<Other>> getSelectedOthers(List<Element<Other>> others, Selector selector,
                                                    String sendOrderToAllOthers) {
 
@@ -96,7 +97,7 @@ public class OthersService {
             return others;
         } else {
             if (isNull(selector) || isEmpty(selector.getSelected())) {
-                return null;
+                return Collections.emptyList();
             }
             return selector.getSelected().stream()
                 .map(others::get)
