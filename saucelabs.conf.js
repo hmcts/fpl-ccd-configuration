@@ -3,7 +3,7 @@
 const supportedBrowsers = require('./e2e/crossbrowser/supportedBrowsers.js');
 const testConfig = require('./e2e/config');
 
-const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 45000;
+const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 30000;
 const smartWait = parseInt(process.env.SMART_WAIT) || 30000;
 const browser = process.env.SAUCELABS_BROWSER || 'chrome';
 const defaultSauceOptions = {
