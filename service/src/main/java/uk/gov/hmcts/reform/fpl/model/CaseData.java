@@ -414,7 +414,7 @@ public class CaseData {
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;
-    private final Selector appointedGuardians_label;
+    private final Selector appointedGuardiansLabel;
 
     private final String orderAppliesToAllChildren;
 

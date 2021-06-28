@@ -22,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SGO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -67,7 +67,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
     @Test
     void shouldReturnCorrectTemplate() {
-        assertThat(underTest.template()).isEqualTo(SGO);
+        assertThat(underTest.template()).isEqualTo(ORDER_V2);
     }
 
     @Test
@@ -211,24 +211,26 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
 
     private String getOrderAppointmentMessageForChildWithSinglePersonResponsible() {
-        return "The Court orders Remmy Respondent is appointed as Special Guardian for the child.";
+        return "The Court orders that Remmy Respondent is appointed as special guardian for the child.";
     }
 
     private String getOrderAppointmentMessageForChildrenWithSinglePersonResponsible() {
-        return "The Court orders Remmy Respondent is appointed as Special Guardian for the children.";
+        return "The Court orders that Remmy Respondent is appointed as special guardian for the children.";
     }
 
     private String getOrderAppointmentMessageForChildWithMultiplePeopleResponsible() {
-        return "The Court orders Remmy Respondent, Randle Responde are appointed as Special Guardian for the child.";
+        return "The Court orders that Remmy Respondent, "
+            + "Randle Responde are appointed as special guardian for the child.";
     }
 
     private String getOrderAppointmentMessageForChildrenWithMultiplePeopleResponsible() {
-        return "The Court orders Remmy Respondent, Randle Responde are appointed as Special Guardian for the children.";
+        return "The Court orders that Remmy Respondent, "
+            + "Randle Responde are appointed as special guardian for the children.";
     }
 
     private String getMaxSpecialGuardiansAllowed() {
-        return "The Court orders P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17"
-            + " are appointed as Special Guardian for the children.";
+        return "The Court orders that P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17"
+            + " are appointed as special guardian for the children.";
     }
 
     private C43aSpecialGuardianshipOrderDocmosisParameters.C43aSpecialGuardianshipOrderDocmosisParametersBuilder<?, ?>

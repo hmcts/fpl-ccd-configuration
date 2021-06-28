@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.service.hearing.HearingService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class ApprovalDateTimeBlockPrePopulator implements QuestionBlockOrderPrePopulator {
 
     private final HearingService hearingService;
+    private final Time time;
 
     @Override
     public OrderQuestionBlock accept() {
@@ -35,6 +37,6 @@ public class ApprovalDateTimeBlockPrePopulator implements QuestionBlockOrderPreP
             );
         }
 
-        return Map.of();
+        return Map.of("manageOrdersApprovalDateTime", time.now());
     }
 }

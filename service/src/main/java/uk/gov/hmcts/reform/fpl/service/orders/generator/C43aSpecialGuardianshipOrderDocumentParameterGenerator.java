@@ -28,7 +28,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
     private final AppointedGuardianFormatter appointedGuardianFormatter;
 
     private static String paragraphBreak = "\n \n";
-    private static String ORDER_HEADER = "\n Warning \n";
+    private static String ORDER_HEADER = "Warning \n";
     private static String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
@@ -41,7 +41,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         + "It may be a criminal offence under the Child Abduction Act 1984 "
         + "to remove the child from the United Kingdom without leave of the court.\n"
         + "";
-    private static String NOTICE_HEADER = "\n Notice \n";
+    private static String NOTICE_HEADER = "Notice \n";
     private static String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
         + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
         + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
@@ -53,7 +53,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.SGO;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
         String applicant = appointedGuardianFormatter.getGuardiansNamesForDocument(caseData);
 
-        return format("The Court orders %s appointed as Special Guardian for the %s.", applicant, childOrChildren);
+        return format("The Court orders that %s appointed as special guardian for the %s.", applicant, childOrChildren);
     }
 
     private String getOrderByConsentMessage(ManageOrdersEventData manageOrdersEventData) {

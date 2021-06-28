@@ -132,6 +132,7 @@ public enum Order {
             LINK_APPLICATION,
             APPROVER,
             APPROVAL_DATE_TIME,
+            WHICH_CHILDREN,
             ORDER_BY_CONSENT,
             APPOINTED_GUARDIAN,
             FURTHER_DIRECTIONS,
