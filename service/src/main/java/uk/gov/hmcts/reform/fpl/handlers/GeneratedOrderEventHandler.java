@@ -77,8 +77,6 @@ public class GeneratedOrderEventHandler {
                 othersSelected);
             allRecipients = sendDocumentService.getRecipientsExcludingOthers(caseData);
             allRecipients.addAll(otherRecipients);
-
-            System.out.println("Post rep is" + allRecipients);
         } else {
             allRecipients = sendDocumentService.getStandardRecipients(caseData);
         }
@@ -112,8 +110,6 @@ public class GeneratedOrderEventHandler {
             othersSelected, caseData.getRepresentatives(), EMAIL);
 
         emailRepresentatives.addAll(emailRepresentativesForOthers);
-
-        System.out.println("Email rep is" + emailRepresentatives);
 
         if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
@@ -153,8 +149,6 @@ public class GeneratedOrderEventHandler {
         Set<String> digitalRepresentativesForOthers = representativesInbox.getOtherRepresentativesToBeNotified(
             othersSelected, caseData.getRepresentatives(), DIGITAL_SERVICE);
         digitalRepresentatives.addAll(digitalRepresentativesForOthers);
-
-        System.out.println("Digital rep is" + digitalRepresentatives);
 
         final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
             orderDocument, GENERATED_ORDER);

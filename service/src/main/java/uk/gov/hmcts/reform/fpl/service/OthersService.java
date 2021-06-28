@@ -82,7 +82,7 @@ public class OthersService {
     }
 
     public boolean hasAddressAdded(Other other) {
-        return !isNull(other.getAddress().getPostcode());
+        return !isNull(other.getAddress()) && !isEmpty(other.getAddress().getPostcode());
     }
 
     public List<Element<Other>> getSelectedOthers(CaseData caseData) {
