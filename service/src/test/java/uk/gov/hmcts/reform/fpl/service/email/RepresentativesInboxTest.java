@@ -357,7 +357,6 @@ class RepresentativesInboxTest {
 
     @Test
     void shouldGetEmailsByPreferenceEmailExcludingOthers() {
-        String representative2Email = "representative2@rep.com";
         final Element<Representative> representativeServedByPost = element(Representative.builder()
             .fullName("Representative 1")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
@@ -368,14 +367,14 @@ class RepresentativesInboxTest {
             .fullName("Representative 2")
             .servingPreferences(EMAIL)
             .role(RepresentativeRole.BARRISTER)
-            .email(representative2Email)
+            .email(EMAIL_2)
             .build());
 
         final Element<Representative> representativeServedByEmail2 = element(Representative.builder()
             .fullName("Representative 3")
             .servingPreferences(EMAIL)
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
-            .email("representative3@rep.com")
+            .email(EMAIL_3)
             .build());
 
         final Element<Representative> representativeServedByDigitalService = element(Representative.builder()
@@ -394,12 +393,11 @@ class RepresentativesInboxTest {
 
         Set<String> actual = underTest.getEmailsByPreferenceExcludingOthers(caseData, EMAIL);
 
-        assertThat(actual).isEqualTo(Set.of(representative2Email));
+        assertThat(actual).isEqualTo(Set.of(EMAIL_2));
     }
 
     @Test
     void shouldGetEmailsByPreferenceDigitalExcludingOthers() {
-        String representative4Email = "representative4@rep.com";
         final Element<Representative> representativeServedByPost = element(Representative.builder()
             .fullName("Representative 1")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
@@ -422,7 +420,7 @@ class RepresentativesInboxTest {
             .fullName("Representative 4")
             .servingPreferences(DIGITAL_SERVICE)
             .role(RepresentativeRole.BARRISTER)
-            .email(representative4Email)
+            .email(EMAIL_4)
             .build());
 
         final CaseData caseData = CaseData.builder()
@@ -435,7 +433,15 @@ class RepresentativesInboxTest {
 
         Set<String> actual = underTest.getEmailsByPreferenceExcludingOthers(caseData, DIGITAL_SERVICE);
 
-        assertThat(actual).isEqualTo(Set.of(representative4Email));
+        assertThat(actual).isEqualTo(Set.of(EMAIL_4));
+    }
+
+    @Test
+    void shouldNotAcceptPOSTAsPreference() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThrows(IllegalArgumentException.class,
+            () -> underTest.getEmailsByPreferenceExcludingOthers(caseData, POST));
     }
 
     @Test
@@ -512,7 +518,6 @@ class RepresentativesInboxTest {
             EMAIL);
 
         assertThat(actual).isEqualTo(Set.of(EMAIL_1));
-        assertThat(actual.size()).isEqualTo(1);
     }
 
     @Test

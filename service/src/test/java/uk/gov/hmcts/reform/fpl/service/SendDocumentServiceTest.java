@@ -415,7 +415,7 @@ class SendDocumentServiceTest {
             final List<Recipient> otherRecipients = underTest.getSelectedOtherRecipients(caseData, othersSelected);
 
             assertThat(otherRecipients)
-                .containsExactlyInAnyOrder(representativeServedByPost.getValue());
+                .containsOnly(representativeServedByPost.getValue());
         }
 
         @Test
@@ -479,7 +479,7 @@ class SendDocumentServiceTest {
             final List<Recipient> recipients = underTest.getRecipientsExcludingOthers(caseData);
 
             assertThat(recipients)
-                .containsExactlyInAnyOrder(representativeServedByPost2.getValue());
+                .containsOnly(representativeServedByPost2.getValue());
 
         }
 
