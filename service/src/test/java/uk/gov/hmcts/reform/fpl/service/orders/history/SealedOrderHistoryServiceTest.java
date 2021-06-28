@@ -118,6 +118,8 @@ class SealedOrderHistoryServiceTest {
             when(child2.asLabel()).thenReturn(CHILD_2_FULLNAME);
             when(time.now()).thenReturn(NOW);
             when(identityService.generateId()).thenReturn(GENERATED_ORDER_UUID);
+            when(othersService.hasAddressAdded(other1)).thenReturn(true);
+            when(othersService.hasAddressAdded(other2)).thenReturn(true);
         }
 
         @Test

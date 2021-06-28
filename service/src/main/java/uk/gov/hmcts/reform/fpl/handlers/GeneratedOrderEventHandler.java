@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +45,6 @@ public class GeneratedOrderEventHandler {
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final SendDocumentService sendDocumentService;
     private final FeatureToggleService featureToggleService;
-    private final OthersService othersService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -54,7 +54,7 @@ public class GeneratedOrderEventHandler {
         issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument, GENERATED_ORDER);
 
         if (featureToggleService.isSendOrderToOthersEnabled()) {
-            List<Element<Other>> othersSelected = othersService.getSelectedOthers(caseData);
+            List<Element<Other>> othersSelected = getSelectedOthers(caseData.getOrderCollection());
 
             sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, othersSelected);
             sendNotificationToEmailServedRepresentatives(caseData, orderDocument, othersSelected);
@@ -71,12 +71,14 @@ public class GeneratedOrderEventHandler {
         List<Recipient> allRecipients;
 
         if (featureToggleService.isSendOrderToOthersEnabled()) {
-            List<Element<Other>> othersSelected = othersService.getSelectedOthers(caseData);
+            List<Element<Other>> othersSelected = getSelectedOthers(caseData.getOrderCollection());
 
             final List<Recipient> otherRecipients = sendDocumentService.getSelectedOtherRecipients(caseData,
                 othersSelected);
             allRecipients = sendDocumentService.getRecipientsExcludingOthers(caseData);
             allRecipients.addAll(otherRecipients);
+
+            System.out.println("Post rep is" + allRecipients);
         } else {
             allRecipients = sendDocumentService.getStandardRecipients(caseData);
         }
@@ -110,6 +112,8 @@ public class GeneratedOrderEventHandler {
             othersSelected, caseData.getRepresentatives(), EMAIL);
 
         emailRepresentatives.addAll(emailRepresentativesForOthers);
+
+        System.out.println("Email rep is" + emailRepresentatives);
 
         if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
@@ -150,6 +154,8 @@ public class GeneratedOrderEventHandler {
             othersSelected, caseData.getRepresentatives(), DIGITAL_SERVICE);
         digitalRepresentatives.addAll(digitalRepresentativesForOthers);
 
+        System.out.println("Digital rep is" + digitalRepresentatives);
+
         final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
             orderDocument, GENERATED_ORDER);
 
@@ -171,5 +177,13 @@ public class GeneratedOrderEventHandler {
         notificationService.sendEmail(
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES, emails, notifyData,
             caseData.getId().toString());
+    }
+
+    private List<Element<Other>> getSelectedOthers(List<Element<GeneratedOrder>> order) {
+        if (order.size() > 0) {
+            return order.get(0).getValue()
+                .getOthers();
+        }
+        return Collections.emptyList();
     }
 }

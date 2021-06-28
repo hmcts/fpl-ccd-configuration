@@ -127,9 +127,10 @@ public class SealedOrderHistoryService {
 
     private String getOthersNotified(List<Element<Other>> selectedOthers) {
         return Optional.ofNullable(selectedOthers).map(
-            others -> others.stream().map(
-                other -> other.getValue().getName()
-            ).collect(Collectors.joining(", "))
+            others -> others.stream()
+                .filter(other -> othersService.isRepresented(other.getValue()) || othersService
+                    .hasAddressAdded(other.getValue()))
+                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
         ).orElse(null);
     }
 }
