@@ -75,6 +75,8 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -382,6 +384,8 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
