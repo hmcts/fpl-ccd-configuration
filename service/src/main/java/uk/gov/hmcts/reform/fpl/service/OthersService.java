@@ -68,6 +68,27 @@ public class OthersService {
             caseData.getSendOrderToAllOthers());
     }
 
+    public String getOthersLabel(List<Element<Other>> others) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < others.size(); i++) {
+            Other other = others.get(i).getValue();
+
+            builder.append(String.format("Other %d: %s", i + 1, other.getName()));
+            builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    public boolean isRepresented(Other other) {
+        return !isEmpty(other.getRepresentedBy());
+    }
+
+    public boolean hasAddressAdded(Other other) {
+        return !isNull(other.getAddress().getPostcode());
+    }
+
     private List<Element<Other>> getSelectedOthers(List<Element<Other>> others, Selector selector,
                                                    String sendOrderToAllOthers) {
 
@@ -122,13 +143,5 @@ public class OthersService {
 
     private boolean otherExists(Others others) {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
-    }
-
-    public boolean isRepresented(Other other) {
-        return !isEmpty(other.getRepresentedBy());
-    }
-
-    public boolean hasAddressAdded(Other other) {
-        return !isNull(other.getAddress().getPostcode());
     }
 }

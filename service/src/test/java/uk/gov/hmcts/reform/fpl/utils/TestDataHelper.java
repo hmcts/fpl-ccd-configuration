@@ -247,6 +247,14 @@ public class TestDataHelper {
             .build();
     }
 
+    public static Other testOther(String name) {
+        return Other.builder()
+            .name(name)
+            .birthPlace(randomAlphanumeric(10))
+            .address(testAddress())
+            .build();
+    }
+
     public static Judge testJudge() {
         return Judge.builder()
             .judgeTitle(MAGISTRATES)

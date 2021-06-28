@@ -174,6 +174,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsisSendOrderToOthersEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isSendOrderToOthersEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("send-order-to-others"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

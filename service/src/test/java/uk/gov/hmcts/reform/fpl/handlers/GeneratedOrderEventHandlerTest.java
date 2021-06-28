@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -72,6 +73,8 @@ class GeneratedOrderEventHandlerTest {
     private SendDocumentService sendDocumentService;
     @Mock
     private RepresentativesInbox representativesInbox;
+    @Mock
+    private FeatureToggleService featureToggleService;
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
 
@@ -97,7 +100,8 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyPartiesOnOrderSubmission() {
+    void shouldNotifyPartiesOnOrderSubmissionWhenSendOrderToOthersToggledOff() {
+        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(false);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
 
         underTest.notifyParties(EVENT);
@@ -127,7 +131,39 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotBuildNotificationTemplateDataForEmailRepresentativesWhenEmailRepresentativesDoNotExist() {
+    void shouldNotifyPartiesOnOrderSubmissionWhenSendOrderToOthersToggledOn() {
+        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(true);
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
+
+        underTest.notifyParties(EVENT);
+
+        verify(issuedOrderAdminNotificationHandler).notifyAdmin(CASE_DATA, TEST_DOCUMENT, GENERATED_ORDER);
+
+        verify(notificationService).sendEmail(
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            NOTIFY_DATA_WITH_CASE_URL,
+            CASE_ID.toString()
+        );
+
+        verify(representativeNotificationService).sendNotificationToRepresentatives(
+            CASE_ID,
+            NOTIFY_DATA_WITH_CASE_URL,
+            DIGITAL_REPS,
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES
+        );
+
+        verify(representativeNotificationService).sendNotificationToRepresentatives(
+            CASE_ID,
+            NOTIFY_DATA_WITHOUT_CASE_URL,
+            EMAIL_REPS,
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES
+        );
+    }
+
+    @Test
+    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndToggledOn() {
+        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(true);
         given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, EMAIL)).willReturn(new HashSet<>());
 
         underTest.notifyParties(EVENT);
@@ -140,11 +176,26 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPost() {
+    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndToggledOff() {
+        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(false);
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(Set.of());
+
+        underTest.notifyParties(EVENT);
+
+        verify(orderIssuedEmailContentProvider, never()).getNotifyDataWithoutCaseUrl(any(), any(), any());
+
+        verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
+            any(), any(), anySet(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES)
+        );
+    }
+
+    @Test
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndToggledOn() {
         final Representative representative = mock(Representative.class);
         final RespondentParty respondent = mock(RespondentParty.class);
         final List<Recipient> recipients = List.of(representative, respondent);
 
+        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(true);
         given(sendDocumentService.getSelectedOtherRecipients(CASE_DATA, null)).willReturn(recipients);
         given(sendDocumentService.getRecipientsExcludingOthers(CASE_DATA)).willReturn(Arrays.asList(representative,
             respondent));
@@ -155,6 +206,23 @@ class GeneratedOrderEventHandlerTest {
         verify(sendDocumentService).getRecipientsExcludingOthers(CASE_DATA);
         verify(sendDocumentService).getSelectedOtherRecipients(CASE_DATA, Collections.emptyList());
 
+        verifyNoMoreInteractions(sendDocumentService);
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndToggledOff() {
+        final Representative representative = mock(Representative.class);
+        final RespondentParty respondent = mock(RespondentParty.class);
+        final List<Recipient> recipients = List.of(representative, respondent);
+
+        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(false);
+        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(recipients);
+
+        underTest.sendOrderByPost(EVENT);
+
+        verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(TEST_DOCUMENT), recipients);
+        verify(sendDocumentService).getStandardRecipients(CASE_DATA);
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);

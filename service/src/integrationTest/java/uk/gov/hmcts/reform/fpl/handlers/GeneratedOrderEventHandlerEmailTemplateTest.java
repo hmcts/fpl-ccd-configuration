@@ -44,9 +44,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {
     IssuedOrderAdminNotificationHandler.class, OrderIssuedEmailContentProvider.class, FixedTimeConfiguration.class,
@@ -83,13 +81,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .lastName(RESPONDENT_LAST_NAME)
                 .build())
             .build()))
-        .orderCollection(List.of(element(GeneratedOrder.builder()
-            .title(null)
-            .type("Care order")
-            .details("Some details")
-            .others(null)
-            .document(testDocumentReference())
-            .build())))
+        .orderCollection(wrapElements(ORDER))
         .build();
 
     @Autowired

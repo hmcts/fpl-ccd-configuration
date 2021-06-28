@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class SealedOrderHistoryServiceTest {
 
@@ -80,8 +80,8 @@ class SealedOrderHistoryServiceTest {
     private static final String EXTRA_TITLE = "ExtraTitle";
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
-    private final Other other1 = buildOther("First other");
-    private final Other other2 = buildOther("Second other");
+    private final Other other1 = testOther("First other");
+    private final Other other2 = testOther("Second other");
     private final UUID other1ID = UUID.randomUUID();
     private final UUID other2ID = UUID.randomUUID();
 
@@ -359,6 +359,10 @@ class SealedOrderHistoryServiceTest {
             PLAIN_WORD_DOCUMENT);
     }
 
+    private CaseData.CaseDataBuilder caseData() {
+        return startCommonCaseDataBuilder(startBuildingCommonEventData());
+    }
+
     private CaseData.CaseDataBuilder caseDataWithLinkedApplication() {
         return startCommonCaseDataBuilder(
             startBuildingCommonEventData().manageOrdersLinkedApplication(SELECTED_LINKED_APPLICATION_LIST)
@@ -412,20 +416,10 @@ class SealedOrderHistoryServiceTest {
             .thenReturn(TAB_JUDGE_AND_LEGAL_ADVISOR);
     }
 
-    private CaseData.CaseDataBuilder caseData() {
-        return CaseData.builder()
-            .allocatedJudge(JUDGE)
-            .judgeAndLegalAdvisor(JUDGE_AND_LEGAL_ADVISOR)
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(ORDER_TYPE)
-                .manageOrdersApprovalDate(APPROVAL_DATE)
-                .build());
-    }
-
-    private Other buildOther(String name) {
-        return Other.builder()
-            .name(name)
-            .address(testAddress())
-            .build();
-    }
+//    private Other buildOther(String name) {
+//        return Other.builder()
+//            .name(name)
+//            .address(testAddress())
+//            .build();
+//    }
 }

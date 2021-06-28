@@ -270,8 +270,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyCtscWhenEnabled() throws NotificationClientException {
-        CaseData caseData = caseData().toBuilder()
-            .sendToCtsc("Yes").build();
+        CaseData caseData = caseData().toBuilder().sendToCtsc("Yes").build();
 
         postSubmittedEvent(caseData);
 
@@ -305,9 +304,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
                 .document(ORDER)
                 .build()))
             .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
-            .representatives(List.of(REPRESENTATIVE_POST,
-                REPRESENTATIVE_DIGITAL,
-                REPRESENTATIVE_EMAIL))
+            .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
             .build();
     }
 }

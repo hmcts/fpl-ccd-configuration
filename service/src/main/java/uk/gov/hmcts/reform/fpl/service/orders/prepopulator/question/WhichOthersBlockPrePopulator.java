@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class WhichOthersBlockPrePopulator implements QuestionBlockOrderPrePopulator {
 
+    private final OthersService othersService;
+
     @Override
     public OrderQuestionBlock accept() {
         return WHICH_OTHERS;
@@ -29,20 +32,7 @@ public class WhichOthersBlockPrePopulator implements QuestionBlockOrderPrePopula
         final Selector othersSelector = newSelector(caseData.getAllOthers().size());
         return Map.of(
             "othersSelector", othersSelector,
-            "others_label", getOthersLabel(caseData.getAllOthers())
+            "others_label", othersService.getOthersLabel(caseData.getAllOthers())
         );
-    }
-
-    public String getOthersLabel(List<Element<Other>> others) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < others.size(); i++) {
-            Other other = others.get(i).getValue();
-
-            builder.append(String.format("Other %d: %s", i + 1, other.getName()));
-            builder.append("\n");
-        }
-
-        return builder.toString();
     }
 }
