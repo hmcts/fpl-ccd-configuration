@@ -8,7 +8,8 @@
     "DisplayContext": "COMPLEX",
     "PageID": "childrenDetails",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -20,7 +21,8 @@
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/representation-details/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/representation-details/mid-event",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -32,7 +34,8 @@
     "PageID": "mainRepresentative",
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 2,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -68,7 +71,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 3,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -80,7 +84,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 4,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -92,7 +97,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 5,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -104,7 +110,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 6,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -116,7 +123,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 7,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -128,7 +136,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 8,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -140,7 +149,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 9,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -152,7 +162,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 10,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -164,7 +175,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 11,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -176,7 +188,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 12,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -188,7 +201,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 13,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -200,7 +214,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 14,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -212,7 +227,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 15,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -224,7 +240,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 16,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -236,7 +253,8 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 17,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -248,6 +266,7 @@
     "PageID": "additionRepresentation",
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 18,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]
