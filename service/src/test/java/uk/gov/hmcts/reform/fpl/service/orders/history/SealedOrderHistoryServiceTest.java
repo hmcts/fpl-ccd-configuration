@@ -75,6 +75,9 @@ class SealedOrderHistoryServiceTest {
     private static final DocumentReference SEALED_PDF_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private static final String EXTRA_TITLE = "ExtraTitle";
+    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
+    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
+        Pair.of(LINKED_APPLICATION_ID, "My test application"));
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
 
@@ -86,16 +89,15 @@ class SealedOrderHistoryServiceTest {
         ManageOrdersClosedCaseFieldGenerator.class);
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator =
         mock(SealedOrderHistoryExtraTitleGenerator.class);
-
-    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
-    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
-        Pair.of(LINKED_APPLICATION_ID, "My test application"));
+    private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker =
+        mock(SealedOrderHistoryFinalMarker.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
         childrenService,
         orderCreationService,
         extraTitleGenerator,
+        sealedOrderHistoryFinalMarker,
         time,
         manageOrdersClosedCaseFieldGenerator
     );
