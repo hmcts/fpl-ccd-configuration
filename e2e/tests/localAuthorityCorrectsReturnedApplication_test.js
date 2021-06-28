@@ -7,11 +7,12 @@ let caseId;
 
 Feature('Local authority corrects returned application');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatorySubmissionWithApplicationDocuments);
-});
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(mandatorySubmissionWithApplicationDocuments); }
+}
 
 Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnApplicationEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.returnApplication);
@@ -26,6 +27,7 @@ Scenario('LA makes corrections to the application', async ({I, caseViewPage, ent
   const now = new Date();
   const formattedDate = dateFormat(now, 'd mmmm yyyy');
 
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);

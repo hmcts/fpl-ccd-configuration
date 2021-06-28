@@ -7,14 +7,13 @@ let caseId;
 
 Feature('Gatekeeping judge SDO journey');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(gatekeepingCaseData);
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(gatekeepingCaseData); }
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-});
-
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+}
 
 Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
   await I.runAccessibilityTest();
@@ -121,6 +120,7 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
 });
 
 Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
@@ -132,6 +132,7 @@ Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allo
 });
 
 Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   await I.goToNextPage();
 
