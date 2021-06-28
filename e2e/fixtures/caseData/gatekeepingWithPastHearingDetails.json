@@ -6,7 +6,13 @@
         "DOB": null,
         "name": "John Doe",
         "gender": null,
-        "address": {},
+        "address": {
+          "County": "United Kingdom",
+          "PostCode": "CR0 2GE",
+          "PostTown": "London",
+          "AddressLine1": "Flat 12, Pinnacle Apartments",
+          "AddressLine2": "Saffron Central Square 11"
+        },
         "telephone": null,
         "birthPlace": "Newry",
         "detailsHidden": null,
