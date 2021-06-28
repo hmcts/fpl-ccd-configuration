@@ -419,9 +419,9 @@
                     "type": "WITH_NOTICE",
                     "author": "HMCTS",
                     "document": {
-                        "document_url": "http://dm-store:8080/documents/a1913b0a-daab-40f2-8b69-e36b8ee67ac1",
+                        "document_url": "${DM_STORE_URL}/documents/a1913b0a-daab-40f2-8b69-e36b8ee67ac1",
                         "document_filename": "mockFile.pdf",
-                        "document_binary_url": "http://dm-store:8080/documents/a1913b0a-daab-40f2-8b69-e36b8ee67ac1/binary"
+                        "document_binary_url": "${DM_STORE_URL}/documents/a1913b0a-daab-40f2-8b69-e36b8ee67ac1/binary"
                     },
                     "applicantName": "Joe Bloggs, Respondent 1",
                     "uploadedDateTime": "16 June 2021, 11:49am",
