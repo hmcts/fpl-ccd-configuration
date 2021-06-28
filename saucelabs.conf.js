@@ -11,8 +11,6 @@ const defaultSauceOptions = {
   accessKey: process.env.SAUCE_ACCESS_KEY,
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
-  extendedDebugging: true,
-  capturePerformance: true,
   tags: ['FPL'],
   maxDuration: 3000,
 };
