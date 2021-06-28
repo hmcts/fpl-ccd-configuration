@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -38,6 +39,14 @@ class ApprovalDateTimeBlockPrePopulatorTest {
     @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.APPROVAL_DATE_TIME);
+    }
+
+    @Test
+    void shouldRetainCurrentlyPopulatedValue() {
+        CaseData caseData = CaseData.builder().manageOrdersEventData(ManageOrdersEventData.builder()
+            .manageOrdersApprovalDateTime(END_DATE).build()).build();
+
+        Assertions.assertThat(underTest.prePopulate(caseData)).isEmpty();
     }
 
     @Test

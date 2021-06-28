@@ -254,7 +254,7 @@
     "PageFieldDisplayOrder": 20,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderDetails",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.orderIsByConsent=\"YES\"",
     "ShowSummaryChangeOption": "Y"
@@ -267,7 +267,7 @@
     "PageFieldDisplayOrder": 21,
     "DisplayContext": "READONLY",
     "PageID": "OrderDetails",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.appointedGuardian=\"YES\"",
     "ShowSummaryChangeOption": "N"
@@ -280,7 +280,7 @@
     "PageFieldDisplayOrder": 22,
     "DisplayContext": "COMPLEX",
     "PageID": "OrderDetails",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.appointedGuardian=\"YES\"",
     "ShowSummaryChangeOption": "N"

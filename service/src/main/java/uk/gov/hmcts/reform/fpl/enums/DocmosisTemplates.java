@@ -15,8 +15,8 @@ public enum DocmosisTemplates {
     EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order"),
     COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents");
 
-    //TODO: 11/06/2021 Update document with correct name
     private final String template;
+
     private final String documentTitle;
 
     DocmosisTemplates(String template, String documentTitle) {

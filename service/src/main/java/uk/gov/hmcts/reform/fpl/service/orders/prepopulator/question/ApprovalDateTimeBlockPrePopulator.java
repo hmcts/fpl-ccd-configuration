@@ -28,6 +28,11 @@ public class ApprovalDateTimeBlockPrePopulator implements QuestionBlockOrderPreP
 
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
+
+        if (hasDataAlreadySet(caseData)) {
+            return Map.of();
+        }
+
         DynamicList selectedHearing = caseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList();
         Optional<Element<HearingBooking>> hearing = hearingService.findHearing(caseData, selectedHearing);
 
@@ -38,5 +43,9 @@ public class ApprovalDateTimeBlockPrePopulator implements QuestionBlockOrderPreP
         }
 
         return Map.of("manageOrdersApprovalDateTime", time.now());
+    }
+
+    private boolean hasDataAlreadySet(CaseData caseData) {
+        return caseData.getManageOrdersEventData().getManageOrdersApprovalDateTime() != null;
     }
 }

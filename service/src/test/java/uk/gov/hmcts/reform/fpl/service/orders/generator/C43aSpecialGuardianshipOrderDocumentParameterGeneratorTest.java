@@ -233,7 +233,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     private C43aSpecialGuardianshipOrderDocmosisParameters.C43aSpecialGuardianshipOrderDocmosisParametersBuilder<?, ?>
-    expectedCommonParameters(Boolean isOrderByConsent) {
+        expectedCommonParameters(Boolean isOrderByConsent) {
         String orderByConsentContent = getOrderByConsentContent(isOrderByConsent);
 
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()

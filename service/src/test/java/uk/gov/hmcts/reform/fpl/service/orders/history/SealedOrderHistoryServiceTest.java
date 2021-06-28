@@ -289,14 +289,14 @@ class SealedOrderHistoryServiceTest {
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
-                when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Special guardians names");
+                when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Guardians names");
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
-                            .specialGuardians("Special guardians names")
+                            .specialGuardians("Guardians names")
                             .build())
                     )
                 ));
