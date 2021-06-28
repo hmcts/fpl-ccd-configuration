@@ -326,5 +326,15 @@
     "ListElementCode": "party.litigationIssuesDetails",
     "FieldDisplayOrder": 29,
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "representative",
+    "FieldDisplayOrder": 30,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   }
 ]

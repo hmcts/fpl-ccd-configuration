@@ -1,9 +1,47 @@
-const { I } = inject();
+const {I} = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
+const output = require('codeceptjs').output;
 
 module.exports = {
   fields: function (index) {
     return {
+      mainSolicitor: {
+        childrenHaveLegalRepresentation: {
+          group: '#childrenHaveRepresentation',
+          options: {
+            yes: 'Yes',
+            no: 'No',
+          },
+        },
+        childrenHaveSameRepresentation: {
+          group: '#childrenHaveSameRepresentation',
+          options: {
+            yes: 'Yes',
+            no: 'No',
+          },
+        },
+        firstName: '#childrenMainRepresentative_firstName',
+        lastName: '#childrenMainRepresentative_lastName',
+        email: '#childrenMainRepresentative_email',
+      },
+      childSolicitor: {
+        useMainSolicitor: {
+          group: `#childRepresentationDetails${index}_useMainSolicitor`,
+          options: {
+            yes: 'Yes',
+            no: 'No',
+          },
+        },
+        specificSolicitor: {
+          firstName: `#childRepresentationDetails${index}_solicitor_firstName`,
+          lastName: `#childRepresentationDetails${index}_solicitor_lastName`,
+          email: `#childRepresentationDetails${index}_solicitor_email`,
+        },
+        unregisteredOrganisation: {
+          name: `#childRepresentationDetails${index}_solicitor_unregisteredOrganisation_name`,
+          address: `#childRepresentationDetails${index}_solicitor_unregisteredOrganisation_address_address`,
+        },
+      },
       child: {
         firstName: `#children1_${index}_party_firstName`,
         lastName: `#children1_${index}_party_lastName`,
@@ -147,6 +185,57 @@ module.exports = {
     if (litigationIssue === 'yes') {
       I.fillField(this.fields(elementIndex).child.litigationIssuesDetails, litigationIssueDetail);
     }
+  },
+
+  selectAnyChildHasLegalRepresentation(answer) {
+    I.click(`${this.fields().mainSolicitor.childrenHaveLegalRepresentation.group}-${answer}`);
+  },
+
+  selectChildrenHaveSameRepresentation(answer) {
+    I.click(`${this.fields().mainSolicitor.childrenHaveSameRepresentation.group}-${answer}`);
+  },
+
+  async selectChildUseMainRepresentation(answer, index, child) {
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => I.see(`Child ${index + 1} - ${child.firstName} ${child.lastName}`));
+    I.click(`${this.fields(index).childSolicitor.useMainSolicitor.group}-${answer}`);
+  },
+
+  enterChildrenMainRepresentation(solicitor) {
+    I.fillField(this.fields().mainSolicitor.firstName, solicitor.forename);
+    I.fillField(this.fields().mainSolicitor.lastName, solicitor.surname);
+    I.fillField(this.fields().mainSolicitor.email, solicitor.email);
+  },
+
+  async enterRegisteredOrganisation(solicitor) {
+    const numOfElements = await I.grabNumberOfVisibleElements('#organisation-selected-table');
+
+    if (numOfElements !== 0) {
+      output.debug('Clearing old solicitor info');
+      I.click('//*[@id="organisation-selected-table"]/tbody//a');
+    }
+
+    I.fillField('#search-org-text', solicitor.organisation);
+    let selectedItem = `//*[@id="organisation-table"]/caption/h3[contains(text(),"${solicitor.organisation}")]/../../tbody//a`;
+    I.click(selectedItem);
+  },
+
+  enterChildrenSpecificRepresentation(index, solicitor) {
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.firstName, solicitor.forename);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.lastName, solicitor.surname);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.email, solicitor.email);
+  },
+
+  async enterSpecificRegisteredOrganisation(index, solicitor) {
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => {
+      await this.enterRegisteredOrganisation(solicitor);
+    });
+  },
+
+  async enterSpecificUnregisteredOrganisation(index, solicitor) {
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => {
+      I.fillField(this.fields(index).childSolicitor.unregisteredOrganisation.name, solicitor.unregisteredOrganisation.name);
+      postcodeLookup.enterAddressManually(solicitor.unregisteredOrganisation.address);
+    });
   },
 
   async getActiveElementIndex() {
