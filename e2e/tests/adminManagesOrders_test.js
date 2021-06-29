@@ -351,8 +351,8 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
-  manageOrdersEventPage.selectOrderByConsent()
-  await manageOrdersEventPage.selectGuardian([0])
+  manageOrdersEventPage.selectOrderByConsent();
+  await manageOrdersEventPage.selectGuardian([0]);
   await manageOrdersEventPage.enterFurtherDirections('Further special guardianship details.');
   await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();
@@ -366,7 +366,7 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
-    specialGuardian: 'Joe Bloggs'
+    specialGuardian: 'Joe Bloggs',
   });
 });
 

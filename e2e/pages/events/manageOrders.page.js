@@ -374,9 +374,9 @@ const selectOrderByConsent = () => {
 };
 
 const selectGuardian = async (indexes = []) => {
-    indexes.forEach((selectorIndex) => {
-      I.checkOption(section4.guardianSelector.selector(selectorIndex));
-    });
+  indexes.forEach((selectorIndex) => {
+    I.checkOption(section4.guardianSelector.selector(selectorIndex));
+  });
 
   await I.runAccessibilityTest();
 };
