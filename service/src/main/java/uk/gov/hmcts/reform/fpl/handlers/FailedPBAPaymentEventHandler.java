@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -38,9 +38,7 @@ public class FailedPBAPaymentEventHandler {
     @EventListener
     public void notifyApplicant(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
-
         String applicant = defaultIfNull(event.getApplicantName(), "");
-
         if (ApplicationType.C110A_APPLICATION == event.getApplicationType()) {
             notifyLocalAuthority(event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
         } else if (ApplicationType.C2_APPLICATION == event.getApplicationType()) {
@@ -74,7 +72,7 @@ public class FailedPBAPaymentEventHandler {
         FailedPBANotificationData parameters = notificationContent
             .getLocalAuthorityNotifyData(event.getApplicationType(), event.getCaseData().getId());
 
-        notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+        notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             emails, parameters, event.getCaseData().getId().toString());
     }
 
@@ -84,7 +82,7 @@ public class FailedPBAPaymentEventHandler {
         IncrementalInteger i = new IncrementalInteger(1);
         caseData.getAllRespondents().forEach(respondent -> respondentEmails.put(
             respondent.getValue().getParty().getFullName() + ", Respondent " + i.getAndIncrement(),
-            List.of(respondent.getValue().getSolicitor().getEmail())));
+            Set.of(respondent.getValue().getSolicitor().getEmail())));
 
         return respondentEmails;
     }
@@ -101,7 +99,7 @@ public class FailedPBAPaymentEventHandler {
         if (event.getApplicationType() == ApplicationType.C110A_APPLICATION) {
             notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
-        } else {
+        } else if (event.getApplicationType() == ApplicationType.C2_APPLICATION) {
             notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
         }

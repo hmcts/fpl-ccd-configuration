@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
@@ -10,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.C2;
 
 @ContextConfiguration(classes = {FailedPBAPaymentContentProvider.class})
@@ -19,9 +20,9 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
     @Autowired
     private FailedPBAPaymentContentProvider contentProvider;
 
-    @Test
-    void shouldReturnDataForCafcassNotification() {
-        final ApplicationType applicationType = C2_APPLICATION;
+    @ParameterizedTest
+    @EnumSource(ApplicationType.class)
+    void shouldReturnDataForCafcassNotification(ApplicationType applicationType) {
         final String applicant = "Swansea local authority, Applicant";
         final CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())
@@ -29,7 +30,8 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
 
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
-            .caseUrl(caseUrl(caseData.getId().toString(), C2))
+            .caseUrl(applicationType == C110A_APPLICATION ? caseUrl((caseData.getId().toString()))
+                : caseUrl(caseData.getId().toString(), C2))
             .applicant(applicant)
             .build();
 
@@ -44,10 +46,11 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
         final ApplicationType applicationType = C110A_APPLICATION;
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
+            .caseUrl(caseUrl("123"))
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .getLocalAuthorityNotifyData(applicationType, null);
+            .getLocalAuthorityNotifyData(applicationType, 123L);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
