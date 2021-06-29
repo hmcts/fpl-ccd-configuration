@@ -14,12 +14,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Collection;
@@ -44,17 +44,18 @@ public class GeneratedOrderEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final SendDocumentService sendDocumentService;
-    private final FeatureToggleService featureToggleService;
+    private final SealedOrderHistoryService sealedOrderHistoryService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getOrderDocument();
+        GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
 
         issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument, GENERATED_ORDER);
 
-        if (featureToggleService.isSendOrderToOthersEnabled()) {
-            List<Element<Other>> othersSelected = getSelectedOthers(caseData.getOrderCollection());
+        if (lastGeneratedOrder.isNewVersion()) {
+            List<Element<Other>> othersSelected = getSelectedOthers(lastGeneratedOrder);
 
             sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, othersSelected);
             sendNotificationToEmailServedRepresentatives(caseData, orderDocument, othersSelected);
@@ -68,10 +69,11 @@ public class GeneratedOrderEventHandler {
     public void sendOrderByPost(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
+        GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
         List<Recipient> allRecipients;
 
-        if (featureToggleService.isSendOrderToOthersEnabled()) {
-            List<Element<Other>> othersSelected = getSelectedOthers(caseData.getOrderCollection());
+        if (lastGeneratedOrder.isNewVersion()) {
+            List<Element<Other>> othersSelected = getSelectedOthers(lastGeneratedOrder);
 
             final List<Recipient> otherRecipients = sendDocumentService.getSelectedOtherRecipients(caseData,
                 othersSelected);
@@ -173,11 +175,10 @@ public class GeneratedOrderEventHandler {
             caseData.getId().toString());
     }
 
-    private List<Element<Other>> getSelectedOthers(List<Element<GeneratedOrder>> order) {
-        if (order.size() > 0) {
-            return order.get(0).getValue()
-                .getOthers();
+    private List<Element<Other>> getSelectedOthers(GeneratedOrder lastOrder) {
+        if (lastOrder.getOthers().isEmpty()) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+        return lastOrder.getOthers();
     }
 }

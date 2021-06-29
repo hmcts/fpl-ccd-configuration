@@ -69,7 +69,7 @@ public class SealedOrderHistoryService {
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
-            .othersNotified(getOthersNotified(selectedOthers))
+            .othersNotified(extraTitleGenerator.getOthersNotified(selectedOthers))
             .document(sealedPdfOrder)
             .unsealedDocumentCopy(plainWordOrder);
 
@@ -122,15 +122,6 @@ public class SealedOrderHistoryService {
             children -> children.stream().map(
                 child -> child.getValue().asLabel()
             ).collect(Collectors.joining(", "))
-        ).orElse(null);
-    }
-
-    private String getOthersNotified(List<Element<Other>> selectedOthers) {
-        return Optional.ofNullable(selectedOthers).map(
-            others -> others.stream()
-                .filter(other -> othersService.isRepresented(other.getValue()) || othersService
-                    .hasAddressAdded(other.getValue()))
-                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
         ).orElse(null);
     }
 }

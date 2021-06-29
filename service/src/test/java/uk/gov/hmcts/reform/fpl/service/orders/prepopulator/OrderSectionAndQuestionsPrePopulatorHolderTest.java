@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetail
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OtherDetailsSectionPrePopulator;
 
 import java.util.List;
 import java.util.Map;
@@ -82,8 +81,6 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private DraftOrderPreviewSectionPrePopulator draftOrderPreviewSectionPrePopulator;
     @Mock
     private CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
-    @Mock
-    private OtherDetailsSectionPrePopulator otherDetailsSectionPrePopulator;
 
     @InjectMocks
     private OrderSectionAndQuestionsPrePopulatorHolder underTest;
@@ -125,13 +122,12 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             ISSUING_DETAILS, issuingDetailsSectionPrePopulator,
             CHILDREN_DETAILS, childrenDetailsSectionPrePopulator,
             ORDER_DETAILS, orderDetailsSectionPrePopulator,
-            OTHER_DETAILS, otherDetailsSectionPrePopulator,
             REVIEW, draftOrderPreviewSectionPrePopulator
         );
         sectionPrePopulators = List.of(
             hearingDetailsSectionPrePopulator,
             issuingDetailsSectionPrePopulator, childrenDetailsSectionPrePopulator, orderDetailsSectionPrePopulator,
-            draftOrderPreviewSectionPrePopulator, otherDetailsSectionPrePopulator
+            draftOrderPreviewSectionPrePopulator
         );
     }
 

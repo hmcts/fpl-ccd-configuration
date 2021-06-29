@@ -309,15 +309,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "othersSelector",
-    "Label": "Select who should get the order",
-    "FieldType": "OthersSelector",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "othersTitle",
     "FieldType": "Label",
     "Label": "### Others in the case",

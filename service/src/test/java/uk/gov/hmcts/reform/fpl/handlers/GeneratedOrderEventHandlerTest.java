@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Arrays;
@@ -56,6 +58,7 @@ class GeneratedOrderEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocumentReference TEST_DOCUMENT = mock(DocumentReference.class);
+    private static final GeneratedOrder LAST_GENERATED_ORDER = mock(GeneratedOrder.class);
     private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT);
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITH_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITHOUT_CASE_URL = mock(OrderIssuedNotifyData.class);
@@ -75,7 +78,7 @@ class GeneratedOrderEventHandlerTest {
     @Mock
     private RepresentativesInbox representativesInbox;
     @Mock
-    private FeatureToggleService featureToggleService;
+    private SealedOrderHistoryService sealedOrderHistoryService;
     @Mock
     private OthersService othersService;
     @InjectMocks
@@ -101,11 +104,12 @@ class GeneratedOrderEventHandlerTest {
         given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REPS);
         given(othersService.getSelectedOthers(CASE_DATA)).willReturn(Collections.emptyList());
+        given(sealedOrderHistoryService.lastGeneratedOrder(any())).willReturn(LAST_GENERATED_ORDER);
     }
 
     @Test
-    void shouldNotifyPartiesOnOrderSubmissionWhenSendOrderToOthersToggledOff() {
-        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(false);
+    void shouldNotifyPartiesOnOrderSubmissionWhenOldOrdersEvent() {
+        given(LAST_GENERATED_ORDER.isNewVersion()).willReturn(false);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
 
         underTest.notifyParties(EVENT);
@@ -135,8 +139,8 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyPartiesOnOrderSubmissionWhenSendOrderToOthersToggledOn() {
-        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(true);
+    void shouldNotifyPartiesOnOrderSubmissionWhenNewOrdersEvent() {
+        given(LAST_GENERATED_ORDER.isNewVersion()).willReturn(true);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
 
         underTest.notifyParties(EVENT);
@@ -166,8 +170,8 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndToggledOn() {
-        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(true);
+    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndNewOrdersEvent() {
+        given(LAST_GENERATED_ORDER.isNewVersion()).willReturn(true);
         given(representativesInbox.getEmailsByPreferenceExcludingOthers(CASE_DATA, EMAIL)).willReturn(new HashSet<>());
 
         underTest.notifyParties(EVENT);
@@ -180,8 +184,8 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndToggledOff() {
-        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(false);
+    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndOldOrdersEvent() {
+        given(LAST_GENERATED_ORDER.isNewVersion()).willReturn(false);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(Set.of());
 
         underTest.notifyParties(EVENT);
@@ -194,12 +198,12 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndToggledOn() {
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndNewOrdersEvent() {
+        given(LAST_GENERATED_ORDER.isNewVersion()).willReturn(true);
         final Representative representative = mock(Representative.class);
         final RespondentParty respondent = mock(RespondentParty.class);
         final List<Recipient> recipients = List.of(representative, respondent);
 
-        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(true);
         given(sendDocumentService.getSelectedOtherRecipients(CASE_DATA, null)).willReturn(recipients);
         given(sendDocumentService.getRecipientsExcludingOthers(CASE_DATA)).willReturn(Arrays.asList(representative,
             respondent));
@@ -215,12 +219,12 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndToggledOff() {
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndOldOrdersEvent() {
+        given(LAST_GENERATED_ORDER.isNewVersion()).willReturn(false);
         final Representative representative = mock(Representative.class);
         final RespondentParty respondent = mock(RespondentParty.class);
         final List<Recipient> recipients = List.of(representative, respondent);
 
-        given(featureToggleService.isSendOrderToOthersEnabled()).willReturn(false);
         given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(recipients);
 
         underTest.sendOrderByPost(EVENT);

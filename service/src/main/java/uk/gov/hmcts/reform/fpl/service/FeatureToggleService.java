@@ -77,10 +77,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("eldest-child-last-name", createLDUser(), false);
     }
 
-    public boolean isSendOrderToOthersEnabled() {
-        return ldClient.boolVariation("send-order-to-others", createLDUser(), false);
-    }
-
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

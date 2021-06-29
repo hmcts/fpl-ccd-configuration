@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetail
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OtherDetailsSectionPrePopulator;
 
 import java.util.List;
 import java.util.Map;
@@ -49,7 +48,6 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ChildrenDetailsSectionPrePopulator childrenDetailsPrePopulator;
     private final OrderDetailsSectionPrePopulator orderDetailsPrePopulator;
     private final DraftOrderPreviewSectionPrePopulator draftOrderPreviewPrePopulator;
-    private final OtherDetailsSectionPrePopulator otherDetailsSectionPrePopulator;
 
     private Map<OrderQuestionBlock, QuestionBlockOrderPrePopulator> blockOrderPrePopulatorMap;
     private Map<OrderSection, OrderSectionPrePopulator> sectionPrePopulatorMap;
@@ -87,8 +85,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             issuingDetailsPrePopulator,
             childrenDetailsPrePopulator,
             orderDetailsPrePopulator,
-            draftOrderPreviewPrePopulator,
-            otherDetailsSectionPrePopulator
+            draftOrderPreviewPrePopulator
         ).stream().collect(Collectors.toMap(
             OrderSectionPrePopulator::accept,
             Function.identity()
