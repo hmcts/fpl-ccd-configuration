@@ -127,13 +127,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
         final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(true), new TypeReference<>() {
-            }
+            getExpectedHmctsParameters(true), new TypeReference<>() {}
         );
 
         final Map<String, Object> completeCafcassParameters = mapper.convertValue(
-            getExpectedCafcassParameters(true), new TypeReference<>() {
-            }
+            getExpectedCafcassParameters(true), new TypeReference<>() {}
         );
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
@@ -180,8 +178,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {
-            }
+            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {}
         );
 
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
@@ -213,8 +210,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            }
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
         );
 
         checkUntil(() -> {
@@ -243,8 +239,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            }
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
         );
 
         checkUntil(() ->
@@ -392,7 +387,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
-                Map.of("applicationType", "C110a"),
+                expectedLocalAuthorityNotificationParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
@@ -414,7 +409,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
-                Map.of("caseUrl", "http://fake-url/cases/case-details/1234567890123456", "applicationType", "C110a"),
+                expectedLocalAuthorityNotificationParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
@@ -437,7 +432,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
-                Map.of("applicationType", "C110a"),
+                expectedLocalAuthorityNotificationParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
@@ -529,6 +524,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             "applicant", "");
     }
 
+    private Map<String, Object> expectedLocalAuthorityNotificationParameters() {
+        return Map.of("applicationType", "C110a",
+            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID);
+    }
+
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
         return CaseDetails.builder()
             .id(CASE_ID)
@@ -588,8 +588,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .localAuthority(LOCAL_AUTHORITY_1_NAME)
             .build();
 
-        return mapper.convertValue(template, new TypeReference<>() {
-        });
+        return mapper.convertValue(template, new TypeReference<>() {});
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
