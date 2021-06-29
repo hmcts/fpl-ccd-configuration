@@ -23,6 +23,8 @@ public class OrderDocumentGeneratorHolder {
     private final C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
     private final C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
     private final C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
+    private final C43aSpecialGuardianshipOrderDocumentParameterGenerator
+        c43ASpecialGuardianshipOrderDocumentParameterGenerator;
     private final C47AAppointmentOfAChildrensGuardianParameterGenerator c47AParameterGenerator;
 
     // additional document collectors
@@ -42,6 +44,7 @@ public class OrderDocumentGeneratorHolder {
                 c35aSupervisionOrderDocumentParameterGenerator,
                 c35bISODocumentParameterGenerator,
                 c43ChildArrangementOrderDocumentParameterGenerator,
+                c43ASpecialGuardianshipOrderDocumentParameterGenerator,
                 c47AParameterGenerator
             ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }

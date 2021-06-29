@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -413,6 +414,7 @@ public class CaseData {
     private final Selector childSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
+    private final Selector appointedGuardianSelector;
 
     private final String orderAppliesToAllChildren;
 
@@ -537,6 +539,10 @@ public class CaseData {
     public List<Element<Child>> getConfidentialChildren() {
         return confidentialChildren != null ? confidentialChildren : new ArrayList<>();
     }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final ChildrenEventData childrenEventData = ChildrenEventData.builder().build();
 
     private final List<Element<Respondent>> confidentialRespondents;
 

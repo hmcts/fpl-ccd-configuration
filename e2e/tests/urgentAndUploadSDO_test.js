@@ -6,13 +6,13 @@ let caseId;
 
 Feature('Alternate gatekeeping order route');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(gatekeeping);
-
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(gatekeeping); }
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-});
+}
 
 Scenario('Gatekeeper uploads urgent hearing order', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+  await setupScenario(I);
   const allocationDecisionFields = draftStandardDirectionsEventPage.fields.allocationDecision;
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.createUrgentHearingOrder();
@@ -35,6 +35,7 @@ Scenario('Gatekeeper uploads urgent hearing order', async ({I, caseViewPage, dra
 });
 
 Scenario('Gatekeeper uploads draft standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.createSDOThroughUpload();
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
@@ -51,6 +52,7 @@ Scenario('Gatekeeper uploads draft standard directions', async ({I, caseViewPage
 });
 
 Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
   await I.goToNextPage();

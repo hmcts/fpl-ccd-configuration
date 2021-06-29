@@ -10,6 +10,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildrenNew",
+    "ListElementCode": "representative",
+    "FieldType": "RespondentSolicitor",
+    "ElementLabel": "Representative",
+    "FieldShowCondition": "representative!=\"\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
     "ListElementCode": "finalOrderIssued",
     "FieldType": "Text",
     "ElementLabel": "Final Order Issued",

@@ -52,3 +52,4 @@ functional-output/
 
 # terraform modules
 infrastructure/.terraform/
+/update-local-env.sh

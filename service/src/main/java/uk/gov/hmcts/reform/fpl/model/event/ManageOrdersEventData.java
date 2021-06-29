@@ -45,6 +45,7 @@ public class ManageOrdersEventData {
     List<C43OrderType> manageOrdersC43Orders;
     String manageOrdersRecitalsAndPreambles;
     String manageOrdersC43Directions;
+    String manageOrdersIsByConsent;
     String manageOrdersChildrenDescription;
     String manageOrdersCareOrderIssuedCourt;
     LocalDate manageOrdersCareOrderIssuedDate;

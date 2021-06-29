@@ -164,6 +164,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "specialGuardians",
+    "FieldType": "Text",
+    "ElementLabel": "Special guardians",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",

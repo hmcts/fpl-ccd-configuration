@@ -11,17 +11,24 @@ let caseId;
 
 Feature('Notice of change');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
-  solicitor1.details = await apiHelper.getUser(solicitor1);
-  solicitor1.details.organisation = 'Private solicitors';
-  solicitor2.details = await apiHelper.getUser(solicitor2);
-  solicitor2.details.organisation = 'London Borough Hillingdon';
-  solicitor3.details = await apiHelper.getUser(solicitor3);
-  solicitor3.details.organisation = 'Wiltshire County Council';
-});
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents); }
+  if (!solicitor1.details) {
+    solicitor1.details = await apiHelper.getUser(solicitor1);
+    solicitor1.details.organisation = 'Private solicitors';
+  }
+  if (!solicitor2.details) {
+    solicitor2.details = await apiHelper.getUser(solicitor2);
+    solicitor2.details.organisation = 'London Borough Hillingdon';
+  }
+  if (!solicitor3.details) {
+    solicitor3.details = await apiHelper.getUser(solicitor3);
+    solicitor3.details.organisation = 'Wiltshire County Council';
+  }
+}
 
 Scenario('Solicitor can request representation only after case submission', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
+  await setupScenario(I);
   await I.signIn(solicitor1);
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
@@ -46,6 +53,7 @@ Scenario('Solicitor can request representation only after case submission', asyn
 });
 
 Scenario('Solicitor request representation of second unrepresented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
+  await setupScenario(I);
   await I.signIn(solicitor2);
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
@@ -58,6 +66,7 @@ Scenario('Solicitor request representation of second unrepresented respondent', 
 });
 
 Scenario('Solicitor request representation of represented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
+  await setupScenario(I);
   await I.signIn(solicitor3);
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
@@ -73,6 +82,7 @@ Scenario('Solicitor request representation of represented respondent', async ({I
 });
 
 Scenario('Hmcts admin replaces respondent solicitor', async ({I, caseListPage, caseViewPage, enterRespondentsEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
 
@@ -88,6 +98,7 @@ Scenario('Hmcts admin replaces respondent solicitor', async ({I, caseListPage, c
 });
 
 Scenario('Hmcts admin removes respondent solicitor', async ({I, caseListPage, caseViewPage, enterRespondentsEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
 
