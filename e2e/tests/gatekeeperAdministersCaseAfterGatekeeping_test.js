@@ -7,14 +7,13 @@ let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(gatekeepingCaseData);
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(gatekeepingCaseData); }
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-});
-
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+}
 
 Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async ({I, caseViewPage, notifyGatekeeperEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);
   await notifyGatekeeperEventPage.enterEmail('gatekeeper@mailnesia.com');
   await I.completeEvent('Save and continue');
@@ -22,6 +21,7 @@ Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async
 });
 
 Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
@@ -33,6 +33,7 @@ Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJu
 });
 
 Scenario('Gatekeeper make allocation decision based on proposal', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
@@ -43,6 +44,7 @@ Scenario('Gatekeeper make allocation decision based on proposal', async ({I, cas
 });
 
 Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   await enterAllocationDecisionEventPage.selectAllocationDecision('Magistrate');
@@ -56,6 +58,7 @@ Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enter
 });
 
 Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+  await setupScenario(I);
   const today = new Date();
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.createSDOThroughService();
@@ -73,6 +76,7 @@ Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draft
 });
 
 Scenario('Gatekeeper submits final version of standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.enterDateOfIssue({day: 11, month: 1, year: 2020});
   draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
