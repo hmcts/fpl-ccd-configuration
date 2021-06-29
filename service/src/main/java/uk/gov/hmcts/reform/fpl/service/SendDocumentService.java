@@ -5,11 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
-import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -20,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -79,66 +75,25 @@ public class SendDocumentService {
         return recipients;
     }
 
-    public List<Recipient> getSelectedOtherRecipients(CaseData caseData, List<Element<Other>> othersSelected) {
-        List<Recipient> recipients = new ArrayList<>();
-        List<Representative> otherRepresentatives = new ArrayList<>();
-
-        othersSelected.stream().forEach(other -> {
-            Other otherToBeNotified = other.getValue();
-            if ((othersService.isRepresented(otherToBeNotified))) {
-                otherToBeNotified.getRepresentedBy().stream().forEach(representedBy -> {
-                    Optional<Representative> representative = caseData.getRepresentatives().stream()
-                        .filter(element -> element.getId().equals(representedBy.getValue()) && element.getValue()
-                            .getServingPreferences() == POST)
-                        .map(Element::getValue)
-                        .findFirst();
-
-                    if (representative.isPresent()) {
-                        otherRepresentatives.add(representative.get());
-                    }
-                });
-
-            } else {
-                if (othersService.hasAddressAdded(otherToBeNotified)) {
-                    recipients.add(Representative.builder()
-                        .fullName(otherToBeNotified.getName())
-                        .address(otherToBeNotified.getAddress())
-                        .build());
-                }
-            }
-        });
-
-        recipients.addAll(new ArrayList<>((otherRepresentatives)));
-
-        return recipients;
-    }
-
-    public List<Recipient> getRecipientsExcludingOthers(CaseData caseData) {
-        final List<Recipient> recipients = new ArrayList<>();
-
-        List<Representative> representatives = caseData.getRepresentativesByServedPreference(POST)
-            .stream()
-            .filter(representative -> !representative.getRole().getType()
-                .equals(RepresentativeRole.Type.OTHER))
-            .collect(Collectors.toList());
-
-        recipients.addAll(new ArrayList<>((representatives)));
-        recipients.addAll(getNotRepresentedRespondents(caseData));
-
-        return recipients;
-    }
-
     private List<Recipient> getRepresentativesServedByPost(CaseData caseData) {
         return new ArrayList<>(caseData.getRepresentativesByServedPreference(POST));
     }
 
-    private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
+    public List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
         return unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
                 && hasNoLegalRepresentation(respondent))
             .map(Respondent::getParty)
             .collect(toList());
     }
+
+    public List<Recipient> getContactableNotRepresentedOthers(CaseData caseData) {
+        return unwrapElements(caseData.getAllOthers()).stream()
+            .filter(other -> !other.isRepresented() && other.hasAddressAdded())
+            .map(Other::toParty)
+            .collect(toList());
+    }
+
 
     private boolean hasNoLegalRepresentation(Respondent respondent) {
         return !YES.getValue().equals(respondent.getLegalRepresentation());
