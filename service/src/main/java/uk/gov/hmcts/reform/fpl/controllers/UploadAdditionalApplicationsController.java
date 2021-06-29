@@ -144,12 +144,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);
                 } catch (FeeRegisterException | PaymentsApiException paymentException) {
                     log.error("Additional applications payment for case {} failed", caseDetails.getId());
-                    publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+                    publishEvent(new FailedPBAPaymentEvent(
+                        caseData, C2_APPLICATION, lastBundle.getC2DocumentBundle().getApplicantName()));
                 }
             } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 log.error("Additional applications payment for case {} not taken as payment fee not shown to user",
                     caseDetails.getId());
-                publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+                publishEvent(new FailedPBAPaymentEvent(
+                    caseData, C2_APPLICATION, lastBundle.getC2DocumentBundle().getApplicantName()));
             }
         }
     }

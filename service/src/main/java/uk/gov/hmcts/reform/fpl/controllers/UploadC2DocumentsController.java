@@ -120,11 +120,13 @@ public class UploadC2DocumentsController extends CallbackController {
                     paymentService.makePaymentForC2(caseDetails.getId(), caseData);
                 } catch (FeeRegisterException | PaymentsApiException paymentException) {
                     log.error("C2 payment for case {} failed", caseDetails.getId());
-                    publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+                    publishEvent(new FailedPBAPaymentEvent(
+                        caseData, C2_APPLICATION, c2DocumentBundle.getApplicantName()));
                 }
             } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 log.error("C2 payment for case {} not taken as payment fee not shown to user", caseDetails.getId());
-                publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+                publishEvent(new FailedPBAPaymentEvent(
+                    caseData, C2_APPLICATION, c2DocumentBundle.getApplicantName()));
             }
         }
     }

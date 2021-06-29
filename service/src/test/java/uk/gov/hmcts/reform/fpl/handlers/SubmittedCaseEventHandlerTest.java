@@ -165,7 +165,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
             verifyNoMoreInteractions(paymentService, eventService);
         }
 
@@ -180,7 +180,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
             verifyNoMoreInteractions(paymentService, eventService);
         }
 
@@ -200,7 +200,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
         }
 
         @Test
@@ -219,7 +219,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
         }
 
         @Test

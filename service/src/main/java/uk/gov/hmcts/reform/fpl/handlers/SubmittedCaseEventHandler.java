@@ -131,6 +131,6 @@ public class SubmittedCaseEventHandler {
 
     private void handlePaymentNotTaken(CaseData caseData) {
         log.error("Payment not taken for case {}.", caseData.getId());
-        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
     }
 }

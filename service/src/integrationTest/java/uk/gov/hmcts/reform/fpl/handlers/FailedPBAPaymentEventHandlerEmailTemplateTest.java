@@ -35,7 +35,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyCTSCC2() {
         underTest.notifyCTSC(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C2_APPLICATION
+            CaseData.builder().id(123L).build(), C2_APPLICATION, ""
         ));
 
         assertThat(response())
@@ -52,7 +52,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyCTSCC110A() {
         underTest.notifyCTSC(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C110A_APPLICATION
+            CaseData.builder().id(123L).build(), C110A_APPLICATION, ""
         ));
 
         assertThat(response())
@@ -69,7 +69,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyLocalAuthorityC2() {
         underTest.notifyLocalAuthority(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C2_APPLICATION
+            CaseData.builder().id(123L).build(), C2_APPLICATION, ""
         ));
 
         assertThat(response())
@@ -91,7 +91,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyLocalAuthorityC110A() {
         underTest.notifyLocalAuthority(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C110A_APPLICATION
+            CaseData.builder().id(123L).build(), C110A_APPLICATION, ""
         ));
 
         assertThat(response())

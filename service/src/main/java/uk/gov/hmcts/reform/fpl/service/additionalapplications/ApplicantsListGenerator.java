@@ -13,7 +13,9 @@ import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -45,6 +47,25 @@ public class ApplicantsListGenerator {
             applicantsFullNames,
             InterlocutoryApplicant::getCode,
             InterlocutoryApplicant::getName);
+    }
+
+    public Map<String, String> getApplicantsEmailAddress(CaseData caseData) {
+
+        Map<String, String> applicantsEmails = new HashMap<>();
+        List<InterlocutoryApplicant> applicantsFullNames = new ArrayList<>();
+
+        // Main applicant
+        if (isNotEmpty(caseData.getCaseLocalAuthorityName())) {
+            applicantsEmails.put(caseData.getCaseLocalAuthorityName() + ", Applicant", "LOCAL_AUTHORITY");
+        }
+
+        // respondents emails
+        IncrementalInteger i = new IncrementalInteger(1);
+        caseData.getAllRespondents().forEach(respondent -> applicantsEmails.put(
+            respondent.getValue().getParty().getFullName() + ", Respondent " + i.getAndIncrement(),
+            respondent.getValue().getSolicitor().getEmail()));
+
+        return applicantsEmails;
     }
 
     private List<InterlocutoryApplicant> buildOthersElements(List<Element<Other>> others) {
