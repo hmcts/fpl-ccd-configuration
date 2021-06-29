@@ -9,8 +9,12 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @Value
 @SuperBuilder(toBuilder = true)
-public class C43DocmosisParameters extends DocmosisParameters {
+public class C43ChildArrangementOrderDocmosisParameters extends DocmosisParameters {
+    String orderHeader;
+    String orderMessage;
     String orderDetails;
     String furtherDirections;
     String localAuthorityName;
+    String noticeHeader;
+    String noticeMessage;
 }

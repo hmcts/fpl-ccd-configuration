@@ -69,7 +69,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("linkApplication", "NO"),
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
-            Map.entry("c43Details", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
             Map.entry("closeCase", "NO")
         );
 

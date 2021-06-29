@@ -43,7 +43,7 @@ public class ManageOrdersEventData {
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
     List<C43OrderType> manageOrdersC43Orders;
-    String manageOrdersC43RecitalsAndPreambles;
+    String manageOrdersRecitalsAndPreambles;
     String manageOrdersC43Directions;
     String manageOrdersChildrenDescription;
     String manageOrdersCareOrderIssuedCourt;

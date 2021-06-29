@@ -23,7 +23,7 @@ const orders = {
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
     c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
-    c43: 'C43_ORDER',
+    c43: 'C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
     other: 'OTHER_ORDER',
   },
@@ -157,7 +157,7 @@ const section4 = {
       prohibitedSteps: '#manageOrdersC43Orders-PROHIBITED_STEPS_ORDER',
     },
   },
-  recitalsAndPreambles: '#manageOrdersC43RecitalsAndPreambles',
+  recitalsAndPreambles: '#manageOrdersRecitalsAndPreambles',
   c43Directions: '#manageOrdersC43Directions',
   isFinalOrder: {
     group: '#manageOrdersIsFinalOrder',

@@ -90,7 +90,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
         Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
         Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-        Map.entry("c43Details", "NO"),
+        Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
         Map.entry("cafcassJurisdictions", "NO"),
         Map.entry("isFinalOrder", "NO")
     ));
@@ -486,7 +486,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("cafcassJurisdictions", "NO"),
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
-            Map.entry("c43Details", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
             Map.entry("closeCase", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
@@ -523,7 +523,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("cafcassJurisdictions", "NO"),
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
-            Map.entry("c43Details", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
             Map.entry("closeCase", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),

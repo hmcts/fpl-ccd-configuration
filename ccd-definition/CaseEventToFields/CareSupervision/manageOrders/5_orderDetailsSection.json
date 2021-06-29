@@ -256,20 +256,20 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.c43Details=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childArrangementSpecificIssueProhibitedSteps=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "manageOrdersC43RecitalsAndPreambles",
+    "CaseFieldID": "manageOrdersRecitalsAndPreambles",
     "PageFieldDisplayOrder": 21,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.c43Details=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childArrangementSpecificIssueProhibitedSteps=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -282,7 +282,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.c43Details=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childArrangementSpecificIssueProhibitedSteps=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

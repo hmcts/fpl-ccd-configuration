@@ -303,7 +303,7 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
   });
 });
 
-Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43) @f', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();

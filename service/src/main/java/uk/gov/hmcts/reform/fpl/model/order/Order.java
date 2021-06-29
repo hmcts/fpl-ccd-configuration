@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.C43_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CAFCASS_JURISDICTIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
@@ -94,15 +94,15 @@ public enum Order {
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION,
             FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
     ),
-    C43_ORDER(
+    C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
         DIGITAL,
         "Child arrangements, Specific issue, Prohibited steps",
         "Section 8 Children Act 1989",
         "Child arrangements, Specific issue, Prohibited steps (C43)",
         IsFinalOrder.MAYBE,
         List.of(
-            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, C43_DETAILS,
-            CLOSE_CASE, REVIEW_DRAFT_ORDER)
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
+            CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
         DIGITAL,
@@ -129,8 +129,7 @@ public enum Order {
             FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS,
             REVIEW_DRAFT_ORDER)
-    );
-
+    ),
     /* MANUAL UPLOADS */
     C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER(
         MANUAL_UPLOAD,
@@ -387,8 +386,7 @@ public enum Order {
         "Other",
         IsFinalOrder.MAYBE,
         Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    ;
+    );
 
     private final OrderSourceType sourceType;
     private final String title;

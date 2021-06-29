@@ -44,7 +44,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate",
             "manageOrdersC43Orders",
-            "manageOrdersC43RecitalsAndPreambles",
+            "manageOrdersRecitalsAndPreambles",
             "manageOrdersC43Directions",
             "orderPreview",
             "manageOrdersIsFinalOrder",

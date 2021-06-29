@@ -65,7 +65,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         careOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         careOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
-        careOrderQuestions.put("c43Details", "NO");
+        careOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         careOrderQuestions.put("isFinalOrder", "NO");
         careOrderQuestions.put("closeCase", "YES");
         careOrderQuestions.put("dischargeOfCareDetails", "NO");
@@ -87,6 +87,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         dischargeOfCareQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        dischargeOfCareQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         dischargeOfCareQuestions.put("isFinalOrder", "YES");
         dischargeOfCareQuestions.put("closeCase", "YES");
 
@@ -107,7 +108,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         epoQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
-        epoQuestions.put("c43Details", "NO");
+        epoQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         epoQuestions.put("closeCase", "NO");
         epoQuestions.put("isFinalOrder", "NO");
 
@@ -128,7 +129,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         blankOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         blankOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
-        blankOrderQuestions.put("c43Details", "NO");
+        blankOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         blankOrderQuestions.put("closeCase", "NO");
         blankOrderQuestions.put("isFinalOrder", "NO");
 
@@ -149,7 +150,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithMonth", "YES");
         supervisionOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
-        supervisionOrderQuestions.put("c43Details", "NO");
+        supervisionOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         supervisionOrderQuestions.put("closeCase", "YES");
         supervisionOrderQuestions.put("isFinalOrder", "NO");
 
@@ -170,7 +171,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
-        appointmentOfChildrensGuardianQuestions.put("c43Details", "NO");
+        appointmentOfChildrensGuardianQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         appointmentOfChildrensGuardianQuestions.put("closeCase", "NO");
         appointmentOfChildrensGuardianQuestions.put("isFinalOrder", "NO");
 
@@ -205,6 +206,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("approvalDate", "YES"),
                 Map.entry("approvalDateTime", "NO"),
                 Map.entry("dischargeOfCareDetails", "NO"),
+                Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
                 Map.entry("epoIncludePhrase", "NO"),
                 Map.entry("epoExpiryDate", "NO"),
                 Map.entry("isFinalOrder", "YES"),
@@ -243,6 +245,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("approvalDate", "YES"),
                 Map.entry("approvalDateTime", "NO"),
                 Map.entry("dischargeOfCareDetails", "NO"),
+                Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
                 Map.entry("epoIncludePhrase", "NO"),
                 Map.entry("epoExpiryDate", "NO"),
                 Map.entry("isFinalOrder", "NO"),

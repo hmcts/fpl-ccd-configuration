@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
@@ -36,8 +36,10 @@ class OrderTest {
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c21_blank_order.doc");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32_care_order.pdf");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32_care_order.doc");
-        assertThat(C43_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c43_order.pdf");
-        assertThat(C43_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c43_order.doc");
+        assertThat(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.fileName(RenderFormat.PDF)).isEqualTo(
+            "c43_child_arrangement_specific_issue_prohibited_steps_order.pdf");
+        assertThat(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.fileName(RenderFormat.WORD)).isEqualTo(
+            "c43_child_arrangement_specific_issue_prohibited_steps_order.doc");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo(
             "c32b_discharge_of_care_order.pdf");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo(
@@ -65,7 +67,8 @@ class OrderTest {
         assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C23_EMERGENCY_PROTECTION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
-        assertThat(C43_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.firstSection())
+            .isEqualTo(HEARING_DETAILS);
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C33_INTERIM_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35A_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
@@ -116,11 +119,19 @@ class OrderTest {
             Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty()),
-            Arguments.of(C43_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
-            Arguments.of(C43_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
-            Arguments.of(C43_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
-            Arguments.of(C43_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C43_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                HEARING_DETAILS,
+                Optional.of(ISSUING_DETAILS)),
+            Arguments.of(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                ISSUING_DETAILS,
+                Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                CHILDREN_DETAILS,
+                Optional.of(ORDER_DETAILS)),
+            Arguments.of(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                ORDER_DETAILS,
+                Optional.of(REVIEW)),
+            Arguments.of(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER, REVIEW, Optional.empty()),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),

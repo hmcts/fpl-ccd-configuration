@@ -130,11 +130,11 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersEndDateTime(LocalDateTime.of(2018, 9, 1, 13, 20, 4))
                         .build()
                 );
-            case C43_DETAILS:
+            case CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                     .manageOrdersC43Orders(Collections.singletonList(C43OrderType.CHILD_ARRANGEMENT_ORDER))
-                    .manageOrdersC43RecitalsAndPreambles("Recitals and Preambles")
+                    .manageOrdersRecitalsAndPreambles("Recitals and Preambles")
                     .manageOrdersC43Directions("C43 directions")
                     .build()
                 );
