@@ -133,17 +133,17 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldPopulateCorrespondenceEvidenceCollection() {
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = List.of(
-            element(SupportingEvidenceBundle.builder()
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
+            SupportingEvidenceBundle.builder()
                 .name("test1")
                 .dateTimeUploaded(now().minusDays(2))
                 .uploadedBy(USER)
-                .build()),
-            element(SupportingEvidenceBundle.builder()
+                .build(),
+            SupportingEvidenceBundle.builder()
                 .name("test2")
                 .dateTimeUploaded(now())
                 .uploadedBy(USER)
-                .build()));
+                .build());
 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
