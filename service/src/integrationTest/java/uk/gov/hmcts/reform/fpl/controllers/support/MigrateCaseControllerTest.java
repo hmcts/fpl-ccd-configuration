@@ -22,6 +22,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -306,18 +307,18 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         private List<Element<SupportingEvidenceBundle>> buildCorrespondenceDocuments(String uploadedBy) {
-            return List.of(element(SupportingEvidenceBundle.builder()
+            return wrapElements(SupportingEvidenceBundle.builder()
                     .name("document1").document(document)
                     .uploadedBy(uploadedBy)
-                    .dateTimeUploaded(now().minusDays(3)).build()),
-                element(SupportingEvidenceBundle.builder()
+                    .dateTimeUploaded(now().minusDays(3)).build(),
+                SupportingEvidenceBundle.builder()
                     .name("document2").document(document)
                     .uploadedBy(uploadedBy)
-                    .dateTimeUploaded(now().minusDays(2)).build()),
-                element(SupportingEvidenceBundle.builder()
+                    .dateTimeUploaded(now().minusDays(2)).build(),
+                SupportingEvidenceBundle.builder()
                     .name("document3").document(document)
                     .uploadedBy(uploadedBy)
-                    .dateTimeUploaded(now().minusDays(1)).build()));
+                    .dateTimeUploaded(now().minusDays(1)).build());
         }
 
         private CaseDetails caseDetails(List<Element<SupportingEvidenceBundle>> correspondenceDocuments,
