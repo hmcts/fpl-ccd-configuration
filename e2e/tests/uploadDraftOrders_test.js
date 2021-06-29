@@ -44,14 +44,16 @@ let date;
 
 Feature('Upload Draft Orders Journey');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(standardDirectionOrder);
-  today = new Date();
-  date = dateFormat(today, 'd mmm yyyy');
-});
+async function setupScenario(I) {
+  if (!caseId) {
+    caseId = await I.submitNewCaseWithData(standardDirectionOrder);
+    today = new Date();
+    date = dateFormat(today, 'd mmm yyyy');
+  }
+}
 
 Scenario('Local authority uploads draft orders', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
-
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
   await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1);
@@ -79,6 +81,7 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
 });
 
 Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
   const representative = representatives.servedByDigitalService;
@@ -100,6 +103,7 @@ Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, e
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
@@ -119,6 +123,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
 });
 
 Scenario('Judge sends draft orders to the local authority', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
@@ -142,6 +147,7 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
 });
 
 Scenario('Local authority makes changes requested by the judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
@@ -163,6 +169,7 @@ Scenario('Local authority makes changes requested by the judge', async ({I, case
 });
 
 Scenario('Judge seals and sends draft orders for no hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
@@ -184,6 +191,7 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
 });
 
 Scenario('Judge seals and sends draft orders for hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);

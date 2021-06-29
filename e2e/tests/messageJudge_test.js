@@ -7,11 +7,12 @@ let reply = 'This is a reply';
 
 Feature('Message judge or legal adviser');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatoryWithAdditionalApplicationsBundle);
-});
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithAdditionalApplicationsBundle); }
+}
 
 Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectMessageRelatedToAdditionalApplication();
@@ -35,6 +36,7 @@ Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPag
 });
 
 Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
@@ -56,6 +58,7 @@ Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOr
 });
 
 Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
@@ -77,6 +80,7 @@ Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudge
 });
 
 Scenario('Judge messages court admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
