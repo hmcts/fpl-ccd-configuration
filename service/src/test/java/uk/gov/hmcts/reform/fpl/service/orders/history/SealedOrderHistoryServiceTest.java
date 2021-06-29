@@ -78,6 +78,10 @@ class SealedOrderHistoryServiceTest {
     private static final DocumentReference SEALED_PDF_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private static final String EXTRA_TITLE = "ExtraTitle";
+    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
+    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
+        Pair.of(LINKED_APPLICATION_ID, "My test application"));
+    private static final String OTHERS_NOTIFIED = "First other, Second other";
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
     private final Other other1 = testOther("First other");
@@ -94,10 +98,8 @@ class SealedOrderHistoryServiceTest {
         ManageOrdersClosedCaseFieldGenerator.class);
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator =
         mock(SealedOrderHistoryExtraTitleGenerator.class);
-
-    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
-    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
-        Pair.of(LINKED_APPLICATION_ID, "My test application"));
+    private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator = mock(
+        SealedOrderHistoryExtraOthersNotifiedGenerator.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
@@ -105,6 +107,7 @@ class SealedOrderHistoryServiceTest {
         othersService,
         orderCreationService,
         extraTitleGenerator,
+        othersNotifiedGenerator,
         time,
         manageOrdersClosedCaseFieldGenerator
     );
@@ -118,8 +121,6 @@ class SealedOrderHistoryServiceTest {
             when(child2.asLabel()).thenReturn(CHILD_2_FULLNAME);
             when(time.now()).thenReturn(NOW);
             when(identityService.generateId()).thenReturn(GENERATED_ORDER_UUID);
-            when(othersService.hasAddressAdded(other1)).thenReturn(true);
-            when(othersService.hasAddressAdded(other2)).thenReturn(true);
         }
 
         @Test
@@ -133,6 +134,8 @@ class SealedOrderHistoryServiceTest {
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -155,6 +158,8 @@ class SealedOrderHistoryServiceTest {
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
                 when(manageOrdersClosedCaseFieldGenerator.generate(caseData)).thenReturn(
                     Map.of("somethingClose", "closeCaseValue")
                 );
@@ -181,6 +186,8 @@ class SealedOrderHistoryServiceTest {
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -208,6 +215,8 @@ class SealedOrderHistoryServiceTest {
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -234,6 +243,8 @@ class SealedOrderHistoryServiceTest {
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -262,6 +273,8 @@ class SealedOrderHistoryServiceTest {
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -290,6 +303,8 @@ class SealedOrderHistoryServiceTest {
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -396,7 +411,7 @@ class SealedOrderHistoryServiceTest {
     private GeneratedOrder.GeneratedOrderBuilder startCommonExpectedGeneratedOrderBuilder() {
         return GeneratedOrder.builder()
             .others(List.of(element(other1ID, other1), element(other2ID, other2)))
-            .othersNotified("First other, Second other")
+            .othersNotified(OTHERS_NOTIFIED)
             .orderType(ORDER_TYPE.name())
             .type(ORDER_TYPE.getHistoryTitle())
             .title(EXTRA_TITLE)
