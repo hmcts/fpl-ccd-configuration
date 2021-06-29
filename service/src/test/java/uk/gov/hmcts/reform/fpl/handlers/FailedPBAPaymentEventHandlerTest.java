@@ -71,11 +71,11 @@ class FailedPBAPaymentEventHandlerTest {
             .applicationType(C110A_APPLICATION.getType())
             .build();
 
-        given(failedPBAPaymentContentProvider.getLocalAuthorityNotifyData(C110A_APPLICATION))
+        given(failedPBAPaymentContentProvider.getLocalAuthorityNotifyData(C110A_APPLICATION, null))
             .willReturn(expectedParameters);
 
-        failedPBAPaymentEventHandler.notifyLocalAuthority(
-            new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
+        failedPBAPaymentEventHandler.notifyApplicant(
+            new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, null));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
@@ -86,16 +86,18 @@ class FailedPBAPaymentEventHandlerTest {
 
     @Test
     void shouldNotifyCtscWhenApplicationPBAPaymentFails() {
+        String applicant = "Swansea council, Applicant";
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C2_APPLICATION.getType())
             .caseUrl("caseUrl")
+            .applicant(applicant)
             .build();
 
-        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, C2_APPLICATION))
+        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, C2_APPLICATION, applicant))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyCTSC(
-            new FailedPBAPaymentEvent(caseData, C2_APPLICATION, ""));
+            new FailedPBAPaymentEvent(caseData, C2_APPLICATION, applicant));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,

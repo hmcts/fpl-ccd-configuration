@@ -12,5 +12,5 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 public class FailedPBAPaymentEvent {
     private final CaseData caseData;
     private final ApplicationType applicationType;
-    private final String applicant;
+    private final String applicantName;
 }

@@ -22,6 +22,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldReturnDataForCafcassNotification() {
         final ApplicationType applicationType = C2_APPLICATION;
+        final String applicant = "Swansea local authority, Applicant";
         final CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())
             .build();
@@ -29,10 +30,11 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
             .caseUrl(caseUrl(caseData.getId().toString(), C2))
+            .applicant(applicant)
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .getCtscNotifyData(caseData, applicationType);
+            .getCtscNotifyData(caseData, applicationType, applicant);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
@@ -45,7 +47,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .getLocalAuthorityNotifyData(applicationType);
+            .getLocalAuthorityNotifyData(applicationType, null);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }

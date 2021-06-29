@@ -13,17 +13,22 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.C2;
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
     public FailedPBANotificationData getCtscNotifyData(CaseData caseData,
-                                                       ApplicationType applicationType) {
+                                                       ApplicationType applicationType,
+                                                       String applicantName) {
         return FailedPBANotificationData.builder()
             .caseUrl(applicationType.equals(C2_APPLICATION) ? getCaseUrl(caseData.getId(), C2)
                 : getCaseUrl(caseData.getId()))
             .applicationType(applicationType.getType())
+            .applicant(applicantName)
             .build();
     }
 
-    public FailedPBANotificationData getLocalAuthorityNotifyData(ApplicationType applicationType) {
+    public FailedPBANotificationData getLocalAuthorityNotifyData(ApplicationType applicationType,
+                                                                 Long caseReference) {
         return FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
+            .caseUrl(applicationType.equals(C2_APPLICATION) ? getCaseUrl(caseReference, C2)
+                : getCaseUrl(caseReference))
             .build();
     }
 }
