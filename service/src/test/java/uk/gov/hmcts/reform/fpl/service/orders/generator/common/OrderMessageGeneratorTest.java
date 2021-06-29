@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator.common;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 
 import java.util.Map;
@@ -27,6 +28,24 @@ public class OrderMessageGeneratorTest {
     @BeforeEach
     void setUp() {
         when(manageOrderDocumentService.commonContextElements(CASE_DATA)).thenReturn(CONTEXT_ELEMENTS);
+    }
+
+    @Test
+    void shouldReturnByConsent() {
+        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+            .manageOrdersIsByConsent("Yes")
+            .build();
+
+        assertThat(underTest.getOrderByConsentMessage(manageOrdersEventData)).isEqualTo("By consent");
+    }
+
+    @Test
+    void shouldNotReturnByConsent() {
+        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+            .manageOrdersIsByConsent("No")
+            .build();
+
+        assertThat(underTest.getOrderByConsentMessage(manageOrdersEventData)).isEqualTo(null);
     }
 
     @Test

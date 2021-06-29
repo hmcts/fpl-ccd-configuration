@@ -180,6 +180,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        specialGuardianshipOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         specialGuardianshipOrderQuestions.put("closeCase", "NO");
         specialGuardianshipOrderQuestions.put("isFinalOrder", "YES");
         specialGuardianshipOrderQuestions.put("orderIsByConsent", "YES");

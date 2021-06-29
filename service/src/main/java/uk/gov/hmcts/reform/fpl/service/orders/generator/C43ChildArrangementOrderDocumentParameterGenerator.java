@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43ChildArrangementOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C43ChildArrangementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
+    private final OrderMessageGenerator orderMessageGenerator;
+
     public static final String WARNING = "Where a Child Arrangements Order is in force and the arrangements "
         + "regulated by it consist of, or include, arrangements which relate to either or both (a) with whom the child "
         + "concerned shall live and(b) when the child shall live with any person, no person may cause the child to be "
@@ -67,6 +70,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             c43DocmosisParameters = C43ChildArrangementOrderDocmosisParameters
             .builder()
             .orderTitle(getOrderTitle(eventData))
+            .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(getOrderRecitalsAndPreambles(eventData))
             .furtherDirections(getOrderDirections(eventData))
             .localAuthorityName(localAuthorityName)

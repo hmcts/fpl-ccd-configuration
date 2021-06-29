@@ -13,16 +13,19 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43ChildArrangementOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class})
 public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
+    private static final String CONSENT = "By consent";
     private static final String ORDER_HEADER = "Warning \n";
     private static final String RECITALS_AND_PREAMBLES = "Recitals and Preambles";
     private static final String DIRECTIONS = "Directions";
@@ -30,6 +33,9 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     @Mock
     private LocalAuthorityNameLookupConfiguration laNameLookup;
+
+    @Mock
+    private OrderMessageGenerator orderMessageGenerator;
 
     @InjectMocks
     private C43ChildArrangementOrderDocumentParameterGenerator underTest;
@@ -40,7 +46,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     }
 
     @Test
-    void shouldShowWarning() {
+    void shouldShowWarningWhenChildArrangementOrder() {
         List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
@@ -49,6 +55,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         CaseData caseData = buildCaseData(c43OrderTypes);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
@@ -59,7 +66,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     }
 
     @Test
-    void shouldNotShowWarning() {
+    void shouldNotShowWarningWhenNoChildArrangementOrder() {
         List<C43OrderType> c43OrderTypes = List.of(
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
@@ -68,6 +75,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         CaseData caseData = buildCaseData(c43OrderTypes);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
@@ -83,6 +91,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         CaseData caseData = buildCaseData(c43OrderTypes);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
@@ -99,6 +108,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
             .caseLocalAuthority(LA_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
+                .manageOrdersIsByConsent("No")
                 .manageOrdersC43Orders(c43OrderTypes)
                 .manageOrdersRecitalsAndPreambles(RECITALS_AND_PREAMBLES)
                 .manageOrdersC43Directions(DIRECTIONS)
@@ -115,6 +125,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
         return C43ChildArrangementOrderDocmosisParameters.builder()
             .orderTitle(orderTitle)
+            .orderByConsent("By consent")
             .orderDetails(orderDetails)
             .furtherDirections(directions)
             .localAuthorityName(LA_NAME)

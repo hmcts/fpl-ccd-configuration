@@ -303,18 +303,20 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
 });
 
 Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c43);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
   await I.goToNextPage();
   await manageOrdersEventPage.selectC43Orders();
+  manageOrdersEventPage.selectOrderByConsent();
   await manageOrdersEventPage.enterRecitalsAndPreambles('Recitals and Preambles');
   await manageOrdersEventPage.enterC43Directions('C43 specific directions');
   await manageOrdersEventPage.enterFurtherDirections('Further details.');
