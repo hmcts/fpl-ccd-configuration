@@ -45,6 +45,7 @@ public class SealedOrderHistoryService {
     private final OthersService othersService;
     private final OrderCreationService orderCreationService;
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
+    private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator;
     private final Time time;
 
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
@@ -69,7 +70,7 @@ public class SealedOrderHistoryService {
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
-            .othersNotified(extraTitleGenerator.getOthersNotified(selectedOthers))
+            .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
             .document(sealedPdfOrder)
             .unsealedDocumentCopy(plainWordOrder);
 

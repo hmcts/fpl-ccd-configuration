@@ -14,10 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class SealedOrderHistoryExtraTitleGenerator {
-
-    private final OthersService othersService;
 
     public String generate(CaseData caseData) {
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
@@ -30,14 +27,5 @@ public class SealedOrderHistoryExtraTitleGenerator {
             default:
                 return null;
         }
-    }
-
-    public String getOthersNotified(List<Element<Other>> selectedOthers) {
-        return Optional.ofNullable(selectedOthers).map(
-            others -> others.stream()
-                .filter(other -> othersService.isRepresented(other.getValue()) || othersService
-                    .hasAddressAdded(other.getValue()))
-                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
-        ).orElse(null);
     }
 }
