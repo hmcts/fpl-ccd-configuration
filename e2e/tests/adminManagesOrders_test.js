@@ -16,13 +16,14 @@ let caseId;
 
 Feature('HMCTS Admin manages orders');
 
-BeforeSuite(async ({ I }) => caseId = await I.submitNewCaseWithData(caseData));
-
-Before(async ({ I }) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
+async function setupScenario(I, caseViewPage) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(caseData); }
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+}
 
 Scenario('Create C32 care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c32);
@@ -53,7 +54,7 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({ I, 
 });
 
 Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c32b);
@@ -84,8 +85,7 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
 });
 
 Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
@@ -116,8 +116,7 @@ Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) 
 });
 
 Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
@@ -153,7 +152,7 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
 });
 
 Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c21);
@@ -216,7 +215,7 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
 });
 
 Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35A);
@@ -246,7 +245,7 @@ Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrders
 });
 
 Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c33);
@@ -276,7 +275,7 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
 });
 
 Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35B);
@@ -339,7 +338,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
 });
 
 Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
   await I.goToNextPage();
   await manageOrdersEventPage.selectUploadOrder(manageOrdersEventPage.orders.options.other);
