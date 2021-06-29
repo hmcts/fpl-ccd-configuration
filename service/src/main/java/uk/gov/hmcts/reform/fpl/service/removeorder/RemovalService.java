@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,9 +23,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -70,24 +73,33 @@ public class RemovalService {
             .orElseThrow(() -> new RemovableOrderNotFoundException(removedOrderId));
     }
 
-    public ApplicationsBundle getRemovedApplicationById(CaseData caseData, UUID selectedBundleId) {
-        return caseData.getAllApplicationsBundles().stream()
+    public Element<AdditionalApplicationsBundle> getRemovedApplicationById(CaseData caseData, UUID selectedBundleId) {
+        return caseData.getAdditionalApplicationsBundle().stream()
             .filter(orderElement -> selectedBundleId.equals(orderElement.getId()))
-            .map(Element::getValue)
             .findAny()
             .orElseThrow(() -> new RemovableOrderNotFoundException(selectedBundleId));
     }
 
-    public List<Element<AdditionalApplicationsBundle>> removeApplicationFromCase(CaseData caseData,
-                                                                                 ApplicationsBundle bundle) {
+    public DynamicList buildDynamicListOfApplications(CaseData caseData) {
+        return buildDynamicListOfApplications(caseData, null);
     }
 
-    public Map<String, Object> populateApplicationFields(ApplicationsBundle bundle) {
-        return Map.of(
-            "applicationTypeToBeRemoved", bundle.toLabel(),
-            "applicationToBeRemoved", bundle.
-        )
+    public DynamicList buildDynamicListOfApplications(CaseData caseData, UUID selected) {
+        List<Element<AdditionalApplicationsBundle>> applications = caseData.getAdditionalApplicationsBundle();
 
+        applications.sort(Comparator
+            .comparing((Element<AdditionalApplicationsBundle> bundle) -> bundle.getValue().getUploadedDateTime()));
+
+        return asDynamicList(applications, selected, AdditionalApplicationsBundle::toLabel);
+    }
+
+    public Map<String, Object> populateApplicationFields(Element<AdditionalApplicationsBundle> bundleElement) {
+        return Map.of(
+            "applicationTypeToBeRemoved", bundleElement.getValue().toLabel(),
+            "c2ApplicationToBeRemoved", bundleElement.getValue().getC2DocumentBundle().getDocument(),
+            "otherApplicationToBeRemoved", bundleElement.getValue().getOtherApplicationsBundle().getDocument(),
+            "orderDateToBeRemoved", bundleElement.getValue().getUploadedDateTime()
+        );
 
     }
 

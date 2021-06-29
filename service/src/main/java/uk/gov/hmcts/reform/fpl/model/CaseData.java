@@ -436,7 +436,7 @@ public class CaseData {
     private final Object removableApplicationList;
     private final String reasonToRemoveOrder;
     private final List<Element<GeneratedOrder>> hiddenOrders;
-    private final OrderOrApplication orderOrApplication;
+    private final OrderOrApplication removeOrderOrApplication;
 
     public List<Element<GeneratedOrder>> getHiddenOrders() {
         return defaultIfNull(hiddenOrders, new ArrayList<>());

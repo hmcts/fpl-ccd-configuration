@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "removeOrderOrApplication",
     "Label": "What do you want to remove?",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "OrderOrApplication",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -50,7 +50,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicationRemovalDetails",
-    "Label": "Why is the application being removed?",
+    "Label": "Give details",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -95,8 +95,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "applicationToBeRemoved",
-    "Label": "Link to application",
+    "ID": "applicationToBeRemovedLabel",
+    "Label": "### Link to application",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2ApplicationToBeRemoved",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherApplicationToBeRemoved",
+    "Label": " ",
     "FieldType": "Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
