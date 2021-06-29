@@ -6,14 +6,17 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class RemoveOrderService {
+public class RemovalService {
 
     private final OrderRemovalActions orderRemovalActions;
 
@@ -65,6 +68,27 @@ public class RemoveOrderService {
             .map(Element::getValue)
             .findAny()
             .orElseThrow(() -> new RemovableOrderNotFoundException(removedOrderId));
+    }
+
+    public ApplicationsBundle getRemovedApplicationById(CaseData caseData, UUID selectedBundleId) {
+        return caseData.getAllApplicationsBundles().stream()
+            .filter(orderElement -> selectedBundleId.equals(orderElement.getId()))
+            .map(Element::getValue)
+            .findAny()
+            .orElseThrow(() -> new RemovableOrderNotFoundException(selectedBundleId));
+    }
+
+    public List<Element<AdditionalApplicationsBundle>> removeApplicationFromCase(CaseData caseData,
+                                                                                 ApplicationsBundle bundle) {
+    }
+
+    public Map<String, Object> populateApplicationFields(ApplicationsBundle bundle) {
+        return Map.of(
+            "applicationTypeToBeRemoved", bundle.toLabel(),
+            "applicationToBeRemoved", bundle.
+        )
+
+
     }
 
     public Optional<StandardDirectionOrder> getRemovedSDO(

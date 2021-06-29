@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @ExtendWith(MockitoExtension.class)
-class RemoveOrderServiceTest {
+class RemovalServiceTest {
 
     private static final LocalDate NOW = LocalDate.now();
     private static final java.util.UUID REMOVED_UUID = java.util.UUID.randomUUID();
@@ -78,7 +78,7 @@ class RemoveOrderServiceTest {
     private CaseData caseDataBefore;
 
     @InjectMocks
-    private RemoveOrderService underTest;
+    private RemovalService underTest;
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("generateAllAvailableStatesSource")

@@ -3,6 +3,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "removeOrderOrApplication",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "removableOrderList",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
@@ -10,7 +17,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "removableApplicationList",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "reasonToRemoveOrder",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reasonToRemoveApplication",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicationRemovalDetails",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
@@ -38,7 +66,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicationToBeRemoved",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderTitleToBeRemoved",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicationTypeToBeRemoved",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
   },

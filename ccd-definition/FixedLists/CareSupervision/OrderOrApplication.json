@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderOrApplication",
+    "ListElementCode": "ORDER",
+    "ListElement": "Order",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderOrApplication",
+    "ListElementCode": "APPLICATION",
+    "ListElement": "Application",
+    "DisplayOrder": 2
+  }
+]
