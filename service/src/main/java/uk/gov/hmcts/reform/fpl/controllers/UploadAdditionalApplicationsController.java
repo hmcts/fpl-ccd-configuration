@@ -33,7 +33,6 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -144,14 +143,16 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);
                 } catch (FeeRegisterException | PaymentsApiException paymentException) {
                     log.error("Additional applications payment for case {} failed", caseDetails.getId());
-                    publishEvent(new FailedPBAPaymentEvent(
-                        caseData, C2_APPLICATION, lastBundle.getC2DocumentBundle().getApplicantName()));
+                    publishEvent(new FailedPBAPaymentEvent(caseData,
+                        uploadAdditionalApplicationsService.getApplicationTypes(lastBundle),
+                        uploadAdditionalApplicationsService.getApplicantName(lastBundle)));
                 }
             } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 log.error("Additional applications payment for case {} not taken as payment fee not shown to user",
                     caseDetails.getId());
-                publishEvent(new FailedPBAPaymentEvent(
-                    caseData, C2_APPLICATION, lastBundle.getC2DocumentBundle().getApplicantName()));
+                publishEvent(new FailedPBAPaymentEvent(caseData,
+                    uploadAdditionalApplicationsService.getApplicationTypes(lastBundle),
+                    uploadAdditionalApplicationsService.getApplicantName(lastBundle)));
             }
         }
     }

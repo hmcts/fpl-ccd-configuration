@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvid
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
 import java.util.Collection;
+import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME;
@@ -131,6 +132,6 @@ public class SubmittedCaseEventHandler {
 
     private void handlePaymentNotTaken(CaseData caseData) {
         log.error("Payment not taken for case {}.", caseData.getId());
-        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
+        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
     }
 }

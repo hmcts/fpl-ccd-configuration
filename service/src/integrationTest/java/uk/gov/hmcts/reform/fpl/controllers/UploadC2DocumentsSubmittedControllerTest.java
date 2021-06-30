@@ -323,13 +323,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/cases/case-details/12345#C2",
+            "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
             "applicant", LOCAL_AUTHORITY_1_NAME + ", Applicant");
     }
 
     private Map<String, Object> expectedApplicantNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/cases/case-details/12345#C2");
+            "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications");
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {

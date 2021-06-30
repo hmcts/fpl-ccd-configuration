@@ -39,9 +39,9 @@ public class FailedPBAPaymentEventHandler {
     public void notifyApplicant(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
         String applicant = defaultIfNull(event.getApplicantName(), "");
-        if (ApplicationType.C110A_APPLICATION == event.getApplicationType()) {
+        if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
             notifyLocalAuthority(event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
-        } else if (ApplicationType.C2_APPLICATION == event.getApplicationType()) {
+        } else {
             if ((caseData.getCaseLocalAuthorityName() + ", Applicant").equals(applicant)) {
                 notifyLocalAuthority(event, INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT);
             } else {
@@ -57,7 +57,7 @@ public class FailedPBAPaymentEventHandler {
         CaseData caseData = event.getCaseData();
 
         FailedPBANotificationData parameters = notificationContent
-            .getLocalAuthorityNotifyData(event.getApplicationType(), event.getCaseData().getId());
+            .getLocalAuthorityNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -70,7 +70,7 @@ public class FailedPBAPaymentEventHandler {
 
     private void notifyRespondent(FailedPBAPaymentEvent event, Collection<String> emails) {
         FailedPBANotificationData parameters = notificationContent
-            .getLocalAuthorityNotifyData(event.getApplicationType(), event.getCaseData().getId());
+            .getLocalAuthorityNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
 
         notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             emails, parameters, event.getCaseData().getId().toString());
@@ -92,14 +92,14 @@ public class FailedPBAPaymentEventHandler {
         CaseData caseData = event.getCaseData();
 
         FailedPBANotificationData parameters = notificationContent.getCtscNotifyData(caseData,
-            event.getApplicationType(), event.getApplicantName());
+            event.getApplicationTypes(), event.getApplicantName());
 
         String email = ctscEmailLookupConfiguration.getEmail();
 
-        if (event.getApplicationType() == ApplicationType.C110A_APPLICATION) {
+        if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
             notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
-        } else if (event.getApplicationType() == ApplicationType.C2_APPLICATION) {
+        } else if (event.getApplicationTypes().contains(ApplicationType.C2_APPLICATION)) {
             notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
         }

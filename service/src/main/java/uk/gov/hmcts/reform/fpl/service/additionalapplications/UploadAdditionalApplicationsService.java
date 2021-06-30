@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,10 +31,12 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -45,6 +49,32 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
+
+    public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
+        List<ApplicationType> applicationTypes = new ArrayList<>();
+        if (!isNull(bundle.getC2DocumentBundle())) {
+            applicationTypes.add(C2_APPLICATION);
+        }
+
+        if (!isNull(bundle.getOtherApplicationsBundle())) {
+            applicationTypes.add(ApplicationType.valueOf(
+                bundle.getOtherApplicationsBundle().getApplicationType().name()));
+        }
+        return applicationTypes;
+    }
+
+    public String getApplicantName(AdditionalApplicationsBundle bundle) {
+        if (!isNull(bundle.getC2DocumentBundle())) {
+            return bundle.getC2DocumentBundle().getApplicantName();
+        }
+
+        if (!isNull(bundle.getOtherApplicationsBundle())) {
+            return bundle.getOtherApplicationsBundle().getApplicantName();
+        }
+
+        return EMPTY;
+    }
+
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
         final Optional<String> applicantName = getSelectedApplicantName(

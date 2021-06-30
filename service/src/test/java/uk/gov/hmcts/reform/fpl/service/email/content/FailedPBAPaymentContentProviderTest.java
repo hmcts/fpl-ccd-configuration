@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.C2;
@@ -36,7 +38,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .getCtscNotifyData(caseData, applicationType, applicant);
+            .getCtscNotifyData(caseData, List.of(applicationType), applicant);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
@@ -50,7 +52,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .getLocalAuthorityNotifyData(applicationType, 123L);
+            .getLocalAuthorityNotifyData(List.of(applicationType), 123L);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }

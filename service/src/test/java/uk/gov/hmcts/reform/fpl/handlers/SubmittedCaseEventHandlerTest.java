@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.doThrow;
@@ -165,7 +166,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
             verifyNoMoreInteractions(paymentService, eventService);
         }
 
@@ -180,7 +181,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
             verifyNoMoreInteractions(paymentService, eventService);
         }
 
@@ -200,7 +201,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
         }
 
         @Test
@@ -219,7 +220,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION, ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
         }
 
         @Test
