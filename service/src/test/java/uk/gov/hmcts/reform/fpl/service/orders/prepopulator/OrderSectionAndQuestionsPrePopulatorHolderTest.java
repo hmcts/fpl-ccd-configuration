@@ -49,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 @ExtendWith(MockitoExtension.class)
 class OrderSectionAndQuestionsPrePopulatorHolderTest {
 
-    // Section blocks/DocmosisOrderCaseDataGenerator.java
     @Mock
     private WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
     @Mock
