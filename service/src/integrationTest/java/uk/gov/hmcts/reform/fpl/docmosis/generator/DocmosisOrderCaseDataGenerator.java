@@ -54,6 +54,7 @@ public class DocmosisOrderCaseDataGenerator {
             case LINK_APPLICATION:
             case REVIEW_DRAFT_ORDER:
             case CLOSE_CASE:
+            case WHICH_OTHERS:
                 // Do Nothing - they won't modify the document
                 break;
             case APPROVER:
@@ -160,9 +161,6 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersCafcassRegion("ENGLAND")
                         .build()
                 );
-            case WHICH_OTHERS:
-                // Do Nothing - they won't modify the document
-                break;
             default:
                 throw new RuntimeException("Question block for " + questionBlock + " not implemented");
         }
