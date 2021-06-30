@@ -41,7 +41,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BOURNEMOUTH;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
@@ -100,7 +100,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @BeforeEach
     void mocks() {
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(PDF)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
@@ -112,7 +112,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         when(uploadService.uploadDocument(eq(DOCUMENT_PDF_BINARIES), anyString(), eq("application/pdf")))
             .thenReturn(UPLOADED_PDF_DOCUMENT);
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER), eq(WORD)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(WORD)))
             .thenReturn(DOCMOSIS_WORD_DOCUMENT);
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(WORD)))
             .thenReturn(DOCMOSIS_WORD_DOCUMENT);

@@ -34,13 +34,13 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String buildOrderDetails(ManageOrdersEventData manageOrdersEventData) {
         String office = getCafcassOffice(manageOrdersEventData);
 
-        return String.format("The court appoints Cafcass %s as a Children's Guardian for the child in the"
+        return String.format("The court appoints Cafcass %s as a children's guardian for the child in the"
             + " proceedings.", office);
     }
 

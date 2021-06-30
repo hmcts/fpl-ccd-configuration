@@ -7,12 +7,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
@@ -30,16 +34,27 @@ class OrderDetailsWithEndTypeGeneratorTest {
         20,
         13,
         21,
-        03);
+        3);
     private static final int MONTHS_END_DATE = 4;
     private static final LocalDate APPROVAL_DATE = LocalDate.of(2013, 11, 8);
+    private static final Map<String, String> CHILD_CONTEXT_ELEMENTS = new HashMap<>(Map.of(
+        "childOrChildren", "child",
+        "childIsOrAre", "is",
+        "localAuthorityName", LA_NAME));
 
+    private static final Map<String, String> CHILDREN_CONTEXT_ELEMENTS = new HashMap<>(Map.of(
+        "childOrChildren", "children",
+        "childIsOrAre", "are",
+        "localAuthorityName", LA_NAME));
+
+
+    private final ManageOrderDocumentService manageOrderDocumentService = mock(ManageOrderDocumentService.class);
     private final ChildrenService childrenService = mock(ChildrenService.class);
     private final LocalAuthorityNameLookupConfiguration laNameLookup = mock(
         LocalAuthorityNameLookupConfiguration.class);
 
     private final OrderDetailsWithEndTypeGenerator underTest =
-        new OrderDetailsWithEndTypeGenerator(childrenService, laNameLookup);
+        new OrderDetailsWithEndTypeGenerator(manageOrderDocumentService);
 
     @BeforeEach
     void setUp() {
@@ -62,6 +77,8 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
     @Test
     void testTemplateWithLocalAuthorityName() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILD_CONTEXT_ELEMENTS);
+
         String actual = underTest.orderDetails(CALENDAR_DAY,
             OrderDetailsWithEndTypeMessages.builder()
                 .messageWithSpecifiedTime("blah ${localAuthorityName} blah")
@@ -78,6 +95,7 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
     @Test
     void testTemplateWithChildOrChildrenSingleChild() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_CODE)
@@ -99,6 +117,7 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
     @Test
     void testTemplateWithChildOrChildrenMultipleChildren() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -122,6 +141,7 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
     @Test
     void testTemplateWithEndDate() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -142,6 +162,7 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
     @Test
     void testTemplateWithEndOfProceedings() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -163,6 +184,7 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
     @Test
     void testTemplateWithNumberOfMonths() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
