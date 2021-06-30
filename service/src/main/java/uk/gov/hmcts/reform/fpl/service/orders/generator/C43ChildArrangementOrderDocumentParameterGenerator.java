@@ -49,8 +49,8 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "necessary.";
 
     public static final String NOTICE = "Any person with parental responsibility for the child may obtain "
-        + "advice on what can be done to prevent theissue of a passport to the child. They should write to London "
-        + "Passport Office, Globe House, 89 EcclestonSquare, LONDON SW1V 1PN.";
+        + "advice on what can be done to prevent the issue of a passport to the child. They should write to London "
+        + "Passport Office, Globe House, 89 Eccleston Square, LONDON SW1V 1PN.";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
 
