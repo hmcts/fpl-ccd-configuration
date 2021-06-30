@@ -82,7 +82,8 @@ public class EmailTemplateTest {
 
     @BeforeEach
     void lookupServiceSetUp() {
-        when(inbox.getEmailsByPreference(any(), any())).thenReturn(new LinkedHashSet<>(Arrays.asList("representative@example.com")));
+        when(inbox.getEmailsByPreference(any(), any())).thenReturn(new LinkedHashSet<>(Arrays
+            .asList("representative@example.com")));
         when(inboxLookupService.getRecipients(any())).thenReturn(Set.of("test@example.com"));
         when(hmctsCourtLookupConfiguration.getCourt(any()))
             .thenReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "court@test.com", COURT_CODE));
