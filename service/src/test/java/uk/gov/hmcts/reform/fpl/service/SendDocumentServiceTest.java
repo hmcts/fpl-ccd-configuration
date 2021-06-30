@@ -53,9 +53,6 @@ class SendDocumentServiceTest {
     @Mock
     private SentDocumentHistoryService sentDocumentsService;
 
-    @Mock
-    private OthersService othersService;
-
     @TestLogs
     private TestLogger logs = new TestLogger(SendDocumentService.class);
 
@@ -375,7 +372,4 @@ class SendDocumentServiceTest {
             .address(address)
             .build();
     }
-
-
-
 }
