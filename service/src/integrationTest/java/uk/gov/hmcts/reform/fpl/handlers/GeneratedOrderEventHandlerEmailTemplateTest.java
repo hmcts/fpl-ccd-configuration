@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraOthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -55,7 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
     @MockBean(FeatureToggleService.class), @MockBean(ChildrenService.class), @MockBean(IdentityService.class),
     @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
-    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
+    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class)
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);

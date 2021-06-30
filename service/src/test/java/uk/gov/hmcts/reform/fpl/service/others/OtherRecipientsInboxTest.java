@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -34,40 +34,40 @@ class OtherRecipientsInboxTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void testShouldReturnAllOtherNonSelectedRecipientEmailsWhoAreRepresented() {
+    void testShouldReturnAllOtherNonSelectedRecipientsWhoAreRepresentedByEmail() {
         Other firstOther = testOther("First other");
         firstOther.addRepresentative(REPRESENTATIVE_ID_1);
 
         Other secondOther = testOther("Second other");
         secondOther.addRepresentative(REPRESENTATIVE_ID_2);
 
-        Representative representingOther1 = Representative.builder()
+        Element<Representative> representingOther1 = element(REPRESENTATIVE_ID_1, Representative.builder()
             .servingPreferences(EMAIL)
             .role(RepresentativeRole.REPRESENTING_OTHER_PERSON_1)
             .email(REPRESENTING_OTHER_1_EMAIL)
-            .build();
+            .build());
 
-        Representative representingOther2 = Representative.builder()
+        Element<Representative> representingOther2 = element(REPRESENTATIVE_ID_2, Representative.builder()
             .servingPreferences(EMAIL)
             .role(RepresentativeRole.REPRESENTING_OTHER_PERSON_2)
             .email(REPRESENTING_OTHER_2_EMAIL)
-            .build();
+            .build());
 
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
                 .firstOther(firstOther)
             .additionalOthers(List.of(element(secondOther), element(testOther("Third other"))))
             .build())
-            .representatives(List.of(element(REPRESENTATIVE_ID_1, representingOther1),
-                element(REPRESENTATIVE_ID_2, representingOther2)))
+            .representatives(List.of(representingOther1, representingOther2))
             .build();
 
         List<Element<Other>> othersSelected = List.of(element(firstOther));
 
-        Set<String> nonSelectedRecipients = (Set<String>) underTest.getNonSelectedRecipients(EMAIL, caseData,
+        Set<Element<Representative>> nonSelectedRecipients = (Set<Element<Representative>>)
+            underTest.getNonSelectedRecipients(EMAIL, caseData,
             othersSelected,
-            element -> element.getValue().getEmail());
-        assertThat(nonSelectedRecipients).containsOnly(REPRESENTING_OTHER_2_EMAIL);
+            Function.identity());
+        assertThat(nonSelectedRecipients).containsOnly(representingOther2);
     }
 
     @SuppressWarnings("unchecked")
@@ -87,31 +87,32 @@ class OtherRecipientsInboxTest {
 
         List<Element<Other>> othersSelected = List.of(element(firstOther));
 
-        Set<Recipient> nonSelectedRecipients = (Set<Recipient>) underTest.getNonSelectedRecipients(EMAIL, caseData,
+        Set<Representative> nonSelectedRecipients = (Set<Representative>)
+            underTest.getNonSelectedRecipients(EMAIL, caseData,
             othersSelected, Function.identity());
         assertThat(nonSelectedRecipients).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    void testShouldReturnAllOtherNonSelectedRecipientsWhoAreRepresented() {
+    void testShouldReturnAllOtherNonSelectedRecipientsWhoAreRepresentedByPost() {
         Other firstOther = testOther("First other");
         firstOther.addRepresentative(REPRESENTATIVE_ID_1);
 
         Other secondOther = testOther("Second other");
         secondOther.addRepresentative(REPRESENTATIVE_ID_2);
 
-        Representative representingOther1 = Representative.builder()
+        Element<Representative> representingOther1 = element(REPRESENTATIVE_ID_1, Representative.builder()
             .servingPreferences(EMAIL)
             .role(RepresentativeRole.REPRESENTING_OTHER_PERSON_1)
             .email(REPRESENTING_OTHER_1_EMAIL)
-            .build();
+            .build());
 
-        Representative representingOther2 = Representative.builder()
+        Element<Representative> representingOther2 = element(REPRESENTATIVE_ID_2, Representative.builder()
             .servingPreferences(POST)
             .role(RepresentativeRole.REPRESENTING_OTHER_PERSON_2)
             .email(REPRESENTING_OTHER_2_EMAIL)
-            .build();
+            .build());
 
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
@@ -119,22 +120,16 @@ class OtherRecipientsInboxTest {
                 .additionalOthers(List.of(element(secondOther),
                     element(testOther("Third other"))))
                 .build())
-            .representatives(List.of(element(REPRESENTATIVE_ID_1, representingOther1),
-                element(REPRESENTATIVE_ID_2, representingOther2)))
+            .representatives(List.of(representingOther1,
+                representingOther2))
             .build();
 
         List<Element<Other>> othersSelected = List.of(element(firstOther));
 
-        Representative expectedRecipient = Representative.builder()
-            .email(REPRESENTING_OTHER_2_EMAIL)
-            .role(RepresentativeRole.REPRESENTING_OTHER_PERSON_2)
-            .servingPreferences(POST)
-            .build();
-
-        Set<Recipient> nonSelectedRecipients = (Set<Recipient>) underTest.getNonSelectedRecipients(POST, caseData,
-            othersSelected,
-            element -> element.getValue());
-        assertThat(nonSelectedRecipients).containsOnly(expectedRecipient);
+        Set<Element<Representative>> nonSelectedRecipients = (Set<Element<Representative>>)
+            underTest.getNonSelectedRecipients(POST, caseData,
+            othersSelected, Function.identity());
+        assertThat(nonSelectedRecipients).containsOnly(representingOther2);
     }
 
     @SuppressWarnings("unchecked")
@@ -147,22 +142,59 @@ class OtherRecipientsInboxTest {
                 .build())
             .build();
 
-        Representative representingRespondent = Representative.builder()
+        Element<Representative> representingRespondent = element(REPRESENTATIVE_ID_1, Representative.builder()
             .servingPreferences(EMAIL)
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
             .email(REPRESENTING_RESPONDENT_1_EMAIL)
-            .build();
+            .build());
 
         CaseData caseData = CaseData.builder()
             .respondents1(List.of(element(respondent)))
-            .representatives(List.of(element(REPRESENTATIVE_ID_1, representingRespondent)))
+            .representatives(List.of(representingRespondent))
             .build();
 
-        List<Element<Other>> othersSelected = Collections.emptyList();
+        List<Element<Other>> othersSelected = emptyList();
 
-        Set<String> nonSelectedRecipients = (Set<String>) underTest.getNonSelectedRecipients(EMAIL, caseData,
-            othersSelected,
-            element -> element.getValue().getEmail());
+        Set<Element<Representative>> nonSelectedRecipients = (Set<Element<Representative>>)
+            underTest.getNonSelectedRecipients(EMAIL,
+            caseData,
+            othersSelected, Function.identity());
         assertThat(nonSelectedRecipients).isEmpty();
+    }
+
+    @Test
+    void testShouldReturnSelectedRecipientsWithNoRepresentationWhenAddressPresent() {
+        Other firstOther = testOther("First other");
+        firstOther.addRepresentative(REPRESENTATIVE_ID_1);
+
+        Other secondOther = testOther("Second other");
+
+        List<Element<Other>> othersSelected = List.of(element(firstOther), element(secondOther));
+
+        Set<Recipient> recipients = underTest.getSelectedRecipientsWithNoRepresentation(othersSelected);
+
+        assertThat(recipients).containsOnly(secondOther.toParty());
+    }
+
+    @Test
+    void testShouldReturnEmptyListWhenSelectedOthersHaveNoAddressPresent() {
+        Other firstOther = Other.builder()
+            .name("First other")
+            .build();
+
+        List<Element<Other>> othersSelected = List.of(element(firstOther));
+
+        Set<Recipient> recipients = underTest.getSelectedRecipientsWithNoRepresentation(othersSelected);
+
+        assertThat(recipients).isEmpty();
+    }
+
+    @Test
+    void testShouldReturnEmptyListWhenNoSelectedOthers() {
+        List<Element<Other>> othersSelected = emptyList();
+
+        Set<Recipient> recipients = underTest.getSelectedRecipientsWithNoRepresentation(othersSelected);
+
+        assertThat(recipients).isEmpty();
     }
 }
