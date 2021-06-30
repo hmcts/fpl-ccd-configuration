@@ -89,7 +89,7 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersCareOrderIssuedDate(LocalDate.of(2013, 10, 4))
-                        .manageOrdersCareOrderIssuedCourt("1")
+                        .manageOrdersCareOrderIssuedCourt("98")
                         .build()
                 );
             case DETAILS:

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHolder;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.UploadedOrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.io.IOException;
 import java.util.stream.Stream;
@@ -73,6 +75,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     C33InterimCareOrderDocumentParameterGenerator.class,
     C23EPOAdditionalDocumentsCollector.class,
     C35bISODocumentParameterGenerator.class,
+    ManageOrderDocumentService.class,
+    OrderMessageGenerator.class,
     C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
     OrderDetailsWithEndTypeGenerator.class,
     UploadedOrderDocumentGenerator.class,
