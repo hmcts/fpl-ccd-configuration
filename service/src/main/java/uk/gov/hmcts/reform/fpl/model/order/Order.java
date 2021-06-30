@@ -55,11 +55,11 @@ public enum Order {
             EPO_TYPE_AND_PREVENT_REMOVAL, EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE,
             FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
-    C32_CARE_ORDER(
+    C32A_CARE_ORDER(
         DIGITAL,
         "Care order",
         "Section 31 Children Act 1989",
-        "C32 - Care order",
+        "Care order (C32A)",
         IsFinalOrder.YES,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER, CLOSE_CASE)

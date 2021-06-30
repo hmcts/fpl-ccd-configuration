@@ -22,7 +22,7 @@ class CloseCaseBlockPrePopulatorTest {
 
     private static final UUID CHILD_ID_1 = UUID.randomUUID();
     private static final UUID CHILD_ID_2 = UUID.randomUUID();
-    private static final Order FINAL_ORDER_TYPE = Order.C32_CARE_ORDER;
+    private static final Order FINAL_ORDER_TYPE = Order.C32A_CARE_ORDER;
     private static final Order NON_FINAL_ORDER_TYPE = Order.C23_EMERGENCY_PROTECTION_ORDER;
     private static final Order MAYBE_FINAL_ORDER_TYPE = Order.C32B_DISCHARGE_OF_CARE_ORDER;
 

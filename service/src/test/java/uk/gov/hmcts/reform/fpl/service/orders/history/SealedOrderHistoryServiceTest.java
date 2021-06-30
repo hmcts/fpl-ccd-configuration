@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 class SealedOrderHistoryServiceTest {
 
     private static final Judge JUDGE = mock(Judge.class);
-    private static final Order ORDER_TYPE = Order.C32_CARE_ORDER;
+    private static final Order ORDER_TYPE = Order.C32A_CARE_ORDER;
     private static final LocalDate TODAY = LocalDate.of(2012, 12, 22);
     private static final LocalDateTime NOW = TODAY.atStartOfDay();
     private static final LocalDate APPROVAL_DATE = LocalDate.of(2010, 11, 6);

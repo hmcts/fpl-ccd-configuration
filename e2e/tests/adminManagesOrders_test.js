@@ -22,7 +22,7 @@ async function setupScenario(I, caseViewPage) {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 }
 
-Scenario('Create C32 care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -46,7 +46,7 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({ I, 
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
-    orderType: 'C32 - Care order',
+    orderType: 'Care order (C32A)',
     approvalDate: new Date(2012, 10, 3),
     allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
     children: 'Timothy Jones',
