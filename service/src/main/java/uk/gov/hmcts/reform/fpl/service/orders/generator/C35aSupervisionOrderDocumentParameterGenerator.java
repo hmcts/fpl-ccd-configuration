@@ -51,7 +51,7 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
 }

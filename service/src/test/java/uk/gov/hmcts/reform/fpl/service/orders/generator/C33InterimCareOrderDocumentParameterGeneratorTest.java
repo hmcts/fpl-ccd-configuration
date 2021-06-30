@@ -1,25 +1,27 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
@@ -30,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_O
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class C33InterimCareOrderDocumentParameterGeneratorTest {
     private static final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -38,22 +39,40 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
     private static final String CHILDREN_GRAMMAR = "children are";
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Sheffield City Council";
-    private static final Child CHILD = mock(Child.class);
     private static final GeneratedOrderType TYPE = GeneratedOrderType.CARE_ORDER;
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final String EXCLUSION_DETAILS = "reasons are x y and z";
+    private static final String ORDER_HEADER = "Care order restrictions";
+    private static final String ORDER_MESSAGE = "Care order message";
+    private static final Map<String, String> CHILD_CONTEXT_ELEMENTS = new HashMap<>(Map.of(
+        "childOrChildren", "child",
+        "childIsOrAre", "is",
+        "localAuthorityName", LA_NAME));
+
+    private static final Map<String, String> CHILDREN_CONTEXT_ELEMENTS = new HashMap<>(Map.of(
+        "childOrChildren", "children",
+        "childIsOrAre", "are",
+        "localAuthorityName", LA_NAME));
+
     private static final LocalDateTime NEXT_WEEK_DATE_TIME = time.now().plusDays(7);
     private String dayOrdinalSuffix;
     private String courtOrderMessage;
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final ManageOrderDocumentService manageOrderDocumentService = mock(ManageOrderDocumentService.class);
+    private final OrderMessageGenerator orderMessageGenerator = mock(OrderMessageGenerator.class);
     private final LocalAuthorityNameLookupConfiguration laNameLookup =
         mock(LocalAuthorityNameLookupConfiguration.class);
 
     private C33InterimCareOrderDocumentParameterGenerator underTest =
         new C33InterimCareOrderDocumentParameterGenerator(
-            laNameLookup, new OrderDetailsWithEndTypeGenerator(childrenService, laNameLookup)
+            laNameLookup, orderMessageGenerator, new OrderDetailsWithEndTypeGenerator(manageOrderDocumentService)
         );
+
+    @BeforeEach
+    void setUp() {
+        when(orderMessageGenerator.getCareOrderRestrictions(any())).thenReturn(ORDER_MESSAGE);
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+    }
 
     @Test
     void accept() {
@@ -62,7 +81,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
     @Test
     void template() {
-        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER);
+        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
     @Test
@@ -77,11 +96,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -103,11 +118,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -128,11 +139,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -153,11 +160,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -177,11 +180,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         );
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -201,11 +200,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         );
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -225,11 +220,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         );
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -249,11 +240,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         );
         String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -270,11 +257,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getChildMessageForEndOfProceedings(CHILD_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -291,11 +274,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getChildMessageForEndOfProceedings(CHILD_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -312,11 +291,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getChildMessageForEndOfProceedings(CHILD_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -333,11 +308,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getChildMessageForEndOfProceedings(CHILD_GRAMMAR);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -365,6 +336,8 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             return C33InterimCareOrderDocmosisParameters.builder()
                 .orderTitle(Order.C33_INTERIM_CARE_ORDER.getTitle())
                 .orderType(TYPE)
+                .orderHeader(ORDER_HEADER)
+                .orderMessage(ORDER_MESSAGE)
                 .furtherDirections(FURTHER_DIRECTIONS)
                 .exclusionClause(EXCLUSION_DETAILS)
                 .localAuthorityName(LA_NAME);
@@ -372,6 +345,8 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             return C33InterimCareOrderDocmosisParameters.builder()
                 .orderTitle(Order.C33_INTERIM_CARE_ORDER.getTitle())
                 .orderType(TYPE)
+                .orderHeader(ORDER_HEADER)
+                .orderMessage(ORDER_MESSAGE)
                 .furtherDirections(FURTHER_DIRECTIONS)
                 .localAuthorityName(LA_NAME);
         }
