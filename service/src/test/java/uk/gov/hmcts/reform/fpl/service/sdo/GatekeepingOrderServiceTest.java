@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.sdo;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -32,20 +31,18 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -97,10 +94,7 @@ class GatekeepingOrderServiceTest {
     Time time;
 
     @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
-    private RequestData requestData;
+    private UserService userService;
 
     @MockBean
     private DocumentService documentService;
@@ -869,15 +863,11 @@ class GatekeepingOrderServiceTest {
         final DocumentReference uploadedOrder = TestDataHelper.testDocumentReference();
         final DocumentReference sealedOrder = TestDataHelper.testDocumentReference();
 
-        final UserInfo user = UserInfo.builder()
-            .name("John Smith")
-            .build();
+        final String userName = "John Smith";
 
         @BeforeEach
         void init() {
-            final String userToken = RandomStringUtils.randomAlphanumeric(10);
-            when(requestData.authorisation()).thenReturn(userToken);
-            when(idamClient.getUserInfo(userToken)).thenReturn(user);
+            when(userService.getUserName()).thenReturn(userName);
             when(sealingService.sealDocument(uploadedOrder)).thenReturn(sealedOrder);
         }
 
@@ -900,7 +890,7 @@ class GatekeepingOrderServiceTest {
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(DRAFT)
                 .dateOfUpload(time.now().toLocalDate())
-                .uploader(user.getName())
+                .uploader(userName)
                 .orderDoc(uploadedOrder)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
@@ -929,7 +919,7 @@ class GatekeepingOrderServiceTest {
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
                 .dateOfUpload(time.now().toLocalDate())
-                .uploader(user.getName())
+                .uploader(userName)
                 .orderDoc(sealedOrder)
                 .lastUploadedOrder(uploadedOrder)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())

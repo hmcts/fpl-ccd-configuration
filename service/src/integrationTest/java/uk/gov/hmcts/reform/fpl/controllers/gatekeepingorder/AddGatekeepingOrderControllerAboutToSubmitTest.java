@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,6 +83,10 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
     private static final Document C6_DOCUMENT = testDocument();
     private static final DocumentReference SDO_REFERENCE = DocumentReference.buildFromDocument(SDO_DOCUMENT);
     private static final DocumentReference C6_REFERENCE = DocumentReference.buildFromDocument(C6_DOCUMENT);
+    private static final UserDetails USER = UserDetails.builder()
+        .forename("John")
+        .surname("Smith")
+        .build();
 
     @MockBean
     private DocumentSealingService sealingService;
@@ -109,6 +114,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
 
         given(uploadDocumentService.uploadPDF(sdoBinaries, sealedOrderFileName)).willReturn(SDO_DOCUMENT);
         given(uploadDocumentService.uploadPDF(c6Binaries, c6FileName)).willReturn(C6_DOCUMENT);
+        givenCurrentUser(USER);
     }
 
     @Test

@@ -21,13 +21,10 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,8 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeF
 public class GatekeepingOrderService {
 
     private final Time time;
-    private final IdamClient idamClient;
-    private final RequestData requestData;
+    private final UserService userService;
     private final CaseConverter converter;
     private final DocumentService documentService;
     private final CalendarService calendarService;
@@ -85,13 +81,12 @@ public class GatekeepingOrderService {
             .getGatekeepingOrderSealDecision();
 
         caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision();
-        UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
         DocumentReference draftDocument = decision.getDraftDocument();
         DocumentReference document = decision.isSealed() ? sealingService.sealDocument(draftDocument) : draftDocument;
 
         return buildBaseGatekeepingOrder(caseData).toBuilder()
             .dateOfUpload(time.now().toLocalDate())
-            .uploader(userInfo.getName())
+            .uploader(userService.getUserName())
             .orderDoc(document)
             .lastUploadedOrder(decision.isSealed() ? draftDocument : null)
             .build();

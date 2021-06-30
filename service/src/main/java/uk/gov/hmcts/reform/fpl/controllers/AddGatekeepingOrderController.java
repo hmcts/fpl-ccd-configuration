@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -185,9 +184,10 @@ public class AddGatekeepingOrderController extends CallbackController {
             }
         }
 
-        List<String> tempFields = GatekeepingOrderEventData.temporaryFields();
-
-        tempFields.addAll(List.of(
+        removeTemporaryFields(data,
+            "urgentHearingOrderDocument",
+            "urgentHearingAllocation",
+            "showUrgentHearingAllocation",
             "currentSDO",
             "preparedSDO",
             "replacementSDO",
@@ -199,15 +199,11 @@ public class AddGatekeepingOrderController extends CallbackController {
             "gatekeepingOrderHearingDate2",
             "gatekeepingOrderHasHearing1",
             "gatekeepingOrderHasHearing2"
-        ));
+        );
 
         if (decision.isSealed()) {
-            tempFields.add("gatekeepingOrderIssuingJudge");
-            tempFields.add("gatekeepingOrderRouter");
-            tempFields.add("customDirections");
+            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "gatekeepingOrderRouter", "customDirections");
         }
-
-        removeTemporaryFields(data, tempFields);
 
         return respond(data);
     }
