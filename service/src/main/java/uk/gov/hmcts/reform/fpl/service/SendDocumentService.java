@@ -6,7 +6,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
@@ -35,7 +34,6 @@ public class SendDocumentService {
     private final SendLetterService sendLetters;
     private final CoreCaseDataService caseService;
     private final SentDocumentHistoryService sentDocuments;
-    private final OthersService othersService;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
 
@@ -79,21 +77,13 @@ public class SendDocumentService {
         return new ArrayList<>(caseData.getRepresentativesByServedPreference(POST));
     }
 
-    public List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
+    private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
         return unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
                 && hasNoLegalRepresentation(respondent))
             .map(Respondent::getParty)
             .collect(toList());
     }
-
-    public List<Recipient> getContactableNotRepresentedOthers(CaseData caseData) {
-        return unwrapElements(caseData.getAllOthers()).stream()
-            .filter(other -> !other.isRepresented() && other.hasAddressAdded())
-            .map(Other::toParty)
-            .collect(toList());
-    }
-
 
     private boolean hasNoLegalRepresentation(Respondent respondent) {
         return !YES.getValue().equals(respondent.getLegalRepresentation());

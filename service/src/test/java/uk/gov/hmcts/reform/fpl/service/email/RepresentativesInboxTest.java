@@ -347,5 +347,4 @@ class RepresentativesInboxTest {
             EMAIL_1, EMAIL_3
         ));
     }
-
 }

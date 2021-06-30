@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32bDischargeOfCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.time.LocalDate;
 
@@ -29,6 +30,8 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
     private static final String VENUE_NAME = "Venue";
     private static final String DIRECTIONS = "The Court discharges the care order made by Venue made on 1st June 2021.";
     private static final String FURTHER_DIRECTIONS = "Further test directions";
+    private static final String ORDER_HEADER = "Care order restrictions";
+    private static final String ORDER_MESSAGE = "Care order message";
     private static final CaseData CASE_DATA = CaseData.builder()
         .caseLocalAuthority(LA_CODE)
         .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -49,6 +52,9 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
     private LocalAuthorityNameLookupConfiguration laNameLookup;
 
     @Mock
+    private OrderMessageGenerator orderMessageGenerator;
+
+    @Mock
     private HearingVenueLookUpService hearingVenueLookUpService;
 
     @InjectMocks
@@ -63,6 +69,7 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
     void generate() {
         when(hearingVenueLookUpService.getHearingVenue(VENUE_ID)).thenReturn(HEARING_VENUE);
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        when(orderMessageGenerator.getCareOrderRestrictions(CASE_DATA)).thenReturn(ORDER_MESSAGE);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
         assertThat(generatedParameters).isEqualTo(expectedCommonParameters());
@@ -70,12 +77,14 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
 
     @Test
     void template() {
-        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER);
+        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
     private C32bDischargeOfCareOrderDocmosisParameters expectedCommonParameters() {
         return C32bDischargeOfCareOrderDocmosisParameters.builder()
             .orderTitle(Order.C32B_DISCHARGE_OF_CARE_ORDER.getTitle())
+            .orderHeader(ORDER_HEADER)
+            .orderMessage(ORDER_MESSAGE)
             .orderDetails(DIRECTIONS)
             .furtherDirections(FURTHER_DIRECTIONS)
             .localAuthorityName(LA_NAME)

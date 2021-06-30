@@ -20,8 +20,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativesInbox {
 
-    public Set<String> getEmailsByPreference(CaseData caseData,
-                                             RepresentativeServingPreferences preference) {
+    public Set<String> getEmailsByPreference(CaseData caseData, RepresentativeServingPreferences preference) {
         if (preference.equals(RepresentativeServingPreferences.POST)) {
             throw new IllegalArgumentException("Preference should not be POST");
         }
@@ -32,14 +31,16 @@ public class RepresentativesInbox {
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        emails.addAll(nullSafeList(caseData.getRespondents1()).stream()
-            .filter(respondent ->
-                (preference == RepresentativeServingPreferences.DIGITAL_SERVICE)
-                    == respondent.getValue().hasRegisteredOrganisation())
-            .map(respondent -> Optional.ofNullable(respondent.getValue().getSolicitor())
-                .map(RespondentSolicitor::getEmail).orElse(null))
-            .filter(StringUtils::isNotBlank)
-            .collect(Collectors.toCollection(LinkedHashSet::new)));
+        emails.addAll(
+            nullSafeList(caseData.getRespondents1()).stream()
+                .filter(respondent ->
+                    (preference == RepresentativeServingPreferences.DIGITAL_SERVICE)
+                        == respondent.getValue().hasRegisteredOrganisation())
+                .map(respondent -> Optional.ofNullable(respondent.getValue().getSolicitor())
+                    .map(RespondentSolicitor::getEmail).orElse(null))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
 
         return emails;
     }

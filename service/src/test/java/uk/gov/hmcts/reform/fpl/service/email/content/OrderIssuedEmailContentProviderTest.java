@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraOthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -47,8 +48,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
     EmailNotificationHelper.class, FixedTimeConfiguration.class, ManageOrdersClosedCaseFieldGenerator.class,
-    SealedOrderHistoryExtraTitleGenerator.class,
-    LookupTestConfig.class, ChildrenService.class,
+    SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryExtraOthersNotifiedGenerator.class,
+    LookupTestConfig.class, ChildrenService.class, OthersService.class,
     OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class, IdentityService.class})
 @MockBeans({@MockBean(OrderCreationService.class),@MockBean(SealedOrderHistoryExtraTitleGenerator.class)})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
@@ -71,9 +72,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @MockBean
     private EmailNotificationHelper helper;
-
-    @MockBean
-    private OthersService othersService;
 
     @MockBean
     private OrderIssuedEmailContentProviderTypeOfOrderCalculator calculator;
