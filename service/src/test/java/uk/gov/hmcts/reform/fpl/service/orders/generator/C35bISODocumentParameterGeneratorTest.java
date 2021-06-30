@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION
 @ExtendWith({MockitoExtension.class})
 class C35bISODocumentParameterGeneratorTest {
 
-    private static final DocmosisTemplates TEMPLATE = DocmosisTemplates.ORDER;
+    private static final DocmosisTemplates TEMPLATE = DocmosisTemplates.ORDER_V2;
     private static final Order ORDER = C35B_INTERIM_SUPERVISION_ORDER;
     private static final String FURTHER_DIRECTIONS = "FurtherDirections";
     private static final String ORDER_DETAILS = "OrderDetails";
