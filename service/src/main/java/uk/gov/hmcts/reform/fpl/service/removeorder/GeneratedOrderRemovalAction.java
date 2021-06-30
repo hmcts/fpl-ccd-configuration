@@ -65,7 +65,9 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
         data.put("orderTitleToBeRemoved", defaultIfNull(generatedRemovableOrder.getTitle(),
             generatedRemovableOrder.getType()));
         data.put("orderIssuedDateToBeRemoved", Optional.ofNullable(generatedRemovableOrder.getDateOfIssue())
-            .orElseGet(() -> formatLocalDateTimeBaseUsingFormat(generatedRemovableOrder.getDateTimeIssued(), "d MMMM yyyy"))
+            .orElseGet(
+                () -> formatLocalDateTimeBaseUsingFormat(generatedRemovableOrder.getDateTimeIssued(), "d MMMM yyyy")
+            )
         );
         data.put("orderDateToBeRemoved", generatedRemovableOrder.getDate());
         data.put("showRemoveCMOFieldsFlag", NO.getValue());

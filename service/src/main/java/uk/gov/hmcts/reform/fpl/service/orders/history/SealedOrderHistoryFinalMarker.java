@@ -14,7 +14,7 @@ public class SealedOrderHistoryFinalMarker {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
         Order order = eventData.getManageOrdersType();
 
-        switch (order.getIsFinalOrder()){
+        switch (order.getIsFinalOrder()) {
             case YES:
                 return YesNo.YES;
             case MAYBE:
