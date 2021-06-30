@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -84,19 +83,16 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
         .fullName("First Representative")
         .servingPreferences(POST)
-        .role(RepresentativeRole.BARRISTER)
         .address(testAddress())
         .build());
     private static final Element<Representative> REPRESENTATIVE_EMAIL = element(Representative.builder()
         .fullName("Third Representative")
         .servingPreferences(EMAIL)
-        .role(RepresentativeRole.BARRISTER)
         .email("third@representatives.com")
         .build());
     private static final Element<Representative> REPRESENTATIVE_DIGITAL = element(Representative.builder()
         .fullName("Second Representative")
         .servingPreferences(DIGITAL_SERVICE)
-        .role(RepresentativeRole.BARRISTER)
         .email("second@representatives.com")
         .build());
     private static final Respondent RESPONDENT_NOT_REPRESENTED = Respondent.builder()

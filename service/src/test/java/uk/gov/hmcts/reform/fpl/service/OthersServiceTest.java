@@ -17,8 +17,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
@@ -244,70 +242,6 @@ class OthersServiceTest {
         List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
 
         assertThat(selectedOthers).containsExactly(caseData.getAllOthers().get(selectedOther));
-    }
-
-    @Test
-    void shouldReturnTrueWhenRepresented() {
-        Other other = testOther("First other");
-        other.addRepresentative(UUID.randomUUID());
-
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other)
-                .build())
-            .build();
-
-        boolean isRepresented = service.isRepresented(caseData.getAllOthers().get(0).getValue());
-
-        assertTrue(isRepresented);
-    }
-
-    @Test
-    void shouldReturnFalseWhenNotRepresented() {
-        Other other = testOther("First other");
-
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other)
-                .build())
-            .build();
-
-        boolean isRepresented = service.isRepresented(caseData.getAllOthers().get(0).getValue());
-
-        assertFalse(isRepresented);
-    }
-
-    @Test
-    void shouldReturnTrueWhenHasAddressAdded() {
-        Other other = testOther("First other");
-
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other)
-                .build())
-            .build();
-
-        boolean hasAddressAdded = service.hasAddressAdded(caseData.getAllOthers().get(0).getValue());
-
-        assertTrue(hasAddressAdded);
-    }
-
-    @Test
-    void shouldReturnFalseWhenAddressIsNotPresent() {
-        Other other = Other.builder()
-            .name("First other")
-            .address(Address.builder().build())
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other)
-                .build())
-            .build();
-
-        boolean hasAddressAdded = service.hasAddressAdded(caseData.getAllOthers().get(0).getValue());
-
-        assertFalse(hasAddressAdded);
     }
 
     private CaseData buildCaseDataWithOthers(Other firstOther,

@@ -64,7 +64,9 @@ class OtherRecipientsInboxTest {
 
         List<Element<Other>> othersSelected = List.of(element(firstOther));
 
-        Set<String> nonSelectedRecipients = (Set<String>) underTest.getNonSelectedRecipients(EMAIL, caseData, othersSelected, element -> element.getValue().getEmail());
+        Set<String> nonSelectedRecipients = (Set<String>) underTest.getNonSelectedRecipients(EMAIL, caseData,
+            othersSelected,
+            element -> element.getValue().getEmail());
         assertThat(nonSelectedRecipients).containsOnly(REPRESENTING_OTHER_2_EMAIL);
     }
 
@@ -85,7 +87,8 @@ class OtherRecipientsInboxTest {
 
         List<Element<Other>> othersSelected = List.of(element(firstOther));
 
-        Set<Recipient> nonSelectedRecipients = (Set<Recipient>) underTest.getNonSelectedRecipients(EMAIL, caseData, othersSelected, Function.identity());
+        Set<Recipient> nonSelectedRecipients = (Set<Recipient>) underTest.getNonSelectedRecipients(EMAIL, caseData,
+            othersSelected, Function.identity());
         assertThat(nonSelectedRecipients).isEmpty();
     }
 
@@ -116,7 +119,8 @@ class OtherRecipientsInboxTest {
                 .additionalOthers(List.of(element(secondOther),
                     element(testOther("Third other"))))
                 .build())
-            .representatives(List.of(element(REPRESENTATIVE_ID_1, representingOther1), element(REPRESENTATIVE_ID_2, representingOther2)))
+            .representatives(List.of(element(REPRESENTATIVE_ID_1, representingOther1),
+                element(REPRESENTATIVE_ID_2, representingOther2)))
             .build();
 
         List<Element<Other>> othersSelected = List.of(element(firstOther));
@@ -127,7 +131,9 @@ class OtherRecipientsInboxTest {
             .servingPreferences(POST)
             .build();
 
-        Set<Recipient> nonSelectedRecipients = (Set<Recipient>) underTest.getNonSelectedRecipients(POST, caseData, othersSelected, element -> element.getValue());
+        Set<Recipient> nonSelectedRecipients = (Set<Recipient>) underTest.getNonSelectedRecipients(POST, caseData,
+            othersSelected,
+            element -> element.getValue());
         assertThat(nonSelectedRecipients).containsOnly(expectedRecipient);
     }
 
@@ -154,7 +160,9 @@ class OtherRecipientsInboxTest {
 
         List<Element<Other>> othersSelected = Collections.emptyList();
 
-        Set<String> nonSelectedRecipients = (Set<String>) underTest.getNonSelectedRecipients(EMAIL, caseData, othersSelected, element -> element.getValue().getEmail());
+        Set<String> nonSelectedRecipients = (Set<String>) underTest.getNonSelectedRecipients(EMAIL, caseData,
+            othersSelected,
+            element -> element.getValue().getEmail());
         assertThat(nonSelectedRecipients).isEmpty();
     }
 }

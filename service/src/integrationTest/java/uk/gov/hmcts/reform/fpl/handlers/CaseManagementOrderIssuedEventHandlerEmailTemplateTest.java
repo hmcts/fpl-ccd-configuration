@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraOthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -57,8 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans({
     @MockBean(CoreCaseDataService.class), @MockBean(IdentityService.class), @MockBean(ChildrenService.class),
     @MockBean(OrderCreationService.class), @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
-    @MockBean(OthersService.class),
-    @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
+    @MockBean(OthersService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class), @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
@@ -99,6 +99,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         underTest.notifyParties(new CaseManagementOrderIssuedEvent(caseData, cmo));
 
         List<SendEmailResponse> responses = allResponses();
+
         SendEmailResponse laResponse = responses.get(0);
         SendEmailResponse digitalRepResponse = responses.get(2);
         List.of(laResponse, digitalRepResponse).forEach(response ->

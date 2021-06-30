@@ -77,14 +77,6 @@ public class OthersService {
         return builder.toString();
     }
 
-    public boolean isRepresented(Other other) {
-        return !isEmpty(other.getRepresentedBy());
-    }
-
-    public boolean hasAddressAdded(Other other) {
-        return !isNull(other.getAddress()) && !isEmpty(other.getAddress().getPostcode());
-    }
-
     public List<Element<Other>> getSelectedOthers(CaseData caseData) {
         return getSelectedOthers(caseData.getAllOthers(), caseData.getOthersSelector(),
             caseData.getSendOrderToAllOthers());
