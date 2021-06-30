@@ -39,7 +39,7 @@ public class OtherRecipientsInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Other>> othersSelectedElements){
+    public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Other>> othersSelectedElements) {
 
         return othersSelectedElements.stream()
             .map(Element::getValue)

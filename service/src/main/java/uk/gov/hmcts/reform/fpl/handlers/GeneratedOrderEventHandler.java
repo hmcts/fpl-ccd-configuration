@@ -141,9 +141,8 @@ public class GeneratedOrderEventHandler {
     }
 
     private List<Element<Other>> getOthersSelected(GeneratedOrder lastGeneratedOrder) {
-        List<Element<Other>> othersSelected = lastGeneratedOrder.isNewVersion() ?
-            defaultIfNull(lastGeneratedOrder.getOthers(),
-                new ArrayList<>()) : new ArrayList<>();
+        List<Element<Other>> othersSelected = lastGeneratedOrder.isNewVersion()
+            ? defaultIfNull(lastGeneratedOrder.getOthers(), new ArrayList<>()) : new ArrayList<>();
         return othersSelected;
     }
 

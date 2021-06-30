@@ -44,7 +44,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ORDER_DETAILS;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.OTHER_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 
 @ExtendWith(MockitoExtension.class)
