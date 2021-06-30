@@ -110,13 +110,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {
         String recitals = eventData.getManageOrdersRecitalsAndPreambles();
 
-        String orderDetails = "The Court orders";
-
-        if (!isEmpty(recitals)) {
-            orderDetails += "\n\n" + recitals;
-        }
-
-        return orderDetails;
+        return "The Court orders" + "\n\n" + recitals;
     }
 
     private String getOrderDirections(ManageOrdersEventData eventData) {

@@ -31,7 +31,7 @@ public class OrderMessageGeneratorTest {
     }
 
     @Test
-    void shouldReturnByConsent() {
+    void shouldReturnByConsentMessage() {
         ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
             .manageOrdersIsByConsent("Yes")
             .build();
@@ -40,7 +40,7 @@ public class OrderMessageGeneratorTest {
     }
 
     @Test
-    void shouldNotReturnByConsent() {
+    void shouldNotReturnByConsentMessage() {
         ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
             .manageOrdersIsByConsent("No")
             .build();

@@ -125,7 +125,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
         return C43ChildArrangementOrderDocmosisParameters.builder()
             .orderTitle(orderTitle)
-            .orderByConsent("By consent")
+            .orderByConsent(CONSENT)
             .orderDetails(orderDetails)
             .furtherDirections(directions)
             .localAuthorityName(LA_NAME)
