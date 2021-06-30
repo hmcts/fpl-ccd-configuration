@@ -44,7 +44,7 @@ public class C21BlankOrderDocumentParameterGenerator implements DocmosisParamete
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String getOrderTitle(CaseData caseData) {
