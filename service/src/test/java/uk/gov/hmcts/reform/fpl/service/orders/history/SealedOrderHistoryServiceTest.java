@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -78,6 +79,7 @@ class SealedOrderHistoryServiceTest {
     private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
     private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
         Pair.of(LINKED_APPLICATION_ID, "My test application"));
+    private static final YesNo FINAL_MARKER = YesNo.NO;
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
 
@@ -120,7 +122,7 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -140,7 +142,7 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(manageOrdersClosedCaseFieldGenerator.generate(caseData)).thenReturn(
                     Map.of("somethingClose", "closeCaseValue")
@@ -164,7 +166,7 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -189,7 +191,7 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_IN_THE_PAST
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -213,7 +215,7 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_IN_THE_FUTURE
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -239,7 +241,7 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_LEGACY
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -265,7 +267,7 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_LEGACY
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -375,6 +377,7 @@ class SealedOrderHistoryServiceTest {
             .orderType(ORDER_TYPE.name())
             .type(ORDER_TYPE.getHistoryTitle())
             .title(EXTRA_TITLE)
+            .markedFinal(FINAL_MARKER.getValue())
             .judgeAndLegalAdvisor(TAB_JUDGE_AND_LEGAL_ADVISOR)
             .children(wrapElements(child1))
             .childrenDescription(CHILD_1_FULLNAME)
@@ -384,8 +387,9 @@ class SealedOrderHistoryServiceTest {
             .dateTimeIssued(NOW);
     }
 
-    private void mockExtraTitleGenerator(CaseData caseData) {
+    private void mockGenerators(CaseData caseData) {
         when(extraTitleGenerator.generate(caseData)).thenReturn(EXTRA_TITLE);
+        when(sealedOrderHistoryFinalMarker.calculate(caseData)).thenReturn(FINAL_MARKER);
     }
 
     private void mockHelper(MockedStatic<JudgeAndLegalAdvisorHelper> jalMock) {
