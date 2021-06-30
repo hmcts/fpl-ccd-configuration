@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 @SuperBuilder(toBuilder = true)
 public class C32CareOrderDocmosisParameters extends DocmosisParameters {
     GeneratedOrderType orderType;
+    String orderHeader;
+    String orderMessage;
     String orderDetails;
     String furtherDirections;
     String localAuthorityName;
