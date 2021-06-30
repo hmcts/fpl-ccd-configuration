@@ -68,10 +68,7 @@ public class UploadAdditionalApplicationsService {
             return bundle.getC2DocumentBundle().getApplicantName();
         }
 
-        if (!isNull(bundle.getOtherApplicationsBundle())) {
-            return bundle.getOtherApplicationsBundle().getApplicantName();
-        }
-        return EMPTY;
+        return bundle.getOtherApplicationsBundle().getApplicantName();
     }
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
