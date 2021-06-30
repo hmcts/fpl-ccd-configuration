@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.C2;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 
 @ContextConfiguration(classes = {FailedPBAPaymentContentProvider.class})
 class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTest {
@@ -33,7 +33,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
             .caseUrl(applicationType == C110A_APPLICATION ? caseUrl((caseData.getId().toString()))
-                : caseUrl(caseData.getId().toString(), C2))
+                : caseUrl(caseData.getId().toString(), OTHER_APPLICATIONS))
             .applicant(applicant)
             .build();
 
@@ -52,7 +52,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .getLocalAuthorityNotifyData(List.of(applicationType), 123L);
+            .getApplicantNotifyData(List.of(applicationType), 123L);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }

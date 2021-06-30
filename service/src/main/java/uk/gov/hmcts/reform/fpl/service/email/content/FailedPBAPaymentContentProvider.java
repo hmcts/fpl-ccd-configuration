@@ -29,8 +29,8 @@ public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    public FailedPBANotificationData getLocalAuthorityNotifyData(List<ApplicationType> applicationTypes,
-                                                                 Long caseReference) {
+    public FailedPBANotificationData getApplicantNotifyData(List<ApplicationType> applicationTypes,
+                                                            Long caseReference) {
         String applicationNames = applicationTypes.stream()
             .map(ApplicationType::getType).collect(Collectors.joining(","));
         return FailedPBANotificationData.builder()

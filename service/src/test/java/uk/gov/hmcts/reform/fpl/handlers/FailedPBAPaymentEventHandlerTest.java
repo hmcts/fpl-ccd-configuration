@@ -97,7 +97,7 @@ class FailedPBAPaymentEventHandlerTest {
             .caseUrl("caseUrl")
             .build();
 
-        given(failedPBAPaymentContentProvider.getLocalAuthorityNotifyData(List.of(C110A_APPLICATION), 12345L))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C110A_APPLICATION), 12345L))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
@@ -118,7 +118,7 @@ class FailedPBAPaymentEventHandlerTest {
             .applicant(LOCAL_AUTHORITY_NAME + ", Applicant")
             .build();
 
-        given(failedPBAPaymentContentProvider.getLocalAuthorityNotifyData(List.of(C2_APPLICATION), 12345L))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C2_APPLICATION), 12345L))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
@@ -139,7 +139,7 @@ class FailedPBAPaymentEventHandlerTest {
             .applicant(RESPONDENT_1_NAME)
             .build();
 
-        given(failedPBAPaymentContentProvider.getLocalAuthorityNotifyData(List.of(C2_APPLICATION), 12345L))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C2_APPLICATION), 12345L))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(

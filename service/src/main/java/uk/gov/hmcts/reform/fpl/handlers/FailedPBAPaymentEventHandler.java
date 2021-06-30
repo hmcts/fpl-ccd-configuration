@@ -57,7 +57,7 @@ public class FailedPBAPaymentEventHandler {
         CaseData caseData = event.getCaseData();
 
         FailedPBANotificationData parameters = notificationContent
-            .getLocalAuthorityNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
+            .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -70,7 +70,7 @@ public class FailedPBAPaymentEventHandler {
 
     private void notifyRespondent(FailedPBAPaymentEvent event, Collection<String> emails) {
         FailedPBANotificationData parameters = notificationContent
-            .getLocalAuthorityNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
+            .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
 
         notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             emails, parameters, event.getCaseData().getId().toString());
