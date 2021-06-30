@@ -23,12 +23,12 @@ public class OtherRecipientsInbox {
         CaseData caseData, List<Element<Other>> othersSelected,
         Function<Element<Representative>, ?> mapperFunction) {
 
-        Set<Element<UUID>> allOthersRepresentativeIds = caseData.getAllOthers().stream()
-            .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream())
+        Set<UUID> allOthersRepresentativeIds = caseData.getAllOthers().stream()
+            .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
 
-        Set<Element<UUID>> selectedRepresentativeIds = othersSelected.stream()
-            .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream())
+        Set<UUID> selectedRepresentativeIds = othersSelected.stream()
+            .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
 
         return caseData.getRepresentativesElementsByServedPreference(servingPreferences)
