@@ -77,6 +77,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     C33InterimCareOrderDocumentParameterGenerator.class,
     C23EPOAdditionalDocumentsCollector.class,
     C35bISODocumentParameterGenerator.class,
+    ManageOrderDocumentService.class,
+    OrderMessageGenerator.class,
     C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
     ManageOrderDocumentService.class,
     OrderMessageGenerator.class,
