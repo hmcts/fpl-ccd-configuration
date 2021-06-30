@@ -15,13 +15,16 @@ let submittedAt;
 
 Feature('Manage documents');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
-  await api.grantCaseAccess(caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
-});
+async function setupScenario(I) {
+  if (!caseId) {
+    caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
+    await api.grantCaseAccess(caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
+  }
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+}
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   manageDocumentsEventPage.selectFurtherEvidence();
@@ -77,7 +80,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
 
   manageDocumentsEventPage.selectFurtherEvidence();
@@ -151,7 +154,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   manageDocumentsEventPage.selectCorrespondence();
@@ -192,7 +195,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
 });
 
 Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await setupScenario(I);
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
@@ -243,7 +246,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
 });
 
 Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await setupScenario(I);
   await manageDocumentsForLAHelper.uploadOtherApplications(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 

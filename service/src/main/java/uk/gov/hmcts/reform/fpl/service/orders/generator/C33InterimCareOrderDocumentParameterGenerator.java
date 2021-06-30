@@ -13,13 +13,16 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmos
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeMessages;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
     private static final GeneratedOrderType TYPE = GeneratedOrderType.CARE_ORDER;
+    private static final String ORDER_HEADER = "Care order restrictions";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
+    private final OrderMessageGenerator orderMessageGenerator;
     private final OrderDetailsWithEndTypeGenerator orderDetailsWithEndTypeGenerator;
 
     @Override
@@ -34,6 +37,8 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
         return C33InterimCareOrderDocmosisParameters.builder()
             .orderTitle(Order.C33_INTERIM_CARE_ORDER.getTitle())
             .orderType(TYPE)
+            .orderHeader(ORDER_HEADER)
+            .orderMessage(orderMessageGenerator.getCareOrderRestrictions(caseData))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .exclusionClause(eventData.getManageOrdersExclusionDetails())
             .localAuthorityName(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
@@ -53,6 +58,6 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 }

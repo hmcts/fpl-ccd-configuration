@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
 
@@ -24,8 +25,10 @@ import static java.lang.String.format;
 public class C32CareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
     private static final GeneratedOrderType TYPE = GeneratedOrderType.CARE_ORDER;
+    private static final String ORDER_HEADER = "Care order restrictions";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
+    private final OrderMessageGenerator orderMessageGenerator;
     private final ChildrenService childrenService;
 
     @Override
@@ -45,6 +48,8 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
         return C32CareOrderDocmosisParameters.builder()
             .orderTitle(Order.C32_CARE_ORDER.getTitle())
             .orderType(TYPE)
+            .orderHeader(ORDER_HEADER)
+            .orderMessage(orderMessageGenerator.getCareOrderRestrictions(caseData))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName))
             .localAuthorityName(localAuthorityName)
@@ -53,7 +58,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String orderDetails(int numOfChildren, String caseLocalAuthority) {

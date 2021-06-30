@@ -95,9 +95,9 @@ public enum Order {
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
         DIGITAL,
-        "Appointment of a Children's Guardian",
+        "Appointment of a children's guardian",
         "Section 41(1) Children Act 1989",
-        "C47A - Appointment of a Children's Guardian",
+        "C47A - Appointment of a children's guardian",
         IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS,
