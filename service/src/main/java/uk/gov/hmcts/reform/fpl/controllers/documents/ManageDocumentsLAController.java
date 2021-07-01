@@ -189,10 +189,13 @@ public class ManageDocumentsLAController extends CallbackController {
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA()
                     );
 
+                List<Element<SupportingEvidenceBundle>> sortedDocuments
+                    = manageDocumentService.sortCorrespondenceDocumentsByUploadedDate(updatedCorrespondenceDocuments);
+
                 splitter.updateConfidentialDocsInCaseDetails(
-                    caseDetailsMap, updatedCorrespondenceDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
+                    caseDetailsMap, sortedDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
                 );
-                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, updatedCorrespondenceDocuments);
+                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, sortedDocuments);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(
