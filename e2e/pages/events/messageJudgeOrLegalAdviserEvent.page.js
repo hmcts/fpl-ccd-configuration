@@ -7,8 +7,8 @@ module.exports = {
       no: '#isMessageRegardingAdditionalApplications_No',
     },
     eventOptions: {
-      newMessage: '#messageJudgeOption_NEW_MESSAGE',
-      reply: '#messageJudgeOption_REPLY',
+      newMessage: '#messageJudgeOption-NEW_MESSAGE',
+      reply: '#messageJudgeOption-REPLY',
     },
     additionalApplicationsList: '#additionalApplicationsDynamicList',
     existingMessagesList: '#judicialMessageDynamicList',

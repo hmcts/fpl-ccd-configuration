@@ -13,8 +13,8 @@ module.exports = {
     closedCaseOptions: {
       id: '#closedStateRadioList',
       options: {
-        caseManagement: '#closedStateRadioList_PREPARE_FOR_HEARING',
-        finalHearing: '#closedStateRadioList_FINAL_HEARING',
+        caseManagement: '#closedStateRadioList-PREPARE_FOR_HEARING',
+        finalHearing: '#closedStateRadioList-FINAL_HEARING',
       },
     },
     endButton: 'Save and return',

@@ -60,7 +60,8 @@ module.exports = {
     I.fillField(this.fields.customDirection.fields(elementIndex).description, direction.description);
     I.selectOption(this.fields.customDirection.fields(elementIndex).assignee, direction.assignee);
     I.click(this.fields.customDirection.fields(elementIndex).dueDateType);
-    await I.fillDate(direction.dueDate, this.fields.customDirection.fields(elementIndex).date);
+    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="dateToBeCompletedBy"]`;
+    await I.fillDate(direction.dueDate, dateSelector);
   },
 
   async clickDateAndTime(directionName) {

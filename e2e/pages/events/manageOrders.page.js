@@ -176,7 +176,7 @@ const selectOperation = async (operationType) => {
 };
 
 const selectOperationInClosedState = async (operationType) => {
-  I.click(`${operations.groupInClosedState}_${operationType}`);
+  I.click(`${operations.groupInClosedState}-${operationType}`);
   await I.runAccessibilityTest();
 };
 
@@ -254,7 +254,7 @@ const enterDirections = async (text) => {
 };
 
 const selectIncludePhrase = (includePhrase) => {
-  I.click(`${section4.includePhrase.group}-${includePhrase}`);
+  I.click(`${section4.includePhrase.group}_${includePhrase}`);
 };
 
 const selectEpoType = (epoType) => {
@@ -262,7 +262,7 @@ const selectEpoType = (epoType) => {
 };
 
 const selectExclusionRequirementEPO = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirementEPO.group}-${exclusionRequirement}`);
+  I.click(`${section4.exclusionRequirementEPO.group}_${exclusionRequirement}`);
 };
 
 const enterExclusionDetails = (text) => {
@@ -287,7 +287,7 @@ const uploadManualOrder = async (file) => {
 };
 
 const selectManualOrderNeedSealing = (needSealing) => {
-  I.click(`${section4.manualOrderNeedSealing.group}-${needSealing}`);
+  I.click(`${section4.manualOrderNeedSealing.group}_${needSealing}`);
 };
 
 const enterRemovalAddress = (address) => {
@@ -341,7 +341,7 @@ const selectCloseCase = async () => {
 };
 
 const selectExclusionRequirementICO = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
+  I.click(`${section4.exclusionRequirement.group}_${exclusionRequirement}`);
 };
 
 const selectCafcassRegion = region => {

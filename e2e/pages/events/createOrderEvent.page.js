@@ -217,22 +217,22 @@ module.exports = {
 
   selectChildren(children = []) {
     for (let child of children) {
-      I.click(`${this.fields.childSelector.selector(child)}_SELECTED`);
+      I.click(`${this.fields.childSelector.selector(child)}-SELECTED`);
     }
   },
 
   selectCareOrder(careOrders = []) {
     for (let order of careOrders) {
-      I.click(`${this.fields.careOrderSelector.selector(order)}_SELECTED`);
+      I.click(`${this.fields.careOrderSelector.selector(order)}-SELECTED`);
     }
   },
 
   useAllChildren() {
-    I.click(`${this.fields.allChildren.id}-${this.fields.allChildren.options.yes}`);
+    I.click(`${this.fields.allChildren.id}_${this.fields.allChildren.options.yes}`);
   },
 
   notAllChildren() {
-    I.click(`${this.fields.allChildren.id}-${this.fields.allChildren.options.no}`);
+    I.click(`${this.fields.allChildren.id}_${this.fields.allChildren.options.no}`);
   },
 
   closeCaseFromOrder(closeCase) {
