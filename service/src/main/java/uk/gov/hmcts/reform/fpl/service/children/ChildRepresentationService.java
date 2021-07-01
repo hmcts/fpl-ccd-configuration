@@ -3,17 +3,24 @@ package uk.gov.hmcts.reform.fpl.service.children;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.components.ChildSolicitorNoticeOfChangeAnswersConverter;
+import uk.gov.hmcts.reform.fpl.components.ChildSolicitorPolicyConverter;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
+import uk.gov.hmcts.reform.fpl.enums.ChildSolicitorRole;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,6 +35,8 @@ public class ChildRepresentationService {
 
     private final OptionCountBuilder optionCountBuilder;
     private final ChildRepresentationDetailsFlattener childRepSerializer;
+    private final ChildSolicitorPolicyConverter childSolicitorPolicyConverter;
+    private final ChildSolicitorNoticeOfChangeAnswersConverter noticeOfChangeAnswersConverter;
 
     public Map<String, Object> populateRepresentationDetails(CaseData caseData) {
         ChildrenEventData eventData = caseData.getChildrenEventData();
@@ -76,5 +85,34 @@ public class ChildRepresentationService {
         }
 
         return details.getSolicitor();
+    }
+
+    public Map<String, Object> generateCaseAccessFields(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+
+        Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
+
+        List<Element<Child>> children = caseData.getChildren1();
+        int numOfChildren = children.size();
+
+        for (int i = 0; i < ChildSolicitorRole.values().length; i++) {
+            ChildSolicitorRole solicitorRole = ChildSolicitorRole.values()[i];
+
+            Optional<Element<Child>> childElement
+                = (i < numOfChildren) ? Optional.of(children.get(i)) : Optional.empty();
+
+            OrganisationPolicy organisationPolicy
+                = childSolicitorPolicyConverter.generateForSubmission(solicitorRole, childElement);
+
+            data.put(String.format("childPolicy%d", i), organisationPolicy);
+
+            if (childElement.isPresent()) {
+                NoticeOfChangeAnswers noticeOfChangeAnswer
+                    = noticeOfChangeAnswersConverter.generateForSubmission(childElement.get(), firstApplicant);
+                data.put(String.format("noticeOfChangeChildAnswers%d", i), noticeOfChangeAnswer);
+            }
+        }
+
+        return data;
     }
 }

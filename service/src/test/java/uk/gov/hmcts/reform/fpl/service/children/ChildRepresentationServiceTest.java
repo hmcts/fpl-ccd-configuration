@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.children;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.components.ChildSolicitorNoticeOfChangeAnswersConverter;
+import uk.gov.hmcts.reform.fpl.components.ChildSolicitorPolicyConverter;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -42,7 +44,9 @@ class ChildRepresentationServiceTest {
     private final OptionCountBuilder optionCountBuilder = mock(OptionCountBuilder.class);
     private final ChildRepresentationDetailsFlattener flattener = mock(ChildRepresentationDetailsFlattener.class);
 
-    private final ChildRepresentationService underTest = new ChildRepresentationService(optionCountBuilder, flattener);
+    private final ChildRepresentationService underTest = new ChildRepresentationService(
+        optionCountBuilder, flattener, mock(ChildSolicitorPolicyConverter.class),mock(ChildSolicitorNoticeOfChangeAnswersConverter.class)
+    );
 
     @Nested
     class PopulateRepresentationDetails {
