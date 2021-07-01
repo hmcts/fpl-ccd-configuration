@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -363,12 +364,12 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
             "familyManCaseNumber", String.valueOf(CASE_ID),
-            "respondents1", wrapElements(Respondent.builder()
+            "respondents1", List.of(element(Respondent.builder()
                 .party(RespondentParty.builder()
                     .firstName(RESPONDENT_FIRSTNAME)
                     .lastName(RESPONDENT_SURNAME)
                     .build())
-                .build()));
+                .build())));
     }
 
     private CaseDetails createCase(Map<String, Object> data) {
