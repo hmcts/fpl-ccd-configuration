@@ -133,7 +133,17 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldPopulateCorrespondenceEvidenceCollection() {
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
+            SupportingEvidenceBundle.builder()
+                .name("test1")
+                .dateTimeUploaded(now().minusDays(2))
+                .uploadedBy(USER)
+                .build(),
+            SupportingEvidenceBundle.builder()
+                .name("test2")
+                .dateTimeUploaded(now())
+                .uploadedBy(USER)
+                .build());
 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
@@ -144,7 +154,10 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
 
-        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        List<Element<SupportingEvidenceBundle>> expectedDocuments = List.of(
+            furtherEvidenceBundle.get(1), furtherEvidenceBundle.get(0));
+
+        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(expectedDocuments);
         assertExpectedFieldsAreRemoved(extractedCaseData);
 
         assertThat(response.getData().get("documentViewHMCTS")).isNull();

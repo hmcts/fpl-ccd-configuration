@@ -172,10 +172,13 @@ public class ManageDocumentsController extends CallbackController {
                 currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
                     caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocuments());
 
-                confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
+                List<Element<SupportingEvidenceBundle>> sortedBundle
+                    = documentService.sortCorrespondenceDocumentsByUploadedDate(currentBundle);
+
+                confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, sortedBundle,
                     CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
 
-                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
+                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData));
