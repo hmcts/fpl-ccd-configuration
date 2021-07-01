@@ -208,6 +208,8 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
     @Test
     void testTemplateWithNumberOfMonths_UsingApprovalDateTime_WithOneMonth() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILD_CONTEXT_ELEMENTS);
+
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(APPROVAL_DATE.atTime(14, 0))
@@ -226,7 +228,7 @@ class OrderDetailsWithEndTypeGeneratorTest {
             caseData);
 
         assertThat(actual).isEqualTo("Values are: numMonths=[1]; decoratedNumberOfMonths=[1 month]; "
-            + "endDate=[8th December 2013]; childIsOrAre=[are]; childOrChildren=[children]; "
+            + "endDate=[8th December 2013]; childIsOrAre=[is]; childOrChildren=[child]; "
             + "localAuthorityName=[LA_NAME]");
     }
 
