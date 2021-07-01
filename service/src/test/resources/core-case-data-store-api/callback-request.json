@@ -618,26 +618,6 @@
             "servingPreferences": "EMAIL",
             "role": "CAFCASS_SOLICITOR"
           }
-        },
-        {
-          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a3",
-          "value": {
-            "fullName": "Mary Matthews",
-            "positionInACase": "Solicitor",
-            "address": {
-              "County": "Dublin",
-              "Country": "Ireland",
-              "PostCode": "SE1 2GH",
-              "PostTown": "Limerick",
-              "AddressLine1": "170 Bridge St",
-              "AddressLine2": "Beg road",
-              "AddressLine3": "Haggardstown"
-            },
-            "email": "mary@aol.com",
-            "telephoneNumber": "0717171719",
-            "servingPreferences": "EMAIL",
-            "role": "REPRESENTING_PERSON_1"
-          }
         }
       ],
       "hearingDetails": [
