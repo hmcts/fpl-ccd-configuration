@@ -171,7 +171,7 @@ const preview = {
 
 // Actions
 const selectOperation = async (operationType) => {
-  I.click(`${operations.group}_${operationType}`);
+  I.click(`${operations.group}-${operationType}`);
   await I.runAccessibilityTest();
 };
 
@@ -191,12 +191,12 @@ const selectHearing = async (hearing) => {
 };
 
 const selectOrder = async (orderType) => {
-  I.click(`${orders.group}_${orderType}`);
+  I.click(`${orders.group}-${orderType}`);
   await I.runAccessibilityTest();
 };
 
 const selectUploadOrder = async (orderType) => {
-  I.click(`${orders.uploadGroup}_${orderType}`);
+  I.click(`${orders.uploadGroup}-${orderType}`);
   await I.runAccessibilityTest();
 };
 
