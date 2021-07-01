@@ -501,7 +501,6 @@ class RemovalServiceTest {
                 .build();
         }
 
-
         private AdditionalApplicationsBundle buildCombinedApplication(OtherApplicationType type, String date) {
             return AdditionalApplicationsBundle.builder()
                 .uploadedDateTime(date)

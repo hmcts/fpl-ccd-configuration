@@ -85,7 +85,8 @@ public class RemovalService {
     }
 
     public DynamicList buildDynamicListOfApplications(CaseData caseData, UUID selected) {
-        List<Element<AdditionalApplicationsBundle>> applications = caseData.getAdditionalApplicationsBundle();
+        List<Element<AdditionalApplicationsBundle>> applications = defaultIfNull(
+            caseData.getAdditionalApplicationsBundle(), new ArrayList<>());
 
         applications.sort(Comparator
             .comparing((Element<AdditionalApplicationsBundle> bundle) -> bundle.getValue().getUploadedDateTime()));

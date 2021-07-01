@@ -9,14 +9,18 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -25,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,11 +47,14 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderOrApplication.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -87,18 +95,21 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveTemporaryFields() {
         CaseDetails caseDetails = asCaseDetails(buildCaseData(selectedOrder));
 
-        caseDetails.getData().putAll(
-            Map.of(
-                "orderToBeRemoved", "dummy data",
-                "orderTitleToBeRemoved", "dummy data",
-                "orderIssuedDateToBeRemoved", "dummy data",
-                "orderDateToBeRemoved", "dummy data",
-                "hearingToUnlink", "dummy data",
-                "showRemoveCMOFieldsFlag", "dummy data",
-                "showReasonFieldFlag", "dummy data",
-                "showRemoveSDOWarningFlag", "dummy data"
-            )
-        );
+        Map<String, Object> fields = new HashMap<>();
+
+        fields.put("orderToBeRemoved", "dummy data");
+        fields.put("c2ApplicationToBeRemoved", "dummy data");
+        fields.put("otherApplicationToBeRemoved", "dummy data");
+        fields.put("orderTitleToBeRemoved", "dummy data");
+        fields.put("applicationTypeToBeRemoved", "dummy data");
+        fields.put("orderIssuedDateToBeRemoved", "dummy data");
+        fields.put("orderDateToBeRemoved", "dummy data");
+        fields.put("hearingToUnlink", "dummy data");
+        fields.put("showRemoveCMOFieldsFlag", "dummy data");
+        fields.put("showReasonFieldFlag", "dummy data");
+        fields.put("showRemoveSDOWarningFlag", "dummy data");
+
+        caseDetails.getData().putAll(fields);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
@@ -106,7 +117,10 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
             "removableOrderList",
             "reasonToRemoveOrder",
             "orderToBeRemoved",
+            "c2ApplicationToBeRemoved",
+            "otherApplicationToBeRemoved",
             "orderTitleToBeRemoved",
+            "applicationTypeToBeRemoved",
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
             "hearingToUnlink",
@@ -384,6 +398,29 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertNull(unlinkedHearing.getCaseManagementOrderId());
     }
 
+    @Test
+    void shouldUpdateAdditionalApplicationsBundleCollection() {
+        UUID applicationId = UUID.randomUUID();
+        AdditionalApplicationsBundle application = buildCombinedApplication(C1_WITH_SUPPLEMENT, "6 May 2020");
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(applicationId)
+                .label("C2, C1, 6 May 2020")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .removeOrderOrApplication(APPLICATION)
+            .additionalApplicationsBundle(List.of(element(applicationId, application)))
+            .removableApplicationList(dynamicList)
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseData.getAdditionalApplicationsBundle()).isEmpty();
+    }
+
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
         return CaseData.builder()
             .orderCollection(List.of(order))
@@ -424,6 +461,21 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
         return DynamicListElement.builder()
             .code(id)
             .label(label)
+            .build();
+    }
+
+    private AdditionalApplicationsBundle buildCombinedApplication(OtherApplicationType type, String date) {
+        return AdditionalApplicationsBundle.builder()
+            .uploadedDateTime(date)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .document(testDocumentReference())
+                .uploadedDateTime(date)
+                .build())
+            .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                .document(testDocumentReference())
+                .applicationType(type)
+                .uploadedDateTime(date)
+                .build())
             .build();
     }
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import net.bytebuddy.implementation.bytecode.Addition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -46,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -181,8 +179,8 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
 
     @Test
     void shouldBuildListOfApplications() {
-        List<Element<AdditionalApplicationsBundle>> applications = wrapElements(
-            buildCombinedApplication(C1_WITH_SUPPLEMENT, "6 May 2020"));
+        List<Element<AdditionalApplicationsBundle>> applications = List.of(
+            element(buildCombinedApplication(C1_WITH_SUPPLEMENT, "6 May 2020")));
         CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
@@ -192,7 +190,7 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
-            .listItems(List.of(buildListElement(applications.get(0).getId(), "C1, C2, 6 May 2020"))).build();
+            .listItems(List.of(buildListElement(applications.get(0).getId(), "C2, C1, 6 May 2020"))).build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
     }
