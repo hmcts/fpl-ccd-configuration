@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import net.bytebuddy.implementation.bytecode.Addition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,10 +10,14 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -33,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
@@ -40,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -172,6 +179,24 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(builtDynamicList).isEqualTo(expectedList);
     }
 
+    @Test
+    void shouldBuildListOfApplications() {
+        List<Element<AdditionalApplicationsBundle>> applications = wrapElements(
+            buildCombinedApplication(C1_WITH_SUPPLEMENT, "6 May 2020"));
+        CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        DynamicList builtDynamicList = mapper.convertValue(
+            response.getData().get("removableApplicationList"), DynamicList.class
+        );
+
+        DynamicList expectedList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(List.of(buildListElement(applications.get(0).getId(), "C1, C2, 6 May 2020"))).build();
+
+        assertThat(builtDynamicList).isEqualTo(expectedList);
+    }
+
     private DynamicListElement buildListElement(UUID id, String label) {
         return DynamicListElement.builder()
             .code(id)
@@ -203,5 +228,18 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
             Arguments.of(CASE_MANAGEMENT),
             Arguments.of(FINAL_HEARING),
             Arguments.of(CLOSED));
+    }
+
+    private AdditionalApplicationsBundle buildCombinedApplication(OtherApplicationType type, String date) {
+        return AdditionalApplicationsBundle.builder()
+            .uploadedDateTime(date)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .uploadedDateTime(date)
+                .build())
+            .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                .applicationType(type)
+                .uploadedDateTime(date)
+                .build())
+            .build();
     }
 }

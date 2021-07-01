@@ -7,9 +7,10 @@ import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundExce
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -23,11 +24,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -93,14 +93,13 @@ public class RemovalService {
         return asDynamicList(applications, selected, AdditionalApplicationsBundle::toLabel);
     }
 
-    public Map<String, Object> populateApplicationFields(Element<AdditionalApplicationsBundle> bundleElement) {
-        return Map.of(
-            "applicationTypeToBeRemoved", bundleElement.getValue().toLabel(),
-            "c2ApplicationToBeRemoved", bundleElement.getValue().getC2DocumentBundle().getDocument(),
-            "otherApplicationToBeRemoved", bundleElement.getValue().getOtherApplicationsBundle().getDocument(),
-            "orderDateToBeRemoved", bundleElement.getValue().getUploadedDateTime()
-        );
-
+    public void populateApplicationFields(CaseDetailsMap data, AdditionalApplicationsBundle application) {
+        data.put("applicationTypeToBeRemoved", application.toLabel());
+        data.put("c2ApplicationToBeRemoved", defaultIfNull(application.getC2DocumentBundle(),
+            C2DocumentBundle.builder().build()).getDocument());
+        data.put("otherApplicationToBeRemoved", defaultIfNull(application.getOtherApplicationsBundle(),
+            OtherApplicationsBundle.builder().build()).getDocument());
+        data.put("orderDateToBeRemoved", application.getUploadedDateTime());
     }
 
     public Optional<StandardDirectionOrder> getRemovedSDO(

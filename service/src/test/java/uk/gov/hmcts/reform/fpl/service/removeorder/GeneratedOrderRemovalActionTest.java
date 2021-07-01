@@ -154,7 +154,7 @@ class GeneratedOrderRemovalActionTest {
         assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
             generatedOrder))
             .isInstanceOf(RemovableOrderNotFoundException.class)
-            .hasMessage("Removable order with id %s not found", ALREADY_REMOVED_ORDER_ID);
+            .hasMessage("Removable order or application with id %s not found", ALREADY_REMOVED_ORDER_ID);
     }
 
     @Test

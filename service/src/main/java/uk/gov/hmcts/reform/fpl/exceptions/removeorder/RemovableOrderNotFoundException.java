@@ -8,6 +8,6 @@ public class RemovableOrderNotFoundException extends IllegalStateException {
     }
 
     public RemovableOrderNotFoundException(UUID orderId) {
-        super(String.format("Removable order with id %s not found", orderId));
+        super(String.format("Removable order or application with id %s not found", orderId));
     }
 }

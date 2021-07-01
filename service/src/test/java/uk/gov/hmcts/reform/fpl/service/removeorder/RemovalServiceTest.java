@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
+import net.bytebuddy.implementation.bytecode.Addition;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,10 +13,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
@@ -24,7 +31,10 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -34,6 +44,7 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
@@ -47,6 +58,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C4_WHEREABOUTS_OF_A_MISSING_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
@@ -56,6 +70,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class RemovalServiceTest {
@@ -80,274 +96,423 @@ class RemovalServiceTest {
     @InjectMocks
     private RemovalService underTest;
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("generateAllAvailableStatesSource")
-    void shouldMakeDynamicListOfBlankOrdersInAllExpectedStates(State state) {
-        List<Element<GeneratedOrder>> generatedOrders = List.of(
-            element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020")),
-            element(buildOrder(BLANK_ORDER, "order 2", "16 July 2020"))
-        );
+    @org.junit.jupiter.api.Nested
+    class OrderRemovalTest {
 
-        CaseData caseData = CaseData.builder()
-            .orderCollection(generatedOrders)
-            .state(state)
-            .build();
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("generateAllAvailableStatesSource")
+        void shouldMakeDynamicListOfBlankOrdersInAllExpectedStates(State state) {
+            List<Element<GeneratedOrder>> generatedOrders = List.of(
+                element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020")),
+                element(buildOrder(BLANK_ORDER, "order 2", "16 July 2020"))
+            );
 
-        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+            CaseData caseData = CaseData.builder()
+                .orderCollection(generatedOrders)
+                .state(state)
+                .build();
 
-        DynamicList expectedList = DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
-            .listItems(List.of(
-                buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
-                buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020")
-            ))
-            .build();
+            DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
-        assertThat(listOfOrders).isEqualTo(expectedList);
-    }
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of(
+                    buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
+                    buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020")
+                ))
+                .build();
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("generateAllAvailableStatesSource")
-    void shouldMakeDynamicListOfMixedNonSDOrderTypesInAllExpectedStates(State state) {
-        List<Element<GeneratedOrder>> generatedOrders = List.of(
-            element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020")),
-            element(buildOrder(CARE_ORDER, "order 2", "16 July 2020")),
-            element(buildOrder(EMERGENCY_PROTECTION_ORDER, "order 3", "17 August 2020")),
-            element(buildOrder(SUPERVISION_ORDER, "order 4", "18 September 2020"))
-        );
+            assertThat(listOfOrders).isEqualTo(expectedList);
+        }
 
-        List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("generateAllAvailableStatesSource")
+        void shouldMakeDynamicListOfMixedNonSDOrderTypesInAllExpectedStates(State state) {
+            List<Element<GeneratedOrder>> generatedOrders = List.of(
+                element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020")),
+                element(buildOrder(CARE_ORDER, "order 2", "16 July 2020")),
+                element(buildOrder(EMERGENCY_PROTECTION_ORDER, "order 3", "17 August 2020")),
+                element(buildOrder(SUPERVISION_ORDER, "order 4", "18 September 2020"))
+            );
 
-        Element<HearingOrder> draftCMOOne = element(buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> agreedCMO = element(buildPastHearingOrder(AGREED_CMO));
-        Element<HearingOrder> draftOrder = element(
-            HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
+            List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
 
-        CaseData caseData = CaseData.builder()
-            .state(state)
-            .orderCollection(generatedOrders)
-            .sealedCMOs(sealedCaseManagementOrders)
-            .hearingOrdersBundlesDrafts(List.of(
-                element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne)).build()),
-                element(HearingOrdersBundle.builder().orders(
-                    newArrayList(draftCMOTwo, draftOrder)).build()),
-                element(HearingOrdersBundle.builder().orders(newArrayList(agreedCMO)).build())))
-            .build();
+            Element<HearingOrder> draftCMOOne = element(buildPastHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> agreedCMO = element(buildPastHearingOrder(AGREED_CMO));
+            Element<HearingOrder> draftOrder = element(
+                HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
 
-        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+            CaseData caseData = CaseData.builder()
+                .state(state)
+                .orderCollection(generatedOrders)
+                .sealedCMOs(sealedCaseManagementOrders)
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne)).build()),
+                    element(HearingOrdersBundle.builder().orders(
+                        newArrayList(draftCMOTwo, draftOrder)).build()),
+                    element(HearingOrdersBundle.builder().orders(newArrayList(agreedCMO)).build())))
+                .build();
 
-        DynamicList expectedList = DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
-            .listItems(List.of(
-                buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
-                buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020"),
-                buildListElement(generatedOrders.get(2).getId(), "order 3 - 17 August 2020"),
-                buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
-                buildListElement(sealedCaseManagementOrders.get(0).getId(),
-                    format("Sealed case management order issued on %s",
-                        formatLocalDateToString(NOW, "d MMMM yyyy"))),
-                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
-            .build();
+            DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
-        assertThat(listOfOrders).isEqualTo(expectedList);
-    }
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of(
+                    buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
+                    buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020"),
+                    buildListElement(generatedOrders.get(2).getId(), "order 3 - 17 August 2020"),
+                    buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
+                    buildListElement(sealedCaseManagementOrders.get(0).getId(),
+                        format("Sealed case management order issued on %s",
+                            formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                    buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(draftOrder.getId(), format("Draft order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                .build();
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("generateAllAvailableStatesSource")
-    void shouldMakeDynamicListOfCMOsFromDraftUploadedCMOsAndHearingOrdersBundlesInAllExpectedStates(State state) {
-        List<Element<GeneratedOrder>> generatedOrders = List.of(
-            element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"))
-        );
+            assertThat(listOfOrders).isEqualTo(expectedList);
+        }
 
-        List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("generateAllAvailableStatesSource")
+        void shouldMakeDynamicListOfCMOsFromDraftUploadedCMOsAndHearingOrdersBundlesInAllExpectedStates(State state) {
+            List<Element<GeneratedOrder>> generatedOrders = List.of(
+                element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"))
+            );
 
-        Element<HearingOrder> draftCMOOne = element(buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> legacyDraftCMO = element(HearingOrder.builder().dateSent(NOW.minusDays(1)).build());
-        Element<HearingOrder> draftOrder =
-            element(HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
+            List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
 
-        CaseData caseData = CaseData.builder()
-            .state(state)
-            .orderCollection(generatedOrders)
-            .sealedCMOs(sealedCaseManagementOrders)
-            .draftUploadedCMOs(List.of(draftCMOTwo, legacyDraftCMO))
-            .hearingOrdersBundlesDrafts(List.of(
-                element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne)).build()),
-                element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOTwo, draftOrder)).build())))
-            .build();
+            Element<HearingOrder> draftCMOOne = element(buildPastHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> legacyDraftCMO = element(HearingOrder.builder().dateSent(NOW.minusDays(1)).build());
+            Element<HearingOrder> draftOrder =
+                element(HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
 
-        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+            CaseData caseData = CaseData.builder()
+                .state(state)
+                .orderCollection(generatedOrders)
+                .sealedCMOs(sealedCaseManagementOrders)
+                .draftUploadedCMOs(List.of(draftCMOTwo, legacyDraftCMO))
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne)).build()),
+                    element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOTwo, draftOrder)).build())))
+                .build();
 
-        DynamicList expectedList = DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
-            .listItems(List.of(
-                buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
-                buildListElement(sealedCaseManagementOrders.get(0).getId(),
-                    format("Sealed case management order issued on %s",
-                        formatLocalDateToString(NOW, "d MMMM yyyy"))),
-                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(legacyDraftCMO.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
-            .build();
+            DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
-        assertThat(listOfOrders).isEqualTo(expectedList);
-    }
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of(
+                    buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
+                    buildListElement(sealedCaseManagementOrders.get(0).getId(),
+                        format("Sealed case management order issued on %s",
+                            formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                    buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(draftOrder.getId(), format("Draft order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(legacyDraftCMO.getId(), format("Draft case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                .build();
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("generateAllAvailableStatesSource")
-    void shouldMakeDynamicListOfDraftHearingOrdersInAllExpectedStatesWhenNoHearingOrdersBundlesExist(State state) {
-        List<Element<GeneratedOrder>> generatedOrders = List.of(
-            element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"))
-        );
+            assertThat(listOfOrders).isEqualTo(expectedList);
+        }
 
-        List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("generateAllAvailableStatesSource")
+        void shouldMakeDynamicListOfDraftHearingOrdersInAllExpectedStatesWhenNoHearingOrdersBundlesExist(State state) {
+            List<Element<GeneratedOrder>> generatedOrders = List.of(
+                element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"))
+            );
 
-        Element<HearingOrder> draftCMO = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> agreedCMO = element(UUID.randomUUID(), buildPastHearingOrder(AGREED_CMO));
-        Element<HearingOrder> draftOrder = element(UUID.randomUUID(), buildPastHearingOrder(C21));
+            List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
 
-        HearingOrdersBundle bundle1 = HearingOrdersBundle.builder()
-            .orders(newArrayList(draftCMO, draftOrder)).build();
+            Element<HearingOrder> draftCMO = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> agreedCMO = element(UUID.randomUUID(), buildPastHearingOrder(AGREED_CMO));
+            Element<HearingOrder> draftOrder = element(UUID.randomUUID(), buildPastHearingOrder(C21));
 
-        HearingOrdersBundle bundle2 = HearingOrdersBundle.builder()
-            .orders(newArrayList(agreedCMO)).build();
+            HearingOrdersBundle bundle1 = HearingOrdersBundle.builder()
+                .orders(newArrayList(draftCMO, draftOrder)).build();
 
-        CaseData caseData = CaseData.builder()
-            .state(state)
-            .orderCollection(generatedOrders)
-            .sealedCMOs(sealedCaseManagementOrders)
-            .draftUploadedCMOs(List.of(draftCMO, agreedCMO))
-            .hearingOrdersBundlesDrafts(wrapElements(bundle1, bundle2))
-            .build();
+            HearingOrdersBundle bundle2 = HearingOrdersBundle.builder()
+                .orders(newArrayList(agreedCMO)).build();
 
-        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+            CaseData caseData = CaseData.builder()
+                .state(state)
+                .orderCollection(generatedOrders)
+                .sealedCMOs(sealedCaseManagementOrders)
+                .draftUploadedCMOs(List.of(draftCMO, agreedCMO))
+                .hearingOrdersBundlesDrafts(wrapElements(bundle1, bundle2))
+                .build();
 
-        DynamicList expectedList = DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
-            .listItems(List.of(
-                buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
-                buildListElement(sealedCaseManagementOrders.get(0).getId(),
-                    format("Sealed case management order issued on %s",
-                        formatLocalDateToString(NOW, "d MMMM yyyy"))),
-                buildListElement(draftCMO.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
-            .build();
+            DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
-        assertThat(listOfOrders).isEqualTo(expectedList);
-    }
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of(
+                    buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
+                    buildListElement(sealedCaseManagementOrders.get(0).getId(),
+                        format("Sealed case management order issued on %s",
+                            formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                    buildListElement(draftCMO.getId(), format("Draft case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(draftOrder.getId(), format("Draft order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                .build();
 
-    @ParameterizedTest(name = "{0}")
-    @EnumSource(value = State.class, names = {"SUBMITTED", "GATEKEEPING", "CASE_MANAGEMENT", "CLOSED"})
-    void shouldMakeDynamicListOfSDOrderTypesInExpectedCaseStates(State state) {
-        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
-            .orderStatus(SEALED)
-            .build();
+            assertThat(listOfOrders).isEqualTo(expectedList);
+        }
 
-        CaseData caseData = CaseData.builder()
-            .state(state)
-            .standardDirectionOrder(standardDirectionOrder)
-            .build();
+        @ParameterizedTest(name = "{0}")
+        @EnumSource(value = State.class, names = {"SUBMITTED", "GATEKEEPING", "CASE_MANAGEMENT", "CLOSED"})
+        void shouldMakeDynamicListOfSDOrderTypesInExpectedCaseStates(State state) {
+            StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .build();
 
-        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+            CaseData caseData = CaseData.builder()
+                .state(state)
+                .standardDirectionOrder(standardDirectionOrder)
+                .build();
 
-        DynamicList expectedList = DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
-            .listItems(List.of(
-                buildListElement(SDO_ID, format("Gatekeeping order - %s",
-                    formatLocalDateToString(NOW, "d MMMM yyyy")))))
-            .build();
+            DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
-        assertThat(listOfOrders).isEqualTo(expectedList);
-    }
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of(
+                    buildListElement(SDO_ID, format("Gatekeeping order - %s",
+                        formatLocalDateToString(NOW, "d MMMM yyyy")))))
+                .build();
 
-    @Test
-    void shouldNotBuildDynamicListOfSDOrdersInFinalHearingState() {
-        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
-            .orderStatus(SEALED)
-            .build();
+            assertThat(listOfOrders).isEqualTo(expectedList);
+        }
 
-        CaseData caseData = CaseData.builder()
-            .state(FINAL_HEARING)
-            .standardDirectionOrder(standardDirectionOrder)
-            .build();
+        @Test
+        void shouldNotBuildDynamicListOfSDOrdersInFinalHearingState() {
+            StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .build();
 
-        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
+            CaseData caseData = CaseData.builder()
+                .state(FINAL_HEARING)
+                .standardDirectionOrder(standardDirectionOrder)
+                .build();
 
-        DynamicList expectedList = DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
-            .listItems(List.of())
-            .build();
+            DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
-        assertThat(listOfOrders).isEqualTo(expectedList);
-    }
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of())
+                .build();
 
-    @Test
-    void shouldUseExpectedRemovalActionWhenRemovingAnOrder() {
-        when(orderRemovalActions.getAction(removableOrder)).thenReturn(orderRemovalAction);
+            assertThat(listOfOrders).isEqualTo(expectedList);
+        }
 
-        underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
+        @Test
+        void shouldUseExpectedRemovalActionWhenRemovingAnOrder() {
+            when(orderRemovalActions.getAction(removableOrder)).thenReturn(orderRemovalAction);
 
-        verify(orderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
-    }
+            underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
-    @Test
-    void shouldUseExpectedRemovalActionWhenPreparingCaseFields() {
-        when(orderRemovalActions.getAction(removableOrder)).thenReturn(orderRemovalAction);
+            verify(orderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
+        }
 
-        underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
+        @Test
+        void shouldUseExpectedRemovalActionWhenPreparingCaseFields() {
+            when(orderRemovalActions.getAction(removableOrder)).thenReturn(orderRemovalAction);
 
-        verify(orderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
-    }
+            underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("generateGetRemovedSDOArgumentsSource")
-    void shouldReturnRemovedSDO(
-        String testName,
-        List<Element<StandardDirectionOrder>> hiddenSDOs,
-        List<Element<StandardDirectionOrder>> previousHiddenSDOs,
-        Element<StandardDirectionOrder> expectedRemovedSDO
-    ) {
-        Optional<StandardDirectionOrder> removedOrder = underTest.getRemovedSDO(hiddenSDOs, previousHiddenSDOs);
+            verify(orderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
+        }
 
-        if (expectedRemovedSDO == null) {
-            assertThat(removedOrder).isEmpty();
-        } else {
-            assertThat(removedOrder).isNotEmpty().containsSame(expectedRemovedSDO.getValue());
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("generateGetRemovedSDOArgumentsSource")
+        void shouldReturnRemovedSDO(
+            String testName,
+            List<Element<StandardDirectionOrder>> hiddenSDOs,
+            List<Element<StandardDirectionOrder>> previousHiddenSDOs,
+            Element<StandardDirectionOrder> expectedRemovedSDO
+        ) {
+            Optional<StandardDirectionOrder> removedOrder = underTest.getRemovedSDO(hiddenSDOs, previousHiddenSDOs);
+
+            if (expectedRemovedSDO == null) {
+                assertThat(removedOrder).isEmpty();
+            } else {
+                assertThat(removedOrder).isNotEmpty().containsSame(expectedRemovedSDO.getValue());
+            }
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("generateGetRemovedCMOArgumentsSource")
+        void shouldReturnRemovedCMO(
+            String testName,
+            List<Element<HearingOrder>> hiddenCMOs,
+            List<Element<HearingOrder>> previousHiddenCMOs,
+            Element<HearingOrder> expectedRemovedCMO
+        ) {
+            Optional<HearingOrder> removedOrder = underTest.getRemovedCMO(hiddenCMOs, previousHiddenCMOs);
+
+            if (expectedRemovedCMO == null) {
+                assertThat(removedOrder).isEmpty();
+            } else {
+                assertThat(removedOrder).isNotEmpty().containsSame(expectedRemovedCMO.getValue());
+            }
         }
     }
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("generateGetRemovedCMOArgumentsSource")
-    void shouldReturnRemovedCMO(
-        String testName,
-        List<Element<HearingOrder>> hiddenCMOs,
-        List<Element<HearingOrder>> previousHiddenCMOs,
-        Element<HearingOrder> expectedRemovedCMO
-    ) {
-        Optional<HearingOrder> removedOrder = underTest.getRemovedCMO(hiddenCMOs, previousHiddenCMOs);
+    @Nested
+    class ApplicationRemovalTests {
 
-        if (expectedRemovedCMO == null) {
-            assertThat(removedOrder).isEmpty();
-        } else {
-            assertThat(removedOrder).isNotEmpty().containsSame(expectedRemovedCMO.getValue());
+        @Test
+        void shouldBuildSortedDynamicListOfApplications() {
+            List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
+            applications.add(element(buildC2Application("12 May 2020")));
+
+            applications.add(element(buildOtherApplication(C4_WHEREABOUTS_OF_A_MISSING_CHILD, "7 August 2020")));
+
+            applications.add(element(buildCombinedApplication(C17_EDUCATION_SUPERVISION_ORDER, "1 January 2020")));
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+
+            DynamicList listOfApplications = underTest.buildDynamicListOfApplications(caseData);
+
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of(
+                    buildListElement(applications.get(0).getId(), "C2, C17, 1 January 2020"),
+                    buildListElement(applications.get(1).getId(), "C2, 12 May 2020"),
+                    buildListElement(applications.get(2).getId(), "C4, 7 August 2020")
+                ))
+                .build();
+
+            assertThat(listOfApplications).isEqualTo(expectedList);
+        }
+
+        @Test
+        void shouldBuildDynamicListOfApplicationsWithSelectedId() {
+            UUID applicationId = UUID.randomUUID();
+            List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
+
+            applications.add(element(applicationId, buildC2Application("12 May 2020")));
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+
+            DynamicList listOfApplications = underTest.buildDynamicListOfApplications(caseData, applicationId);
+
+            DynamicList expectedList = DynamicList.builder()
+                .value(DynamicListElement.builder().code(applicationId).label("C2, 12 May 2020").build())
+                .listItems(List.of(
+                    buildListElement(applications.get(0).getId(), "C2, 12 May 2020")
+                ))
+                .build();
+
+            assertThat(listOfApplications).isEqualTo(expectedList);
+        }
+
+        @Test
+        void shouldPopulateApplicationFieldsWithC2Application() {
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(Map.of());
+
+            AdditionalApplicationsBundle application = buildC2Application("15 October 2020");
+            underTest.populateApplicationFields(caseDetailsMap, application);
+
+            HashMap<String, Object> expectedMap = new HashMap<>();
+            expectedMap.put("applicationTypeToBeRemoved", "C2, 15 October 2020");
+            expectedMap.put("c2ApplicationToBeRemoved", application.getC2DocumentBundle().getDocument());
+            expectedMap.put("otherApplicationToBeRemoved", null);
+            expectedMap.put("orderDateToBeRemoved", "15 October 2020");
+
+            assertThat(caseDetailsMap).isEqualTo(expectedMap);
+        }
+
+        @Test
+        void shouldPopulateApplicationFieldsWithOtherApplication() {
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(Map.of());
+
+            AdditionalApplicationsBundle application = buildOtherApplication(C1_APPOINTMENT_OF_A_GUARDIAN, "15 October 2020");
+            underTest.populateApplicationFields(caseDetailsMap, application);
+
+            HashMap<String, Object> expectedMap = new HashMap<>();
+            expectedMap.put("applicationTypeToBeRemoved", "C1, 15 October 2020");
+            expectedMap.put("c2ApplicationToBeRemoved", null);
+            expectedMap.put("otherApplicationToBeRemoved", application.getOtherApplicationsBundle().getDocument());
+            expectedMap.put("orderDateToBeRemoved", "15 October 2020");
+
+            assertThat(caseDetailsMap).isEqualTo(expectedMap);
+        }
+
+        @Test
+        void shouldGetApplicationElementToRemove() {
+            UUID id = UUID.randomUUID();
+            List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
+            applications.add(element(buildC2Application("3 June 2020")));
+            applications.add(element(id, buildC2Application("12 May 2020")));
+            applications.add(element(buildC2Application("25 December 2020")));
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+            Element<AdditionalApplicationsBundle> application = underTest.getRemovedApplicationById(caseData, id);
+
+            assertThat(application).isEqualTo(applications.get(1));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenElementNotFound() {
+            UUID id = UUID.randomUUID();
+            List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
+            applications.add(element(buildC2Application("3 June 2020")));
+            applications.add(element(buildC2Application("12 May 2020")));
+            applications.add(element(buildC2Application("25 December 2020")));
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+
+            assertThatThrownBy(() -> underTest.getRemovedApplicationById(caseData, id))
+                .isInstanceOf(RemovableOrderNotFoundException.class)
+                .hasMessage(String.format("Removable order or application with id %s not found", id));
+        }
+
+        private AdditionalApplicationsBundle buildC2Application(String date) {
+            return AdditionalApplicationsBundle.builder()
+                .uploadedDateTime(date)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .document(testDocumentReference())
+                    .uploadedDateTime(date)
+                    .build())
+                .build();
+        }
+
+        private AdditionalApplicationsBundle buildOtherApplication(OtherApplicationType type, String date) {
+            return AdditionalApplicationsBundle.builder()
+                .uploadedDateTime(date)
+                .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                    .applicationType(type)
+                    .uploadedDateTime(date)
+                    .build())
+                .build();
+        }
+
+
+        private AdditionalApplicationsBundle buildCombinedApplication(OtherApplicationType type, String date) {
+            return AdditionalApplicationsBundle.builder()
+                .uploadedDateTime(date)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .uploadedDateTime(date)
+                    .build())
+                .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                    .applicationType(type)
+                    .uploadedDateTime(date)
+                    .build())
+                .build();
         }
     }
 

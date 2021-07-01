@@ -23,8 +23,7 @@ public class AdditionalApplicationsBundle {
     @JsonIgnore
     public String toLabel() {
         if (isNotEmpty(c2DocumentBundle) && isNotEmpty(otherApplicationsBundle)) {
-            return String.format("C2 + %s - %s",
-                otherApplicationsBundle.getApplicationType().getLabel(), c2DocumentBundle.getUploadedDateTime());
+            return String.format("C2, %s", otherApplicationsBundle.toLabel());
         }
         else if (isNotEmpty(c2DocumentBundle)) {
             return c2DocumentBundle.toLabel();

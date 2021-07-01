@@ -64,13 +64,14 @@ public class RemoveOrderController extends CallbackController {
 
         if (caseData.getRemoveOrderOrApplication() == APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
-            Element<AdditionalApplicationsBundle> bundleElement = service.getRemovedApplicationById(caseData,
-                removedApplicationId);
-            caseDetailsMap.putAll(service.populateApplicationFields(bundleElement));
+            AdditionalApplicationsBundle application = service.getRemovedApplicationById(
+                caseData, removedApplicationId).getValue();
 
+            service.populateApplicationFields(caseDetailsMap, application);
+
+            // Can be removed once dynamic lists are fixed
             caseDetailsMap.put(REMOVABLE_APPLICATION_LIST_KEY,
                 service.buildDynamicListOfApplications(caseData, removedApplicationId));
-
         } else {
             // When dynamic lists are fixed this can be moved into the below method
             UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
