@@ -188,16 +188,16 @@ module.exports = {
   },
 
   selectAnyChildHasLegalRepresentation(answer) {
-    I.click(`${this.fields().mainSolicitor.childrenHaveLegalRepresentation.group}-${answer}`);
+    I.click(`${this.fields().mainSolicitor.childrenHaveLegalRepresentation.group}_${answer}`);
   },
 
   selectChildrenHaveSameRepresentation(answer) {
-    I.click(`${this.fields().mainSolicitor.childrenHaveSameRepresentation.group}-${answer}`);
+    I.click(`${this.fields().mainSolicitor.childrenHaveSameRepresentation.group}_${answer}`);
   },
 
   async selectChildUseMainRepresentation(answer, index, child) {
     await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => I.see(`Child ${index + 1} - ${child.firstName} ${child.lastName}`));
-    I.click(`${this.fields(index).childSolicitor.useMainSolicitor.group}-${answer}`);
+    I.click(`${this.fields(index).childSolicitor.useMainSolicitor.group}_${answer}`);
   },
 
   enterChildrenMainRepresentation(solicitor) {
