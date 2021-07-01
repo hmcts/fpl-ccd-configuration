@@ -99,7 +99,7 @@ public class FailedPBAPaymentEventHandler {
         if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
             notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
-        } else if (event.getApplicationTypes().contains(ApplicationType.C2_APPLICATION)) {
+        } else {
             notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
         }

@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
@@ -134,16 +135,16 @@ class FailedPBAPaymentEventHandlerTest {
     @Test
     void shouldNotifyRespondentWhenInterlocutoryApplicationPBAPaymentFails() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
-            .applicationType(C2_APPLICATION.getType())
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
             .caseUrl("caseUrl")
             .applicant(RESPONDENT_1_NAME)
             .build();
 
-        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C2_APPLICATION), 12345L))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C1_APPOINTMENT_OF_A_GUARDIAN), 12345L))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
-            new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION), RESPONDENT_1_NAME));
+            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN), RESPONDENT_1_NAME));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
@@ -166,6 +167,29 @@ class FailedPBAPaymentEventHandlerTest {
 
         failedPBAPaymentEventHandler.notifyCTSC(
             new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION), applicant));
+
+        verify(notificationService).sendEmail(
+            INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            CTSC_INBOX,
+            expectedParameters,
+            caseData.getId());
+    }
+
+    @Test
+    void shouldNotifyCtscWhenPBAPaymentFailsForOtherApplication() {
+        String applicant = LOCAL_AUTHORITY_NAME + ", Applicant";
+        final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
+            .caseUrl("caseUrl")
+            .applicant(applicant)
+            .build();
+
+        given(failedPBAPaymentContentProvider.getCtscNotifyData(
+            caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN), applicant))
+            .willReturn(expectedParameters);
+
+        failedPBAPaymentEventHandler.notifyCTSC(
+            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN), applicant));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
