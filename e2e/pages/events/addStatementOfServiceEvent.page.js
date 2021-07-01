@@ -17,9 +17,9 @@ module.exports = {
         timeSent: `#statementOfService_${index}_timeSent`,
         sentBy: {
           group: `#statementOfService_${index}_sentBy`,
-          email: `#statementOfService_${index}_sentBy_EMAIL`,
-          post: `#statementOfService_${index}_sentBy_POST`,
-          givenInPerson: `#statementOfService_${index}_sentBy_GIVEN_IN_PERSON`,
+          email: `#statementOfService_${index}_sentBy-EMAIL`,
+          post: `#statementOfService_${index}_sentBy-POST`,
+          givenInPerson: `#statementOfService_${index}_sentBy-GIVEN_IN_PERSON`,
         },
         emailAddress: `//*[@id="statementOfService_${index}_email"]`,
         post: `#statementOfService_${index}_postOfficeAddress`,
@@ -35,9 +35,8 @@ module.exports = {
     I.click(this.fields(elementIndex).recipients.addressCheck);
     this.enterRecipientsAddress(elementIndex, recipients);
     I.fillField(this.fields(elementIndex).recipients.documents, recipients.documents);
-    I.fillField(this.fields(elementIndex).recipients.date.day, recipients.date.day);
-    I.fillField(this.fields(elementIndex).recipients.date.month, recipients.date.month);
-    I.fillField(this.fields(elementIndex).recipients.date.year, recipients.date.year);
+    const dateSelector = `(//*[contains(@class, "collection-title")])[${ elementIndex + 1 }]/parent::div//*[contains(@class,"form-date")]`;
+    I.fillDate(recipients.date, dateSelector);
     I.fillField(this.fields(elementIndex).recipients.timeSent, recipients.timeSent);
     I.click(this.fields(elementIndex).recipients.sentBy.email);
     I.waitForText('Recipient\'s email address');
