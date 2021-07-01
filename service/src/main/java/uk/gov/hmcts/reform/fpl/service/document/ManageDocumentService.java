@@ -35,6 +35,9 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.nullsLast;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -326,6 +329,13 @@ public class ManageDocumentService {
                 .orElse(List.of());
 
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
+    }
+
+    public List<Element<SupportingEvidenceBundle>> sortCorrespondenceDocumentsByUploadedDate(
+        List<Element<SupportingEvidenceBundle>> documents) {
+        return defaultIfNull(documents, new ArrayList<Element<SupportingEvidenceBundle>>()).stream()
+            .sorted(comparing(bundle -> bundle.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
+            .collect(Collectors.toList());
     }
 
     public List<Element<SupportingEvidenceBundle>> getRespondentStatements(CaseData caseData,
