@@ -241,22 +241,6 @@ public enum Order {
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
-    C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
-        MANUAL_UPLOAD,
-        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        "",
-        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        IsFinalOrder.MAYBE,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    C43A_SPECIAL_GUARDIANSHIP_ORDER(
-        MANUAL_UPLOAD,
-        "Special guardianship order (C43A)",
-        "",
-        "Special guardianship order (C43A)",
-        IsFinalOrder.MAYBE,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
     C44A_LEAVE_TO_CHANGE_SURNAME(
         MANUAL_UPLOAD,
         "Leave to change surname (C44A)",
