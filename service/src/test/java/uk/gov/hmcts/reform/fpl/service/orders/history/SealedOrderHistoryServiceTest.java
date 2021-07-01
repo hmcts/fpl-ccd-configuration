@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -152,6 +153,54 @@ class SealedOrderHistoryServiceTest {
                     ),
                     "somethingClose", "closeCaseValue"
                 ));
+            }
+        }
+
+        @Test
+        void generateWithNoChildrenDescriptionWhenOrderAppliesToAllChildren() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().orderAppliesToAllChildren("Yes").build();
+                mockDocumentUpload(caseData);
+                mockExtraTitleGenerator(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .childrenDescription(null)
+                            .children(wrapElements(child1, child1))
+                            .build())
+                    )));
+            }
+        }
+
+        @Test
+        void generateWithNoChildrenDescriptionWhenOnlyOneChildInCase() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData()
+                    .orderAppliesToAllChildren("No")
+                    .children1(wrapElements(child1))
+                    .childSelector(Selector.builder().selected(List.of(1)).build())
+                    .build();
+                mockDocumentUpload(caseData);
+                mockExtraTitleGenerator(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .childrenDescription(null)
+                            .children(wrapElements(child1))
+                            .build())
+                    )));
             }
         }
 

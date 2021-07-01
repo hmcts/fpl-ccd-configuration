@@ -6,7 +6,6 @@ const caseDataWithApplication = require('../fixtures/caseData/gatekeepingWithPas
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
 
 const approvalDate = new Date(2021, 3, 9);
-const allocatedJudge = { title: 'Her Honour Judge', name: 'Moley' };
 const orderTitle = 'some title';
 const aYearAgo = new Date(Date.now() - (3600 * 1000 * 24));
 const today = new Date(Date.now());
@@ -48,8 +47,6 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
     orderIndex: 1,
     orderType: 'Care order (C32A)',
     approvalDate: new Date(2012, 10, 3),
-    allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
-    children: 'Timothy Jones',
   });
 });
 
@@ -79,8 +76,6 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
     orderIndex: 1,
     orderType: 'Discharge of care order (C32B)',
     approvalDate: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -110,8 +105,6 @@ Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) 
     orderIndex: 1,
     orderType: 'C23 - Emergency protection order',
     approvalDateTime: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -146,8 +139,6 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
     orderIndex: 1,
     orderType: 'C23 - Emergency protection order',
     approvalDateTime: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -176,8 +167,6 @@ Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPa
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -209,8 +198,6 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -239,8 +226,6 @@ Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrders
     orderIndex: 3,
     orderType: 'Supervision order (C35A)',
     approvalDate: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -269,8 +254,6 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
     orderIndex: 3,
     orderType: manageOrdersEventPage.orders.title.c33,
     approvalDate: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -297,8 +280,6 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
     orderIndex: 3,
     orderType: manageOrdersEventPage.orders.title.c35B,
     approvalDate: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -332,8 +313,6 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
     orderType: 'C47A - Appointment of a children\'s guardian',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
   });
 });
 
@@ -361,7 +340,6 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
-    children: 'Timothy Jones',
   });
 });
 

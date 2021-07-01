@@ -273,8 +273,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("CASE_NUMBER")
             .children1(CHILDREN)
-            .orderAppliesToAllChildren("Yes")
-            .childSelector(Selector.newSelector(2))
+            .orderAppliesToAllChildren("No")
+            .childSelector(Selector.builder().count("3").selected(List.of(0,1)).build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
             .allocatedJudge(Judge.builder().judgeLastName("Dredd").judgeTitle(HIS_HONOUR_JUDGE).build())
             .build();
