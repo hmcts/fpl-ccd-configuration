@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProv
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -33,6 +37,9 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
@@ -75,9 +82,13 @@ class FailedPBAPaymentEventHandlerTest {
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_NAME)
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
-                .solicitor(RespondentSolicitor.builder().email(RESPONDENT_EMAIL).build()).build()))
+            .respondents1(wrapElements(
+                Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                    .solicitor(RespondentSolicitor.builder().email(RESPONDENT_EMAIL).build()).build(),
+                Respondent.builder().party(RespondentParty.builder().firstName("Ross").lastName("Bob").build())
+                    .solicitor(RespondentSolicitor.builder().build()).build(),
+                Respondent.builder().party(RespondentParty.builder().firstName("Timothy").lastName("Jones").build())
+                    .build()))
             .others(Others.builder().firstOther(Other.builder().name("Joe Bloggs").build()).build())
             .build();
 
@@ -102,7 +113,8 @@ class FailedPBAPaymentEventHandlerTest {
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
-            new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
+            new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
@@ -123,7 +135,8 @@ class FailedPBAPaymentEventHandlerTest {
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
-            new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION), LOCAL_AUTHORITY_NAME + ", Applicant"));
+            new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
@@ -144,29 +157,50 @@ class FailedPBAPaymentEventHandlerTest {
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
-            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN), RESPONDENT_1_NAME));
+            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN),
+                OrderApplicant.builder().type(RESPONDENT).name("John Smith").build()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
-            Set.of(RESPONDENT_EMAIL),
+            RESPONDENT_EMAIL,
             expectedParameters,
             caseData.getId().toString());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Timothy Jones", "Ross Bob"})
+    void shouldNotSendNotificationWhenRespondentSolicitorDetailsAreMissing(String respondentName) {
+        final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
+            .caseUrl("caseUrl")
+            .applicant(RESPONDENT_1_NAME)
+            .build();
+
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C1_APPOINTMENT_OF_A_GUARDIAN), 12345L))
+            .willReturn(expectedParameters);
+
+        failedPBAPaymentEventHandler.notifyApplicant(
+            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN),
+                OrderApplicant.builder().type(RESPONDENT).name(respondentName).build()));
+
+        verifyNoInteractions(notificationService);
+    }
+
     @Test
     void shouldNotifyCtscWhenInterlocutoryApplicationPBAPaymentFails() {
-        String applicant = LOCAL_AUTHORITY_NAME + ", Applicant";
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C2_APPLICATION.getType())
             .caseUrl("caseUrl")
-            .applicant(applicant)
+            .applicant(LOCAL_AUTHORITY_NAME)
             .build();
 
-        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, List.of(C2_APPLICATION), applicant))
+        given(failedPBAPaymentContentProvider.getCtscNotifyData(
+            caseData, List.of(C2_APPLICATION), LOCAL_AUTHORITY_NAME))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyCTSC(
-            new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION), applicant));
+            new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
@@ -177,19 +211,19 @@ class FailedPBAPaymentEventHandlerTest {
 
     @Test
     void shouldNotifyCtscWhenPBAPaymentFailsForOtherApplication() {
-        String applicant = LOCAL_AUTHORITY_NAME + ", Applicant";
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
             .caseUrl("caseUrl")
-            .applicant(applicant)
+            .applicant(LOCAL_AUTHORITY_NAME)
             .build();
 
         given(failedPBAPaymentContentProvider.getCtscNotifyData(
-            caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN), applicant))
+            caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN), LOCAL_AUTHORITY_NAME))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyCTSC(
-            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN), applicant));
+            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
@@ -199,21 +233,30 @@ class FailedPBAPaymentEventHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Joe Bloggs, Other to be given notice 1", "David Smith"})
-    void shouldNotNotifyApplicantWhenInterlocutoryApplicationPBAPaymentFailsAndApplicantIsOthers(String applicant) {
+    @MethodSource("otherApplicantsData")
+    void shouldNotNotifyApplicantWhenInterlocutoryApplicationPBAPaymentFailsAndApplicantIsOthers(
+        OrderApplicant applicant,
+        String expectedApplicant) {
+
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C2_APPLICATION.getType())
             .caseUrl("caseUrl")
-            .applicant(applicant)
+            .applicant(expectedApplicant)
             .build();
 
-        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, List.of(C2_APPLICATION), applicant))
+        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, List.of(C2_APPLICATION), expectedApplicant))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
             new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION), applicant));
 
         verifyNoInteractions(notificationService);
+    }
+
+    private static Stream<Arguments> otherApplicantsData() {
+        return Stream.of(
+            Arguments.of(OrderApplicant.builder().type(OTHER).name("Joe Bloggs").build(), "Joe Bloggs"),
+            Arguments.of(OrderApplicant.builder().type(OTHER).name("David Smith").build(), "David Smith"));
     }
 
     @Test
@@ -223,11 +266,13 @@ class FailedPBAPaymentEventHandlerTest {
             .caseUrl("caseUrl")
             .build();
 
-        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, List.of(C110A_APPLICATION), ""))
+        given(failedPBAPaymentContentProvider.getCtscNotifyData(
+            caseData, List.of(C110A_APPLICATION), LOCAL_AUTHORITY_NAME))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyCTSC(
-            new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
+            new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,

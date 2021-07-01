@@ -14,11 +14,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
@@ -120,13 +122,15 @@ public class UploadC2DocumentsController extends CallbackController {
                     paymentService.makePaymentForC2(caseDetails.getId(), caseData);
                 } catch (FeeRegisterException | PaymentsApiException paymentException) {
                     log.error("C2 payment for case {} failed", caseDetails.getId());
-                    publishEvent(new FailedPBAPaymentEvent(
-                        caseData, List.of(C2_APPLICATION), c2DocumentBundle.getApplicantName()));
+                    publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION),
+                        OrderApplicant.builder().type(ApplicantType.LOCAL_AUTHORITY)
+                            .name(caseData.getCaseLocalAuthorityName()).build()));
                 }
             } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 log.error("C2 payment for case {} not taken as payment fee not shown to user", caseDetails.getId());
-                publishEvent(new FailedPBAPaymentEvent(
-                    caseData, List.of(C2_APPLICATION), c2DocumentBundle.getApplicantName()));
+                publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION),
+                    OrderApplicant.builder().type(ApplicantType.LOCAL_AUTHORITY)
+                        .name(caseData.getCaseLocalAuthorityName()).build()));
             }
         }
     }

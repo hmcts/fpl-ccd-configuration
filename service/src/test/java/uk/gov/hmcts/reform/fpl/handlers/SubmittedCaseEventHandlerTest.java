@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
@@ -166,7 +168,8 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
             verifyNoMoreInteractions(paymentService, eventService);
         }
 
@@ -181,7 +184,8 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
             verifyNoMoreInteractions(paymentService, eventService);
         }
 
@@ -201,7 +205,8 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
         }
 
         @Test
@@ -220,7 +225,8 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), ""));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
         }
 
         @Test

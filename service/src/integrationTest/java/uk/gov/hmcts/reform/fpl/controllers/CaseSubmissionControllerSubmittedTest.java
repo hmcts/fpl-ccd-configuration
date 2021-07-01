@@ -521,7 +521,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C110a",
             "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID,
-            "applicant", "");
+            "applicant", LOCAL_AUTHORITY_1_NAME);
     }
 
     private Map<String, Object> expectedLocalAuthorityNotificationParameters() {
@@ -544,6 +544,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                     .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
                     .build(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
                 "sendToCtsc", enableCtsc.getValue(),
                 "dateSubmitted", LocalDate.of(2020, 1, 1)
             ))).build();

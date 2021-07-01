@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
@@ -39,8 +41,8 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     void notifyCTSCC2() {
         underTest.notifyCTSC(new FailedPBAPaymentEvent(
             CaseData.builder().id(123L).caseLocalAuthorityName(LOCAL_AUTHORITY_NAME).build(),
-            List.of(C2_APPLICATION), LOCAL_AUTHORITY_NAME + ", Applicant"
-        ));
+            List.of(C2_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C2 – payment not taken")
@@ -48,7 +50,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("The online payment has failed for:")
                 .line()
                 .callout("http://fake-url/cases/case-details/123#Other%20applications")
-                .callout(LOCAL_AUTHORITY_NAME + ", Applicant")
+                .callout(LOCAL_AUTHORITY_NAME)
                 .callout("C2")
                 .line()
                 .end("Contact the applicant to arrange payment.")
@@ -58,8 +60,8 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyCTSCC110A() {
         underTest.notifyCTSC(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), List.of(C110A_APPLICATION), ""
-        ));
+            CaseData.builder().id(123L).build(), List.of(C110A_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C110a – payment not taken")
@@ -76,8 +78,8 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     void notifyLocalAuthorityC2() {
         underTest.notifyApplicant(new FailedPBAPaymentEvent(
             CaseData.builder().id(123L).caseLocalAuthorityName(LOCAL_AUTHORITY_NAME).build(),
-            List.of(C2_APPLICATION), LOCAL_AUTHORITY_NAME + ", Applicant"
-        ));
+            List.of(C2_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C2 – payment not taken")
@@ -101,8 +103,8 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyLocalAuthorityC110A() {
         underTest.notifyApplicant(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), List.of(C110A_APPLICATION), ""
-        ));
+            CaseData.builder().id(123L).build(), List.of(C110A_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C110a – payment not taken")

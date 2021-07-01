@@ -316,7 +316,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
             "c2DocumentBundle", wrapElements(C2DocumentBundle.builder()
                 .document(latestC2Document)
                 .usePbaPayment(usePbaPayment.getValue())
-                .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
+                .applicantName(LOCAL_AUTHORITY_1_NAME)
                 .build())
         );
     }
@@ -324,7 +324,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
             "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
-            "applicant", LOCAL_AUTHORITY_1_NAME + ", Applicant");
+            "applicant", LOCAL_AUTHORITY_1_NAME);
     }
 
     private Map<String, Object> expectedApplicantNotificationParameters() {

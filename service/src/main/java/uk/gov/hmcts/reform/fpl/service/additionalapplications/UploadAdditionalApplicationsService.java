@@ -63,14 +63,6 @@ public class UploadAdditionalApplicationsService {
         return applicationTypes;
     }
 
-    public String getApplicantName(AdditionalApplicationsBundle bundle) {
-        if (!isNull(bundle.getC2DocumentBundle())) {
-            return bundle.getC2DocumentBundle().getApplicantName();
-        }
-
-        return bundle.getOtherApplicationsBundle().getApplicantName();
-    }
-
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
         final Optional<String> applicantName = getSelectedApplicantName(
             caseData.getApplicantsList(), defaultIfNull(caseData.getOtherApplicant(), EMPTY)

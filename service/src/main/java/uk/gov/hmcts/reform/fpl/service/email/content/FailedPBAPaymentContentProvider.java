@@ -15,11 +15,13 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 @Service
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
+    public static final String DELIMITER = ", ";
+
     public FailedPBANotificationData getCtscNotifyData(CaseData caseData,
                                                        List<ApplicationType> applicationTypes,
                                                        String applicantName) {
         String applicationNames = applicationTypes.stream()
-            .map(ApplicationType::getType).collect(Collectors.joining(","));
+            .map(ApplicationType::getType).collect(Collectors.joining(DELIMITER));
 
         return FailedPBANotificationData.builder()
             .caseUrl(applicationTypes.contains(C110A_APPLICATION) ? getCaseUrl(caseData.getId())
@@ -32,7 +34,7 @@ public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvide
     public FailedPBANotificationData getApplicantNotifyData(List<ApplicationType> applicationTypes,
                                                             Long caseReference) {
         String applicationNames = applicationTypes.stream()
-            .map(ApplicationType::getType).collect(Collectors.joining(","));
+            .map(ApplicationType::getType).collect(Collectors.joining(", "));
         return FailedPBANotificationData.builder()
             .applicationType(applicationNames)
             .caseUrl(applicationTypes.contains(C110A_APPLICATION) ? getCaseUrl(caseReference)

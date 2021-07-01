@@ -145,14 +145,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     log.error("Additional applications payment for case {} failed", caseDetails.getId());
                     publishEvent(new FailedPBAPaymentEvent(caseData,
                         uploadAdditionalApplicationsService.getApplicationTypes(lastBundle),
-                        uploadAdditionalApplicationsService.getApplicantName(lastBundle)));
+                        applicantsListGenerator.getApplicant(caseData, lastBundle)));
                 }
             } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 log.error("Additional applications payment for case {} not taken as payment fee not shown to user",
                     caseDetails.getId());
                 publishEvent(new FailedPBAPaymentEvent(caseData,
                     uploadAdditionalApplicationsService.getApplicationTypes(lastBundle),
-                    uploadAdditionalApplicationsService.getApplicantName(lastBundle)));
+                    applicantsListGenerator.getApplicant(caseData, lastBundle)));
             }
         }
     }

@@ -61,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallbackTest {
 
+    private static final String RESPONDENT_FIRSTNAME = "John";
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final Long CASE_ID = 12345L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -291,16 +292,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         verify(notificationClient).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             LOCAL_AUTHORITY_1_INBOX,
-            Map.of("applicationType", "C2,C1 - Appointment of a guardian",
+            Map.of("applicationType", "C2, C1 - Appointment of a guardian",
                 "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications"),
             NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
-            Map.of("applicationType", "C2,C1 - Appointment of a guardian",
+            Map.of("applicationType", "C2, C1 - Appointment of a guardian",
                 "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
-                "applicant", LOCAL_AUTHORITY_1_NAME + ", Applicant"),
+                "applicant", LOCAL_AUTHORITY_1_NAME),
             NOTIFICATION_REFERENCE);
     }
 
@@ -362,14 +363,12 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
             "familyManCaseNumber", String.valueOf(CASE_ID),
-            "respondents1", List.of(
-                Map.of(
-                    "value", Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .lastName(RESPONDENT_SURNAME)
-                            .build())
-                        .build()))
-        );
+            "respondents1", wrapElements(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName(RESPONDENT_FIRSTNAME)
+                    .lastName(RESPONDENT_SURNAME)
+                    .build())
+                .build()));
     }
 
     private CaseDetails createCase(Map<String, Object> data) {
@@ -412,7 +411,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
             "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
-            "applicant", LOCAL_AUTHORITY_1_NAME + ", Applicant");
+            "applicant", LOCAL_AUTHORITY_1_NAME);
     }
 
     private Map<String, Object> expectedApplicantNotificationParameters() {

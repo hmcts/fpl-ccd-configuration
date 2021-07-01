@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ import java.util.List;
 public class FailedPBAPaymentEvent {
     private final CaseData caseData;
     private final List<ApplicationType> applicationTypes;
-    private final String applicantName;
+    private final OrderApplicant applicant;
 }

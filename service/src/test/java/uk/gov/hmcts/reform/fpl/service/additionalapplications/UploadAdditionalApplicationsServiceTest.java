@@ -283,39 +283,31 @@ class UploadAdditionalApplicationsServiceTest {
     @ParameterizedTest
     @MethodSource("additionalApplicationBundlesData")
     void shouldGetTheApplicantAndApplicationTypes(AdditionalApplicationsBundle applicationBundle,
-                                                  List<ApplicationType> expectedApplicationTypes,
-                                                  String expectedApplicantName) {
+                                                  List<ApplicationType> expectedApplicationTypes) {
         assertThat(underTest.getApplicationTypes(applicationBundle)).isEqualTo(expectedApplicationTypes);
-        assertThat(underTest.getApplicantName(applicationBundle)).isEqualTo(expectedApplicantName);
     }
 
     private static Stream<Arguments> additionalApplicationBundlesData() {
-        String applicant = "Swansea council, Applicant";
         return Stream.of(
             Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(
                 C2DocumentBundle.builder()
                     .type(WITHOUT_NOTICE)
-                    .applicantName(applicant)
                     .document(DocumentReference.builder().build()).build()).build(),
-                List.of(C2_APPLICATION), applicant),
+                List.of(C2_APPLICATION)),
             Arguments.of(AdditionalApplicationsBundle.builder().otherApplicationsBundle(
                 OtherApplicationsBundle.builder()
                     .applicationType(C1_PARENTAL_RESPONSIBILITY)
-                    .applicantName("John Smith, Respondent 1")
                     .document(DocumentReference.builder().build()).build()).build(),
-                List.of(ApplicationType.C1_PARENTAL_RESPONSIBILITY), "John Smith, Respondent 1"),
-
+                List.of(ApplicationType.C1_PARENTAL_RESPONSIBILITY)),
             Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(
                 C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
-                    .applicantName(applicant)
                     .document(DocumentReference.builder().build()).build())
                     .otherApplicationsBundle(
                         OtherApplicationsBundle.builder()
                             .applicationType(C1_PARENTAL_RESPONSIBILITY)
-                            .applicantName(applicant)
                             .document(DocumentReference.builder().build()).build()).build(),
-                List.of(C2_APPLICATION, ApplicationType.C1_PARENTAL_RESPONSIBILITY), applicant)
+                List.of(C2_APPLICATION, ApplicationType.C1_PARENTAL_RESPONSIBILITY))
         );
     }
 
