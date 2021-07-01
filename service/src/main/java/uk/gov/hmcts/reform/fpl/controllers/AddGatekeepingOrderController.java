@@ -177,7 +177,6 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         if (URGENT == sdoRouter || decision.isSealed()) {
             data.put("state", CASE_MANAGEMENT);
-
             if (GATEKEEPING == caseData.getState()) {
                 List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
                 data.put("noticeOfProceedingsBundle", nopService.uploadNoticesOfProceedings(caseData, nopTemplates));
@@ -201,7 +200,7 @@ public class AddGatekeepingOrderController extends CallbackController {
             "gatekeepingOrderHasHearing2"
         );
 
-        if (decision.isSealed()) {
+        if (decision.isSealed() || sdoRouter == URGENT) {
             removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "gatekeepingOrderRouter", "customDirections");
         }
 

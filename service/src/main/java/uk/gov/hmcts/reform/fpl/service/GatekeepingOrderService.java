@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -235,12 +236,20 @@ public class GatekeepingOrderService {
         final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
+        final HearingBooking firstHearing = getHearing(caseData).orElse(null);
+
         final List<StandardDirection> standardDirections = eventData.getRequestedDirections().stream()
             .map(requestedType -> {
                 StandardDirection standardDirection = converter
                     .convert(caseDetails.getData().get(requestedType.getFieldName()), StandardDirection.class);
 
                 DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(requestedType);
+
+                if (standardDirection.getDueDateType() == DirectionDueDateType.DAYS) {
+                    standardDirection.setDateToBeCompletedBy(
+                        calculateDirectionDueDate(firstHearing, directionConfig.getDisplay(),
+                            standardDirection.getDaysBeforeHearing()));
+                }
 
                 return standardDirection.applyConfig(directionConfig);
             })
@@ -272,6 +281,10 @@ public class GatekeepingOrderService {
     }
 
     private LocalDateTime calculateDirectionDueDate(HearingBooking hearing, Display display) {
+        return calculateDirectionDueDate(hearing, display, null);
+    }
+
+    private LocalDateTime calculateDirectionDueDate(HearingBooking hearing, Display display, Integer workingDays) {
 
         final LocalDate hearingDay = ofNullable(hearing)
             .map(HearingBooking::getStartDate)
@@ -282,9 +295,9 @@ public class GatekeepingOrderService {
             return null;
         }
 
-        final Integer daysBefore = Optional.ofNullable(display.getDelta())
+        final Integer daysBefore = Optional.ofNullable(workingDays).orElse(Optional.ofNullable(display.getDelta())
             .map(Integer::parseInt)
-            .orElse(0);
+            .orElse(0));
 
         LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
 
