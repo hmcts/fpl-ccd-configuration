@@ -19,9 +19,9 @@ module.exports = {
         placeOfBirth: `#respondents1_${index}_party_placeOfBirth`,
         relationshipToChild: `#respondents1_${index}_party_relationshipToChild`,
         litigationIssues: {
-          yes: `#respondents1_${index}_party_litigationIssues-YES`,
-          no: `#respondents1_${index}_party_litigationIssues-NO`,
-          dont_know: `#respondents1_${index}_party_litigationIssues-DONT_KNOW`,
+          yes: `#respondents1_${index}_party_litigationIssues_YES`,
+          no: `#respondents1_${index}_party_litigationIssues_NO`,
+          dont_know: `#respondents1_${index}_party_litigationIssues_DONT_KNOW`,
         },
         litigationIssuesDetails: `#respondents1_${index}_party_litigationIssuesDetails`,
       },

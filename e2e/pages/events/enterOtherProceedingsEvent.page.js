@@ -4,8 +4,8 @@ module.exports = {
   fields: function(index) {
     return {
       onGoingProceeding: {
-        yes: '#proceeding_onGoingProceeding-Yes',
-        no: '#proceeding_onGoingProceeding-No',
+        yes: '#proceeding_onGoingProceeding_Yes',
+        no: '#proceeding_onGoingProceeding_No',
         dontKnow: '#proceeding_onGoingProceeding-DontKnow',
       },
       proceedingStatus: {

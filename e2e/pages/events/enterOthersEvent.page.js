@@ -16,9 +16,9 @@ module.exports = {
       telephoneNumber: `#others_${index}_telephone`,
       relationshipToChild: `#others_${index}_childInformation`,
       litigationIssues: {
-        yes: `#others_${index}_litigationIssues-YES`,
-        no: `#others_${index}_litigationIssues-NO`,
-        dont_know: `#others_${index}_litigationIssues-DONT_KNOW`,
+        yes: `#others_${index}_litigationIssues_YES`,
+        no: `#others_${index}_litigationIssues_NO`,
+        dont_know: `#others_${index}_litigationIssues_DONT_KNOW`,
       },
       litigationIssuesDetails: `#others_${index}_litigationIssuesDetails`,
       detailsHidden: (option) => {

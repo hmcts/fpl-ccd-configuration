@@ -6,7 +6,7 @@ module.exports = {
     return {
       recipients: {
         name: `#statementOfService_${index}_name`,
-        addressCheck: `#statementOfService_${index}_addressCheck-Yes`,
+        addressCheck: `#statementOfService_${index}_addressCheck_Yes`,
         address: `#statementOfService_${index}_address_address`,
         documents: `#statementOfService_${index}_documents`,
         date: {
@@ -17,9 +17,9 @@ module.exports = {
         timeSent: `#statementOfService_${index}_timeSent`,
         sentBy: {
           group: `#statementOfService_${index}_sentBy`,
-          email: `#statementOfService_${index}_sentBy-EMAIL`,
-          post: `#statementOfService_${index}_sentBy-POST`,
-          givenInPerson: `#statementOfService_${index}_sentBy-GIVEN_IN_PERSON`,
+          email: `#statementOfService_${index}_sentBy_EMAIL`,
+          post: `#statementOfService_${index}_sentBy_POST`,
+          givenInPerson: `#statementOfService_${index}_sentBy_GIVEN_IN_PERSON`,
         },
         emailAddress: `//*[@id="statementOfService_${index}_email"]`,
         post: `#statementOfService_${index}_postOfficeAddress`,

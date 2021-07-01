@@ -6,15 +6,15 @@ module.exports = {
     confirmChangeState: {
       id: '#confirmChangeState',
       options: {
-        yes: '#confirmChangeState-Yes',
-        no: '#confirmChangeState-No',
+        yes: '#confirmChangeState_Yes',
+        no: '#confirmChangeState_No',
       },
     },
     closedCaseOptions: {
       id: '#closedStateRadioList',
       options: {
-        caseManagement: '#closedStateRadioList-PREPARE_FOR_HEARING',
-        finalHearing: '#closedStateRadioList-FINAL_HEARING',
+        caseManagement: '#closedStateRadioList_PREPARE_FOR_HEARING',
+        finalHearing: '#closedStateRadioList_FINAL_HEARING',
       },
     },
     endButton: 'Save and return',

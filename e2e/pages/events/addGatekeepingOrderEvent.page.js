@@ -20,7 +20,7 @@ module.exports = {
         };
       },
     },
-    useAllocatedJudge: '#gatekeepingOrderIssuingJudge_useAllocatedJudge-Yes',
+    useAllocatedJudge: '#gatekeepingOrderIssuingJudge_useAllocatedJudge_Yes',
     issuingJudgeTitle: '#gatekeepingOrderIssuingJudge_judgeTitle-HER_HONOUR_JUDGE',
     issuingJudgeName: '#gatekeepingOrderIssuingJudge_judgeLastName',
     issuingJudgeEmail: '#gatekeepingOrderIssuingJudge_judgeEmailAddress',

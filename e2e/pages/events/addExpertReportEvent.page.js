@@ -13,7 +13,7 @@ module.exports = {
       month: '#expertReport_0_reportApprovalDate-month',
       year: '#expertReport_0_reportApprovalDate-year',
     },
-    reportApproval: '#expertReport_0_reportApproval-Yes',
+    reportApproval: '#expertReport_0_reportApproval_Yes',
   },
 
   async addExpertReportLog(expertReportLog) {

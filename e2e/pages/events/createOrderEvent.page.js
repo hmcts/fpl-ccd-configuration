@@ -17,16 +17,16 @@ module.exports = {
     directionsNeeded: {
       id: '#orderFurtherDirections_directionsNeeded',
       options: {
-        yes: '#orderFurtherDirections_directionsNeeded-Yes',
-        no: '#orderFurtherDirections_directionsNeeded-No',
+        yes: '#orderFurtherDirections_directionsNeeded_Yes',
+        no: '#orderFurtherDirections_directionsNeeded_No',
       },
     },
     directions: '#orderFurtherDirections_directions',
     exclusionClauseNeeded: {
       id: '#orderExclusionClause_exclusionClauseNeeded',
       options: {
-        yes: '#orderExclusionClause_exclusionClauseNeeded-Yes',
-        no: '#orderExclusionClause_exclusionClauseNeeded-No',
+        yes: '#orderExclusionClause_exclusionClauseNeeded_Yes',
+        no: '#orderExclusionClause_exclusionClauseNeeded_No',
       },
     },
     exclusionClause: '#orderExclusionClause_exclusionClause',
@@ -104,8 +104,8 @@ module.exports = {
     closeCase: {
       id: '#closeCaseFromOrder',
       options: {
-        yes: '#closeCaseFromOrder-Yes',
-        no: '#closeCaseFromOrder-No',
+        yes: '#closeCaseFromOrder_Yes',
+        no: '#closeCaseFromOrder_No',
       },
     },
     uploadedOrder: '#uploadedOrder',
@@ -177,7 +177,7 @@ module.exports = {
   },
 
   enterChildrenDescription(description) {
-    I.click(this.fields.epo.childrenDescription.radioGroup + '-Yes');
+    I.click(this.fields.epo.childrenDescription.radioGroup + '_Yes');
     I.fillField(this.fields.epo.childrenDescription.description, description);
   },
 
@@ -217,13 +217,13 @@ module.exports = {
 
   selectChildren(children = []) {
     for (let child of children) {
-      I.click(`${this.fields.childSelector.selector(child)}-SELECTED`);
+      I.click(`${this.fields.childSelector.selector(child)}_SELECTED`);
     }
   },
 
   selectCareOrder(careOrders = []) {
     for (let order of careOrders) {
-      I.click(`${this.fields.careOrderSelector.selector(order)}-SELECTED`);
+      I.click(`${this.fields.careOrderSelector.selector(order)}_SELECTED`);
     }
   },
 

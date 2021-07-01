@@ -151,8 +151,8 @@ const section4 = {
   isFinalOrder: {
     group: '#manageOrdersIsFinalOrder',
     options: {
-      yes: '#manageOrdersIsFinalOrder-Yes',
-      no: '#manageOrdersIsFinalOrder-No',
+      yes: '#manageOrdersIsFinalOrder_Yes',
+      no: '#manageOrdersIsFinalOrder_No',
     },
   },
 };
@@ -163,8 +163,8 @@ const preview = {
   closeCase: {
     group: '#manageOrdersCloseCase',
     options: {
-      yes: '#manageOrdersCloseCase-Yes',
-      no: '#manageOrdersCloseCase-No',
+      yes: '#manageOrdersCloseCase_Yes',
+      no: '#manageOrdersCloseCase_No',
     },
   },
 };
