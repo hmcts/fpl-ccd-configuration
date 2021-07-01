@@ -81,6 +81,7 @@ public class OrderDetailsWithEndTypeGenerator {
         context.put("endDate",
             formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix)));
         context.put("numOfMonths", numOfMonths.toString());
+        context.put("decoratedNumberOfMonths", numOfMonths + (numOfMonths > 1 ? " months" : " month"));
         return new StringSubstitutor(context).replace(courtResponsibilityAssignmentMessage);
 
     }
