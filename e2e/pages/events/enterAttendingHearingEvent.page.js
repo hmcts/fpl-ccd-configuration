@@ -12,7 +12,7 @@ module.exports = {
       yes: '#hearingPreferences_disabilityAssistance_Yes',
       details: '#hearingPreferences_disabilityAssistanceDetails',
     },
-    welshNo: '#hearingPreferences_welsh-No',
+    welshNo: '#hearingPreferences_welsh_No',
     extraSecurityMeasures: {
       yes: '#hearingPreferences_extraSecurityMeasures_Yes',
       details: '#hearingPreferences_extraSecurityMeasuresDetails',

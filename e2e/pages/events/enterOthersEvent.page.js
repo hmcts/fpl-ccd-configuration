@@ -16,14 +16,14 @@ module.exports = {
       telephoneNumber: `#others_${index}_telephone`,
       relationshipToChild: `#others_${index}_childInformation`,
       litigationIssues: {
-        yes: `#others_${index}_litigationIssues_YES`,
-        no: `#others_${index}_litigationIssues_NO`,
-        dont_know: `#others_${index}_litigationIssues_DONT_KNOW`,
+        yes: `#others_${index}_litigationIssues-YES`,
+        no: `#others_${index}_litigationIssues-NO`,
+        dont_know: `#others_${index}_litigationIssues-DONT_KNOW`,
       },
       litigationIssuesDetails: `#others_${index}_litigationIssuesDetails`,
       detailsHidden: (option) => {
         return {
-          option: `#others_${index}_detailsHidden-${option}`,
+          option: `#others_${index}_detailsHidden_${option}`,
           reason: `#others_${index}_detailsHiddenReason`,
         };
       },
@@ -35,10 +35,8 @@ module.exports = {
 
     await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).name, other.name);
-    I.click(this.fields(elementIndex).DOB.day);
-    I.fillField(this.fields(elementIndex).DOB.day, other.DOB.day);
-    I.fillField(this.fields(elementIndex).DOB.month, other.DOB.month);
-    I.fillField(this.fields(elementIndex).DOB.year, other.DOB.year);
+    const dateSelector = `(//*[@id="DOB"])[${await this.getActiveElementIndex2()}]`;
+    I.fillDate(other.DOB, dateSelector);
     I.selectOption(this.fields(elementIndex).gender, other.gender);
     I.fillField(this.fields(elementIndex).birthPlace, other.birthPlace);
     await within(this.fields(elementIndex).address, () => {
@@ -87,6 +85,15 @@ module.exports = {
       return 'firstOther';
     } else {
       return `additionalOthers_${count}`;
+    }
+  },
+
+  async getActiveElementIndex2() {
+    const count = await I.getActiveElementIndex();
+    if (count === -1) {
+      return 1;
+    } else {
+      return count + 2;
     }
   },
 };

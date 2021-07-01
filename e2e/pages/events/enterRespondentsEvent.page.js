@@ -19,9 +19,9 @@ module.exports = {
         placeOfBirth: `#respondents1_${index}_party_placeOfBirth`,
         relationshipToChild: `#respondents1_${index}_party_relationshipToChild`,
         litigationIssues: {
-          yes: `#respondents1_${index}_party_litigationIssues_YES`,
-          no: `#respondents1_${index}_party_litigationIssues_NO`,
-          dont_know: `#respondents1_${index}_party_litigationIssues_DONT_KNOW`,
+          yes: `#respondents1_${index}_party_litigationIssues-YES`,
+          no: `#respondents1_${index}_party_litigationIssues-NO`,
+          dont_know: `#respondents1_${index}_party_litigationIssues-DONT_KNOW`,
         },
         litigationIssuesDetails: `#respondents1_${index}_party_litigationIssuesDetails`,
       },
@@ -38,13 +38,13 @@ module.exports = {
       },
       contactDetailsHidden: (option) => {
         return {
-          option: `#respondents1_${index}_party_contactDetailsHidden-${option}`,
+          option: `#respondents1_${index}_party_contactDetailsHidden_${option}`,
           reason: `#respondents1_${index}_party_contactDetailsHiddenReason`,
         };
       },
       legalRepresentation: (option) => {
         return {
-          option: `#respondents1_${index}_legalRepresentation-${option}`,
+          option: `#respondents1_${index}_legalRepresentation_${option}`,
         };
       },
     };
@@ -55,9 +55,11 @@ module.exports = {
 
     I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
     I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
-    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.day, respondent.dob.day);
-    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.month, respondent.dob.month);
-    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.year, respondent.dob.year);
+    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="dateOfBirth"]`;
+    I.fillDate(respondent.dob, dateSelector);
+    //I.fillField(this.fields(elementIndex).respondent.dateOfBirth.month, respondent.dob.month);
+    //I.fillField(this.fields(elementIndex).respondent.dateOfBirth.year, respondent.dob.year);
+
     I.selectOption(this.fields(elementIndex).respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');

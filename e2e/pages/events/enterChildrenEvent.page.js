@@ -65,7 +65,7 @@ module.exports = {
         },
         keyDates: `#children1_${index}_party_keyDates`,
         careAndContactPlan: `#children1_${index}_party_careAndContactPlan`,
-        adoptionNo: `#children1_${index}_party_adoption-No`,
+        adoptionNo: `#children1_${index}_party_adoption_No`,
         mothersName: `#children1_${index}_party_mothersName`,
         fathersName: `#children1_${index}_party_fathersName`,
         fatherResponsible: `#children1_${index}_party_fathersResponsibility`,
@@ -75,9 +75,9 @@ module.exports = {
         contactHiddenNo: `#children1_${index}_party_detailsHidden_No`,
         contactHiddenYes: `#children1_${index}_party_detailsHidden_Yes`,
         litigationIssues: {
-          yes: `#children1_${index}_party_litigationIssues_YES`,
-          no: `#children1_${index}_party_litigationIssues_NO`,
-          dont_know: `#children1_${index}_party_litigationIssues_DONT_KNOW`,
+          yes: `#children1_${index}_party_litigationIssues-YES`,
+          no: `#children1_${index}_party_litigationIssues-NO`,
+          dont_know: `#children1_${index}_party_litigationIssues-DONT_KNOW`,
         },
         litigationIssuesDetails: `#children1_${index}_party_litigationIssuesDetails`,
       },
@@ -88,9 +88,12 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
     I.fillField(this.fields(elementIndex).child.firstName, firstName);
     I.fillField(this.fields(elementIndex).child.lastName, lastName);
-    I.fillField(this.fields(elementIndex).child.dateOfBirth.day, day);
-    I.fillField(this.fields(elementIndex).child.dateOfBirth.month, month);
-    I.fillField(this.fields(elementIndex).child.dateOfBirth.year, year);
+
+    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="dateOfBirth"]`;
+    I.fillDate({'day': day, 'month': month, 'year': year}, dateSelector );
+    //I.fillField(this.fields(elementIndex).child.dateOfBirth.month, month);
+    //I.fillField(this.fields(elementIndex).child.dateOfBirth.year, year);
+
     I.selectOption(this.fields(elementIndex).child.gender, gender);
   },
 
@@ -101,9 +104,10 @@ module.exports = {
       I.click(locate('label').withText('Living with respondents'));
     });
     await I.runAccessibilityTest();
-    I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.day, day);
-    I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.month, month);
-    I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.year, year);
+    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="addressChangeDate"]`;
+    I.fillDate({'day': day, 'month': month, 'year': year}, dateSelector);
+    //I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.month, month);
+    //I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.year, year);
   },
 
   async enterAddress(address) {

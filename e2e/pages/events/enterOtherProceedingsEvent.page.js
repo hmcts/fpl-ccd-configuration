@@ -4,8 +4,8 @@ module.exports = {
   fields: function(index) {
     return {
       onGoingProceeding: {
-        yes: '#proceeding_onGoingProceeding_Yes',
-        no: '#proceeding_onGoingProceeding_No',
+        yes: '#proceeding_onGoingProceeding-Yes',
+        no: '#proceeding_onGoingProceeding-No',
         dontKnow: '#proceeding_onGoingProceeding-DontKnow',
       },
       proceedingStatus: {
@@ -20,8 +20,8 @@ module.exports = {
       children: `#proceeding_${index}children`,
       guardian: `#proceeding_${index}guardian`,
       sameGuardianNeeded: {
-        yes: `#proceeding_${index}sameGuardianNeeded-Yes`,
-        no: `#proceeding_${index}sameGuardianNeeded-No`,
+        yes: `#proceeding_${index}sameGuardianNeeded_Yes`,
+        no: `#proceeding_${index}sameGuardianNeeded_No`,
       },
     };
   },
