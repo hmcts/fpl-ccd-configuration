@@ -171,17 +171,17 @@ const preview = {
 
 // Actions
 const selectOperation = async (operationType) => {
-  I.click(`${operations.group}-${operationType}`);
+  I.click(`${operations.group}_${operationType}`);
   await I.runAccessibilityTest();
 };
 
 const selectOperationInClosedState = async (operationType) => {
-  I.click(`${operations.groupInClosedState}-${operationType}`);
+  I.click(`${operations.groupInClosedState}_${operationType}`);
   await I.runAccessibilityTest();
 };
 
 const selectRelatedToHearing = (answer) => {
-  I.click(`${hearingDetails.linkedToHearing.group}-${answer}`);
+  I.click(`${hearingDetails.linkedToHearing.group}_${answer}`);
 };
 
 const selectHearing = async (hearing) => {
@@ -191,12 +191,12 @@ const selectHearing = async (hearing) => {
 };
 
 const selectOrder = async (orderType) => {
-  I.click(`${orders.group}-${orderType}`);
+  I.click(`${orders.group}_${orderType}`);
   await I.runAccessibilityTest();
 };
 
 const selectUploadOrder = async (orderType) => {
-  I.click(`${orders.uploadGroup}-${orderType}`);
+  I.click(`${orders.uploadGroup}_${orderType}`);
   await I.runAccessibilityTest();
 };
 
@@ -233,7 +233,7 @@ const enterEPOEndDateTime = async (dateTime) => {
 };
 
 const selectChildren = async (option, indexes = []) => {
-  I.click(`${section3.allChildren.group}-${option}`);
+  I.click(`${section3.allChildren.group}_${option}`);
 
   if (option === section3.allChildren.options.select) {
     indexes.forEach((selectorIndex) => {

@@ -10,9 +10,9 @@ module.exports = {
         address: `#statementOfService_${index}_address_address`,
         documents: `#statementOfService_${index}_documents`,
         date: {
-          day: `#statementOfService_${index}_date-day`,
-          month: `#statementOfService_${index}_date-month`,
-          year: `#statementOfService_${index}_date-year`,
+          day: `#statementOfService_${index}_date_day`,
+          month: `#statementOfService_${index}_date_month`,
+          year: `#statementOfService_${index}_date_year`,
         },
         timeSent: `#statementOfService_${index}_timeSent`,
         sentBy: {
