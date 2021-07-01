@@ -4,16 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
@@ -25,17 +23,13 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuf
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderDetailsWithEndTypeGenerator {
 
-    private static final String CHILD = "child";
-    private static final String CHILDREN = "children";
-
-    private final ChildrenService childrenService;
-    private final LocalAuthorityNameLookupConfiguration laNameLookup;
+    private final ManageOrderDocumentService manageOrderDocumentService;
 
     public String orderDetails(ManageOrdersEndDateType ordersEndDateType,
                                OrderDetailsWithEndTypeMessages orderDetailsWithEndTypeMessages, CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
-        Map<String, String> context = commonContextElements(caseData);
+        Map<String, String> context = manageOrderDocumentService.commonContextElements(caseData);
 
         LocalDateTime orderExpiration;
 
@@ -80,14 +74,6 @@ public class OrderDetailsWithEndTypeGenerator {
 
     }
 
-    private Map<String, String> commonContextElements(CaseData caseData) {
-        Map<String, String> context = new HashMap<>();
-        context.put("childOrChildren", getChildGrammar(childrenService.getSelectedChildren(caseData).size()));
-        context.put("childIsOrAre", getChildIsOrAreGrammar(childrenService.getSelectedChildren(caseData).size()));
-        context.put("localAuthorityName", laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
-        return context;
-    }
-
     private String getMonthMessage(Map<String, String> context, LocalDateTime orderExpiration,
                                    String formatString, Integer numOfMonths,
                                    String courtResponsibilityAssignmentMessage, String dayOrdinalSuffix) {
@@ -112,14 +98,6 @@ public class OrderDetailsWithEndTypeGenerator {
             formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix)));
         return new StringSubstitutor(context).replace(courtResponsibilityAssignmentMessage);
 
-    }
-
-    private String getChildGrammar(int numOfChildren) {
-        return (numOfChildren == 1) ? CHILD : CHILDREN;
-    }
-
-    private String getChildIsOrAreGrammar(int numOfChildren) {
-        return (numOfChildren == 1) ? "is" : "are";
     }
 
 }
