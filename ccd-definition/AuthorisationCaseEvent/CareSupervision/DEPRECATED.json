@@ -427,7 +427,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CR"
+        "CRUD": "R"
       },
       {
         "UserRoles": [
