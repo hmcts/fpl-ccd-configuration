@@ -42,7 +42,7 @@ public class OrderMessageGeneratorTest {
         assertThat(underTest.getCareOrderRestrictions(CASE_DATA)).isEqualTo(
             "While a care order is in place, no one can change the child’s "
                 + "surname or take the child out of the UK unless they "
-                + "have written consent from all people with parental responsibility, or permission from the court.\n"
+                + "have written consent from all people with parental responsibility, or permission from the Court.\n"
                 + "\n"
                 + "Taking the child from the UK without this consent or permission might be an offence under "
                 + "the Child Abduction Act 1984.\n"
