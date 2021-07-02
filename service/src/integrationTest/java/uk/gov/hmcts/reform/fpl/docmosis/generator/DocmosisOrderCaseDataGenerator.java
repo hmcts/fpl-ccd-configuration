@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -68,13 +69,7 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersApprovalDate(LocalDate.of(2013, 10, 5))
                         .build());
             case WHICH_CHILDREN:
-                return builder.children1(List.of(element(UUID.randomUUID(), Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Kenny")
-                        .lastName("Kruger")
-                        .dateOfBirth(LocalDate.of(2010, 1, 1))
-                        .build())
-                    .build())))
+                return builder.children1(buildChild())
                     .childSelector(Selector.builder().selected(List.of(1)).build());
             case DISCHARGE_DETAILS:
                 return builder.manageOrdersEventData(
@@ -159,12 +154,23 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersCafcassOfficesEngland(BRIGHTON)
                         .manageOrdersCafcassRegion("ENGLAND")
                         .build()
-                );
+                )
+                    .children1(buildChild());
             default:
                 throw new RuntimeException("Question block for " + questionBlock + " not implemented");
         }
 
         return builder;
+    }
+
+    private List<Element<Child>> buildChild() {
+        return List.of(element(UUID.randomUUID(), Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Kenny")
+                .lastName("Kruger")
+                .dateOfBirth(LocalDate.of(2010, 1, 1))
+                .build())
+            .build()));
     }
 
     private ManageOrdersEventData.ManageOrdersEventDataBuilder getManageOrdersEvent(CaseData.CaseDataBuilder builder) {
