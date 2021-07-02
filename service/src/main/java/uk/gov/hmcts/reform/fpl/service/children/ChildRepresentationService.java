@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.components.ChildSolicitorNoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.ChildSolicitorPolicyConverter;
+import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.ChildSolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -36,7 +36,7 @@ public class ChildRepresentationService {
     private final OptionCountBuilder optionCountBuilder;
     private final ChildRepresentationDetailsFlattener childRepSerializer;
     private final ChildSolicitorPolicyConverter childSolicitorPolicyConverter;
-    private final ChildSolicitorNoticeOfChangeAnswersConverter noticeOfChangeAnswersConverter;
+    private final NoticeOfChangeAnswersConverter noticeOfChangeAnswersConverter;
 
     public Map<String, Object> populateRepresentationDetails(CaseData caseData) {
         ChildrenEventData eventData = caseData.getChildrenEventData();

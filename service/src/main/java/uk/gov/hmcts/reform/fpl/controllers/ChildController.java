@@ -76,7 +76,7 @@ public class ChildController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
-        caseDetails.getData().putAll(childRepresentationService.generateCaseAccessFields(caseData));
+        caseDetails.getData().putAll(childRepresentationService.generateCaseAccessFields(getCaseData(caseDetails)));
 
         confidentialDetailsService.addConfidentialDetailsToCase(
             caseDetails, getCaseData(caseDetails).getAllChildren(), CHILD
