@@ -43,6 +43,19 @@ class UserServiceTest {
     }
 
     @Test
+    void shouldReturnUserName() {
+        when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
+        when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(UserDetails.builder()
+            .surname("Smith")
+            .forename("John")
+            .build());
+
+        String name = underTest.getUserName();
+
+        assertThat(name).isEqualTo("John Smith");
+    }
+
+    @Test
     void shouldCheckIfCurrentUserHasRole() {
         when(requestData.userRoles()).thenReturn(Set.of(GATEKEEPER.getRoleName(), CAFCASS.getRoleName()));
 
