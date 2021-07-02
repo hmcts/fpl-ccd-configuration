@@ -17,16 +17,16 @@ module.exports = {
     directionsNeeded: {
       id: '#orderFurtherDirections_directionsNeeded',
       options: {
-        yes: '#orderFurtherDirections_directionsNeeded-Yes',
-        no: '#orderFurtherDirections_directionsNeeded-No',
+        yes: '#orderFurtherDirections_directionsNeeded_Yes',
+        no: '#orderFurtherDirections_directionsNeeded_No',
       },
     },
     directions: '#orderFurtherDirections_directions',
     exclusionClauseNeeded: {
       id: '#orderExclusionClause_exclusionClauseNeeded',
       options: {
-        yes: '#orderExclusionClause_exclusionClauseNeeded-Yes',
-        no: '#orderExclusionClause_exclusionClauseNeeded-No',
+        yes: '#orderExclusionClause_exclusionClauseNeeded_Yes',
+        no: '#orderExclusionClause_exclusionClauseNeeded_No',
       },
     },
     exclusionClause: '#orderExclusionClause_exclusionClause',
@@ -104,8 +104,8 @@ module.exports = {
     closeCase: {
       id: '#closeCaseFromOrder',
       options: {
-        yes: '#closeCaseFromOrder-Yes',
-        no: '#closeCaseFromOrder-No',
+        yes: '#closeCaseFromOrder_Yes',
+        no: '#closeCaseFromOrder_No',
       },
     },
     uploadedOrder: '#uploadedOrder',
@@ -177,7 +177,7 @@ module.exports = {
   },
 
   enterChildrenDescription(description) {
-    I.click(this.fields.epo.childrenDescription.radioGroup + '-Yes');
+    I.click(this.fields.epo.childrenDescription.radioGroup + '_Yes');
     I.fillField(this.fields.epo.childrenDescription.description, description);
   },
 
@@ -190,7 +190,7 @@ module.exports = {
   },
 
   includePhrase(option) {
-    I.click(`${this.fields.epo.includePhrase}-${option}`);
+    I.click(`${this.fields.epo.includePhrase}_${option}`);
   },
 
   async enterEpoEndDate(date) {
@@ -228,11 +228,11 @@ module.exports = {
   },
 
   useAllChildren() {
-    I.click(`${this.fields.allChildren.id}-${this.fields.allChildren.options.yes}`);
+    I.click(`${this.fields.allChildren.id}_${this.fields.allChildren.options.yes}`);
   },
 
   notAllChildren() {
-    I.click(`${this.fields.allChildren.id}-${this.fields.allChildren.options.no}`);
+    I.click(`${this.fields.allChildren.id}_${this.fields.allChildren.options.no}`);
   },
 
   closeCaseFromOrder(closeCase) {

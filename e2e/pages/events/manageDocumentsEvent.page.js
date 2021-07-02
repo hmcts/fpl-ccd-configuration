@@ -13,8 +13,8 @@ module.exports = {
       otherDocuments: 'Any other document',
     },
     relatedToHearing: {
-      yes: '#manageDocumentsRelatedToHearing-Yes',
-      no: '#manageDocumentsRelatedToHearing-No',
+      yes: '#manageDocumentsRelatedToHearing_Yes',
+      no: '#manageDocumentsRelatedToHearing_No',
     },
     hearingList: '#manageDocumentsHearingList',
     respondentStatementList: '#respondentStatementList',
