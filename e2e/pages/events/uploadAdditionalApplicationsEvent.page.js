@@ -12,8 +12,8 @@ module.exports = {
     otherSupplements: supplementsFragment.supplements(0, 'temporaryOtherApplicationsBundle_supplementsBundle'),
     c2AdditionalOrdersRequested:'#temporaryC2Document_c2AdditionalOrdersRequested-',
     usePbaPayment: {
-      yes: '#temporaryPbaPayment_usePbaPayment-Yes',
-      no: '#temporaryPbaPayment_usePbaPayment-No',
+      yes: '#temporaryPbaPayment_usePbaPayment_Yes',
+      no: '#temporaryPbaPayment_usePbaPayment_No',
     },
     pbaNumber: '#temporaryPbaPayment_pbaNumber',
     clientCode: '#temporaryPbaPayment_clientCode',
