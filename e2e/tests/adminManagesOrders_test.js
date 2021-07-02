@@ -327,7 +327,7 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I,caseViewPage,{
-    orderIndex: 1,
+    orderIndex: 3,
     orderType: manageOrdersEventPage.orders.title.c43,
     approvalDate: today,
     allocatedJudge: allocatedJudge,

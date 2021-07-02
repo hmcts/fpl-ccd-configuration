@@ -61,7 +61,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
         assertThat(generatedParameters).isEqualTo(expectedCommonParameters(orderTitle)
             .orderHeader(ORDER_HEADER)
-            .orderMessage(C43ChildArrangementOrderDocumentParameterGenerator.WARNING)
+            .orderMessage(C43ChildArrangementOrderDocumentParameterGenerator.WARNING_MESSAGE)
             .build());
     }
 
@@ -109,9 +109,9 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
                 .manageOrdersIsByConsent("No")
-                .manageOrdersC43Orders(c43OrderTypes)
+                .manageOrdersMultiSelectListForC43(c43OrderTypes)
                 .manageOrdersRecitalsAndPreambles(RECITALS_AND_PREAMBLES)
-                .manageOrdersC43Directions(DIRECTIONS)
+                .manageOrdersDirectionsForC43(DIRECTIONS)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .build())
             .build();
@@ -121,7 +121,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         expectedCommonParameters(String orderTitle) {
         String orderDetails = String.format("The Court orders\n\n%s", RECITALS_AND_PREAMBLES);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
-            C43ChildArrangementOrderDocumentParameterGenerator.WHERE);
+            C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE);
 
         return C43ChildArrangementOrderDocmosisParameters.builder()
             .orderTitle(orderTitle)
@@ -130,6 +130,6 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
             .furtherDirections(directions)
             .localAuthorityName(LA_NAME)
             .noticeHeader("Notice")
-            .noticeMessage(C43ChildArrangementOrderDocumentParameterGenerator.NOTICE);
+            .noticeMessage(C43ChildArrangementOrderDocumentParameterGenerator.NOTICE_MESSAGE);
     }
 }

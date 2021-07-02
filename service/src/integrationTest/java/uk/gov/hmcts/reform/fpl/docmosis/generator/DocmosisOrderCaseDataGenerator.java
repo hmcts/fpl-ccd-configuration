@@ -142,9 +142,9 @@ public class DocmosisOrderCaseDataGenerator {
             case CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
-                    .manageOrdersC43Orders(Collections.singletonList(C43OrderType.CHILD_ARRANGEMENT_ORDER))
+                    .manageOrdersMultiSelectListForC43(Collections.singletonList(C43OrderType.CHILD_ARRANGEMENT_ORDER))
                     .manageOrdersRecitalsAndPreambles("Recitals and Preambles")
-                    .manageOrdersC43Directions("C43 directions")
+                    .manageOrdersDirectionsForC43("C43 directions")
                     .build()
                 );
             case FURTHER_DIRECTIONS:

@@ -153,13 +153,13 @@ const section4 = {
   walesOffices: '#manageOrdersCafcassOfficesWales',
   c43Orders: {
     orders: {
-      childArrangement: '#manageOrdersC43Orders-CHILD_ARRANGEMENT_ORDER',
-      specificIssue: '#manageOrdersC43Orders-SPECIFIC_ISSUE_ORDER',
-      prohibitedSteps: '#manageOrdersC43Orders-PROHIBITED_STEPS_ORDER',
+      childArrangement: '#manageOrdersMultiSelectListForC43-CHILD_ARRANGEMENT_ORDER',
+      specificIssue: '#manageOrdersMultiSelectListForC43-SPECIFIC_ISSUE_ORDER',
+      prohibitedSteps: '#manageOrdersMultiSelectListForC43-PROHIBITED_STEPS_ORDER',
     },
   },
   recitalsAndPreambles: '#manageOrdersRecitalsAndPreambles',
-  c43Directions: '#manageOrdersC43Directions',
+  c43Directions: '#manageOrdersDirectionsForC43',
   isFinalOrder: {
     group: '#manageOrdersIsFinalOrder',
     options: {

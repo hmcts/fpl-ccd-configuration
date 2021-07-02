@@ -168,7 +168,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersC43Orders",
+    "ID": "manageOrdersMultiSelectListForC43",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "C43OrderType",
@@ -187,7 +187,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersC43Directions",
+    "ID": "manageOrdersDirectionsForC43",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "TextArea",
     "Label": "Add directions",

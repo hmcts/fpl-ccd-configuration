@@ -42,9 +42,9 @@ public class ManageOrdersEventData {
     String manageOrdersDirections;
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
-    List<C43OrderType> manageOrdersC43Orders;
+    List<C43OrderType> manageOrdersMultiSelectListForC43;
     String manageOrdersRecitalsAndPreambles;
-    String manageOrdersC43Directions;
+    String manageOrdersDirectionsForC43;
     String manageOrdersIsByConsent;
     String manageOrdersChildrenDescription;
     String manageOrdersCareOrderIssuedCourt;

@@ -22,7 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class C43ChildArrangementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
     private final OrderMessageGenerator orderMessageGenerator;
 
-    public static final String WARNING = "Where a Child Arrangements Order is in force and the arrangements "
+    public static final String WARNING_MESSAGE = "Where a Child Arrangements Order is in force and the arrangements "
         + "regulated by it consist of, or include, arrangements which relate to either or both (a) with whom the child "
         + "concerned shall live and(b) when the child shall live with any person, no person may cause the child to be "
         + "known by a new surname or remove the child from the United Kingdom without the written consent of every "
@@ -38,7 +38,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "(b) the Court may make an order requiring you to undertake unpaid work (\"an "
         + "enforcement order\") and/or an order that you pay financial compensation.";
 
-    public static final String WHERE = "Where - \n"
+    public static final String CONDITIONS_MESSAGE = "Where - \n"
         + "(a) there are no proceedings pending under Part 2 Children Act 1989; \n"
         + "(b) an officer of the service/ Welsh family proceedings officer who remains involved "
         + "with the case is given cause to suspect, whilst this order is in force, that the "
@@ -48,7 +48,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "to consider that risk assessment and give such directions as the court thinks "
         + "necessary.";
 
-    public static final String NOTICE = "Any person with parental responsibility for the child may obtain "
+    public static final String NOTICE_MESSAGE = "Any person with parental responsibility for the child may obtain "
         + "advice on what can be done to prevent the issue of a passport to the child. They should write to London "
         + "Passport Office, Globe House, 89 Eccleston Square, LONDON SW1V 1PN.";
 
@@ -75,12 +75,10 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             .furtherDirections(getOrderDirections(eventData))
             .localAuthorityName(localAuthorityName)
             .noticeHeader("Notice")
-            .noticeMessage(NOTICE);
+            .noticeMessage(NOTICE_MESSAGE);
 
-        if (showWarning(eventData)) {
-            c43DocmosisParameters
-                .orderHeader("Warning \n")
-                .orderMessage(WARNING);
+        if (isChildArrangementOrderSelected(eventData)) {
+            addChildArrangementOrderWarningMessage(c43DocmosisParameters);
         }
 
         return c43DocmosisParameters.build();
@@ -92,7 +90,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     }
 
     private String getOrderTitle(ManageOrdersEventData eventData) {
-        List<C43OrderType> orders = eventData.getManageOrdersC43Orders();
+        List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
 
         switch (orders.size()) {
             case 1:
@@ -114,21 +112,29 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     }
 
     private String getOrderDirections(ManageOrdersEventData eventData) {
-        String directions = eventData.getManageOrdersC43Directions();
+        String directions = eventData.getManageOrdersDirectionsForC43();
         String furtherDirections = eventData.getManageOrdersFurtherDirections();
 
         if (!isEmpty(furtherDirections)) {
             directions += "\n\n" + furtherDirections;
         }
 
-        directions += "\n\n" + WHERE;
+        directions += "\n\n" + CONDITIONS_MESSAGE;
 
         return directions;
     }
 
-    private Boolean showWarning(ManageOrdersEventData eventData) {
-        List<C43OrderType> orders = eventData.getManageOrdersC43Orders();
+    private Boolean isChildArrangementOrderSelected(ManageOrdersEventData eventData) {
+        List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
 
         return orders.contains(C43OrderType.CHILD_ARRANGEMENT_ORDER);
+    }
+
+    private void addChildArrangementOrderWarningMessage(
+        C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
+            c43DocmosisParameters) {
+        c43DocmosisParameters
+            .orderHeader("Warning \n")
+            .orderMessage(WARNING_MESSAGE);
     }
 }
