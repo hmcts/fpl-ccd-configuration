@@ -9,39 +9,38 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
+public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder {
     private final String hearingDate;
     private final String dateOfIssue;
     private final OrderStatus orderStatus;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;
+    private final DocumentReference unsealedDocumentCopy;
+    private final List<Element<CustomDirection>> customDirections;
+    private final List<Element<StandardDirection>> standardDirections;
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
-
-    private final DocumentReference unsealedDocumentCopy;
-    private final List<Element<CustomDirection>> customDirections;
-    private final List<Element<StandardDirection>> standardDirections;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -71,16 +70,13 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
         return isSealed();
     }
 
-    @JsonIgnore
-    public LocalDate getDateOfIssueAsDate() {
-        return ofNullable(dateOfIssue)
-            .map(date -> parseLocalDateFromStringUsingFormat(date, DATE))
-            .orElse(LocalDate.now());
-    }
-
     @Override
     public String asLabel() {
-        return "Gatekeeping order - " + formatLocalDateToString(getDateOfIssueAsDate(), "d MMMM yyyy");
+        Optional<String> formattedDate = Optional.ofNullable(dateOfIssue)
+            .or(() -> Optional.ofNullable(dateOfUpload).map(date -> formatLocalDateToString(date, DATE)))
+            .map(date -> " - " + date);
+
+        return "Gatekeeping order" + formattedDate.orElse("");
     }
 }
 

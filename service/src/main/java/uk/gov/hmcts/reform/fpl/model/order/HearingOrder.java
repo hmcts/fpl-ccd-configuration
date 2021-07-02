@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 
 @Data
 @Builder(toBuilder = true)
-public class HearingOrder implements RemovableOrder {
+public class HearingOrder implements RemovableOrder, AmendableOrder {
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
@@ -65,6 +66,7 @@ public class HearingOrder implements RemovableOrder {
         return true;
     }
 
+    @Override
     public String asLabel() {
         if (type == C21) {
             return format("Draft order sent on %s", formatLocalDateToString(dateSent, DATE));

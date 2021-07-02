@@ -106,5 +106,23 @@
     "Label": "You must check to see if there are restrictions on who should be sent the order.",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "amendmentDownloadSectionHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "## Download order\nOpen the attached order in PDF-Xchange Editor to make changes.",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "amendmentUploadSectionHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "## Replace old order",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]
