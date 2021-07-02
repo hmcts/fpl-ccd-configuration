@@ -26,15 +26,15 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "regulated by it consist of, or include, arrangements which relate to either or both (a) with whom the child "
         + "concerned shall live and(b) when the child shall live with any person, no person may cause the child to be "
         + "known by a new surname or remove the child from the United Kingdom without the written consent of every "
-        + "person with parental responsibility for the child or the leave of the court. \n\n"
+        + "person with parental responsibility for the child or the leave of the Court. \n\n"
         + "However, this does not prevent the removal of the child, for a period of less than 1 month, by a person "
         + "named in the Child Arrangements Order as a person with whom the child shall live (Sections13(1), (2) and"
         + " (4) Children Act 1989). \n\n"
         + "It may be a criminal offence under the Child Abduction Act 1984 to remove the child "
-        + "from the United Kingdom without the leave of the court. \n\n"
+        + "from the United Kingdom without the leave of the Court. \n\n"
         + "Where a Child Arrangements Order is in force: if "
         + "you do not comply with a provision of this Child Arrangements Order– \n\n"
-        + "(a) you may be held in contempt of court and be committed to prison or fined; and/or \n"
+        + "(a) you may be held in contempt of Court and be committed to prison or fined; and/or \n"
         + "(b) the Court may make an order requiring you to undertake unpaid work (\"an "
         + "enforcement order\") and/or an order that you pay financial compensation.";
 
@@ -44,8 +44,8 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "with the case is given cause to suspect, whilst this order is in force, that the "
         + "child concerned is at risk of harm; and \n"
         + "(c) as a result that officer makes a risk assessment under section 16A of that Act, "
-        + "the officer may apply to the court for it to revive the previous proceedings and "
-        + "to consider that risk assessment and give such directions as the court thinks "
+        + "the officer may apply to the Court for it to revive the previous proceedings and "
+        + "to consider that risk assessment and give such directions as the Court thinks "
         + "necessary.";
 
     public static final String NOTICE_MESSAGE = "Any person with parental responsibility for the child may obtain "
