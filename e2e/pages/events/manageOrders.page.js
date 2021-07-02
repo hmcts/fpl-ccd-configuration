@@ -151,8 +151,8 @@ const section4 = {
   isFinalOrder: {
     group: '#manageOrdersIsFinalOrder',
     options: {
-      yes: '#manageOrdersIsFinalOrder-Yes',
-      no: '#manageOrdersIsFinalOrder-No',
+      yes: '#manageOrdersIsFinalOrder_Yes',
+      no: '#manageOrdersIsFinalOrder_No',
     },
   },
 };
@@ -179,8 +179,8 @@ const preview = {
   closeCase: {
     group: '#manageOrdersCloseCase',
     options: {
-      yes: '#manageOrdersCloseCase-Yes',
-      no: '#manageOrdersCloseCase-No',
+      yes: '#manageOrdersCloseCase_Yes',
+      no: '#manageOrdersCloseCase_No',
     },
   },
 };
@@ -197,7 +197,7 @@ const selectOperationInClosedState = async (operationType) => {
 };
 
 const selectRelatedToHearing = (answer) => {
-  I.click(`${hearingDetails.linkedToHearing.group}-${answer}`);
+  I.click(`${hearingDetails.linkedToHearing.group}_${answer}`);
 };
 
 const selectHearing = async (hearing) => {
@@ -249,7 +249,7 @@ const enterEPOEndDateTime = async (dateTime) => {
 };
 
 const selectChildren = async (option, indexes = []) => {
-  I.click(`${section3.allChildren.group}-${option}`);
+  I.click(`${section3.allChildren.group}_${option}`);
 
   if (option === section3.allChildren.options.select) {
     indexes.forEach((selectorIndex) => {
@@ -280,7 +280,7 @@ const enterDirections = async (text) => {
 };
 
 const selectIncludePhrase = (includePhrase) => {
-  I.click(`${section4.includePhrase.group}-${includePhrase}`);
+  I.click(`${section4.includePhrase.group}_${includePhrase}`);
 };
 
 const selectEpoType = (epoType) => {
@@ -288,7 +288,7 @@ const selectEpoType = (epoType) => {
 };
 
 const selectExclusionRequirementEPO = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirementEPO.group}-${exclusionRequirement}`);
+  I.click(`${section4.exclusionRequirementEPO.group}_${exclusionRequirement}`);
 };
 
 const enterExclusionDetails = (text) => {
@@ -313,7 +313,7 @@ const uploadManualOrder = async (file) => {
 };
 
 const selectManualOrderNeedSealing = (needSealing) => {
-  I.click(`${section4.manualOrderNeedSealing.group}-${needSealing}`);
+  I.click(`${section4.manualOrderNeedSealing.group}_${needSealing}`);
 };
 
 const enterRemovalAddress = (address) => {
@@ -367,7 +367,7 @@ const selectCloseCase = async () => {
 };
 
 const selectExclusionRequirementICO = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
+  I.click(`${section4.exclusionRequirement.group}_${exclusionRequirement}`);
 };
 
 const selectCafcassRegion = region => {

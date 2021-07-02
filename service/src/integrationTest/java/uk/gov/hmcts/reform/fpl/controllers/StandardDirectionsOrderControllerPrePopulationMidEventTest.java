@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -37,6 +37,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -192,7 +194,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
         @Test
         void shouldPopulateDateOfIssue() {
             CaseData caseData = CaseData.builder()
-                .sdoRouter(SDORoute.SERVICE)
+                .sdoRouter(GatekeepingOrderRoute.SERVICE)
                 .build();
 
             CaseData responseData = extractCaseData(postMidEvent(caseData, "pre-populate"));
@@ -229,19 +231,19 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
 
         @Test
         void shouldReturnUrgentHearingOrderSelectedInNonGatekeepingState() {
-            CaseData caseData = CaseData.builder().state(State.CASE_MANAGEMENT).sdoRouter(SDORoute.URGENT).build();
+            CaseData caseData = CaseData.builder().state(CASE_MANAGEMENT).sdoRouter(URGENT).build();
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "pre-populate");
 
             assertThat(response.getErrors()).isEqualTo(List.of(
                 "An urgent hearing order has already been added to this case. You can still add a gatekeeping "
-                + "order, if needed."
+                    + "order, if needed."
             ));
         }
 
         @Test
         void shouldReturnErrorWhenNoHearingsAndInGatekeeping() {
-            CaseData caseData = CaseData.builder().state(State.GATEKEEPING).sdoRouter(SDORoute.URGENT).build();
+            CaseData caseData = CaseData.builder().state(State.GATEKEEPING).sdoRouter(URGENT).build();
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "pre-populate");
 
@@ -256,7 +258,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
                 .state(State.GATEKEEPING)
                 .hearingDetails(hearings)
                 .allocationProposal(Allocation.builder().proposal("District judge").build())
-                .sdoRouter(SDORoute.URGENT)
+                .sdoRouter(URGENT)
                 .build();
 
             CaseData data = extractCaseData(postMidEvent(caseData, "pre-populate"));
@@ -277,7 +279,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
                     .judgeLevelRadio("District judge")
                     .proposalReason("blah")
                     .build())
-                .sdoRouter(SDORoute.URGENT)
+                .sdoRouter(URGENT)
                 .build();
 
             CaseData data = extractCaseData(postMidEvent(caseData, "pre-populate"));

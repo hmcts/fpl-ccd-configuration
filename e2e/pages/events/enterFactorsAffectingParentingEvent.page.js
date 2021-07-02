@@ -4,16 +4,16 @@ module.exports = {
 
   fields: {
     alcoholOrDrugAbuse: {
-      yes: '#factorsParenting_alcoholDrugAbuse-Yes',
+      yes: '#factorsParenting_alcoholDrugAbuse_Yes',
       reason: '#factorsParenting_alcoholDrugAbuseReason',
     },
     domesticViolence: {
-      yes: '#factorsParenting_domesticViolence-Yes',
+      yes: '#factorsParenting_domesticViolence_Yes',
       reason: '#factorsParenting_domesticViolenceReason',
 
     },
     anythingElse: {
-      yes: '#factorsParenting_anythingElse-Yes',
+      yes: '#factorsParenting_anythingElse_Yes',
       reason: '#factorsParenting_anythingElseReason',
     },
   },
