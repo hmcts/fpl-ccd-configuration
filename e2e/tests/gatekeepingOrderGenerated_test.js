@@ -5,7 +5,7 @@ const hearingDate = '10 January 2050, 3:15pm';
 
 let caseId;
 
-Feature('Gatekeeping judge SDO journey');
+Feature('Generated gatekeeping order');
 
 async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(gatekeepingCaseData); }
@@ -134,7 +134,6 @@ Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allo
 Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
-  await I.goToNextPage();
 
   I.seeCheckboxIsChecked('Request permission for expert evidence');
   I.seeCheckboxIsChecked('Ask for disclosure');
@@ -191,4 +190,8 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');
   I.seeInTab(['Gatekeeping order', 'Date of issue'], '11 January 2020');
+
+  caseViewPage.selectTab(caseViewPage.tabs.history);
+  I.seeEndStateForEvent(config.administrationActions.addGatekeepingOrder, 'Case management');
+
 });
