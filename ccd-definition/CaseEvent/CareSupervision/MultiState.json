@@ -775,7 +775,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addGatekeepingOrder",
-    "Name": "V2: Add the gatekeeping order",
+    "Name": "Add the gatekeeping order",
     "Description": "Add the gatekeeping order",
     "DisplayOrder": 10,
     "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING",
