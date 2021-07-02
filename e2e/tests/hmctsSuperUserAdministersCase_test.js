@@ -12,6 +12,18 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
 }
 
+Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCaseNameEventPage}) => {
+  await setupScenario(I);
+  caseViewPage.seeInCaseTitle('e2e test case');
+
+  await caseViewPage.goToNewActions(config.administrationActions.changeCaseName);
+  await changeCaseNameEventPage.changeCaseName('e2e test case updated by superuser');
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+
+  await I.seeEventSubmissionConfirmation(config.administrationActions.changeCaseName);
+  caseViewPage.seeInCaseTitle('e2e test case updated by superuser');
+});
+
 Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
   await setupScenario(I);
   I.seeFamilyManNumber('mockcaseID');
