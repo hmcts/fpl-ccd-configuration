@@ -32,7 +32,7 @@ module.exports = {
 
     await I.runAccessibilityTest();
     I.fillField(this.fields(elementSelector).name, other.name);
-    I.fillDate(other.DOB, this.fields(elementIndex).dob);
+    I.fillDate(other.DOB, this.fields(elementIndex).DOB);
     I.selectOption(this.fields(elementSelector).gender, other.gender);
     I.fillField(this.fields(elementSelector).birthPlace, other.birthPlace);
     await within(this.fields(elementSelector).address, () => {
