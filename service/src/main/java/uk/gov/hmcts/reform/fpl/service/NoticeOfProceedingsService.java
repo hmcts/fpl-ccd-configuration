@@ -71,7 +71,7 @@ public class NoticeOfProceedingsService {
         return noticeOfProceedings;
     }
 
-    public List<Element<DocumentBundle>> uploadAndPrepareNoticeOfProceedingBundle(
+    public List<Element<DocumentBundle>> uploadNoticesOfProceedings(
         CaseData caseData, List<DocmosisTemplates> docmosisTemplatesTypes) {
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
             .getTemplateData(caseData);
