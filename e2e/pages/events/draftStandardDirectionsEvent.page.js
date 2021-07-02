@@ -89,17 +89,17 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
-    await directions.enterDate('allParties', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('localAuthorityDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('respondentDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('cafcassDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('otherPartiesDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('courtDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
   },
 

@@ -7,11 +7,7 @@ module.exports = {
       respondent: {
         firstName: `#respondents1_${index}_party_firstName`,
         lastName: `#respondents1_${index}_party_lastName`,
-        dateOfBirth: {
-          day: `#respondents1_${index}_party_dateOfBirth-day`,
-          month: `#respondents1_${index}_party_dateOfBirth-month`,
-          year: `#respondents1_${index}_party_dateOfBirth-year`,
-        },
+        dateOfBirth: `(//*[contains(@class, "collection-title")])[${index + 1}]/parent::div//*[@id="dateOfBirth"]`,
         address: `#respondents1_${index}_party_address_address`,
         telephone: `input[id="respondents1_${index}_party_telephoneNumber_telephoneNumber"]`,
         gender: `#respondents1_${index}_party_gender`,
@@ -55,10 +51,7 @@ module.exports = {
 
     I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
     I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
-    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="dateOfBirth"]`;
-    I.fillDate(respondent.dob, dateSelector);
-    //I.fillField(this.fields(elementIndex).respondent.dateOfBirth.month, respondent.dob.month);
-    //I.fillField(this.fields(elementIndex).respondent.dateOfBirth.year, respondent.dob.year);
+    I.fillDate(respondent.dob, this.fields(elementIndex).respondent.dateOfBirth);
 
     I.selectOption(this.fields(elementIndex).respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {

@@ -45,11 +45,8 @@ module.exports = {
       child: {
         firstName: `#children1_${index}_party_firstName`,
         lastName: `#children1_${index}_party_lastName`,
-        dateOfBirth: {
-          day: `#children1_${index}_party_dateOfBirth-day`,
-          month: `#children1_${index}_party_dateOfBirth-month`,
-          year: `#children1_${index}_party_dateOfBirth-year`,
-        },
+        dateOfBirth: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[@id="dateOfBirth"]`,
+        addressChangeDate: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[@id="addressChangeDate"]`,
         address: `#children1_${index}_party_address_address`,
         gender: `#children1_${index}_party_gender`,
         genderIdentification: `#children1_${index}_party_genderIdentification`,
@@ -89,11 +86,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).child.firstName, firstName);
     I.fillField(this.fields(elementIndex).child.lastName, lastName);
 
-    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="dateOfBirth"]`;
-    I.fillDate({'day': day, 'month': month, 'year': year}, dateSelector );
-    //I.fillField(this.fields(elementIndex).child.dateOfBirth.month, month);
-    //I.fillField(this.fields(elementIndex).child.dateOfBirth.year, year);
-
+    I.fillDate({'day': day, 'month': month, 'year': year}, this.fields(elementIndex).child.dateOfBirth );
     I.selectOption(this.fields(elementIndex).child.gender, gender);
   },
 
@@ -104,10 +97,7 @@ module.exports = {
       I.click(locate('label').withText('Living with respondents'));
     });
     await I.runAccessibilityTest();
-    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="addressChangeDate"]`;
-    I.fillDate({'day': day, 'month': month, 'year': year}, dateSelector);
-    //I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.month, month);
-    //I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.year, year);
+    I.fillDate({'day': day, 'month': month, 'year': year}, this.fields(elementIndex).child.addressChangeDate);
   },
 
   async enterAddress(address) {

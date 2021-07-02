@@ -16,7 +16,7 @@ module.exports = {
           description: `#customDirections_${index}_description`,
           assignee: `#customDirections_${index}_assignee`,
           dueDateType: `#customDirections_${index}_dueDateType-DATE`,
-          date: `#customDirections_${index}_dateToBeCompletedBy`,
+          date: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[@id="dateToBeCompletedBy"]`,
         };
       },
     },
@@ -60,8 +60,7 @@ module.exports = {
     I.fillField(this.fields.customDirection.fields(elementIndex).description, direction.description);
     I.selectOption(this.fields.customDirection.fields(elementIndex).assignee, direction.assignee);
     I.click(this.fields.customDirection.fields(elementIndex).dueDateType);
-    const dateSelector = `(//*[contains(@class, "collection-title")])[${elementIndex+1}]/parent::div//*[@id="dateToBeCompletedBy"]`;
-    await I.fillDate(direction.dueDate, dateSelector);
+    await I.fillDate(direction.dueDate, this.fields.customDirection.fields(elementIndex).date);
   },
 
   async clickDateAndTime(directionName) {

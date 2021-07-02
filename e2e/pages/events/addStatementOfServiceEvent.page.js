@@ -9,12 +9,8 @@ module.exports = {
         addressCheck: `#statementOfService_${index}_addressCheck_Yes`,
         address: `#statementOfService_${index}_address_address`,
         documents: `#statementOfService_${index}_documents`,
-        date: {
-          day: `#statementOfService_${index}_date_day`,
-          month: `#statementOfService_${index}_date_month`,
-          year: `#statementOfService_${index}_date_year`,
-        },
         timeSent: `#statementOfService_${index}_timeSent`,
+        date: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[contains(@class,"form-date")]`,
         sentBy: {
           group: `#statementOfService_${index}_sentBy`,
           email: `#statementOfService_${index}_sentBy-EMAIL`,
@@ -35,8 +31,7 @@ module.exports = {
     I.click(this.fields(elementIndex).recipients.addressCheck);
     this.enterRecipientsAddress(elementIndex, recipients);
     I.fillField(this.fields(elementIndex).recipients.documents, recipients.documents);
-    const dateSelector = `(//*[contains(@class, "collection-title")])[${ elementIndex + 1 }]/parent::div//*[contains(@class,"form-date")]`;
-    I.fillDate(recipients.date, dateSelector);
+    I.fillDate(recipients.date, this.fields(elementIndex).recipients.date);
     I.fillField(this.fields(elementIndex).recipients.timeSent, recipients.timeSent);
     I.click(this.fields(elementIndex).recipients.sentBy.email);
     I.waitForText('Recipient\'s email address');
