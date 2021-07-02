@@ -22,13 +22,8 @@ module.exports = {
     I.selectOption(this.fields.reportList, expertReportLog.reportList.value);
 
     I.wait(0.5);
-
-    I.fillField(this.fields.reportRequestDate.day, expertReportLog.reportRequestDate.day);
-    I.fillField(this.fields.reportRequestDate.month, expertReportLog.reportRequestDate.month);
-    I.fillField(this.fields.reportRequestDate.year, expertReportLog.reportRequestDate.year);
+    I.fillDate(expertReportLog.reportRequestDate, '#expertReportDateRequested');
     I.click(this.fields.reportApproval);
-    I.fillField(this.fields.reportApprovalDate.day, expertReportLog.reportApprovalDate.day);
-    I.fillField(this.fields.reportApprovalDate.month, expertReportLog.reportApprovalDate.month);
-    I.fillField(this.fields.reportApprovalDate.year, expertReportLog.reportApprovalDate.year);
+    I.fillDate(expertReportLog.reportApprovalDate, '#reportApprovalDate');
   },
 };

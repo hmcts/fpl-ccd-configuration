@@ -190,7 +190,7 @@ module.exports = {
   },
 
   includePhrase(option) {
-    I.click(`${this.fields.epo.includePhrase}-${option}`);
+    I.click(`${this.fields.epo.includePhrase}_${option}`);
   },
 
   async enterEpoEndDate(date) {
