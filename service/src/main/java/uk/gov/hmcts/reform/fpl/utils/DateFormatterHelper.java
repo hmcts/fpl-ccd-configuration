@@ -12,10 +12,9 @@ public class DateFormatterHelper {
     public static final String TIME_DATE = "h:mma, d MMMM yyyy";
     public static final String DATE_TIME = "d MMMM yyyy, h:mma";
     public static final String DATE = "d MMMM yyyy";
-    public static final String DATE_SHORT_MONTH = "d MMM yyyy";
     public static final String DATE_TIME_WITH_ORDINAL_SUFFIX = "h:mma 'on the' d'%s' MMMM y";
     public static final String DATE_WITH_ORDINAL_SUFFIX = "d'%s' MMMM y";
-    public static final String DATE_MONTH = "ddMMMM";
+    public static final String DATE_SHORT = "dd/MM/YYYY";
 
     private DateFormatterHelper() {
         // NO-OP
