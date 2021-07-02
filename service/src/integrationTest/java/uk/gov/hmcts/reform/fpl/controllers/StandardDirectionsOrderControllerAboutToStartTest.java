@@ -5,7 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -19,8 +19,8 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -137,7 +137,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(actualCaseData.getCourtDirections()).isEqualTo(originalCaseData.getCourtDirections());
     }
 
-    private CaseData buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
+    private CaseData buildCaseDetailsWithDateOfIssueAndRoute(String date, GatekeepingOrderRoute route) {
         return buildCaseDetails(date, null, route);
     }
 
@@ -145,7 +145,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         return buildCaseDetails(null, SDO, UPLOAD);
     }
 
-    private CaseData buildCaseDetails(String date, DocumentReference doc, SDORoute route) {
+    private CaseData buildCaseDetails(String date, DocumentReference doc, GatekeepingOrderRoute route) {
         return CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder().dateOfIssue(date).orderDoc(doc).build())
             .sdoRouter(route)

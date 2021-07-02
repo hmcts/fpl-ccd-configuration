@@ -41,6 +41,7 @@ module.exports = {
         await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
 
       }, signedInSelector, false, 10);
+      await this.rejectCookies();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
     } else {
@@ -70,6 +71,13 @@ module.exports = {
         this.click('Sign in');
         this.click('Yes');
       });
+    }
+  },
+
+  async rejectCookies() {
+    const rejectCookiesButton = '//button[@name="cookies" and @value="reject"]';
+    if (await this.hasSelector(rejectCookiesButton)) {
+      this.click(rejectCookiesButton);
     }
   },
 

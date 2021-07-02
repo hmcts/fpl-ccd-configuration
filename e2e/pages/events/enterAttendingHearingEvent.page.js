@@ -4,21 +4,21 @@ module.exports = {
 
   fields: {
     interpreter: {
-      yes: '#hearingPreferences_interpreter-Yes',
+      yes: '#hearingPreferences_interpreter_Yes',
       details: '#hearingPreferences_interpreterDetails',
     },
-    intermediaryNo: '#hearingPreferences_intermediary-No',
+    intermediaryNo: '#hearingPreferences_intermediary_No',
     disabilityAssistance: {
-      yes: '#hearingPreferences_disabilityAssistance-Yes',
+      yes: '#hearingPreferences_disabilityAssistance_Yes',
       details: '#hearingPreferences_disabilityAssistanceDetails',
     },
-    welshNo: '#hearingPreferences_welsh-No',
+    welshNo: '#hearingPreferences_welsh_No',
     extraSecurityMeasures: {
-      yes: '#hearingPreferences_extraSecurityMeasures-Yes',
+      yes: '#hearingPreferences_extraSecurityMeasures_Yes',
       details: '#hearingPreferences_extraSecurityMeasuresDetails',
     },
     somethingElse: {
-      yes: '#hearingPreferences_somethingElse-Yes',
+      yes: '#hearingPreferences_somethingElse_Yes',
       details: '#hearingPreferences_somethingElseDetails',
     },
   },

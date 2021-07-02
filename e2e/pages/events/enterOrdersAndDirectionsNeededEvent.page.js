@@ -34,7 +34,7 @@ module.exports = {
     },
     removalAddress: '#orders_address_address',
     excluded: '#orders_excluded',
-    directions: '#orders_directions-Yes',
+    directions: '#orders_directions_Yes',
     directionsDetails: '#orders_directionDetails',
   },
 

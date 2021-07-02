@@ -1,7 +1,7 @@
 const {I} = inject();
 
 const fields = {
-  date: '#closeCase_date',
+  date: '#date',
   details: '#closeCase_details',
   fullReason: '#closeCase_fullReason',
   partialReason: '#closeCase_partialReason',
