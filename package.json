@@ -10,14 +10,14 @@
     "eslint-plugin-codeceptjs": "^1.3.0",
     "glob": "^7.1.7",
     "html_codesniffer": "^2.5.1",
-    "husky": "^6.0.0",
+    "husky": "^7.0.0",
     "lodash": "^4.17.21",
     "mocha-junit-reporter": "^2.0.0",
     "mocha-multi": "^1.1.3",
     "mochawesome": "^6.2.2",
     "moment": "2.29.1",
     "node-fetch": "^2.6.1",
-    "puppeteer": "10.0.0",
+    "puppeteer": "10.1.0",
     "webdriverio": "^7.7.4"
   },
   "scripts": {

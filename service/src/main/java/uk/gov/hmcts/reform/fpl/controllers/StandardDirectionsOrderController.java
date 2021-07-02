@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -44,7 +44,6 @@ import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
 import uk.gov.hmcts.reform.fpl.service.sdo.UrgentGatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,8 +55,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.URGENT;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -97,7 +96,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-        SDORoute sdoRouter = caseData.getSdoRouter();
+        GatekeepingOrderRoute sdoRouter = caseData.getSdoRouter();
 
         List<String> errors = routeValidator.allowAccessToEvent(caseData);
         if (!errors.isEmpty()) {
@@ -137,7 +136,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        SDORoute route = caseData.getSdoRouter();
+        GatekeepingOrderRoute route = caseData.getSdoRouter();
         if (URGENT != route) {
             if (SERVICE == route) {
                 caseDetails.getData().put(
@@ -159,7 +158,8 @@ public class StandardDirectionsOrderController extends CallbackController {
             }
 
             caseDetails.getData().putAll(
-                mapper.convertValue(urgentOrderService.prePopulate(caseData), new TypeReference<>() {})
+                mapper.convertValue(urgentOrderService.prePopulate(caseData), new TypeReference<>() {
+                })
             );
         }
         return respond(caseDetails);
@@ -242,7 +242,7 @@ public class StandardDirectionsOrderController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        SDORoute sdoRouter = caseData.getSdoRouter();
+        GatekeepingOrderRoute sdoRouter = caseData.getSdoRouter();
 
         if (URGENT != sdoRouter) {
             List<String> errors = orderValidationService.validate(caseData);
@@ -300,7 +300,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                 break;
         }
 
-        List<String> tempFields = new ArrayList<>(List.of(GatekeepingOrderEventData.temporaryFields()));
+        List<String> tempFields = GatekeepingOrderEventData.temporaryFields();
         tempFields.addAll(List.of(JUDGE_AND_LEGAL_ADVISOR_KEY, DATE_OF_ISSUE_KEY, "preparedSDO", "currentSDO",
             "replacementSDO", "useServiceRoute", "useUploadRoute", "noticeOfProceedings", "showNoticeOfProceedings"
         ));
@@ -314,7 +314,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                     ? urgentOrderService.getNoticeOfProceedingsTemplates(caseData)
                     : caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
-                List<Element<DocumentBundle>> newNoP = nopService.uploadAndPrepareNoticeOfProceedingBundle(
+                List<Element<DocumentBundle>> newNoP = nopService.uploadNoticesOfProceedings(
                     caseData, docmosisTemplateTypes
                 );
 

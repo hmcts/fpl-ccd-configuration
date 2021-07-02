@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
@@ -52,6 +52,10 @@ public class GatekeepingOrderEventData {
     List<Element<CustomDirection>> customDirections;
     List<Element<StandardDirection>> standardDirections;
 
+    DocumentReference currentSDO;
+    YesNo useUploadRoute;
+    YesNo useServiceRoute;
+
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
         return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
     }
@@ -66,13 +70,13 @@ public class GatekeepingOrderEventData {
             directionsForCafcass, directionsForOthers, directionsForCourt)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
-    public static String[] temporaryFields() {
+    public static List<String> temporaryFields() {
         return getFieldsListWithAnnotation(GatekeepingOrderEventData.class, Temp.class).stream()
             .map(Field::getName)
-            .toArray(String[]::new);
+            .collect(toList());
     }
 
     public List<Element<StandardDirection>> resetStandardDirections() {

@@ -20,7 +20,8 @@
     "DisplayContext": "READONLY",
     "PageID": "SelectStandardDirections",
     "PageDisplayOrder": 2,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "gatekeepingOrderRouter=\"SERVICE\" OR useServiceRoute=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",

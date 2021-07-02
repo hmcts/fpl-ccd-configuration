@@ -7,8 +7,8 @@ module.exports = {
     uploadC2: '#temporaryC2Document_document',
     description: '#temporaryC2Document_description',
     usePbaPayment: {
-      yes: '#temporaryC2Document_usePbaPayment-Yes',
-      no: '#temporaryC2Document_usePbaPayment-No',
+      yes: '#temporaryC2Document_usePbaPayment_Yes',
+      no: '#temporaryC2Document_usePbaPayment_No',
     },
     pbaNumber: '#temporaryC2Document_pbaNumber',
     clientCode: '#temporaryC2Document_clientCode',
