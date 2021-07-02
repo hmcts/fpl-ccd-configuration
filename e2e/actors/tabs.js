@@ -29,6 +29,10 @@ function organisationTabFieldSelector(pathToField) {
   return `${selector}//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${fieldName}:"]]`;
 }
 
+function getTabSelector(tab){
+  return `//*[@role="tab"]/div[text() = "${tab}"]`;
+}
+
 module.exports = {
   seeInTab: function (pathToField, fieldValue) {
     const fieldSelector = tabFieldSelector(pathToField);
@@ -123,7 +127,7 @@ module.exports = {
   },
 
   async selectTab(tab){
-    const tabSelector = `//*[@role="tab"]/div[text() = "${tab}"]`;
+    const tabSelector = getTabSelector(tab);
 
     const numberOfElements = await this.grabNumberOfVisibleElements('//*[@role="tab"]');
 
@@ -136,5 +140,9 @@ module.exports = {
     }
 
     return this.click(tabSelector);
+  },
+
+  async dontSeeTab(tab){
+    this.dontSeeElement(getTabSelector(tab));
   },
 };

@@ -134,6 +134,7 @@ module.exports = {
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
+    changeCaseName: 'Change case name',
     sendToGatekeeper: 'Send to gatekeeper',
     notifyGatekeeper: 'Notify gatekeeper',
     amendChildren: 'Children',
