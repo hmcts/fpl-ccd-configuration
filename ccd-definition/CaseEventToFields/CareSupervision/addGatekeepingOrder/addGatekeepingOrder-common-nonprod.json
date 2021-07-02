@@ -9,7 +9,35 @@
     "PageID": "Router",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "useServiceRoute=\"\" AND useUploadRoute=\"\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/pre-populate/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "useServiceRoute",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "CustomDirections",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderRouter=\"DO NOT SHOW\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "useUploadRoute",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "CustomDirections",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderRouter=\"DO NOT SHOW\"",
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,7 +73,8 @@
     "PageID": "CustomDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "gatekeepingOrderRouter=\"SERVICE\" OR useServiceRoute=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -57,7 +86,8 @@
     "PageID": "IssuingJudge",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/generate-draft/mid-event"
+    "PageShowCondition": "gatekeepingOrderRouter!=\"URGENT\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/prepare-decision/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -69,7 +99,8 @@
     "PageID": "SealDecision",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "gatekeepingOrderRouter!=\"URGENT\""
   },
   {
     "LiveFrom": "01/01/2017",
