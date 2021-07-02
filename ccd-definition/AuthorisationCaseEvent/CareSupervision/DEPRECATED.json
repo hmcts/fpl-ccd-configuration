@@ -425,12 +425,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "R"
-      },
-      {
-        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-solicitor",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-magistrate"
