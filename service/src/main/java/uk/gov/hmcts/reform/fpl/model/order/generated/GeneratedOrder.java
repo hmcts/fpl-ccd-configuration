@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
@@ -24,11 +25,12 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Data
 @Builder(toBuilder = true)
-public class GeneratedOrder implements RemovableOrder {
+public class GeneratedOrder implements RemovableOrder, AmendableOrder {
 
     // this is the new type
     private final String orderType;
@@ -75,10 +77,11 @@ public class GeneratedOrder implements RemovableOrder {
         return FINAL.equals(descriptor.getSubtype());
     }
 
+    @Override
     public String asLabel() {
         return String.format("%s - %s",
             defaultIfEmpty(title, type),
-            isNewVersion() ? formatLocalDateTimeBaseUsingFormat(dateTimeIssued, "d MMMM yyyy") : dateOfIssue
+            isNewVersion() ? formatLocalDateTimeBaseUsingFormat(dateTimeIssued, DATE) : dateOfIssue
         );
     }
 
@@ -95,5 +98,4 @@ public class GeneratedOrder implements RemovableOrder {
     public boolean isNewVersion() {
         return Objects.nonNull(dateTimeIssued);
     }
-
 }

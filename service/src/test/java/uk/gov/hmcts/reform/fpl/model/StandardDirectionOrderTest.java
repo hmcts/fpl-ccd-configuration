@@ -9,8 +9,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class StandardDirectionOrderTest {
@@ -38,7 +36,7 @@ class StandardDirectionOrderTest {
             .orderStatus(SEALED)
             .build();
 
-        assertThat(standardDirectionOrder.isSealed()).isTrue();
+        assertThat(standardDirectionOrder.isRemovable()).isTrue();
     }
 
     @Test
@@ -47,7 +45,7 @@ class StandardDirectionOrderTest {
             .orderStatus(DRAFT)
             .build();
 
-        assertThat(standardDirectionOrder.isSealed()).isFalse();
+        assertThat(standardDirectionOrder.isRemovable()).isFalse();
     }
 
     @Test
@@ -77,15 +75,22 @@ class StandardDirectionOrderTest {
             .dateOfIssue("1 January 2020")
             .build();
 
-        assertThat(standardDirectionOrder.asLabel()).isEqualTo(
-            String.format("Gatekeeping order - %s", "1 January 2020"));
+        assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
+    }
+
+    @Test
+    void shouldFormatStandardDirectionOrderAsLabelWithProvidedDateOfUpload() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .dateOfUpload(LocalDate.of(2020, 1, 1))
+            .build();
+
+        assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
     }
 
     @Test
     void shouldFormatStandardDirectionOrderAsLabelWithoutProvidedDateOfIssue() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
 
-        assertThat(standardDirectionOrder.asLabel()).isEqualTo(
-            String.format("Gatekeeping order - %s", formatLocalDateToString(LocalDate.now(), "d MMMM yyyy")));
+        assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order");
     }
 }

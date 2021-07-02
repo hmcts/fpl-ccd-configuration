@@ -62,4 +62,6 @@ public class ManageOrdersEventData {
     WalesOffices manageOrdersCafcassOfficesWales;
     DynamicList manageOrdersLinkedApplication;
 
+    DynamicList manageOrdersAmendmentList;
+    DocumentReference manageOrdersAmendedOrder;
 }
