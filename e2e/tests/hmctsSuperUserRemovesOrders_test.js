@@ -1,6 +1,7 @@
 const config = require('../config.js');
 
 const finalHearingCaseData = require('../fixtures/caseData/finalHearingWithMultipleOrders.json');
+const caseDataWithApplication = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndApplication.json');
 const moment = require('moment');
 
 Feature('HMCTS super user removes orders');
@@ -95,14 +96,31 @@ Scenario('HMCTS super user removes a draft order from a case', async ({I, caseVi
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
 });
 
+Scenario('HMCTS super user removes an application from the case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
+  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
+
+  const applicationToRemove = caseDataWithApplication.caseData.additionalApplicationsBundle[0].value;
+  const labelToSelect = 'C2, ' + applicationToRemove.uploadedDateTime;
+
+  await caseViewPage.goToNewActions(config.superUserActions.removeOrdersAndApplications);
+  await removeOrderEventPage.selectApplicationToRemove(labelToSelect);
+  await I.goToNextPage();
+
+  await removeOrderEventPage.addRemoveApplicationReason('Mistakes were made');
+  await I.completeEvent('Submit');
+
+  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.otherApplications)
+});
+
 const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect, reasonFieldExists) => {
-  await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
+  await caseViewPage.goToNewActions(config.superUserActions.removeOrdersAndApplications);
   await removeOrderEventPage.selectOrderToRemove(labelToSelect);
   await I.goToNextPage();
   if(reasonFieldExists) {
     removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
   }
   await I.completeEvent('Submit');
-  I.seeEventSubmissionConfirmation(config.superUserActions.removeOrder);
+  I.seeEventSubmissionConfirmation(config.superUserActions.removeOrdersAndApplications);
 };
 

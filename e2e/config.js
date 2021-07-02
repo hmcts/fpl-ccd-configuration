@@ -163,7 +163,7 @@ module.exports = {
     manageOrders: 'Manage orders',
   },
   superUserActions: {
-    removeOrder: 'Remove an order',
+    removeOrdersAndApplications: 'Remove orders and applications',
     changeCaseState: 'Change case state',
   },
   internalActions: {
