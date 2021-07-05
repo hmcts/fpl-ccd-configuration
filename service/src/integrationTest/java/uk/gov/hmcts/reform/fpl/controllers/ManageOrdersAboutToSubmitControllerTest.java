@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BOURNEMOUTH;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -147,6 +148,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                     .judgeLastName("Dredd")
                     .build())
                 .dateTimeIssued(now())
+                .markedFinal(NO.getValue())
                 .approvalDate(dateNow())
                 .childrenDescription("first1 last1, first2 last2")
                 .document(DOCUMENT_PDF_REFERENCE)
@@ -186,6 +188,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                     .judgeLastName("Dredd")
                     .build())
                 .dateTimeIssued(now())
+                .markedFinal(NO.getValue())
                 .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
                 .childrenDescription("first1 last1, first2 last2")
                 .document(DOCUMENT_PDF_REFERENCE)
@@ -216,6 +219,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                     .build())
                 .dateTimeIssued(now())
                 .approvalDate(dateNow())
+                .markedFinal(NO.getValue())
                 .childrenDescription("first1 last1, first2 last2")
                 .document(DOCUMENT_PDF_REFERENCE)
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
