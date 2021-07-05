@@ -452,7 +452,7 @@
     "ID": "manageOrdersAmendmentList",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Label": "Select order to amend",
-    "FieldType": "Text",
+    "FieldType": "DynamicList",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
@@ -461,7 +461,7 @@
     "ID": "manageOrdersOrderToAmend",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Label": " ",
-    "FieldType": "DocumentReference",
+    "FieldType": "Document",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
@@ -470,8 +470,9 @@
     "ID": "manageOrdersAmendedOrder",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Label": "Upload the amended order. It will then be dated and stamped as amended.",
-    "FieldType": "DocumentReference",
+    "FieldType": "Document",
     "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".pdf",
     "Searchable": "N"
   }
 ]

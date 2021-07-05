@@ -67,7 +67,12 @@ public enum OrderQuestionBlock {
     CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
         List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning")),
     WHICH_OTHERS("whichOthers", "Which others", OrderSection.OTHER_DETAILS,
-        List.of("sendOrderToAllOthers", "others_label", "othersSelector"));
+        List.of("sendOrderToAllOthers", "others_label", "othersSelector")),
+    ORDER_TO_AMEND("orderToAmend", "Download order to amend", OrderSection.AMEND_DOWNLOAD,
+        List.of("manageOrdersOrderToAmend")),
+    UPLOAD_AMENDED_ORDER("uploadAmendedOrder", "Upload order to amend", OrderSection.AMEND_DOWNLOAD,
+        List.of("manageOrdersAmendedOrder"));
+
 
     private final String showHideField;
     private final String question;

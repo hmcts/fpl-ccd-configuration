@@ -1,18 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.orders.amendment;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -21,12 +19,10 @@ import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
-class AmendedOrderListManagerTest {
+class AmendableOrderListBuilderTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID ORDER_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
     private static final UUID CMO_ID = UUID.fromString("33333333-3333-3333-3333-333333333333");
@@ -57,12 +53,8 @@ class AmendedOrderListManagerTest {
 
     @Mock
     private DynamicListService listService;
-    private AmendedOrderListManager underTest;
-
-    @BeforeEach
-    void setUp() {
-        underTest = new AmendedOrderListManager(listService);
-    }
+    @InjectMocks
+    private AmendableOrderListBuilder underTest;
 
     @Test
     void buildList() {
@@ -203,120 +195,5 @@ class AmendedOrderListManagerTest {
         Optional<DynamicList> builtAmendableOrderList = underTest.buildList(caseData);
 
         assertThat(builtAmendableOrderList).isEmpty();
-    }
-
-    @Test
-    void getSelectedOrderForSDO() {
-        DynamicList amendedOrderList = mock(DynamicList.class);
-        DocumentReference orderDocument = mock(DocumentReference.class);
-
-        ManageOrdersEventData eventData = ManageOrdersEventData.builder()
-            .manageOrdersAmendmentList(amendedOrderList)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(eventData)
-            .standardDirectionOrder(sdo)
-            .urgentHearingOrder(uho)
-            .orderCollection(List.of(element(ORDER_ID, order)))
-            .sealedCMOs(List.of(element(CMO_ID, cmo)))
-            .build();
-
-        when(amendedOrderList.getValueCodeAsUUID()).thenReturn(SDO_ID);
-        when(sdo.getOrderDoc()).thenReturn(orderDocument);
-
-        assertThat(underTest.getSelectedOrder(caseData)).isEqualTo(orderDocument);
-    }
-
-    @Test
-    void getSelectedOrderForUHO() {
-        DynamicList amendedOrderList = mock(DynamicList.class);
-        DocumentReference orderDocument = mock(DocumentReference.class);
-
-        ManageOrdersEventData eventData = ManageOrdersEventData.builder()
-            .manageOrdersAmendmentList(amendedOrderList)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(eventData)
-            .standardDirectionOrder(sdo)
-            .urgentHearingOrder(uho)
-            .orderCollection(List.of(element(ORDER_ID, order)))
-            .sealedCMOs(List.of(element(CMO_ID, cmo)))
-            .build();
-
-        when(amendedOrderList.getValueCodeAsUUID()).thenReturn(UHO_ID);
-        when(uho.getOrder()).thenReturn(orderDocument);
-
-        assertThat(underTest.getSelectedOrder(caseData)).isEqualTo(orderDocument);
-    }
-
-    @Test
-    void getSelectedOrderForCMO() {
-        DynamicList amendedOrderList = mock(DynamicList.class);
-        DocumentReference orderDocument = mock(DocumentReference.class);
-
-        ManageOrdersEventData eventData = ManageOrdersEventData.builder()
-            .manageOrdersAmendmentList(amendedOrderList)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(eventData)
-            .standardDirectionOrder(sdo)
-            .urgentHearingOrder(uho)
-            .orderCollection(List.of(element(ORDER_ID, order)))
-            .sealedCMOs(List.of(element(CMO_ID, cmo)))
-            .build();
-
-        when(amendedOrderList.getValueCodeAsUUID()).thenReturn(CMO_ID);
-        when(cmo.getOrder()).thenReturn(orderDocument);
-
-        assertThat(underTest.getSelectedOrder(caseData)).isEqualTo(orderDocument);
-    }
-
-    @Test
-    void getSelectedOrderForOrder() {
-        DynamicList amendedOrderList = mock(DynamicList.class);
-        DocumentReference orderDocument = mock(DocumentReference.class);
-
-        ManageOrdersEventData eventData = ManageOrdersEventData.builder()
-            .manageOrdersAmendmentList(amendedOrderList)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(eventData)
-            .standardDirectionOrder(sdo)
-            .urgentHearingOrder(uho)
-            .orderCollection(List.of(element(ORDER_ID, order)))
-            .sealedCMOs(List.of(element(CMO_ID, cmo)))
-            .build();
-
-        when(amendedOrderList.getValueCodeAsUUID()).thenReturn(ORDER_ID);
-        when(order.getDocument()).thenReturn(orderDocument);
-
-        assertThat(underTest.getSelectedOrder(caseData)).isEqualTo(orderDocument);
-    }
-
-    @Test
-    void getSelectedOrderForOrderNotFound() {
-        DynamicList amendedOrderList = mock(DynamicList.class);
-
-        ManageOrdersEventData eventData = ManageOrdersEventData.builder()
-            .manageOrdersAmendmentList(amendedOrderList)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(eventData)
-            .standardDirectionOrder(sdo)
-            .urgentHearingOrder(uho)
-            .orderCollection(List.of(element(ORDER_ID, order)))
-            .sealedCMOs(List.of(element(CMO_ID, cmo)))
-            .build();
-
-        when(amendedOrderList.getValueCodeAsUUID()).thenReturn(UUID.fromString("44444444-4444-4444-4444-444444444444"));
-
-        assertThatThrownBy(() -> underTest.getSelectedOrder(caseData))
-            .isInstanceOf(NoSuchElementException.class)
-            .hasMessage("Could not find amendable order with id \"44444444-4444-4444-4444-444444444444\"");
     }
 }
