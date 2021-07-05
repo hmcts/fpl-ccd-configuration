@@ -22,6 +22,10 @@ public class UserService {
         return getUserDetails().getEmail();
     }
 
+    public String getUserName() {
+        return getUserDetails().getFullName();
+    }
+
     public boolean hasUserRole(UserRole userRole) {
         return getIdamRoles().contains(userRole.getRoleName());
     }
@@ -46,4 +50,5 @@ public class UserService {
     private UserDetails getUserDetails() {
         return idam.getUserDetails(requestData.authorisation());
     }
+
 }

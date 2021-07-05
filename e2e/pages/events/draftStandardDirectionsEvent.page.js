@@ -26,8 +26,8 @@ module.exports = {
     },
     allocationDecision: {
       judgeLevelConfirmation: {
-        yes: '#urgentHearingAllocation_judgeLevelRadio-Yes',
-        no: '#urgentHearingAllocation_judgeLevelRadio-No',
+        yes: '#urgentHearingAllocation_judgeLevelRadio_Yes',
+        no: '#urgentHearingAllocation_judgeLevelRadio_No',
       },
       allocationLevel: {
         // ids have spaces in so don't work
@@ -89,17 +89,17 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
-    await directions.enterDate('allParties', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('localAuthorityDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('respondentDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('cafcassDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('otherPartiesDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
-    await directions.enterDate('courtDirections', direction.dueDate);
+    await directions.enterDate(direction.dueDate);
     await I.goToNextPage();
   },
 

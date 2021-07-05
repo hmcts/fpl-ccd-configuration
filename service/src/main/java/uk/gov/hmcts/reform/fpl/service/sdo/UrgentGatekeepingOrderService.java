@@ -71,6 +71,7 @@ public class UrgentGatekeepingOrderService {
         return returnedData;
     }
 
+    @Deprecated
     public List<DocmosisTemplates> getNoticeOfProceedingsTemplates(CaseData caseData) {
         List<DocmosisTemplates> templates = new ArrayList<>();
         templates.add(DocmosisTemplates.C6);

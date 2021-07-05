@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 
+import java.util.List;
+
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
@@ -37,6 +39,12 @@ public class CaseDetailsHelper {
     }
 
     public static void removeTemporaryFields(CaseDetailsMap caseDetails, String... fields) {
+        for (String field : fields) {
+            caseDetails.remove(field);
+        }
+    }
+
+    public static void removeTemporaryFields(CaseDetailsMap caseDetails, List<String> fields) {
         for (String field : fields) {
             caseDetails.remove(field);
         }
