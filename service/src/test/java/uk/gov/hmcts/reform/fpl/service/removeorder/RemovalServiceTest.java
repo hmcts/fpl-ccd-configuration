@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
-import net.bytebuddy.implementation.bytecode.Addition;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -45,6 +45,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
@@ -70,7 +71,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,7 +96,8 @@ class RemovalServiceTest {
     @InjectMocks
     private RemovalService underTest;
 
-    @org.junit.jupiter.api.Nested
+    @TestInstance(PER_CLASS)
+    @Nested
     class OrderRemovalTest {
 
         @ParameterizedTest(name = "{0}")
@@ -369,6 +370,67 @@ class RemovalServiceTest {
                 assertThat(removedOrder).isNotEmpty().containsSame(expectedRemovedCMO.getValue());
             }
         }
+
+        private Stream<Arguments> generateGetRemovedSDOArgumentsSource() {
+            Element<StandardDirectionOrder> hiddenSDO1 = element(StandardDirectionOrder.builder().build());
+            Element<StandardDirectionOrder> hiddenSDO2 = element(StandardDirectionOrder.builder().build());
+
+            return Stream.of(
+                Arguments.of("A SDO is removed", singletonList(hiddenSDO2), emptyList(), hiddenSDO2),
+                Arguments.of(
+                    "A new SDO is removed", List.of(hiddenSDO1, hiddenSDO2), singletonList(hiddenSDO1), hiddenSDO2),
+                Arguments.of("No SDOs removed", List.of(hiddenSDO2, hiddenSDO1), List.of(hiddenSDO2, hiddenSDO1), null),
+                Arguments.of("No Hidden SDOs exist", emptyList(), emptyList(), null)
+            );
+        }
+
+        private Stream<Arguments> generateGetRemovedCMOArgumentsSource() {
+            Element<HearingOrder> hiddenCMO1 = element(HearingOrder.builder().build());
+            Element<HearingOrder> hiddenCMO2 = element(HearingOrder.builder().build());
+
+            return Stream.of(
+                Arguments.of("A CMO is removed", singletonList(hiddenCMO2), emptyList(), hiddenCMO2),
+                Arguments.of(
+                    "A new CMO is removed", List.of(hiddenCMO1, hiddenCMO2), singletonList(hiddenCMO1), hiddenCMO2),
+                Arguments.of("No CMOs removed", List.of(hiddenCMO2, hiddenCMO1), List.of(hiddenCMO2, hiddenCMO1), null),
+                Arguments.of("No Hidden CMOs exist", emptyList(), emptyList(), null)
+            );
+        }
+
+        private Stream<Arguments> generateAllAvailableStatesSource() {
+            return Stream.of(
+                Arguments.of(SUBMITTED),
+                Arguments.of(GATEKEEPING),
+                Arguments.of(CASE_MANAGEMENT),
+                Arguments.of(FINAL_HEARING),
+                Arguments.of(CLOSED));
+        }
+
+        private GeneratedOrder buildOrder(GeneratedOrderType type, String title, String dateOfIssue) {
+            return GeneratedOrder.builder()
+                .type(getFullOrderType(type))
+                .title(title)
+                .dateOfIssue(dateOfIssue)
+                .build();
+        }
+
+        private List<Element<HearingOrder>> buildSealedCaseManagementOrders() {
+            return List.of(
+                element(HearingOrder.builder()
+                    .type(AGREED_CMO)
+                    .status(APPROVED)
+                    .dateIssued(NOW)
+                    .build()));
+        }
+
+        private HearingOrder buildPastHearingOrder(HearingOrderType type) {
+            return HearingOrder.builder()
+                .type(type)
+                .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
+                .dateIssued((type == AGREED_CMO || type == C21) ? NOW : null)
+                .dateSent(NOW.minusDays(1))
+                .build();
+        }
     }
 
     @Nested
@@ -440,7 +502,8 @@ class RemovalServiceTest {
         void shouldPopulateApplicationFieldsWithOtherApplication() {
             CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(Map.of());
 
-            AdditionalApplicationsBundle application = buildOtherApplication(C1_APPOINTMENT_OF_A_GUARDIAN, "15 October 2020");
+            AdditionalApplicationsBundle application = buildOtherApplication(C1_APPOINTMENT_OF_A_GUARDIAN,
+                "15 October 2020");
             underTest.populateApplicationFields(caseDetailsMap, application);
 
             HashMap<String, Object> expectedMap = new HashMap<>();
@@ -468,11 +531,11 @@ class RemovalServiceTest {
 
         @Test
         void shouldThrowExceptionWhenElementNotFound() {
-            UUID id = UUID.randomUUID();
             List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
             applications.add(element(buildC2Application("3 June 2020")));
             applications.add(element(buildC2Application("12 May 2020")));
             applications.add(element(buildC2Application("25 December 2020")));
+            UUID id = UUID.randomUUID();
 
             CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
 
@@ -515,71 +578,10 @@ class RemovalServiceTest {
         }
     }
 
-    private static Stream<Arguments> generateGetRemovedSDOArgumentsSource() {
-        Element<StandardDirectionOrder> hiddenSDO1 = element(StandardDirectionOrder.builder().build());
-        Element<StandardDirectionOrder> hiddenSDO2 = element(StandardDirectionOrder.builder().build());
-
-        return Stream.of(
-            Arguments.of("A SDO is removed", singletonList(hiddenSDO2), emptyList(), hiddenSDO2),
-            Arguments.of(
-                "A new SDO is removed", List.of(hiddenSDO1, hiddenSDO2), singletonList(hiddenSDO1), hiddenSDO2),
-            Arguments.of("No SDOs removed", List.of(hiddenSDO2, hiddenSDO1), List.of(hiddenSDO2, hiddenSDO1), null),
-            Arguments.of("No Hidden SDOs exist", emptyList(), emptyList(), null)
-        );
-    }
-
-    private static Stream<Arguments> generateGetRemovedCMOArgumentsSource() {
-        Element<HearingOrder> hiddenCMO1 = element(HearingOrder.builder().build());
-        Element<HearingOrder> hiddenCMO2 = element(HearingOrder.builder().build());
-
-        return Stream.of(
-            Arguments.of("A CMO is removed", singletonList(hiddenCMO2), emptyList(), hiddenCMO2),
-            Arguments.of(
-                "A new CMO is removed", List.of(hiddenCMO1, hiddenCMO2), singletonList(hiddenCMO1), hiddenCMO2),
-            Arguments.of("No CMOs removed", List.of(hiddenCMO2, hiddenCMO1), List.of(hiddenCMO2, hiddenCMO1), null),
-            Arguments.of("No Hidden CMOs exist", emptyList(), emptyList(), null)
-        );
-    }
-
-    private static Stream<Arguments> generateAllAvailableStatesSource() {
-        return Stream.of(
-            Arguments.of(SUBMITTED),
-            Arguments.of(GATEKEEPING),
-            Arguments.of(CASE_MANAGEMENT),
-            Arguments.of(FINAL_HEARING),
-            Arguments.of(CLOSED));
-    }
-
     private DynamicListElement buildListElement(UUID id, String label) {
         return DynamicListElement.builder()
             .code(id)
             .label(label)
-            .build();
-    }
-
-    private GeneratedOrder buildOrder(GeneratedOrderType type, String title, String dateOfIssue) {
-        return GeneratedOrder.builder()
-            .type(getFullOrderType(type))
-            .title(title)
-            .dateOfIssue(dateOfIssue)
-            .build();
-    }
-
-    private List<Element<HearingOrder>> buildSealedCaseManagementOrders() {
-        return List.of(
-            element(HearingOrder.builder()
-                .type(AGREED_CMO)
-                .status(APPROVED)
-                .dateIssued(NOW)
-                .build()));
-    }
-
-    private HearingOrder buildPastHearingOrder(HearingOrderType type) {
-        return HearingOrder.builder()
-            .type(type)
-            .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
-            .dateIssued((type == AGREED_CMO || type == C21) ? NOW : null)
-            .dateSent(NOW.minusDays(1))
             .build();
     }
 }

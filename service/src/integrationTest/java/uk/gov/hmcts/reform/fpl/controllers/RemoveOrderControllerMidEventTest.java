@@ -323,7 +323,8 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
             "orderDateToBeRemoved", application.getUploadedDateTime()
         );
 
-        DynamicList removableApplicationList = mapper.convertValue(responseData.get("removableApplicationList"), DynamicList.class);
+        DynamicList removableApplicationList = mapper.convertValue(responseData.get("removableApplicationList"),
+            DynamicList.class);
 
         DynamicList expectedList = DynamicList.builder()
             .value(buildListElement(applicationId, "C2, C1, 6 May 2020"))
@@ -342,8 +343,8 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
     private DynamicList buildRemovableOrderList(UUID id) {
         return DynamicList.builder()
-            .value(buildListElement(id,"order - 12 March 1234"))
-            .listItems(List.of(buildListElement(id,"order - 12 March 1234")))
+            .value(buildListElement(id, "order - 12 March 1234"))
+            .listItems(List.of(buildListElement(id, "order - 12 March 1234")))
             .build();
     }
 

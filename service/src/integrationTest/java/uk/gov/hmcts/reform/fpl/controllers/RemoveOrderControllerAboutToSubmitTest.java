@@ -93,8 +93,6 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldRemoveTemporaryFields() {
-        CaseDetails caseDetails = asCaseDetails(buildCaseData(selectedOrder));
-
         Map<String, Object> fields = new HashMap<>();
 
         fields.put("orderToBeRemoved", "dummy data");
@@ -108,6 +106,8 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
         fields.put("showRemoveCMOFieldsFlag", "dummy data");
         fields.put("showReasonFieldFlag", "dummy data");
         fields.put("showRemoveSDOWarningFlag", "dummy data");
+
+        CaseDetails caseDetails = asCaseDetails(buildCaseData(selectedOrder));
 
         caseDetails.getData().putAll(fields);
 
