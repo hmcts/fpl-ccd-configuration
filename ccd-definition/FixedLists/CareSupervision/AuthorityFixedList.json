@@ -107,6 +107,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CBF",
+    "ListElement": "Central Bedfordshire Council",
+    "DisplayOrder": 53
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CER",
     "ListElement": "Ceredigion County Council",
     "DisplayOrder": 55
@@ -271,6 +278,13 @@
     "ListElementCode": "HAM",
     "ListElement": "Hampshire County Council",
     "DisplayOrder": 135
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HPL",
+    "ListElement": "Hartlepool Borough Council",
+    "DisplayOrder": 138
   },
   {
     "LiveFrom": "01/01/2017",
