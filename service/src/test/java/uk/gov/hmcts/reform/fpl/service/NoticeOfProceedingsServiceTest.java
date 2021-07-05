@@ -234,7 +234,7 @@ class NoticeOfProceedingsServiceTest {
             .willReturn(document);
 
         List<Element<DocumentBundle>> noticeOfProceedings
-            = noticeOfProceedingService.uploadAndPrepareNoticeOfProceedingBundle(caseData, List.of(C6, C6A));
+            = noticeOfProceedingService.uploadNoticesOfProceedings(caseData, List.of(C6, C6A));
 
         assertThat(noticeOfProceedings.size()).isEqualTo(2);
     }

@@ -16,11 +16,11 @@ module.exports = {
           description: `#customDirections_${index}_description`,
           assignee: `#customDirections_${index}_assignee`,
           dueDateType: `#customDirections_${index}_dueDateType-DATE`,
-          date: `#customDirections_${index}_dateToBeCompletedBy`,
+          date: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[@id="dateToBeCompletedBy"]`,
         };
       },
     },
-    useAllocatedJudge: '#gatekeepingOrderIssuingJudge_useAllocatedJudge-Yes',
+    useAllocatedJudge: '#gatekeepingOrderIssuingJudge_useAllocatedJudge_Yes',
     issuingJudgeTitle: '#gatekeepingOrderIssuingJudge_judgeTitle-HER_HONOUR_JUDGE',
     issuingJudgeName: '#gatekeepingOrderIssuingJudge_judgeLastName',
     issuingJudgeEmail: '#gatekeepingOrderIssuingJudge_judgeEmailAddress',

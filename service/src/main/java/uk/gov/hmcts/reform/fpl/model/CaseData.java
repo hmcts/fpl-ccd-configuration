@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -209,7 +209,9 @@ public class CaseData {
         return defaultIfNull(hiddenStandardDirectionOrders, new ArrayList<>());
     }
 
-    private SDORoute sdoRouter;
+    private GatekeepingOrderRoute sdoRouter;
+    private GatekeepingOrderRoute gatekeepingOrderRouter;
+
     private final DocumentReference preparedSDO;
     private final DocumentReference replacementSDO;
 

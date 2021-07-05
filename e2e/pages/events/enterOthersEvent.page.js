@@ -5,12 +5,8 @@ module.exports = {
   fields: function (index) {
     return {
       name: `#others_${index}_name`,
-      DOB: {
-        day: `#others_${index}_DOB-day`,
-        month: `#others_${index}_DOB-month`,
-        year: `#others_${index}_DOB-year`,
-      },
       gender: `#others_${index}_gender`,
+      DOB: `(//*[@id="DOB"])[${index}]`,
       birthPlace: `#others_${index}_birthPlace`,
       address: `#others_${index}_address_address`,
       telephoneNumber: `#others_${index}_telephone`,
@@ -23,7 +19,7 @@ module.exports = {
       litigationIssuesDetails: `#others_${index}_litigationIssuesDetails`,
       detailsHidden: (option) => {
         return {
-          option: `#others_${index}_detailsHidden-${option}`,
+          option: `#others_${index}_detailsHidden_${option}`,
           reason: `#others_${index}_detailsHiddenReason`,
         };
       },
@@ -31,29 +27,27 @@ module.exports = {
   },
 
   async enterOtherDetails(other) {
+    const elementSelector = await this.getActiveElementSelector();
     const elementIndex = await this.getActiveElementIndex();
 
     await I.runAccessibilityTest();
-    I.fillField(this.fields(elementIndex).name, other.name);
-    I.click(this.fields(elementIndex).DOB.day);
-    I.fillField(this.fields(elementIndex).DOB.day, other.DOB.day);
-    I.fillField(this.fields(elementIndex).DOB.month, other.DOB.month);
-    I.fillField(this.fields(elementIndex).DOB.year, other.DOB.year);
-    I.selectOption(this.fields(elementIndex).gender, other.gender);
-    I.fillField(this.fields(elementIndex).birthPlace, other.birthPlace);
-    await within(this.fields(elementIndex).address, () => {
+    I.fillField(this.fields(elementSelector).name, other.name);
+    I.fillDate(other.DOB, this.fields(elementIndex).DOB);
+    I.selectOption(this.fields(elementSelector).gender, other.gender);
+    I.fillField(this.fields(elementSelector).birthPlace, other.birthPlace);
+    await within(this.fields(elementSelector).address, () => {
       postcodeLookup.enterAddressManually(other.address);
     });
-    I.fillField(this.fields(elementIndex).telephoneNumber, other.telephoneNumber);
+    I.fillField(this.fields(elementSelector).telephoneNumber, other.telephoneNumber);
   },
 
   async enterRelationshipToChild(childInformation) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementSelector();
     I.fillField(this.fields(elementIndex).relationshipToChild, childInformation);
   },
 
   async enterContactDetailsHidden(option) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementSelector();
 
     I.click(this.fields(elementIndex).detailsHidden(option).option);
     if (option === 'Yes') {
@@ -62,7 +56,7 @@ module.exports = {
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementSelector();
 
     litigationIssue = litigationIssue.toLowerCase();
     switch(litigationIssue) {
@@ -81,12 +75,21 @@ module.exports = {
     }
   },
 
-  async getActiveElementIndex() {
+  async getActiveElementSelector() {
     const count = await I.getActiveElementIndex();
     if (count === -1) {
       return 'firstOther';
     } else {
       return `additionalOthers_${count}`;
+    }
+  },
+
+  async getActiveElementIndex() {
+    const count = await I.getActiveElementIndex();
+    if (count === -1) {
+      return 1;
+    } else {
+      return count + 2;
     }
   },
 };
