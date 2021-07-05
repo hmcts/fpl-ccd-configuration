@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -131,6 +132,7 @@ class NoticeOfChangeServiceTest {
     }
 
     @Nested
+    @SuppressWarnings("unchecked")
     class UpdateRepresentationAccess {
 
         @Test
@@ -150,10 +152,11 @@ class NoticeOfChangeServiceTest {
                 .respondents1(newRespondents)
                 .build();
 
-            when(respondentService.getRepresentationChanges(newRespondents, previousRespondents))
+            when(respondentService.getRepresentationChanges((List)newRespondents,(List) previousRespondents,
+                SolicitorRole.Representing.RESPONDENT))
                 .thenReturn(emptyList());
 
-            underTest.updateRepresentativesAccess(caseData, caseDataBefore);
+            underTest.updateRepresentativesAccess(caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT);
 
             verifyNoInteractions(coreCaseDataService);
         }
@@ -193,9 +196,10 @@ class NoticeOfChangeServiceTest {
 
             List<ChangeOrganisationRequest> changes = List.of(changeOrganisationRequest1, changeOrganisationRequest2);
 
-            when(respondentService.getRepresentationChanges(newRespondents, previousRespondents)).thenReturn(changes);
+            when(respondentService.getRepresentationChanges((List)newRespondents, (List) previousRespondents,
+                SolicitorRole.Representing.RESPONDENT)).thenReturn(changes);
 
-            underTest.updateRepresentativesAccess(caseData, caseDataBefore);
+            underTest.updateRepresentativesAccess(caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT);
 
             verify(coreCaseDataService).triggerEvent(CASE_ID, "updateRepresentation",
                 Map.of("changeOrganisationRequestField", changeOrganisationRequest1));

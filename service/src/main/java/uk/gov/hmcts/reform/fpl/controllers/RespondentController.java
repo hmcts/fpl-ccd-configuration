@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -83,8 +84,9 @@ public class RespondentController extends CallbackController {
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
         if (!OPEN.equals(caseData.getState())) {
-            caseDetails.getData().putAll(
-                respondentAfterSubmissionRepresentationService.updateRepresentation(caseData, caseDataBefore));
+            caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
+                caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT
+            ));
         }
         return respond(caseDetails);
     }
@@ -96,7 +98,8 @@ public class RespondentController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (!OPEN.equals(caseData.getState())) {
-            noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore);
+            noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore,
+                SolicitorRole.Representing.RESPONDENT);
             publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }

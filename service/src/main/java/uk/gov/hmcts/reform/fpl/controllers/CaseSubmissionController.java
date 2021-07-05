@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
@@ -118,7 +119,7 @@ public class CaseSubmissionController extends CallbackController {
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
             data.put("submittedForm", buildFromDocument(document));
 
-            data.putAll(respondentRepresentationService.generate(caseData));
+            data.putAll(respondentRepresentationService.generate(caseData, SolicitorRole.Representing.RESPONDENT));
             // data.putAll(); DO we need to do it here? Yes to allow noc
         }
 

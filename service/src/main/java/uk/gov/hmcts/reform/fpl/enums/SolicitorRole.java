@@ -2,9 +2,13 @@ package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
@@ -56,8 +60,32 @@ public enum SolicitorRole {
             .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     public enum Representing {
-        RESPONDENT,
-        CHILD
+        RESPONDENT(caseData -> (List) caseData.getAllRespondents(), "respondentPolicy%d", "noticeOfChangeAnswers%d"),
+        CHILD(caseData -> (List) caseData.getAllChildren(), "childPolicy%d", "noticeOfChangeChildAnswers%d");
+
+        private final Function<CaseData, List<Element<WithSolicitor>>> target;
+        private final String policyFieldTemplate;
+        private final String nocAnswersTemplate;
+
+        Representing(Function<CaseData, List<Element<WithSolicitor>>> target,
+                     String policyFieldTemplate, String nocAnswersTemplate) {
+            this.target = target;
+            this.policyFieldTemplate = policyFieldTemplate;
+            this.nocAnswersTemplate = nocAnswersTemplate;
+        }
+
+        public Function<CaseData, List<Element<WithSolicitor>>> getTarget() {
+            return target;
+        }
+
+        public String getPolicyFieldTemplate() {
+            return policyFieldTemplate;
+        }
+
+        public String getNocAnswersTemplate() {
+            return nocAnswersTemplate;
+        }
     }
 }

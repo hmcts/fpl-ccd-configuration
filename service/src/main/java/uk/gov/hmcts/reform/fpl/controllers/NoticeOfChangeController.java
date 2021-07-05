@@ -13,13 +13,17 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static uk.gov.hmcts.reform.aac.model.DecisionRequest.decisionRequest;
 
@@ -47,21 +51,29 @@ public class NoticeOfChangeController extends CallbackController {
     }
 
     @PostMapping("/submitted")
+    @SuppressWarnings("unchecked")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
 
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
         CaseData newCaseData = getCaseData(callbackRequest);
 
         List<ChangeOrganisationRequest> changeRequests = respondentService
-            .getRepresentationChanges(newCaseData.getRespondents1(), oldCaseData.getRespondents1());
+            .getRepresentationChanges((List)newCaseData.getRespondents1(), (List) oldCaseData.getRespondents1(),
+                SolicitorRole.Representing.RESPONDENT);
+
+        changeRequests.addAll(respondentService
+            .getRepresentationChanges((List)newCaseData.getAllChildren(), (List) oldCaseData.getAllChildren(),
+                SolicitorRole.Representing.CHILD));
 
         changeRequests.forEach(
             changeRequest -> {
-                int solicitorIndex = changeRequest.getCaseRole().getIndex();
+                SolicitorRole caseRole = changeRequest.getCaseRole();
+                Function<CaseData, List<Element<WithSolicitor>>> target = caseRole.getRepresenting().getTarget();
+                int solicitorIndex = caseRole.getIndex();
                 publishEvent(new NoticeOfChangeEvent(
                     newCaseData,
-                    oldCaseData.getRespondents1().get(solicitorIndex).getValue().getSolicitor(),
-                    newCaseData.getRespondents1().get(solicitorIndex).getValue().getSolicitor())
+                    target.apply(oldCaseData).get(solicitorIndex).getValue().getSolicitor(),
+                    target.apply(newCaseData).get(solicitorIndex).getValue().getSolicitor())
                 );
             });
     }

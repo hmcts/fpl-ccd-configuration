@@ -14,18 +14,20 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
 import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -34,34 +36,37 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentRepresentationService {
 
-    private final NoticeOfChangeAnswersConverter noticeOfChangeRespondentConverter;
+    private final NoticeOfChangeAnswersConverter noticeOfChangeAnswersConverter;
     private final RespondentPolicyConverter respondentPolicyConverter;
     private final ChangeOfRepresentationService changeOfRepresentationService;
 
-    public Map<String, Object> generate(CaseData caseData) {
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> generate(CaseData caseData,
+                                        SolicitorRole.Representing representing) {
         Map<String, Object> data = new HashMap<>();
 
         Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
 
-        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        List<Element<WithSolicitor>> respondents = representing.getTarget().apply(caseData);
         int numOfRespondents = respondents.size();
 
-        List<SolicitorRole> solicitorRoles = SolicitorRole.values(SolicitorRole.Representing.RESPONDENT);
+        List<SolicitorRole> solicitorRoles = SolicitorRole.values(representing);
         for (int i = 0; i < solicitorRoles.size(); i++) {
             SolicitorRole solicitorRole = solicitorRoles.get(i);
 
-            Optional<Element<Respondent>> respondentElement
+            Optional<Element<WithSolicitor>> respondentElement
                 = (i < numOfRespondents) ? Optional.of(respondents.get(i)) : Optional.empty();
 
             OrganisationPolicy organisationPolicy
                 = respondentPolicyConverter.generateForSubmission(solicitorRole, respondentElement);
 
-            data.put(String.format("respondentPolicy%d", i), organisationPolicy);
+            data.put(String.format(representing.getPolicyFieldTemplate(), i), organisationPolicy);
 
             if (respondentElement.isPresent()) {
-                NoticeOfChangeAnswers noticeOfChangeAnswer
-                    = noticeOfChangeRespondentConverter.generateForSubmission(respondentElement.get(), firstApplicant);
-                data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
+                NoticeOfChangeAnswers noticeOfChangeAnswer = noticeOfChangeAnswersConverter.generateForSubmission(
+                        (Element) respondentElement.get(), firstApplicant
+                );
+                data.put(String.format(representing.getNocAnswersTemplate(), i), noticeOfChangeAnswer);
             }
         }
 
@@ -77,9 +82,11 @@ public class RespondentRepresentationService {
 
         final SolicitorRole solicitorRole = SolicitorRole.from(change.getCaseRoleId().getValueCode());
 
-        final List<Element<Respondent>> respondents = defaultIfNull(caseData.getRespondents1(), emptyList());
+        final List<Element<WithSolicitor>> respondents = defaultIfNull(solicitorRole.getRepresenting()
+            .getTarget().apply(caseData), Collections.emptyList()
+        );
 
-        final Respondent respondent = respondents.get(solicitorRole.getIndex()).getValue();
+        final WithSolicitor respondent = respondents.get(solicitorRole.getIndex()).getValue();
 
         RespondentSolicitor removedSolicitor = respondent.getSolicitor();
 
@@ -90,7 +97,11 @@ public class RespondentRepresentationService {
             .organisation(change.getOrganisationToAdd())
             .build();
 
-        respondent.setLegalRepresentation(YesNo.YES.getValue());
+        //        TODO: FIX!!! FUNCTION SPECIFIC (strategy)
+        if (SolicitorRole.Representing.RESPONDENT == solicitorRole.getRepresenting()) {
+            ((Respondent) respondent).setLegalRepresentation(YesNo.YES.getValue());
+        }
+
         respondent.setSolicitor(addedSolicitor);
 
         return Map.of(
@@ -99,7 +110,7 @@ public class RespondentRepresentationService {
                 ChangeOfRepresentationRequest.builder()
                     .method(ChangeOfRepresentationMethod.NOC)
                     .by(solicitor.getEmail())
-                    .respondent(respondent)
+                    .respondent((ConfidentialParty) respondent)
                     .current(caseData.getChangeOfRepresentatives())
                     .addedRepresentative(addedSolicitor)
                     .removedRepresentative(removedSolicitor)

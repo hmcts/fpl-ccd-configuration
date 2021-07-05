@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.components.ChildSolicitorPolicyConverter;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -100,8 +101,8 @@ public class ChildRepresentationService {
         for (int i = 0; i < solicitorRoles.size(); i++) {
             SolicitorRole solicitorRole = solicitorRoles.get(i);
 
-            Optional<Element<Child>> childElement
-                = (i < numOfChildren) ? Optional.of(children.get(i)) : Optional.empty();
+            Optional<Element<Child>> childElement = (i < numOfChildren) || childrenDoNotHaveRepresentation(caseData)
+                ? Optional.of(children.get(i)) : Optional.empty();
 
             OrganisationPolicy organisationPolicy
                 = childSolicitorPolicyConverter.generate(solicitorRole, childElement);
@@ -117,4 +118,9 @@ public class ChildRepresentationService {
 
         return data;
     }
+
+    private boolean childrenDoNotHaveRepresentation(CaseData caseData) {
+        return YES != YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
+    }
+
 }
