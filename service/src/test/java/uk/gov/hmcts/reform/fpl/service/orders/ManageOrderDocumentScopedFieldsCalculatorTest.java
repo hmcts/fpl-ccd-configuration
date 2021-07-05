@@ -48,7 +48,6 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSetMonthsEndDate",
             "manageOrdersMultiSelectListForC43",
             "manageOrdersRecitalsAndPreambles",
-            "manageOrdersDirectionsForC43",
             "orderPreview",
             "manageOrdersIsFinalOrder",
             "manageOrdersCloseCase",

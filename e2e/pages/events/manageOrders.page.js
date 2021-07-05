@@ -159,7 +159,6 @@ const section4 = {
     },
   },
   recitalsAndPreambles: '#manageOrdersRecitalsAndPreambles',
-  c43Directions: '#manageOrdersDirectionsForC43',
   isFinalOrder: {
     group: '#manageOrdersIsFinalOrder',
     options: {
@@ -344,10 +343,6 @@ const enterRecitalsAndPreambles = async (text) => {
   I.fillField(section4.recitalsAndPreambles, text);
 };
 
-const enterC43Directions = async (text) => {
-  I.fillField(section4.c43Directions, text);
-};
-
 const enterFurtherDirections = async (text) => {
   I.fillField(section4.furtherDirections, text);
   await I.runAccessibilityTest();
@@ -415,5 +410,5 @@ module.exports = {
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
-  selectC43Orders, enterRecitalsAndPreambles, enterC43Directions,
+  selectC43Orders, enterRecitalsAndPreambles,
 };

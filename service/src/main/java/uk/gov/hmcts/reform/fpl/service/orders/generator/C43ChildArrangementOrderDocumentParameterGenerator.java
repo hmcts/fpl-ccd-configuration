@@ -112,7 +112,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     }
 
     private String getOrderDirections(ManageOrdersEventData eventData) {
-        String directions = eventData.getManageOrdersDirectionsForC43();
+        String directions = eventData.getManageOrdersDirections();
         String furtherDirections = eventData.getManageOrdersFurtherDirections();
 
         if (!isEmpty(furtherDirections)) {

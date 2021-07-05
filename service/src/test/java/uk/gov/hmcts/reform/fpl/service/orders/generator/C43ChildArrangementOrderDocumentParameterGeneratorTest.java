@@ -111,7 +111,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
                 .manageOrdersIsByConsent("No")
                 .manageOrdersMultiSelectListForC43(c43OrderTypes)
                 .manageOrdersRecitalsAndPreambles(RECITALS_AND_PREAMBLES)
-                .manageOrdersDirectionsForC43(DIRECTIONS)
+                .manageOrdersDirections(DIRECTIONS)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .build())
             .build();

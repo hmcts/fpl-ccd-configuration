@@ -318,7 +318,7 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
   await manageOrdersEventPage.selectC43Orders();
   manageOrdersEventPage.selectOrderByConsent();
   await manageOrdersEventPage.enterRecitalsAndPreambles('Recitals and Preambles');
-  await manageOrdersEventPage.enterC43Directions('C43 specific directions');
+  await manageOrdersEventPage.enterDirections('some text');
   await manageOrdersEventPage.enterFurtherDirections('Further details.');
   await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();

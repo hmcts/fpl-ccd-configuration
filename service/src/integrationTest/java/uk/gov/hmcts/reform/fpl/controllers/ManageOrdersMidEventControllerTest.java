@@ -70,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
+        Map.entry("orderTitle", "NO"),
         Map.entry("hearingDetails", "YES"),
         Map.entry("linkApplication", "NO"),
         Map.entry("approver", "YES"),
@@ -471,6 +472,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("orderTitle", "NO"),
             Map.entry("hearingDetails", "YES"),
             Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),
@@ -510,6 +512,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("orderTitle", "NO"),
             Map.entry("hearingDetails", "YES"),
             Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),

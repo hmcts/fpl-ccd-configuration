@@ -49,6 +49,7 @@ class OrderShowHideQuestionsCalculatorTest {
             "previewOrder", "YES");
 
         Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
+        careOrderQuestions.put("orderTitle", "NO");
         careOrderQuestions.put("furtherDirections", "YES");
         careOrderQuestions.put("approvalDate", "YES");
         careOrderQuestions.put("approvalDateTime", "NO");
@@ -72,6 +73,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("appointedGuardian", "NO");
 
         Map<String, String> dischargeOfCareQuestions = new HashMap<>(commonQuestions);
+        dischargeOfCareQuestions.put("orderTitle", "NO");
         dischargeOfCareQuestions.put("furtherDirections", "YES");
         dischargeOfCareQuestions.put("approvalDate", "YES");
         dischargeOfCareQuestions.put("approvalDateTime", "NO");
@@ -95,6 +97,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("appointedGuardian", "NO");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
+        epoQuestions.put("orderTitle", "NO");
         epoQuestions.put("furtherDirections", "YES");
         epoQuestions.put("approvalDate", "NO");
         epoQuestions.put("approvalDateTime", "YES");
@@ -118,6 +121,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("appointedGuardian", "NO");
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
+        blankOrderQuestions.put("orderTitle", "YES");
         blankOrderQuestions.put("approvalDate", "YES");
         blankOrderQuestions.put("furtherDirections", "NO");
         blankOrderQuestions.put("orderDetails", "YES");
@@ -141,6 +145,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("appointedGuardian", "NO");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
+        supervisionOrderQuestions.put("orderTitle", "NO");
         supervisionOrderQuestions.put("approvalDate", "YES");
         supervisionOrderQuestions.put("furtherDirections", "YES");
         supervisionOrderQuestions.put("orderDetails", "NO");
@@ -164,6 +169,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("appointedGuardian", "NO");
 
         Map<String, String> specialGuardianshipOrderQuestions = new HashMap<>(commonQuestions);
+        specialGuardianshipOrderQuestions.put("orderTitle", "NO");
         specialGuardianshipOrderQuestions.put("approvalDate", "NO");
         specialGuardianshipOrderQuestions.put("furtherDirections", "YES");
         specialGuardianshipOrderQuestions.put("orderDetails", "NO");
@@ -187,6 +193,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("appointedGuardian", "YES");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
+        appointmentOfChildrensGuardianQuestions.put("orderTitle", "NO");
         appointmentOfChildrensGuardianQuestions.put("approvalDate", "YES");
         appointmentOfChildrensGuardianQuestions.put("furtherDirections", "YES");
         appointmentOfChildrensGuardianQuestions.put("orderDetails", "NO");
@@ -233,6 +240,7 @@ class OrderShowHideQuestionsCalculatorTest {
             .map(order -> Arguments.of(order, Map.ofEntries(
                 Map.entry("approver", "NO"),
                 Map.entry("previewOrder", "YES"),
+                Map.entry("orderTitle", "NO"),
                 Map.entry("furtherDirections", "NO"),
                 Map.entry("orderDetails", "NO"),
                 Map.entry("whichChildren", "YES"),
@@ -274,6 +282,7 @@ class OrderShowHideQuestionsCalculatorTest {
             .map(order -> Arguments.of(order, Map.ofEntries(
                 Map.entry("approver", "NO"),
                 Map.entry("previewOrder", "YES"),
+                Map.entry("orderTitle", "NO"),
                 Map.entry("furtherDirections", "NO"),
                 Map.entry("orderDetails", "NO"),
                 Map.entry("whichChildren", "YES"),
