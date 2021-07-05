@@ -9,7 +9,7 @@
     "PageID": "Download",
     "PageDisplayOrder": 8,
     "PageColumnNumber": 1,
-    "PageShowCondition": "manageOrdersOperation = \"AMEND\"",
+    "PageShowCondition": "orderTempQuestions.uploadAmendedOrder=\"YES\"",
     "ShowSummaryChangeOption": "N"
   },
   {

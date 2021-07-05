@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder(toBuilder = true)
 public class OrderTempQuestions {
-
     String hearingDetails;
     String linkApplication;
     String approver;
@@ -29,5 +28,6 @@ public class OrderTempQuestions {
     String closeCase;
     String uploadOrderFile;
     String previewOrder;
-
+    String orderToAmend;
+    String uploadAmendedOrder;
 }

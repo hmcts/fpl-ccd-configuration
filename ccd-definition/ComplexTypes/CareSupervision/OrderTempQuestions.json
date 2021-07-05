@@ -196,5 +196,23 @@
     "ElementLabel": " ",
     "FieldShowCondition": "linkApplication=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "orderToAmend",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "orderToAmend=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "uploadAmendedOrder",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "uploadAmendedOrder=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]

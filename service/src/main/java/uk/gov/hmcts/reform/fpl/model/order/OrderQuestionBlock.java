@@ -56,7 +56,11 @@ public enum OrderQuestionBlock {
         "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),
     CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
-        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning"));
+        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning")),
+    ORDER_TO_AMEND("orderToAmend", "Download order to amend", OrderSection.AMEND_DOWNLOAD,
+        List.of("manageOrdersOrderToAmend")),
+    UPLOAD_AMENDED_ORDER("uploadAmendedOrder", "Upload order to amend", OrderSection.AMEND_DOWNLOAD,
+        List.of("manageOrdersAmendedOrder"));
 
     private final String showHideField;
     private final String question;

@@ -17,18 +17,16 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
-import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendedOrderListManager;
+import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendableOrderListBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.preselector.ManageOrderInitialTypePreSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.List;
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
 
 @Api
 @RestController
@@ -40,16 +38,16 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
-    private final ManageOrderInitialTypePreSelector manageOrderInitialTypePreSelector;
+    private final ManageOrderOperationPostPopulator operationPostPopulator;
     private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
-    private final AmendedOrderListManager amendedOrderListManager;
+    private final AmendableOrderListBuilder amendableOrderListBuilder;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        amendedOrderListManager.buildList(caseData).ifPresent(list ->
+        amendableOrderListBuilder.buildList(caseData).ifPresent(list ->
             caseDetails.getData().put("manageOrdersAmendmentList", list)
         );
 
@@ -59,12 +57,9 @@ public class ManageOrdersController extends CallbackController {
     @PostMapping("/initial-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateInitialSection(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        if (AMEND == caseData.getManageOrdersEventData().getManageOrdersOperation()) {
-            caseDetails.getData().put("manageOrdersOrderToAmend", amendedOrderListManager.getSelectedOrder(caseData));
-        } else {
-            caseDetails.getData().putAll(manageOrderInitialTypePreSelector.preSelect(caseDetails));
-        }
+
+        caseDetails.getData().putAll(operationPostPopulator.populate(caseDetails));
+
         return respond(caseDetails);
     }
 

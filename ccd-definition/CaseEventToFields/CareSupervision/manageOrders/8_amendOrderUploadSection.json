@@ -9,7 +9,7 @@
     "PageID": "UploadAmended",
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
-    "PageShowCondition": "manageOrdersOperation = \"AMEND\"",
+    "PageShowCondition": "orderTempQuestions.orderToAmend=\"YES\"",
     "ShowSummaryChangeOption": "N"
   },
   {
