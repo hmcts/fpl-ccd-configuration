@@ -7,11 +7,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Value
 @Builder
 @Jacksonized
 public class UrgentHearingOrder implements AmendableOrder {
+    public static final UUID COLLECTION_ID = UUID.fromString("5d05d011-5d01-5d01-5d01-5d05d05d05d0");
+
     DocumentReference order;
     DocumentReference unsealedOrder;
     String allocation;
@@ -20,5 +23,10 @@ public class UrgentHearingOrder implements AmendableOrder {
     @Override
     public String asLabel() {
         return "Urgent hearing order";
+    }
+
+    @Override
+    public LocalDate amendableSortDate() {
+        return dateAdded;
     }
 }

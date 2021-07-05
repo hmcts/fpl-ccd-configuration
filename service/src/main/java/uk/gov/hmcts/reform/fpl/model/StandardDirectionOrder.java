@@ -23,11 +23,14 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder {
+    public static final UUID COLLECTION_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
     private final String hearingDate;
     private final String dateOfIssue;
     private final OrderStatus orderStatus;
@@ -61,7 +64,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
     @JsonIgnore
     public UUID getCollectionId() {
-        return UUID.fromString("11111111-1111-1111-1111-111111111111");
+        return COLLECTION_ID;
     }
 
     @Override
@@ -77,6 +80,12 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
             .map(date -> " - " + date);
 
         return "Gatekeeping order" + formattedDate.orElse("");
+    }
+
+    @Override
+    public LocalDate amendableSortDate() {
+        return null != dateOfUpload ? dateOfUpload
+                                    : parseLocalDateFromStringUsingFormat(dateOfIssue, DATE);
     }
 }
 

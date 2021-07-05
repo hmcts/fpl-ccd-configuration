@@ -36,11 +36,15 @@ public class DateFormatterHelper {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern(format, Locale.UK));
     }
 
+    public static LocalDateTime parseLocalDateTimeFromStringUsingFormat(String date, String format) {
+        return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(format, Locale.UK));
+    }
+
     public static LocalDateTime parseLocalDateTimeFromStringUsingFormat(String date, String main, String alternative) {
         try {
-            return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(main, Locale.UK));
+            return parseLocalDateTimeFromStringUsingFormat(date, main);
         } catch (DateTimeParseException e) {
-            return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(alternative, Locale.UK));
+            return parseLocalDateTimeFromStringUsingFormat(date, alternative);
         }
     }
 

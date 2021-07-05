@@ -85,4 +85,9 @@ public class HearingOrder implements RemovableOrder, AmendableOrder {
                 formatLocalDateToString(dateSent, DATE));
         }
     }
+
+    @Override
+    public LocalDate amendableSortDate() {
+        return dateIssued;
+    }
 }
