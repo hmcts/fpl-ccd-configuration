@@ -69,7 +69,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersCafcassOfficesWales",
             "othersSelector",
             "others_label",
-            "sendOrderToAllOthers"
+            "sendOrderToAllOthers",
+            "manageOrdersAmendmentList",
+            "manageOrdersOrderToAmend",
+            "manageOrdersAmendedOrder"
         );
     }
 }
