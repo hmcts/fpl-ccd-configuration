@@ -275,6 +275,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "HPL",
+    "ListElement": "Hartlepool Borough Council",
+    "DisplayOrder": 138
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "HFC",
     "ListElement": "Herefordshire Council",
     "DisplayOrder": 140

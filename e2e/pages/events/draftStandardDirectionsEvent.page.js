@@ -1,6 +1,4 @@
 const {I} = inject();
-const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
-const directions = require('../../fragments/directions');
 
 module.exports = {
   fields: {
@@ -9,20 +7,9 @@ module.exports = {
       sealed: 'Yes, seal it and send to the local authority',
       draft: 'No, just save it on the system',
     },
-    routingRadioGroup: {
-      groupName: '#sdoRouter',
-      service: '#sdoRouter-SERVICE',
-      upload: '#sdoRouter-UPLOAD',
-      urgent: '#sdoRouter-URGENT',
-    },
     file: {
       preparedSDO: '#preparedSDO',
       replacementSDO: '#replacementSDO',
-    },
-    noticeOfProceedings: {
-      groupName: '#noticeOfProceedings_proceedingTypes',
-      c6: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
-      c6a: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
     },
     allocationDecision: {
       judgeLevelConfirmation: {
@@ -42,24 +29,6 @@ module.exports = {
     urgentHearingOrder: '#urgentHearingOrderDocument',
   },
 
-  async createSDOThroughService() {
-    I.click(this.fields.routingRadioGroup.service);
-    await I.runAccessibilityTest();
-    await I.goToNextPage();
-  },
-
-  async createSDOThroughUpload() {
-    I.click(this.fields.routingRadioGroup.upload);
-    await I.runAccessibilityTest();
-    await I.goToNextPage();
-  },
-
-  async createUrgentHearingOrder() {
-    I.click(this.fields.routingRadioGroup.urgent);
-    await I.runAccessibilityTest();
-    await I.goToNextPage();
-  },
-
   async uploadPreparedSDO(file) {
     await I.runAccessibilityTest();
     I.attachFile(this.fields.file.preparedSDO, file);
@@ -72,37 +41,6 @@ module.exports = {
     await I.goToNextPage();
   },
 
-  async skipDateOfIssue() {
-    await I.runAccessibilityTest();
-    await I.goToNextPage();
-  },
-
-  async enterDateOfIssue(date) {
-    await I.runAccessibilityTest();
-    await I.fillDate(date);
-    await I.goToNextPage();
-  },
-
-  useAllocatedJudge(legalAdvisorName) {
-    judgeAndLegalAdvisor.useAllocatedJudge();
-    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
-  },
-
-  async enterDatesForDirections(direction) {
-    await directions.enterDate(direction.dueDate);
-    await I.goToNextPage();
-    await directions.enterDate(direction.dueDate);
-    await I.goToNextPage();
-    await directions.enterDate(direction.dueDate);
-    await I.goToNextPage();
-    await directions.enterDate(direction.dueDate);
-    await I.goToNextPage();
-    await directions.enterDate(direction.dueDate);
-    await I.goToNextPage();
-    await directions.enterDate(direction.dueDate);
-    await I.goToNextPage();
-  },
-
   markAsDraft() {
     I.click(this.fields.statusRadioGroup.draft);
   },
@@ -110,14 +48,6 @@ module.exports = {
   async markAsFinal() {
     await I.runAccessibilityTest();
     I.click(this.fields.statusRadioGroup.sealed);
-  },
-
-  checkC6() {
-    I.checkOption(this.fields.noticeOfProceedings.c6);
-  },
-
-  checkC6A() {
-    I.checkOption(this.fields.noticeOfProceedings.c6a);
   },
 
   async makeAllocationDecision(agreement, level, reason) {
