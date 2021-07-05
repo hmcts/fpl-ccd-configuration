@@ -303,8 +303,7 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
 });
 
 Scenario('Create C43a special guardianship order', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
+  await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c43a);

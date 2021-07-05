@@ -156,7 +156,7 @@ const section4 = {
       no: '#manageOrdersIsFinalOrder_No',
     },
   },
-  orderByConsent: '#manageOrdersIsByConsent-Yes',
+  orderByConsent: '#manageOrdersIsByConsent_Yes',
   guardianSelector: {
     selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
   },
