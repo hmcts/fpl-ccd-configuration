@@ -440,6 +440,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "changeCaseName-superuser",
+    "Name": "Change case name",
+    "Description": "Change case name",
+    "DisplayOrder": 15,
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placement",
     "Name": "Placement",
     "Description": "Placement",
@@ -739,5 +753,22 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-managing-organisation/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-managing-organisation/submitted",
     "EventEnablingCondition": "outsourcingPolicy.Organisation.OrganisationID != \"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addGatekeepingOrder",
+    "Name": "Add the gatekeeping order",
+    "Description": "Add the gatekeeping order",
+    "DisplayOrder": 10,
+    "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/submitted",
+    "EndButtonLabel": "Save and continue",
+    "ShowEventNotes": "Y",
+    "ShowSummary": "Y"
   }
 ]

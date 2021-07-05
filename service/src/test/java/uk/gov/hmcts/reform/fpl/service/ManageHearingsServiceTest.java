@@ -602,6 +602,22 @@ class ManageHearingsServiceTest {
     }
 
     @Test
+    void shouldFindAndSetPreviousVenueIdWhenFlagNotPresent() {
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder().build())))
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        service.findAndSetPreviousVenueId(caseData);
+
+        assertThat(caseData.getPreviousVenueId()).isNull();
+    }
+
+    @Test
     void shouldNotFindAndSetPreviousVenueIdWhenNoHearings() {
         CaseData caseData = CaseData.builder().build();
 

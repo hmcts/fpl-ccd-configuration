@@ -6,8 +6,8 @@ module.exports = {
     confirmChangeState: {
       id: '#confirmChangeState',
       options: {
-        yes: '#confirmChangeState-Yes',
-        no: '#confirmChangeState-No',
+        yes: '#confirmChangeState_Yes',
+        no: '#confirmChangeState_No',
       },
     },
     closedCaseOptions: {

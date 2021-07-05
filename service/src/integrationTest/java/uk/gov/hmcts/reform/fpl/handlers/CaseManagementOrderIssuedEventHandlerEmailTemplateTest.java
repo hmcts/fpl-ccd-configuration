@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -56,7 +57,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans({
     @MockBean(CoreCaseDataService.class), @MockBean(IdentityService.class), @MockBean(ChildrenService.class),
     @MockBean(OrderCreationService.class), @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
-    @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
+    @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(SealedOrderHistoryFinalMarker.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
@@ -119,7 +121,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                     .line("HM Courts & Tribunals Service")
                     .line()
                     .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                         + "contactfpl@justice.gov.uk")
+                        + "contactfpl@justice.gov.uk")
                 )
         );
 
@@ -145,7 +147,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                     .line("HM Courts & Tribunals Service")
                     .line()
                     .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                         + "contactfpl@justice.gov.uk")
+                        + "contactfpl@justice.gov.uk")
                 )
         );
 
@@ -167,7 +169,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
