@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
-@Data
+@Value
 @Builder(toBuilder = true)
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
 @JsonInclude(JsonInclude.Include.NON_NULL)

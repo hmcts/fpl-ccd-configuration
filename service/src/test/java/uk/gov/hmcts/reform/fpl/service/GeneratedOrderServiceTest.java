@@ -540,9 +540,12 @@ class GeneratedOrderServiceTest {
     }
 
     private static Element<Child> childWithFinalOrderIssuedValue(String finalOrderValue) {
-        Element<Child> child = testChild();
-        child.getValue().setFinalOrderIssued(finalOrderValue);
-        return child;
+        Child modifiedChild = testChild().getValue().toBuilder()
+            .finalOrderIssued(finalOrderValue)
+            .build();
+        return testChild().toBuilder()
+            .value(modifiedChild)
+            .build();
     }
 
     private static class FileNamesProvider implements ArgumentsProvider {

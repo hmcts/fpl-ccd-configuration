@@ -7,10 +7,10 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -50,42 +50,56 @@ public class ChildrenService {
     }
 
     public List<Element<Child>> updateFinalOrderIssued(String orderLabel, List<Element<Child>> children,
-                                                       String orderAppliesToAllChildren, Selector childSelector,
-                                                       String remainingChildIndex) {
+                                                       String orderAppliesToAllChildren,
+                                                       List<Element<Child>> selectedChildren) {
+
+        final Stream<Element<Child>> childrenToReturn;
+
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
-            children.forEach(child -> {
-                child.getValue().setFinalOrderIssued(YES.getValue());
-                child.getValue().setFinalOrderIssuedType(orderLabel);
+            childrenToReturn = children.stream().map(childElement -> {
+                Child child = childElement.getValue().toBuilder()
+                    .finalOrderIssued(YES.getValue())
+                    .finalOrderIssuedType(orderLabel)
+                    .build();
+                return childElement.toBuilder().value(child).build();
             });
         } else {
-            List<Integer> selectedChildren;
-            if (StringUtils.isNotBlank(remainingChildIndex)) {
-                selectedChildren = List.of(Integer.parseInt(remainingChildIndex));
-            } else if (childSelector != null) {
-                selectedChildren = childSelector.getSelected();
-            } else {
-                selectedChildren = new ArrayList<>();
-            }
-            for (int i = 0; i < children.size(); i++) {
-                Child child = children.get(i).getValue();
-                if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
-                    child.setFinalOrderIssued(YES.getValue());
-                    child.setFinalOrderIssuedType(orderLabel);
-                } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
-                    child.setFinalOrderIssued(NO.getValue());
+            childrenToReturn = children.stream().map(childElement -> {
+                boolean childWasSelected = selectedChildren.contains(childElement);
+                if (childWasSelected) {
+                    Child child = childElement.getValue().toBuilder()
+                        .finalOrderIssued(YES.getValue())
+                        .finalOrderIssuedType(orderLabel)
+                        .build();
+                    return childElement.toBuilder().value(child).build();
+                } else {
+                    return childElement;
                 }
-            }
+            });
         }
-        return children;
+
+        Stream<Element<Child>> normalisedChildrenElements = childrenToReturn.map(childElement -> {
+            boolean finalOrderForChildWasNotSet = StringUtils.isEmpty(childElement.getValue().getFinalOrderIssued());
+            if (finalOrderForChildWasNotSet) {
+                Child child = childElement.getValue().toBuilder()
+                    .finalOrderIssued(NO.getValue())
+                    .build();
+                return childElement.toBuilder().value(child).build();
+            } else {
+                return childElement;
+            }
+        });
+        return normalisedChildrenElements.collect(Collectors.toList());
     }
 
     public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
+        //TODO - could we use the smart selector?
+        List<Element<Child>> selectedChildren = getSelectedChildren(caseData.getAllChildren(), caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren(), caseData.getRemainingChildIndex());
         return updateFinalOrderIssued(
             caseData.getManageOrdersEventData().getManageOrdersType().getTitle(),
             caseData.getAllChildren(),
             caseData.getOrderAppliesToAllChildren(),
-            caseData.getChildSelector(),
-            caseData.getRemainingChildIndex()
+            selectedChildren
         );
     }
 

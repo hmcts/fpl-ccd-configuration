@@ -76,11 +76,13 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
         List<UUID> removedChildrenIDList = removedOrder.getChildrenIDs();
 
         return caseData.getAllChildren().stream()
-            .map(element -> {
+            .map(element -> {//TODO - refactor
                 if (removedChildrenIDList.contains(element.getId())) {
-                    Child child = element.getValue();
-                    child.setFinalOrderIssued(null);
-                    child.setFinalOrderIssuedType(null);
+                    Child child = element.getValue().toBuilder()
+                        .finalOrderIssued(null)
+                        .finalOrderIssuedType(null)
+                        .build();
+                    return element.toBuilder().value(child).build();
                 }
                 return element;
             }).collect(Collectors.toList());
