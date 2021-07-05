@@ -2,11 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.children;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.components.ChildSolicitorPolicyConverter;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
-import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -15,12 +12,10 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
-import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,66 +45,16 @@ class ChildRepresentationServiceTest {
             .organisationName(ORGANISATION_NAME)
             .build())
         .build();
-    private static final List<Element<Applicant>> APPLICANTS = List.of(element(FIRST_APPLICANT));
-    private static final OrganisationPolicy ORGANISATION_POLICY_A = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_B = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_C = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_D = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_E = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_F = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_G = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_H = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_I = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_J = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_K = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_L = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_M = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_N = mock(OrganisationPolicy.class);
-    private static final OrganisationPolicy ORGANISATION_POLICY_O = mock(OrganisationPolicy.class);
-
-    private static final Element<Child> CHILD_A = element(mock(Child.class));
-    private static final Element<Child> CHILD_B = element(mock(Child.class));
-    private static final Element<Child> CHILD_C = element(mock(Child.class));
-    private static final Element<Child> CHILD_D = element(mock(Child.class));
-    private static final Element<Child> CHILD_E = element(mock(Child.class));
-    private static final Element<Child> CHILD_F = element(mock(Child.class));
-    private static final Element<Child> CHILD_G = element(mock(Child.class));
-    private static final Element<Child> CHILD_H = element(mock(Child.class));
-    private static final Element<Child> CHILD_I = element(mock(Child.class));
-    private static final Element<Child> CHILD_J = element(mock(Child.class));
-    private static final Element<Child> CHILD_K = element(mock(Child.class));
-    private static final Element<Child> CHILD_L = element(mock(Child.class));
-    private static final Element<Child> CHILD_M = element(mock(Child.class));
-    private static final Element<Child> CHILD_N = element(mock(Child.class));
-    private static final Element<Child> CHILD_O = element(mock(Child.class));
-
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_A = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_B = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_C = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_D = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_E = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_F = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_G = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_H = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_I = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_J = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_K = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_L = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_M = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_N = mock(NoticeOfChangeAnswers.class);
-    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_O = mock(NoticeOfChangeAnswers.class);
 
     private final RespondentSolicitor mainRepresentative = mock(RespondentSolicitor.class);
 
     private final OptionCountBuilder optionCountBuilder = mock(OptionCountBuilder.class);
     private final ChildRepresentationDetailsFlattener flattener = mock(ChildRepresentationDetailsFlattener.class);
-    private final ChildSolicitorPolicyConverter childSolicitorPolicyConverter =
-        mock(ChildSolicitorPolicyConverter.class);
     private final NoticeOfChangeAnswersConverter noticeOfChangeAnswersConverter =
         mock(NoticeOfChangeAnswersConverter.class);
 
     private final ChildRepresentationService underTest = new ChildRepresentationService(
-        optionCountBuilder, flattener, childSolicitorPolicyConverter, noticeOfChangeAnswersConverter
+        optionCountBuilder, flattener
     );
 
     @Nested
@@ -165,7 +110,7 @@ class ChildRepresentationServiceTest {
         void testIfMainSolicitorNotPresent() {
             Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
-                    .representative(CHILD_REPRESENTATIVE)
+                    .solicitor(CHILD_REPRESENTATIVE)
                     .build())))
                 .childrenEventData(ChildrenEventData.builder()
                     .childrenHaveRepresentation(NO.getValue())
@@ -174,7 +119,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .representative(null)
+                    .solicitor(null)
                     .build()))
             ));
         }
@@ -183,7 +128,7 @@ class ChildRepresentationServiceTest {
         void testIfMainSolicitorIsPresentAndAllChildrenUseMainSolicitor() {
             Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
-                    .representative(CHILD_REPRESENTATIVE)
+                    .solicitor(CHILD_REPRESENTATIVE)
                     .build())))
                 .childrenEventData(ChildrenEventData.builder()
                     .childrenHaveRepresentation(YES.getValue())
@@ -194,7 +139,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .representative(MAIN_CHILD_REPRESENTATIVE)
+                    .solicitor(MAIN_CHILD_REPRESENTATIVE)
                     .build()))
             ));
         }
@@ -217,7 +162,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .representative(CHILD_REPRESENTATIVE)
+                    .solicitor(CHILD_REPRESENTATIVE)
                     .build()))
             ));
         }
@@ -239,7 +184,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .representative(MAIN_CHILD_REPRESENTATIVE)
+                    .solicitor(MAIN_CHILD_REPRESENTATIVE)
                     .build()))
             ));
         }
@@ -270,16 +215,67 @@ class ChildRepresentationServiceTest {
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(
                     element(CHILD_UUID_1, Child.builder()
-                        .representative(MAIN_CHILD_REPRESENTATIVE)
+                        .solicitor(MAIN_CHILD_REPRESENTATIVE)
                         .build()),
                     element(CHILD_UUID_2, Child.builder()
-                        .representative(CHILD_REPRESENTATIVE)
+                        .solicitor(CHILD_REPRESENTATIVE)
                         .build())
                 )
             ));
         }
 
     }
+
+    /* Move to The appropriate test
+
+       private static final List<Element<Applicant>> APPLICANTS = List.of(element(FIRST_APPLICANT));
+    private static final OrganisationPolicy ORGANISATION_POLICY_A = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_B = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_C = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_D = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_E = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_F = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_G = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_H = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_I = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_J = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_K = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_L = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_M = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_N = mock(OrganisationPolicy.class);
+    private static final OrganisationPolicy ORGANISATION_POLICY_O = mock(OrganisationPolicy.class);
+
+    private static final Element<Child> CHILD_A = element(mock(Child.class));
+    private static final Element<Child> CHILD_B = element(mock(Child.class));
+    private static final Element<Child> CHILD_C = element(mock(Child.class));
+    private static final Element<Child> CHILD_D = element(mock(Child.class));
+    private static final Element<Child> CHILD_E = element(mock(Child.class));
+    private static final Element<Child> CHILD_F = element(mock(Child.class));
+    private static final Element<Child> CHILD_G = element(mock(Child.class));
+    private static final Element<Child> CHILD_H = element(mock(Child.class));
+    private static final Element<Child> CHILD_I = element(mock(Child.class));
+    private static final Element<Child> CHILD_J = element(mock(Child.class));
+    private static final Element<Child> CHILD_K = element(mock(Child.class));
+    private static final Element<Child> CHILD_L = element(mock(Child.class));
+    private static final Element<Child> CHILD_M = element(mock(Child.class));
+    private static final Element<Child> CHILD_N = element(mock(Child.class));
+    private static final Element<Child> CHILD_O = element(mock(Child.class));
+
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_A = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_B = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_C = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_D = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_E = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_F = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_G = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_H = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_I = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_J = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_K = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_L = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_M = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_N = mock(NoticeOfChangeAnswers.class);
+    private static final NoticeOfChangeAnswers NOTICE_OF_CHANGE_ANSWERS_O = mock(NoticeOfChangeAnswers.class);
 
     @Nested
     class GenerateCaseAccessFields {
@@ -461,5 +457,6 @@ class ChildRepresentationServiceTest {
         }
 
     }
+    */
 
 }

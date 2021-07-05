@@ -27,7 +27,6 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
     private String finalOrderIssued;
     private String finalOrderIssuedType;
     private RespondentSolicitor solicitor;
-    private RespondentSolicitor representative;
 
     public boolean containsConfidentialDetails() {
         String hiddenValue = defaultIfNull(party.getDetailsHidden(), "");

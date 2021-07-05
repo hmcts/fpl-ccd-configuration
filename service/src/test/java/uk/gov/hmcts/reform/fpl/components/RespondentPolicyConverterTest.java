@@ -61,7 +61,7 @@ class RespondentPolicyConverterTest {
                 .build();
 
         OrganisationPolicy actualOrganisationPolicy
-            = respondentPolicyConverter.generateForSubmission(SOLICITORA, optionalRespondentElement);
+            = respondentPolicyConverter.generate(SOLICITORA, optionalRespondentElement);
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
@@ -88,7 +88,7 @@ class RespondentPolicyConverterTest {
             .build();
 
         OrganisationPolicy actualOrganisationPolicy
-            = respondentPolicyConverter.generateForSubmission(SOLICITORA, optionalRespondentElement);
+            = respondentPolicyConverter.generate(SOLICITORA, optionalRespondentElement);
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
@@ -101,7 +101,7 @@ class RespondentPolicyConverterTest {
             .build();
 
         OrganisationPolicy actualOrganisationPolicy
-            = respondentPolicyConverter.generateForSubmission(SOLICITORB, Optional.empty());
+            = respondentPolicyConverter.generate(SOLICITORB, Optional.empty());
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }

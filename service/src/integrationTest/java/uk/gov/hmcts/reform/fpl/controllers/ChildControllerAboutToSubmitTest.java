@@ -74,7 +74,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .applicants(APPLICANTS)
             .children1(wrapElements(Child.builder()
-                .representative(MAIN_REPRESENTATIVE)
+                .solicitor(MAIN_REPRESENTATIVE)
                 .party(ChildParty.builder().build())
                 .build()))
             .childrenEventData(eventData)
@@ -143,11 +143,11 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             Child.builder().party(ChildParty.builder()
                 .firstName(CHILD_NAME_1)
                 .lastName(CHILD_SURNAME_1)
-                .build()).representative(MAIN_REPRESENTATIVE).build(),
+                .build()).solicitor(MAIN_REPRESENTATIVE).build(),
             Child.builder().party(ChildParty.builder()
                 .firstName(CHILD_NAME_2)
                 .lastName(CHILD_SURNAME_2)
-                .build()).representative(MAIN_REPRESENTATIVE).build()
+                .build()).solicitor(MAIN_REPRESENTATIVE).build()
         );
 
         assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
@@ -204,8 +204,8 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder().build()).representative(MAIN_REPRESENTATIVE).build(),
-            Child.builder().party(ChildParty.builder().build()).representative(ANOTHER_REPRESENTATIVE).build()
+            Child.builder().party(ChildParty.builder().build()).solicitor(MAIN_REPRESENTATIVE).build(),
+            Child.builder().party(ChildParty.builder().build()).solicitor(ANOTHER_REPRESENTATIVE).build()
         );
     }
 

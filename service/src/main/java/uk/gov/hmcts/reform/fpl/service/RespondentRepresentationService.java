@@ -58,7 +58,7 @@ public class RespondentRepresentationService {
                 = (i < numOfRespondents) ? Optional.of(respondents.get(i)) : Optional.empty();
 
             OrganisationPolicy organisationPolicy
-                = respondentPolicyConverter.generateForSubmission(solicitorRole, respondentElement);
+                = respondentPolicyConverter.generate(solicitorRole, respondentElement);
 
             data.put(String.format(representing.getPolicyFieldTemplate(), i), organisationPolicy);
 
