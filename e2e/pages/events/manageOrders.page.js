@@ -18,6 +18,7 @@ const orders = {
   options: {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
+    c26: 'C26_SECURE_ACCOMMODATION_ORDER',
     c32: 'C32A_CARE_ORDER',
     c32b: 'C32B_DISCHARGE_OF_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
@@ -427,6 +428,24 @@ const selectGuardian = async (indexes = []) => {
   await I.runAccessibilityTest();
 };
 
+const selectSingleChild = async (childName) => {
+  I.see('Which child is the order for?');
+  I.selectOption('Which child is the order for?', childName);
+  await I.goToNextPage();
+};
+
+const selectReasonForSecureAccommodation = (reason) => {
+  I.click('#manageOrdersReasonForSecureAccommodation-'+reason);
+};
+
+const selectWhetherChildIsRepresented = (answer) => {
+  I.click('#manageOrdersIsChildRepresented_'+answer);
+};
+
+const selectJurisdiction = (jurisdiction) => {
+  I.click('#manageOrdersOrderJurisdiction-'+jurisdiction);
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4, whichOthers,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
@@ -436,5 +455,5 @@ module.exports = {
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
-  selectC43Orders, enterRecitalsAndPreambles,
+  selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
 };

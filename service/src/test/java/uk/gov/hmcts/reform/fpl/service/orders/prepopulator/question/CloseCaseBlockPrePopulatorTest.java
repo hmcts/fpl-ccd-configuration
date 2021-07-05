@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ class CloseCaseBlockPrePopulatorTest {
     private final OrderTempQuestions initialOrderQuestions = getOrderQuestions();
 
     @Mock
-    private ChildrenService childrenService;
+    private ChildrenSmartFinalOrderUpdater childrenSmartFinalOrderUpdater;
 
     @InjectMocks
     private CloseCaseBlockPrePopulator underTest;
@@ -50,7 +50,7 @@ class CloseCaseBlockPrePopulatorTest {
                 .build())
             .build();
 
-        when(childrenService.updateFinalOrderIssued(caseData))
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(wrapElements(childWithFinalOrder(), childWithFinalOrder()));
 
         final Map<String, Object> actual = underTest.prePopulate(caseData);
@@ -69,7 +69,7 @@ class CloseCaseBlockPrePopulatorTest {
                 .build())
             .build();
 
-        when(childrenService.updateFinalOrderIssued(caseData))
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(wrapElements(childWithFinalOrder(), childWithoutFinalOrder()));
 
         final Map<String, Object> actual = underTest.prePopulate(caseData);
@@ -87,7 +87,8 @@ class CloseCaseBlockPrePopulatorTest {
                 .build())
             .build();
 
-        when(childrenService.updateFinalOrderIssued(caseData)).thenReturn(wrapElements(childWithFinalOrder()));
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
+            .thenReturn(wrapElements(childWithFinalOrder()));
 
         final Map<String, Object> actual = underTest.prePopulate(caseData);
 
@@ -107,7 +108,7 @@ class CloseCaseBlockPrePopulatorTest {
                 .build())
             .build();
 
-        when(childrenService.updateFinalOrderIssued(caseData))
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(wrapElements(childWithFinalOrder(), childWithFinalOrder()));
 
         final Map<String, Object> actual = underTest.prePopulate(caseData);
@@ -127,7 +128,7 @@ class CloseCaseBlockPrePopulatorTest {
                 .build())
             .build();
 
-        when(childrenService.updateFinalOrderIssued(caseData))
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(wrapElements(childWithFinalOrder(), childWithFinalOrder()));
 
         final Map<String, Object> actual = underTest.prePopulate(caseData);
@@ -147,7 +148,7 @@ class CloseCaseBlockPrePopulatorTest {
                 .build())
             .build();
 
-        when(childrenService.updateFinalOrderIssued(caseData))
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(wrapElements(childWithFinalOrder(), childWithoutFinalOrder()));
 
         final Map<String, Object> actual = underTest.prePopulate(caseData);

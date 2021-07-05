@@ -53,7 +53,7 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
   });
 });
 
-Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create 32b discharge of care order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -411,7 +411,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   });
 });
 
-Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Upload Manual order (other order)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
   await I.goToNextPage();
@@ -420,7 +420,7 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.goToNextPage();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   await manageOrdersEventPage.uploadManualOrder(config.testPdfFile);
   manageOrdersEventPage.selectManualOrderNeedSealing(manageOrdersEventPage.section4.manualOrderNeedSealing.options.yes);
@@ -437,6 +437,45 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
+  });
+});
+
+Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+  await setupScenario(I, caseViewPage);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c26);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
+  await manageOrdersEventPage.selectHearing('Case management hearing, 3 November 2012');
+  await I.goToNextPage();
+
+  // Judge and approval date is already preFilled
+  await I.goToNextPage();
+
+  await manageOrdersEventPage.selectSingleChild('Timothy Jones');
+
+  I.see('Authority to keep a child in secure accommodation (C26)');
+  manageOrdersEventPage.selectOrderByConsent('Yes');
+  manageOrdersEventPage.selectReasonForSecureAccommodation('ABSCOND');
+  manageOrdersEventPage.selectWhetherChildIsRepresented('Yes');
+  manageOrdersEventPage.selectJurisdiction('ENGLAND');
+  manageOrdersEventPage.selectOrderTypeWithMonth(manageOrdersEventPage.section4.orderTypeWithMonth.options.numberOfMonths);
+  manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
+  manageOrdersEventPage.selectIsNotFinalOrder();
+  await manageOrdersEventPage.enterFurtherDirections('some text');
+  await I.goToNextPage();
+
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 8,
+    orderType: 'Authority to keep a child in secure accommodation (C26)',
+    approvalDate: new Date(2012, 10, 3),
+    allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
+    children: 'Timothy Jones',
+    documentName: 'c26_secure_accommodation_order.pdf',
   });
 });
 
@@ -467,5 +506,9 @@ function assertOrder(I, caseViewPage, order) {
   I.seeInTab([orderElement, 'Others notified'], order.others);
   if (order.title !== undefined) {
     I.seeInTab([orderElement, 'Order title'], orderTitle);
+  }
+
+  if (order.documentName !== undefined) {
+    I.seeInTab([orderElement, 'Order document'], order.documentName);
   }
 }

@@ -7,9 +7,13 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public enum ChildGender {
 
-    BOY("Boy"), GIRL("Girl"), OTHER("They identify in another way");
+    BOY("Boy", "he", "himself"),
+    GIRL("Girl", "she", "herself"),
+    OTHER("They identify in another way", "they", "themselves");
 
     private final String label;
+    private final String subjectPronoun;
+    private final String reflexivePronoun;
 
     public static ChildGender fromLabel(String label) {
         return Stream.of(ChildGender.values())
@@ -22,5 +26,13 @@ public enum ChildGender {
         return label;
     }
 
+
+    public String getReflexivePronoun() {
+        return reflexivePronoun;
+    }
+
+    public String getSubjectPronoun() {
+        return subjectPronoun;
+    }
 
 }

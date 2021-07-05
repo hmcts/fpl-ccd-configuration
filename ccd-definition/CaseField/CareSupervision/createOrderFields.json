@@ -179,6 +179,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "whichChildIsTheOrderFor",
+    "Label": "Which child is the order for?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "singleCareOrder_label",
     "Label": " ",
     "FieldType": "TextArea",

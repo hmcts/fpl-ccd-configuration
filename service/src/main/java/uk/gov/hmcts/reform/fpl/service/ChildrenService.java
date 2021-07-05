@@ -49,16 +49,6 @@ public class ChildrenService {
         return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
     }
 
-    public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
-        List<Element<Child>> childrenToIssueFinalOrder = getSelectedChildrenForIssuingFinalOrder(caseData);
-        return updateFinalOrderIssued(
-            caseData.getManageOrdersEventData().getManageOrdersType().getTitle(),
-            caseData.getAllChildren(),
-            caseData.getOrderAppliesToAllChildren(),
-            childrenToIssueFinalOrder
-        );
-    }
-
     public List<Element<Child>> updateFinalOrderIssued(String orderLabel,
                                                        List<Element<Child>> children,
                                                        String orderAppliesToAllChildren,

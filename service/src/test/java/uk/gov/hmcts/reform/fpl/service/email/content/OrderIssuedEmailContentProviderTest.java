@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTit
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -56,7 +58,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     LookupTestConfig.class, ChildrenService.class, AppointedGuardianFormatter.class,
     SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryExtraOthersNotifiedGenerator.class,
     OthersService.class, OrderIssuedEmailContentProviderTypeOfOrderCalculator.class,
-    SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class})
+    SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class,
+    ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class})
 @MockBeans({
     @MockBean(OrderCreationService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
     @MockBean(SealedOrderHistoryFinalMarker.class)
