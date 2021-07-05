@@ -9,13 +9,14 @@ import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 @Component
 public class NoticeOfChangeAnswersConverter {
-    public NoticeOfChangeAnswers generateForSubmission(Element<? extends ConfidentialParty> respondentElement, Applicant applicant) {
+    public NoticeOfChangeAnswers generateForSubmission(Element<? extends ConfidentialParty> respondentElement,
+                                                       Applicant applicant) {
         Party respondentParty = respondentElement.getValue().toParty();
 
         return NoticeOfChangeAnswers.builder()
-                .respondentFirstName(respondentParty.getFirstName())
-                .respondentLastName(respondentParty.getLastName())
-                .applicantName(applicant.getParty().getOrganisationName())
-                .build();
+            .respondentFirstName(respondentParty.getFirstName())
+            .respondentLastName(respondentParty.getLastName())
+            .applicantName(applicant.getParty().getOrganisationName())
+            .build();
     }
 }

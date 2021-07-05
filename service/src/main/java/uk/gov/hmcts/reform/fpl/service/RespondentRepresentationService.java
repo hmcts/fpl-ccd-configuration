@@ -46,8 +46,9 @@ public class RespondentRepresentationService {
         List<Element<Respondent>> respondents = caseData.getRespondents1();
         int numOfRespondents = respondents.size();
 
-        for (int i = 0; i < SolicitorRole.values().length; i++) {
-            SolicitorRole solicitorRole = SolicitorRole.values()[i];
+        List<SolicitorRole> solicitorRoles = SolicitorRole.values(SolicitorRole.Representing.RESPONDENT);
+        for (int i = 0; i < solicitorRoles.size(); i++) {
+            SolicitorRole solicitorRole = solicitorRoles.get(i);
 
             Optional<Element<Respondent>> respondentElement
                 = (i < numOfRespondents) ? Optional.of(respondents.get(i)) : Optional.empty();

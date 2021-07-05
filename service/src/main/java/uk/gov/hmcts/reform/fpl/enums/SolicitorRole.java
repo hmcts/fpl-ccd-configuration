@@ -4,28 +4,60 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
 
 @RequiredArgsConstructor
 @Getter
 public enum SolicitorRole {
-    SOLICITORA("[SOLICITORA]", 0),
-    SOLICITORB("[SOLICITORB]", 1),
-    SOLICITORC("[SOLICITORC]", 2),
-    SOLICITORD("[SOLICITORD]", 3),
-    SOLICITORE("[SOLICITORE]", 4),
-    SOLICITORF("[SOLICITORF]", 5),
-    SOLICITORG("[SOLICITORG]", 6),
-    SOLICITORH("[SOLICITORH]", 7),
-    SOLICITORI("[SOLICITORI]", 8),
-    SOLICITORJ("[SOLICITORJ]", 9);
+    SOLICITORA("[SOLICITORA]", 0, RESPONDENT),
+    SOLICITORB("[SOLICITORB]", 1, RESPONDENT),
+    SOLICITORC("[SOLICITORC]", 2, RESPONDENT),
+    SOLICITORD("[SOLICITORD]", 3, RESPONDENT),
+    SOLICITORE("[SOLICITORE]", 4, RESPONDENT),
+    SOLICITORF("[SOLICITORF]", 5, RESPONDENT),
+    SOLICITORG("[SOLICITORG]", 6, RESPONDENT),
+    SOLICITORH("[SOLICITORH]", 7, RESPONDENT),
+    SOLICITORI("[SOLICITORI]", 8, RESPONDENT),
+    SOLICITORJ("[SOLICITORJ]", 9, RESPONDENT),
+    CHILDSOLICITORA("[CHILDSOLICITORA]", 0, CHILD),
+    CHILDSOLICITORB("[CHILDSOLICITORB]", 1, CHILD),
+    CHILDSOLICITORC("[CHILDSOLICITORC]", 2, CHILD),
+    CHILDSOLICITORD("[CHILDSOLICITORD]", 3, CHILD),
+    CHILDSOLICITORE("[CHILDSOLICITORE]", 4, CHILD),
+    CHILDSOLICITORF("[CHILDSOLICITORF]", 5, CHILD),
+    CHILDSOLICITORG("[CHILDSOLICITORG]", 6, CHILD),
+    CHILDSOLICITORH("[CHILDSOLICITORH]", 7, CHILD),
+    CHILDSOLICITORI("[CHILDSOLICITORI]", 8, CHILD),
+    CHILDSOLICITORJ("[CHILDSOLICITORJ]", 9, CHILD),
+    CHILDSOLICITORK("[CHILDSOLICITORK]", 10, CHILD),
+    CHILDSOLICITORL("[CHILDSOLICITORL]", 11, CHILD),
+    CHILDSOLICITORM("[CHILDSOLICITORM]", 12, CHILD),
+    CHILDSOLICITORN("[CHILDSOLICITORN]", 13, CHILD),
+    CHILDSOLICITORO("[CHILDSOLICITORO]", 14, CHILD);
 
     private final String caseRoleLabel;
     private final int index;
+    private final Representing representing;
 
     public static SolicitorRole from(String label) {
         return Arrays.stream(SolicitorRole.values())
             .filter(role -> role.caseRoleLabel.equals(label))
             .findFirst()
             .orElseThrow();
+    }
+
+    public static List<SolicitorRole> values(Representing representing) {
+        return Arrays.stream(SolicitorRole.values())
+            .filter(role -> role.representing == representing)
+            .collect(Collectors.toList());
+    }
+
+    public enum Representing {
+        RESPONDENT,
+        CHILD
     }
 }

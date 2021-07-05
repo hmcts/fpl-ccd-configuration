@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.ChildSolicitorPolicyConverter;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
-import uk.gov.hmcts.reform.fpl.enums.ChildSolicitorRole;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -92,17 +92,19 @@ public class ChildRepresentationService {
 
         Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
 
-        List<Element<Child>> children = caseData.getChildren1();
+        List<Element<Child>> children = caseData.getAllChildren();
         int numOfChildren = children.size();
 
-        for (int i = 0; i < ChildSolicitorRole.values().length; i++) {
-            ChildSolicitorRole solicitorRole = ChildSolicitorRole.values()[i];
+        List<SolicitorRole> solicitorRoles = SolicitorRole.values(SolicitorRole.Representing.CHILD);
+
+        for (int i = 0; i < solicitorRoles.size(); i++) {
+            SolicitorRole solicitorRole = solicitorRoles.get(i);
 
             Optional<Element<Child>> childElement
                 = (i < numOfChildren) ? Optional.of(children.get(i)) : Optional.empty();
 
             OrganisationPolicy organisationPolicy
-                = childSolicitorPolicyConverter.generateForSubmission(solicitorRole, childElement);
+                = childSolicitorPolicyConverter.generate(solicitorRole, childElement);
 
             data.put(String.format("childPolicy%d", i), organisationPolicy);
 

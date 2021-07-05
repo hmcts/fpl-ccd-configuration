@@ -119,7 +119,7 @@ public class CaseSubmissionController extends CallbackController {
             data.put("submittedForm", buildFromDocument(document));
 
             data.putAll(respondentRepresentationService.generate(caseData));
-           // data.putAll(); DO we need to do it here? Yes to allow noc
+            // data.putAll(); DO we need to do it here? Yes to allow noc
         }
 
         removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");
