@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -49,7 +50,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     SealedOrderHistoryExtraTitleGenerator.class,
     LookupTestConfig.class, ChildrenService.class,
     OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class, IdentityService.class})
-@MockBeans({@MockBean(OrderCreationService.class),@MockBean(SealedOrderHistoryExtraTitleGenerator.class)})
+@MockBeans({
+    @MockBean(OrderCreationService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(SealedOrderHistoryFinalMarker.class)
+})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final CaseData CASE_DATA = CaseData.builder()

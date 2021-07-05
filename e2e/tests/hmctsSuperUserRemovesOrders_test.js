@@ -13,7 +13,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
 }
 
-Scenario('HMCTS super user removes a generated order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+Scenario('HMCTS super user removes a generated order through \'Create or upload an order - legacy\' from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
   await setupScenario(I);
   const orderToRemove = finalHearingCaseData.caseData.orderCollection[0];
   const labelToSelect = `${orderToRemove.value.title} - ${orderToRemove.value.dateOfIssue}`;
@@ -28,6 +28,23 @@ Scenario('HMCTS super user removes a generated order from a case', async ({I, ca
   I.seeInTab([generatedOrders, 'Date and time of upload'], '2:33pm, 26 May 2020');
   I.seeInTab([generatedOrders, 'Reason for removal'], 'Entered incorrect order');
 });
+
+Scenario('HMCTS super user removes a generated order through \'Manage orders\' from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  await setupScenario(I);
+  const orderToRemove = finalHearingCaseData.caseData.orderCollection[1];
+  const labelToSelect = `${orderToRemove.value.type} - ` +  moment.utc(orderToRemove.value.dateTimeIssued).format('D MMMM YYYY');
+
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, true);
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  const generatedOrders = 'Other removed orders 2';
+  I.seeInTab([generatedOrders, 'Type of order'], 'Discharge of parental responsibility (C45B)');
+  I.seeInTab([generatedOrders, 'Order document'], 'Discharge of parental responsibility (C45B).pdf');
+  I.seeInTab([generatedOrders, 'Approval date'], '14 Jun 2021');
+  I.seeInTab([generatedOrders, 'Children'], 'Timothy Jones');
+  I.seeInTab([generatedOrders, 'Reason for removal'], 'Entered incorrect order');
+});
+
 
 Scenario('HMCTS super user removes a sealed cmo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
   await setupScenario(I);
