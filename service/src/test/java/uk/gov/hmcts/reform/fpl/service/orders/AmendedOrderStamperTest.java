@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendedOrderStamper;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTime;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
@@ -30,17 +31,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ExtendWith({TestLogsExtension.class})
-class OrderAmendmentStamperTest {
+class AmendedOrderStamperTest {
     private static final LocalDate FIXED_DATE = LocalDate.of(420, 6, 9);
     private static final String BINARY_URL = "binary url";
     private static final String FILE_NAME = "order.pdf";
 
     @TestLogs
-    private final TestLogger logs = new TestLogger(OrderAmendmentStamper.class);
+    private final TestLogger logs = new TestLogger(AmendedOrderStamper.class);
 
     private DocumentDownloadService downloadService;
     private UploadDocumentService uploadService;
-    private OrderAmendmentStamper underTest;
+    private AmendedOrderStamper underTest;
 
 
     @BeforeEach
@@ -48,7 +49,7 @@ class OrderAmendmentStamperTest {
         downloadService = mock(DocumentDownloadService.class);
         uploadService = mock(UploadDocumentService.class);
         Time time = new FixedTime(LocalDateTime.of(FIXED_DATE, LocalTime.MIDNIGHT));
-        underTest = new OrderAmendmentStamper(uploadService, downloadService, time);
+        underTest = new AmendedOrderStamper(uploadService, downloadService, time);
     }
 
     @Test

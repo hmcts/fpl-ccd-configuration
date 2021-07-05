@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
+import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendedOrderListManager;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
@@ -26,6 +27,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
 
 @Api
 @RestController
@@ -39,11 +42,29 @@ public class ManageOrdersController extends CallbackController {
     private final SealedOrderHistoryService sealedOrderHistoryService;
     private final ManageOrderInitialTypePreSelector manageOrderInitialTypePreSelector;
     private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
+    private final AmendedOrderListManager amendedOrderListManager;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        amendedOrderListManager.buildList(caseData).ifPresent(list ->
+            caseDetails.getData().put("manageOrdersAmendmentList", list)
+        );
+
+        return respond(caseDetails);
+    }
 
     @PostMapping("/initial-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateInitialSection(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        caseDetails.getData().putAll(manageOrderInitialTypePreSelector.preSelect(caseDetails));
+        CaseData caseData = getCaseData(caseDetails);
+        if (AMEND == caseData.getManageOrdersEventData().getManageOrdersOperation()) {
+            caseDetails.getData().put("manageOrdersOrderToAmend", amendedOrderListManager.getSelectedOrder(caseData));
+        } else {
+            caseDetails.getData().putAll(manageOrderInitialTypePreSelector.preSelect(caseDetails));
+        }
         return respond(caseDetails);
     }
 

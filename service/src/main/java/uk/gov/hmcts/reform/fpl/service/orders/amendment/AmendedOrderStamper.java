@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.orders;
+package uk.gov.hmcts.reform.fpl.service.orders.amendment;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class OrderAmendmentStamper {
+public class AmendedOrderStamper {
 
     private static final String PDF = "pdf";
     private static final String MEDIA_TYPE = RenderFormat.PDF.getMediaType();
