@@ -14,6 +14,11 @@ public class OrderTempQuestions {
     String approvalDateTime;
     String cafcassJurisdictions;
     String whichChildren;
+    String selectSingleChild;
+    String reasonForSecureAccommodation;
+    String childLegalRepresentation;
+    String orderIsByConsent;
+    String orderJurisdiction;
     String dischargeOfCareDetails;
     String epoTypeAndPreventRemoval;
     String epoIncludePhrase;

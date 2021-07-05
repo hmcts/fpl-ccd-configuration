@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
@@ -39,6 +40,8 @@ class OrderDocumentGeneratorHolderTest {
     private C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     @Mock
     private C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
+    @Mock
+    private C26SecureAccommodationOrderDocumentParameterGenerator c26SecureAccommodationOrderDocumentParameterGenerator;
     @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     @Mock
@@ -63,15 +66,17 @@ class OrderDocumentGeneratorHolderTest {
     void setUp() {
         generators = List.of(
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
-            c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
-            c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
-            c35bISODocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator
+            c26SecureAccommodationOrderDocumentParameterGenerator, c32CareOrderDocumentParameterGenerator,
+            c32bDischargeOfCareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
+            c35aSupervisionOrderDocumentParameterGenerator, c35bISODocumentParameterGenerator,
+            c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
         typeToGenerator = Map.of(
             C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator,
             C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator,
+            C26_SECURE_ACCOMMODATION_ORDER, c26SecureAccommodationOrderDocumentParameterGenerator,
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator,
             C32B_DISCHARGE_OF_CARE_ORDER, c32bDischargeOfCareOrderDocumentParameterGenerator,
             C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator,

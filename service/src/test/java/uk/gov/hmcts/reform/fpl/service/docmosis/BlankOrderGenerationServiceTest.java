@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -27,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {BlankOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class, ChildrenService.class, CaseDetailsHelper.class})
+    FixedTimeConfiguration.class, ChildrenSmartSelector.class, ChildrenService.class, CaseDetailsHelper.class})
 class BlankOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     @Autowired

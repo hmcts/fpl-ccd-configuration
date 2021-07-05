@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
@@ -43,7 +43,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
     private static final String ORDER_MESSAGE = "Care order message";
 
     @Mock
-    private ChildrenService childrenService;
+    private ChildrenSmartSelector childrenSmartSelector;
 
     @Mock
     private LocalAuthorityNameLookupConfiguration laNameLookup;
@@ -65,7 +65,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getCareOrderRestrictions(CASE_DATA)).thenReturn(ORDER_MESSAGE);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
@@ -82,7 +82,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
 
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
         when(orderMessageGenerator.getCareOrderRestrictions(CASE_DATA)).thenReturn(ORDER_MESSAGE);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);

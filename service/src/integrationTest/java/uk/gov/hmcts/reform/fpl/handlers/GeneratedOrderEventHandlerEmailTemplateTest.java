@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -48,7 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     IssuedOrderAdminNotificationHandler.class, OrderIssuedEmailContentProvider.class, FixedTimeConfiguration.class,
     OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, EmailNotificationHelper.class,
     SealedOrderHistoryService.class, CaseUrlService.class, GeneratedOrderEventHandler.class,
-    RepresentativeNotificationService.class
+    RepresentativeNotificationService.class, ChildrenSmartSelector.class
 })
 @MockBeans({
     // All but the feature toggle service are only mocked because they are dependencies that aren't used

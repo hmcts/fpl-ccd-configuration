@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C21BlankOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPOAdditionalDocumentsCollector;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPODocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C26SecureAccommodationOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32CareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32bDischargeOfCareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C33InterimCareOrderDocumentParameterGenerator;
@@ -58,15 +60,15 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 @ContextConfiguration(classes = {
     OrderCreationService.class,
     OrderDocumentGenerator.class,
-    OrderDocumentGenerator.class,
     DocmosisDocumentGeneratorService.class,
     OrderDocumentGeneratorHolder.class,
     DocmosisCommonElementDecorator.class,
     CaseDataExtractionService.class,
     C21BlankOrderDocumentParameterGenerator.class,
     C32CareOrderDocumentParameterGenerator.class,
-    C32bDischargeOfCareOrderDocumentParameterGenerator.class,
     C23EPODocumentParameterGenerator.class,
+    C26SecureAccommodationOrderDocumentParameterGenerator.class,
+    C32bDischargeOfCareOrderDocumentParameterGenerator.class,
     C35aSupervisionOrderDocumentParameterGenerator.class,
     C47AAppointmentOfAChildrensGuardianParameterGenerator.class,
     C33InterimCareOrderDocumentParameterGenerator.class,
@@ -77,7 +79,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     OrderDetailsWithEndTypeGenerator.class,
     UploadedOrderDocumentGenerator.class,
     DocumentSealingService.class,
-    DocmosisDocumentGeneratorService.class,
+    ChildrenSmartSelector.class,
 })
 @MockBeans({@MockBean(DocumentDownloadService.class)})
 public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {

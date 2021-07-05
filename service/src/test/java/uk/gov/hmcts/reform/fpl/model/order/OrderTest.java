@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
@@ -33,6 +34,10 @@ class OrderTest {
     void fileExtension() {
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c21_blank_order.pdf");
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c21_blank_order.doc");
+        assertThat(C26_SECURE_ACCOMMODATION_ORDER.fileName(RenderFormat.PDF))
+            .isEqualTo("c26_secure_accommodation_order.pdf");
+        assertThat(C26_SECURE_ACCOMMODATION_ORDER.fileName(RenderFormat.WORD))
+            .isEqualTo("c26_secure_accommodation_order.doc");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32_care_order.pdf");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32_care_order.doc");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo(
@@ -61,6 +66,7 @@ class OrderTest {
     void firstSection() {
         assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C23_EMERGENCY_PROTECTION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C26_SECURE_ACCOMMODATION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C33_INTERIM_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
@@ -107,6 +113,11 @@ class OrderTest {
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
+            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, REVIEW, Optional.empty()),
             Arguments.of(C32_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),

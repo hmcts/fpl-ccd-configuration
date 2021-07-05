@@ -124,7 +124,11 @@ public class TestDataHelper {
     }
 
     public static Element<Child> testChild() {
-        return testChild(randomAlphanumeric(10), randomAlphanumeric(10), null, now());
+        return testChild(null);
+    }
+
+    public static Element<Child> testChild(ChildGender childGender) {
+        return testChild(randomAlphanumeric(10), randomAlphanumeric(10), childGender, now());
     }
 
     public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {

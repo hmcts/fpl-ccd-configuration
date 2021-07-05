@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
@@ -29,7 +29,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final OrderMessageGenerator orderMessageGenerator;
-    private final ChildrenService childrenService;
+    private final ChildrenSmartSelector childrenSmartSelector;
 
     @Override
     public Order accept() {
@@ -43,7 +43,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
         String localAuthorityCode = caseData.getCaseLocalAuthority();
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
 
         return C32CareOrderDocmosisParameters.builder()
             .orderTitle(Order.C32_CARE_ORDER.getTitle())

@@ -399,5 +399,44 @@
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIsByConsent",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Is the order by consent?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersReasonForSecureAccommodation",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Order given because the child is likely to",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ReasonsForSecureAccommodation",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIsChildRepresented",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Does the child have a Legal Aid representative?",
+    "FieldType": "YesOrNo",
+    "FieldTypeParameter": "ChildLegalAidRepresentative",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersOrderJurisdiction",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Jurisdiction",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "SecureAccommodationType",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

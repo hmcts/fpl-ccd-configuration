@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -34,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.EN
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CareOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class, ChildrenService.class, CaseDetailsHelper.class})
+    FixedTimeConfiguration.class, ChildrenSmartSelector.class, ChildrenService.class, CaseDetailsHelper.class})
 class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     private static final String EXAMPLE_EXCLUSION_CLAUSE = "Example Exclusion Clause";

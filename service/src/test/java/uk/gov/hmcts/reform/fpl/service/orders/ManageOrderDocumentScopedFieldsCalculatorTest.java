@@ -61,7 +61,12 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersHasExclusionRequirement",
             "manageOrdersCafcassRegion",
             "manageOrdersCafcassOfficesEngland",
-            "manageOrdersCafcassOfficesWales"
+            "manageOrdersCafcassOfficesWales",
+            "manageOrdersIsChildRepresented",
+            "manageOrdersReasonForSecureAccommodation",
+            "manageOrdersIsByConsent",
+            "manageOrdersOrderJurisdiction",
+            "whichChildIsTheOrderFor"
         );
     }
 }
