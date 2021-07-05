@@ -90,7 +90,7 @@ public class DocmosisOrderCaseDataGenerator {
             case TITLE:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
-                        .manageOrdersDirections("Some order directions")
+                        .manageOrdersTitle("Blank Order Title")
                         .build()
                 );
             case DISCHARGE_DETAILS:
@@ -103,7 +103,7 @@ public class DocmosisOrderCaseDataGenerator {
             case DETAILS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
-                        .manageOrdersTitle("Blank Order Title")
+                        .manageOrdersDirections("Some order directions")
                         .build()
                 );
             case APPROVAL_DATE_TIME:
@@ -149,7 +149,6 @@ public class DocmosisOrderCaseDataGenerator {
                     getManageOrdersEvent(builder)
                     .manageOrdersMultiSelectListForC43(Collections.singletonList(C43OrderType.CHILD_ARRANGEMENT_ORDER))
                     .manageOrdersRecitalsAndPreambles("Recitals and Preambles")
-                    .manageOrdersDirections("Some directions directions")
                     .build()
                 );
             case FURTHER_DIRECTIONS:
