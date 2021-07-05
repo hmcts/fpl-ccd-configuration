@@ -127,7 +127,7 @@ Scenario('HMCTS super user removes an application from the case', async ({I, cas
   await removeOrderEventPage.addRemoveApplicationReason('Mistakes were made');
   await I.completeEvent('Submit');
 
-  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.otherApplications)
+  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.otherApplications);
 });
 
 const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect, reasonFieldExists) => {
