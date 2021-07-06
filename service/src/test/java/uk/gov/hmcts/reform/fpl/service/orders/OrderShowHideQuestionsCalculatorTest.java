@@ -68,6 +68,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         careOrderQuestions.put("isFinalOrder", "NO");
         careOrderQuestions.put("closeCase", "YES");
+        careOrderQuestions.put("whichOthers", "YES");
         careOrderQuestions.put("dischargeOfCareDetails", "NO");
         careOrderQuestions.put("orderIsByConsent", "NO");
         careOrderQuestions.put("appointedGuardian", "NO");
@@ -92,6 +93,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         dischargeOfCareQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         dischargeOfCareQuestions.put("isFinalOrder", "YES");
+        dischargeOfCareQuestions.put("whichOthers", "YES");
         dischargeOfCareQuestions.put("closeCase", "YES");
         dischargeOfCareQuestions.put("orderIsByConsent", "NO");
         dischargeOfCareQuestions.put("appointedGuardian", "NO");
@@ -116,6 +118,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         epoQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         epoQuestions.put("closeCase", "NO");
+        epoQuestions.put("whichOthers", "YES");
         epoQuestions.put("isFinalOrder", "NO");
         epoQuestions.put("orderIsByConsent", "NO");
         epoQuestions.put("appointedGuardian", "NO");
@@ -140,6 +143,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         blankOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         blankOrderQuestions.put("closeCase", "NO");
+        blankOrderQuestions.put("whichOthers", "YES");
         blankOrderQuestions.put("isFinalOrder", "NO");
         blankOrderQuestions.put("orderIsByConsent", "NO");
         blankOrderQuestions.put("appointedGuardian", "NO");
@@ -164,6 +168,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         supervisionOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         supervisionOrderQuestions.put("closeCase", "YES");
+        supervisionOrderQuestions.put("whichOthers", "YES");
         supervisionOrderQuestions.put("isFinalOrder", "NO");
         supervisionOrderQuestions.put("orderIsByConsent", "NO");
         supervisionOrderQuestions.put("appointedGuardian", "NO");
@@ -190,6 +195,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("closeCase", "NO");
         specialGuardianshipOrderQuestions.put("isFinalOrder", "YES");
         specialGuardianshipOrderQuestions.put("orderIsByConsent", "YES");
+        specialGuardianshipOrderQuestions.put("whichOthers", "YES");
         specialGuardianshipOrderQuestions.put("appointedGuardian", "YES");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
@@ -215,6 +221,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("isFinalOrder", "NO");
         appointmentOfChildrensGuardianQuestions.put("orderIsByConsent", "NO");
         appointmentOfChildrensGuardianQuestions.put("appointedGuardian", "NO");
+        appointmentOfChildrensGuardianQuestions.put("whichOthers", "YES");
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),
@@ -263,7 +270,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("uploadOrderFile", "YES"),
                 Map.entry("closeCase", "YES"),
                 Map.entry("orderIsByConsent", "NO"),
-                Map.entry("appointedGuardian", "NO")
+                Map.entry("appointedGuardian", "NO"),
+                Map.entry("whichOthers", "YES")
                 )
             ));
     }
@@ -305,7 +313,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("uploadOrderFile", "YES"),
                 Map.entry("closeCase", "YES"),
                 Map.entry("orderIsByConsent", "NO"),
-                Map.entry("appointedGuardian", "NO")
+                Map.entry("appointedGuardian", "NO"),
+                Map.entry("whichOthers", "YES")
                 )
             ));
     }

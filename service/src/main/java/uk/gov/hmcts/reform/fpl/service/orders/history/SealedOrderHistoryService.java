@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -42,9 +44,11 @@ public class SealedOrderHistoryService {
     private final IdentityService identityService;
     private final ChildrenService childrenService;
     private final AppointedGuardianFormatter appointedGuardianFormatter;
+    private final OthersService othersService;
     private final OrderCreationService orderCreationService;
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
     private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker;
+    private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator;
     private final Time time;
 
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
@@ -53,6 +57,7 @@ public class SealedOrderHistoryService {
         List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData);
 
         DocumentReference sealedPdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
@@ -63,12 +68,14 @@ public class SealedOrderHistoryService {
             .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .markedFinal(sealedOrderHistoryFinalMarker.calculate(caseData).getValue())
             .children(selectedChildren)
+            .others(selectedOthers) // hidden field, to store the selected others for notify
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
             .specialGuardians(appointedGuardianFormatter.getGuardiansNamesForTab(caseData))
+            .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
             .document(sealedPdfOrder)
             .unsealedDocumentCopy(plainWordOrder);
 

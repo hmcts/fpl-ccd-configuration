@@ -88,5 +88,23 @@
     "Label": "## Check your order\nA preview of your order is below.\n\nCheck the details now. You can use the next page to correct any errors",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherDetailsSectionHeader",
+    "FieldType": "Label",
+    "Label": "## Confirm recipients",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "otherDetailsSectionSubHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "You must check to see if there are restrictions on who should be sent the order.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

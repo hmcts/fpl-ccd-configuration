@@ -172,6 +172,22 @@ const section4 = {
   },
 };
 
+const whichOthers = {
+  allOthers: {
+    group: '#sendOrderToAllOthers',
+    options: {
+      all: 'Yes',
+      select: 'No',
+    },
+    others: {
+      other1: 'John Doe',
+    },
+  },
+  othersSelector: {
+    selector: index => `#othersSelector_option${index}-SELECTED`,
+  },
+};
+
 const preview = {
   label: '#orderPreviewSectionHeader',
   documentName: 'Preview order.pdf',
@@ -257,6 +273,16 @@ const selectChildren = async (option, indexes = []) => {
   }
 
   await I.runAccessibilityTest();
+};
+
+const selectOthers = async (option, indexes = []) => {
+  I.click(`${whichOthers.allOthers.group}_${option}`);
+
+  if (option === whichOthers.allOthers.options.select) {
+    indexes.forEach((selectorIndex) => {
+      I.checkOption(whichOthers.othersSelector.selector(selectorIndex));
+    });
+  }
 };
 
 const enterTitle = (text) => {
@@ -402,13 +428,13 @@ const selectGuardian = async (indexes = []) => {
 };
 
 module.exports = {
-  operations, hearingDetails, orders, section2, section3, section4,
+  operations, hearingDetails, orders, section2, section3, section4, whichOthers,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, selectIsFinalOrder, selectIsNotFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
+  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
-  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
   selectC43Orders, enterRecitalsAndPreambles,
 };
