@@ -13,11 +13,11 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class OrderGenerationService {
+public class OrderProcessingService {
     private final AmendOrderService amendOrderService;
     private final SealedOrderHistoryService historyService;
 
-    public Map<String, Object> generate(CaseData caseData) {
+    public Map<String, Object> process(CaseData caseData) {
         return AMEND == caseData.getManageOrdersEventData().getManageOrdersOperation()
                ? amendOrderService.updateOrder(caseData)
                : historyService.generate(caseData);
