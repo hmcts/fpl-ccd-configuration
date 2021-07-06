@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLIC
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -118,6 +120,24 @@ public enum Order {
             FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS,
             REVIEW_DRAFT_ORDER)
+    ),
+    C43A_SPECIAL_GUARDIANSHIP_ORDER(
+        DIGITAL,
+        "Special guardianship order",
+        "Section 14A(1) Children Act 1989",
+        "Special guardianship order (C43A)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            LINKED_TO_HEARING,
+            LINK_APPLICATION,
+            APPROVER,
+            APPROVAL_DATE_TIME,
+            WHICH_CHILDREN,
+            ORDER_BY_CONSENT,
+            APPOINTED_GUARDIAN,
+            FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER
+        )
     ),
 
     /* MANUAL UPLOADS */
@@ -246,14 +266,6 @@ public enum Order {
         "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
         "",
         "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        IsFinalOrder.MAYBE,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    C43A_SPECIAL_GUARDIANSHIP_ORDER(
-        MANUAL_UPLOAD,
-        "Special guardianship order (C43A)",
-        "",
-        "Special guardianship order (C43A)",
         IsFinalOrder.MAYBE,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),

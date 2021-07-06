@@ -23,6 +23,7 @@ const orders = {
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
     c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
+    c43a: 'C43A_SPECIAL_GUARDIANSHIP_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
     other: 'OTHER_ORDER',
   },
@@ -69,7 +70,7 @@ const section3 = {
     },
   },
   childSelector: {
-    selector: index => `#childSelector_option${index}`,
+    selector: index => `#childSelector_option${index}-SELECTED`,
   },
 };
 
@@ -154,6 +155,10 @@ const section4 = {
       yes: '#manageOrdersIsFinalOrder_Yes',
       no: '#manageOrdersIsFinalOrder_No',
     },
+  },
+  orderByConsent: '#manageOrdersIsByConsent_Yes',
+  guardianSelector: {
+    selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
   },
 };
 
@@ -364,6 +369,18 @@ const confirmNoApplicationCanBeLinked = () => {
   I.dontSee('Is there an application for the order on the system?');
 };
 
+const selectOrderByConsent = () => {
+  I.click(section4.orderByConsent);
+};
+
+const selectGuardian = async (indexes = []) => {
+  indexes.forEach((selectorIndex) => {
+    I.checkOption(section4.guardianSelector.selector(selectorIndex));
+  });
+
+  await I.runAccessibilityTest();
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
@@ -371,6 +388,6 @@ module.exports = {
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
-  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked,
+  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
 };
