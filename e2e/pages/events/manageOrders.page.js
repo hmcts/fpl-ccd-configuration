@@ -261,7 +261,7 @@ const selectChildren = async (option, indexes = []) => {
 };
 
 const selectOthers = async (option, indexes = []) => {
-  I.click(`${whichOthers.allOthers.group}-${option}`);
+  I.click(`${whichOthers.allOthers.group}_${option}`);
 
   if (option === whichOthers.allOthers.options.select) {
     indexes.forEach((selectorIndex) => {
