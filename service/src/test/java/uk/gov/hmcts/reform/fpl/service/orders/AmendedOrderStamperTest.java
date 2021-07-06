@@ -36,7 +36,6 @@ class AmendedOrderStamperTest {
     private DocumentDownloadService downloadService;
     private AmendedOrderStamper underTest;
 
-
     @BeforeEach
     void setUp() {
         downloadService = mock(DocumentDownloadService.class);
