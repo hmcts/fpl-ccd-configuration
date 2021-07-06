@@ -63,5 +63,6 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersLinkedApplication;
 
     DynamicList manageOrdersAmendmentList;
+    DocumentReference manageOrdersOrderToAmend;
     DocumentReference manageOrdersAmendedOrder;
 }
