@@ -3,10 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.orders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendedOrderStamper;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTime;
@@ -22,13 +20,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ExtendWith({TestLogsExtension.class})
 class AmendedOrderStamperTest {
@@ -40,16 +34,14 @@ class AmendedOrderStamperTest {
     private final TestLogger logs = new TestLogger(AmendedOrderStamper.class);
 
     private DocumentDownloadService downloadService;
-    private UploadDocumentService uploadService;
     private AmendedOrderStamper underTest;
 
 
     @BeforeEach
     void setUp() {
         downloadService = mock(DocumentDownloadService.class);
-        uploadService = mock(UploadDocumentService.class);
         Time time = new FixedTime(LocalDateTime.of(FIXED_DATE, LocalTime.MIDNIGHT));
-        underTest = new AmendedOrderStamper(uploadService, downloadService, time);
+        underTest = new AmendedOrderStamper(downloadService, time);
     }
 
     @Test
@@ -58,20 +50,14 @@ class AmendedOrderStamperTest {
         final byte[] outputBinaries = readBytes("documents/document-amended.pdf");
 
         DocumentReference inputPDF = mock(DocumentReference.class);
-        Document outputPDF = testDocument();
-        DocumentReference expectedAmendedPDF = buildFromDocument(outputPDF);
 
         when(inputPDF.getFilename()).thenReturn(FILE_NAME);
         when(inputPDF.getBinaryUrl()).thenReturn(BINARY_URL);
         when(downloadService.downloadDocument(BINARY_URL)).thenReturn(inputBinaries);
-        when(uploadService.uploadDocument(any(), any(), any())).thenReturn(outputPDF);
 
-        DocumentReference amendedPDF = underTest.amendDocument(inputPDF);
+        byte[] amendedPDF = underTest.amendDocument(inputPDF);
 
-        verify(uploadService).uploadDocument(
-            outputBinaries, "amended_" + FILE_NAME, "application/pdf"
-        );
-        assertThat(amendedPDF).isEqualTo(expectedAmendedPDF);
+        assertThat(amendedPDF).isEqualTo(outputBinaries);
     }
 
     @Test

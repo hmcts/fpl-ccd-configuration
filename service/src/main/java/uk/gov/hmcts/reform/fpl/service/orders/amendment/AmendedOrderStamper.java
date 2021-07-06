@@ -12,10 +12,8 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.util.Matrix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
@@ -27,7 +25,6 @@ import java.io.UncheckedIOException;
 import java.time.LocalDate;
 
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
@@ -38,15 +35,13 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 public class AmendedOrderStamper {
 
     private static final String PDF = "pdf";
-    private static final String MEDIA_TYPE = RenderFormat.PDF.getMediaType();
     private static final float FONT_SIZE = 16f;
     private static final String FONT_LOCATION = "fonts/arial_bold.ttf";
 
-    private final UploadDocumentService uploadService;
     private final DocumentDownloadService downloadService;
     private final Time time;
 
-    public DocumentReference amendDocument(DocumentReference original) {
+    public byte[] amendDocument(DocumentReference original) {
         if (!hasExtension(original, PDF)) {
             throw new UnsupportedOperationException(
                 "Can only amend documents that are pdf, requested document was of type: "
@@ -57,13 +52,11 @@ public class AmendedOrderStamper {
         byte[] documentContents = downloadService.downloadDocument(original.getBinaryUrl());
 
         try {
-            documentContents = amendDocument(documentContents);
+            return amendDocument(documentContents);
         } catch (IOException e) {
             log.error("Could not add amendment text to {}", original, e);
             throw new UncheckedIOException(e);
         }
-
-        return buildFromDocument(uploadService.uploadDocument(documentContents, updateFileName(original), MEDIA_TYPE));
     }
 
     private byte[] amendDocument(byte[] binaries) throws IOException {
@@ -111,9 +104,5 @@ public class AmendedOrderStamper {
             document.save(outputBytes);
             return outputBytes.toByteArray();
         }
-    }
-
-    private String updateFileName(DocumentReference original) {
-        return "amended_" + original.getFilename();
     }
 }
