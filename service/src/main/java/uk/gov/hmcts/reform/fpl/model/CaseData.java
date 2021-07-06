@@ -95,6 +95,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -414,11 +415,13 @@ public class CaseData {
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
+    private final Selector othersSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;
 
     private final String orderAppliesToAllChildren;
+    private final String sendOrderToAllOthers;
 
     public String getOrderAppliesToAllChildren() {
         return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
@@ -448,11 +451,19 @@ public class CaseData {
 
     @JsonIgnore
     public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
+        return getRepresentativesElementsByServedPreference(preference).stream()
+            .map(Element::getValue)
+            .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public List<Element<Representative>> getRepresentativesElementsByServedPreference(
+        RepresentativeServingPreferences preference
+    ) {
         if (isNotEmpty(representatives)) {
             return representatives.stream()
                 .filter(Objects::nonNull)
-                .map(Element::getValue)
-                .filter(representative -> preference == representative.getServingPreferences())
+                .filter(representative -> preference == representative.getValue().getServingPreferences())
                 .collect(toList());
         }
         return emptyList();

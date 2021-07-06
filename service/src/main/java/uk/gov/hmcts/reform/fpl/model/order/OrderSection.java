@@ -9,7 +9,8 @@ public enum OrderSection {
     ISSUING_DETAILS,
     CHILDREN_DETAILS,
     ORDER_DETAILS,
-    REVIEW;
+    REVIEW,
+    OTHER_DETAILS;
 
     public static OrderSection from(final String section) {
         final String parsed = section.toUpperCase().replace('-', '_');

@@ -60,7 +60,9 @@ public enum OrderQuestionBlock {
         "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),
     CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
-        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning"));
+        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning")),
+    WHICH_OTHERS("whichOthers", "Which others", OrderSection.OTHER_DETAILS,
+        List.of("sendOrderToAllOthers", "others_label", "othersSelector"));
 
     private final String showHideField;
     private final String question;

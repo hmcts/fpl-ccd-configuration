@@ -63,6 +63,7 @@ public class DocmosisOrderCaseDataGenerator {
             case LINK_APPLICATION:
             case REVIEW_DRAFT_ORDER:
             case CLOSE_CASE:
+            case WHICH_OTHERS:
                 // Do Nothing - they won't modify the document
                 break;
             case APPROVER:

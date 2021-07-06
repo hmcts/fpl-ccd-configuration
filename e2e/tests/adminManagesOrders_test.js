@@ -42,6 +42,8 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({ I, 
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -50,6 +52,7 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({ I, 
     approvalDate: new Date(2012, 10, 3),
     allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -73,6 +76,8 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -104,6 +109,8 @@ Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) 
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -112,6 +119,7 @@ Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) 
     approvalDateTime: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -140,6 +148,8 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -148,6 +158,7 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
     approvalDateTime: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -169,6 +180,8 @@ Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPa
   await manageOrdersEventPage.enterDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -178,6 +191,7 @@ Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPa
     approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -202,6 +216,8 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
   await manageOrdersEventPage.enterDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -211,6 +227,7 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
     approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -233,6 +250,8 @@ Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrders
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -241,6 +260,7 @@ Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrders
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -263,6 +283,8 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
   await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -271,6 +293,7 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -291,6 +314,8 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
   await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -299,6 +324,7 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -321,6 +347,8 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
   await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -357,6 +385,8 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   manageOrdersEventPage.selectEnglandOffice('Hull');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -366,6 +396,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
     approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -386,6 +417,8 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -421,7 +454,7 @@ function assertOrder(I, caseViewPage, order) {
   }
 
   I.seeInTab([orderElement, 'Children'], order.children);
-
+  I.seeInTab([orderElement, 'Others notified'], order.others);
   if (order.title !== undefined) {
     I.seeInTab([orderElement, 'Order title'], orderTitle);
   }

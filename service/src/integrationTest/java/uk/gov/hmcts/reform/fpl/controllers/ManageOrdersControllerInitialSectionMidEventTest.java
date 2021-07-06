@@ -54,6 +54,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("furtherDirections", "NO"),
             Map.entry("orderDetails", "YES"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("whichOthers", "YES"),
             Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
