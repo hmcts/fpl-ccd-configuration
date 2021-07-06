@@ -1409,6 +1409,19 @@ class ManageDocumentServiceTest {
     }
 
     @Test
+    void shouldSortDocumentByUploadedDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Element<SupportingEvidenceBundle>> documents = new ArrayList<>(wrapElements(
+            SupportingEvidenceBundle.builder().name("doc1").dateTimeUploaded(now.minusSeconds(1)).build(),
+            SupportingEvidenceBundle.builder().name("doc2").dateTimeUploaded(now.minusDays(1)).build(),
+            SupportingEvidenceBundle.builder().name("doc3").dateTimeUploaded(null).build(),
+            SupportingEvidenceBundle.builder().name("doc4").dateTimeUploaded(now).build()));
+
+        assertThat(underTest.sortCorrespondenceDocumentsByUploadedDate(documents))
+            .isEqualTo(List.of(documents.get(3), documents.get(0), documents.get(1), documents.get(2)));
+    }
+
+    @Test
     void shouldGetSelectedRespondentIdFromDynamicList() {
         UUID selectedRespondentId = randomUUID();
         UUID additionalRespondentId = randomUUID();

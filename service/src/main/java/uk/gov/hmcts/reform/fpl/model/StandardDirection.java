@@ -23,8 +23,8 @@ public class StandardDirection {
     private final String description;
     private final DirectionType type;
     private final DirectionAssignee assignee;
-    private final LocalDateTime dateToBeCompletedBy;
-    private final Integer daysBeforeHearing;
+    private LocalDateTime dateToBeCompletedBy;
+    private Integer daysBeforeHearing;
     private final DirectionDueDateType dueDateType;
 
     @JsonIgnore

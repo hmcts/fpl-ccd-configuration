@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers.gatekeepingorder;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,6 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
@@ -19,6 +23,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -27,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARD
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ATTEND_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.bankHolidays;
 
@@ -34,12 +41,14 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.bankHolidays;
 @OverrideAutoConfiguration(enabled = true)
 class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extends AbstractCallbackTest {
 
-    AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest() {
-        super("add-gatekeeping-order");
-    }
+    private static final String CALLBACK_NAME = "direction-selection";
 
     @MockBean
     private BankHolidaysApi bankHolidaysApi;
+
+    AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest() {
+        super("add-gatekeeping-order");
+    }
 
     @Test
     void shouldPrepareSelectedStandardDirectionsWhenHearingNotPresent() {
@@ -48,13 +57,14 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
         List<DirectionType> selectedDirectionsForCafcass = List.of(APPOINT_CHILDREN_GUARDIAN);
 
         CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(SERVICE)
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .directionsForAllParties(selectedDirectionsForAll)
                 .directionsForCafcass(selectedDirectionsForCafcass)
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "direction-selection");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, CALLBACK_NAME);
 
         assertThat(getStandardDirection(callbackResponse, REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE)).isEqualTo(
             StandardDirection.builder()
@@ -105,6 +115,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
         List<DirectionType> selectedDirectionsForCafcass = List.of(APPOINT_CHILDREN_GUARDIAN);
 
         CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(SERVICE)
             .hearingDetails(wrapElements(firstHearing, secondHearing))
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .directionsForAllParties(selectedDirectionsForAll)
@@ -114,7 +125,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
 
         given(bankHolidaysApi.retrieveAll()).willReturn(bankHolidays(LocalDate.of(2030, 2, 9)));
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "direction-selection");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, CALLBACK_NAME);
 
         assertThat(getStandardDirection(response, REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE)).isEqualTo(
             StandardDirection.builder()
@@ -149,6 +160,52 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .daysBeforeHearing(2)
                 .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 7, 16, 0, 0))
                 .build());
+    }
+
+    @Test
+    void shouldSetHearingDateIfHearingPresent() {
+        CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(SERVICE)
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .type(HearingType.CASE_MANAGEMENT)
+                .startDate(LocalDateTime.of(2030, 2, 10, 10, 30, 0))
+                .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, CALLBACK_NAME);
+
+        assertThat(callbackResponse.getData()).contains(
+            entry("gatekeepingOrderHasHearing1", "YES"),
+            entry("gatekeepingOrderHasHearing2", "YES"),
+            entry("gatekeepingOrderHearingDate1", "10 February 2030, 10:30am"),
+            entry("gatekeepingOrderHearingDate2", "10 February 2030, 10:30am")
+        );
+    }
+
+    @Test
+    void shouldNotSetHearingDateIfHearingNotPresent() {
+        CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(SERVICE)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, CALLBACK_NAME);
+
+        assertThat(callbackResponse.getData()).doesNotContainKeys(
+            "gatekeepingOrderHasHearing1",
+            "gatekeepingOrderHasHearing2",
+            "gatekeepingOrderHearingDate1",
+            "gatekeepingOrderHearingDate2");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = GatekeepingOrderRoute.class, mode = EnumSource.Mode.EXCLUDE, names = "SERVICE")
+    void shouldThrowExceptionWhenInvokedForInvalidRoute(GatekeepingOrderRoute route) {
+        CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(route)
+            .build();
+
+        assertThatThrownBy(() -> postMidEvent(caseData, CALLBACK_NAME))
+            .hasMessageContaining(String.format("The %s callback does not support %s route", CALLBACK_NAME, route));
     }
 
     private StandardDirection getStandardDirection(AboutToStartOrSubmitCallbackResponse response, DirectionType type) {

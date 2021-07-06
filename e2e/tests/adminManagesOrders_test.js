@@ -302,6 +302,38 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
   });
 });
 
+Scenario('Create C43a special guardianship order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await setupScenario(I, caseViewPage);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c43a);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDateTime(today);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectOrderByConsent();
+  await manageOrdersEventPage.selectGuardian([0]);
+  await manageOrdersEventPage.enterFurtherDirections('Further special guardianship details.');
+  await manageOrdersEventPage.selectIsFinalOrder();
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 1,
+    orderType: 'Special guardianship order (C43A)',
+    orderTitle: orderTitle,
+    approvalDate: today,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+    specialGuardian: 'Joe Bloggs',
+  });
+});
+
 Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);

@@ -82,6 +82,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
     ManageOrderDocumentService.class,
     OrderMessageGenerator.class,
+    C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
     OrderDetailsWithEndTypeGenerator.class,
     UploadedOrderDocumentGenerator.class,
     DocumentSealingService.class,
