@@ -8,13 +8,18 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
+import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 
@@ -35,25 +40,28 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyCTSCC2() {
         underTest.notifyCTSC(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C2_APPLICATION
-        ));
+            CaseData.builder().id(123L).caseLocalAuthorityName(LOCAL_AUTHORITY_NAME).build(),
+            List.of(C2_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C2 – payment not taken")
             .hasBody(emailContent()
                 .line("The online payment has failed for:")
                 .line()
-                .callout("http://fake-url/cases/case-details/123#C2")
+                .callout("http://fake-url/cases/case-details/123#Other%20applications")
+                .callout(LOCAL_AUTHORITY_NAME)
+                .callout("C2")
                 .line()
-                .end("Contact the relevant court so they can take the payment.")
+                .end("Contact the applicant to arrange payment.")
             );
     }
 
     @Test
     void notifyCTSCC110A() {
         underTest.notifyCTSC(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C110A_APPLICATION
-        ));
+            CaseData.builder().id(123L).build(), List.of(C110A_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C110a – payment not taken")
@@ -68,31 +76,35 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void notifyLocalAuthorityC2() {
-        underTest.notifyLocalAuthority(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C2_APPLICATION
-        ));
+        underTest.notifyApplicant(new FailedPBAPaymentEvent(
+            CaseData.builder().id(123L).caseLocalAuthorityName(LOCAL_AUTHORITY_NAME).build(),
+            List.of(C2_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C2 – payment not taken")
             .hasBody(emailContent()
-                .line("Your C2 application has been sent to the court.")
+                .line("Your PBA payment for the following application has failed:")
                 .line()
-                .line("However, the online payment did not work. We’ll contact you soon to take payment.")
+                .callout("http://fake-url/cases/case-details/123#Other%20applications")
+                .callout("C2")
+                .line()
+                .line("We’ll contact you soon to take payment.")
                 .line()
                 .line("This will not affect the progress of your application.")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .end("Do not reply to this email. "
-                    + "If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
     @Test
     void notifyLocalAuthorityC110A() {
-        underTest.notifyLocalAuthority(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), C110A_APPLICATION
-        ));
+        underTest.notifyApplicant(new FailedPBAPaymentEvent(
+            CaseData.builder().id(123L).build(), List.of(C110A_APPLICATION),
+            OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())
             .hasSubject("C110a – payment not taken")
