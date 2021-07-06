@@ -59,9 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(FeatureToggleService.class), @MockBean(ChildrenService.class), @MockBean(IdentityService.class),
     @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class),
     @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(OrderCreationService.class),
-    @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
-    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(OthersService.class),
     @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class), @MockBean(OtherRecipientsInbox.class)
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
