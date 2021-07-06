@@ -56,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans({
     @MockBean(IdentityService.class), @MockBean(ChildrenService.class), @MockBean(OrderCreationService.class),
     @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(AppointedGuardianFormatter.class)
+    @MockBean(AppointedGuardianFormatter.class),
     @MockBean(SealedOrderHistoryFinalMarker.class)
 })
 public class NoticeOfPlacementOrderUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {

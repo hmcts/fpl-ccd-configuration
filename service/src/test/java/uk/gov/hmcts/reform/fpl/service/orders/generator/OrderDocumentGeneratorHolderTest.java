@@ -23,8 +23,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,7 +72,7 @@ class OrderDocumentGeneratorHolderTest {
             c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
             c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
             c35bISODocumentParameterGenerator,
-            c47AAppointmentOfAChildrensGuardianParameterGenerator
+            c47AAppointmentOfAChildrensGuardianParameterGenerator,
             c35bISODocumentParameterGenerator,
             c43ChildArrangementOrderDocumentParameterGenerator,
             c43aSGODocumentParameterGenerator
