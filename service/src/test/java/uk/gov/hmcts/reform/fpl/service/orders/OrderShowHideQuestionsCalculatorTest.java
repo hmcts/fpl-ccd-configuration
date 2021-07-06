@@ -183,6 +183,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("closeCase", "NO");
         specialGuardianshipOrderQuestions.put("isFinalOrder", "YES");
         specialGuardianshipOrderQuestions.put("orderIsByConsent", "YES");
+        specialGuardianshipOrderQuestions.put("whichOthers", "YES");
         specialGuardianshipOrderQuestions.put("appointedGuardian", "YES");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
