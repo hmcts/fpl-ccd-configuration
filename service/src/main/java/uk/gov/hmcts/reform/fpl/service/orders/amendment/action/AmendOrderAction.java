@@ -8,5 +8,5 @@ import java.util.Map;
 public interface AmendOrderAction {
     boolean accept(CaseData caseData);
 
-    Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedOrder);
+    Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument);
 }

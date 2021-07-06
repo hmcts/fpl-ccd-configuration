@@ -25,10 +25,10 @@ public class AmendStandardDirectionOrderAction implements AmendOrderAction {
     }
 
     @Override
-    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedOrder) {
+    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument) {
         StandardDirectionOrder sdo = caseData.getStandardDirectionOrder().toBuilder()
             .amendedDate(time.now().toLocalDate())
-            .orderDoc(amendedOrder)
+            .orderDoc(amendedDocument)
             .build();
 
         return Map.of(CASE_FIELD, sdo);
