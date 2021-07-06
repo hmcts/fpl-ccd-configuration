@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -84,6 +85,7 @@ class SealedOrderHistoryServiceTest {
     private final Child child2 = mock(Child.class);
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final AppointedGuardianFormatter appointedGuardianFormatter = mock(AppointedGuardianFormatter.class);
     private final IdentityService identityService = mock(IdentityService.class);
     private final OrderCreationService orderCreationService = mock(OrderCreationService.class);
     private final Time time = mock(Time.class);
@@ -97,6 +99,7 @@ class SealedOrderHistoryServiceTest {
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
         childrenService,
+        appointedGuardianFormatter,
         orderCreationService,
         extraTitleGenerator,
         sealedOrderHistoryFinalMarker,
@@ -276,6 +279,29 @@ class SealedOrderHistoryServiceTest {
                     "orderCollection", List.of(
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrderWithLinkedApplication().build()),
                         ORDER_APPROVED_LEGACY
+                    )
+                ));
+            }
+        }
+
+        @Test
+        void generateWithSpecialGuardians() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().build();
+                mockDocumentUpload(caseData);
+                mockGenerators(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Guardians names");
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .specialGuardians("Guardians names")
+                            .build())
                     )
                 ));
             }

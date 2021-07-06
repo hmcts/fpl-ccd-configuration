@@ -40,6 +40,7 @@ public class ManageOrdersEventData {
     String manageOrdersDirections;
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
+    String manageOrdersIsByConsent;
     String manageOrdersChildrenDescription;
     String manageOrdersCareOrderIssuedCourt;
     LocalDate manageOrdersCareOrderIssuedDate;

@@ -149,13 +149,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C43A_SPECIAL_GUARDIANSHIP_ORDER",
-    "ListElement": "Special guardianship order (C43A)",
-    "DisplayOrder": 210
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
     "ListElementCode": "C47C_TERMINATION_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN",
     "ListElement": "Termination of appointment of a children's guardian (C47C)",
     "DisplayOrder": 220

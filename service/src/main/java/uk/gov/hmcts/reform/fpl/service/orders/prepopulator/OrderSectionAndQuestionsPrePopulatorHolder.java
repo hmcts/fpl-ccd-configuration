@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGuardianBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
@@ -39,6 +40,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
     private final CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
+    private final AppointedGuardianBlockPrePopulator appointedGuardianBlockPrePopulator;
 
     // Sections
     private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
@@ -63,7 +65,8 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             whichChildrenBlockPrePopulator,
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
-            closeCaseBlockPrePopulator
+            closeCaseBlockPrePopulator,
+            appointedGuardianBlockPrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()

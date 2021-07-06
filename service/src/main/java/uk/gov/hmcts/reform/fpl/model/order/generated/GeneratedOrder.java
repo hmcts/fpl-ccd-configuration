@@ -51,6 +51,7 @@ public class GeneratedOrder implements RemovableOrder {
     @JsonSerialize(contentConverter = BasicChildConverter.class)
     private final List<Element<Child>> children;
     private final String childrenDescription;
+    private final String specialGuardians;
     private String removalReason;
     private String linkedApplicationId;
     private String markedFinal;
