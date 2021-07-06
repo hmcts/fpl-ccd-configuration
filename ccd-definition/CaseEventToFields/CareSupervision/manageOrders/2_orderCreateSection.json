@@ -24,6 +24,20 @@
     "PageID": "OrderSelection",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersOperation = \"CREATE\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "uploadOrderSectionHeader",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "OrderSelection",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersOperation = \"UPLOAD\"",
     "ShowSummaryChangeOption": "N"
   },
   {
