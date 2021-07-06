@@ -17,8 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 import static uk.gov.hmcts.reform.fpl.enums.CMOType.AGREED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOType.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 
 @Value
 @Builder(toBuilder = true)
@@ -75,5 +78,25 @@ public class UploadDraftOrdersData {
         return getFieldsListWithAnnotation(UploadDraftOrdersData.class, Temp.class).stream()
             .map(Field::getName)
             .toArray(String[]::new);
+    }
+
+    @JsonIgnore
+    public Object getHearingDynamicList() {
+        if (isEmpty(hearingOrderDraftKind)) {
+            return null;
+        }
+
+        if (hearingOrderDraftKind.contains(CMO)) {
+            if (cmoUploadType == AGREED) {
+                return pastHearingsForCMO;
+            }
+            if (cmoUploadType == DRAFT) {
+                return futureHearingsForCMO;
+            }
+        } else {
+            return hearingsForHearingOrderDrafts;
+        }
+
+        return null;
     }
 }
