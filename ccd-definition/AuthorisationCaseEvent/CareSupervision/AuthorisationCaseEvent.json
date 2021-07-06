@@ -1216,7 +1216,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       },
