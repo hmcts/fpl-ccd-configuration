@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @Jacksonized
 public class UrgentHearingOrder implements AmendableOrder {
     public static final UUID COLLECTION_ID = UUID.fromString("5d05d011-5d01-5d01-5d01-5d05d05d05d0");
@@ -19,6 +19,7 @@ public class UrgentHearingOrder implements AmendableOrder {
     DocumentReference unsealedOrder;
     String allocation;
     LocalDate dateAdded;
+    LocalDate amendedDate;
 
     @Override
     public String asLabel() {
