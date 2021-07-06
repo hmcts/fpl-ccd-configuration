@@ -159,6 +159,7 @@ class DraftOrderServiceTest {
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .cmoUploadType(CMOType.AGREED)
                 .build();
 
             CaseData caseData = CaseData.builder()
@@ -189,6 +190,7 @@ class DraftOrderServiceTest {
 
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .cmoUploadType(CMOType.AGREED)
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .cmoSupportingDocs(bundle)
                 .build();
@@ -329,6 +331,7 @@ class DraftOrderServiceTest {
 
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .cmoUploadType(CMOType.AGREED)
                 .pastHearingsForCMO(pastHearingId.toString())
                 .futureHearingsForCMO(futureHearingId.toString())
                 .hearingsForHearingOrderDrafts(DEFAULT_CODE.toString())
@@ -362,6 +365,7 @@ class DraftOrderServiceTest {
 
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .cmoUploadType(CMOType.AGREED)
                 .replacementCMO(testDocumentReference())
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .build();
@@ -376,6 +380,7 @@ class DraftOrderServiceTest {
 
             UploadDraftOrdersData expectedData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .cmoUploadType(CMOType.AGREED)
                 .previousCMO(cmo.getValue().getOrder())
                 .cmoToSend(eventData.getReplacementCMO())
                 .cmoJudgeInfo("His Honour Judge Dredd")
@@ -400,6 +405,7 @@ class DraftOrderServiceTest {
 
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .cmoUploadType(CMOType.AGREED)
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .build();
 
@@ -528,7 +534,8 @@ class DraftOrderServiceTest {
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
                 .uploadedCaseManagementOrder(testDocumentReference())
-                .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), List.of(hearings.get(0), hearings.get(1))))
+                .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), List.of(hearings.get(0))))
+                .pastHearingsForCMO(dynamicList(hearings.get(1).getId(), List.of(hearings.get(1))))
                 .cmoSupportingDocs(bundle)
                 .cmoUploadType(CMOType.DRAFT)
                 .build();
