@@ -29,6 +29,8 @@ public class OrderTempQuestions {
     String closeCase;
     String uploadOrderFile;
     String previewOrder;
+    String appointedGuardian;
+    String orderIsByConsent;
     String whichOthers;
 
 }

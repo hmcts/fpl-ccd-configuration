@@ -53,6 +53,7 @@ public class GeneratedOrder implements RemovableOrder {
     private final List<Element<Child>> children;
     private final List<Element<Other>> others;
     private final String childrenDescription;
+    private final String specialGuardians;
     private final String othersNotified;
     private String removalReason;
     private String linkedApplicationId;

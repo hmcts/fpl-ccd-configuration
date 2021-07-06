@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGuardianBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
@@ -31,6 +32,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
@@ -63,6 +65,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private ApprovalDateBlockPrePopulator approvalDateBlockPrePopulator;
     @Mock
     private ApprovalDateTimeBlockPrePopulator approvalDateTimeBlockPrePopulator;
+    @Mock
+    private AppointedGuardianBlockPrePopulator appointedGuardianBlockPrePopulator;
     @Mock
     private WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
 
@@ -100,6 +104,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator,
+            appointedGuardianBlockPrePopulator,
             whichOthersBlockPrePopulator
 
         );
@@ -110,6 +115,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator,
             APPROVER, approverBlockPrePopulator,
             WHICH_CHILDREN, whichChildrenBlockPrePopulator,
+            APPOINTED_GUARDIAN, appointedGuardianBlockPrePopulator,
             EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator,
             CLOSE_CASE, closeCaseBlockPrePopulator,
             WHICH_OTHERS, whichOthersBlockPrePopulator

@@ -48,7 +48,7 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderAppliesToAllChildren=\"No\"",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -61,6 +61,6 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderAppliesToAllChildren=\"No\"",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "N"
   }
 ]

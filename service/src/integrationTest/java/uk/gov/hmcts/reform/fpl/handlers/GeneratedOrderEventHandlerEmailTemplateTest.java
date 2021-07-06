@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -59,7 +60,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(FeatureToggleService.class), @MockBean(ChildrenService.class), @MockBean(IdentityService.class),
     @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class),
     @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(OthersService.class),
+    @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(AppointedGuardianFormatter.class),
+    @MockBean(OthersService.class),
     @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class), @MockBean(OtherRecipientsInbox.class)
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
