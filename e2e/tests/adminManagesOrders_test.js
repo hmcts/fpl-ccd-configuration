@@ -384,6 +384,8 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I,caseViewPage,{
@@ -392,6 +394,7 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    others: 'John Doe',
   });
 });
 
@@ -415,6 +418,8 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
   await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -425,6 +430,7 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
     specialGuardian: 'Joe Bloggs',
+    others: 'John Doe',
   });
 });
 
