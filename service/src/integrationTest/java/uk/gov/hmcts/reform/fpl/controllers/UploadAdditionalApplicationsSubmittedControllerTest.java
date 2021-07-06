@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
-import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -42,15 +41,20 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -58,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallbackTest {
 
+    private static final String RESPONDENT_FIRSTNAME = "John";
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final Long CASE_ID = 12345L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -132,7 +137,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             wrapElements(
                 AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
-                        .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
+                        .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
                         .build())
                     .pbaPayment(PBAPayment.builder().build()).build()));
 
@@ -217,6 +222,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                         .type(WITH_NOTICE)
                         .supplementsBundle(new ArrayList<>())
                         .usePbaPayment(NO.getValue())
+                        .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
                         .build())))
             .build();
 
@@ -275,7 +281,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildAdditionalApplicationsBundle(YES))
+            .putAll(buildAdditionalApplicationsBundleWithC2AndOtherOrder(YES))
             .put("displayAmountToPay", YES.getValue())
             .build();
 
@@ -285,15 +291,18 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             LOCAL_AUTHORITY_1_INBOX,
-            Map.of("applicationType", "C2"),
+            Map.of("applicationType", "C2, C1 - Appointment of a guardian",
+                "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications"),
             NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
-            expectedCtscNotificationParameters(),
+            Map.of("applicationType", "C2, C1 - Appointment of a guardian",
+                "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
+                "applicant", LOCAL_AUTHORITY_1_NAME),
             NOTIFICATION_REFERENCE);
     }
 
@@ -308,13 +317,13 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             LOCAL_AUTHORITY_1_INBOX,
-            Map.of("applicationType", "C2"),
+            expectedApplicantNotificationParameters(),
             NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
             NOTIFICATION_REFERENCE);
@@ -353,15 +362,14 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> buildCommonNotificationParameters() {
         return Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+            "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
             "familyManCaseNumber", String.valueOf(CASE_ID),
-            "respondents1", List.of(
-                Map.of(
-                    "value", Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .lastName(RESPONDENT_SURNAME)
-                            .build())
-                        .build()))
-        );
+            "respondents1", List.of(element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName(RESPONDENT_FIRSTNAME)
+                    .lastName(RESPONDENT_SURNAME)
+                    .build())
+                .build())));
     }
 
     private CaseDetails createCase(Map<String, Object> data) {
@@ -380,13 +388,36 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .c2DocumentBundle(C2DocumentBundle.builder()
                         .type(WITH_NOTICE)
                         .supplementsBundle(new ArrayList<>())
-                        .usePbaPayment(usePbaPayment.getValue()).build())
+                        .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
+                    .build()));
+    }
+
+    private Map<String, Object> buildAdditionalApplicationsBundleWithC2AndOtherOrder(YesNo usePbaPayment) {
+        return ImmutableMap.of(
+            "additionalApplicationType", List.of(C2_ORDER, OTHER_ORDER),
+            "additionalApplicationsBundle", wrapElements(
+                AdditionalApplicationsBundle.builder()
+                    .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .type(WITH_NOTICE)
+                        .supplementsBundle(new ArrayList<>())
+                        .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                        .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
+                        .supplementsBundle(new ArrayList<>())
+                        .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
                     .build()));
     }
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/cases/case-details/12345#C2");
+            "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
+            "applicant", LOCAL_AUTHORITY_1_NAME);
+    }
+
+    private Map<String, Object> expectedApplicantNotificationParameters() {
+        return Map.of("applicationType", "C2",
+            "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications");
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
