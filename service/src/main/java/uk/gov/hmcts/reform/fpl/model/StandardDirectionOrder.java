@@ -44,6 +44,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
+    private final LocalDate amendedDate;
 
     @JsonIgnore
     public boolean isSealed() {
