@@ -291,7 +291,7 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Guardians names");
 
