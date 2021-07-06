@@ -45,6 +45,7 @@ public class SealedOrderHistoryService {
     private final OthersService othersService;
     private final OrderCreationService orderCreationService;
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
+    private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker;
     private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator;
     private final Time time;
 
@@ -63,6 +64,7 @@ public class SealedOrderHistoryService {
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
             .title(extraTitleGenerator.generate(caseData))
             .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
+            .markedFinal(sealedOrderHistoryFinalMarker.calculate(caseData).getValue())
             .children(selectedChildren)
             .others(selectedOthers) // hidden field, to store the selected others for notify
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
