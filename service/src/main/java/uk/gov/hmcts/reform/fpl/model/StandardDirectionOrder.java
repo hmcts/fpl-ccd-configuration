@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -76,11 +77,10 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
     @Override
     public String asLabel() {
-        Optional<String> formattedDate = Optional.ofNullable(dateOfIssue)
-            .or(() -> Optional.ofNullable(dateOfUpload).map(date -> formatLocalDateToString(date, DATE)))
-            .map(date -> " - " + date);
+        String formattedDate = Optional.ofNullable(dateOfIssue)
+            .orElse(formatLocalDateToString(defaultIfNull(dateOfUpload, LocalDate.now()), DATE));
 
-        return "Gatekeeping order" + formattedDate.orElse("");
+        return "Gatekeeping order - " + formattedDate;
     }
 
     @Override

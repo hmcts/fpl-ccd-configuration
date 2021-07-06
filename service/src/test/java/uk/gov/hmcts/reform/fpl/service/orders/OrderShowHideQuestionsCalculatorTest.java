@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,7 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
@@ -35,9 +38,53 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
 
+    @Test
+    void calculateAmendment() {
+        assertThat(underTest.calculate(AMENED_ORDER)).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            entry("orderToAmend", "YES"),
+            entry("uploadAmendedOrder", "YES"),
+            entry("uploadOrderFile", "NO"),
+            entry("approvalDateTime", "NO"),
+            entry("approver", "NO"),
+            entry("previewOrder", "NO"),
+            entry("approvalDate", "NO"),
+            entry("whichChildren", "NO"),
+            entry("epoIncludePhrase", "NO"),
+            entry("manageOrdersExpiryDateWithMonth", "NO"),
+            entry("hearingDetails", "NO"),
+            entry("dischargeOfCareDetails", "NO"),
+            entry("manageOrdersExclusionRequirementDetails", "NO"),
+            entry("furtherDirections", "NO"),
+            entry("orderDetails", "NO"),
+            entry("epoChildrenDescription", "NO"),
+            entry("epoExpiryDate", "NO"),
+            entry("needSealing", "NO"),
+            entry("linkApplication", "NO"),
+            entry("isFinalOrder", "NO"),
+            entry("cafcassJurisdictions", "NO"),
+            entry("epoTypeAndPreventRemoval", "NO"),
+            entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            entry("closeCase", "NO")
+        ));
+    }
+
     @ParameterizedTest(name = "Show hide map for {0}")
     @MethodSource("orderWithExpectedMap")
     void calculate(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("finalManualUploadOrders")
+    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("nonFinalManualUploadOrders")
+    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
         assertThat(underTest.calculate(order))
             .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
@@ -47,7 +94,10 @@ class OrderShowHideQuestionsCalculatorTest {
             "hearingDetails", "YES",
             "linkApplication", "YES",
             "approver", "YES",
-            "previewOrder", "YES");
+            "previewOrder", "YES",
+            "orderToAmend", "NO",
+            "uploadAmendedOrder", "NO"
+        );
 
         Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
         careOrderQuestions.put("furtherDirections", "YES");
@@ -180,47 +230,34 @@ class OrderShowHideQuestionsCalculatorTest {
         );
     }
 
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("finalManualUploadOrders")
-    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
-    }
-
     private static Stream<Arguments> finalManualUploadOrders() {
         return ORDERS_WITH_IS_FINAL_ORDER_QUESTION.stream()
             .map(order -> Arguments.of(order, Map.ofEntries(
-                Map.entry("approver", "NO"),
-                Map.entry("previewOrder", "YES"),
-                Map.entry("furtherDirections", "NO"),
-                Map.entry("orderDetails", "NO"),
-                Map.entry("whichChildren", "YES"),
-                Map.entry("hearingDetails", "NO"),
-                Map.entry("linkApplication", "NO"),
-                Map.entry("approvalDate", "YES"),
-                Map.entry("approvalDateTime", "NO"),
-                Map.entry("dischargeOfCareDetails", "NO"),
-                Map.entry("epoIncludePhrase", "NO"),
-                Map.entry("epoExpiryDate", "NO"),
-                Map.entry("isFinalOrder", "YES"),
-                Map.entry("epoTypeAndPreventRemoval", "NO"),
-                Map.entry("epoChildrenDescription", "NO"),
-                Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
-                Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-                Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
-                Map.entry("cafcassJurisdictions", "NO"),
-                Map.entry("needSealing", "YES"),
-                Map.entry("uploadOrderFile", "YES"),
-                Map.entry("closeCase", "YES")
-                )
-            ));
-    }
-
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("nonFinalManualUploadOrders")
-    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+                entry("approver", "NO"),
+                entry("previewOrder", "YES"),
+                entry("furtherDirections", "NO"),
+                entry("orderDetails", "NO"),
+                entry("whichChildren", "YES"),
+                entry("hearingDetails", "NO"),
+                entry("linkApplication", "NO"),
+                entry("approvalDate", "YES"),
+                entry("approvalDateTime", "NO"),
+                entry("dischargeOfCareDetails", "NO"),
+                entry("epoIncludePhrase", "NO"),
+                entry("epoExpiryDate", "NO"),
+                entry("isFinalOrder", "YES"),
+                entry("epoTypeAndPreventRemoval", "NO"),
+                entry("epoChildrenDescription", "NO"),
+                entry("manageOrdersExclusionRequirementDetails", "NO"),
+                entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+                entry("manageOrdersExpiryDateWithMonth", "NO"),
+                entry("cafcassJurisdictions", "NO"),
+                entry("needSealing", "YES"),
+                entry("uploadOrderFile", "YES"),
+                entry("closeCase", "YES"),
+                entry("orderToAmend", "NO"),
+                entry("uploadAmendedOrder", "NO")
+            )));
     }
 
     private static Stream<Arguments> nonFinalManualUploadOrders() {
@@ -228,29 +265,30 @@ class OrderShowHideQuestionsCalculatorTest {
             .filter(order -> OrderSourceType.MANUAL_UPLOAD == order.getSourceType())
             .filter(order -> !ORDERS_WITH_IS_FINAL_ORDER_QUESTION.contains(order))
             .map(order -> Arguments.of(order, Map.ofEntries(
-                Map.entry("approver", "NO"),
-                Map.entry("previewOrder", "YES"),
-                Map.entry("furtherDirections", "NO"),
-                Map.entry("orderDetails", "NO"),
-                Map.entry("whichChildren", "YES"),
-                Map.entry("hearingDetails", "NO"),
-                Map.entry("linkApplication", "NO"),
-                Map.entry("approvalDate", "YES"),
-                Map.entry("approvalDateTime", "NO"),
-                Map.entry("dischargeOfCareDetails", "NO"),
-                Map.entry("epoIncludePhrase", "NO"),
-                Map.entry("epoExpiryDate", "NO"),
-                Map.entry("isFinalOrder", "NO"),
-                Map.entry("epoTypeAndPreventRemoval", "NO"),
-                Map.entry("epoChildrenDescription", "NO"),
-                Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
-                Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-                Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
-                Map.entry("cafcassJurisdictions", "NO"),
-                Map.entry("needSealing", "YES"),
-                Map.entry("uploadOrderFile", "YES"),
-                Map.entry("closeCase", "YES")
-                )
-            ));
+                entry("approver", "NO"),
+                entry("previewOrder", "YES"),
+                entry("furtherDirections", "NO"),
+                entry("orderDetails", "NO"),
+                entry("whichChildren", "YES"),
+                entry("hearingDetails", "NO"),
+                entry("linkApplication", "NO"),
+                entry("approvalDate", "YES"),
+                entry("approvalDateTime", "NO"),
+                entry("dischargeOfCareDetails", "NO"),
+                entry("epoIncludePhrase", "NO"),
+                entry("epoExpiryDate", "NO"),
+                entry("isFinalOrder", "NO"),
+                entry("epoTypeAndPreventRemoval", "NO"),
+                entry("epoChildrenDescription", "NO"),
+                entry("manageOrdersExclusionRequirementDetails", "NO"),
+                entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+                entry("manageOrdersExpiryDateWithMonth", "NO"),
+                entry("cafcassJurisdictions", "NO"),
+                entry("needSealing", "YES"),
+                entry("uploadOrderFile", "YES"),
+                entry("closeCase", "YES"),
+                entry("orderToAmend", "NO"),
+                entry("uploadAmendedOrder", "NO")
+            )));
     }
 }
