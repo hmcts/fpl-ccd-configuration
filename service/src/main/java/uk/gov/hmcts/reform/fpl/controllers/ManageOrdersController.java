@@ -18,9 +18,9 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.OrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderProcessingService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
-import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendableOrderListBuilder;
+import uk.gov.hmcts.reform.fpl.service.orders.amendment.list.AmendableOrderListBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
@@ -39,7 +39,7 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
-    private final OrderGenerationService orderGenerationService;
+    private final OrderProcessingService orderProcessing;
     private final ManageOrderOperationPostPopulator operationPostPopulator;
     private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
     private final AmendableOrderListBuilder amendableOrderListBuilder;
@@ -113,7 +113,7 @@ public class ManageOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = fixAndRetrieveCaseData(caseDetails);
 
-        data.putAll(orderGenerationService.generate(caseData));
+        data.putAll(orderProcessing.process(caseData));
 
         fieldsCalculator.calculate().forEach(data::remove);
 
