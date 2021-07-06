@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendableOrderListBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
@@ -38,6 +39,7 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
+    private final OrderGenerationService orderGenerationService;
     private final ManageOrderOperationPostPopulator operationPostPopulator;
     private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
     private final AmendableOrderListBuilder amendableOrderListBuilder;
@@ -111,7 +113,7 @@ public class ManageOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = fixAndRetrieveCaseData(caseDetails);
 
-        data.putAll(sealedOrderHistoryService.generate(caseData));
+        data.putAll(orderGenerationService.generate(caseData));
 
         fieldsCalculator.calculate().forEach(data::remove);
 
