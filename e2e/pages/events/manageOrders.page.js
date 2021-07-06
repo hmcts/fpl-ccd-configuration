@@ -170,10 +170,6 @@ const section4 = {
   guardianSelector: {
     selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
   },
-  orderByConsent: '#manageOrdersIsByConsent-Yes',
-  guardianSelector: {
-    selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
-  },
 };
 
 const preview = {
