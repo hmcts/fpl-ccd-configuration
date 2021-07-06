@@ -43,8 +43,8 @@ public class C35bISODocumentParameterGenerator implements DocmosisParameterGener
                     .messageWithSpecifiedTime(
                         "The Court orders ${localAuthorityName} supervises the ${childOrChildren} until ${endDate}.")
                     .messageWithNumberOfMonths(
-                        "The Court orders ${localAuthorityName} supervises the ${childOrChildren} for ${numOfMonths} "
-                            + "months from the date of "
+                        "The Court orders ${localAuthorityName} supervises the ${childOrChildren} for "
+                            + "${decoratedNumberOfMonths} from the date of "
                             + "this order until ${endDate}.")
                     .messageWithEndOfProceedings(
                         "The Court orders ${localAuthorityName} supervises the ${childOrChildren} until "

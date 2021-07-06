@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
@@ -57,8 +58,9 @@ public class OrderDetailsWithEndTypeGenerator {
                     orderDetailsWithEndTypeMessages.getMessageWithEndOfProceedings()
                 );
             case NUMBER_OF_MONTHS:
-                LocalDate approvalDate = eventData.getManageOrdersApprovalDate();
                 Integer numOfMonths = eventData.getManageOrdersSetMonthsEndDate();
+                LocalDate approvalDate = Optional.ofNullable(eventData.getManageOrdersApprovalDate())
+                    .orElseGet(() -> eventData.getManageOrdersApprovalDateTime().toLocalDate());
                 orderExpiration = LocalDateTime.of(approvalDate.plusMonths(numOfMonths), LocalTime.MIDNIGHT);
                 final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
                 return getMonthMessage(
@@ -81,6 +83,7 @@ public class OrderDetailsWithEndTypeGenerator {
         context.put("endDate",
             formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix)));
         context.put("numOfMonths", numOfMonths.toString());
+        context.put("decoratedNumberOfMonths", numOfMonths + (numOfMonths > 1 ? " months" : " month"));
         return new StringSubstitutor(context).replace(courtResponsibilityAssignmentMessage);
 
     }
