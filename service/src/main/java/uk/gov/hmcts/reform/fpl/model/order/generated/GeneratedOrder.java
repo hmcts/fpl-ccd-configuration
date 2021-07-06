@@ -41,6 +41,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     private final String details;
     private final DocumentReference document;
     private final DocumentReference unsealedDocumentCopy;
+    private final LocalDate amendedDate;
     private final String dateOfIssue;
     private final LocalDateTime dateTimeIssued;
     private final LocalDate approvalDate;
