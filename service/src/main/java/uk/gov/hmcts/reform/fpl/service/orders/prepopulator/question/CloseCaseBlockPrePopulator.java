@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Optional.ofNullable;
+
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CloseCaseBlockPrePopulator implements QuestionBlockOrderPrePopulator {
@@ -31,16 +33,18 @@ public class CloseCaseBlockPrePopulator implements QuestionBlockOrderPrePopulato
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
 
-        List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData);
-        ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
-        Order order = manageOrdersEventData.getManageOrdersType();
+        final List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData);
+        final ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
+        final Order order = manageOrdersEventData.getManageOrdersType();
 
-        if (!isFinalOrder(manageOrdersEventData, order) || !allChildrenHaveFinalOrder(updatedChildren)) {
-            OrderTempQuestions orderTempQuestions = manageOrdersEventData.getOrderTempQuestions();
-            return Map.of("orderTempQuestions", orderTempQuestions.toBuilder().closeCase("NO").build());
-        }
+        final OrderTempQuestions orderTempQuestions = ofNullable(manageOrdersEventData.getOrderTempQuestions())
+            .orElse(OrderTempQuestions.builder().build());
 
-        return Map.of();
+        boolean canCloseCase = isFinalOrder(manageOrdersEventData, order) && allChildrenHaveFinalOrder(updatedChildren);
+
+        return Map.of("orderTempQuestions", orderTempQuestions.toBuilder()
+            .closeCase(canCloseCase ? "YES" : "NO")
+            .build());
     }
 
     private boolean isFinalOrder(ManageOrdersEventData manageOrdersEventData, Order order) {
