@@ -7,26 +7,26 @@ const orders = {
   generated: {
     name: 'C32 - Care order - 7 July 2021',
     file: 'C32 - Care order.pdf',
-    tabPathAmendment: ['Order 4', 'Amended'],
-    tabPathFile: ['Order 4', 'Order document'],
+    tabObjectName: 'Order 4',
+    tabOrderDocFieldName: 'Order document',
   },
   standardDirectionOrder: {
     name: 'Gatekeeping order - 4 July 2021',
     file: 'sdo.pdf',
-    tabPathAmendment: ['Gatekeeping order', 'Amended'],
-    tabPathFile: ['Gatekeeping order', 'File'],
+    tabObjectName: 'Gatekeeping order',
+    tabOrderDocFieldName: 'File',
   },
   urgentHearingOrder: {
     name: 'Urgent hearing order - 3 July 2021',
     file: 'uho.pdf',
-    tabPathAmendment: ['Gatekeeping order - urgent hearing order', 'Amended'],
-    tabPathFile: ['Gatekeeping order - urgent hearing order', 'Order'],
+    tabObjectName: 'Gatekeeping order - urgent hearing order',
+    tabOrderDocFieldName: 'Order',
   },
   caseManagementOrder: {
     name: 'Sealed case management order issued on 6 July 2021',
     file: 'mockFile.pdf',
-    tabPathAmendment: ['Sealed Case Management Order 1', 'Amended'],
-    tabPathFile: ['Sealed Case Management Order 1', 'Order'],
+    tabObjectName: 'Sealed Case Management Order 1',
+    tabOrderDocFieldName: 'Order',
   },
 };
 
@@ -81,6 +81,6 @@ async function amendOrder(I, manageOrdersEventPage, order) {
 function assertAmendment(I, caseViewPage, order) {
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab(order.tabPathAmendment, dateFormat(new Date(), 'd mmm yyyy'));
-  I.seeInTab(order.tabPathFile, `amended_${order.file}`);
+  I.seeInTab([order.tabObjectName, 'Amended'], dateFormat(new Date(), 'd mmm yyyy'));
+  I.seeInTab([order.tabObjectName, order.tabOrderDocFieldName], `amended_${order.file}`);
 }

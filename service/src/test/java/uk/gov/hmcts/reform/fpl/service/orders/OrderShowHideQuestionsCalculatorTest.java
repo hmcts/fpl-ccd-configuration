@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
@@ -33,6 +35,39 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
 
+    @Test
+    void calculateAmendment() {
+        assertThat(underTest.calculate(AMENED_ORDER)).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("orderToAmend", "YES"),
+            Map.entry("uploadAmendedOrder", "YES"),
+            Map.entry("uploadOrderFile", "NO"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("approver", "NO"),
+            Map.entry("previewOrder", "NO"),
+            Map.entry("approvalDate", "NO"),
+            Map.entry("whichChildren", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("hearingDetails", "NO"),
+            Map.entry("dischargeOfCareDetails", "NO"),
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+            Map.entry("furtherDirections", "NO"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("needSealing", "NO"),
+            Map.entry("linkApplication", "NO"),
+            Map.entry("isFinalOrder", "NO"),
+            Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("closeCase", "NO"),
+            Map.entry("orderIsByConsent", "NO"),
+            Map.entry("whichOthers", "YES"),
+            Map.entry("appointedGuardian", "NO")
+        ));
+    }
+
     @ParameterizedTest(name = "Show hide map for {0}")
     @MethodSource("orderWithExpectedMap")
     void calculate(Order order, Map<String, String> expectedShowHideMap) {
@@ -45,7 +80,10 @@ class OrderShowHideQuestionsCalculatorTest {
             "hearingDetails", "YES",
             "linkApplication", "YES",
             "approver", "YES",
-            "previewOrder", "YES");
+            "previewOrder", "YES",
+            "orderToAmend", "NO",
+            "uploadAmendedOrder", "NO"
+        );
 
         Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
         careOrderQuestions.put("orderTitle", "NO");
@@ -297,9 +335,10 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("closeCase", "YES"),
                 Map.entry("orderIsByConsent", "NO"),
                 Map.entry("appointedGuardian", "NO"),
-                Map.entry("whichOthers", "YES")
-                )
-            ));
+                Map.entry("whichOthers", "YES"),
+                Map.entry("orderToAmend", "NO"),
+                Map.entry("uploadAmendedOrder", "NO")
+            )));
     }
 
     @ParameterizedTest(name = "Show hide map for upload order {0}")
@@ -340,8 +379,9 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("closeCase", "YES"),
                 Map.entry("orderIsByConsent", "NO"),
                 Map.entry("appointedGuardian", "NO"),
-                Map.entry("whichOthers", "YES")
-                )
-            ));
+                Map.entry("whichOthers", "YES"),
+                Map.entry("orderToAmend", "NO"),
+                Map.entry("uploadAmendedOrder", "NO")
+            )));
     }
 }

@@ -30,14 +30,14 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLIC
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.AMENDED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.MANUAL_UPLOAD;
@@ -408,7 +408,7 @@ public enum Order {
         "",
         "",
         IsFinalOrder.NO,
-        List.of(ORDER_TO_AMEND, UPLOAD_AMENDED_ORDER)
+        List.of(ORDER_TO_AMEND, UPLOAD_AMENDED_ORDER, WHICH_OTHERS)
     );
 
     private final OrderSourceType sourceType;

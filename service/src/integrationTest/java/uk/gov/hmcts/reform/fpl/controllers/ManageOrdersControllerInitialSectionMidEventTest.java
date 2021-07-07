@@ -78,6 +78,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .furtherDirections(NO)
             .orderDetails(NO)
             .whichChildren(NO)
+            .whichOthers(YES)
             .hearingDetails(NO)
             .approvalDate(NO)
             .approvalDateTime(NO)
@@ -97,6 +98,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .isFinalOrder(NO)
             .orderToAmend(YES)
             .uploadAmendedOrder(YES)
+            .appointedGuardian(NO)
+            .orderIsByConsent(NO)
             .build()
         );
     }
@@ -143,6 +146,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .isFinalOrder(NO)
             .orderToAmend(NO)
             .uploadAmendedOrder(NO)
+            .appointedGuardian(NO)
+            .orderIsByConsent(NO)
             .build()
         );
     }
