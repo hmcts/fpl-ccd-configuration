@@ -1217,7 +1217,8 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-superuser"
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "CR"
       },
