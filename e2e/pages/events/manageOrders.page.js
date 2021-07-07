@@ -36,7 +36,7 @@ const orders = {
     c33: 'Interim care order (C33)',
     c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
-    c43: 'Child arrangements, Specific issue, Prohibited steps (C43)',
+    c43: 'Child arrangements, Prohibited steps and Specific issue order (C43)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
     other: 'Other',
   },
