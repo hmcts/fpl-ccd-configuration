@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+
 @Value
 @Builder(toBuilder = true)
 @Jacksonized
@@ -23,7 +26,7 @@ public class UrgentHearingOrder implements AmendableOrder {
 
     @Override
     public String asLabel() {
-        return "Urgent hearing order";
+        return "Urgent hearing order - " + formatLocalDateToString(dateAdded, DATE);
     }
 
     @Override
