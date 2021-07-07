@@ -53,6 +53,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "Passport Office, Globe House, 89 Eccleston Square, LONDON SW1V 1PN.";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
+    private final C43ChildArrangementOrderTitleGenerator c43TitleGenerator;
 
     @Override
     public Order accept() {
@@ -69,7 +70,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
             c43DocmosisParameters = C43ChildArrangementOrderDocmosisParameters
             .builder()
-            .orderTitle(getOrderTitle(eventData))
+            .orderTitle(c43TitleGenerator.getOrderTitle(eventData))
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(getOrderRecitalsAndPreambles(eventData))
             .furtherDirections(getOrderDirections(eventData))
@@ -87,22 +88,6 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     @Override
     public DocmosisTemplates template() {
         return DocmosisTemplates.ORDER_V2;
-    }
-
-    public static String getOrderTitle(ManageOrdersEventData eventData) {
-        List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
-
-        switch (orders.size()) {
-            case 1:
-                return String.format("%s order", orders.get(0).getLabel());
-            case 2:
-                return String.format("%s and %s order", orders.get(0).getLabel(), orders.get(1).getLabel());
-            default:
-                return String.format("%s, %s and %s order",
-                    orders.get(0).getLabel(),
-                    orders.get(1).getLabel(),
-                    orders.get(2).getLabel());
-        }
     }
 
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {

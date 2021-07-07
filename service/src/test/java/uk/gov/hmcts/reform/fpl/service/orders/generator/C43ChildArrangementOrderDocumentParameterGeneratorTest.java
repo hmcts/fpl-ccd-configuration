@@ -30,12 +30,16 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     private static final String RECITALS_AND_PREAMBLES = "Recitals and Preambles";
     private static final String DIRECTIONS = "Directions";
     private static final String FURTHER_DIRECTIONS = "Further directions";
+    private static final String ORDER_TITLE = "Title";
 
     @Mock
     private LocalAuthorityNameLookupConfiguration laNameLookup;
 
     @Mock
     private OrderMessageGenerator orderMessageGenerator;
+
+    @Mock
+    private C43ChildArrangementOrderTitleGenerator c43ChildArrangementOrderTitleGenerator;
 
     @InjectMocks
     private C43ChildArrangementOrderDocumentParameterGenerator underTest;
@@ -50,16 +54,15 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        String orderTitle = "Child arrangements, Specific issue and Prohibited steps order";
-
         CaseData caseData = buildCaseData(c43OrderTypes);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
-        assertThat(generatedParameters).isEqualTo(expectedCommonParameters(orderTitle)
+        assertThat(generatedParameters).isEqualTo(expectedCommonParameters()
             .orderHeader(ORDER_HEADER)
             .orderMessage(C43ChildArrangementOrderDocumentParameterGenerator.WARNING_MESSAGE)
             .build());
@@ -70,32 +73,15 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        String orderTitle = "Specific issue and Prohibited steps order";
-
         CaseData caseData = buildCaseData(c43OrderTypes);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
-        assertThat(generatedParameters).isEqualTo(expectedCommonParameters(orderTitle).build());
-    }
-
-    @Test
-    void expectedOrderTitleWhenOneOrderSelected() {
-        List<C43OrderType> c43OrderTypes = List.of(C43OrderType.SPECIFIC_ISSUE_ORDER);
-
-        String orderTitle = "Specific issue order";
-
-        CaseData caseData = buildCaseData(c43OrderTypes);
-
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
-
-        DocmosisParameters generatedParameters = underTest.generate(caseData);
-
-        assertThat(generatedParameters).isEqualTo(expectedCommonParameters(orderTitle).build());
+        assertThat(generatedParameters).isEqualTo(expectedCommonParameters().build());
     }
 
     @Test
@@ -118,13 +104,13 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     }
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
-        expectedCommonParameters(String orderTitle) {
+        expectedCommonParameters() {
         String orderDetails = String.format("The Court orders\n\n%s", RECITALS_AND_PREAMBLES);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
             C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE);
 
         return C43ChildArrangementOrderDocmosisParameters.builder()
-            .orderTitle(orderTitle)
+            .orderTitle(ORDER_TITLE)
             .orderByConsent(CONSENT)
             .orderDetails(orderDetails)
             .furtherDirections(directions)

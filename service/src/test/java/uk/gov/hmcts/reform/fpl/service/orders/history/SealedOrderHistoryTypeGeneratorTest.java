@@ -1,37 +1,43 @@
 package uk.gov.hmcts.reform.fpl.service.orders.history;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderTitleGenerator;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.CHILD_ARRANGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.SPECIFIC_ISSUE_ORDER;
 
 public class SealedOrderHistoryTypeGeneratorTest {
+    private final C43ChildArrangementOrderTitleGenerator c43ChildArrangementOrderTitleGenerator = mock(
+        C43ChildArrangementOrderTitleGenerator.class);
+    private final SealedOrderHistoryTypeGenerator underTest = new SealedOrderHistoryTypeGenerator(
+        c43ChildArrangementOrderTitleGenerator);
 
-    private final SealedOrderHistoryTypeGenerator underTest = new SealedOrderHistoryTypeGenerator();
+    @Test
+    void testIfChildArrangementSpecificIssueProhibitedStepsOrder() {
+        List<C43OrderType> orders = List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER);
 
-    @ParameterizedTest
-    @MethodSource("c43OrdersSource")
-    void testIfChildArrangementSpecificIssueProhibitedStepsOrder(List<C43OrderType> orders, String expectedString) {
+        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+            .manageOrdersType(Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
+            .manageOrdersMultiSelectListForC43(orders)
+            .build();
+
+        when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(manageOrdersEventData)).thenReturn("title");
+
         String actual = underTest.generate(CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
-                .manageOrdersMultiSelectListForC43(orders)
-                .build())
+            .manageOrdersEventData(manageOrdersEventData)
             .build());
 
-        assertThat(actual).isEqualTo(expectedString);
+        assertThat(actual).isEqualTo("title (C43)");
     }
 
     @Test
@@ -45,21 +51,5 @@ public class SealedOrderHistoryTypeGeneratorTest {
             .build());
 
         assertThat(actual).isEqualTo(order.getHistoryTitle());
-    }
-
-    private static Stream<Arguments> c43OrdersSource() {
-        return Stream.of(
-            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER), "Child arrangements order (C43)"),
-            Arguments.of(List.of(SPECIFIC_ISSUE_ORDER), "Specific issue order (C43)"),
-            Arguments.of(List.of(PROHIBITED_STEPS_ORDER), "Prohibited steps order (C43)"),
-            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER),
-                "Child arrangements and Specific issue order (C43)"),
-            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, PROHIBITED_STEPS_ORDER),
-                "Child arrangements and Prohibited steps order (C43)"),
-            Arguments.of(List.of(SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER),
-                "Specific issue and Prohibited steps order (C43)"),
-            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER),
-                "Child arrangements, Specific issue and Prohibited steps order (C43)")
-        );
     }
 }

@@ -67,7 +67,7 @@ class OrderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("c43Orders")
+    @MethodSource("c43OrdersSource")
     void c43ChildArrangementSpecificIssueProhibitedStepsOrderFileExtension(List<C43OrderType> orders,
                                                                         String expectedString) {
         Order order = C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
@@ -123,7 +123,7 @@ class OrderTest {
         assertThat(testedOrders).isEqualTo(allOrders);
     }
 
-    private static Stream<Arguments> c43Orders() {
+    private static Stream<Arguments> c43OrdersSource() {
         return Stream.of(
             Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER), "c43_child_arrangements"),
             Arguments.of(List.of(SPECIFIC_ISSUE_ORDER), "c43_specific_issue"),

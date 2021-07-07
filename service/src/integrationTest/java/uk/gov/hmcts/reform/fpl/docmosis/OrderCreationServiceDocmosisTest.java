@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C33InterimCareOrderDocum
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35aSupervisionOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35bISODocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43aSpecialGuardianshipOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C47AAppointmentOfAChildrensGuardianParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisCommonElementDecorator;
@@ -82,6 +83,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
     ManageOrderDocumentService.class,
     OrderMessageGenerator.class,
+    C43ChildArrangementOrderTitleGenerator.class,
     C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
     OrderDetailsWithEndTypeGenerator.class,
     UploadedOrderDocumentGenerator.class,
