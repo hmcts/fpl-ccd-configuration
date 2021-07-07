@@ -1576,6 +1576,37 @@ class CaseDataTest {
         }
 
         @Test
+        void shouldReturnRepresentativesElementsByServedPreference() {
+            UUID firstID = randomUUID();
+            UUID secondID = randomUUID();
+            List<Element<Representative>> expectedReps = List.of(element(firstID, emailRepOne),
+                element(secondID, emailRepTwo));
+
+            CaseData caseData = CaseData.builder()
+                .representatives(List.of(element(firstID, emailRepOne), element(secondID, emailRepTwo),
+                    element(UUID.randomUUID(), digitalRepOne)))
+                .build();
+
+            List<Element<Representative>> digitalRepresentatives
+                = caseData.getRepresentativesElementsByServedPreference(EMAIL);
+
+            assertThat(digitalRepresentatives).isEqualTo(expectedReps);
+        }
+
+        @Test
+        void shouldReturnEmptyListIfNoRepresentativesByPreference() {
+            CaseData caseData = CaseData.builder()
+                .representatives(List.of(element(UUID.randomUUID(), emailRepOne),
+                    element(UUID.randomUUID(), emailRepTwo)))
+                .build();
+
+            List<Element<Representative>> digitalRepresentatives
+                = caseData.getRepresentativesElementsByServedPreference(DIGITAL_SERVICE);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
         void shouldReturnHearingOrdersBundlesForApproval() {
             Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
                 HearingOrdersBundle.builder()

@@ -3,7 +3,7 @@ const { I } = inject();
 module.exports = {
 
   fields: {
-    evidenceHandled: '#evidenceHandled-Yes',
+    evidenceHandled: '#evidenceHandled_Yes',
   },
 
   async handleSupplementaryEvidence() {

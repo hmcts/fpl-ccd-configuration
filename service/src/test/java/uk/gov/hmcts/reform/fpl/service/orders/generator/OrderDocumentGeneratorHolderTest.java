@@ -52,9 +52,9 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
     @Mock
-    private C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
-    @Mock
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator c43aSGODocumentParameterGenerator;
+    @Mock
+    private C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
     @Mock
     private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
 
@@ -71,8 +71,11 @@ class OrderDocumentGeneratorHolderTest {
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
             c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
             c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
-            c35bISODocumentParameterGenerator, c43ChildArrangementOrderDocumentParameterGenerator,
-            c43aSGODocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator
+            c35bISODocumentParameterGenerator,
+            c47AAppointmentOfAChildrensGuardianParameterGenerator,
+            c35bISODocumentParameterGenerator,
+            c43ChildArrangementOrderDocumentParameterGenerator,
+            c43aSGODocumentParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -84,9 +87,9 @@ class OrderDocumentGeneratorHolderTest {
             C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator,
             C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator,
             C35B_INTERIM_SUPERVISION_ORDER, c35bISODocumentParameterGenerator,
+            C43A_SPECIAL_GUARDIANSHIP_ORDER, c43aSGODocumentParameterGenerator,
             C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
             c43ChildArrangementOrderDocumentParameterGenerator,
-            C43A_SPECIAL_GUARDIANSHIP_ORDER, c43aSGODocumentParameterGenerator,
             C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
 

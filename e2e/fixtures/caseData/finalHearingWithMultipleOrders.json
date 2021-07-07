@@ -865,6 +865,63 @@
             "allocatedJudgeLabel": null
           }
         }
+      },
+      {
+        "id": "c4f7b2c8-833d-441b-9d02-680acbeed3bc",
+        "value": {
+          "date": null,
+          "type": "Discharge of parental responsibility (C45B)",
+          "title": null,
+          "details": null,
+          "children": [
+            {
+              "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "lastName": "Jones",
+                  "firstName": "Timothy",
+                  "dateOfBirth": "2015-08-01"
+                }
+              }
+            }
+          ],
+          "document": {
+            "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
+            "document_filename": "c45b_discharge_of_parental_responsibility.pdf",
+            "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+          },
+          "uploader": null,
+          "courtName": null,
+          "orderType": "C45B_DISCHARGE_OF_PARENTAL_RESPONSIBILITY",
+          "expiryDate": null,
+          "dateOfIssue": null,
+          "approvalDate": "2021-06-14",
+          "removalReason": null,
+          "dateTimeIssued": "2021-06-14T20:14:16.037482",
+          "approvalDateTime": null,
+          "furtherDirections": {
+            "directions": null,
+            "directionsNeeded": null
+          },
+          "childrenDescription": "Timothy Jones",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": null,
+            "otherTitle": null,
+            "judgeFullName": null,
+            "judgeLastName": null,
+            "legalAdvisorName": null,
+            "judgeEmailAddress": null,
+            "useAllocatedJudge": null,
+            "allocatedJudgeLabel": null
+          },
+          "unsealedDocumentCopy": {
+            "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
+            "document_filename": "mockFile.docx",
+            "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+          },
+          "uploadedOrderDescription": null
+        }
       }
     ]
   }

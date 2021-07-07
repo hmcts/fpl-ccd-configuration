@@ -107,6 +107,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CBF",
+    "ListElement": "Central Bedfordshire Council",
+    "DisplayOrder": 53
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CER",
     "ListElement": "Ceredigion County Council",
     "DisplayOrder": 55
@@ -275,6 +282,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "HPL",
+    "ListElement": "Hartlepool Borough Council",
+    "DisplayOrder": 138
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "HFC",
     "ListElement": "Herefordshire Council",
     "DisplayOrder": 140
@@ -390,6 +404,13 @@
     "ListElementCode": "LBM",
     "ListElement": "London Borough of Merton",
     "DisplayOrder": 188
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SWK",
+    "ListElement": "London Borough of Southwark",
+    "DisplayOrder": 189
   },
   {
     "LiveFrom": "01/01/2017",

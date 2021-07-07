@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicat
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOthersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetailsSectionPrePopulator;
@@ -40,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
@@ -49,7 +51,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 @ExtendWith(MockitoExtension.class)
 class OrderSectionAndQuestionsPrePopulatorHolderTest {
 
-    // Section blocks
     @Mock
     private WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
     @Mock
@@ -66,6 +67,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private ApprovalDateTimeBlockPrePopulator approvalDateTimeBlockPrePopulator;
     @Mock
     private AppointedGuardianBlockPrePopulator appointedGuardianBlockPrePopulator;
+    @Mock
+    private WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
 
     // Section blocks
     @Mock
@@ -101,7 +104,9 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator,
-            appointedGuardianBlockPrePopulator
+            appointedGuardianBlockPrePopulator,
+            whichOthersBlockPrePopulator
+
         );
         questionBlockPrepopulatorMapping = Map.of(
             LINKED_TO_HEARING, linkedToHearingBlockPrePopulator,
@@ -112,7 +117,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             WHICH_CHILDREN, whichChildrenBlockPrePopulator,
             APPOINTED_GUARDIAN, appointedGuardianBlockPrePopulator,
             EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator,
-            CLOSE_CASE, closeCaseBlockPrePopulator
+            CLOSE_CASE, closeCaseBlockPrePopulator,
+            WHICH_OTHERS, whichOthersBlockPrePopulator
         );
 
         sectionPrepopulatorMapping = Map.of(

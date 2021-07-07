@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -101,5 +104,15 @@ public class Other implements Representable, ConfidentialParty<Other> {
             .address(null)
             .telephone(null)
             .build();
+    }
+
+    @JsonIgnore
+    public boolean hasAddressAdded() {
+        return !isNull(getAddress()) && !isEmpty(getAddress().getPostcode());
+    }
+
+    @JsonIgnore
+    public boolean isRepresented() {
+        return !isEmpty(getRepresentedBy());
     }
 }

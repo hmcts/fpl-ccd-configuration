@@ -162,13 +162,29 @@ const section4 = {
   isFinalOrder: {
     group: '#manageOrdersIsFinalOrder',
     options: {
-      yes: '#manageOrdersIsFinalOrder-Yes',
-      no: '#manageOrdersIsFinalOrder-No',
+      yes: '#manageOrdersIsFinalOrder_Yes',
+      no: '#manageOrdersIsFinalOrder_No',
     },
   },
-  orderByConsent: '#manageOrdersIsByConsent-Yes',
+  orderByConsent: '#manageOrdersIsByConsent_Yes',
   guardianSelector: {
     selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
+  },
+};
+
+const whichOthers = {
+  allOthers: {
+    group: '#sendOrderToAllOthers',
+    options: {
+      all: 'Yes',
+      select: 'No',
+    },
+    others: {
+      other1: 'John Doe',
+    },
+  },
+  othersSelector: {
+    selector: index => `#othersSelector_option${index}-SELECTED`,
   },
 };
 
@@ -178,8 +194,8 @@ const preview = {
   closeCase: {
     group: '#manageOrdersCloseCase',
     options: {
-      yes: '#manageOrdersCloseCase-Yes',
-      no: '#manageOrdersCloseCase-No',
+      yes: '#manageOrdersCloseCase_Yes',
+      no: '#manageOrdersCloseCase_No',
     },
   },
 };
@@ -196,7 +212,7 @@ const selectOperationInClosedState = async (operationType) => {
 };
 
 const selectRelatedToHearing = (answer) => {
-  I.click(`${hearingDetails.linkedToHearing.group}-${answer}`);
+  I.click(`${hearingDetails.linkedToHearing.group}_${answer}`);
 };
 
 const selectHearing = async (hearing) => {
@@ -248,7 +264,7 @@ const enterEPOEndDateTime = async (dateTime) => {
 };
 
 const selectChildren = async (option, indexes = []) => {
-  I.click(`${section3.allChildren.group}-${option}`);
+  I.click(`${section3.allChildren.group}_${option}`);
 
   if (option === section3.allChildren.options.select) {
     indexes.forEach((selectorIndex) => {
@@ -257,6 +273,16 @@ const selectChildren = async (option, indexes = []) => {
   }
 
   await I.runAccessibilityTest();
+};
+
+const selectOthers = async (option, indexes = []) => {
+  I.click(`${whichOthers.allOthers.group}_${option}`);
+
+  if (option === whichOthers.allOthers.options.select) {
+    indexes.forEach((selectorIndex) => {
+      I.checkOption(whichOthers.othersSelector.selector(selectorIndex));
+    });
+  }
 };
 
 const enterTitle = (text) => {
@@ -269,7 +295,7 @@ const enterDirections = async (text) => {
 };
 
 const selectIncludePhrase = (includePhrase) => {
-  I.click(`${section4.includePhrase.group}-${includePhrase}`);
+  I.click(`${section4.includePhrase.group}_${includePhrase}`);
 };
 
 const selectEpoType = (epoType) => {
@@ -277,7 +303,7 @@ const selectEpoType = (epoType) => {
 };
 
 const selectExclusionRequirementEPO = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirementEPO.group}-${exclusionRequirement}`);
+  I.click(`${section4.exclusionRequirementEPO.group}_${exclusionRequirement}`);
 };
 
 const enterExclusionDetails = (text) => {
@@ -302,7 +328,7 @@ const uploadManualOrder = async (file) => {
 };
 
 const selectManualOrderNeedSealing = (needSealing) => {
-  I.click(`${section4.manualOrderNeedSealing.group}-${needSealing}`);
+  I.click(`${section4.manualOrderNeedSealing.group}_${needSealing}`);
 };
 
 const enterRemovalAddress = (address) => {
@@ -366,7 +392,7 @@ const selectCloseCase = async () => {
 };
 
 const selectExclusionRequirementICO = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
+  I.click(`${section4.exclusionRequirement.group}_${exclusionRequirement}`);
 };
 
 const selectCafcassRegion = region => {
@@ -402,13 +428,13 @@ const selectGuardian = async (indexes = []) => {
 };
 
 module.exports = {
-  operations, hearingDetails, orders, section2, section3, section4,
+  operations, hearingDetails, orders, section2, section3, section4, whichOthers,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, selectIsFinalOrder, selectIsNotFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
+  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
-  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
   selectC43Orders, enterRecitalsAndPreambles,
 };

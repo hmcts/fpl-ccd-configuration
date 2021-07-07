@@ -6,24 +6,39 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.C2;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 
 @Service
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
+    public static final String DELIMITER = ", ";
+
     public FailedPBANotificationData getCtscNotifyData(CaseData caseData,
-                                                       ApplicationType applicationType) {
+                                                       List<ApplicationType> applicationTypes,
+                                                       String applicantName) {
+        String applicationNames = applicationTypes.stream()
+            .map(ApplicationType::getType).collect(Collectors.joining(DELIMITER));
+
         return FailedPBANotificationData.builder()
-            .caseUrl(applicationType.equals(C2_APPLICATION) ? getCaseUrl(caseData.getId(), C2)
-                : getCaseUrl(caseData.getId()))
-            .applicationType(applicationType.getType())
+            .caseUrl(applicationTypes.contains(C110A_APPLICATION) ? getCaseUrl(caseData.getId())
+                : getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
+            .applicationType(applicationNames)
+            .applicant(applicantName)
             .build();
     }
 
-    public FailedPBANotificationData getLocalAuthorityNotifyData(ApplicationType applicationType) {
+    public FailedPBANotificationData getApplicantNotifyData(List<ApplicationType> applicationTypes,
+                                                            Long caseReference) {
+        String applicationNames = applicationTypes.stream()
+            .map(ApplicationType::getType).collect(Collectors.joining(", "));
         return FailedPBANotificationData.builder()
-            .applicationType(applicationType.getType())
+            .applicationType(applicationNames)
+            .caseUrl(applicationTypes.contains(C110A_APPLICATION) ? getCaseUrl(caseReference)
+                : getCaseUrl(caseReference, OTHER_APPLICATIONS))
             .build();
     }
 }
