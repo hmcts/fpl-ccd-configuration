@@ -38,13 +38,13 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
         + " of every person who has parental responsibility for the child or "
-        + "the leave of the court. "
+        + "the leave of the Court. "
         + "However, this does not prevent the removal "
         + "of a child for a period of less than 3 months, "
         + "by its special guardian(s) (Section 14C (3) and (4) Children Act 1989)."
         + "\n \n"
         + "It may be a criminal offence under the Child Abduction Act 1984 "
-        + "to remove the child from the United Kingdom without leave of the court.\n"
+        + "to remove the child from the United Kingdom without leave of the Court.\n"
         + "";
     private static final String NOTICE_HEADER = "Notice \n";
     private static final String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
