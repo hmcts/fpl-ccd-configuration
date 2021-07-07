@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -38,6 +39,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
@@ -183,7 +185,7 @@ public class CaseDataExtractionService {
         return DocmosisHearingBooking.builder()
             .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
             .hearingVenue(hearingVenue)
-            .hearingAttendance(getHearingAttendance(hearing).orElse(null))
+            .hearingAttendance(getHearingAttendance(hearing))
             .hearingAttendanceDetails(hearing.getAttendanceDetails())
             .preHearingAttendance(hearing.getPreAttendanceDetails())
             .hearingTime(getHearingTime(hearing))
