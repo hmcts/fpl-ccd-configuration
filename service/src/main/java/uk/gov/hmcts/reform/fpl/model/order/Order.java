@@ -99,7 +99,7 @@ public enum Order {
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION,
             FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
     ),
-    C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
+    C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
         DIGITAL,
         "Child arrangements, Specific issue, Prohibited steps",
         "Section 8 Children Act 1989",
@@ -278,14 +278,6 @@ public enum Order {
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
-    C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
-        MANUAL_UPLOAD,
-        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        "",
-        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        IsFinalOrder.MAYBE,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
     C44A_LEAVE_TO_CHANGE_SURNAME(
         MANUAL_UPLOAD,
         "Leave to change surname (C44A)",
@@ -419,7 +411,7 @@ public enum Order {
     }
 
     public String fileName(RenderFormat format, ManageOrdersEventData manageOrdersEventData) {
-        if (C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.equals(this)) {
+        if (C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.equals(this)) {
             String c43Orders = manageOrdersEventData.getManageOrdersMultiSelectListForC43()
                 .stream().map(C43OrderType -> C43OrderType.getLabel().toLowerCase().replace(" ", "_"))
                 .collect(Collectors.joining("_"));

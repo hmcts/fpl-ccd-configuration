@@ -27,7 +27,7 @@ public class SealedOrderHistoryTypeGeneratorTest {
         List<C43OrderType> orders = List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER);
 
         ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
-            .manageOrdersType(Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
+            .manageOrdersType(Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
             .manageOrdersMultiSelectListForC43(orders)
             .build();
 

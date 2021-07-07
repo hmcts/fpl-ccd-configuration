@@ -57,7 +57,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
 
     @Override
     public Order accept() {
-        return Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
+        return Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
     }
 
     @Override

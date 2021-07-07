@@ -17,7 +17,7 @@ public class SealedOrderHistoryTypeGenerator {
     public String generate(CaseData caseData) {
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
 
-        if (Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER
+        if (Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER
             .equals(manageOrdersEventData.getManageOrdersType())) {
             return c43TitleGenerator.getOrderTitle(manageOrdersEventData) + " (C43)";
         }

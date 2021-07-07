@@ -46,7 +46,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     @Test
     void accept() {
-        assertThat(underTest.accept()).isEqualTo(Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER);
+        assertThat(underTest.accept()).isEqualTo(Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         return CaseData.builder()
             .caseLocalAuthority(LA_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(Order.C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
+                .manageOrdersType(Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
                 .manageOrdersIsByConsent("No")
                 .manageOrdersMultiSelectListForC43(c43OrderTypes)
                 .manageOrdersRecitalsAndPreambles(RECITALS_AND_PREAMBLES)

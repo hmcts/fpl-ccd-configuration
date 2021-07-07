@@ -28,7 +28,6 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private static final Set<Order> ORDERS_WITH_IS_FINAL_ORDER_QUESTION = Set.of(
         C37_EDUCATION_SUPERVISION_ORDER,
-        C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
         OTHER_ORDER
     );
 
