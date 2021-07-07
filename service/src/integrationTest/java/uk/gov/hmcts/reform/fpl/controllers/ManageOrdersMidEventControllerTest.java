@@ -45,7 +45,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO_V2;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
@@ -329,7 +329,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().minusDays(4), now().plusDays(1))).build();
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
             .thenReturn(DOCMOSIS_DOCUMENT);
 
         when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
@@ -350,7 +350,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             buildPreventRemovalEventData(Address.builder().addressLine1("test").postcode("SW").build()))
             .build();
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
             .thenReturn(DOCMOSIS_DOCUMENT);
         when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
             .thenReturn(UPLOADED_DOCUMENT);
