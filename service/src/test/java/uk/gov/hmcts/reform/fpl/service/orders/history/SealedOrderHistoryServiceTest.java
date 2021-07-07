@@ -108,9 +108,7 @@ class SealedOrderHistoryServiceTest {
         mock(SealedOrderHistoryFinalMarker.class);
     private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator = mock(
         SealedOrderHistoryExtraOthersNotifiedGenerator.class);
-    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
-    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
-        Pair.of(LINKED_APPLICATION_ID, "My test application"));
+
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
