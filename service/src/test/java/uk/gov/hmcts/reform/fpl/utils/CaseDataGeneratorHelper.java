@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.RandomStringUtils;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -38,16 +37,12 @@ import static java.util.Optional.ofNullable;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -67,6 +62,9 @@ public class CaseDataGeneratorHelper {
             .startDate(startDate)
             .venue("Venue")
             .endDate(endDate)
+            .attendance(List.of(IN_PERSON))
+            .attendanceDetails("Room: 123")
+            .preAttendanceDetails("30 minutes before the hearing")
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Law")
@@ -319,29 +317,6 @@ public class CaseDataGeneratorHelper {
             .judgeFullName(judgeFullName)
             .judgeTitle(judgeTitle)
             .build();
-    }
-
-    private static Direction createCustomDirection(DirectionAssignee assignee) {
-        return Direction.builder()
-            .directionType("Direction title")
-            .directionText("Mock direction text")
-            .directionNeeded(YES.getValue())
-            .assignee(assignee)
-            .readOnly("No")
-            .custom("Yes")
-            .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
-            .build();
-    }
-
-    public static List<Element<Direction>> createCmoDirections() {
-        return wrapElements(
-            createCustomDirection(ALL_PARTIES),
-            createCustomDirection(LOCAL_AUTHORITY),
-            createCustomDirection(PARENTS_AND_RESPONDENTS),
-            createCustomDirection(CAFCASS),
-            createCustomDirection(OTHERS),
-            createCustomDirection(COURT)
-        );
     }
 
     public static List<Element<Representative>> createRepresentatives(

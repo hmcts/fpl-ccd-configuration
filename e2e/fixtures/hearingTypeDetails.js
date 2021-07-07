@@ -2,7 +2,9 @@ module.exports = [
   {
     caseManagement: 'Case management',
     venue: 'Aberdeen Tribunal Hearing Centre',
-    presence: 'In person',
+    attendance: ['In person'],
+    attendanceDetails: 'Room 7',
+    preAttendanceDetails: '30 minutes before hearing',
     startDate: {
       second: '00',
       minute: '15',
@@ -47,7 +49,7 @@ module.exports = [
       postcode: 'CR0 2GE',
       country: 'United Kingdom',
     },
-    presence: 'Remote',
+    attendance: ['In person', 'Remote - video call'],
     startDate: {
       second: '00',
       minute: '00',

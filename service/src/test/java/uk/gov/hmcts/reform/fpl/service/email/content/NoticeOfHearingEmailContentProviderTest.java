@@ -75,12 +75,13 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
         when(HEARING_BOOKING.getType()).thenReturn(CASE_MANAGEMENT);
         when(HEARING_BOOKING.getNoticeOfHearing()).thenReturn(noticeOfHearing);
         when(HEARING_BOOKING.getStartDate()).thenReturn(LocalDateTime.of(2021, 12, 12, 0, 0, 0));
+        when(HEARING_BOOKING.getPreAttendanceDetails()).thenReturn(PRE_HEARING_ATTENDANCE);
 
         when(venueLookUp.getHearingVenue(HEARING_BOOKING)).thenReturn(venue);
         when(venueLookUp.buildHearingVenue(venue)).thenReturn(VENUE);
 
         when(extractionService.getHearingTime(HEARING_BOOKING)).thenReturn(HEARING_TIME);
-        when(extractionService.extractPrehearingAttendance(HEARING_BOOKING)).thenReturn(PRE_HEARING_ATTENDANCE);
+        when(extractionService.getHearingAttendance(HEARING_BOOKING)).thenReturn(PRE_HEARING_ATTENDANCE);
 
         when(helper.getEldestChildLastName(children)).thenReturn(CHILD_LAST_NAME);
 

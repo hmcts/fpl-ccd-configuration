@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -33,11 +35,12 @@ import static java.lang.String.format;
 import static java.time.format.FormatStyle.LONG;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -107,11 +110,6 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    public String extractPrehearingAttendance(HearingBooking booking) {
-        LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
-
-        return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTimeWithYear(time);
-    }
 
     public DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return DocmosisJudgeAndLegalAdvisor.builder()
@@ -185,7 +183,9 @@ public class CaseDataExtractionService {
         return DocmosisHearingBooking.builder()
             .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
             .hearingVenue(hearingVenue)
-            .preHearingAttendance(extractPrehearingAttendance(hearing))
+            .hearingAttendance(getHearingAttendance(hearing))
+            .hearingAttendanceDetails(hearing.getAttendanceDetails())
+            .preHearingAttendance(hearing.getPreAttendanceDetails())
             .hearingTime(getHearingTime(hearing))
             .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
             .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
@@ -237,12 +237,19 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    private LocalDateTime calculatePrehearingAttendance(LocalDateTime dateTime) {
-        return dateTime.minusHours(1);
-    }
+    public String getHearingAttendance(HearingBooking hearingBooking) {
 
-    private String formatDateTimeWithYear(LocalDateTime dateTime) {
-        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME);
+        if (isEmpty(hearingBooking.getAttendance())) {
+            return null;
+        }
+
+        final String joined = hearingBooking.getAttendance()
+            .stream()
+            .map(HearingAttendance::getLabel)
+            .map(StringUtils::uncapitalize)
+            .collect(joining(", "));
+
+        return StringUtils.capitalize(joined);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {

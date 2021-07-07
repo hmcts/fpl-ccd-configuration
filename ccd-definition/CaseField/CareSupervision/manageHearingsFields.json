@@ -76,11 +76,30 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "hearingPresence",
+    "ID": "hearingAttendance",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "HearingPresence",
-    "Label": "In person or remote via video",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingAttendance",
+    "Label": "Hearing attendance",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "hearingAttendanceDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add details",
+    "HintText": "For example, video link or telephone number",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "preHearingAttendanceDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Pre-hearing attendance",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

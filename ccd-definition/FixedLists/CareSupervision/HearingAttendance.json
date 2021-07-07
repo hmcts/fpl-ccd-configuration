@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingAttendance",
+    "ListElementCode": "IN_PERSON",
+    "ListElement": "In person",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingAttendance",
+    "ListElementCode": "VIDEO",
+    "ListElement": "Remote - video call",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingAttendance",
+    "ListElementCode": "PHONE",
+    "ListElement": "Remote - phone call",
+    "DisplayOrder": 3
+  }
+]
