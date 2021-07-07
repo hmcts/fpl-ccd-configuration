@@ -23,7 +23,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
-    "ListElementCode": "C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER",
+    "ListElementCode": "C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER",
     "ListElement": "Child arrangements, Specific issue, Prohibited steps (C43)",
     "DisplayOrder": 4
   },
