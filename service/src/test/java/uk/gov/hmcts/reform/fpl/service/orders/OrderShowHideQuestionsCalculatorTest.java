@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.OTHER_ORDER;
 
@@ -221,6 +222,31 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("appointedGuardian", "NO");
         appointmentOfChildrensGuardianQuestions.put("whichOthers", "YES");
 
+        Map<String, String> childArrangementSpecificOrder = new HashMap<>(commonQuestions);
+        childArrangementSpecificOrder.put("orderTitle", "NO");
+        childArrangementSpecificOrder.put("approvalDate", "YES");
+        childArrangementSpecificOrder.put("furtherDirections", "YES");
+        childArrangementSpecificOrder.put("orderDetails", "YES");
+        childArrangementSpecificOrder.put("approvalDateTime", "NO");
+        childArrangementSpecificOrder.put("epoIncludePhrase", "NO");
+        childArrangementSpecificOrder.put("uploadOrderFile", "NO");
+        childArrangementSpecificOrder.put("needSealing", "NO");
+        childArrangementSpecificOrder.put("epoChildrenDescription", "NO");
+        childArrangementSpecificOrder.put("epoExpiryDate", "NO");
+        childArrangementSpecificOrder.put("epoTypeAndPreventRemoval", "NO");
+        childArrangementSpecificOrder.put("cafcassJurisdictions", "NO");
+        childArrangementSpecificOrder.put("whichChildren", "YES");
+        childArrangementSpecificOrder.put("dischargeOfCareDetails", "NO");
+        childArrangementSpecificOrder.put("manageOrdersExpiryDateWithMonth", "NO");
+        childArrangementSpecificOrder.put("manageOrdersExclusionRequirementDetails", "NO");
+        childArrangementSpecificOrder.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        childArrangementSpecificOrder.put("childArrangementSpecificIssueProhibitedSteps", "YES");
+        childArrangementSpecificOrder.put("closeCase", "YES");
+        childArrangementSpecificOrder.put("isFinalOrder", "YES");
+        childArrangementSpecificOrder.put("orderIsByConsent", "YES");
+        childArrangementSpecificOrder.put("appointedGuardian", "NO");
+        childArrangementSpecificOrder.put("whichOthers", "YES");
+
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, dischargeOfCareQuestions),
@@ -229,6 +255,8 @@ class OrderShowHideQuestionsCalculatorTest {
             Arguments.of(C35A_SUPERVISION_ORDER, supervisionOrderQuestions),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
             Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, specialGuardianshipOrderQuestions),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                childArrangementSpecificOrder),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, appointmentOfChildrensGuardianQuestions)
         );
     }
