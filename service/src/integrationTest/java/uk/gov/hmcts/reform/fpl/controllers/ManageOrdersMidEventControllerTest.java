@@ -291,19 +291,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void reviewShouldNotAlterCaseData() {
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32A_CARE_ORDER).build())
-            .build();
-
-        CaseDetails caseDetails = asCaseDetails(caseData);
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "review");
-
-        assertThat(response.getData()).isEqualTo(caseDetails.getData());
-    }
-
-    @Test
     void epoEndDateShouldReturnErrorForPastDate() {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().plusDays(1), now().minusDays(1))).build();

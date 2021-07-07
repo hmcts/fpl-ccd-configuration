@@ -193,6 +193,10 @@ class SealedOrderHistoryServiceTest {
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -219,6 +223,10 @@ class SealedOrderHistoryServiceTest {
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
