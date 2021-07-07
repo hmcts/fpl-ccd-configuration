@@ -40,6 +40,7 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
   await I.goToNextPage();
   await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
@@ -462,20 +463,24 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
   manageOrdersEventPage.selectJurisdiction('ENGLAND');
   manageOrdersEventPage.selectOrderTypeWithMonth(manageOrdersEventPage.section4.orderTypeWithMonth.options.numberOfMonths);
   manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
-  manageOrdersEventPage.selectIsNotFinalOrder();
+  manageOrdersEventPage.selectIsFinalOrder();
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
 
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 8,
+    orderIndex: 10,
     orderType: 'Authority to keep a child in secure accommodation (C26)',
     approvalDate: new Date(2012, 10, 3),
     allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
     children: 'Timothy Jones',
     documentName: 'c26_secure_accommodation_order.pdf',
+    others: 'John Doe',
   });
 });
 

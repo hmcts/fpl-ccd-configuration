@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.updaters;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -12,10 +11,9 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
@@ -23,13 +21,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ChildrenTestHelper.buildPairsFromChildrenList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 class ChildrenSmartFinalOrderUpdaterTest {
 
-    ChildrenSmartFinalOrderUpdater underTest = new ChildrenSmartFinalOrderUpdater(new ChildrenService());
+    ChildrenSmartFinalOrderUpdater underTest =
+        new ChildrenSmartFinalOrderUpdater(new ChildSelectionUtils(), new ChildrenService());
 
     ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
         .manageOrdersType(Order.C32_CARE_ORDER)
@@ -136,14 +136,11 @@ class ChildrenSmartFinalOrderUpdaterTest {
         List<Element<Child>> children = List.of(childWithFinalOrderIssued(),
             childWithoutFinalOrderIssued(),
             childWithFinalOrderIssued());
-        List<Pair<UUID, String>> dynamicListItems = children.stream()
-            .map(childElement -> Pair.of(childElement.getId(), childElement.getValue().getParty().getFullName()))
-            .collect(Collectors.toList());
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(Order.C35A_SUPERVISION_ORDER)
-                .whichChildIsTheOrderFor(buildDynamicList(1, dynamicListItems))
+                .whichChildIsTheOrderFor(buildDynamicList(1, buildPairsFromChildrenList(children)))
                 .orderTempQuestions(OrderTempQuestions.builder().selectSingleChild("YES").build())
                 .build())
             .children1(children)

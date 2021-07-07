@@ -1,23 +1,22 @@
 package uk.gov.hmcts.reform.fpl.selectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,14 +24,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
-@ExtendWith({MockitoExtension.class})
 class ChildrenSmartSelectorTest {
 
-    @Mock
     private ChildrenService mockChildrenService;
 
-    @InjectMocks
-    private ChildrenSmartSelector childrenSmartSelector;
+    private ChildrenSmartSelector underTest;
+
+    @BeforeEach
+    void setUp() {
+        mockChildrenService = mock(ChildrenService.class);
+        underTest = new ChildrenSmartSelector(new ChildSelectionUtils(), mockChildrenService);
+    }
 
     @Test
     void shouldCallChildrenServiceWhenSingleChildSelectorIsDisabled() {
@@ -40,7 +42,7 @@ class ChildrenSmartSelectorTest {
         List<Element<Child>> expectedSelectedChildren = asList(element(Child.builder().build()));
         when(mockChildrenService.getSelectedChildren(incomingCaseData)).thenReturn(expectedSelectedChildren);
 
-        List<Element<Child>> actualSelectedChildren = childrenSmartSelector.getSelectedChildren(incomingCaseData);
+        List<Element<Child>> actualSelectedChildren = underTest.getSelectedChildren(incomingCaseData);
 
         assertThat(actualSelectedChildren).isEqualTo(expectedSelectedChildren);
         verify(mockChildrenService).getSelectedChildren(incomingCaseData);
@@ -66,7 +68,7 @@ class ChildrenSmartSelectorTest {
                 .build())
             .build();
 
-        List<Element<Child>> actualSelectedChildren = childrenSmartSelector.getSelectedChildren(incomingCaseData);
+        List<Element<Child>> actualSelectedChildren = underTest.getSelectedChildren(incomingCaseData);
 
         assertThat(actualSelectedChildren)
             .hasSize(1)

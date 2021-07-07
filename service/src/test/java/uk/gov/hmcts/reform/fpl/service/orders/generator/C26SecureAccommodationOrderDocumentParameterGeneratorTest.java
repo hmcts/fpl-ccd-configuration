@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.GIRL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.enums.Jurisdiction.ENGLAND;
 import static uk.gov.hmcts.reform.fpl.enums.Jurisdiction.WALES;
 import static uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation.ABSCOND;
@@ -75,7 +75,7 @@ class C26SecureAccommodationOrderDocumentParameterGeneratorTest {
 
     @Test
     void template() {
-        assertThat(underTest.template()).isEqualTo(ORDER);
+        assertThat(underTest.template()).isEqualTo(ORDER_V2);
     }
 
     @Test

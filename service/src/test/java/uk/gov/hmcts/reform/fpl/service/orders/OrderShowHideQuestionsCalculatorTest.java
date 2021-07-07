@@ -302,6 +302,7 @@ class OrderShowHideQuestionsCalculatorTest {
         secureAccommodationOrderQuestions.put("manageOrdersExpiryDateWithMonth", "YES");
         secureAccommodationOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         secureAccommodationOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        secureAccommodationOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         secureAccommodationOrderQuestions.put("dischargeOfCareDetails", "NO");
         secureAccommodationOrderQuestions.put("closeCase", "YES");
         secureAccommodationOrderQuestions.put("isFinalOrder", "YES");

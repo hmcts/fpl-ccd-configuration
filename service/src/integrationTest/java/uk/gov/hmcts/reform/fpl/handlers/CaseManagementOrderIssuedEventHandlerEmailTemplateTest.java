@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMar
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
+import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.service.notify.SendEmailResponse;
@@ -57,7 +58,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     CaseManagementOrderIssuedEventHandler.class, CaseManagementOrderEmailContentProvider.class,
     EmailNotificationHelper.class, CaseUrlService.class, IssuedOrderAdminNotificationHandler.class,
     OrderIssuedEmailContentProvider.class, FixedTimeConfiguration.class, SealedOrderHistoryService.class,
-    OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, ChildrenSmartSelector.class
+    OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, ChildrenSmartSelector.class,
+    ChildSelectionUtils.class
 })
 @MockBeans({
     @MockBean(CoreCaseDataService.class), @MockBean(IdentityService.class), @MockBean(ChildrenService.class),

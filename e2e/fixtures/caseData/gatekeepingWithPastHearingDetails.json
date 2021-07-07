@@ -99,17 +99,6 @@
             "dateOfBirth": "2015-08-01"
           }
         }
-      },
-      {
-        "id": "bbb6ec04-0ff4-4731-86e7-71e8ca33eaa5",
-        "value": {
-          "party": {
-            "gender": "Girl",
-            "lastName": "Jones",
-            "firstName": "Stephanie",
-            "dateOfBirth": "2017-02-15"
-          }
-        }
       }
     ],
     "solicitor": {

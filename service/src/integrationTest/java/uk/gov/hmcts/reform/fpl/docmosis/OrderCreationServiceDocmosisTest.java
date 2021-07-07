@@ -45,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHo
 import uk.gov.hmcts.reform.fpl.service.orders.generator.UploadedOrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
+import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 
 import java.io.IOException;
 import java.util.stream.Stream;
@@ -91,6 +92,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     UploadedOrderDocumentGenerator.class,
     DocumentSealingService.class,
     ChildrenSmartSelector.class,
+    ChildSelectionUtils.class
 })
 @MockBeans({@MockBean(DocumentDownloadService.class)})
 public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {

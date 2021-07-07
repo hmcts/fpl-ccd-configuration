@@ -48,7 +48,7 @@ public class C26SecureAccommodationOrderDocumentParameterGenerator implements Do
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     @Override
