@@ -164,6 +164,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "specialGuardians",
+    "FieldType": "Text",
+    "ElementLabel": "Special guardians",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
@@ -186,5 +194,23 @@
     "ElementLabel": "Linked application",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "othersNotified",
+    "FieldType": "Text",
+    "ElementLabel": "Others notified",
+    "SecurityClassification": "Public"
   }
 ]

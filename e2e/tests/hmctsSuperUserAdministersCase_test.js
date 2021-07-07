@@ -12,6 +12,11 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
 }
 
+Scenario('HMCTS super user can add gatekeeping order', async ({I, caseViewPage}) => {
+  await setupScenario(I);
+  await caseViewPage.checkActionsAreAvailable([config.administrationActions.addGatekeepingOrder]);
+});
+
 Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCaseNameEventPage}) => {
   await setupScenario(I);
   caseViewPage.seeInCaseTitle('e2e test case');

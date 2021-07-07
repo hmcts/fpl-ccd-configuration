@@ -295,5 +295,24 @@
     "Label": "Who's excluded?",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sendOrderToAllOthers",
+    "Label": "Send order to all others in the case?",
+    "HintText": "The applicant and respondents will also be sent this order",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "othersTitle",
+    "FieldType": "Label",
+    "Label": "### Others in the case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

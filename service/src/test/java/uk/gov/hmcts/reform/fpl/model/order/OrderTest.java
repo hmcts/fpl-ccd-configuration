@@ -20,11 +20,13 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ORDER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.OTHER_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 
 class OrderTest {
@@ -101,37 +103,50 @@ class OrderTest {
             Arguments.of(C21_BLANK_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C21_BLANK_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C21_BLANK_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C21_BLANK_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C21_BLANK_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C21_BLANK_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C32_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C32_CARE_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C33_INTERIM_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C33_INTERIM_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C33_INTERIM_CARE_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C35A_SUPERVISION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C35A_SUPERVISION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C35A_SUPERVISION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C35A_SUPERVISION_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C35A_SUPERVISION_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C35A_SUPERVISION_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.empty())
+            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, OTHER_DETAILS, Optional.empty())
         );
     }
 
@@ -142,7 +157,7 @@ class OrderTest {
                 Arguments.of(order, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
                 Arguments.of(order, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
                 Arguments.of(order, ORDER_DETAILS, Optional.of(REVIEW)),
-                Arguments.of(order, REVIEW, Optional.empty()))
+                Arguments.of(order, REVIEW, Optional.of(OTHER_DETAILS)))
             );
     }
 }

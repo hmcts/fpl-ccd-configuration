@@ -11,6 +11,7 @@ class SealedOrderHistoryExtraTitleGeneratorTest {
 
     private static final String BLANK_ORDER_TITLE = "Blank order title";
     private static final String UPLOAD_OTHER_TITLE = "Upload other title";
+
     private final SealedOrderHistoryExtraTitleGenerator underTest = new SealedOrderHistoryExtraTitleGenerator();
 
     @Test
