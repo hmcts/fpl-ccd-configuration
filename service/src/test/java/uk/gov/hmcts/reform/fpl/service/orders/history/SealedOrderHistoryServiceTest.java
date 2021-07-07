@@ -7,9 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -18,8 +20,10 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -41,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class SealedOrderHistoryServiceTest {
 
@@ -76,27 +81,42 @@ class SealedOrderHistoryServiceTest {
     private static final DocumentReference SEALED_PDF_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private static final String EXTRA_TITLE = "ExtraTitle";
+    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
+    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
+        Pair.of(LINKED_APPLICATION_ID, "My test application"));
+    private static final YesNo FINAL_MARKER = YesNo.NO;
+    private static final String OTHERS_NOTIFIED = "First other, Second other";
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
+    private final Other other1 = testOther("First other");
+    private final Other other2 = testOther("Second other");
+    private final UUID other1ID = UUID.randomUUID();
+    private final UUID other2ID = UUID.randomUUID();
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final AppointedGuardianFormatter appointedGuardianFormatter = mock(AppointedGuardianFormatter.class);
     private final IdentityService identityService = mock(IdentityService.class);
+    private final OthersService othersService = mock(OthersService.class);
     private final OrderCreationService orderCreationService = mock(OrderCreationService.class);
     private final Time time = mock(Time.class);
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator = mock(
         ManageOrdersClosedCaseFieldGenerator.class);
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator =
         mock(SealedOrderHistoryExtraTitleGenerator.class);
-
-    private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
-    private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
-        Pair.of(LINKED_APPLICATION_ID, "My test application"));
+    private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker =
+        mock(SealedOrderHistoryFinalMarker.class);
+    private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator = mock(
+        SealedOrderHistoryExtraOthersNotifiedGenerator.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
         childrenService,
+        appointedGuardianFormatter,
+        othersService,
         orderCreationService,
         extraTitleGenerator,
+        sealedOrderHistoryFinalMarker,
+        othersNotifiedGenerator,
         time,
         manageOrdersClosedCaseFieldGenerator
     );
@@ -119,8 +139,12 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -139,8 +163,12 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
                 when(manageOrdersClosedCaseFieldGenerator.generate(caseData)).thenReturn(
                     Map.of("somethingClose", "closeCaseValue")
                 );
@@ -163,7 +191,7 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().orderAppliesToAllChildren("Yes").build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -189,7 +217,7 @@ class SealedOrderHistoryServiceTest {
                     .childSelector(Selector.builder().selected(List.of(1)).build())
                     .build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -211,8 +239,12 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -236,8 +268,12 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_IN_THE_PAST
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -260,8 +296,12 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_IN_THE_FUTURE
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -286,8 +326,12 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_LEGACY
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -312,8 +356,12 @@ class SealedOrderHistoryServiceTest {
                         ORDER_APPROVED_LEGACY
                     )).build();
                 mockDocumentUpload(caseData);
-                mockExtraTitleGenerator(caseData);
+                mockGenerators(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
 
                 Map<String, Object> actual = underTest.generate(caseData);
 
@@ -321,6 +369,33 @@ class SealedOrderHistoryServiceTest {
                     "orderCollection", List.of(
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrderWithLinkedApplication().build()),
                         ORDER_APPROVED_LEGACY
+                    )
+                ));
+            }
+        }
+
+        @Test
+        void generateWithSpecialGuardians() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().build();
+                mockDocumentUpload(caseData);
+                mockGenerators(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Guardians names");
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .specialGuardians("Guardians names")
+                            .build())
                     )
                 ));
             }
@@ -419,9 +494,12 @@ class SealedOrderHistoryServiceTest {
 
     private GeneratedOrder.GeneratedOrderBuilder startCommonExpectedGeneratedOrderBuilder() {
         return GeneratedOrder.builder()
+            .others(List.of(element(other1ID, other1), element(other2ID, other2)))
+            .othersNotified(OTHERS_NOTIFIED)
             .orderType(ORDER_TYPE.name())
             .type(ORDER_TYPE.getHistoryTitle())
             .title(EXTRA_TITLE)
+            .markedFinal(FINAL_MARKER.getValue())
             .judgeAndLegalAdvisor(TAB_JUDGE_AND_LEGAL_ADVISOR)
             .children(wrapElements(child1))
             .childrenDescription(CHILD_1_FULLNAME)
@@ -431,13 +509,13 @@ class SealedOrderHistoryServiceTest {
             .dateTimeIssued(NOW);
     }
 
-    private void mockExtraTitleGenerator(CaseData caseData) {
+    private void mockGenerators(CaseData caseData) {
         when(extraTitleGenerator.generate(caseData)).thenReturn(EXTRA_TITLE);
+        when(sealedOrderHistoryFinalMarker.calculate(caseData)).thenReturn(FINAL_MARKER);
     }
 
     private void mockHelper(MockedStatic<JudgeAndLegalAdvisorHelper> jalMock) {
         jalMock.when(() -> JudgeAndLegalAdvisorHelper.getJudgeForTabView(JUDGE_AND_LEGAL_ADVISOR, JUDGE))
             .thenReturn(TAB_JUDGE_AND_LEGAL_ADVISOR);
     }
-
 }

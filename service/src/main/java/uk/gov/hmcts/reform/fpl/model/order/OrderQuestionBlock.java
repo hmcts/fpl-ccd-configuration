@@ -40,6 +40,10 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersCareOrderIssuedDate", "manageOrdersCareOrderIssuedCourt")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
+    APPOINTED_GUARDIAN("appointedGuardian", "Who's the appointed guardian?", OrderSection.ORDER_DETAILS,
+        List.of("appointedGuardians_label", "appointedGuardianSelector")),
+    ORDER_BY_CONSENT("orderIsByConsent", "Is the order by consent?", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersIsByConsent")),
     MANAGE_ORDER_END_DATE_WITH_MONTH(
         "manageOrdersExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
@@ -56,7 +60,9 @@ public enum OrderQuestionBlock {
         "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),
     CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
-        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning"));
+        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning")),
+    WHICH_OTHERS("whichOthers", "Which others", OrderSection.OTHER_DETAILS,
+        List.of("sendOrderToAllOthers", "others_label", "othersSelector"));
 
     private final String showHideField;
     private final String question;

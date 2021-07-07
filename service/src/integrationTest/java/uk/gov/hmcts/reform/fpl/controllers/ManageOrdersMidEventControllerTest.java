@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -80,6 +79,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("needSealing", "NO"),
         Map.entry("uploadOrderFile", "NO"),
         Map.entry("dischargeOfCareDetails", "NO"),
+        Map.entry("whichOthers", "YES"),
         Map.entry("closeCase", "YES"),
         Map.entry("approvalDate", "YES"),
         Map.entry("approvalDateTime", "NO"),
@@ -87,6 +87,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("epoChildrenDescription", "NO"),
         Map.entry("epoExpiryDate", "NO"),
         Map.entry("epoTypeAndPreventRemoval", "NO"),
+        Map.entry("appointedGuardian", "NO"),
+        Map.entry("orderIsByConsent", "NO"),
         Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
         Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
         Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
@@ -476,6 +478,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
             Map.entry("dischargeOfCareDetails", "NO"),
+            Map.entry("whichOthers", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
@@ -486,6 +489,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
             Map.entry("closeCase", "YES"),
+            Map.entry("appointedGuardian", "NO"),
+            Map.entry("orderIsByConsent", "NO"),
             Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
@@ -512,6 +517,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
             Map.entry("dischargeOfCareDetails", "NO"),
+            Map.entry("whichOthers", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
@@ -522,6 +528,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
             Map.entry("closeCase", "NO"),
+            Map.entry("appointedGuardian", "NO"),
+            Map.entry("orderIsByConsent", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "YES"),

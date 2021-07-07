@@ -17,17 +17,21 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraOthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -56,7 +60,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans({
     @MockBean(CoreCaseDataService.class), @MockBean(IdentityService.class), @MockBean(ChildrenService.class),
     @MockBean(OrderCreationService.class), @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
-    @MockBean(SealedOrderHistoryExtraTitleGenerator.class)
+    @MockBean(SealedOrderHistoryExtraTitleGenerator.class), @MockBean(SealedOrderHistoryFinalMarker.class),
+    @MockBean(AppointedGuardianFormatter.class), @MockBean(OthersService.class),
+    @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
@@ -97,6 +103,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         underTest.notifyParties(new CaseManagementOrderIssuedEvent(caseData, cmo));
 
         List<SendEmailResponse> responses = allResponses();
+
         SendEmailResponse laResponse = responses.get(0);
         SendEmailResponse digitalRepResponse = responses.get(2);
         List.of(laResponse, digitalRepResponse).forEach(response ->
@@ -119,7 +126,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                     .line("HM Courts & Tribunals Service")
                     .line()
                     .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                         + "contactfpl@justice.gov.uk")
+                        + "contactfpl@justice.gov.uk")
                 )
         );
 
@@ -145,7 +152,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                     .line("HM Courts & Tribunals Service")
                     .line()
                     .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                         + "contactfpl@justice.gov.uk")
+                        + "contactfpl@justice.gov.uk")
                 )
         );
 
@@ -167,7 +174,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 

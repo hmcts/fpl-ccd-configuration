@@ -926,20 +926,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "draftSDOLinkDraftOrdersTab",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "draftSDOLinkOrdersTab",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftUploadedCMOs",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
@@ -2798,5 +2784,54 @@
     "CaseFieldID": "manageOrdersHasExclusionRequirement",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersIsByConsent",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "appointedGuardianSelector",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "appointedGuardians_label",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "othersSelector",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherDetailsSectionHeader",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherDetailsSectionSubHeader",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sendOrderToAllOthers",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
   }
 ]
