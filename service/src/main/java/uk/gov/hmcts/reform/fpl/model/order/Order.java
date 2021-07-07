@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.order;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 
 import java.util.List;
 import java.util.Optional;
@@ -412,6 +413,18 @@ public enum Order {
 
     public String fileName(RenderFormat format) {
         return String.format("%s.%s", this.name().toLowerCase(), format.getExtension());
+    }
+
+    public String fileName(RenderFormat format, ManageOrdersEventData manageOrdersEventData) {
+        if (C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.equals(this)) {
+            String c43Orders = manageOrdersEventData.getManageOrdersMultiSelectListForC43()
+                .stream().map(C43OrderType -> C43OrderType.getLabel().toLowerCase().replace(" ", "_"))
+                .collect(Collectors.joining("_"));
+
+            return String.format("c43_%s.%s", c43Orders, format.getExtension());
+        }
+
+        return fileName(format);
     }
 
     public OrderSection firstSection() {

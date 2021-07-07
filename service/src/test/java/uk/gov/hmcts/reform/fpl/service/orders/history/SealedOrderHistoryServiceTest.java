@@ -76,6 +76,7 @@ class SealedOrderHistoryServiceTest {
     private static final DocumentReference SEALED_PDF_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private static final String EXTRA_TITLE = "ExtraTitle";
+    private static final String TYPE = "type";
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
 
@@ -88,6 +89,7 @@ class SealedOrderHistoryServiceTest {
         ManageOrdersClosedCaseFieldGenerator.class);
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator =
         mock(SealedOrderHistoryExtraTitleGenerator.class);
+    private final SealedOrderHistoryTypeGenerator typeGenerator = mock(SealedOrderHistoryTypeGenerator.class);
 
     private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
     private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
@@ -99,6 +101,7 @@ class SealedOrderHistoryServiceTest {
         appointedGuardianFormatter,
         orderCreationService,
         extraTitleGenerator,
+        typeGenerator,
         time,
         manageOrdersClosedCaseFieldGenerator
     );
@@ -122,6 +125,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -142,6 +146,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(manageOrdersClosedCaseFieldGenerator.generate(caseData)).thenReturn(
                     Map.of("somethingClose", "closeCaseValue")
@@ -166,6 +171,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -191,6 +197,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -215,6 +222,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -241,6 +249,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -267,6 +276,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
                 Map<String, Object> actual = underTest.generate(caseData);
@@ -288,6 +298,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockExtraTitleGenerator(caseData);
+                mockTypeGenerator(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Guardians names");
 
@@ -397,7 +408,7 @@ class SealedOrderHistoryServiceTest {
     private GeneratedOrder.GeneratedOrderBuilder startCommonExpectedGeneratedOrderBuilder() {
         return GeneratedOrder.builder()
             .orderType(ORDER_TYPE.name())
-            .type(ORDER_TYPE.getHistoryTitle())
+            .type(TYPE)
             .title(EXTRA_TITLE)
             .judgeAndLegalAdvisor(TAB_JUDGE_AND_LEGAL_ADVISOR)
             .children(wrapElements(child1))
@@ -410,6 +421,10 @@ class SealedOrderHistoryServiceTest {
 
     private void mockExtraTitleGenerator(CaseData caseData) {
         when(extraTitleGenerator.generate(caseData)).thenReturn(EXTRA_TITLE);
+    }
+
+    private void mockTypeGenerator(CaseData caseData) {
+        when(typeGenerator.generate(caseData)).thenReturn(TYPE);
     }
 
     private void mockHelper(MockedStatic<JudgeAndLegalAdvisorHelper> jalMock) {

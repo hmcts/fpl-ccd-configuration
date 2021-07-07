@@ -4,15 +4,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.CHILD_ARRANGEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.PROHIBITED_STEPS_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.SPECIFIC_ISSUE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
@@ -37,10 +43,6 @@ class OrderTest {
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c21_blank_order.doc");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32_care_order.pdf");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32_care_order.doc");
-        assertThat(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.fileName(RenderFormat.PDF)).isEqualTo(
-            "c43_child_arrangement_specific_issue_prohibited_steps_order.pdf");
-        assertThat(C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.fileName(RenderFormat.WORD)).isEqualTo(
-            "c43_child_arrangement_specific_issue_prohibited_steps_order.doc");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo(
             "c32b_discharge_of_care_order.pdf");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo(
@@ -61,6 +63,23 @@ class OrderTest {
             .isEqualTo("c47a_appointment_of_a_childrens_guardian.pdf");
         assertThat(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.fileName(RenderFormat.WORD))
             .isEqualTo("c47a_appointment_of_a_childrens_guardian.doc");
+    }
+
+    @ParameterizedTest
+    @MethodSource("c43Orders")
+    void c43ChildArrangementSpecificIssueProhibitedStepsOrderFileExtension(List<C43OrderType> orders,
+                                                                        String expectedString) {
+        Order order = C43_CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
+
+        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+            .manageOrdersMultiSelectListForC43(orders)
+            .build();
+
+        String expectedPdfString = expectedString + ".pdf";
+        String expectedWordString = expectedString + ".doc";
+
+        assertThat(order.fileName(RenderFormat.PDF, manageOrdersEventData)).isEqualTo(expectedPdfString);
+        assertThat(order.fileName(RenderFormat.WORD, manageOrdersEventData)).isEqualTo(expectedWordString);
     }
 
     @Test
@@ -101,6 +120,22 @@ class OrderTest {
             .collect(Collectors.toSet());
 
         assertThat(testedOrders).isEqualTo(allOrders);
+    }
+
+    private static Stream<Arguments> c43Orders() {
+        return Stream.of(
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER), "c43_child_arrangements"),
+            Arguments.of(List.of(SPECIFIC_ISSUE_ORDER), "c43_specific_issue"),
+            Arguments.of(List.of(PROHIBITED_STEPS_ORDER), "c43_prohibited_steps"),
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER),
+                "c43_child_arrangements_specific_issue"),
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, PROHIBITED_STEPS_ORDER),
+                "c43_child_arrangements_prohibited_steps"),
+            Arguments.of(List.of(SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER),
+                "c43_specific_issue_prohibited_steps"),
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER),
+                "c43_child_arrangements_specific_issue_prohibited_steps")
+        );
     }
 
     private static Stream<Arguments> sectionsWithNext() {

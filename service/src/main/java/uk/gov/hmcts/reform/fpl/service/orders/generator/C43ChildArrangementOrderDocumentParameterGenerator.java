@@ -89,7 +89,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         return DocmosisTemplates.ORDER_V2;
     }
 
-    private String getOrderTitle(ManageOrdersEventData eventData) {
+    public static String getOrderTitle(ManageOrdersEventData eventData) {
         List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
 
         switch (orders.size()) {
