@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
@@ -9,6 +9,7 @@ const operations = {
   options: {
     create: 'CREATE',
     upload: 'UPLOAD',
+    amend: 'AMEND',
   },
 };
 
@@ -77,7 +78,7 @@ const section4 = {
   title: '#manageOrdersTitle',
   directions: '#manageOrdersDirections',
   furtherDirections: '#manageOrdersFurtherDirections',
-  careOrderIssuedDate:  '#manageOrdersCareOrderIssuedDate',
+  careOrderIssuedDate: '#manageOrdersCareOrderIssuedDate',
   careOrderIssuedVenue: '#manageOrdersCareOrderIssuedCourt',
   epoTypes: {
     group: '#manageOrdersEpoType',
@@ -169,6 +170,11 @@ const preview = {
   },
 };
 
+const amendment = {
+  list: '#manageOrdersAmendmentList',
+  upload: '#manageOrdersAmendedOrder',
+};
+
 // Actions
 const selectOperation = async (operationType) => {
   I.click(`${operations.group}-${operationType}`);
@@ -178,6 +184,10 @@ const selectOperation = async (operationType) => {
 const selectOperationInClosedState = async (operationType) => {
   I.click(`${operations.groupInClosedState}-${operationType}`);
   await I.runAccessibilityTest();
+};
+
+const selectOrderToAmend = order => {
+  I.selectOption(amendment.list, order);
 };
 
 const selectRelatedToHearing = (answer) => {
@@ -364,13 +374,22 @@ const confirmNoApplicationCanBeLinked = () => {
   I.dontSee('Is there an application for the order on the system?');
 };
 
+const reviewOrderToAmend = fileName => {
+  I.see('Open the attached order in PDF-Xchange Editor to make changes.');
+  I.see(fileName);
+};
+
+const uploadAmendedOrder = amendedOrder => {
+  I.attachFile(amendment.upload, amendedOrder);
+};
+
 module.exports = {
-  operations, hearingDetails, orders, section2, section3, section4,
-  selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
+  operations, hearingDetails, orders, section2, section3, section4, amendment,
+  selectOperation, selectOrderToAmend, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, selectIsFinalOrder, selectIsNotFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked,
-  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
+  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, reviewOrderToAmend, uploadAmendedOrder,
 };
