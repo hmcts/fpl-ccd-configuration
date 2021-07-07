@@ -13,17 +13,15 @@ module.exports = {
     applicationList: '#removableApplicationList',
   },
 
-  async selectOrderToRemove(option) {
+  selectOrderToRemove(option) {
     I.click(this.fields.selection.order);
     I.waitForElement(this.fields.orderList);
-    await I.runAccessibilityTest();
     I.selectOption(this.fields.orderList, option);
   },
 
-  async selectApplicationToRemove(option) {
+  selectApplicationToRemove(option) {
     I.click(this.fields.selection.application);
     I.waitForElement(this.fields.applicationList);
-    await I.runAccessibilityTest();
     I.selectOption(this.fields.applicationList, option);
   },
 

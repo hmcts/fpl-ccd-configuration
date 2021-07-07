@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -163,7 +163,7 @@ class GeneratedOrderRemovalActionTest {
 
             assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
                 generatedOrder))
-                .isInstanceOf(RemovableOrderNotFoundException.class)
+                .isInstanceOf(RemovableOrderOrApplicationNotFoundException.class)
                 .hasMessage("Removable order or application with id %s not found", ALREADY_REMOVED_ORDER_ID);
         }
 
@@ -600,7 +600,7 @@ class GeneratedOrderRemovalActionTest {
 
             assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
                 generatedOrder))
-                .isInstanceOf(RemovableOrderNotFoundException.class)
+                .isInstanceOf(RemovableOrderOrApplicationNotFoundException.class)
                 .hasMessage("Removable order or application with id %s not found", ALREADY_REMOVED_ORDER_ID);
         }
 

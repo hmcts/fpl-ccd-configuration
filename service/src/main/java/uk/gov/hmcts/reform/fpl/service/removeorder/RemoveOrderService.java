@@ -3,34 +3,29 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class RemovalService {
+public class RemoveOrderService {
 
     private final OrderRemovalActions orderRemovalActions;
 
@@ -69,37 +64,7 @@ public class RemovalService {
             .filter(orderElement -> removedOrderId.equals(orderElement.getId()))
             .map(Element::getValue)
             .findAny()
-            .orElseThrow(() -> new RemovableOrderNotFoundException(removedOrderId));
-    }
-
-    public Element<AdditionalApplicationsBundle> getRemovedApplicationById(CaseData caseData, UUID selectedBundleId) {
-        return caseData.getAdditionalApplicationsBundle().stream()
-            .filter(orderElement -> selectedBundleId.equals(orderElement.getId()))
-            .findAny()
-            .orElseThrow(() -> new RemovableOrderNotFoundException(selectedBundleId));
-    }
-
-    public DynamicList buildDynamicListOfApplications(CaseData caseData) {
-        return buildDynamicListOfApplications(caseData, null);
-    }
-
-    public DynamicList buildDynamicListOfApplications(CaseData caseData, UUID selected) {
-        List<Element<AdditionalApplicationsBundle>> applications = defaultIfNull(
-            caseData.getAdditionalApplicationsBundle(), new ArrayList<>());
-
-        applications.sort(Comparator
-            .comparing((Element<AdditionalApplicationsBundle> bundle) -> bundle.getValue().getUploadedDateTime()));
-
-        return asDynamicList(applications, selected, AdditionalApplicationsBundle::toLabel);
-    }
-
-    public void populateApplicationFields(CaseDetailsMap data, AdditionalApplicationsBundle application) {
-        data.put("applicationTypeToBeRemoved", application.toLabel());
-        data.put("c2ApplicationToBeRemoved", defaultIfNull(application.getC2DocumentBundle(),
-            C2DocumentBundle.builder().build()).getDocument());
-        data.put("otherApplicationToBeRemoved", defaultIfNull(application.getOtherApplicationsBundle(),
-            OtherApplicationsBundle.builder().build()).getDocument());
-        data.put("orderDateToBeRemoved", application.getUploadedDateTime());
+            .orElseThrow(() -> new RemovableOrderOrApplicationNotFoundException(removedOrderId));
     }
 
     public Optional<StandardDirectionOrder> getRemovedSDO(

@@ -52,7 +52,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hiddenApplicationsBundle",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "removeOrderWarning",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "removeApplicationWarning",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "R"
   },
@@ -68,7 +82,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicationToBeRemovedLabel",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -76,7 +90,8 @@
     "CaseFieldID": "c2ApplicationToBeRemoved",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
-  },  {
+  },
+  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherApplicationToBeRemoved",

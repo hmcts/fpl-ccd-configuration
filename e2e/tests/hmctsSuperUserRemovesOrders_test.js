@@ -121,10 +121,12 @@ Scenario('HMCTS super user removes an application from the case', async ({I, cas
   const labelToSelect = 'C2, ' + applicationToRemove.uploadedDateTime;
 
   await caseViewPage.goToNewActions(config.superUserActions.removeOrdersAndApplications);
-  await removeOrderEventPage.selectApplicationToRemove(labelToSelect);
+  removeOrderEventPage.selectApplicationToRemove(labelToSelect);
+  await I.runAccessibilityTest();
   await I.goToNextPage();
 
-  await removeOrderEventPage.addRemoveApplicationReason('Mistakes were made');
+  removeOrderEventPage.addRemoveApplicationReason('Mistakes were made');
+  await I.runAccessibilityTest();
   await I.completeEvent('Submit');
 
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.otherApplications);
@@ -132,11 +134,13 @@ Scenario('HMCTS super user removes an application from the case', async ({I, cas
 
 const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect, reasonFieldExists) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrdersAndApplications);
-  await removeOrderEventPage.selectOrderToRemove(labelToSelect);
+  removeOrderEventPage.selectOrderToRemove(labelToSelect);
+  await I.runAccessibilityTest();
   await I.goToNextPage();
   if(reasonFieldExists) {
     removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
   }
+  await I.runAccessibilityTest();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.superUserActions.removeOrdersAndApplications);
 };

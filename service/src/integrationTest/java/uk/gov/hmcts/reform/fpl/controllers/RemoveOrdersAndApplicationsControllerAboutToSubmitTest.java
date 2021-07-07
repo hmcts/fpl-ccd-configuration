@@ -56,9 +56,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@WebMvcTest(RemoveOrderController.class)
+@WebMvcTest(RemoveOrdersAndApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
+class RemoveOrdersAndApplicationsControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final String REASON = "The order was removed because the order was removed";
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final UUID REMOVED_ORDER_ID = UUID.randomUUID();
@@ -68,7 +68,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private Element<GeneratedOrder> selectedOrder;
 
-    RemoveOrderControllerAboutToSubmitTest() {
+    RemoveOrdersAndApplicationsControllerAboutToSubmitTest() {
         super("remove-order");
     }
 
@@ -95,17 +95,21 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveTemporaryFields() {
         Map<String, Object> fields = new HashMap<>();
 
+        fields.put("removeOrderOrApplication", "ORDER");
+        fields.put("removableApplicationList", DynamicList.builder().build());
+        fields.put("orderTitleToBeRemoved", "dummy data");
+        fields.put("applicationTypeToBeRemoved", "dummy data");
         fields.put("orderToBeRemoved", "dummy data");
         fields.put("c2ApplicationToBeRemoved", "dummy data");
         fields.put("otherApplicationToBeRemoved", "dummy data");
-        fields.put("orderTitleToBeRemoved", "dummy data");
-        fields.put("applicationTypeToBeRemoved", "dummy data");
         fields.put("orderIssuedDateToBeRemoved", "dummy data");
         fields.put("orderDateToBeRemoved", "dummy data");
+        fields.put("reasonToRemoveApplication", "DUPLICATE");
+        fields.put("applicationRemovalDetails", "dummy data");
         fields.put("hearingToUnlink", "dummy data");
         fields.put("showRemoveCMOFieldsFlag", "dummy data");
-        fields.put("showReasonFieldFlag", "dummy data");
         fields.put("showRemoveSDOWarningFlag", "dummy data");
+        fields.put("showReasonFieldFlag", "dummy data");
 
         CaseDetails caseDetails = asCaseDetails(buildCaseData(selectedOrder));
 
@@ -115,18 +119,22 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(response.getData()).doesNotContainKeys(
             "removableOrderList",
-            "reasonToRemoveOrder",
+            "removableApplicationList",
+            "removeOrderOrApplication",
+            "orderTitleToBeRemoved",
+            "applicationTypeToBeRemoved",
             "orderToBeRemoved",
             "c2ApplicationToBeRemoved",
             "otherApplicationToBeRemoved",
-            "orderTitleToBeRemoved",
-            "applicationTypeToBeRemoved",
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
+            "reasonToRemoveOrder",
+            "reasonToRemoveApplication",
+            "applicationRemovalDetails",
             "hearingToUnlink",
             "showRemoveCMOFieldsFlag",
-            "showReasonFieldFlag",
-            "showRemoveSDOWarningFlag"
+            "showRemoveSDOWarningFlag",
+            "showReasonFieldFlag"
         );
     }
 

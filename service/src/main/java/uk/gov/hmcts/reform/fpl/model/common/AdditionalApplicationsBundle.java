@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.MissingApplicationException;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -24,10 +25,14 @@ public class AdditionalApplicationsBundle {
     public String toLabel() {
         if (isNotEmpty(c2DocumentBundle) && isNotEmpty(otherApplicationsBundle)) {
             return String.format("C2, %s", otherApplicationsBundle.toLabel());
-        } else if (isNotEmpty(c2DocumentBundle)) {
+        }
+        if (isNotEmpty(c2DocumentBundle)) {
             return c2DocumentBundle.toLabel();
         }
-        return otherApplicationsBundle.toLabel();
+        if (isNotEmpty(otherApplicationsBundle)) {
+            return otherApplicationsBundle.toLabel();
+        }
 
+        throw new MissingApplicationException(uploadedDateTime);
     }
 }

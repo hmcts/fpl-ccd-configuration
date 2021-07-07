@@ -29,7 +29,7 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.controllers.RemoveOrderController.CMO_ERROR_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.controllers.RemoveOrdersAndApplicationsController.CMO_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -41,14 +41,14 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@WebMvcTest(RemoveOrderController.class)
+@WebMvcTest(RemoveOrdersAndApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
+class RemoveOrdersAndApplicationsControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID REMOVE_ORDER_ID = UUID.randomUUID();
     private Element<GeneratedOrder> selectedOrder;
 
-    RemoveOrderControllerMidEventTest() {
+    RemoveOrdersAndApplicationsControllerMidEventTest() {
         super("remove-order");
     }
 

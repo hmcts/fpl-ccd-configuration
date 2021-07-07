@@ -17,10 +17,10 @@ import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.removeorder.RemovalService;
+import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
+import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.Map;
@@ -36,11 +36,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 @RestController
 @RequestMapping("/callback/remove-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RemoveOrderController extends CallbackController {
+public class RemoveOrdersAndApplicationsController extends CallbackController {
     private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
     private static final String REMOVABLE_APPLICATION_LIST_KEY = "removableApplicationList";
     private final ObjectMapper mapper;
-    private final RemovalService service;
+    private final RemoveOrderService orderService;
+    private final RemoveApplicationService applicationService;
 
     public static final String CMO_ERROR_MESSAGE = "Email the help desk at dcd-familypubliclawservicedesk@hmcts.net to"
         + " remove this order. Quoting CMO %s, and the hearing it was added for.";
@@ -50,8 +51,8 @@ public class RemoveOrderController extends CallbackController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = getCaseData(request.getCaseDetails());
 
-        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData));
-        data.put(REMOVABLE_APPLICATION_LIST_KEY, service.buildDynamicListOfApplications(caseData));
+        data.put(REMOVABLE_ORDER_LIST_KEY, orderService.buildDynamicListOfOrders(caseData));
+        data.put(REMOVABLE_APPLICATION_LIST_KEY, applicationService.buildDynamicList(caseData));
 
         return respond(data);
     }
@@ -64,23 +65,24 @@ public class RemoveOrderController extends CallbackController {
 
         if (caseData.getRemoveOrderOrApplication() == APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
-            AdditionalApplicationsBundle application = service.getRemovedApplicationById(
+            AdditionalApplicationsBundle application = applicationService.getRemovedApplicationById(
                 caseData, removedApplicationId).getValue();
 
-            service.populateApplicationFields(caseDetailsMap, application);
+            applicationService.populateApplicationFields(caseDetailsMap, application);
 
             // Can be removed once dynamic lists are fixed
             caseDetailsMap.put(REMOVABLE_APPLICATION_LIST_KEY,
-                service.buildDynamicListOfApplications(caseData, removedApplicationId));
+                applicationService.buildDynamicList(caseData, removedApplicationId));
         } else {
             // When dynamic lists are fixed this can be moved into the below method
             UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
-            RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
+            RemovableOrder removableOrder = orderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
-            service.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
+            orderService.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
 
             // Can be removed once dynamic lists are fixed
-            caseDetailsMap.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData, removedOrderId));
+            caseDetailsMap.put(REMOVABLE_ORDER_LIST_KEY,
+                orderService.buildDynamicListOfOrders(caseData, removedOrderId));
         }
         return respond(caseDetailsMap);
     }
@@ -93,30 +95,29 @@ public class RemoveOrderController extends CallbackController {
 
         if (caseData.getRemoveOrderOrApplication() == APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
-            Element<AdditionalApplicationsBundle> bundleElement = service.getRemovedApplicationById(
-                caseData, removedApplicationId);
-
-            caseData.getAdditionalApplicationsBundle().remove(bundleElement);
-            caseDetailsMap.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
+            applicationService.removeApplicationFromCase(caseData, caseDetailsMap, removedApplicationId);
         } else {
             UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
-            RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
+            RemovableOrder removableOrder = orderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
-            service.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);
+            orderService.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);
 
         }
         removeTemporaryFields(
             caseDetailsMap,
             REMOVABLE_ORDER_LIST_KEY,
-            "reasonToRemoveOrder",
-            "reasonToRemoveApplication",
+            REMOVABLE_APPLICATION_LIST_KEY,
+            "removeOrderOrApplication",
+            "orderTitleToBeRemoved",
+            "applicationTypeToBeRemoved",
             "orderToBeRemoved",
             "c2ApplicationToBeRemoved",
             "otherApplicationToBeRemoved",
-            "orderTitleToBeRemoved",
-            "applicationTypeToBeRemoved",
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
+            "reasonToRemoveOrder",
+            "reasonToRemoveApplication",
+            "applicationRemovalDetails",
             "hearingToUnlink",
             "showRemoveCMOFieldsFlag",
             "showRemoveSDOWarningFlag",
@@ -131,10 +132,10 @@ public class RemoveOrderController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        Optional<StandardDirectionOrder> removedSDO = service.getRemovedSDO(
+        Optional<StandardDirectionOrder> removedSDO = orderService.getRemovedSDO(
             caseData.getHiddenStandardDirectionOrders(), caseDataBefore.getHiddenStandardDirectionOrders()
         );
-        Optional<HearingOrder> removedCMO = service.getRemovedCMO(
+        Optional<HearingOrder> removedCMO = orderService.getRemovedCMO(
             caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs()
         );
 

@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -20,16 +21,16 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C4_WHEREABOUTS_OF_A_MISSING_CHILD;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-class RemovalServiceApplicationsTest {
+class RemoveApplicationServiceTest {
 
-    private final RemovalService underTest = new RemovalService(mock(OrderRemovalActions.class));
+    private final RemoveApplicationService underTest = new RemoveApplicationService();
 
     @Test
     void shouldBuildSortedDynamicListOfApplications() {
@@ -42,7 +43,7 @@ class RemovalServiceApplicationsTest {
 
         CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
 
-        DynamicList listOfApplications = underTest.buildDynamicListOfApplications(caseData);
+        DynamicList listOfApplications = underTest.buildDynamicList(caseData);
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
@@ -65,7 +66,7 @@ class RemovalServiceApplicationsTest {
 
         CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
 
-        DynamicList listOfApplications = underTest.buildDynamicListOfApplications(caseData, applicationId);
+        DynamicList listOfApplications = underTest.buildDynamicList(caseData, applicationId);
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.builder().code(applicationId).label("C2, 12 May 2020").build())
@@ -79,7 +80,7 @@ class RemovalServiceApplicationsTest {
 
     @Test
     void shouldPopulateApplicationFieldsWithC2Application() {
-        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(Map.of());
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(Map.of());
 
         AdditionalApplicationsBundle application = buildC2Application("15 October 2020");
         underTest.populateApplicationFields(caseDetailsMap, application);
@@ -95,7 +96,7 @@ class RemovalServiceApplicationsTest {
 
     @Test
     void shouldPopulateApplicationFieldsWithOtherApplication() {
-        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(Map.of());
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(Map.of());
 
         AdditionalApplicationsBundle application = buildOtherApplication(C1_APPOINTMENT_OF_A_GUARDIAN,
             "15 October 2020");
@@ -125,6 +126,26 @@ class RemovalServiceApplicationsTest {
     }
 
     @Test
+    void shouldRemoveApplicationFromCaseDetailsAndUpdateHiddenApplications() {
+        UUID id = UUID.randomUUID();
+        Element<AdditionalApplicationsBundle> bundleToRemove = element(id, buildC2Application("12 May 2020"));
+        List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
+        applications.add(element(buildC2Application("3 June 2020")));
+        applications.add(bundleToRemove);
+        applications.add(element(buildC2Application("25 December 2020")));
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of("additionalApplicationsBundle", applications))
+            .build());
+        CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+        underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
+
+        applications.remove(bundleToRemove);
+        assertThat(caseDetailsMap.get("additionalApplicationsBundle")).isEqualTo(applications);
+        assertThat(caseDetailsMap.get("hiddenApplicationsBundle")).isEqualTo(List.of(bundleToRemove));
+    }
+
+    @Test
     void shouldThrowExceptionWhenElementNotFound() {
         List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
         applications.add(element(buildC2Application("3 June 2020")));
@@ -135,7 +156,7 @@ class RemovalServiceApplicationsTest {
         CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
 
         assertThatThrownBy(() -> underTest.getRemovedApplicationById(caseData, id))
-            .isInstanceOf(RemovableOrderNotFoundException.class)
+            .isInstanceOf(RemovableOrderOrApplicationNotFoundException.class)
             .hasMessage(String.format("Removable order or application with id %s not found", id));
     }
 

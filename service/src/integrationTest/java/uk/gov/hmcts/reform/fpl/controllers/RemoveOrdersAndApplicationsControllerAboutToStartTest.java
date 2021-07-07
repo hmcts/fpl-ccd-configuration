@@ -46,12 +46,12 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@WebMvcTest(RemoveOrderController.class)
+@WebMvcTest(RemoveOrdersAndApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
+class RemoveOrdersAndApplicationsControllerAboutToStartTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
-    RemoveOrderControllerAboutToStartTest() {
+    RemoveOrdersAndApplicationsControllerAboutToStartTest() {
         super("remove-order");
     }
 
