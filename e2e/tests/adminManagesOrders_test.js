@@ -389,47 +389,11 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I,caseViewPage,{
-    orderIndex: 3,
+    orderIndex: 4,
     orderType: manageOrdersEventPage.orders.title.c43,
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
-    others: 'John Doe',
-  });
-});
-
-Scenario('Create C43a special guardianship order', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
-  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
-  await I.goToNextPage();
-  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c43a);
-  await I.goToNextPage();
-  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
-  await I.goToNextPage();
-  manageOrdersEventPage.enterJudge();
-  await manageOrdersEventPage.enterApprovalDateTime(today);
-  await I.goToNextPage();
-  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
-  await I.goToNextPage();
-  manageOrdersEventPage.selectOrderByConsent();
-  await manageOrdersEventPage.selectGuardian([0]);
-  await manageOrdersEventPage.enterFurtherDirections('Further special guardianship details.');
-  await manageOrdersEventPage.selectIsFinalOrder();
-  await I.goToNextPage();
-  await manageOrdersEventPage.checkPreview();
-  await I.goToNextPage();
-  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I, caseViewPage, {
-    orderIndex: 1,
-    orderType: 'Special guardianship order (C43A)',
-    orderTitle: orderTitle,
-    approvalDate: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
-    specialGuardian: 'Joe Bloggs',
     others: 'John Doe',
   });
 });
@@ -494,7 +458,7 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 8,
+    orderIndex: 9,
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
