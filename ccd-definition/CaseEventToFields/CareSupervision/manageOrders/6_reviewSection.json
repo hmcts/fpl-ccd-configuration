@@ -48,7 +48,7 @@
     "PageID": "review",
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersCloseCase=\"Yes\"",
+    "FieldShowCondition": "orderTempQuestions.closeCase=\"YES\" AND manageOrdersCloseCase=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
