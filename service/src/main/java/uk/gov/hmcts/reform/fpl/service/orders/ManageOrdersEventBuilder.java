@@ -24,9 +24,11 @@ public class ManageOrdersEventBuilder {
         GeneratedOrder lastGeneratedOrder = historyService.lastGeneratedOrder(caseData);
 
         if (!isAmendedOrder(currentOrders, oldOrders)) {
+            System.out.println("I am triggering a generated order event");
             return new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument());
         }
 
+        System.out.println("I am triggering an amended order event");
         return new AmendedOrderEvent(caseData, lastGeneratedOrder.getDocument());
     }
 
