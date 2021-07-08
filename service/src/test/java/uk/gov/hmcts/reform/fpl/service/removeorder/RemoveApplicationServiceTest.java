@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.processing.Generated;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER;
@@ -26,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C4_WHEREABOUTS_OF_A_MISSING_CHILD;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class RemoveApplicationServiceTest {
@@ -138,11 +142,38 @@ class RemoveApplicationServiceTest {
             .data(Map.of("additionalApplicationsBundle", applications))
             .build());
         CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+
+        underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
+        applications.remove(bundleToRemove);
+
+        assertThat(caseDetailsMap.get("additionalApplicationsBundle")).isEqualTo(applications);
+        assertThat(caseDetailsMap.get("hiddenApplicationsBundle")).isEqualTo(List.of(bundleToRemove));
+    }
+
+    @Test
+    void shouldRemoveLinkedApplicationIdFromOrder() {
+        UUID id = UUID.randomUUID();
+        Element<AdditionalApplicationsBundle> bundleToRemove = element(id, buildC2Application("12 May 2020"));
+        List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
+        applications.add(bundleToRemove);
+
+        List<Element<GeneratedOrder>> orders = List.of(element(GeneratedOrder.builder()
+            .linkedApplicationId(id.toString())
+            .build()));
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of("additionalApplicationsBundle", applications,
+                "orderCollection", orders))
+            .build());
+        CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
         underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
 
         applications.remove(bundleToRemove);
-        assertThat(caseDetailsMap.get("additionalApplicationsBundle")).isEqualTo(applications);
+        orders.get(0).getValue().setLinkedApplicationId(null);
+
+        assertThat(caseDetailsMap).doesNotContainKey("additionalApplicationsBundle");
         assertThat(caseDetailsMap.get("hiddenApplicationsBundle")).isEqualTo(List.of(bundleToRemove));
+        assertThat(caseDetailsMap.get("orderCollection")).isEqualTo(orders);
     }
 
     @Test

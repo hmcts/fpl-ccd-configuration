@@ -10,15 +10,18 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -57,8 +60,17 @@ public class RemoveApplicationService {
     public void removeApplicationFromCase(CaseData caseData, CaseDetailsMap caseDetailsMap, UUID removedApplicationId) {
         Element<AdditionalApplicationsBundle> bundleElement = getRemovedApplicationById(caseData, removedApplicationId);
 
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+        for (int i = 0; i < orders.size(); i++) {
+            Element<GeneratedOrder> order = orders.get(i);
+            if (bundleElement.getId().toString().equals(order.getValue().getLinkedApplicationId())) {
+                order = element(order.getId(), order.getValue().toBuilder().linkedApplicationId(null).build());
+                orders.set(i, order);
+            }
+        }
+
         caseData.getAdditionalApplicationsBundle().remove(bundleElement);
-        caseDetailsMap.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
+        caseDetailsMap.putIfNotEmpty("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
 
         List<Element<AdditionalApplicationsBundle>> hiddenApplications = caseData.getHiddenApplicationsBundle();
         hiddenApplications.add(bundleElement);
