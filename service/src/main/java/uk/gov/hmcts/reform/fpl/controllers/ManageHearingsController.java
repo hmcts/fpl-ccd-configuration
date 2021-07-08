@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
@@ -231,7 +232,7 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
+        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
 
         if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
             Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
@@ -356,7 +357,9 @@ public class ManageHearingsController extends CallbackController {
     }
 
     private boolean isAddingNewHearing(CaseData caseData) {
-        return isEmpty(caseData.getHearingOption()) || NEW_HEARING.equals(caseData.getHearingOption());
+        return isEmpty(caseData.getHearingOption())
+            || NEW_HEARING.equals(caseData.getHearingOption())
+            || YesNo.fromString(caseData.getFirstHearingFlag()) == YES;
     }
 
     private boolean isNewOrReListedHearing(CaseData caseData) {
