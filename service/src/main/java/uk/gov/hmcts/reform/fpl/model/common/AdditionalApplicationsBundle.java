@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.MissingApplicationException;
+import uk.gov.hmcts.reform.fpl.exceptions.removaltool.MissingApplicationException;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;

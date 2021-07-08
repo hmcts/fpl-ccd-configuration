@@ -1,5 +1,5 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-public enum OrderOrApplication {
+public enum RemovableType {
     ORDER, APPLICATION;
 }

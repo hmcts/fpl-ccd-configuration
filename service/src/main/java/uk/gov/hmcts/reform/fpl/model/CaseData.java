@@ -21,10 +21,10 @@ import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
-import uk.gov.hmcts.reform.fpl.enums.OrderOrApplication;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
+import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
@@ -447,7 +447,7 @@ public class CaseData {
     private final Object removableApplicationList;
     private final String reasonToRemoveOrder;
     private final List<Element<GeneratedOrder>> hiddenOrders;
-    private final OrderOrApplication removeOrderOrApplication;
+    private final RemovableType removeRemovableType;
 
     public List<Element<GeneratedOrder>> getHiddenOrders() {
         return defaultIfNull(hiddenOrders, new ArrayList<>());

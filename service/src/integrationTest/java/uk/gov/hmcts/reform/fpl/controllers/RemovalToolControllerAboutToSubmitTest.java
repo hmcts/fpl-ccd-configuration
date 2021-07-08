@@ -47,18 +47,18 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.OrderOrApplication.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@WebMvcTest(RemoveOrdersAndApplicationsController.class)
+@WebMvcTest(RemovalToolController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrdersAndApplicationsControllerAboutToSubmitTest extends AbstractCallbackTest {
+class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final String REASON = "The order was removed because the order was removed";
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final UUID REMOVED_ORDER_ID = UUID.randomUUID();
@@ -68,7 +68,7 @@ class RemoveOrdersAndApplicationsControllerAboutToSubmitTest extends AbstractCal
 
     private Element<GeneratedOrder> selectedOrder;
 
-    RemoveOrdersAndApplicationsControllerAboutToSubmitTest() {
+    RemovalToolControllerAboutToSubmitTest() {
         super("remove-order");
     }
 
@@ -95,7 +95,7 @@ class RemoveOrdersAndApplicationsControllerAboutToSubmitTest extends AbstractCal
     void shouldRemoveTemporaryFields() {
         Map<String, Object> fields = new HashMap<>();
 
-        fields.put("removeOrderOrApplication", "ORDER");
+        fields.put("removableType", "ORDER");
         fields.put("removableApplicationList", DynamicList.builder().build());
         fields.put("orderTitleToBeRemoved", "dummy data");
         fields.put("applicationTypeToBeRemoved", "dummy data");
@@ -120,7 +120,7 @@ class RemoveOrdersAndApplicationsControllerAboutToSubmitTest extends AbstractCal
         assertThat(response.getData()).doesNotContainKeys(
             "removableOrderList",
             "removableApplicationList",
-            "removeOrderOrApplication",
+            "removableType",
             "orderTitleToBeRemoved",
             "applicationTypeToBeRemoved",
             "orderToBeRemoved",
@@ -419,14 +419,14 @@ class RemoveOrdersAndApplicationsControllerAboutToSubmitTest extends AbstractCal
             .build();
 
         CaseData caseData = CaseData.builder()
-            .removeOrderOrApplication(APPLICATION)
+            .removeRemovableType(APPLICATION)
             .additionalApplicationsBundle(List.of(element(applicationId, application)))
             .removableApplicationList(dynamicList)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        assertThat(responseData.getAdditionalApplicationsBundle()).isEmpty();
+        assertThat(responseData.getAdditionalApplicationsBundle()).isNull();
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {

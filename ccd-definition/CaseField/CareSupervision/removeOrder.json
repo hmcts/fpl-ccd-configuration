@@ -2,10 +2,10 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "removeOrderOrApplication",
+    "ID": "removableType",
     "Label": "What do you want to remove?",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "OrderOrApplication",
+    "FieldTypeParameter": "RemovableType",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

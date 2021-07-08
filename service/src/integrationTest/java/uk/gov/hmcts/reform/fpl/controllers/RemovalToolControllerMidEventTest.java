@@ -29,26 +29,26 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.controllers.RemoveOrdersAndApplicationsController.CMO_ERROR_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.controllers.RemovalToolController.CMO_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.OrderOrApplication.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@WebMvcTest(RemoveOrdersAndApplicationsController.class)
+@WebMvcTest(RemovalToolController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrdersAndApplicationsControllerMidEventTest extends AbstractCallbackTest {
+class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID REMOVE_ORDER_ID = UUID.randomUUID();
     private Element<GeneratedOrder> selectedOrder;
 
-    RemoveOrdersAndApplicationsControllerMidEventTest() {
+    RemovalToolControllerMidEventTest() {
         super("remove-order");
     }
 
@@ -303,7 +303,7 @@ class RemoveOrdersAndApplicationsControllerMidEventTest extends AbstractCallback
             .build();
 
         CaseData caseData = CaseData.builder()
-            .removeOrderOrApplication(APPLICATION)
+            .removeRemovableType(APPLICATION)
             .additionalApplicationsBundle(List.of(element(applicationId, application)))
             .removableApplicationList(dynamicList)
             .build();

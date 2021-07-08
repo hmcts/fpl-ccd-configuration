@@ -54,9 +54,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
-@WebMvcTest(RemoveOrdersAndApplicationsController.class)
+@WebMvcTest(RemovalToolController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrdersAndApplicationsControllerSubmittedEvent extends AbstractCallbackTest {
+class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String CASE_ID = "12345";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
@@ -81,7 +81,7 @@ class RemoveOrdersAndApplicationsControllerSubmittedEvent extends AbstractCallba
     @MockBean
     private FeatureToggleService toggleService;
 
-    RemoveOrdersAndApplicationsControllerSubmittedEvent() {
+    RemovalToolControllerSubmittedEvent() {
         super("remove-order");
     }
 

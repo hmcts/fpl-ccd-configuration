@@ -3,8 +3,8 @@ const {I} = inject();
 module.exports = {
   fields: {
     selection: {
-      order: '#removeOrderOrApplication-ORDER',
-      application: '#removeOrderOrApplication-APPLICATION',
+      order: '#removableType-ORDER',
+      application: '#removableType-APPLICATION',
     },
     orderReason: '#reasonToRemoveOrder',
     applicationReason: '#reasonToRemoveApplication',

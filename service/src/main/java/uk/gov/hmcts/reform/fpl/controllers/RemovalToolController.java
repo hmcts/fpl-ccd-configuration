@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.OrderOrApplication.APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 @RestController
 @RequestMapping("/callback/remove-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RemoveOrdersAndApplicationsController extends CallbackController {
+public class RemovalToolController extends CallbackController {
     private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
     private static final String REMOVABLE_APPLICATION_LIST_KEY = "removableApplicationList";
     private final ObjectMapper mapper;
@@ -63,7 +63,7 @@ public class RemoveOrdersAndApplicationsController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemoveOrderOrApplication() == APPLICATION) {
+        if (caseData.getRemoveRemovableType() == APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
             AdditionalApplicationsBundle application = applicationService.getRemovedApplicationById(
                 caseData, removedApplicationId).getValue();
@@ -93,7 +93,7 @@ public class RemoveOrdersAndApplicationsController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemoveOrderOrApplication() == APPLICATION) {
+        if (caseData.getRemoveRemovableType() == APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
             applicationService.removeApplicationFromCase(caseData, caseDetailsMap, removedApplicationId);
         } else {
@@ -107,7 +107,7 @@ public class RemoveOrdersAndApplicationsController extends CallbackController {
             caseDetailsMap,
             REMOVABLE_ORDER_LIST_KEY,
             REMOVABLE_APPLICATION_LIST_KEY,
-            "removeOrderOrApplication",
+            "removableType",
             "orderTitleToBeRemoved",
             "applicationTypeToBeRemoved",
             "orderToBeRemoved",
