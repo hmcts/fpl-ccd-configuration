@@ -40,7 +40,6 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
-  await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
   await I.goToNextPage();
   await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
