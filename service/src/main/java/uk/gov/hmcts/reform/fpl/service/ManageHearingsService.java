@@ -346,7 +346,8 @@ public class ManageHearingsService {
             START_DATE_FLAG,
             END_DATE_FLAG,
             "hasSession",
-            "hearingPresence"
+            "hearingPresence",
+            "hearingOption"
         );
     }
 
