@@ -30,6 +30,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AmendCaseManagementOrderActionTest {
     private static final LocalDate AMENDED_DATE = LocalDate.of(12, 12, 12);
+    private static final DocumentReference ORIGINAL_DOCUMENT = mock(DocumentReference.class);
+    private static final DocumentReference AMENDED_DOCUMENT = mock(DocumentReference.class);
 
     private final CaseData caseData = mock(CaseData.class);
     private final ManageOrdersEventData eventData = mock(ManageOrdersEventData.class);
@@ -66,19 +68,16 @@ class AmendCaseManagementOrderActionTest {
 
     @Test
     void applyAmendedOrder() {
-        DocumentReference originalDocument = mock(DocumentReference.class);
-        DocumentReference amendedDocument = mock(DocumentReference.class);
-
+        HearingOrder cmoToAmend = HearingOrder.builder().order(ORIGINAL_DOCUMENT).build();
         Element<HearingOrder> ignoredCMO1 = element(mock(HearingOrder.class));
         Element<HearingOrder> ignoredCMO2 = element(mock(HearingOrder.class));
-        HearingOrder cmoToAmend = HearingOrder.builder().order(originalDocument).build();
 
         when(caseData.getSealedCMOs()).thenReturn(new ArrayList<>(List.of(
             ignoredCMO1, element(selectedOrderId, cmoToAmend), ignoredCMO2
         )));
 
         HearingOrder amendedCMO = cmoToAmend.toBuilder()
-            .order(amendedDocument)
+            .order(AMENDED_DOCUMENT)
             .amendedDate(AMENDED_DATE)
             .build();
 
@@ -86,7 +85,7 @@ class AmendCaseManagementOrderActionTest {
             ignoredCMO1, element(selectedOrderId, amendedCMO), ignoredCMO2
         );
 
-        assertThat(underTest.applyAmendedOrder(caseData, amendedDocument)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
             Map.of("sealedCMOs", amendedOrders)
         );
     }

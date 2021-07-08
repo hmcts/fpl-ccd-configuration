@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendedOrderStamper;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTime;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
@@ -33,15 +31,10 @@ class AmendedOrderStamperTest {
     @TestLogs
     private final TestLogger logs = new TestLogger(AmendedOrderStamper.class);
 
-    private DocumentDownloadService downloadService;
-    private AmendedOrderStamper underTest;
-
-    @BeforeEach
-    void setUp() {
-        downloadService = mock(DocumentDownloadService.class);
-        Time time = new FixedTime(LocalDateTime.of(FIXED_DATE, LocalTime.MIDNIGHT));
-        underTest = new AmendedOrderStamper(downloadService, time);
-    }
+    private final DocumentDownloadService downloadService = mock(DocumentDownloadService.class);
+    private final AmendedOrderStamper underTest = new AmendedOrderStamper(
+        downloadService, new FixedTime(LocalDateTime.of(FIXED_DATE, LocalTime.MIDNIGHT))
+    );
 
     @Test
     void amendedPDF() {

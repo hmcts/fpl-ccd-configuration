@@ -21,6 +21,8 @@ import static org.mockito.Mockito.when;
 
 class AmendStandardDirectionOrderActionTest {
     private static final LocalDate AMENDED_DATE = LocalDate.of(12, 12, 12);
+    private static final DocumentReference ORIGINAL_DOCUMENT = mock(DocumentReference.class);
+    private static final DocumentReference AMENDED_DOCUMENT = mock(DocumentReference.class);
 
     private final CaseData caseData = mock(CaseData.class);
 
@@ -53,18 +55,15 @@ class AmendStandardDirectionOrderActionTest {
 
     @Test
     void applyAmendedOrder() {
-        DocumentReference originalDocument = mock(DocumentReference.class);
-        DocumentReference amendedDocument = mock(DocumentReference.class);
-
         StandardDirectionOrder sdo = StandardDirectionOrder.builder()
-            .orderDoc(originalDocument)
+            .orderDoc(ORIGINAL_DOCUMENT)
             .build();
 
         when(caseData.getStandardDirectionOrder()).thenReturn(sdo);
 
-        StandardDirectionOrder amendedSDO = sdo.toBuilder().amendedDate(AMENDED_DATE).orderDoc(amendedDocument).build();
+        StandardDirectionOrder amendedSDO = sdo.toBuilder().amendedDate(AMENDED_DATE).orderDoc(AMENDED_DOCUMENT).build();
 
-        assertThat(underTest.applyAmendedOrder(caseData, amendedDocument)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
             Map.of("standardDirectionOrder", amendedSDO)
         );
     }

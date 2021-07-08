@@ -20,8 +20,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class AmendUrgentHearingOrderActionTest {
-
     private static final LocalDate AMENDED_DATE = LocalDate.of(12, 12, 12);
+    private static final DocumentReference ORIGINAL_ORDER = mock(DocumentReference.class);
+    private static final DocumentReference AMENDED_ORDER = mock(DocumentReference.class);
 
     private final CaseData caseData = mock(CaseData.class);
 
@@ -56,16 +57,13 @@ class AmendUrgentHearingOrderActionTest {
 
     @Test
     void applyAmendedOrder() {
-        DocumentReference originalOrder = mock(DocumentReference.class);
-        DocumentReference amendedOrder = mock(DocumentReference.class);
-
-        UrgentHearingOrder uho = UrgentHearingOrder.builder().order(originalOrder).build();
+        UrgentHearingOrder uho = UrgentHearingOrder.builder().order(ORIGINAL_ORDER).build();
 
         when(caseData.getUrgentHearingOrder()).thenReturn(uho);
 
-        UrgentHearingOrder amendedUHO = uho.toBuilder().amendedDate(AMENDED_DATE).order(amendedOrder).build();
+        UrgentHearingOrder amendedUHO = uho.toBuilder().amendedDate(AMENDED_DATE).order(AMENDED_ORDER).build();
 
-        assertThat(underTest.applyAmendedOrder(caseData, amendedOrder)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_ORDER)).isEqualTo(
             Map.of("urgentHearingOrder", amendedUHO)
         );
     }

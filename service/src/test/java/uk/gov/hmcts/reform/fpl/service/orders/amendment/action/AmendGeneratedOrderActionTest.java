@@ -27,6 +27,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class AmendGeneratedOrderActionTest {
     private static final LocalDate AMENDED_DATE = LocalDate.of(12, 12, 12);
+    private static final DocumentReference ORIGINAL_DOCUMENT = mock(DocumentReference.class);
+    private static final DocumentReference AMENDED_DOCUMENT = mock(DocumentReference.class);
 
     private final CaseData caseData = mock(CaseData.class);
     private final ManageOrdersEventData eventData = mock(ManageOrdersEventData.class);
@@ -63,19 +65,16 @@ class AmendGeneratedOrderActionTest {
 
     @Test
     void applyAmendedOrder() {
-        DocumentReference originalDocument = mock(DocumentReference.class);
-        DocumentReference amendedDocument = mock(DocumentReference.class);
-
+        GeneratedOrder orderToAmend = GeneratedOrder.builder().document(ORIGINAL_DOCUMENT).build();
         Element<GeneratedOrder> nonAmendedOrder1 = element(mock(GeneratedOrder.class));
         Element<GeneratedOrder> nonAmendedOrder2 = element(mock(GeneratedOrder.class));
-        GeneratedOrder orderToAmend = GeneratedOrder.builder().document(originalDocument).build();
 
         when(caseData.getOrderCollection()).thenReturn(new ArrayList<>(List.of(
             nonAmendedOrder1, element(selectedOrderId, orderToAmend), nonAmendedOrder2
         )));
 
         GeneratedOrder amendedOrder = orderToAmend.toBuilder()
-            .document(amendedDocument)
+            .document(AMENDED_DOCUMENT)
             .amendedDate(AMENDED_DATE)
             .build();
 
@@ -83,7 +82,7 @@ class AmendGeneratedOrderActionTest {
             nonAmendedOrder1, element(selectedOrderId, amendedOrder), nonAmendedOrder2
         );
 
-        assertThat(underTest.applyAmendedOrder(caseData, amendedDocument)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
             Map.of("orderCollection", amendedOrders)
         );
     }
