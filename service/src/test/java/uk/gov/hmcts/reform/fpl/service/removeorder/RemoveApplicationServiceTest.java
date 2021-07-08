@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.processing.Generated;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER;
@@ -29,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C4_WHEREABOUTS_OF_A_MISSING_CHILD;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class RemoveApplicationServiceTest {
