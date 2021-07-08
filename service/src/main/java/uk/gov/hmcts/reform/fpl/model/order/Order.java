@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.order;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DA
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CAFCASS_JURISDICTIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
@@ -30,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
@@ -45,8 +48,8 @@ public enum Order {
         "Section 31 Children Act 1989",
         "C21 - Blank order",
         IsFinalOrder.NO,
-        List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER,
-            APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+        List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
+            TITLE, DETAILS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
         DIGITAL,
@@ -95,6 +98,17 @@ public enum Order {
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION,
             FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+    ),
+    C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
+        DIGITAL,
+        "Child arrangements, Specific issue, Prohibited steps",
+        "Section 8 Children Act 1989",
+        "Child arrangements, Specific issue, Prohibited steps (C43)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ORDER_BY_CONSENT,
+            DETAILS, FURTHER_DIRECTIONS, CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS, CLOSE_CASE,
+            REVIEW_DRAFT_ORDER, WHICH_OTHERS)
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
         DIGITAL,
@@ -264,14 +278,6 @@ public enum Order {
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
-    C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
-        MANUAL_UPLOAD,
-        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        "",
-        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        IsFinalOrder.MAYBE,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
     C44A_LEAVE_TO_CHANGE_SURNAME(
         MANUAL_UPLOAD,
         "Leave to change surname (C44A)",
@@ -391,8 +397,7 @@ public enum Order {
         "Other",
         IsFinalOrder.MAYBE,
         Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    ;
+    );
 
     private final OrderSourceType sourceType;
     private final String title;
@@ -403,6 +408,18 @@ public enum Order {
 
     public String fileName(RenderFormat format) {
         return String.format("%s.%s", this.name().toLowerCase(), format.getExtension());
+    }
+
+    public String fileName(RenderFormat format, ManageOrdersEventData manageOrdersEventData) {
+        if (C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.equals(this)) {
+            String c43Orders = manageOrdersEventData.getManageOrdersMultiSelectListForC43()
+                .stream().map(C43OrderType -> C43OrderType.getLabel().toLowerCase().replace(" ", "_"))
+                .collect(Collectors.joining("_"));
+
+            return String.format("c43_%s.%s", c43Orders, format.getExtension());
+        }
+
+        return fileName(format);
     }
 
     public OrderSection firstSection() {

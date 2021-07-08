@@ -69,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
+        Map.entry("orderTitle", "NO"),
         Map.entry("hearingDetails", "YES"),
         Map.entry("linkApplication", "NO"),
         Map.entry("approver", "YES"),
@@ -92,6 +93,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
         Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
         Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+        Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
         Map.entry("cafcassJurisdictions", "NO"),
         Map.entry("isFinalOrder", "NO")
     ));
@@ -457,6 +459,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("orderTitle", "NO"),
             Map.entry("hearingDetails", "YES"),
             Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),
@@ -475,6 +478,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("cafcassJurisdictions", "NO"),
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
             Map.entry("closeCase", "YES"),
             Map.entry("appointedGuardian", "NO"),
             Map.entry("orderIsByConsent", "NO"),
@@ -496,6 +500,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("orderTitle", "NO"),
             Map.entry("hearingDetails", "YES"),
             Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),
@@ -514,6 +519,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("cafcassJurisdictions", "NO"),
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
             Map.entry("closeCase", "NO"),
             Map.entry("appointedGuardian", "NO"),
             Map.entry("orderIsByConsent", "NO"),

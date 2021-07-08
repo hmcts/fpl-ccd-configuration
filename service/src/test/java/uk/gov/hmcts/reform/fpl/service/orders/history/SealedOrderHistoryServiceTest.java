@@ -80,6 +80,7 @@ class SealedOrderHistoryServiceTest {
     private static final DocumentReference SEALED_PDF_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private static final String EXTRA_TITLE = "ExtraTitle";
+    private static final String TYPE = "type";
     private static final UUID LINKED_APPLICATION_ID = UUID.randomUUID();
     private static final DynamicList SELECTED_LINKED_APPLICATION_LIST = buildDynamicList(0,
         Pair.of(LINKED_APPLICATION_ID, "My test application"));
@@ -102,10 +103,12 @@ class SealedOrderHistoryServiceTest {
         ManageOrdersClosedCaseFieldGenerator.class);
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator =
         mock(SealedOrderHistoryExtraTitleGenerator.class);
+    private final SealedOrderHistoryTypeGenerator typeGenerator = mock(SealedOrderHistoryTypeGenerator.class);
     private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker =
         mock(SealedOrderHistoryFinalMarker.class);
     private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator = mock(
         SealedOrderHistoryExtraOthersNotifiedGenerator.class);
+
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
@@ -114,6 +117,7 @@ class SealedOrderHistoryServiceTest {
         othersService,
         orderCreationService,
         extraTitleGenerator,
+        typeGenerator,
         sealedOrderHistoryFinalMarker,
         othersNotifiedGenerator,
         time,
@@ -448,7 +452,7 @@ class SealedOrderHistoryServiceTest {
             .others(List.of(element(other1ID, other1), element(other2ID, other2)))
             .othersNotified(OTHERS_NOTIFIED)
             .orderType(ORDER_TYPE.name())
-            .type(ORDER_TYPE.getHistoryTitle())
+            .type(TYPE)
             .title(EXTRA_TITLE)
             .markedFinal(FINAL_MARKER.getValue())
             .judgeAndLegalAdvisor(TAB_JUDGE_AND_LEGAL_ADVISOR)
@@ -462,6 +466,7 @@ class SealedOrderHistoryServiceTest {
 
     private void mockGenerators(CaseData caseData) {
         when(extraTitleGenerator.generate(caseData)).thenReturn(EXTRA_TITLE);
+        when(typeGenerator.generate(caseData)).thenReturn(TYPE);
         when(sealedOrderHistoryFinalMarker.calculate(caseData)).thenReturn(FINAL_MARKER);
     }
 

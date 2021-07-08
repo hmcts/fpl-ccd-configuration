@@ -43,10 +43,11 @@ class OrderCreationServiceTest {
     private final OrderCreationService underTest = new OrderCreationService(
         documentGenerator, uploadedOrderDocumentGenerator, uploadService
     );
+    private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+        .manageOrdersType(order)
+        .build();
     private final CaseData caseData = CaseData.builder()
-        .manageOrdersEventData(ManageOrdersEventData.builder()
-            .manageOrdersType(order)
-            .build())
+        .manageOrdersEventData(manageOrdersEventData)
         .build();
 
 
@@ -63,7 +64,7 @@ class OrderCreationServiceTest {
     @EnumSource(value = OrderStatus.class, mode = EnumSource.Mode.EXCLUDE, names = "DRAFT")
     void createNonDraftOrderDocument(OrderStatus status) {
         when(documentGenerator.generate(order, caseData, status, format)).thenReturn(DOCMOSIS_DOCUMENT);
-        when(order.fileName(format)).thenReturn(FILE_NAME);
+        when(order.fileName(format, manageOrdersEventData)).thenReturn(FILE_NAME);
         when(format.getMediaType()).thenReturn(MEDIA_TYPE);
         when(uploadService.uploadDocument(BYTES, FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
@@ -76,7 +77,7 @@ class OrderCreationServiceTest {
     void createNonDraftOrderForUploadedDocument(OrderStatus status) {
         when(uploadedOrderDocumentGenerator.generate(caseData, status, format))
             .thenReturn(OrderDocumentGeneratorResult.builder().bytes(BYTES).renderFormat(format).build());
-        when(order.fileName(format)).thenReturn(FILE_NAME);
+        when(order.fileName(format, manageOrdersEventData)).thenReturn(FILE_NAME);
         when(order.getSourceType()).thenReturn(OrderSourceType.MANUAL_UPLOAD);
         when(format.getMediaType()).thenReturn(MEDIA_TYPE);
 
