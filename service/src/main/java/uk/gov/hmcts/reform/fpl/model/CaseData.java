@@ -447,7 +447,7 @@ public class CaseData {
     private final Object removableApplicationList;
     private final String reasonToRemoveOrder;
     private final List<Element<GeneratedOrder>> hiddenOrders;
-    private final RemovableType removeRemovableType;
+    private final RemovableType removableType;
 
     public List<Element<GeneratedOrder>> getHiddenOrders() {
         return defaultIfNull(hiddenOrders, new ArrayList<>());

@@ -303,7 +303,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .removeRemovableType(APPLICATION)
+            .removableType(APPLICATION)
             .additionalApplicationsBundle(List.of(element(applicationId, application)))
             .removableApplicationList(dynamicList)
             .build();

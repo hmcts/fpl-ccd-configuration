@@ -63,7 +63,7 @@ public class RemovalToolController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemoveRemovableType() == APPLICATION) {
+        if (caseData.getRemovableType() == APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
             AdditionalApplicationsBundle application = applicationService.getRemovedApplicationById(
                 caseData, removedApplicationId).getValue();
@@ -93,7 +93,7 @@ public class RemovalToolController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemoveRemovableType() == APPLICATION) {
+        if (caseData.getRemovableType() == APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
             applicationService.removeApplicationFromCase(caseData, caseDetailsMap, removedApplicationId);
         } else {
