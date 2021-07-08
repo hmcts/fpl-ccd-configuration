@@ -474,7 +474,7 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 10,
+    orderIndex: 11,
     orderType: 'Authority to keep a child in secure accommodation (C26)',
     approvalDate: new Date(2012, 10, 3),
     allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
