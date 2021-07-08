@@ -5,24 +5,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.logging.log4j.util.Strings.isBlank;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RegisteredRespondentSolicitorContentProvider {
 
+    private static final String MANAGE_ORG_URL = "https://manage-org.platform.hmcts.net";
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookup;
+    private final EmailNotificationHelper helper;
 
     public RegisteredRespondentSolicitorTemplate buildRespondentSolicitorSubmissionNotification(
-        CaseData caseData, RespondentSolicitor representative) {
-
+        CaseData caseData, Respondent respondent) {
         return RegisteredRespondentSolicitorTemplate.builder()
-            .salutation(getSalutation(representative))
+            .salutation(getSalutation(respondent.getSolicitor()))
+            .clientFullName(respondent.getParty().getFullName())
             .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .ccdNumber(caseData.getId().toString())
+            .caseName(caseData.getCaseName())
+            .manageOrgLink(MANAGE_ORG_URL)
+            .childLastName(helper.getEldestChildLastName(caseData.getChildren1()))
             .build();
     }
 

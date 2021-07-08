@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -95,10 +97,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String SOLICITOR_EMAIL = "solicitor@email.com";
     private static final String SOLICITOR_FIRST_NAME = "John";
     private static final String SOLICITOR_LAST_NAME = "Smith";
+    private static final String RESPONDENT_FIRST_NAME = "David";
+    private static final String RESPONDENT_LAST_NAME = "Jones";
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String SURVEY_LINK = "https://fake.survey.url";
     private static final Long CASE_ID = 1234567890123456L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final String CASE_NAME = "test case name1";
 
     @Autowired
     protected ObjectMapper mapper;
@@ -127,11 +132,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
         final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(true), new TypeReference<>() {}
+            getExpectedHmctsParameters(true), new TypeReference<>() {
+            }
         );
 
         final Map<String, Object> completeCafcassParameters = mapper.convertValue(
-            getExpectedCafcassParameters(true), new TypeReference<>() {}
+            getExpectedCafcassParameters(true), new TypeReference<>() {
+            }
         );
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
@@ -167,18 +174,22 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .respondents1(wrapElements(Respondent.builder()
                 .legalRepresentation("Yes")
+                .party(RespondentParty.builder()
+                    .firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
                 .solicitor(RespondentSolicitor.builder()
-                    .firstName("First").lastName("Respondent")
+                    .firstName("First").lastName("Representative")
                     .email(SOLICITOR_EMAIL)
                     .organisation(Organisation.builder().organisationID("123").build()).build())
                 .build()))
             .id(CASE_ID)
+            .caseName(CASE_NAME)
             .displayAmountToPay(YES.getValue())
             .submittedForm(DocumentReference.builder().binaryUrl("testUrl").build())
             .build();
 
         final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {}
+            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {
+            }
         );
 
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
@@ -210,7 +221,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {}
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            }
         );
 
         checkUntil(() -> {
@@ -239,7 +251,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {}
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            }
         );
 
         checkUntil(() ->
@@ -285,6 +298,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldNotifyUnregisteredSolicitorWhenUnregisteredOrganisationDetailsProvided() {
         Respondent respondent = Respondent.builder()
             .legalRepresentation(YES.getValue())
+            .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
             .solicitor(RespondentSolicitor.builder()
                 .firstName(SOLICITOR_FIRST_NAME)
                 .lastName(SOLICITOR_LAST_NAME)
@@ -303,6 +317,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             UnregisteredRespondentSolicitorTemplate.builder()
                 .ccdNumber("1234-5678-9012-3456")
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
+                .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
+                .childLastName("Reeves")
+                .caseName("test")
                 .build(),
             MAP_TYPE
         );
@@ -320,6 +337,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldNotNotifyUnregisteredSolicitorWhenUnregisteredOrganisationDetailsNotProvided() {
         Respondent respondent = Respondent.builder()
             .legalRepresentation(YES.getValue())
+            .party(RespondentParty.builder()
+                .firstName(RESPONDENT_FIRST_NAME)
+                .lastName(RESPONDENT_LAST_NAME).build())
             .solicitor(RespondentSolicitor.builder()
                 .firstName(SOLICITOR_FIRST_NAME)
                 .lastName(SOLICITOR_LAST_NAME)
@@ -332,10 +352,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
         String expectedSalutation = String.format("Dear %s %s", SOLICITOR_FIRST_NAME, SOLICITOR_LAST_NAME);
+        String expectedName = String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME);
 
         Map<String, Object> expectedUnregisteredSolicitorParameters = mapper.convertValue(
             RegisteredRespondentSolicitorTemplate.builder()
                 .salutation(expectedSalutation)
+                .clientFullName(expectedName)
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
                 .build(),
             new TypeReference<>() {
@@ -578,11 +600,17 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
     private Map<String, Object> getExpectedRegisteredSolicitorParameters() {
         RegisteredRespondentSolicitorTemplate template = RegisteredRespondentSolicitorTemplate.builder()
-            .salutation("Dear First Respondent")
+            .salutation("Dear First Representative")
+            .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
             .localAuthority(LOCAL_AUTHORITY_1_NAME)
+            .ccdNumber(CASE_ID.toString())
+            .caseName(CASE_NAME)
+            .manageOrgLink("https://manage-org.platform.hmcts.net")
+            .childLastName(EMPTY)
             .build();
 
-        return mapper.convertValue(template, new TypeReference<>() {});
+        return mapper.convertValue(template, new TypeReference<>() {
+        });
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {

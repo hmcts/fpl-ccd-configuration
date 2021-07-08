@@ -74,9 +74,9 @@ public final class NotifyTemplates {
     public static final String JUDGE_APPROVES_DRAFT_ORDERS = "632ea051-0ab0-447d-9d6c-54118b04a5c1";
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
-    public static final String REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "c336fa70-497c-4f45-8cc9-2f2dc16c3ca9";
-    public static final String UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "68b071c5-2eb9-4646-9d3e-22cc168477cf";
-    public static final String NOTICE_OF_CHANGE_NEW_REPRESENTATIVE = "0457e13e-6546-46b7-ae96-78d8561ee4ed";
+    public static final String REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "d07b90b8-1e55-4258-8880-346b2268ec0e";
+    public static final String UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "2c43b535-b4d3-466c-b85c-9919f77311ba";
+    public static final String NOTICE_OF_CHANGE_NEW_REPRESENTATIVE = "f313d6a7-a6ff-4d83-be4e-819a4b34d890";
     public static final String NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE = "c3a25f93-0b63-40e5-96ab-7146a7d699db";
     public static final String MANAGING_ORGANISATION_REMOVED_TEMPLATE = "e3fb2174-128a-41a4-acbb-ea3ffe758689";
 }

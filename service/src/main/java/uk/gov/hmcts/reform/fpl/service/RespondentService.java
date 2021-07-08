@@ -112,7 +112,7 @@ public class RespondentService {
         return String.format("%s %s", firstName, lastName);
     }
 
-    public List<RespondentSolicitor> getRegisteredSolicitors(List<Element<Respondent>> respondents) {
+    /*public List<RespondentSolicitor> getRegisteredSolicitors(List<Element<Respondent>> respondents) {
         return unwrapElements(respondents)
             .stream()
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
@@ -127,6 +127,22 @@ public class RespondentService {
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasUnregisteredOrganisation())
             .map(Respondent::getSolicitor)
+            .collect(Collectors.toList());
+    }*/
+
+    public List<Respondent> getRespondentsWithRegisteredSolicitors(List<Element<Respondent>> respondents) {
+        return unwrapElements(respondents)
+            .stream()
+            .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
+                && respondent.hasRegisteredOrganisation())
+            .collect(Collectors.toList());
+    }
+
+    public List<Respondent> getRespondentsWithUnregisteredSolicitors(List<Element<Respondent>> respondents) {
+        return unwrapElements(respondents)
+            .stream()
+            .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
+                && respondent.hasUnregisteredOrganisation())
             .collect(Collectors.toList());
     }
 
