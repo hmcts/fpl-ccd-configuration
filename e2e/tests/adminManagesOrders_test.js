@@ -455,7 +455,7 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
 
   await manageOrdersEventPage.selectSingleChild('Timothy Jones');
 
-  I.see('Authority to keep a child in secure accommodation (C26)');
+  I.see(manageOrdersEventPage.orders.title.c26);
   manageOrdersEventPage.selectOrderByConsent('Yes');
   manageOrdersEventPage.selectReasonForSecureAccommodation('ABSCOND');
   manageOrdersEventPage.selectWhetherChildIsRepresented('Yes');

@@ -32,6 +32,7 @@ const orders = {
   title: {
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
+    c26: 'Authority to keep a child in secure accommodation (C26)',
     c32: 'Care order (C32A)',
     c32b: 'Discharge of care order (C32B)',
     c33: 'Interim care order (C33)',
