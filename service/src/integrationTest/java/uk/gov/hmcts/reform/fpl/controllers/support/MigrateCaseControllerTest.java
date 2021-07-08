@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
@@ -16,7 +19,9 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +35,49 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class MigrateCaseControllerTest extends AbstractCallbackTest {
     MigrateCaseControllerTest() {
         super("migrate-case");
+    }
+
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Fpla3214 {
+
+        final String migrationId = "FPLA-3214";
+
+        @ParameterizedTest
+        @EnumSource(HearingOptions.class)
+        void shouldRemoveHearingOptionIfPresent(HearingOptions hearingOptions) {
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "hearingOption", hearingOptions,
+                    "migrationId", migrationId))
+                .build();
+
+            Map<String, Object> expected = new HashMap<>(caseDetails.getData());
+            expected.remove("hearingOption");
+            expected.remove("migrationId");
+
+            Map<String, Object> response = postAboutToSubmitEvent(caseDetails).getData();
+
+            assertThat(response).isEqualTo(expected);
+        }
+
+        @Test
+        void shouldRemoveMigrationIdWhenHearingOptionNotPresent() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "migrationId", migrationId))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails).getData());
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
