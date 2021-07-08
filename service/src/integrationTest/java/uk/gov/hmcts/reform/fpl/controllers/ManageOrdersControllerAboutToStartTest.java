@@ -77,10 +77,10 @@ class ManageOrdersControllerAboutToStartTest extends AbstractCallbackTest {
             .hasSize(4)
             .hasNoSelectedValue()
             .hasElementsInOrder(
-                Pair.of(uhoId, "Urgent hearing order - 4 April 0004" ),
-                Pair.of(cmoId, "Sealed case management order issued on 3 March 0003" ),
-                Pair.of(sdoId, "Gatekeeping order - 2 February 0002" ),
-                Pair.of(orderId, "some type of order - 1 January 0001" )
+                Pair.of(uhoId, "Urgent hearing order - 4 April 0004"),
+                Pair.of(cmoId, "Sealed case management order issued on 3 March 0003"),
+                Pair.of(sdoId, "Gatekeeping order - 2 February 0002"),
+                Pair.of(orderId, "some type of order - 1 January 0001")
             );
     }
 }

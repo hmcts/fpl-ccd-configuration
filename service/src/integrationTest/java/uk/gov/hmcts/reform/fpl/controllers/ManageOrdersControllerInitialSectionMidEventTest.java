@@ -87,6 +87,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .epoExpiryDate(NO)
             .epoTypeAndPreventRemoval(NO)
             .epoChildrenDescription(NO)
+            .orderTitle(NO)
+            .childArrangementSpecificIssueProhibitedSteps(NO)
             .manageOrdersExclusionRequirementDetails(NO)
             .manageOrdersExpiryDateWithEndOfProceedings(NO)
             .manageOrdersExpiryDateWithMonth(NO)
@@ -148,6 +150,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .uploadAmendedOrder(NO)
             .appointedGuardian(NO)
             .orderIsByConsent(NO)
+            .orderTitle(YES)
             .build()
         );
     }

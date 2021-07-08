@@ -42,25 +42,25 @@ async function setupScenario(I, caseViewPage) {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 }
 
-Scenario('Amend generated order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Amend generated order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await amendOrder(I, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
 });
 
-Scenario('Amend standard directions order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Amend standard directions order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await amendOrder(I, manageOrdersEventPage, orders.standardDirectionOrder);
   assertAmendment(I, caseViewPage, orders.standardDirectionOrder);
 });
 
-Scenario('Amend urgent hearing order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Amend urgent hearing order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await amendOrder(I, manageOrdersEventPage, orders.urgentHearingOrder);
   assertAmendment(I, caseViewPage, orders.urgentHearingOrder);
 });
 
-Scenario('Amend case management order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Amend case management order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await amendOrder(I, manageOrdersEventPage, orders.caseManagementOrder);
   assertAmendment(I, caseViewPage, orders.caseManagementOrder);

@@ -64,7 +64,9 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("closeCase", "NO"),
             Map.entry("orderIsByConsent", "NO"),
             Map.entry("whichOthers", "YES"),
-            Map.entry("appointedGuardian", "NO")
+            Map.entry("appointedGuardian", "NO"),
+            Map.entry("orderTitle", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO")
         ));
     }
 

@@ -4,5 +4,6 @@ import java.time.LocalDate;
 
 public interface AmendableOrder {
     String asLabel();
+
     LocalDate amendableSortDate();
 }
