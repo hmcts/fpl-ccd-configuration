@@ -75,7 +75,6 @@ public class SealedOrderHistoryService {
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren, caseData))
-            .childrenDescription(getChildrenForOrder(selectedChildren, caseData))
             .specialGuardians(appointedGuardianFormatter.getGuardiansNamesForTab(caseData))
             .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
             .document(sealedPdfOrder)
