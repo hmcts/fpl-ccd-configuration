@@ -45,7 +45,7 @@ class ManageOrderEndDateWithMonthValidatorTest {
     void shouldAcceptOrderDateWhenWithinAcceptableRange() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDate(approvalDate)
+                .manageOrdersApprovalDateTime(approvalDateTime)
                 .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(todayDate.plusMonths(6))
                 .build())
@@ -116,7 +116,7 @@ class ManageOrderEndDateWithMonthValidatorTest {
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDate(approvalDate)
+                .manageOrdersApprovalDateTime(approvalDateTime)
                 .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())

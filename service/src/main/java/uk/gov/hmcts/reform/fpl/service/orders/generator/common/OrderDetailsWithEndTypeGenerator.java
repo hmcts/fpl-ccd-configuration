@@ -59,8 +59,9 @@ public class OrderDetailsWithEndTypeGenerator {
                 );
             case NUMBER_OF_MONTHS:
                 Integer numOfMonths = eventData.getManageOrdersSetMonthsEndDate();
-                LocalDate approvalDate = Optional.ofNullable(eventData.getManageOrdersApprovalDate())
-                    .orElseGet(() -> eventData.getManageOrdersApprovalDateTime().toLocalDate());
+                LocalDate approvalDate = Optional.ofNullable(eventData.getManageOrdersApprovalDateOrDateTime())
+                    .map(LocalDateTime::toLocalDate)
+                    .orElseThrow();
                 orderExpiration = LocalDateTime.of(approvalDate.plusMonths(numOfMonths), LocalTime.MIDNIGHT);
                 final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
                 return getMonthMessage(

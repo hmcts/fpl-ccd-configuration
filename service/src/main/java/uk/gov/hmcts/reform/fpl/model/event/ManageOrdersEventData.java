@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Value
 @Builder(toBuilder = true)
@@ -72,5 +73,11 @@ public class ManageOrdersEventData {
     EnglandOffices manageOrdersCafcassOfficesEngland;
     WalesOffices manageOrdersCafcassOfficesWales;
     DynamicList manageOrdersLinkedApplication;
+
+    public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
+        return Optional.ofNullable(manageOrdersApprovalDateTime)
+            .or(() -> Optional.ofNullable(manageOrdersApprovalDate).map(LocalDate::atStartOfDay))
+            .orElse(null);
+    }
 
 }
