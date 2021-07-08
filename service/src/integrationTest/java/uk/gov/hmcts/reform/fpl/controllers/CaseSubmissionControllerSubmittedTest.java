@@ -387,7 +387,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
-                Map.of("applicationType", "C110a"),
+                expectedLocalAuthorityNotificationParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
@@ -409,7 +409,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
-                Map.of("applicationType", "C110a"),
+                expectedLocalAuthorityNotificationParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
@@ -432,7 +432,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
-                Map.of("applicationType", "C110a"),
+                expectedLocalAuthorityNotificationParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
@@ -520,6 +520,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C110a",
+            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID,
+            "applicant", LOCAL_AUTHORITY_1_NAME);
+    }
+
+    private Map<String, Object> expectedLocalAuthorityNotificationParameters() {
+        return Map.of("applicationType", "C110a",
             "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID);
     }
 
@@ -538,6 +544,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                     .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
                     .build(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
                 "sendToCtsc", enableCtsc.getValue(),
                 "dateSubmitted", LocalDate.of(2020, 1, 1)
             ))).build();

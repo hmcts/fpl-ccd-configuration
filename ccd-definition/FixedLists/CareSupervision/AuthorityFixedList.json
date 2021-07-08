@@ -303,6 +303,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "HUL",
+    "ListElement": "Hull City Council",
+    "DisplayOrder": 146
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "IOA",
     "ListElement": "Isle of Anglesey County Council",
     "DisplayOrder": 147
@@ -404,6 +411,13 @@
     "ListElementCode": "LBM",
     "ListElement": "London Borough of Merton",
     "DisplayOrder": 188
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SWK",
+    "ListElement": "London Borough of Southwark",
+    "DisplayOrder": 189
   },
   {
     "LiveFrom": "01/01/2017",

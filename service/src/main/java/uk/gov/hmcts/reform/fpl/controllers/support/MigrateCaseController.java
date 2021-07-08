@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
@@ -55,8 +56,20 @@ public class MigrateCaseController extends CallbackController {
             run3175(caseDetails);
         }
 
+        if ("FPLA-3214".equals(migrationId)) {
+            run3214(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run3214(CaseDetails caseDetails) {
+        if (isNotEmpty(caseDetails.getData().get("hearingOption"))) {
+            caseDetails.getData().remove("hearingOption");
+        } else {
+            throw new IllegalStateException(format("Case %s does not have hearing option", caseDetails.getId()));
+        }
     }
 
     private void run3175(CaseDetails caseDetails) {
@@ -99,7 +112,7 @@ public class MigrateCaseController extends CallbackController {
         if (otherCourtAdminDocuments.stream().noneMatch(document -> documentToRemove.getKey().equals(document.getId())
             && documentToRemove.getValue().equals(document.getValue().getDocumentTitle()))) {
 
-            throw new AssertionError(String.format(
+            throw new AssertionError(format(
                 "Migration FPLA-3175: Expected other court admin document Id %s and document title '%s' "
                     + "but not found", documentToRemove.getKey(), documentToRemove.getValue()
             ));
@@ -141,7 +154,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void validateFamilyManNumber(String migrationId, String familyManCaseNumber, CaseData caseData) {
         if (!Objects.equals(familyManCaseNumber, caseData.getFamilyManCaseNumber())) {
-            throw new AssertionError(String.format(
+            throw new AssertionError(format(
                 "Migration %s: Expected family man case number to be %s but was %s",
                 migrationId, familyManCaseNumber, caseData.getFamilyManCaseNumber()));
         }

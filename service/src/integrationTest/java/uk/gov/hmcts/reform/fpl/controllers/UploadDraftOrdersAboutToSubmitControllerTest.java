@@ -28,10 +28,13 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -226,15 +229,14 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
     @Test
     void shouldRemoveTemporaryFields() {
-        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
         List<Element<HearingOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(CMO))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
-                .pastHearingsForCMO(dynamicList(hearings))
-                .futureHearingsForCMO("DUMMY DATA")
+                .futureHearingsForCMO(dynamicList(hearings))
                 .cmoJudgeInfo("DUMMY DATA")
                 .cmoHearingInfo("DUMMY DATA")
                 .showReplacementCMO(YesNo.NO)
@@ -269,6 +271,10 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     @ValueSource(booleans = {true, false})
     void shouldUpdateDocumentViews(boolean isFurtherEvidenceTabEnabled) {
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
+        List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
+        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
         List<Element<HearingOrder>> draftCMOs = List.of();
         List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
 
@@ -277,7 +283,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .hearingOrderDraftKind(List.of(CMO))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
                 .pastHearingsForCMO(dynamicList(hearings))
-                .futureHearingsForCMO("DUMMY DATA")
+                .futureHearingsForCMO(dynamicList(futureHearings))
                 .cmoJudgeInfo("DUMMY DATA")
                 .cmoHearingInfo("DUMMY DATA")
                 .showReplacementCMO(YesNo.NO)
@@ -288,7 +294,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .showCMOsSentToJudge(YesNo.NO)
                 .cmosSentToJudge("DUMMY DATA")
                 .cmoUploadType(CMOType.DRAFT).build())
-            .hearingDetails(hearings)
+            .hearingDetails(allHearings)
             .hearingFurtherEvidenceDocuments(furtherEvidenceBundle)
             .draftUploadedCMOs(draftCMOs)
             .build();

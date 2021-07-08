@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -32,6 +33,9 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C32bDischargeOfCareOrder
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C33InterimCareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35aSupervisionOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35bISODocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderTitleGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C43aSpecialGuardianshipOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C47AAppointmentOfAChildrensGuardianParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisCommonElementDecorator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
@@ -63,17 +67,24 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     OrderDocumentGeneratorHolder.class,
     DocmosisCommonElementDecorator.class,
     CaseDataExtractionService.class,
+    AppointedGuardianFormatter.class,
     C21BlankOrderDocumentParameterGenerator.class,
     C32CareOrderDocumentParameterGenerator.class,
     C32bDischargeOfCareOrderDocumentParameterGenerator.class,
     C23EPODocumentParameterGenerator.class,
     C35aSupervisionOrderDocumentParameterGenerator.class,
+    C43ChildArrangementOrderDocumentParameterGenerator.class,
     C47AAppointmentOfAChildrensGuardianParameterGenerator.class,
     C33InterimCareOrderDocumentParameterGenerator.class,
     C23EPOAdditionalDocumentsCollector.class,
     C35bISODocumentParameterGenerator.class,
     ManageOrderDocumentService.class,
     OrderMessageGenerator.class,
+    C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
+    ManageOrderDocumentService.class,
+    OrderMessageGenerator.class,
+    C43ChildArrangementOrderTitleGenerator.class,
+    C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
     OrderDetailsWithEndTypeGenerator.class,
     UploadedOrderDocumentGenerator.class,
     DocumentSealingService.class,

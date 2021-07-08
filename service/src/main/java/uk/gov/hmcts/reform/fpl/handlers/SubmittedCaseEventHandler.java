@@ -10,11 +10,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvid
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
 import java.util.Collection;
+import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME;
@@ -131,6 +134,8 @@ public class SubmittedCaseEventHandler {
 
     private void handlePaymentNotTaken(CaseData caseData) {
         log.error("Payment not taken for case {}.", caseData.getId());
-        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+        OrderApplicant applicant = OrderApplicant.builder().name(caseData.getCaseLocalAuthorityName())
+            .type(ApplicantType.LOCAL_AUTHORITY).build();
+        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), applicant));
     }
 }

@@ -168,6 +168,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersMultiSelectListForC43",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C43OrderType",
+    "Label": "Select orders to issue",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersRecitalsAndPreambles",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add recitals or preamble",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersEpoType",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
@@ -399,5 +418,33 @@
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIsByConsent",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Is order by consent?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "appointedGuardianSelector",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Who's the appointed guardian?",
+    "FieldType": "AppointedGuardianSelector",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "appointedGuardians_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of names for children, usage of this should be readonly"
   }
 ]

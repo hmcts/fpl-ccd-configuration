@@ -24,6 +24,9 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "orderAppliesToAllChildren",
             "children_label",
             "childSelector",
+            "appointedGuardianSelector",
+            "manageOrdersIsByConsent",
+            "appointedGuardians_label",
             "manageOrdersTitle",
             "manageOrdersDirections",
             "manageOrdersCareOrderIssuedDate",
@@ -43,6 +46,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSetDateEndDate",
             "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate",
+            "manageOrdersMultiSelectListForC43",
+            "manageOrdersRecitalsAndPreambles",
             "orderPreview",
             "manageOrdersIsFinalOrder",
             "manageOrdersCloseCase",
@@ -61,7 +66,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersHasExclusionRequirement",
             "manageOrdersCafcassRegion",
             "manageOrdersCafcassOfficesEngland",
-            "manageOrdersCafcassOfficesWales"
+            "manageOrdersCafcassOfficesWales",
+            "othersSelector",
+            "others_label",
+            "sendOrderToAllOthers"
         );
     }
 }

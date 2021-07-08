@@ -9,4 +9,5 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 public class FailedPBANotificationData implements NotifyData {
     private String caseUrl;
     private String applicationType;
+    private String applicant;
 }

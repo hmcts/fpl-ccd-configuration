@@ -10,6 +10,7 @@
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTempQuestions.previewOrder=\"YES\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/review/mid-event",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -47,7 +48,7 @@
     "PageID": "review",
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersCloseCase=\"Yes\"",
+    "FieldShowCondition": "orderTempQuestions.closeCase=\"YES\" AND manageOrdersCloseCase=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]

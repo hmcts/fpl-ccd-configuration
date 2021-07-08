@@ -291,11 +291,11 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.5.1'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.6.1'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.22'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -318,7 +318,7 @@ dependencies {
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
-  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.12.3'
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.12.4'
 
   implementation group: 'net.minidev', name:'json-smart', version: '2.4.7'
 
@@ -366,10 +366,10 @@ dependencies {
   contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
   contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.2'
-  contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
+  contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
   contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
-  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.7.RELEASE'
+  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.9.RELEASE'
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ExtendWith(SpringExtension.class)
 class OthersServiceTest {
@@ -167,6 +169,79 @@ class OthersServiceTest {
 
         assertThat(updatedOthers.getAdditionalOthers().get(0).getValue()).isEqualTo(others.get(0).getValue());
         assertThat(updatedOthers.getAdditionalOthers().get(1).getValue()).isEqualTo(others.get(1).getValue());
+    }
+
+    @Test
+    void shouldReturnAllOthersWhenUseAllOthers() {
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(testOther("First other"))
+                .additionalOthers(List.of(element(testOther("Second other"))))
+                .build())
+            .sendOrderToAllOthers("Yes")
+                .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers.get(0).getValue()).isEqualTo(caseData.getAllOthers().get(0).getValue());
+        assertThat(selectedOthers.get(1).getValue()).isEqualTo(caseData.getAllOthers().get(1).getValue());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenSelectorIsNull() {
+        CaseData caseData = CaseData.builder()
+            .sendOrderToAllOthers("No")
+            .othersSelector(null)
+            .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenSelectedIsEmpty() {
+        CaseData caseData = CaseData.builder()
+            .othersSelector(Selector.builder().selected(emptyList()).build())
+            .sendOrderToAllOthers("No")
+            .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers).isEmpty();
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenEmptyList() {
+        String label = service.getOthersLabel(List.of());
+        assertThat(label).isEqualTo("");
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenPopulatedList() {
+        List<Element<Other>> others = List.of(element(testOther("First other")),
+            element(testOther("Second other")));
+
+        String label = service.getOthersLabel(others);
+        assertThat(label).isEqualTo("Other 1: First other\n"
+            + "Other 2: Second other\n");
+    }
+
+    @Test
+    void shouldReturnSelectedOthersOnly() {
+        int selectedOther = 1;
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(testOther("First other"))
+                .additionalOthers(List.of(element(testOther("Second other"))))
+                .build())
+            .othersSelector(Selector.builder().selected(List.of(selectedOther)).build())
+            .sendOrderToAllOthers("No")
+            .build();
+
+        List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
+
+        assertThat(selectedOthers).containsExactly(caseData.getAllOthers().get(selectedOther));
     }
 
     private CaseData buildCaseDataWithOthers(Other firstOther,

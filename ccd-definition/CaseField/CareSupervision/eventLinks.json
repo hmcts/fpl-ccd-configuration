@@ -130,7 +130,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftSDOLinkOrdersTab",
     "FieldType": "Label",
-    "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)\n\nThis is also known as the initial or standard directions order",
+    "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/addGatekeepingOrder)\n\nThis is also known as the initial or standard directions order",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -139,7 +139,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftSDOLinkDraftOrdersTab",
     "FieldType": "Label",
-    "Label": "[Send or replace this order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)",
+    "Label": "[Send or replace this order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/addGatekeepingOrder)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
