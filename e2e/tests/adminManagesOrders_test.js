@@ -110,7 +110,7 @@ Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) 
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
-    orderType: 'C23 - Emergency protection order',
+    orderType: 'Emergency protection order (C23)',
     approvalDateTime: today,
     others: 'John Doe',
   });
@@ -147,7 +147,7 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
-    orderType: 'C23 - Emergency protection order',
+    orderType: 'Emergency protection order (C23)',
     approvalDateTime: today,
     others: 'John Doe',
   });
@@ -177,7 +177,7 @@ Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPa
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 4,
-    orderType: 'C21 - Blank order',
+    orderType: 'Blank order (C21)',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
     others: 'John Doe',
@@ -211,7 +211,7 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
-    orderType: 'C21 - Blank order',
+    orderType: 'Blank order (C21)',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
     others: 'John Doe',
@@ -404,7 +404,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
-    orderType: 'C47A - Appointment of a children\'s guardian',
+    orderType: 'Appointment of a children\'s guardian (C47A)',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
     others: 'John Doe',

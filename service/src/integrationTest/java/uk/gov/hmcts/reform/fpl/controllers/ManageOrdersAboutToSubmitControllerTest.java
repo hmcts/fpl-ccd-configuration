@@ -142,7 +142,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C21_BLANK_ORDER")
-                .type("C21 - Blank order")
+                .type("Blank order (C21)")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -184,7 +184,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C23_EMERGENCY_PROTECTION_ORDER")
-                .type("C23 - Emergency protection order")
+                .type("Emergency protection order (C23)")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -216,7 +216,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C21_BLANK_ORDER")
-                .type("C21 - Blank order")
+                .type("Blank order (C21)")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
