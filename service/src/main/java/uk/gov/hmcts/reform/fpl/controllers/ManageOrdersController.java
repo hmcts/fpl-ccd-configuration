@@ -12,9 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
@@ -49,9 +47,7 @@ public class ManageOrdersController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        amendableOrderListBuilder.buildList(caseData).ifPresent(list ->
-            caseDetails.getData().put("manageOrdersAmendmentList", list)
-        );
+        caseDetails.getData().put("manageOrdersAmendmentList", amendableOrderListBuilder.buildList(caseData));
 
         return respond(caseDetails);
     }
@@ -89,10 +85,8 @@ public class ManageOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = fixAndRetrieveCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
-        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
-        Order order = OrderOperation.AMEND == eventData.getManageOrdersOperation() ? Order.AMENED_ORDER
-                                                                                   : eventData.getManageOrdersType();
+        Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
         OrderSection currentSection = OrderSection.from(section);
 

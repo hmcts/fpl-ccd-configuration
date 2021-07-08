@@ -38,6 +38,17 @@ class OrderProcessingServiceTest {
     }
 
     @Test
+    void processAmendmentOperationClosed() {
+        when(eventData.getManageOrdersOperation()).thenReturn(null);
+        when(eventData.getManageOrdersOperationClosedState()).thenReturn(OrderOperation.AMEND);
+
+        Map<String, Object> amendmentData = Map.of("some amendment", "data");
+        when(amendmentService.updateOrder(caseData)).thenReturn(amendmentData);
+
+        assertThat(underTest.process(caseData)).isEqualTo(amendmentData);
+    }
+
+    @Test
     void processNonAmendmentOperation() {
         when(eventData.getManageOrdersOperation()).thenReturn(OrderOperation.CREATE);
 

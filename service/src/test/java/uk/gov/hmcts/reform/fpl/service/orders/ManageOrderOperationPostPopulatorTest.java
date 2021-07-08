@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.AMEND_DOWNLOAD;
 
 class ManageOrderOperationPostPopulatorTest {
@@ -44,7 +45,23 @@ class ManageOrderOperationPostPopulatorTest {
         Map<String, String> showHideFields = Map.of("fields from", "the calculator");
         Map<String, Object> prePopulatedFields = Map.of("pre-populated", "fields");
 
-        when(eventData.getManageOrdersOperation()).thenReturn(OrderOperation.AMEND);
+        when(eventData.getManageOrdersOperation()).thenReturn(AMEND);
+        when(calculator.calculate(AMENED_ORDER)).thenReturn(showHideFields);
+        when(prePopulator.prePopulate(AMENED_ORDER, AMEND_DOWNLOAD, caseData)).thenReturn(prePopulatedFields);
+
+        Map<String, Object> expectedMap = new HashMap<>(Map.of("orderTempQuestions", showHideFields));
+        expectedMap.putAll(prePopulatedFields);
+
+        assertThat(underTest.populate(caseDetails)).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void populateAmendOrderOperationClosed() {
+        Map<String, String> showHideFields = Map.of("fields from", "the calculator");
+        Map<String, Object> prePopulatedFields = Map.of("pre-populated", "fields");
+
+        when(eventData.getManageOrdersOperation()).thenReturn(null);
+        when(eventData.getManageOrdersOperationClosedState()).thenReturn(AMEND);
         when(calculator.calculate(AMENED_ORDER)).thenReturn(showHideFields);
         when(prePopulator.prePopulate(AMENED_ORDER, AMEND_DOWNLOAD, caseData)).thenReturn(prePopulatedFields);
 

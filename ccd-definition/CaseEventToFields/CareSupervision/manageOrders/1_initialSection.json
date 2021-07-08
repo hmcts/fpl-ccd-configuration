@@ -29,26 +29,26 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "manageOrdersAmendmentList",
+    "CaseFieldID": "manageOrdersOperationClosedState",
     "DisplayContext": "MANDATORY",
     "PageID": "ManageOrdersOperation",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 3,
-    "FieldShowCondition": "manageOrdersOperation = \"AMEND\"",
+    "FieldShowCondition": "[STATE] = \"CLOSED\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "manageOrdersOperationClosedState",
+    "CaseFieldID": "manageOrdersAmendmentList",
     "DisplayContext": "MANDATORY",
     "PageID": "ManageOrdersOperation",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 4,
-    "FieldShowCondition": "[STATE] = \"CLOSED\"",
+    "FieldShowCondition": "manageOrdersOperation = \"AMEND\" OR manageOrdersOperationClosedState = \"AMEND\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
