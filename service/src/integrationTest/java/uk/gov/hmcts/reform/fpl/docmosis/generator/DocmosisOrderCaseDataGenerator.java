@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.docmosis.generator;
 
+import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -86,6 +88,12 @@ public class DocmosisOrderCaseDataGenerator {
                         .build());
             case WHICH_CHILDREN:
                 return builder.childSelector(Selector.builder().selected(List.of(1)).build());
+            case TITLE:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersTitle("Blank Order Title")
+                        .build()
+                );
             case DISCHARGE_DETAILS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
@@ -96,8 +104,7 @@ public class DocmosisOrderCaseDataGenerator {
             case DETAILS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
-                        .manageOrdersTitle("Blank Order Title")
-                        .manageOrdersDirections("Order directions for Blank Order")
+                        .manageOrdersDirections("Some order directions")
                         .build()
                 );
             case APPROVAL_DATE_TIME:
@@ -137,6 +144,13 @@ public class DocmosisOrderCaseDataGenerator {
                     getManageOrdersEvent(builder)
                         .manageOrdersEndDateTime(LocalDateTime.of(2018, 9, 1, 13, 20, 4))
                         .build()
+                );
+            case CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                    .manageOrdersMultiSelectListForC43(Collections.singletonList(C43OrderType.CHILD_ARRANGEMENT_ORDER))
+                    .manageOrdersRecitalsAndPreambles("Recitals and Preambles")
+                    .build()
                 );
             case FURTHER_DIRECTIONS:
                 return builder.manageOrdersEventData(

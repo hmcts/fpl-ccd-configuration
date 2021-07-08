@@ -341,6 +341,40 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
   });
 });
 
+Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await setupScenario(I, caseViewPage);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c43);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterJudge();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectC43Orders();
+  manageOrdersEventPage.selectOrderByConsent();
+  await manageOrdersEventPage.enterRecitalsAndPreambles('Recitals and Preambles');
+  await manageOrdersEventPage.enterDirections('some text');
+  await manageOrdersEventPage.enterFurtherDirections('Further details.');
+  await manageOrdersEventPage.selectIsFinalOrder();
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I,caseViewPage,{
+    orderIndex: 4,
+    orderType: manageOrdersEventPage.orders.title.c43,
+    approvalDate: today,
+    others: 'John Doe',
+  });
+});
+
 Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
@@ -399,7 +433,7 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 8,
+    orderIndex: 9,
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,

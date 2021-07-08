@@ -15,11 +15,13 @@ import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43aSpecialGuardianshipOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
@@ -32,6 +34,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     private static final Child CHILD = mock(Child.class);
     public static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.of(2021, 4, 20, 10, 0, 0);
     public static final String EXPECTED_APPROVAL_DATE_TIME = "20 April 2021, 10:00am";
+    public static final String CONSENT = "By consent";
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final String ORDER_HEADER = "Warning \n";
     private static final String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
@@ -57,6 +60,9 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     @Mock
     private AppointedGuardianFormatter appointedGuardianFormatter;
 
+    @Mock
+    private OrderMessageGenerator orderMessageGenerator;
+
     @InjectMocks
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator underTest;
 
@@ -78,6 +84,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -95,7 +102,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
-
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
             .orderDetails(getOrderAppointmentMessageForChildWithSinglePersonResponsible())
@@ -112,6 +119,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -129,6 +137,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -146,6 +155,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -164,6 +174,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent, Randle Responde are");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -182,6 +193,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent, Randle Responde are");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -200,6 +212,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17 are");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)

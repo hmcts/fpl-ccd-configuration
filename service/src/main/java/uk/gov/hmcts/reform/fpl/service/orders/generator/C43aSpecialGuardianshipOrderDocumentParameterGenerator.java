@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43aSpecialGuardianshipOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
     private final ChildrenService childrenService;
     private final AppointedGuardianFormatter appointedGuardianFormatter;
+    private final OrderMessageGenerator orderMessageGenerator;
 
     private static String paragraphBreak = "\n \n";
     private static String ORDER_HEADER = "Warning \n";
@@ -67,7 +69,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .dateOfIssue(formatLocalDateTimeBaseUsingFormat(eventData.getManageOrdersApprovalDateTime(), DATE_TIME))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(getSpecialGuardianAppointeeMessage(caseData, selectedChildren.size()))
-            .orderByConsent(getOrderByConsentMessage(eventData))
+            .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .noticeHeader(NOTICE_HEADER)
@@ -82,10 +84,5 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         return format("The Court orders that %s appointed as special guardian for the %s.", applicant, childOrChildren);
     }
 
-    private String getOrderByConsentMessage(ManageOrdersEventData manageOrdersEventData) {
-        if ("Yes".equals(manageOrdersEventData.getManageOrdersIsByConsent())) {
-            return "By consent";
-        }
-        return null;
-    }
+
 }

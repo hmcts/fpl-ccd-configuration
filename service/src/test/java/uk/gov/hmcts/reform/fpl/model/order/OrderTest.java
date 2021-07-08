@@ -4,15 +4,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.CHILD_ARRANGEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.PROHIBITED_STEPS_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.SPECIFIC_ISSUE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
@@ -21,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
@@ -59,11 +66,30 @@ class OrderTest {
             .isEqualTo("c47a_appointment_of_a_childrens_guardian.doc");
     }
 
+    @ParameterizedTest
+    @MethodSource("c43OrdersSource")
+    void c43ChildArrangementSpecificIssueProhibitedStepsOrderFileExtension(List<C43OrderType> orders,
+                                                                        String expectedString) {
+        Order order = C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
+
+        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+            .manageOrdersMultiSelectListForC43(orders)
+            .build();
+
+        String expectedPdfString = expectedString + ".pdf";
+        String expectedWordString = expectedString + ".doc";
+
+        assertThat(order.fileName(RenderFormat.PDF, manageOrdersEventData)).isEqualTo(expectedPdfString);
+        assertThat(order.fileName(RenderFormat.WORD, manageOrdersEventData)).isEqualTo(expectedWordString);
+    }
+
     @Test
     void firstSection() {
         assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C23_EMERGENCY_PROTECTION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C32A_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.firstSection())
+            .isEqualTo(HEARING_DETAILS);
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C33_INTERIM_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35A_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
@@ -97,6 +123,22 @@ class OrderTest {
         assertThat(testedOrders).isEqualTo(allOrders);
     }
 
+    private static Stream<Arguments> c43OrdersSource() {
+        return Stream.of(
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER), "c43_child_arrangements"),
+            Arguments.of(List.of(SPECIFIC_ISSUE_ORDER), "c43_specific_issue"),
+            Arguments.of(List.of(PROHIBITED_STEPS_ORDER), "c43_prohibited_steps"),
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER),
+                "c43_child_arrangements_specific_issue"),
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, PROHIBITED_STEPS_ORDER),
+                "c43_child_arrangements_prohibited_steps"),
+            Arguments.of(List.of(SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER),
+                "c43_specific_issue_prohibited_steps"),
+            Arguments.of(List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER),
+                "c43_child_arrangements_specific_issue_prohibited_steps")
+        );
+    }
+
     private static Stream<Arguments> sectionsWithNext() {
         return Stream.of(
             Arguments.of(C21_BLANK_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
@@ -117,6 +159,24 @@ class OrderTest {
             Arguments.of(C32A_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C32A_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C32A_CARE_ORDER, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                HEARING_DETAILS,
+                Optional.of(ISSUING_DETAILS)),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                ISSUING_DETAILS,
+                Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                CHILDREN_DETAILS,
+                Optional.of(ORDER_DETAILS)),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                ORDER_DETAILS,
+                Optional.of(REVIEW)),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                REVIEW,
+                Optional.of(OTHER_DETAILS)),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                OTHER_DETAILS,
+                Optional.empty()),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),

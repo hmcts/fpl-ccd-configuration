@@ -5,14 +5,24 @@ import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderMessageGenerator {
     private final ManageOrderDocumentService manageOrderDocumentService;
+
+    public String getOrderByConsentMessage(ManageOrdersEventData manageOrdersEventData) {
+        if (YES.getValue().equals(manageOrdersEventData.getManageOrdersIsByConsent())) {
+            return "By consent";
+        }
+        return null;
+    }
 
     public String formatOrderMessage(CaseData caseData, String message) {
         Map<String, String> context = manageOrderDocumentService.commonContextElements(caseData);
