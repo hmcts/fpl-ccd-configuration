@@ -12,12 +12,5 @@
     "ListElementCode": "UPLOAD",
     "ListElement": "Upload an order",
     "DisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersOperation",
-    "ListElementCode": "AMEND",
-    "ListElement": "Amend order under the slip rule",
-    "DisplayOrder": 3
   }
 ]
