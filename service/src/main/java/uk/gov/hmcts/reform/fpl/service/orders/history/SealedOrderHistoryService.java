@@ -127,9 +127,8 @@ public class SealedOrderHistoryService {
 
     private String getChildrenForOrder(List<Element<Child>> selectedChildren, CaseData caseData) {
         String appliesToAllChildren = caseData.getOrderAppliesToAllChildren();
-        List<Element<Child>> allChildren = caseData.getAllChildren();
 
-        if (YES.getValue().equals(appliesToAllChildren) || allChildren.size() == 1) {
+        if (YES.getValue().equals(appliesToAllChildren)) {
             return null;
         }
 
