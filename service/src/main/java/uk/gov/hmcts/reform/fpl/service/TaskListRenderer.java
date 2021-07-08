@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
@@ -46,6 +47,7 @@ public class TaskListRenderer {
     private static final String NEW_LINE = "<br/>";
 
     private final TaskListRenderElements taskListRenderElements;
+    private final FeatureToggleService featureToggleService;
 
     //TODO consider templating solution like mustache
     public String render(List<Task> allTasks, List<EventValidationErrors> tasksErrors) {
@@ -95,12 +97,25 @@ public class TaskListRenderer {
             tasks.get(ALLOCATION_PROPOSAL)
         ));
 
-        final TaskSection additionalInformation = newSection("Add additional information", of(
-            tasks.get(OTHER_PROCEEDINGS),
-            tasks.get(INTERNATIONAL_ELEMENT),
-            tasks.get(OTHERS),
-            tasks.get(COURT_SERVICES)
-        )).withInfo("Only complete if relevant");
+        final TaskSection additionalInformation;
+
+        if (featureToggleService.isLanguageRequirementsEnabled()) {
+            additionalInformation = newSection("Add additional information", of(
+                tasks.get(OTHER_PROCEEDINGS),
+                tasks.get(INTERNATIONAL_ELEMENT),
+                tasks.get(OTHERS),
+                tasks.get(COURT_SERVICES),
+                tasks.get(LANGUAGE_REQUIREMENTS)
+            )).withInfo("Only complete if relevant");
+        } else {
+            additionalInformation = newSection("Add additional information", of(
+                tasks.get(OTHER_PROCEEDINGS),
+                tasks.get(INTERNATIONAL_ELEMENT),
+                tasks.get(OTHERS),
+                tasks.get(COURT_SERVICES)
+            )).withInfo("Only complete if relevant");
+        }
+
 
         final TaskSection sentApplication = newSection("Send application", of(tasks.get(SUBMIT_APPLICATION)));
 
