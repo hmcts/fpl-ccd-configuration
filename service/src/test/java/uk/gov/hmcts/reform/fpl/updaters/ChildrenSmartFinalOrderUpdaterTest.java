@@ -32,7 +32,7 @@ class ChildrenSmartFinalOrderUpdaterTest {
         new ChildrenSmartFinalOrderUpdater(new ChildSelectionUtils(), new ChildrenService());
 
     ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
-        .manageOrdersType(Order.C32_CARE_ORDER)
+        .manageOrdersType(Order.C32A_CARE_ORDER)
         .build();
 
     @Test

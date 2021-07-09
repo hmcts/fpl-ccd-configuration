@@ -42,7 +42,20 @@ class ManageOrderEndDateWithMonthValidatorTest {
 
     // Date
     @Test
-    void shouldAcceptOrderDateWhenWithinAcceptableRange() {
+    void shouldAcceptOrderDateWhenWithinAcceptableRange_WithApprovalDate() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(approvalDate)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
+                .manageOrdersSetDateEndDate(todayDate.plusMonths(6))
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldAcceptOrderDateWhenWithinAcceptableRange_WithApprovalDateTime() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(approvalDateTime)
@@ -108,7 +121,25 @@ class ManageOrderEndDateWithMonthValidatorTest {
 
     // DateTime
     @Test
-    void shouldAcceptDateTimeOnBoundaryOfMaxAllowedEndDateTime() {
+    void shouldAcceptDateTimeOnBoundaryOfMaxAllowedEndDateTime_WithApprovalDate() {
+        LocalDateTime onBoundaryDateTime = approvalDateTime
+            .plusMonths(MAXIMUM_MONTHS_ACCEPTED)
+            .toLocalDate()
+            .atStartOfDay();
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(approvalDate)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
+                .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldAcceptDateTimeOnBoundaryOfMaxAllowedEndDateTime_WithApprovalDateTime() {
         LocalDateTime onBoundaryDateTime = approvalDateTime
             .plusMonths(MAXIMUM_MONTHS_ACCEPTED)
             .toLocalDate()
