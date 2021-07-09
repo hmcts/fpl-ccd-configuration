@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -154,6 +155,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .document(DOCUMENT_PDF_REFERENCE)
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
                 .linkedApplicationId(linkedApplicationId.toString())
+                .othersNotified("")
+                .others(Collections.emptyList())
                 .build())
         );
     }
@@ -193,6 +196,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .childrenDescription("first1 last1, first2 last2")
                 .document(DOCUMENT_PDF_REFERENCE)
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
+                .othersNotified("")
+                .others(Collections.emptyList())
                 .build()));
     }
 
@@ -223,6 +228,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .childrenDescription("first1 last1, first2 last2")
                 .document(DOCUMENT_PDF_REFERENCE)
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
+                .othersNotified("")
+                .others(Collections.emptyList())
                 .build())
         );
     }

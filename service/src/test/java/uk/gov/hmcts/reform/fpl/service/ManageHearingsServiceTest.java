@@ -1529,6 +1529,44 @@ class ManageHearingsServiceTest {
         }
     }
 
+    @Test
+    void shouldReturnFieldsToBeDeleted() {
+
+        assertThat(service.caseFieldsToBeRemoved()).containsExactlyInAnyOrder(
+            "hearingType",
+            "hearingTypeDetails",
+            "hearingVenue",
+            "hearingVenueCustom",
+            "hearingStartDate",
+            "hearingEndDate",
+            "sendNoticeOfHearing",
+            "judgeAndLegalAdvisor",
+            "noticeOfHearingNotes",
+            "previousHearingVenue",
+            "firstHearingFlag",
+            "adjournmentReason",
+            "vacatedReason",
+            "hearingDateList",
+            "pastAndTodayHearingDateList",
+            "futureAndTodayHearingDateList",
+            "hasHearingsToAdjourn",
+            "hasHearingsToVacate",
+            "hasExistingHearings",
+            "hasFutureHearingDateFlag",
+            "hearingReListOption",
+            "hearingStartDateLabel",
+            "showConfirmPastHearingDatesPage",
+            "hearingEndDateLabel",
+            "confirmHearingDate",
+            "hearingStartDateConfirmation",
+            "hearingEndDateConfirmation",
+            "startDateFlag",
+            "endDateFlag",
+            "hasSession",
+            "hearingPresence",
+            "hearingOption");
+    }
+
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {
         Element<SupportingEvidenceBundle> adjournedHearingDocument1 = element(SupportingEvidenceBundle.builder()
             .document(TestDataHelper.testDocumentReference())

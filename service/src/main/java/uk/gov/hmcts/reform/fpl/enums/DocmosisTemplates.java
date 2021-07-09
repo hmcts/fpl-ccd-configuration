@@ -16,6 +16,7 @@ public enum DocmosisTemplates {
     COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents");
 
     private final String template;
+
     private final String documentTitle;
 
     DocmosisTemplates(String template, String documentTitle) {
