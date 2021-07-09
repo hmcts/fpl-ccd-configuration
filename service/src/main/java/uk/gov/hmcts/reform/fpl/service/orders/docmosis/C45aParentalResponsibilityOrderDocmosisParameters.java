@@ -13,8 +13,6 @@ public class C45aParentalResponsibilityOrderDocmosisParameters extends DocmosisP
     String orderDetails;
     String furtherDirections;
     String orderByConsent;
-    String orderHeader;
-    String orderMessage;
     String noticeHeader;
     String noticeMessage;
 }

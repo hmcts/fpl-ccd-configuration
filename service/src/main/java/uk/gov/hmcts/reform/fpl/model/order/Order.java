@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RELATIONSHIP_WITH_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
@@ -298,7 +299,7 @@ public enum Order {
     C45A_PARENTAL_RESPONSIBILITY_ORDER(
         DIGITAL,
         "Parental responsibility order (C45A)",
-        "Section [4(1)] [4A(1)] Children Act 1989 Test",
+        "TODO: Change programmatically in C45aParentalResponsibilityOrderDocumentParameterGeneratorTest",
         "Parental responsibility order (C45A)",
         IsFinalOrder.MAYBE,
         List.of(
@@ -309,6 +310,7 @@ public enum Order {
             WHICH_CHILDREN,
             ORDER_BY_CONSENT,
             PARENTAL_RESPONSIBILITY,
+            RELATIONSHIP_WITH_CHILD,
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER
         )

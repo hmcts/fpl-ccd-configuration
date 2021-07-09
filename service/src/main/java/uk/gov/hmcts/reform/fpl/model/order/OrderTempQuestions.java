@@ -35,4 +35,5 @@ public class OrderTempQuestions {
     String orderIsByConsent;
     String whichOthers;
     String parentResponsible;
+    String relationshipWithChild;
 }

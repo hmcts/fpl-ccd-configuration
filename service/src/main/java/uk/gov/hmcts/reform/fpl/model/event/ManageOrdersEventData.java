@@ -6,6 +6,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
+import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
@@ -67,4 +68,5 @@ public class ManageOrdersEventData {
     WalesOffices manageOrdersCafcassOfficesWales;
     DynamicList manageOrdersLinkedApplication;
     String manageOrdersParentResponsible;
+    RelationshipWithChild manageOrdersRelationshipWithChild;
 }
