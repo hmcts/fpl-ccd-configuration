@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -68,7 +69,7 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
             new NoticeOfChangeEvent(CASE_DATA, respondentWithOldSolicitor, respondentWithNewSolicitor));
 
         assertThat(response())
-            .hasSubject(String.format("Notice of change completed, %s %s", CASE_NAME, CHILD_LAST_NAME))
+            .hasSubject(String.format("Notice of change completed, %s, %s", CASE_NAME, CHILD_LAST_NAME))
             .hasBody(emailContent()
                 .line(EXPECTED_SALUTATION)
                 .line()
@@ -90,6 +91,7 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
     void notifySolicitorAccessRevoked() {
 
         Respondent respondentWithOldSolicitor = Respondent.builder()
+            .party(RespondentParty.builder().firstName("Tim").lastName("Jones").build())
             .solicitor(RespondentSolicitor.builder()
                 .firstName(SOLICITOR_FIRST_NAME)
                 .lastName(SOLICITOR_LAST_NAME)
@@ -103,7 +105,7 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
             new NoticeOfChangeEvent(CASE_DATA, respondentWithOldSolicitor, respondentWithNewSolicitor));
 
         assertThat(response())
-            .hasSubject("FPL case access revoked")
+            .hasSubject(String.format("FPL case access revoked, %s, %s", CASE_NAME, CHILD_LAST_NAME))
             .hasBody(emailContent()
                 .line(EXPECTED_SALUTATION)
                 .line()
@@ -111,9 +113,8 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line(CASE_NAME + " " + CASE_ID)
                 .line()
-                .line(
-                    "The respondent’s new legal representative will now have online access to the case. Your "
-                        + "organisation’s access has been revoked.")
+                .line("The new legal representative for Tim Jones will now have online access to the case. Your "
+                    + "organisation’s access has been revoked.")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()

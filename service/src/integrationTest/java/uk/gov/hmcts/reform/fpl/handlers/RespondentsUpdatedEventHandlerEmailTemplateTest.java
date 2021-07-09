@@ -107,7 +107,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
         underTest.notifyRegisteredRespondentSolicitors(new RespondentsUpdated(caseData, caseDataBefore));
 
         assertThat(response())
-            .hasSubject("New C110A application, FPL case test Jones")
+            .hasSubject("New C110A application, FPL case test, Jones")
             .hasBody(emailContent()
                 .start()
                 .line(String.format("%s%s has made the following C110A application on the Family"
@@ -160,7 +160,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
         underTest.notifyUnregisteredRespondentSolicitors(new RespondentsUpdated(caseData, caseDataBefore));
 
         assertThat(response())
-            .hasSubject("New C110a application involving your client, FPL case test Jones")
+            .hasSubject("New C110a application involving your client, FPL case test, Jones")
             .hasBody(emailContent()
                 .start()
                 .line(LOCAL_AUTHORITY_NAME + " has made a new C110a application on the Family Public Law digital "

@@ -77,6 +77,6 @@ public final class NotifyTemplates {
     public static final String REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "d07b90b8-1e55-4258-8880-346b2268ec0e";
     public static final String UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "2c43b535-b4d3-466c-b85c-9919f77311ba";
     public static final String NOTICE_OF_CHANGE_NEW_REPRESENTATIVE = "f313d6a7-a6ff-4d83-be4e-819a4b34d890";
-    public static final String NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE = "c3a25f93-0b63-40e5-96ab-7146a7d699db";
+    public static final String NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE = "0411d52e-69eb-440c-bb1f-3059ac6b9130";
     public static final String MANAGING_ORGANISATION_REMOVED_TEMPLATE = "e3fb2174-128a-41a4-acbb-ea3ffe758689";
 }
