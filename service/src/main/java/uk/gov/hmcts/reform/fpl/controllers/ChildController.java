@@ -83,9 +83,11 @@ public class ChildController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
-        caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
-            getCaseData(caseDetails), getCaseDataBefore(callbackRequest), SolicitorRole.Representing.CHILD
-        ));
+        if (!OPEN.equals(caseData.getState())) {
+            caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
+                getCaseData(caseDetails), getCaseDataBefore(callbackRequest), SolicitorRole.Representing.CHILD
+            ));
+        }
 
         confidentialDetailsService.addConfidentialDetailsToCase(
             caseDetails, getCaseData(caseDetails).getAllChildren(), CHILD

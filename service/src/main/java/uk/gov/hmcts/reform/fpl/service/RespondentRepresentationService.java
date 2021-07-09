@@ -101,6 +101,7 @@ public class RespondentRepresentationService {
         if (SolicitorRole.Representing.RESPONDENT == solicitorRole.getRepresenting()) {
             ((Respondent) respondent).setLegalRepresentation(YesNo.YES.getValue());
         }
+        // if it's before the cafcass is set, return an error.
 
         respondent.setSolicitor(addedSolicitor);
 

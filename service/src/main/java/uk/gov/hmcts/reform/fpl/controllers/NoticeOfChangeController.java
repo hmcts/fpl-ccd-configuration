@@ -57,6 +57,7 @@ public class NoticeOfChangeController extends CallbackController {
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
         CaseData newCaseData = getCaseData(callbackRequest);
 
+        // can put a stream
         List<ChangeOrganisationRequest> changeRequests = respondentService
             .getRepresentationChanges((List)newCaseData.getRespondents1(), (List) oldCaseData.getRespondents1(),
                 SolicitorRole.Representing.RESPONDENT);
