@@ -64,7 +64,7 @@ public class RespondentRepresentationService {
 
             if (respondentElement.isPresent()) {
                 NoticeOfChangeAnswers noticeOfChangeAnswer = noticeOfChangeAnswersConverter.generateForSubmission(
-                        (Element) respondentElement.get(), firstApplicant
+                    (Element) respondentElement.get(), firstApplicant
                 );
                 data.put(String.format(representing.getNocAnswersTemplate(), i), noticeOfChangeAnswer);
             }
@@ -110,10 +110,10 @@ public class RespondentRepresentationService {
                 ChangeOfRepresentationRequest.builder()
                     .method(ChangeOfRepresentationMethod.NOC)
                     .by(solicitor.getEmail())
-                    .respondent(SolicitorRole.Representing.RESPONDENT == solicitorRole.getRepresenting() ?
-                        (ConfidentialParty) respondent : null)
-                    .child(SolicitorRole.Representing.CHILD == solicitorRole.getRepresenting() ?
-                        (ConfidentialParty) respondent : null)
+                    .respondent(SolicitorRole.Representing.RESPONDENT == solicitorRole.getRepresenting()
+                        ? (ConfidentialParty) respondent : null)
+                    .child(SolicitorRole.Representing.CHILD == solicitorRole.getRepresenting()
+                        ? (ConfidentialParty) respondent : null)
                     .current(caseData.getChangeOfRepresentatives())
                     .addedRepresentative(addedSolicitor)
                     .removedRepresentative(removedSolicitor)
