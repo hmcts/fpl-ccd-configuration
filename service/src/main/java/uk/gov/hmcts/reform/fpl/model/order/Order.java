@@ -298,7 +298,7 @@ public enum Order {
     C45A_PARENTAL_RESPONSIBILITY_ORDER(
         DIGITAL,
         "Parental responsibility order (C45A)",
-        "Section [4(1)] [4A(1)] Children Act 1989",
+        "Section [4(1)] [4A(1)] Children Act 1989 Test",
         "Parental responsibility order (C45A)",
         IsFinalOrder.MAYBE,
         List.of(
