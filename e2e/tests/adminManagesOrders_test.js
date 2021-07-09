@@ -11,6 +11,7 @@ const aYearAgo = new Date(Date.now() - (3600 * 1000 * 24));
 const today = new Date(Date.now());
 const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
 const removalAddress = { buildingAndStreet: { lineOne: 'Flat 2 Caversham', town: 'Reading' }, postcode: 'RG4 7AA' };
+const applicationToLink = 'C2, 16 June 2021, 11:49am';
 let caseId;
 
 Feature('HMCTS Admin manages orders');
@@ -386,9 +387,8 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
-
-  const applicationToChoose = 'C2, 16 June 2021, 11:49am';
-  manageOrdersEventPage.linkApplication(applicationToChoose);
+  
+  manageOrdersEventPage.linkApplication(applicationToLink);
 
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
@@ -441,13 +441,18 @@ Scenario('Upload Manual order (other order)', async ({ I, caseViewPage, manageOr
 });
 
 Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I, caseViewPage);
+  const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
+
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c26);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
   await manageOrdersEventPage.selectHearing('Case management hearing, 3 November 2012');
+  manageOrdersEventPage.linkApplication(applicationToLink);
   await I.goToNextPage();
 
   // Judge and approval date is already preFilled
@@ -473,7 +478,7 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 11,
+    orderIndex: 1,
     orderType: 'Authority to keep a child in secure accommodation (C26)',
     approvalDate: new Date(2012, 10, 3),
     allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
