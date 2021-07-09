@@ -18,7 +18,7 @@ const orders = {
   options: {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
-    c32: 'C32_CARE_ORDER',
+    c32: 'C32A_CARE_ORDER',
     c32b: 'C32B_DISCHARGE_OF_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
@@ -31,7 +31,7 @@ const orders = {
   title: {
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
-    c32: 'Care order (C32)',
+    c32: 'Care order (C32A)',
     c32b: 'Discharge of care order (C32B)',
     c33: 'Interim care order (C33)',
     c35B: 'Interim supervision order (C35B)',

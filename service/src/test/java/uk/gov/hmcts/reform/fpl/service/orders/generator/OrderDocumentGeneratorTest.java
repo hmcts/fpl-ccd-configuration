@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 
 class OrderDocumentGeneratorTest {
 
-    private static final Order ORDER = Order.C32_CARE_ORDER;
+    private static final Order ORDER = Order.C32A_CARE_ORDER;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocmosisParameters DOCMOSIS_PARAMETERS = mock(DocmosisParameters.class);
     private static final Map<String, Object> TEMPLATE_DATA = Map.of("key", "value");
