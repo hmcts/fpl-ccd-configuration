@@ -56,7 +56,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
 
     @Test
     void accept() {
-        assertThat(underTest.accept()).isEqualTo(Order.C32_CARE_ORDER);
+        assertThat(underTest.accept()).isEqualTo(Order.C32A_CARE_ORDER);
     }
 
     @Test
@@ -100,7 +100,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
 
     private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?,?> expectedCommonParameters() {
         return C32CareOrderDocmosisParameters.builder()
-            .orderTitle(Order.C32_CARE_ORDER.getTitle())
+            .orderTitle(Order.C32A_CARE_ORDER.getTitle())
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .orderType(TYPE)

@@ -33,7 +33,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
 
     @Override
     public Order accept() {
-        return Order.C32_CARE_ORDER;
+        return Order.C32A_CARE_ORDER;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
         return C32CareOrderDocmosisParameters.builder()
-            .orderTitle(Order.C32_CARE_ORDER.getTitle())
+            .orderTitle(Order.C32A_CARE_ORDER.getTitle())
             .orderType(TYPE)
             .orderHeader(ORDER_HEADER)
             .orderMessage(orderMessageGenerator.getCareOrderRestrictions(caseData))
