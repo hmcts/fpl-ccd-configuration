@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class CloseCaseBlockPrePopulatorTest {
 
     private static final String ORDER_QUESTION = "orderTempQuestions";
-    private static final Order FINAL_ORDER_TYPE = Order.C32_CARE_ORDER;
+    private static final Order FINAL_ORDER_TYPE = Order.C32A_CARE_ORDER;
     private static final Order NON_FINAL_ORDER_TYPE = Order.C23_EMERGENCY_PROTECTION_ORDER;
     private static final Order MAYBE_FINAL_ORDER_TYPE = Order.C32B_DISCHARGE_OF_CARE_ORDER;
     private final OrderTempQuestions initialOrderQuestions = getOrderQuestions();

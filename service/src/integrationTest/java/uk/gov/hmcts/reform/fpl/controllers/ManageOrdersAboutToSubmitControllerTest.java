@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO_V2;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BOURNEMOUTH;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -105,7 +105,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     void mocks() {
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(PDF)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(downloadService.downloadDocument(UPLOADED_POWER_OF_ARREST.getBinaryUrl()))
             .thenReturn(POWER_OF_ARREST_BINARIES);
@@ -117,7 +117,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(WORD)))
             .thenReturn(DOCMOSIS_WORD_DOCUMENT);
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(WORD)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(WORD)))
             .thenReturn(DOCMOSIS_WORD_DOCUMENT);
         when(uploadService.uploadDocument(eq(DOCUMENT_WORD_BINARIES), anyString(), eq("application/msword")))
             .thenReturn(UPLOADED_WORD_DOCUMENT);
@@ -143,7 +143,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C21_BLANK_ORDER")
-                .type("C21 - Blank order")
+                .type("Blank order (C21)")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -185,7 +185,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C23_EMERGENCY_PROTECTION_ORDER")
-                .type("C23 - Emergency protection order")
+                .type("Emergency protection order (C23)")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -218,7 +218,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C21_BLANK_ORDER")
-                .type("C21 - Blank order")
+                .type("Blank order (C21)")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -286,8 +286,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("CASE_NUMBER")
             .children1(CHILDREN)
-            .orderAppliesToAllChildren("Yes")
-            .childSelector(Selector.newSelector(2))
+            .orderAppliesToAllChildren("No")
+            .childSelector(Selector.builder().count("3").selected(List.of(0,1)).build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
             .allocatedJudge(Judge.builder().judgeLastName("Dredd").judgeTitle(HIS_HONOUR_JUDGE).build())
             .build();

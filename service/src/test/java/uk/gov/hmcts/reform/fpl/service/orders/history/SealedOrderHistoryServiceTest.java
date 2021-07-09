@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
@@ -49,7 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 class SealedOrderHistoryServiceTest {
 
     private static final Judge JUDGE = mock(Judge.class);
-    private static final Order ORDER_TYPE = Order.C32_CARE_ORDER;
+    private static final Order ORDER_TYPE = Order.C32A_CARE_ORDER;
     private static final LocalDate TODAY = LocalDate.of(2012, 12, 22);
     private static final LocalDateTime NOW = TODAY.atStartOfDay();
     private static final LocalDate APPROVAL_DATE = LocalDate.of(2010, 11, 6);
@@ -184,6 +185,62 @@ class SealedOrderHistoryServiceTest {
                     ),
                     "somethingClose", "closeCaseValue"
                 ));
+            }
+        }
+
+        @Test
+        void generateWithNoChildrenDescriptionWhenOrderAppliesToAllChildren() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().orderAppliesToAllChildren("Yes").build();
+                mockDocumentUpload(caseData);
+                mockGenerators(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .childrenDescription(null)
+                            .children(wrapElements(child1, child1))
+                            .build())
+                    )));
+            }
+        }
+
+        @Test
+        void generateWithNoChildrenDescriptionWhenOnlyOneChildInCase() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData()
+                    .orderAppliesToAllChildren("No")
+                    .children1(wrapElements(child1))
+                    .childSelector(Selector.builder().selected(List.of(1)).build())
+                    .build();
+                mockDocumentUpload(caseData);
+                mockGenerators(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .childrenDescription(null)
+                            .children(wrapElements(child1))
+                            .build())
+                    )));
             }
         }
 

@@ -24,9 +24,10 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
     @Override
     public DocmosisParameters generate(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+        int numberOfChildren = caseData.getAllChildren().size();
 
         return C47ADocmosisParameters.builder()
-            .orderDetails(buildOrderDetails(caseData.getManageOrdersEventData()))
+            .orderDetails(buildOrderDetails(caseData.getManageOrdersEventData(), numberOfChildren))
             .orderTitle(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.getTitle())
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .build();
@@ -37,11 +38,12 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
         return DocmosisTemplates.ORDER_V2;
     }
 
-    private String buildOrderDetails(ManageOrdersEventData manageOrdersEventData) {
+    private String buildOrderDetails(ManageOrdersEventData manageOrdersEventData, int numberOfChildren) {
+        String childGrammar = (numberOfChildren == 1 ? "child" : "children");
         String office = getCafcassOffice(manageOrdersEventData);
 
-        return String.format("The court appoints Cafcass %s as a children's guardian for the child in the"
-            + " proceedings.", office);
+        return String.format("The Court appoints Cafcass %s as a children's guardian for the %s in the proceedings.",
+            office, childGrammar);
     }
 
     private String getCafcassOffice(ManageOrdersEventData manageOrdersEventData) {

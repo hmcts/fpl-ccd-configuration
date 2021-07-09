@@ -367,7 +367,7 @@
     "ID": "manageOrdersHasExclusionRequirement",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "YesOrNo",
-    "Label": "Add exclusion details",
+    "Label": "Is there an exclusion requirement?",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
