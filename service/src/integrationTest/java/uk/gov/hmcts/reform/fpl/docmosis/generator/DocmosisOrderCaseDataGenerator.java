@@ -45,6 +45,13 @@ public class DocmosisOrderCaseDataGenerator {
 
     private CaseData.CaseDataBuilder commonCaseData(Order order) {
         return CaseData.builder()
+            .children1(List.of(element(UUID.randomUUID(), Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Kenny")
+                    .lastName("Kruger")
+                    .dateOfBirth(LocalDate.of(2010, 1, 1))
+                    .build())
+                .build())))
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(order)
                 .build())
@@ -80,14 +87,7 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersApprovalDate(LocalDate.of(2013, 10, 5))
                         .build());
             case WHICH_CHILDREN:
-                return builder.children1(List.of(element(UUID.randomUUID(), Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Kenny")
-                        .lastName("Kruger")
-                        .dateOfBirth(LocalDate.of(2010, 1, 1))
-                        .build())
-                    .build())))
-                    .childSelector(Selector.builder().selected(List.of(1)).build());
+                return builder.childSelector(Selector.builder().selected(List.of(1)).build());
             case TITLE:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)

@@ -72,7 +72,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.EPO;
+        return DocmosisTemplates.EPO_V2;
     }
 
     private String orderDetails(int numOfChildren, String caseLocalAuthority) {

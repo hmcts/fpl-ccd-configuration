@@ -24,7 +24,7 @@ class SealedOrderHistoryFinalMarkerTest {
     @Test
     void testFinalOrder() {
         YesNo actual = underTest.calculate(CaseData.builder().manageOrdersEventData(ManageOrdersEventData.builder()
-            .manageOrdersType(Order.C32_CARE_ORDER)
+            .manageOrdersType(Order.C32A_CARE_ORDER)
             .build()).build());
 
         assertThat(actual).isEqualTo(YesNo.YES);

@@ -195,7 +195,7 @@ module.exports = {
     }
   },
 
-  async assertOrder(I, caseViewPage, order, defaultIssuedDate, hasAllocatedJudge = false, isOrderRemoved = false) {
+  async assertOrder(I, caseViewPage, order, defaultIssuedDate, isOrderRemoved = false) {
     caseViewPage.selectTab(caseViewPage.tabs.orders);
     const numberOfOrders = await I.grabNumberOfVisibleElements('//*[text() = \'Type of order\']');
     const orderHeading = isOrderRemoved ? `Other removed orders ${numberOfOrders}` : `Order ${numberOfOrders}`;
@@ -213,16 +213,7 @@ module.exports = {
       I.seeInTab([orderHeading, 'Starts on'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
     }
 
-    if (order.type !== 'Upload') {
-      if (hasAllocatedJudge) {
-        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
-        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
-      } else {
-        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.judgeAndLegalAdvisor.judgeTitle);
-        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
-        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
-      }
-    } else {
+    if (order.type === 'Upload') {
       I.seeInTab([orderHeading, 'Order description'], order.orderDescription);
       I.seeTextInTab([orderHeading, 'Date and time of upload']);
       I.seeTextInTab([orderHeading, 'Uploaded by']);

@@ -82,7 +82,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinaries();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinaries();
     private static final DocumentReference ORDER = testDocumentReference();
-    private static final String ORDER_TYPE = "C32 - Care order";
+    private static final String ORDER_TYPE = "Care order (C32A)";
     private static final Map<String, Object> NOTIFICATION_PARAMETERS = getExpectedParametersMap(ORDER_TYPE, true);
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
         .fullName("First Representative")
@@ -284,7 +284,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .orderCollection(wrapElements(GeneratedOrder.builder()
-                .orderType("C32_CARE_ORDER")
+                .orderType("C32A_CARE_ORDER")
                 .type(ORDER_TYPE)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)

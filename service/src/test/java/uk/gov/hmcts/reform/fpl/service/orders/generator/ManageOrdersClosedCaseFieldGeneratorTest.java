@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 
 @ExtendWith({MockitoExtension.class})
 public class ManageOrdersClosedCaseFieldGeneratorTest {
@@ -39,7 +39,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
     @Test
     void shouldCloseCase() {
-        CaseData caseData = buildCaseData("Yes", "No", C32_CARE_ORDER);
+        CaseData caseData = buildCaseData("Yes", "No", C32A_CARE_ORDER);
 
         when(childrenService.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
@@ -58,7 +58,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     @Test
     void shouldUpdateChildrenAndNotCloseCase() {
 
-        CaseData caseData = buildCaseData("No", "No", C32_CARE_ORDER);
+        CaseData caseData = buildCaseData("No", "No", C32A_CARE_ORDER);
         when(childrenService.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
 
