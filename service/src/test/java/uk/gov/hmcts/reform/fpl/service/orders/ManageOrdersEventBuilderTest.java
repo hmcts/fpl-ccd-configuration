@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.OrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -12,9 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class ManageOrdersEventBuilderTest {
     private final DocumentReference document = mock(DocumentReference.class);
@@ -30,10 +34,15 @@ class ManageOrdersEventBuilderTest {
     void buildAmended() {
         when(caseData.getOrderCollection()).thenReturn(orders);
         when(caseDataBefore.getOrderCollection()).thenReturn(orders);
+        when(historyService.lastGeneratedOrder(caseData)).thenReturn(GeneratedOrder.builder()
+            .document(document)
+            .build());
 
-        Optional<GeneratedOrderEvent> event = underTest.build(caseData, caseDataBefore);
+        OrderEvent event = underTest.build(caseData, caseDataBefore);
 
-        assertThat(event).isEmpty();
+        assertThat(event).isInstanceOf(AmendedOrderEvent.class);
+        assertThat(event.getCaseData()).isEqualTo(caseData);
+        assertThat(event.getOrderDocument()).isEqualTo(document);
     }
 
     @Test
@@ -43,11 +52,14 @@ class ManageOrdersEventBuilderTest {
         when(caseDataBefore.getOrderCollection()).thenReturn(ordersBefore);
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(order);
         when(order.getDocument()).thenReturn(document);
+        when(historyService.lastGeneratedOrder(caseData)).thenReturn(GeneratedOrder.builder()
+            .document(document)
+            .build());
 
-        Optional<GeneratedOrderEvent> event = underTest.build(caseData, caseDataBefore);
+        OrderEvent event = underTest.build(caseData, caseDataBefore);
 
-        assertThat(event).isPresent();
-        assertThat(event.get().getCaseData()).isEqualTo(caseData);
-        assertThat(event.get().getOrderDocument()).isEqualTo(document);
+        assertThat(event).isInstanceOf(GeneratedOrderEvent.class);
+        assertThat(event.getCaseData()).isEqualTo(caseData);
+        assertThat(event.getOrderDocument()).isEqualTo(document);
     }
 }

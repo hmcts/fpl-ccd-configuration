@@ -36,39 +36,11 @@ public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvid
     public OrderAmendedNotifyData getNotifyData(final CaseData caseData,
                                                 final DocumentReference orderDocument,
                                                 final IssuedOrderType issuedOrderType) {
-        if (issuedOrderType == CMO) {
-            return getNotifyDataForCMO(caseData, orderDocument, issuedOrderType);
-        } else {
-            return commonOrderAmendedNotifyData(caseData, issuedOrderType).toBuilder()
-                .documentLink(getDocumentUrl(orderDocument))
-                .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
-                .build();
-        }
-    }
-
-    public OrderAmendedNotifyData getNotifyDataForCMO(final CaseData caseData,
-                                                     final DocumentReference orderDocument,
-                                                     final IssuedOrderType issuedOrderType) {
-        UUID hearingId = caseData.getLastHearingOrderDraftsHearingId();
-        HearingBooking hearing = findElement(hearingId, caseData.getAllHearings())
-            .orElseThrow(() -> new HearingNotFoundException("No hearing found with id: " + hearingId))
-            .getValue();
-
-        return commonOrderAmendedNotifyData(caseData, issuedOrderType).toBuilder()
-            .documentLink(getDocumentUrl(orderDocument))
-            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
-            .callout("^" + buildSubjectLineWithHearingBookingDateSuffix(
-                caseData.getFamilyManCaseNumber(), caseData.getRespondents1(), hearing))
-            .build();
-    }
-
-    private OrderAmendedNotifyData commonOrderAmendedNotifyData(final CaseData caseData,
-                                                                final IssuedOrderType type) {
         return OrderAmendedNotifyData.builder()
             .lastName(helper.getSubjectLineLastName(caseData))
-            .orderType(typeCalculator.getTypeOfOrder(caseData, type))
+            .orderType(typeCalculator.getTypeOfOrder(caseData, issuedOrderType))
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout(NOTICE_OF_PLACEMENT_ORDER != type ? buildCalloutWithNextHearing(caseData, time.now()) : "")
+            .callout(NOTICE_OF_PLACEMENT_ORDER != issuedOrderType ? buildCalloutWithNextHearing(caseData, time.now()) : "")
             .build();
     }
 
