@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -67,7 +68,7 @@ class AmendedOrderEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocumentReference TEST_DOCUMENT = mock(DocumentReference.class);
-    private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT);
+    private static final AmendedOrderEvent EVENT = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT);
     private static final OrderAmendedNotifyData NOTIFY_DATA = mock(OrderAmendedNotifyData.class);
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
     private static final List<Element<Other>> LAST_GENERATED_ORDER_OTHERS = List.of(element(mock(Other.class)));

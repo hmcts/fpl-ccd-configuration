@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -50,7 +50,7 @@ public class AmendedOrderEventHandler {
     private final OtherRecipientsInbox otherRecipientsInbox;
 
     @EventListener
-    public void notifyParties(final GeneratedOrderEvent orderEvent) {
+    public void notifyParties(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getOrderDocument();
         GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
@@ -60,11 +60,10 @@ public class AmendedOrderEventHandler {
 
         sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, othersSelected);
         sendNotificationToEmailServedRepresentatives(caseData, orderDocument, othersSelected);
-
     }
 
     @EventListener
-    public void sendOrderByPost(final GeneratedOrderEvent orderEvent) {
+    public void sendOrderByPost(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
         GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
@@ -79,6 +78,8 @@ public class AmendedOrderEventHandler {
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
         }
 
+        System.out.println("I am posting to" + allRecipients);
+
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
     }
 
@@ -91,6 +92,8 @@ public class AmendedOrderEventHandler {
             EMAIL, caseData, othersSelected, element -> element.getValue().getEmail()
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+
+        System.out.println("I am sending to email reps" + emailRepresentatives);
 
         if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
@@ -120,6 +123,8 @@ public class AmendedOrderEventHandler {
 
         sendToLocalAuthority(caseData, notifyData);
 
+        System.out.println("I am sending to digital reps" + digitalRepresentatives);
+
         representativeNotificationService.sendNotificationToRepresentatives(
             caseData.getId(),
             notifyData,
@@ -132,6 +137,8 @@ public class AmendedOrderEventHandler {
                                       final NotifyData notifyData) {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+
+        System.out.println("I am sending to local authority" + emails);
 
         notificationService.sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE, emails, notifyData,
