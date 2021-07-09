@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
@@ -20,11 +21,11 @@ public class ManageOrdersCaseDataFixer {
         OrderOperation operation = eventData.getManageOrdersOperation();
         OrderOperation closedOperation = eventData.getManageOrdersOperationClosedState();
 
-        if (CREATE == closedOperation) {
+        if (CREATE == closedOperation && CLOSED == caseData.getState()) {
             return caseData.toBuilder().manageOrdersEventData(
                 eventData.toBuilder()
                     .manageOrdersType(C21_BLANK_ORDER)
-                    .manageOrdersOperation(closedOperation)
+                    .manageOrdersOperation(CREATE)
                     .build()
             ).build();
         }

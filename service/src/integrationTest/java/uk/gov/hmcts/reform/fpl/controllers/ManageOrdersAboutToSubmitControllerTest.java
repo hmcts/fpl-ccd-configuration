@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -206,6 +207,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         CaseData caseData = buildCaseData().toBuilder()
             .state(State.CLOSED)
             .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperationClosedState(OrderOperation.CREATE)
                 .manageOrdersApprovalDate(dateNow())
                 .manageOrdersDirections("Some directions")
                 .build())

@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
 
 import java.time.LocalDate;
@@ -58,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.CREATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -124,9 +124,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
-
-    @MockBean
-    private DocumentMerger documentMerger;
 
     @MockBean
     private UploadDocumentService uploadService;
@@ -380,6 +377,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .allocatedJudge(JUDGE)
             .state(CLOSED)
             .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperationClosedState(CREATE)
                 .manageOrdersApprovalDate(dateNow())
                 .build())
             .build();
