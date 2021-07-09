@@ -47,9 +47,9 @@ class RegisteredRespondentSolicitorContentProviderTest extends AbstractEmailCont
     @Autowired
     private RegisteredRespondentSolicitorContentProvider underTest;
 
-    private List<Element<Child>> children = wrapElements(mock(Child.class));
+    private final List<Element<Child>> children = wrapElements(mock(Child.class));
 
-    private CaseData caseData = CaseData.builder()
+    private final CaseData caseData = CaseData.builder()
         .id(CASE_REFERENCE)
         .caseName("Test case1")
         .children1(children)
