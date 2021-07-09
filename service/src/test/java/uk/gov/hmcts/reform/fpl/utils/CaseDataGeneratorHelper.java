@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
@@ -242,6 +243,9 @@ public class CaseDataGeneratorHelper {
         final String orderType = "Blank order (C21)";
         return ElementUtils.wrapElements(
             GeneratedOrder.builder()
+                .others(List.of(element(Other.builder()
+                    .address(Address.builder().build())
+                    .build())))
                 .type(orderType)
                 .title("Example Order")
                 .details(

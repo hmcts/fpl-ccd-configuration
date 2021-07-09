@@ -1,0 +1,42 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "preparedSDO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "orderUpload",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "gatekeepingOrderRouter=\"UPLOAD\" AND useUploadRoute=\"\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/prepare-decision/mid-event",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "currentSDO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "orderUploadConfirm",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "gatekeepingOrderRouter=\"UPLOAD\" AND useUploadRoute=\"YES\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/prepare-decision/mid-event",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "replacementSDO",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "orderUploadConfirm",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  }
+]

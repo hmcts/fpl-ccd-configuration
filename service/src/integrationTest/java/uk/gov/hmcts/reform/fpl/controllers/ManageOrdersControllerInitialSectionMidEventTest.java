@@ -54,6 +54,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("furtherDirections", "NO"),
             Map.entry("orderDetails", "YES"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("whichOthers", "YES"),
             Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -62,6 +63,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("appointedGuardian", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
@@ -69,6 +71,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("linkApplication", "NO"),
             Map.entry("needSealing", "NO"),
             Map.entry("uploadOrderFile", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
             Map.entry("closeCase", "NO")
         );
 

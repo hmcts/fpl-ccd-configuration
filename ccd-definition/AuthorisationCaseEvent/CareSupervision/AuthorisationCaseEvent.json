@@ -239,6 +239,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "changeCaseName-superuser",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CR"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeState",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CR"
@@ -280,28 +287,6 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-solicitor"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "draftSDO",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1179,6 +1164,29 @@
     "CaseEventID": "removeManagingOrganisation",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CR"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-gatekeeper"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      }
+    ]
   },
   {
     "LiveFrom": "01/01/2017",

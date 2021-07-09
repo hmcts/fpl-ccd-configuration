@@ -1,6 +1,4 @@
 const config = require('../config.js');
-const directions = require('../fixtures/directions.js');
-const dateFormat = require('dateformat');
 const gatekeepingCaseData = require('../fixtures/caseData/gatekeepingNoAllocatedJudge.json');
 
 let caseId;
@@ -56,47 +54,3 @@ Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enter
   I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
   I.seeInTab(['Allocation decision', 'Give reason'], 'new information was acquired');
 });
-
-Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
-  await setupScenario(I);
-  const today = new Date();
-  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-  await draftStandardDirectionsEventPage.createSDOThroughService();
-  await draftStandardDirectionsEventPage.skipDateOfIssue();
-  draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await I.goToNextPage();
-  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-  draftStandardDirectionsEventPage.markAsDraft();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
-
-  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
-  I.seeInTab(['Gatekeeping order', 'Date of issue'], dateFormat(today, 'd mmmm yyyy'));
-});
-
-Scenario('Gatekeeper submits final version of standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
-  await setupScenario(I);
-  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-  await draftStandardDirectionsEventPage.enterDateOfIssue({day: 11, month: 1, year: 2020});
-  draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await I.goToNextPage();
-  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-  await draftStandardDirectionsEventPage.markAsFinal();
-  await I.goToNextPage();
-  draftStandardDirectionsEventPage.checkC6();
-  draftStandardDirectionsEventPage.checkC6A();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
-
-  caseViewPage.selectTab(caseViewPage.tabs.hearings);
-  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
-  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
-
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');
-  I.seeInTab(['Gatekeeping order', 'Date of issue'], '11 January 2020');
-
-  caseViewPage.selectTab(caseViewPage.tabs.history);
-  I.seeEndStateForEvent(config.administrationActions.draftStandardDirections, 'Case management');
-}).retry(1); //async processing in prev test

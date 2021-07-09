@@ -602,6 +602,22 @@ class ManageHearingsServiceTest {
     }
 
     @Test
+    void shouldFindAndSetPreviousVenueIdWhenFlagNotPresent() {
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder().build())))
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        service.findAndSetPreviousVenueId(caseData);
+
+        assertThat(caseData.getPreviousVenueId()).isNull();
+    }
+
+    @Test
     void shouldNotFindAndSetPreviousVenueIdWhenNoHearings() {
         CaseData caseData = CaseData.builder().build();
 
@@ -1511,6 +1527,44 @@ class ManageHearingsServiceTest {
 
             return asDynamicList(List.of(randomHearing1, randomHearing2), selectedId, HearingBooking::toLabel);
         }
+    }
+
+    @Test
+    void shouldReturnFieldsToBeDeleted() {
+
+        assertThat(service.caseFieldsToBeRemoved()).containsExactlyInAnyOrder(
+            "hearingType",
+            "hearingTypeDetails",
+            "hearingVenue",
+            "hearingVenueCustom",
+            "hearingStartDate",
+            "hearingEndDate",
+            "sendNoticeOfHearing",
+            "judgeAndLegalAdvisor",
+            "noticeOfHearingNotes",
+            "previousHearingVenue",
+            "firstHearingFlag",
+            "adjournmentReason",
+            "vacatedReason",
+            "hearingDateList",
+            "pastAndTodayHearingDateList",
+            "futureAndTodayHearingDateList",
+            "hasHearingsToAdjourn",
+            "hasHearingsToVacate",
+            "hasExistingHearings",
+            "hasFutureHearingDateFlag",
+            "hearingReListOption",
+            "hearingStartDateLabel",
+            "showConfirmPastHearingDatesPage",
+            "hearingEndDateLabel",
+            "confirmHearingDate",
+            "hearingStartDateConfirmation",
+            "hearingEndDateConfirmation",
+            "startDateFlag",
+            "endDateFlag",
+            "hasSession",
+            "hearingPresence",
+            "hearingOption");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {

@@ -249,7 +249,7 @@ public class ManageHearingsService {
 
     public void findAndSetPreviousVenueId(CaseData caseData) {
         if (isNotEmpty(caseData.getHearingDetails()) && caseData.getPreviousHearingVenue() != null
-            && caseData.getPreviousHearingVenue().getUsePreviousVenue().equals(YES.getValue())) {
+            && YES.getValue().equals(caseData.getPreviousHearingVenue().getUsePreviousVenue())) {
 
             PreviousHearingVenue previousVenueForEditedHearing = caseData.getPreviousHearingVenue();
 
@@ -346,7 +346,8 @@ public class ManageHearingsService {
             START_DATE_FLAG,
             END_DATE_FLAG,
             "hasSession",
-            "hearingPresence"
+            "hearingPresence",
+            "hearingOption"
         );
     }
 

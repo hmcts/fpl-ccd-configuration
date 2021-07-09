@@ -35,7 +35,6 @@ class OrderDetailsWithEndTypeGeneratorTest {
         13,
         21,
         3);
-    private static final int MONTHS_END_DATE = 4;
     private static final LocalDate APPROVAL_DATE = LocalDate.of(2013, 11, 8);
     private static final Map<String, String> CHILD_CONTEXT_ELEMENTS = new HashMap<>(Map.of(
         "childOrChildren", "child",
@@ -183,13 +182,13 @@ class OrderDetailsWithEndTypeGeneratorTest {
     }
 
     @Test
-    void testTemplateWithNumberOfMonths() {
+    void testTemplateWithNumberOfMonths_UsingApprovalDate_WithMoreThanOneMonth() {
         when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(APPROVAL_DATE)
-                .manageOrdersSetMonthsEndDate(MONTHS_END_DATE)
+                .manageOrdersSetMonthsEndDate(4)
                 .build())
             .caseLocalAuthority(LA_CODE)
             .build();
@@ -197,14 +196,40 @@ class OrderDetailsWithEndTypeGeneratorTest {
         String actual = underTest.orderDetails(NUMBER_OF_MONTHS,
             OrderDetailsWithEndTypeMessages.builder()
                 .messageWithNumberOfMonths(
-                    "blah months ${numOfMonths} ${endDate} ${childIsOrAre} ${childOrChildren} ${localAuthorityName} "
-                        + "blah"
+                    "Values are: numMonths=[${numOfMonths}]; decoratedNumberOfMonths=[${decoratedNumberOfMonths}]; "
+                        + "endDate=[${endDate}]; childIsOrAre=[${childIsOrAre}]; childOrChildren=[${childOrChildren}]; "
+                        + "localAuthorityName=[${localAuthorityName}]"
                 ).build(),
             caseData);
 
-        assertThat(actual).isEqualTo("blah months 4 8th March 2014 are children LA_NAME blah");
-
+        assertThat(actual).isEqualTo("Values are: numMonths=[4]; decoratedNumberOfMonths=[4 months]; "
+            + "endDate=[8th March 2014]; childIsOrAre=[are]; childOrChildren=[children]; localAuthorityName=[LA_NAME]");
     }
 
+    @Test
+    void testTemplateWithNumberOfMonths_UsingApprovalDateTime_WithOneMonth() {
+        when(manageOrderDocumentService.commonContextElements(any())).thenReturn(CHILD_CONTEXT_ELEMENTS);
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(APPROVAL_DATE.atTime(14, 0))
+                .manageOrdersSetMonthsEndDate(1)
+                .build())
+            .caseLocalAuthority(LA_CODE)
+            .build();
+
+        String actual = underTest.orderDetails(NUMBER_OF_MONTHS,
+            OrderDetailsWithEndTypeMessages.builder()
+                .messageWithNumberOfMonths(
+                    "Values are: numMonths=[${numOfMonths}]; decoratedNumberOfMonths=[${decoratedNumberOfMonths}]; "
+                        + "endDate=[${endDate}]; childIsOrAre=[${childIsOrAre}]; childOrChildren=[${childOrChildren}]; "
+                        + "localAuthorityName=[${localAuthorityName}]"
+                ).build(),
+            caseData);
+
+        assertThat(actual).isEqualTo("Values are: numMonths=[1]; decoratedNumberOfMonths=[1 month]; "
+            + "endDate=[8th December 2013]; childIsOrAre=[is]; childOrChildren=[child]; "
+            + "localAuthorityName=[LA_NAME]");
+    }
 
 }

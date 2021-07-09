@@ -47,6 +47,10 @@ public final class NotifyTemplates {
         = "b40328fe-c01e-4b7f-9542-4ef776140df9";
     public static final String APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC
         = "7d362e1e-bc87-4d63-8218-3835abecb600";
+    public static final String INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT
+        = "364aebbb-9ecc-4a46-8f0e-c3567e1b3ec7";
+    public static final String INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC
+        = "8b77b5a9-bccc-44ea-b3b3-35ee8502161e";
     public static final String LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE = "7f3bf6f3-64cd-4b36-ba56-6c7a676a4816";
     public static final String LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME
         = "a17492b8-3724-4d24-8b5a-d815f64ce5ac";

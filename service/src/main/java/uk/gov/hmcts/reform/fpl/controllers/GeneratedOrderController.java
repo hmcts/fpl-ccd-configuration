@@ -332,12 +332,13 @@ public class GeneratedOrderController extends CallbackController {
     }
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
+        List<Element<Child>> childrenToIssueFinalOrder =
+            childrenService.getSelectedChildrenForIssuingFinalOrder(caseData);
         return childrenService.updateFinalOrderIssued(
             caseData.getOrderTypeAndDocument().getTypeLabel(),
             caseData.getAllChildren(),
             caseData.getOrderAppliesToAllChildren(),
-            caseData.getChildSelector(),
-            caseData.getRemainingChildIndex()
+            childrenToIssueFinalOrder
         );
     }
 }
