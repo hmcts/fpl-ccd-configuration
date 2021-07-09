@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -18,14 +17,11 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
-import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -43,20 +39,15 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAsse
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@SpringBootTest(classes = {
+@ContextConfiguration(classes = {
     RespondentsUpdatedEventHandler.class,
-    NotificationService.class,
     RespondentService.class,
     RegisteredRespondentSolicitorContentProvider.class,
     UnregisteredRespondentSolicitorContentProvider.class,
-    LocalAuthorityNameLookupConfiguration.class,
-    CaseDetailsHelper.class,
-    CaseUrlService.class,
-    ObjectMapper.class,
-    FixedTimeConfiguration.class,
     EmailNotificationHelper.class,
-    FeatureToggleService.class
+    FixedTimeConfiguration.class
 })
+@MockBeans({@MockBean(FeatureToggleService.class)})
 class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_FIRST_NAME = "John";
@@ -66,9 +57,6 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
         .build();
     private static final long CASE_ID = 1234567890123456L;
     public static final String CASE_NAME = "FPL case test";
-
-    @MockBean
-    private FeatureToggleService toggleService;
 
     @Autowired
     private RespondentsUpdatedEventHandler underTest;

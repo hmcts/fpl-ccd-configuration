@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -26,8 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {UnregisteredRespondentSolicitorContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class})
+@ContextConfiguration(classes = {UnregisteredRespondentSolicitorContentProvider.class})
 class UnregisteredRespondentSolicitorContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "LA_CODE";

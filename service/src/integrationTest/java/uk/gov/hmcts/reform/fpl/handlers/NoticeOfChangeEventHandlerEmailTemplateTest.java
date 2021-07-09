@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     NoticeOfChangeEventHandler.class, NoticeOfChangeContentProvider.class, CaseUrlService.class,
     EmailNotificationHelper.class
 })
+@MockBeans({@MockBean(FeatureToggleService.class)})
 class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;
     private static final String CASE_NAME = "Test";
@@ -45,9 +47,6 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .lastName(CHILD_LAST_NAME)
                 .build()).build()))
         .build();
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @Autowired
     private NoticeOfChangeEventHandler underTest;
