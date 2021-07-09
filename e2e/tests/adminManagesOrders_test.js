@@ -387,7 +387,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
-  
+
   manageOrdersEventPage.linkApplication(applicationToLink);
 
   await I.goToNextPage();
@@ -481,8 +481,6 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
     orderIndex: 1,
     orderType: 'Authority to keep a child in secure accommodation (C26)',
     approvalDate: new Date(2012, 10, 3),
-    allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
-    children: 'Timothy Jones',
     documentName: 'c26_secure_accommodation_order.pdf',
     others: 'John Doe',
   });
