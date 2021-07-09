@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,13 +47,22 @@ class RegisteredRespondentSolicitorContentProviderTest extends AbstractEmailCont
     @Autowired
     private RegisteredRespondentSolicitorContentProvider underTest;
 
+    private List<Element<Child>> children = wrapElements(mock(Child.class));
+
+    private CaseData caseData = CaseData.builder()
+        .id(CASE_REFERENCE)
+        .caseName("Test case1")
+        .children1(children)
+        .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+        .build();
+
     @ParameterizedTest
     @MethodSource("representativeNameSource")
     void shouldReturnExpectedMapWithRepresentativeNameAndLocalAuthorityName(
         String firstName, String lastName, String expectedFullName) {
-        RegisteredRespondentSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate(expectedFullName);
+        RegisteredRespondentSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate(
+            expectedFullName, String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME));
 
-        List<Element<Child>> children = wrapElements(mock(Child.class));
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
             .solicitor(RespondentSolicitor.builder()
@@ -61,14 +71,26 @@ class RegisteredRespondentSolicitorContentProviderTest extends AbstractEmailCont
                 .organisation(Organisation.builder().organisationID("123").build())
                 .build()).build();
 
-        CaseData caseData = CaseData.builder()
-            .id(CASE_REFERENCE)
-            .caseName("Test case1")
-            .children1(children)
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .respondents1(wrapElements(respondent))
-            .build();
+        CaseData caseData = this.caseData.toBuilder().respondents1(wrapElements(respondent)).build();
+        when(helper.getEldestChildLastName(children)).thenReturn("Tim Jones");
 
+        assertThat(underTest.buildRespondentSolicitorSubmissionNotification(caseData, respondent))
+            .usingRecursiveComparison().isEqualTo(expectedTemplate);
+    }
+
+    @Test
+    void shouldReturnExpectedMapWithEmptyRespondentName() {
+        RegisteredRespondentSolicitorTemplate expectedTemplate
+            = buildRegisteredSolicitorTemplate("Dear John Smith", "");
+
+        Respondent respondent = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .organisation(Organisation.builder().organisationID("123").build())
+                .build()).build();
+
+        CaseData caseData = this.caseData.toBuilder().respondents1(wrapElements(respondent)).build();
         when(helper.getEldestChildLastName(children)).thenReturn("Tim Jones");
 
         assertThat(underTest.buildRespondentSolicitorSubmissionNotification(caseData, respondent))
@@ -92,11 +114,12 @@ class RegisteredRespondentSolicitorContentProviderTest extends AbstractEmailCont
         );
     }
 
-    private RegisteredRespondentSolicitorTemplate buildRegisteredSolicitorTemplate(String expectedSalutation) {
+    private RegisteredRespondentSolicitorTemplate buildRegisteredSolicitorTemplate(String expectedSalutation,
+                                                                                   String expectedClientName) {
         return RegisteredRespondentSolicitorTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_1_NAME)
             .salutation(expectedSalutation)
-            .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
+            .clientFullName(expectedClientName)
             .manageOrgLink(MANAGE_ORG_LINK)
             .ccdNumber(CASE_REFERENCE.toString())
             .caseName("Test case1")

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,6 +33,7 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
     private static final String CASE_NAME = "Test";
     private static final String RESPONDENT_FIRST_NAME = "John";
     private static final String RESPONDENT_LAST_NAME = "Smith";
+    public static final String EXPECTED_NAME = String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME);
     public static final List<Element<Child>> CHILDREN = wrapElements(mock(Child.class));
 
     private static final CaseData CASE_DATA = CaseData.builder()
@@ -61,7 +63,8 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
             .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
             .build();
 
-        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation);
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate
+            = buildExpectedTemplate(expectedSalutation, EXPECTED_NAME);
 
         assertThat(underTest.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, respondent))
             .isEqualTo(expectedTemplate);
@@ -79,7 +82,25 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
             .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
             .build();
 
-        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation);
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate
+            = buildExpectedTemplate(expectedSalutation, EXPECTED_NAME);
+
+        assertThat(underTest.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, respondent))
+            .isEqualTo(expectedTemplate);
+    }
+
+    @Test
+    void shouldBuildNotificationDataForSolicitorAccessRevokedWhenRespondentNameIsMissing() {
+        Respondent respondent = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .build())
+            .party(null)
+            .build();
+
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate
+            = buildExpectedTemplate("Dear John Smith", EMPTY);
 
         assertThat(underTest.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, respondent))
             .isEqualTo(expectedTemplate);
@@ -102,13 +123,14 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
         );
     }
 
-    private NoticeOfChangeRespondentSolicitorTemplate buildExpectedTemplate(String expectedSalutation) {
+    private NoticeOfChangeRespondentSolicitorTemplate buildExpectedTemplate(String expectedSalutation,
+                                                                            String clientName) {
         return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(expectedSalutation)
             .caseName(CASE_NAME)
             .ccdNumber(CASE_ID.toString())
             .caseUrl("http://fake-url/cases/case-details/" + CASE_ID)
-            .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
+            .clientFullName(clientName)
             .childLastName(CHILD_LAST_NAME)
             .build();
     }

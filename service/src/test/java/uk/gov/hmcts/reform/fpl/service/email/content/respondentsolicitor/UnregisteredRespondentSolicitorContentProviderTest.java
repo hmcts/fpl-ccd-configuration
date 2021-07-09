@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,32 +44,59 @@ class UnregisteredRespondentSolicitorContentProviderTest extends AbstractEmailCo
     @Autowired
     private UnregisteredRespondentSolicitorContentProvider underTest;
 
+    private final List<Element<Child>> CHILDREN = wrapElements(mock(Child.class));
+
+    @BeforeEach
+    void setup() {
+        when(lookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
+        when(helper.getEldestChildLastName(CHILDREN)).thenReturn("Tim Jones");
+    }
+
     @Test
     void buildContent() {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder().firstName("David").lastName("Jones").build())
             .solicitor(RespondentSolicitor.builder().firstName("John").lastName("Smith").build()).build();
 
-        List<Element<Child>> children = wrapElements(mock(Child.class));
         CaseData caseData = CaseData.builder()
             .id(CCD_NUMBER)
             .caseName("Test case1")
-            .children1(children)
+            .children1(CHILDREN)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondents1(wrapElements(respondent))
             .build();
 
-        when(lookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
-        when(helper.getEldestChildLastName(children)).thenReturn("Tim Jones");
+        NotifyData expectedTemplateData = getExpectedTemplateData("David Jones");
 
-        NotifyData expectedTemplateData = UnregisteredRespondentSolicitorTemplate.builder()
+        assertThat(underTest.buildContent(caseData, respondent)).isEqualTo(expectedTemplateData);
+    }
+
+    @Test
+    void buildContentWithEmptyRespondentName() {
+        Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder().build())
+            .solicitor(RespondentSolicitor.builder().firstName("John").lastName("Smith").build()).build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CCD_NUMBER)
+            .caseName("Test case1")
+            .children1(CHILDREN)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .respondents1(wrapElements(respondent))
+            .build();
+
+        NotifyData expectedTemplateData = getExpectedTemplateData(EMPTY);
+
+        assertThat(underTest.buildContent(caseData, respondent)).isEqualTo(expectedTemplateData);
+    }
+
+    private NotifyData getExpectedTemplateData(String expectedName) {
+        return UnregisteredRespondentSolicitorTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_NAME)
             .ccdNumber(FORMATTED_CCD_NUMBER)
-            .clientFullName("David Jones")
+            .clientFullName(expectedName)
             .childLastName("Tim Jones")
             .caseName("Test case1")
             .build();
-
-        assertThat(underTest.buildContent(caseData, respondent)).isEqualTo(expectedTemplateData);
     }
 }
