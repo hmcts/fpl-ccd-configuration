@@ -55,8 +55,8 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     private final String uploader;
     private final String uploadedOrderDescription;
     @JsonSerialize(contentConverter = BasicChildConverter.class)
-    private final List<Element<Other>> others;
     private final List<Element<Child>> children;
+    private final List<Element<Other>> others;
     private final String childrenDescription;
     private final String specialGuardians;
     private final String othersNotified;
