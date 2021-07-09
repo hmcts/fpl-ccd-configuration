@@ -16,6 +16,7 @@ public class ChangeOfRepresentationRequest {
 
     List<Element<ChangeOfRepresentation>> current;
     ConfidentialParty respondent;
+    ConfidentialParty child;
     RespondentSolicitor addedRepresentative;
     RespondentSolicitor removedRepresentative;
     ChangeOfRepresentationMethod method;

@@ -105,12 +105,15 @@ public class RespondentRepresentationService {
         respondent.setSolicitor(addedSolicitor);
 
         return Map.of(
-            "respondents1", caseData.getRespondents1(),
+            solicitorRole.getRepresenting().getCaseField(), solicitorRole.getRepresenting().getTarget().apply(caseData),
             "changeOfRepresentatives", changeOfRepresentationService.changeRepresentative(
                 ChangeOfRepresentationRequest.builder()
                     .method(ChangeOfRepresentationMethod.NOC)
                     .by(solicitor.getEmail())
-                    .respondent((ConfidentialParty) respondent)
+                    .respondent(SolicitorRole.Representing.RESPONDENT == solicitorRole.getRepresenting() ?
+                        (ConfidentialParty) respondent : null)
+                    .child(SolicitorRole.Representing.CHILD == solicitorRole.getRepresenting() ?
+                        (ConfidentialParty) respondent : null)
                     .current(caseData.getChangeOfRepresentatives())
                     .addedRepresentative(addedSolicitor)
                     .removedRepresentative(removedSolicitor)

@@ -62,18 +62,26 @@ public enum SolicitorRole {
 
     @SuppressWarnings("unchecked")
     public enum Representing {
-        RESPONDENT(caseData -> (List) caseData.getAllRespondents(), "respondentPolicy%d", "noticeOfChangeAnswers%d"),
-        CHILD(caseData -> (List) caseData.getAllChildren(), "childPolicy%d", "noticeOfChangeChildAnswers%d");
+        RESPONDENT(caseData -> (List) caseData.getAllRespondents(),
+            "respondentPolicy%d",
+            "noticeOfChangeAnswers%d",
+            "respondents1"),
+        CHILD(caseData -> (List) caseData.getAllChildren(),
+            "childPolicy%d",
+            "noticeOfChangeChildAnswers%d",
+            "children1");
 
         private final Function<CaseData, List<Element<WithSolicitor>>> target;
         private final String policyFieldTemplate;
         private final String nocAnswersTemplate;
+        private final String caseField;
 
         Representing(Function<CaseData, List<Element<WithSolicitor>>> target,
-                     String policyFieldTemplate, String nocAnswersTemplate) {
+                     String policyFieldTemplate, String nocAnswersTemplate, String caseField) {
             this.target = target;
             this.policyFieldTemplate = policyFieldTemplate;
             this.nocAnswersTemplate = nocAnswersTemplate;
+            this.caseField = caseField;
         }
 
         public Function<CaseData, List<Element<WithSolicitor>>> getTarget() {
@@ -86,6 +94,10 @@ public enum SolicitorRole {
 
         public String getNocAnswersTemplate() {
             return nocAnswersTemplate;
+        }
+
+        public String getCaseField() {
+            return caseField;
         }
     }
 }
