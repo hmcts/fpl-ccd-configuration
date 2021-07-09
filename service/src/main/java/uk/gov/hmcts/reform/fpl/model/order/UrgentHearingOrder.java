@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
-import com.nimbusds.jose.shaded.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
