@@ -61,7 +61,10 @@ class AmendStandardDirectionOrderActionTest {
 
         when(caseData.getStandardDirectionOrder()).thenReturn(sdo);
 
-        StandardDirectionOrder amendedSDO = sdo.toBuilder().amendedDate(AMENDED_DATE).orderDoc(AMENDED_DOCUMENT).build();
+        StandardDirectionOrder amendedSDO = sdo.toBuilder()
+            .amendedDate(AMENDED_DATE)
+            .orderDoc(AMENDED_DOCUMENT)
+            .build();
 
         assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
             Map.of("standardDirectionOrder", amendedSDO)
