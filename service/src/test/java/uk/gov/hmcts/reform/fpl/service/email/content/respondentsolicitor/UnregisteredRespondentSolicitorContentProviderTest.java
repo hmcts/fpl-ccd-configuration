@@ -44,12 +44,12 @@ class UnregisteredRespondentSolicitorContentProviderTest extends AbstractEmailCo
     @Autowired
     private UnregisteredRespondentSolicitorContentProvider underTest;
 
-    private final List<Element<Child>> CHILDREN = wrapElements(mock(Child.class));
+    private final List<Element<Child>> children = wrapElements(mock(Child.class));
 
     @BeforeEach
     void setup() {
         when(lookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
-        when(helper.getEldestChildLastName(CHILDREN)).thenReturn("Tim Jones");
+        when(helper.getEldestChildLastName(children)).thenReturn("Tim Jones");
     }
 
     @Test
@@ -61,7 +61,7 @@ class UnregisteredRespondentSolicitorContentProviderTest extends AbstractEmailCo
         CaseData caseData = CaseData.builder()
             .id(CCD_NUMBER)
             .caseName("Test case1")
-            .children1(CHILDREN)
+            .children1(children)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondents1(wrapElements(respondent))
             .build();
@@ -80,7 +80,7 @@ class UnregisteredRespondentSolicitorContentProviderTest extends AbstractEmailCo
         CaseData caseData = CaseData.builder()
             .id(CCD_NUMBER)
             .caseName("Test case1")
-            .children1(CHILDREN)
+            .children1(children)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondents1(wrapElements(respondent))
             .build();
