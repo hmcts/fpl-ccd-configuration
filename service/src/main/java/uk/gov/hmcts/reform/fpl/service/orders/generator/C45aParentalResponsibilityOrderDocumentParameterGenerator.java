@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43aSpecialGuardianshipOrderDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C45aParentalResponsibilityOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
@@ -58,7 +58,7 @@ public class C45aParentalResponsibilityOrderDocumentParameterGenerator implement
 
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
-        return C43aSpecialGuardianshipOrderDocmosisParameters.builder()
+        return C45aParentalResponsibilityOrderDocmosisParameters.builder()
             .orderTitle(ORDER.getTitle())
             .dateOfIssue(formatLocalDateTimeBaseUsingFormat(eventData.getManageOrdersApprovalDateTime(), DATE_TIME))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
