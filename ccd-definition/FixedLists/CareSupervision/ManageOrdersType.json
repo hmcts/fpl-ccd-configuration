@@ -16,8 +16,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
-    "ListElementCode": "C32_CARE_ORDER",
-    "ListElement": "Care order (C32)",
+    "ListElementCode": "C32A_CARE_ORDER",
+    "ListElement": "Care order (C32A)",
     "DisplayOrder": 3
   },
   {

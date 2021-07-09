@@ -47,7 +47,7 @@ public enum Order {
         DIGITAL,
         "Blank order",
         "Section 31 Children Act 1989",
-        "C21 - Blank order",
+        "Blank order (C21)",
         IsFinalOrder.NO,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
             TITLE, DETAILS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
@@ -56,17 +56,17 @@ public enum Order {
         DIGITAL,
         "Emergency protection order",
         "Section 44 Children Act 1989",
-        "C23 - Emergency protection order",
+        "Emergency protection order (C23)",
         IsFinalOrder.NO,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN,
             EPO_TYPE_AND_PREVENT_REMOVAL, EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE,
             FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
     ),
-    C32_CARE_ORDER(
+    C32A_CARE_ORDER(
         DIGITAL,
         "Care order",
         "Section 31 Children Act 1989",
-        "C32 - Care order",
+        "Care order (C32A)",
         IsFinalOrder.YES,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
@@ -115,7 +115,7 @@ public enum Order {
         DIGITAL,
         "Appointment of a children's guardian",
         "Section 41(1) Children Act 1989",
-        "C47A - Appointment of a children's guardian",
+        "Appointment of a children's guardian (C47A)",
         IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS,

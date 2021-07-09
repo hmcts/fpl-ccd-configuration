@@ -45,7 +45,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO_V2;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
@@ -54,7 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALEN
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -136,7 +136,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void orderSelectionShouldPopulateQuestionConditionHolder() {
         CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32A_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
@@ -163,7 +163,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
+                .manageOrdersType(C32A_CARE_ORDER)
                 .build())
             .hearingDetails(List.of(pastHearing, futureHearing))
             .additionalApplicationsBundle(singletonList(element(
@@ -178,7 +178,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData responseCaseData = extractCaseData(response);
 
         assertThat(response.getData())
-            .containsEntry("hearingDetailsSectionSubHeader", "C32 - Care order");
+            .containsEntry("hearingDetailsSectionSubHeader", "Care order (C32A)");
         ManageOrdersEventData manageOrdersEventData = responseCaseData.getManageOrdersEventData();
         assertThat(manageOrdersEventData.getManageOrdersApprovedAtHearingList())
             .isEqualTo(
@@ -208,7 +208,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void issuingDetailsShouldValidateAgainstFutureApprovalDate() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
+                .manageOrdersType(C32A_CARE_ORDER)
                 .manageOrdersApprovalDate(dateNow().plusDays(1))
                 .build())
             .build();
@@ -223,7 +223,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         final CaseData caseData = CaseData.builder()
             .children1(CHILDREN)
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
+                .manageOrdersType(C32A_CARE_ORDER)
                 .manageOrdersApprovalDate(dateNow())
                 .build())
             .build();
@@ -236,7 +236,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         assertThat(response.getData().get("children_label"))
             .isEqualTo("Child 1: first1 last1\nChild 2: first2 last2\n");
 
-        assertThat(response.getData().get("childrenDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
+        assertThat(response.getData().get("childrenDetailsSectionSubHeader")).isEqualTo("Care order (C32A)");
     }
 
     @Test
@@ -244,7 +244,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
             .childSelector(Selector.newSelector(2))
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32A_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
@@ -256,12 +256,12 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void childrenDetailsShouldPrepopulateNextSectionDetails() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("Yes")
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32A_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
 
-        assertThat(response.getData().get("orderDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
+        assertThat(response.getData().get("orderDetailsSectionSubHeader")).isEqualTo("Care order (C32A)");
     }
 
     @Test
@@ -275,7 +275,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
             .allocatedJudge(JUDGE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
+                .manageOrdersType(C32A_CARE_ORDER)
                 .manageOrdersApprovalDate(dateNow())
                 .build())
             .build();
@@ -332,7 +332,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().minusDays(4), now().plusDays(1))).build();
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
             .thenReturn(DOCMOSIS_DOCUMENT);
 
         when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
@@ -353,7 +353,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             buildPreventRemovalEventData(Address.builder().addressLine1("test").postcode("SW").build()))
             .build();
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
             .thenReturn(DOCMOSIS_DOCUMENT);
         when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
             .thenReturn(UPLOADED_DOCUMENT);
@@ -537,7 +537,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void responseShouldHaveValuesChangedByBothTheCalculatorAndThePrePopulator() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
+                .manageOrdersType(C32A_CARE_ORDER)
                 .build())
             .build();
 

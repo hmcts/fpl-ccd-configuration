@@ -10,10 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Value
 @SuperBuilder(toBuilder = true)
 public class C32bDischargeOfCareOrderDocmosisParameters extends DocmosisParameters {
-    String orderHeader;
-    String orderMessage;
     String orderDetails;
     String furtherDirections;
     String localAuthorityName;
-    boolean showCareRestrictions;
 }

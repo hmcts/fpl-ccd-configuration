@@ -33,7 +33,7 @@ public class OrderMessageGenerator {
     public String getCareOrderRestrictions(CaseData caseData) {
         String careOrderRestrictions = "While a care order is in place, no one can change the ${childOrChildren}’s "
             + "surname or take the ${childOrChildren} out of the UK unless they "
-            + "have written consent from all people with parental responsibility, or permission from the court.\n"
+            + "have written consent from all people with parental responsibility, or permission from the Court.\n"
             + "\n"
             + "Taking the ${childOrChildren} from the UK without this consent or permission might be an offence under "
             + "the Child Abduction Act 1984.\n"
