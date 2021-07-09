@@ -120,6 +120,7 @@ public class CaseSubmissionController extends CallbackController {
             data.put("submittedForm", buildFromDocument(document));
 
             data.putAll(respondentRepresentationService.generate(caseData, SolicitorRole.Representing.RESPONDENT));
+            data.putAll(respondentRepresentationService.generate(caseData, SolicitorRole.Representing.CHILD));
             // data.putAll(); DO we need to do it here? Yes to allow noc
         }
 
