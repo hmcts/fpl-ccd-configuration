@@ -49,6 +49,8 @@ public enum OrderQuestionBlock {
         List.of("appointedGuardians_label", "appointedGuardianSelector")),
     ORDER_BY_CONSENT("orderIsByConsent", "Is the order by consent?", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersIsByConsent")),
+    PARENTAL_RESPONSIBILITY("parentResponsible", "Who's been given parental responsibility", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersParentResponsible")),
     MANAGE_ORDER_END_DATE_WITH_MONTH(
         "manageOrdersExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",

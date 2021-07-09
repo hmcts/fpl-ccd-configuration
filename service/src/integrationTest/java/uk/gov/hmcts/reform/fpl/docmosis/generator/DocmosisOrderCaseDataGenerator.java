@@ -158,6 +158,12 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersFurtherDirections("Some further directions.")
                         .build()
                 );
+            case PARENTAL_RESPONSIBILITY:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersParentResponsible("Remmy Responsible")
+                        .build()
+                );
             case ICO_EXCLUSION:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)

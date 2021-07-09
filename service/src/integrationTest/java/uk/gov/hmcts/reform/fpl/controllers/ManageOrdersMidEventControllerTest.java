@@ -95,7 +95,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
         Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
         Map.entry("cafcassJurisdictions", "NO"),
-        Map.entry("isFinalOrder", "NO")
+        Map.entry("isFinalOrder", "NO"),
+        Map.entry("parentResponsible", "NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
