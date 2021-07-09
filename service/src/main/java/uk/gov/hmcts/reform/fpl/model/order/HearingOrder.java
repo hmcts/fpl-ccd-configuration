@@ -93,4 +93,10 @@ public class HearingOrder implements RemovableOrder, AmendableOrder {
     public LocalDate amendableSortDate() {
         return dateIssued;
     }
+
+    @JsonIgnore
+    @Override
+    public DocumentReference getDocument() {
+        return order;
+    }
 }

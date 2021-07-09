@@ -89,5 +89,11 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
         return null != dateOfUpload ? dateOfUpload
                                     : parseLocalDateFromStringUsingFormat(dateOfIssue, DATE);
     }
+
+    @Override
+    @JsonIgnore
+    public DocumentReference getDocument() {
+        return orderDoc;
+    }
 }
 

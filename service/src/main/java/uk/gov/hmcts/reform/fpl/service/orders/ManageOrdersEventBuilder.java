@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -40,7 +41,7 @@ public class ManageOrdersEventBuilder {
             .map(Optional::get)
             .findFirst();
 
-        AmendableOrder orderToAmend = order.get();
+        DocumentReference orderToAmend = order.get().getDocument();
         System.out.println("Order to amend is" + orderToAmend);
 
         return order.map(amendableOrder -> new AmendedOrderEvent(caseData, amendableOrder));

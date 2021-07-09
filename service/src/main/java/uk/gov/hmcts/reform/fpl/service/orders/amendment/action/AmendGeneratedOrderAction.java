@@ -40,9 +40,9 @@ public class AmendGeneratedOrderAction implements AmendOrderAction {
             .findFirst()
             .ifPresent(order -> {
                 GeneratedOrder amended = order.getValue().toBuilder()
-                    .others(selectedOthers)
                     .document(amendedDocument)
                     .amendedDate(time.now().toLocalDate())
+                    .others(selectedOthers)
                     .build();
 
                 orders.set(orders.indexOf(order), element(order.getId(), amended));

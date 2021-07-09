@@ -111,4 +111,9 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     public boolean isNewVersion() {
         return Objects.nonNull(dateTimeIssued);
     }
+
+    @Override
+    public DocumentReference getDocument() {
+        return document;
+    }
 }

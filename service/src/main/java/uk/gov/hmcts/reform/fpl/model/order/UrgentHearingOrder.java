@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
+import com.nimbusds.jose.shaded.json.annotate.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -32,5 +33,11 @@ public class UrgentHearingOrder implements AmendableOrder {
     @Override
     public LocalDate amendableSortDate() {
         return dateAdded;
+    }
+
+    @Override
+    @JsonIgnore
+    public DocumentReference getDocument() {
+        return order;
     }
 }
