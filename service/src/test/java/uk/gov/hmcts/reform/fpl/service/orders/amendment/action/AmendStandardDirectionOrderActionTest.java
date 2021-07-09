@@ -66,7 +66,7 @@ class AmendStandardDirectionOrderActionTest {
             .orderDoc(AMENDED_DOCUMENT)
             .build();
 
-        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(
             Map.of("standardDirectionOrder", amendedSDO)
         );
     }

@@ -40,6 +40,9 @@ public class ManageOrdersEventBuilder {
             .map(Optional::get)
             .findFirst();
 
+        AmendableOrder orderToAmend = order.get();
+        System.out.println("Order to amend is" + orderToAmend);
+
         return order.map(amendableOrder -> new AmendedOrderEvent(caseData, amendableOrder));
 
     }

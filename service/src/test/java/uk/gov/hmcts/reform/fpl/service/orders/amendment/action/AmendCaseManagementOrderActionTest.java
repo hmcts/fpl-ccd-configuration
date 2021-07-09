@@ -85,7 +85,7 @@ class AmendCaseManagementOrderActionTest {
             ignoredCMO1, element(selectedOrderId, amendedCMO), ignoredCMO2
         );
 
-        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(
             Map.of("sealedCMOs", amendedOrders)
         );
     }

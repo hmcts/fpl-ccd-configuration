@@ -52,7 +52,8 @@ public class AmendedOrderEventHandler {
     @EventListener
     public void notifyParties(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
-        final DocumentReference orderDocument = orderEvent.getOrderDocument();
+        //final DocumentReference orderDocument = orderEvent.getOrderDocument();
+        final DocumentReference orderDocument = DocumentReference.builder().build();
         GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
 
         // TODO type may need changed to AMEND order
@@ -65,7 +66,8 @@ public class AmendedOrderEventHandler {
     @EventListener
     public void sendOrderByPost(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
-        final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
+        final List<DocumentReference> documents = List.of(DocumentReference.builder().build());
+        //final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
         GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
 
         Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));

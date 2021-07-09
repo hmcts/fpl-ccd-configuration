@@ -6,8 +6,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.action.AmendOrderAction;
 
@@ -24,6 +27,7 @@ public class AmendOrderService {
     private final AmendedOrderStamper stamper;
     private final List<AmendOrderAction> amendmentActions;
     private final UploadDocumentService uploadService;
+    private final OthersService othersService;
 
     public Map<String, Object> updateOrder(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
@@ -40,7 +44,9 @@ public class AmendOrderService {
         String amendedFileName = updateFileName(eventData.getManageOrdersOrderToAmend());
         Document stampedDocument = uploadService.uploadDocument(stampedBinaries, amendedFileName, MEDIA_TYPE);
 
-        return amendmentAction.applyAmendedOrder(caseData, buildFromDocument(stampedDocument));
+        List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData);
+
+        return amendmentAction.applyAmendedOrder(caseData, buildFromDocument(stampedDocument), selectedOthers);
     }
 
     private String updateFileName(DocumentReference original) {

@@ -82,7 +82,7 @@ class AmendGeneratedOrderActionTest {
             nonAmendedOrder1, element(selectedOrderId, amendedOrder), nonAmendedOrder2
         );
 
-        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(
             Map.of("orderCollection", amendedOrders)
         );
     }

@@ -54,7 +54,7 @@ class AmendOrderServiceTest {
         when(uploadService.uploadDocument(stampedBinaries, "amended_file.pdf", "application/pdf"))
             .thenReturn(stampedDocument);
 
-        when(action.applyAmendedOrder(caseData, amendedOrder)).thenReturn(amendedFields);
+        when(action.applyAmendedOrder(caseData, amendedOrder, selectedOthers)).thenReturn(amendedFields);
 
         assertThat(underTest.updateOrder(caseData)).isEqualTo(amendedFields);
     }
