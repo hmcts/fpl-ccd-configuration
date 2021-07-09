@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
@@ -23,9 +24,12 @@ public class RegisteredRespondentSolicitorContentProvider {
 
     public RegisteredRespondentSolicitorTemplate buildRespondentSolicitorSubmissionNotification(
         CaseData caseData, Respondent respondent) {
+
+        String respondentName = isNull(respondent.getParty()) ? EMPTY : respondent.getParty().getFullName();
+
         return RegisteredRespondentSolicitorTemplate.builder()
             .salutation(getSalutation(respondent.getSolicitor()))
-            .clientFullName(respondent.getParty().getFullName())
+            .clientFullName(respondentName)
             .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .ccdNumber(caseData.getId().toString())
             .caseName(caseData.getCaseName())

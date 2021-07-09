@@ -21,12 +21,12 @@ public class UnregisteredRespondentSolicitorContentProvider {
 
     public UnregisteredRespondentSolicitorTemplate buildContent(CaseData caseData,
                                                                 Respondent respondent) {
-        String clientName = isNull(respondent.getParty()) ? EMPTY : respondent.getParty().getFullName();
+        String respondentName = isNull(respondent.getParty()) ? EMPTY : respondent.getParty().getFullName();
 
         return UnregisteredRespondentSolicitorTemplate.builder()
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
             .localAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
-            .clientFullName(clientName)
+            .clientFullName(respondentName)
             .caseName(caseData.getCaseName())
             .childLastName(helper.getEldestChildLastName(caseData.getChildren1()))
             .build();

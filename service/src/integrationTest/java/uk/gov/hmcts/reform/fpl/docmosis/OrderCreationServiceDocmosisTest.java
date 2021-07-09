@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.docmosis;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -81,7 +80,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     DocmosisDocumentGeneratorService.class,
 })
 @MockBeans({@MockBean(DocumentDownloadService.class)})
-@Disabled
 public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";

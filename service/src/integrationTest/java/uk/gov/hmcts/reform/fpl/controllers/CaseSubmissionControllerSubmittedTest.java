@@ -132,13 +132,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
         final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(true), new TypeReference<>() {
-            }
+            getExpectedHmctsParameters(true), new TypeReference<>() {}
         );
 
         final Map<String, Object> completeCafcassParameters = mapper.convertValue(
-            getExpectedCafcassParameters(true), new TypeReference<>() {
-            }
+            getExpectedCafcassParameters(true), new TypeReference<>() {}
         );
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
@@ -188,8 +186,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {
-            }
+            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {}
         );
 
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
@@ -221,8 +218,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            }
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
         );
 
         checkUntil(() -> {
@@ -251,8 +247,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            }
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
         );
 
         checkUntil(() ->
@@ -609,8 +604,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .childLastName(EMPTY)
             .build();
 
-        return mapper.convertValue(template, new TypeReference<>() {
-        });
+        return mapper.convertValue(template, new TypeReference<>() {});
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
