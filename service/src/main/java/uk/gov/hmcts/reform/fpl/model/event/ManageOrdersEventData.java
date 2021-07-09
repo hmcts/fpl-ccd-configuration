@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -74,6 +75,7 @@ public class ManageOrdersEventData {
     WalesOffices manageOrdersCafcassOfficesWales;
     DynamicList manageOrdersLinkedApplication;
 
+    @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
         return Optional.ofNullable(manageOrdersApprovalDateTime)
             .or(() -> Optional.ofNullable(manageOrdersApprovalDate).map(LocalDate::atStartOfDay))
