@@ -12,6 +12,9 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
@@ -24,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AmendedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Arrays;
@@ -39,10 +43,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_AMENDED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -185,16 +193,45 @@ class AmendedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndOldOrdersEvent() {
+    @SuppressWarnings("unchecked")
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndNewOrdersEvent() {
+        given(lastGeneratedOrder.isNewVersion()).willReturn(true);
+        given(lastGeneratedOrder.getOthers()).willReturn(LAST_GENERATED_ORDER_OTHERS);
+        final Representative representative = mock(Representative.class);
+        final Representative representative2 = mock(Representative.class);
+        final RespondentParty otherRespondent = mock(RespondentParty.class);
+
+        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(List.of(representative,representative2));
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST),
+            eq(CASE_DATA), eq(LAST_GENERATED_ORDER_OTHERS), any()))
+            .willReturn((Set) Set.of(representative));
+        given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(LAST_GENERATED_ORDER_OTHERS))
+            .willReturn(Set.of(otherRespondent));
+
+        underTest.sendOrderByPost(EVENT);
+
+        verify(sendDocumentService).sendDocuments(CASE_DATA,
+            List.of(TEST_DOCUMENT),
+            List.of(representative2, otherRespondent));
+
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndOldOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(false);
-        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(Sets.newHashSet());
+        final Representative representative = mock(Representative.class);
+        final RespondentParty respondent = mock(RespondentParty.class);
+        final List<Recipient> recipients = List.of(representative, respondent);
 
-        underTest.notifyParties(EVENT);
+        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(recipients);
 
-        verify(amendedOrderEmailContentProvider, never()).getNotifyData(any(), any(), any());
+        underTest.sendOrderByPost(EVENT);
 
-        verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
-            any(), any(), anySet(), eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE)
-        );
+        verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(TEST_DOCUMENT), recipients);
+        verify(sendDocumentService).getStandardRecipients(CASE_DATA);
+
+        verifyNoMoreInteractions(sendDocumentService);
+        verifyNoInteractions(notificationService);
     }
 }
