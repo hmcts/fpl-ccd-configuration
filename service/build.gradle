@@ -4,7 +4,7 @@ buildscript {
   }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
-    classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.2.3") {
+    classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.1.8") {
       exclude group: 'com.vladsch.flexmark'
     }
   }
