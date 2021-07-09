@@ -58,6 +58,8 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     private final List<Element<Other>> others;
     private final List<Element<Child>> children;
     private final String childrenDescription;
+    private final String specialGuardians;
+    private final String othersNotified;
     private String removalReason;
     private String linkedApplicationId;
     private String markedFinal;

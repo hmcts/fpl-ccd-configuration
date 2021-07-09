@@ -13,7 +13,9 @@ public class OrderTempQuestions {
     String approvalDateTime;
     String cafcassJurisdictions;
     String whichChildren;
+    String orderTitle;
     String dischargeOfCareDetails;
+    String childArrangementSpecificIssueProhibitedSteps;
     String epoTypeAndPreventRemoval;
     String epoIncludePhrase;
     String epoChildrenDescription;
@@ -28,6 +30,9 @@ public class OrderTempQuestions {
     String closeCase;
     String uploadOrderFile;
     String previewOrder;
+    String appointedGuardian;
+    String orderIsByConsent;
+    String whichOthers;
     String orderToAmend;
     String uploadAmendedOrder;
 }

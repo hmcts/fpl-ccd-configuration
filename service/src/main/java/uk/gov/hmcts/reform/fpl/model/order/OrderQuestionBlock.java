@@ -30,16 +30,25 @@ public enum OrderQuestionBlock {
     EPO_TYPE_AND_PREVENT_REMOVAL("epoTypeAndPreventRemoval", "Prevent removal", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEpoType", "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement",
             "manageOrdersWhoIsExcluded", "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest")),
+    TITLE("orderTitle", "Order title", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersTitle")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersFurtherDirections")),
     CAFCASS_JURISDICTIONS("cafcassJurisdictions", "Select jurisdiction", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersCafcassRegion", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassOfficesWales")),
     DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersTitle", "manageOrdersDirections")),
+        List.of("manageOrdersDirections")),
+    CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS("childArrangementSpecificIssueProhibitedSteps",
+        "Order Details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersMultiSelectListForC43", "manageOrdersRecitalsAndPreambles")),
     DISCHARGE_DETAILS("dischargeOfCareDetails", "Order Details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersCareOrderIssuedDate", "manageOrdersCareOrderIssuedCourt")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
+    APPOINTED_GUARDIAN("appointedGuardian", "Who's the appointed guardian?", OrderSection.ORDER_DETAILS,
+        List.of("appointedGuardians_label", "appointedGuardianSelector")),
+    ORDER_BY_CONSENT("orderIsByConsent", "Is the order by consent?", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersIsByConsent")),
     MANAGE_ORDER_END_DATE_WITH_MONTH(
         "manageOrdersExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
@@ -57,10 +66,13 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),
     CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
         List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning")),
+    WHICH_OTHERS("whichOthers", "Which others", OrderSection.OTHER_DETAILS,
+        List.of("sendOrderToAllOthers", "others_label", "othersSelector")),
     ORDER_TO_AMEND("orderToAmend", "Download order to amend", OrderSection.AMEND_DOWNLOAD,
         List.of("manageOrdersOrderToAmend")),
     UPLOAD_AMENDED_ORDER("uploadAmendedOrder", "Upload order to amend", OrderSection.AMEND_DOWNLOAD,
         List.of("manageOrdersAmendedOrder"));
+
 
     private final String showHideField;
     private final String question;

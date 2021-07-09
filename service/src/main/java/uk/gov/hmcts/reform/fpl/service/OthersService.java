@@ -5,14 +5,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -61,6 +64,43 @@ public class OthersService {
             .build();
     }
 
+    public String getOthersLabel(List<Element<Other>> others) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < others.size(); i++) {
+            Other other = others.get(i).getValue();
+
+            builder.append(String.format("Other %d: %s", i + 1, other.getName()));
+            builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    public List<Element<Other>> getSelectedOthers(CaseData caseData) {
+        return getSelectedOthers(caseData.getAllOthers(), caseData.getOthersSelector(),
+            caseData.getSendOrderToAllOthers());
+    }
+
+    private List<Element<Other>> getSelectedOthers(List<Element<Other>> others, Selector selector,
+                                                   String sendOrderToAllOthers) {
+
+        if (useAllOthers(sendOrderToAllOthers)) {
+            return others;
+        } else {
+            if (isNull(selector) || isEmpty(selector.getSelected())) {
+                return Collections.emptyList();
+            }
+            return selector.getSelected().stream()
+                .map(others::get)
+                .collect(toList());
+        }
+    }
+
+    private boolean useAllOthers(String sendOrdersToAllOthers) {
+        return "Yes".equals(sendOrdersToAllOthers);
+    }
+
     private Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
         return other.getValue().toBuilder()
             .telephone(confidentialOther.getTelephone())
@@ -96,9 +136,5 @@ public class OthersService {
 
     private boolean otherExists(Others others) {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
-    }
-
-    public List<Element<Other>> getSelectedOthers(CaseData caseData) {
-        return Collections.emptyList();
     }
 }

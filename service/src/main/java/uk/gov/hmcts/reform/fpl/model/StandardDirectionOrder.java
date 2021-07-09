@@ -38,14 +38,15 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;
-    private final DocumentReference unsealedDocumentCopy;
-    private final List<Element<CustomDirection>> customDirections;
-    private final List<Element<StandardDirection>> standardDirections;
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
     private final LocalDate amendedDate;
+
+    private final DocumentReference unsealedDocumentCopy;
+    private final List<Element<CustomDirection>> customDirections;
+    private final List<Element<StandardDirection>> standardDirections;
 
     @JsonIgnore
     public boolean isSealed() {

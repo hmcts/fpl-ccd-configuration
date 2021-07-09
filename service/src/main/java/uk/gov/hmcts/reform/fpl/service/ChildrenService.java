@@ -49,44 +49,48 @@ public class ChildrenService {
         return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
     }
 
-    public List<Element<Child>> updateFinalOrderIssued(String orderLabel, List<Element<Child>> children,
-                                                       String orderAppliesToAllChildren, Selector childSelector,
-                                                       String remainingChildIndex) {
+    public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
+        List<Element<Child>> childrenToIssueFinalOrder = getSelectedChildrenForIssuingFinalOrder(caseData);
+        return updateFinalOrderIssued(
+            caseData.getManageOrdersEventData().getManageOrdersType().getTitle(),
+            caseData.getAllChildren(),
+            caseData.getOrderAppliesToAllChildren(),
+            childrenToIssueFinalOrder
+        );
+    }
+
+    public List<Element<Child>> updateFinalOrderIssued(String orderLabel,
+                                                       List<Element<Child>> children,
+                                                       String orderAppliesToAllChildren,
+                                                       List<Element<Child>> selectedChildren) {
+
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> {
                 child.getValue().setFinalOrderIssued(YES.getValue());
                 child.getValue().setFinalOrderIssuedType(orderLabel);
             });
         } else {
-            List<Integer> selectedChildren;
-            if (StringUtils.isNotBlank(remainingChildIndex)) {
-                selectedChildren = List.of(Integer.parseInt(remainingChildIndex));
-            } else if (childSelector != null) {
-                selectedChildren = childSelector.getSelected();
-            } else {
-                selectedChildren = new ArrayList<>();
-            }
-            for (int i = 0; i < children.size(); i++) {
-                Child child = children.get(i).getValue();
-                if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
-                    child.setFinalOrderIssued(YES.getValue());
-                    child.setFinalOrderIssuedType(orderLabel);
-                } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
-                    child.setFinalOrderIssued(NO.getValue());
+            children.forEach(child -> {
+                boolean childWasSelected = selectedChildren.contains(child);
+                if (childWasSelected) {
+                    child.getValue().setFinalOrderIssued(YES.getValue());
+                    child.getValue().setFinalOrderIssuedType(orderLabel);
                 }
-            }
+            });
         }
+
+        setFinalOrderNotIssuedForChildrenWithNoFinalOrderInformation(children);
+
         return children;
     }
 
-    public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
-        return updateFinalOrderIssued(
-            caseData.getManageOrdersEventData().getManageOrdersType().getTitle(),
-            caseData.getAllChildren(),
-            caseData.getOrderAppliesToAllChildren(),
-            caseData.getChildSelector(),
-            caseData.getRemainingChildIndex()
-        );
+    private void setFinalOrderNotIssuedForChildrenWithNoFinalOrderInformation(List<Element<Child>> children) {
+        children.forEach(child -> {
+            boolean finalOrderForChildWasNotSet = StringUtils.isEmpty(child.getValue().getFinalOrderIssued());
+            if (finalOrderForChildWasNotSet) {
+                child.getValue().setFinalOrderIssued(NO.getValue());
+            }
+        });
     }
 
     /**
@@ -166,4 +170,24 @@ public class ChildrenService {
         // If there is only one child in the case then the choice will be null
         return appliesToAllChildren == null || "Yes".equals(appliesToAllChildren);
     }
+
+    public List<Element<Child>> getSelectedChildrenForIssuingFinalOrder(CaseData caseData) {
+        String remainingChildIndex = caseData.getRemainingChildIndex();
+        Selector childSelector = caseData.getChildSelector();
+        List<Element<Child>> children = caseData.getAllChildren();
+
+        List<Integer> selectedChildren;
+        if (StringUtils.isNotBlank(remainingChildIndex)) {
+            selectedChildren = List.of(Integer.parseInt(remainingChildIndex));
+        } else if (childSelector != null) {
+            selectedChildren = childSelector.getSelected();
+        } else {
+            selectedChildren = new ArrayList<>();
+        }
+
+        return selectedChildren.stream()
+            .map(children::get)
+            .collect(Collectors.toList());
+    }
+
 }

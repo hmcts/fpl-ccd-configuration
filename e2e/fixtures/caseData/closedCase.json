@@ -1,6 +1,30 @@
 {
   "state": "CLOSED",
   "caseData": {
+    "others": {
+      "firstOther": {
+        "DOB": null,
+        "name": "John Doe",
+        "gender": null,
+        "address": {
+          "County": "United Kingdom",
+          "PostCode": "CR0 2GE",
+          "PostTown": "London",
+          "AddressLine1": "Flat 12, Pinnacle Apartments",
+          "AddressLine2": "Saffron Central Square 11"
+        },
+        "telephone": null,
+        "birthPlace": "Newry",
+        "detailsHidden": null,
+        "representedBy": [],
+        "childInformation": null,
+        "litigationIssues": null,
+        "detailsHiddenReason": null,
+        "genderIdentification": null,
+        "litigationIssuesDetails": null
+      },
+      "additionalOthers": []
+    },
     "caseName": "e2e test case",
     "orders": {
       "orderType": [

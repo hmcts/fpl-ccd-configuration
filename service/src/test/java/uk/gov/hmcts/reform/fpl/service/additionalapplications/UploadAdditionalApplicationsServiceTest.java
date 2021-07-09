@@ -4,11 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
@@ -33,6 +36,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,6 +44,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
@@ -273,6 +278,37 @@ class UploadAdditionalApplicationsServiceTest {
             .getUploadedDateTime());
         assertThat(bundleAtLastIndex.getUploadedDateTime()).isEqualTo(firstBundleAdded
             .getUploadedDateTime());
+    }
+
+    @ParameterizedTest
+    @MethodSource("additionalApplicationBundlesData")
+    void shouldGetTheApplicantAndApplicationTypes(AdditionalApplicationsBundle applicationBundle,
+                                                  List<ApplicationType> expectedApplicationTypes) {
+        assertThat(underTest.getApplicationTypes(applicationBundle)).isEqualTo(expectedApplicationTypes);
+    }
+
+    private static Stream<Arguments> additionalApplicationBundlesData() {
+        return Stream.of(
+            Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(
+                C2DocumentBundle.builder()
+                    .type(WITHOUT_NOTICE)
+                    .document(DocumentReference.builder().build()).build()).build(),
+                List.of(C2_APPLICATION)),
+            Arguments.of(AdditionalApplicationsBundle.builder().otherApplicationsBundle(
+                OtherApplicationsBundle.builder()
+                    .applicationType(C1_PARENTAL_RESPONSIBILITY)
+                    .document(DocumentReference.builder().build()).build()).build(),
+                List.of(ApplicationType.C1_PARENTAL_RESPONSIBILITY)),
+            Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(
+                C2DocumentBundle.builder()
+                    .type(WITH_NOTICE)
+                    .document(DocumentReference.builder().build()).build())
+                    .otherApplicationsBundle(
+                        OtherApplicationsBundle.builder()
+                            .applicationType(C1_PARENTAL_RESPONSIBILITY)
+                            .document(DocumentReference.builder().build()).build()).build(),
+                List.of(C2_APPLICATION, ApplicationType.C1_PARENTAL_RESPONSIBILITY))
+        );
     }
 
     private void assertSupplementsBundle(Supplement actual, Supplement exampleOfExpectedSupplement) {

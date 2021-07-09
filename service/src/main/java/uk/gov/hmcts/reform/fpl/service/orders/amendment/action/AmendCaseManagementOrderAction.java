@@ -34,23 +34,17 @@ public class AmendCaseManagementOrderAction implements AmendOrderAction {
         UUID selectedOrderId = caseData.getManageOrdersEventData().getManageOrdersAmendmentList().getValueCodeAsUUID();
         List<Element<HearingOrder>> orders = caseData.getSealedCMOs();
 
-        int idx = -1;
-        HearingOrder orderToAmend = null;
-        for (int i = 0; i < orders.size(); i++) {
-            Element<HearingOrder> order = orders.get(i);
-            if (Objects.equals(selectedOrderId, order.getId())) {
-                idx = i;
-                orderToAmend = order.getValue();
-                break;
-            }
-        }
+        orders.stream()
+            .filter(order -> Objects.equals(order.getId(), selectedOrderId))
+            .findFirst()
+            .ifPresent(order -> {
+                HearingOrder amended = order.getValue().toBuilder()
+                    .order(amendedDocument)
+                    .amendedDate(time.now().toLocalDate())
+                    .build();
 
-        HearingOrder amended = Objects.requireNonNull(orderToAmend).toBuilder()
-            .order(amendedDocument)
-            .amendedDate(time.now().toLocalDate())
-            .build();
-
-        orders.set(idx, element(selectedOrderId, amended));
+                orders.set(orders.indexOf(order), element(order.getId(), amended));
+            });
 
         return Map.of(CASE_FIELD, orders);
     }

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
@@ -28,6 +27,7 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @Slf4j
 @Service
@@ -61,7 +61,7 @@ public class AmendedOrderStamper {
 
     private byte[] amendDocument(byte[] binaries) throws IOException {
         try (PDDocument document = PDDocument.load(binaries)) {
-            final ByteArrayInputStream font_binaries = new ByteArrayInputStream(ResourceReader.readBytes(FONT_LOCATION));
+            final ByteArrayInputStream font_binaries = new ByteArrayInputStream(readBytes(FONT_LOCATION));
             final PDFont font = PDType0Font.load(document, font_binaries);
 
             final PDPage page = document.getPage(0);

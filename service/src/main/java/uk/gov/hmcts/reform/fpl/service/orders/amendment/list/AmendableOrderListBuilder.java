@@ -12,12 +12,10 @@ import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
-import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -25,11 +23,7 @@ public class AmendableOrderListBuilder {
     private final DynamicListService listService;
     private final List<AmendableListItemProvider> providers;
 
-    public Optional<DynamicList> buildList(CaseData caseData) {
-        if (CLOSED == caseData.getState()) {
-            return Optional.empty();
-        }
-
+    public DynamicList buildList(CaseData caseData) {
         Comparator<Element<? extends AmendableOrder>> comparator = comparing(
             order -> order.getValue().amendableSortDate(), reverseOrder()
         );
@@ -42,10 +36,10 @@ public class AmendableOrderListBuilder {
             .sorted(comparator)
             .collect(Collectors.toList());
 
-        return Optional.of(listService.asDynamicList(
+        return listService.asDynamicList(
             amendableOrders,
             order -> order.getId().toString(),
             order -> order.getValue().asLabel()
-        ));
+        );
     }
 }

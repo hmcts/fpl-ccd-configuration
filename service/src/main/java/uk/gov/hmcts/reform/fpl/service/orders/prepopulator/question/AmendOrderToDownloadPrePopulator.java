@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class AmendOrderToDownloadPrePopulator implements QuestionBlockOrderPrePopulator{
+public class AmendOrderToDownloadPrePopulator implements QuestionBlockOrderPrePopulator {
     @Override
     public OrderQuestionBlock accept() {
         return OrderQuestionBlock.ORDER_TO_AMEND;

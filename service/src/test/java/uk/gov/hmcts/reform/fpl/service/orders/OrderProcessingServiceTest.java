@@ -15,6 +15,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class OrderProcessingServiceTest {
+    private static final Map<String, Object> AMENDMENT_DATA = Map.of("some amendment", "data");
+    private static final Map<String, Object> CREATION_DATA = Map.of("some creation", "data");
+
     private final CaseData caseData = mock(CaseData.class);
     private final ManageOrdersEventData eventData = mock(ManageOrdersEventData.class);
 
@@ -31,19 +34,27 @@ class OrderProcessingServiceTest {
     void processAmendmentOperation() {
         when(eventData.getManageOrdersOperation()).thenReturn(OrderOperation.AMEND);
 
-        Map<String, Object> amendmentData = Map.of("some amendment", "data");
-        when(amendmentService.updateOrder(caseData)).thenReturn(amendmentData);
+        when(amendmentService.updateOrder(caseData)).thenReturn(AMENDMENT_DATA);
 
-        assertThat(underTest.process(caseData)).isEqualTo(amendmentData);
+        assertThat(underTest.process(caseData)).isEqualTo(AMENDMENT_DATA);
+    }
+
+    @Test
+    void processAmendmentOperationClosed() {
+        when(eventData.getManageOrdersOperation()).thenReturn(null);
+        when(eventData.getManageOrdersOperationClosedState()).thenReturn(OrderOperation.AMEND);
+
+        when(amendmentService.updateOrder(caseData)).thenReturn(AMENDMENT_DATA);
+
+        assertThat(underTest.process(caseData)).isEqualTo(AMENDMENT_DATA);
     }
 
     @Test
     void processNonAmendmentOperation() {
         when(eventData.getManageOrdersOperation()).thenReturn(OrderOperation.CREATE);
 
-        Map<String, Object> creationData = Map.of("some creation", "data");
-        when(historyService.generate(caseData)).thenReturn(creationData);
+        when(historyService.generate(caseData)).thenReturn(CREATION_DATA);
 
-        assertThat(underTest.process(caseData)).isEqualTo(creationData);
+        assertThat(underTest.process(caseData)).isEqualTo(CREATION_DATA);
     }
 }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.others;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;

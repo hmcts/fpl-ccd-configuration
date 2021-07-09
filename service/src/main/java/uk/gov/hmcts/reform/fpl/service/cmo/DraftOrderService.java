@@ -345,13 +345,10 @@ public class DraftOrderService {
     }
 
     private UUID getSelectedHearingId(UploadDraftOrdersData eventData) {
-        if (getHearingOrderKinds(eventData).contains(HearingOrderKind.CMO)) {
-            Object dynamicList = defaultIfNull(eventData.getPastHearingsForCMO(), eventData.getFutureHearingsForCMO());
-            return getDynamicListSelectedValue(dynamicList, mapper);
-        } else {
-            UUID selectedHearingId = getDynamicListSelectedValue(eventData.getHearingsForHearingOrderDrafts(), mapper);
-            return DEFAULT_CODE.equals(selectedHearingId) ? null : selectedHearingId;
-        }
+        final Object hearingDynamicList = eventData.getHearingDynamicList();
+        final UUID selectedHearingId = getDynamicListSelectedValue(hearingDynamicList, mapper);
+
+        return DEFAULT_CODE.equals(selectedHearingId) ? null : selectedHearingId;
     }
 
     private List<HearingOrderKind> getHearingOrderKinds(UploadDraftOrdersData eventData) {

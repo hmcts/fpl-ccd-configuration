@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.OrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
@@ -48,9 +47,7 @@ public class ManageOrdersController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        amendableOrderListBuilder.buildList(caseData).ifPresent(list ->
-            caseDetails.getData().put("manageOrdersAmendmentList", list)
-        );
+        caseDetails.getData().put("manageOrdersAmendmentList", amendableOrderListBuilder.buildList(caseData));
 
         return respond(caseDetails);
     }

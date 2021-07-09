@@ -11,17 +11,15 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert.assertThat;
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -32,18 +30,7 @@ class ManageOrdersControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotPopulateManageOrdersAmendmentListWhenStateIsClosed() {
-        CaseData caseData = CaseData.builder()
-            .state(CLOSED)
-            .build();
-
-        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(caseData));
-
-        assertThat(returnedCaseData.getManageOrdersEventData().getManageOrdersAmendmentList()).isNull();
-    }
-
-    @Test
-    void shouldPopulateManageOrdersAmendmentListWhenStateIsNotClosed() {
+    void shouldPopulateManageOrdersAmendmentList() {
         UUID orderId = UUID.randomUUID();
         UUID cmoId = UUID.randomUUID();
         UUID uhoId = UUID.fromString("5d05d011-5d01-5d01-5d01-5d05d05d05d0");
@@ -73,14 +60,14 @@ class ManageOrdersControllerAboutToStartTest extends AbstractCallbackTest {
             .build();
 
         CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
-        DynamicListAssert.assertThat(responseData.getManageOrdersEventData().getManageOrdersAmendmentList())
+        assertThat(responseData.getManageOrdersEventData().getManageOrdersAmendmentList())
             .hasSize(4)
             .hasNoSelectedValue()
             .hasElementsInOrder(
-                Pair.of(uhoId, "Urgent hearing order - 4 April 0004" ),
-                Pair.of(cmoId, "Sealed case management order issued on 3 March 0003" ),
-                Pair.of(sdoId, "Gatekeeping order - 2 February 0002" ),
-                Pair.of(orderId, "some type of order - 1 January 0001" )
+                Pair.of(uhoId, "Urgent hearing order - 4 April 0004"),
+                Pair.of(cmoId, "Sealed case management order issued on 3 March 0003"),
+                Pair.of(sdoId, "Gatekeeping order - 2 February 0002"),
+                Pair.of(orderId, "some type of order - 1 January 0001")
             );
     }
 }
