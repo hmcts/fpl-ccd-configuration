@@ -1,8 +1,7 @@
-package uk.gov.hmcts.reform.fpl.events;
+package uk.gov.hmcts.reform.fpl.events.order;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
@@ -11,5 +10,5 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 @RequiredArgsConstructor
 public class AmendedOrderEvent implements ManageOrdersEvent {
     private final CaseData caseData;
-    private final AmendableOrder amendableOrder;
+    private final AmendableOrder order;
 }

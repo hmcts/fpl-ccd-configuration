@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.events;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
-public class GeneratedOrderEvent extends OrderEvent {
-
-    public GeneratedOrderEvent(CaseData caseData, DocumentReference documentReference) {
-        super(caseData, documentReference);
+@Getter
+@RequiredArgsConstructor
+    public class GeneratedOrderEvent implements ManageOrdersEvent {
+        private final CaseData caseData;
+        private final DocumentReference orderDocument;
     }
-}
