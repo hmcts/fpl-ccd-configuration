@@ -84,7 +84,7 @@ public class CaseSubmissionController extends CallbackController {
             }
         }
 
-        String signeeName = caseSubmissionService.getSigneeName(caseData.getAllApplicants());
+        String signeeName = caseSubmissionService.getSigneeName(caseData);
 
         String label = String.format(CONSENT_TEMPLATE, signeeName);
         data.put("submissionConsentLabel", label);

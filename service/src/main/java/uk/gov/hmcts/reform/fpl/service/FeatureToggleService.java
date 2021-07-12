@@ -77,6 +77,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("eldest-child-last-name", createLDUser(), false);
     }
 
+    public boolean isApplicantAdditionalContactsEnabled() {
+        return ldClient.boolVariation("applicant-additional-contacts", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

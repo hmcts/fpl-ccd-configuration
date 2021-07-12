@@ -9,10 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -22,17 +25,24 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
+import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static java.time.Month.APRIL;
@@ -76,17 +86,6 @@ class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnRoboticsDataWithoutApplicantNodeWhenApplicantIsNull() {
-        CaseData caseData = prepareCaseData().toBuilder()
-            .applicants(null)
-            .build();
-
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
-
-        assertThat(roboticsData.getApplicant()).isNull();
-    }
-
-    @Test
     void shouldReturnRoboticsDataWithoutDateOfIssueWhenNotPresent() {
         CaseData caseData = prepareCaseData().toBuilder()
             .dateSubmitted(null)
@@ -97,18 +96,140 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.getIssueDate()).isNull();
     }
 
-    @Test
-    void shouldReturnRoboticsDataWithEmptyApplicant() {
-        CaseData caseData = prepareCaseData().toBuilder()
-            .applicants(wrapElements(Applicant.builder()
-                .party(ApplicantParty.builder().build())
-                .build()))
+    @Nested
+    class RoboticsApplicant {
+
+        final Applicant applicant = Applicant.builder()
+            .party(ApplicantParty.builder()
+                .organisationName("Applicant organisation name")
+                .mobileNumber(Telephone.builder()
+                    .telephoneNumber("077111111")
+                    .build())
+                .telephoneNumber(Telephone.builder()
+                    .telephoneNumber("077222222")
+                    .contactDirection("John Green")
+                    .build())
+                .jobTitle("Applicant solicitor")
+                .email(EmailAddress.builder()
+                    .email("applicant@test.com")
+                    .build())
+                .address(Address.builder()
+                    .addressLine1("First line")
+                    .postcode("AB 111")
+                    .build())
+                .build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+        @Test
+        void shouldGetApplicantFromLocalAuthorityWhenExists() {
+            final Colleague mainContact = Colleague.builder()
+                .role(ColleagueRole.OTHER)
+                .title("Legal adviser")
+                .fullName("John Smith")
+                .phone("077777777")
+                .mainContact("Yes")
+                .build();
 
-        assertThat(roboticsData.getApplicant())
-            .isEqualTo(uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder().build());
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name("Local authority")
+                .address(Address.builder()
+                    .addressLine1("Line 1")
+                    .postcode("AB 100")
+                    .build())
+                .phone("088888888")
+                .email("la@test.com")
+                .colleagues(wrapElements(mainContact))
+                .build();
+
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .applicants(wrapElements(applicant))
+                .build();
+
+            final uk.gov.hmcts.reform.fpl.model.robotics.Applicant expectedApplicant =
+                uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder()
+                    .name(localAuthority.getName())
+                    .contactName(mainContact.getFullName())
+                    .jobTitle(mainContact.getTitle())
+                    .address(uk.gov.hmcts.reform.fpl.model.robotics.Address.builder()
+                        .addressLine1(localAuthority.getAddress().getAddressLine1())
+                        .postcode(localAuthority.getAddress().getPostcode())
+                        .build())
+                    .mobileNumber(mainContact.getPhone())
+                    .telephoneNumber(localAuthority.getPhone())
+                    .email(localAuthority.getEmail())
+                    .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            assertThat(roboticsData.getApplicant()).isEqualTo(expectedApplicant);
+        }
+
+        @Test
+        void shouldGetApplicantFromLegacyApplicantsWhenLocalAuthorityDoesNotExists() {
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .applicants(wrapElements(applicant))
+                .build();
+
+            final uk.gov.hmcts.reform.fpl.model.robotics.Applicant expectedApplicant =
+                uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder()
+                    .name(applicant.getParty().getOrganisationName())
+                    .contactName(applicant.getParty().getTelephoneNumber().getContactDirection())
+                    .jobTitle(applicant.getParty().getJobTitle())
+                    .address(uk.gov.hmcts.reform.fpl.model.robotics.Address.builder()
+                        .addressLine1(applicant.getParty().getAddress().getAddressLine1())
+                        .postcode(applicant.getParty().getAddress().getPostcode())
+                        .build())
+                    .mobileNumber(applicant.getParty().getMobileNumber().getTelephoneNumber())
+                    .telephoneNumber(applicant.getParty().getTelephoneNumber().getTelephoneNumber())
+                    .email(applicant.getParty().getEmail().getEmail())
+                    .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            assertThat(roboticsData.getApplicant()).isEqualTo(expectedApplicant);
+        }
+
+        @Test
+        void shouldReturnNullWhenLocalAuthorityNorApplicantExists() {
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(null)
+                .applicants(null)
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicant()).isNull();
+        }
+
+        @Test
+        void shouldReturnEmptyApplicantDataFromLegacyApplicant() {
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder().build())
+                    .build()))
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicant())
+                .isEqualTo(uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder().build());
+        }
+
+        @Test
+        void shouldReturnEmptyApplicantDataFromLocalAuthority() {
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(wrapElements(LocalAuthority.builder()
+                    .build()))
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder().build())
+                    .build()))
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicant())
+                .isEqualTo(uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder().build());
+        }
+
     }
 
     @Test
@@ -277,42 +398,200 @@ class RoboticsDataServiceTest {
     }
 
     @Nested
-    class Solicitor {
+    class RoboticsSolicitor {
 
         @Test
-        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNull() {
-            CaseData caseData = prepareCaseData().toBuilder()
+        void shouldPopulateSolicitorFromLocalAuthoritySolicitor() {
+            final Colleague colleague1 = Colleague.builder()
+                .fullName("John Smith")
+                .role(ColleagueRole.SOCIAL_WORKER)
+                .build();
+
+            final Colleague colleague2 = Colleague.builder()
+                .fullName("Alex Williams")
+                .role(ColleagueRole.SOLICITOR)
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(wrapElements(colleague1, colleague2))
+                .build();
+
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor("Emma Watson"))
+                .build();
+
+            final Solicitor expectedSolicitor = Solicitor.builder()
+                .firstName("Alex")
+                .lastName("Williams")
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isEqualTo(expectedSolicitor);
+        }
+
+        @Test
+        void shouldPopulateSolicitorFromFirstLocalAuthoritySolicitor() {
+            final Colleague colleague1 = Colleague.builder()
+                .fullName("John Smith")
+                .role(ColleagueRole.SOLICITOR)
+                .build();
+
+            final Colleague colleague2 = Colleague.builder()
+                .fullName("Alex Williams")
+                .role(ColleagueRole.SOLICITOR)
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(wrapElements(colleague1, colleague2))
+                .build();
+
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor("Emma Watson"))
+                .build();
+
+            final Solicitor expectedSolicitor = Solicitor.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isEqualTo(expectedSolicitor);
+        }
+
+        @Test
+        void shouldNotPopulateSolicitorWhenNoSolicitorInLocalAuthority() {
+            final Colleague colleague1 = Colleague.builder()
+                .fullName("John Smith")
+                .role(ColleagueRole.SOCIAL_WORKER)
+                .build();
+
+            final Colleague colleague2 = Colleague.builder()
+                .fullName("Alex Williams")
+                .role(ColleagueRole.OTHER)
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(wrapElements(colleague1, colleague2))
+                .build();
+
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor("Emma Watson"))
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldNotPopulateSolicitorWhenLocalAuthoritySolicitorDoesNotHaveName(String name) {
+            final Colleague colleague = Colleague.builder()
+                .fullName(name)
+                .role(ColleagueRole.SOLICITOR)
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(wrapElements(colleague))
+                .build();
+
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor("Emma Watson"))
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @Test
+        void shouldNotPopulateSolicitorWhenLocalAuthoritySolicitorNameCanNotBeSplit() {
+            final Colleague colleague = Colleague.builder()
+                .fullName("AlexWilliams")
+                .role(ColleagueRole.SOLICITOR)
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(wrapElements(colleague))
+                .build();
+
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor("Emma Watson"))
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldNotPopulateSolicitorWhenLocalAuthorityNorLegacySolicitorExists(
+            List<Element<LocalAuthority>> localAuthorities) {
+            final CaseData caseData = prepareCaseData().toBuilder()
                 .solicitor(null)
+                .localAuthorities(localAuthorities)
                 .build();
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
             assertThat(roboticsData.getSolicitor()).isNull();
         }
 
-        @Test
-        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsEmpty() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder().build())
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
-
-            assertThat(roboticsData.getSolicitor()).isNull();
-        }
-
-        @Test
-        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsNotFull() {
-            CaseData caseData = prepareCaseData().toBuilder()
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldNotPopulateSolicitorWhenLocalAuthorityNotPresentAndLegacySolicitorDoesNotHaveName(String name) {
+            final CaseData caseData = prepareCaseData().toBuilder()
                 .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder()
-                    .name("Smith")
+                    .name(name)
                     .build())
                 .build();
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
             assertThat(roboticsData.getSolicitor()).isNull();
         }
+
+        @Test
+        void shouldNotPopulateSolicitorWhenLocalAuthorityNotPresentAndLegacySolicitorNameCanNotBeSplit() {
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(solicitor("Smith"))
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @Test
+        void shouldPopulateSolicitorFromLegacySolicitorWhenLocalAuthorityNotPresent() {
+            final CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(solicitor("John Smith"))
+                .build();
+
+            final RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isEqualTo(Solicitor.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .build());
+        }
+
+        private uk.gov.hmcts.reform.fpl.model.Solicitor legacySolicitor(String name) {
+            return uk.gov.hmcts.reform.fpl.model.Solicitor.builder().name(name).build();
+        }
+
+        private uk.gov.hmcts.reform.fpl.model.Solicitor solicitor(String name) {
+            return uk.gov.hmcts.reform.fpl.model.Solicitor.builder().name(name).build();
+        }
+
     }
 
     @Nested

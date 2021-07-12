@@ -21,14 +21,17 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -59,6 +62,8 @@ import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
@@ -129,9 +134,16 @@ class CaseSubmissionGenerationServiceTest {
 
     @Nested
     class DocmosisCaseSubmissionSigneeNameTest {
+
         @Test
-        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerPresent() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
+        void shouldReturnFormLocalAuthorityLegalTeamManager() {
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .legalTeamManager("John Manager in local authority")
+                .build();
+
+            final CaseData caseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
                 .applicants(wrapElements(Applicant.builder()
                     .party(ApplicantParty.builder()
                         .legalTeamManager("legal team manager")
@@ -139,25 +151,64 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("John Manager in local authority");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnCurrentUserWhenLocalAuthorityDoesNotHaveLegalTeamManager(String legalTeamManager) {
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .legalTeamManager(legalTeamManager)
+                .build();
+
+            final CaseData caseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager("legal team manager")
+                        .build())
+                    .build()))
+                .build();
+
+
+            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
+        }
+
+        @Test
+        void shouldReturnApplicantLegalTeamManagerWhenNoLocalAuthorities() {
+
+            final CaseData caseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager("legal team manager")
+                        .build())
+                    .build()))
+                .build();
+
+            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+
             assertThat(caseSubmission.getUserFullName()).isEqualTo("legal team manager");
         }
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnCurrentUserWhenApplicantsListIsNullOrEmpty(
-            List<Element<Applicant>> applicants) {
+        void shouldReturnCurrentUserWhenNoLegacyApplicantsNorLocalAuthorities(List<Element<Applicant>> applicants) {
+            final CaseData caseData = givenCaseData.toBuilder().applicants(applicants).build();
 
-            CaseData updatedCaseData = givenCaseData.toBuilder().applicants(applicants).build();
+            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
             assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
         }
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnCurrentUserWhenLegalTeamManagerIsEmptyOrNotPresent(String legalTeamManager) {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
+        void shouldReturnCurrentUserWhenNoLegacyApplicantLegalTeamManagerAndNoLocalAuthority(String legalTeamManager) {
+            final CaseData caseData = givenCaseData.toBuilder()
                 .applicants(wrapElements(Applicant.builder()
                     .party(ApplicantParty.builder()
                         .legalTeamManager(legalTeamManager)
@@ -165,7 +216,8 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+
             assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
         }
     }
@@ -815,11 +867,184 @@ class CaseSubmissionGenerationServiceTest {
     class DocmosisCaseSubmissionBuildApplicantTest {
 
         @Test
-        void shouldReturnDefaultApplicantDetailsWhenInfoNotGiven() {
+        void shouldTakeApplicantDetailsFromLocalAuthority() {
+            final Colleague solicitor = Colleague.builder()
+                .role(SOLICITOR)
+                .fullName("Alex Williams")
+                .email("alex@test.com")
+                .phone("0777777777")
+                .dx("DX1")
+                .reference("Ref 1")
+                .build();
+
+            final Colleague mainContact = Colleague.builder()
+                .role(OTHER)
+                .title("Legal adviser")
+                .fullName("Emma White")
+                .phone("07778888888")
+                .mainContact("Yes")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name("Local authority 1")
+                .email("la@test.com")
+                .phone("0777999999")
+                .pbaNumber("PBA1234567")
+                .address(Address.builder()
+                    .addressLine1("L1")
+                    .postcode("AB 100")
+                    .build())
+                .colleagues(wrapElements(solicitor, mainContact))
+                .build();
+
+            final CaseData updatedCaseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(Solicitor.builder()
+                    .name("Legacy solicitor")
+                    .email("legacy@test.com")
+                    .mobile("0777111111")
+                    .build())
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Applicant organisation")
+                        .email(EmailAddress.builder()
+                            .email("applicantemail@gmail.com")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
+                .organisationName(localAuthority.getName())
+                .jobTitle(mainContact.getTitle())
+                .mobileNumber(mainContact.getPhone())
+                .telephoneNumber(localAuthority.getPhone())
+                .pbaNumber(localAuthority.getPbaNumber())
+                .email(localAuthority.getEmail())
+                .contactName(mainContact.getFullName())
+                .solicitorDx(solicitor.getDx())
+                .solicitorEmail(solicitor.getEmail())
+                .solicitorMobile(solicitor.getPhone())
+                .solicitorName(solicitor.getFullName())
+                .solicitorReference(solicitor.getReference())
+                .solicitorTelephone(solicitor.getPhone())
+                .address("L1\nAB 100")
+                .build();
+
+            assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo(localAuthority.getName());
+        }
+
+        @Test
+        void shouldTakeApplicantDetailsFromLocalAuthorityWhenMissingSolicitorAndMainContactDetails() {
+
+            final Colleague solicitor = Colleague.builder()
+                .role(SOLICITOR)
+                .build();
+
+            final Colleague mainContact = Colleague.builder()
+                .role(OTHER)
+                .mainContact("Yes")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(wrapElements(solicitor, mainContact))
+                .build();
+
+            final CaseData updatedCaseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(Solicitor.builder()
+                    .name("Legacy solicitor")
+                    .email("legacy@test.com")
+                    .mobile("0777111111")
+                    .build())
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Applicant organisation")
+                        .email(EmailAddress.builder()
+                            .email("applicantemail@gmail.com")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
+                .organisationName("-")
+                .jobTitle("-")
+                .mobileNumber("-")
+                .telephoneNumber("-")
+                .pbaNumber("-")
+                .email("-")
+                .contactName("-")
+                .solicitorDx("-")
+                .solicitorEmail("-")
+                .solicitorMobile("-")
+                .solicitorName("-")
+                .solicitorReference("-")
+                .solicitorTelephone("-")
+                .address("-")
+                .build();
+
+            assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicantOrganisations()).isEmpty();
+        }
+
+        @Test
+        void shouldTakeApplicantDetailsFromLocalAuthorityWhenNoSolicitorNorMainContact() {
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .build();
+
+            final CaseData updatedCaseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(Solicitor.builder()
+                    .name("Legacy solicitor")
+                    .email("legacy@test.com")
+                    .mobile("0777111111")
+                    .build())
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .email(EmailAddress.builder()
+                            .email("applicantemail@gmail.com")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
+                .organisationName("-")
+                .jobTitle("-")
+                .mobileNumber("-")
+                .telephoneNumber("-")
+                .pbaNumber("-")
+                .email("-")
+                .contactName("-")
+                .solicitorDx("-")
+                .solicitorEmail("-")
+                .solicitorMobile("-")
+                .solicitorName("-")
+                .solicitorReference("-")
+                .solicitorTelephone("-")
+                .address("-")
+                .build();
+
+            assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicantOrganisations()).isEmpty();
+        }
+
+        @Test
+        void shouldTakeApplicantFromLegacyApplicant() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .solicitor(null)
                 .applicants(wrapElements(Applicant.builder()
                     .party(ApplicantParty.builder()
+                        .organisationName("Applicant organisation")
                         .email(EmailAddress.builder()
                             .email("applicantemail@gmail.com")
                             .build())
@@ -835,7 +1060,7 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
-                .organisationName("-")
+                .organisationName("Applicant organisation")
                 .jobTitle("-")
                 .mobileNumber("-")
                 .pbaNumber("-")
@@ -851,9 +1076,8 @@ class CaseSubmissionGenerationServiceTest {
                 .solicitorTelephone("-")
                 .build();
 
-            assertThat(caseSubmission.getApplicants()).hasSize(1);
-            assertThat(caseSubmission.getApplicants().get(0))
-                .isEqualToComparingFieldByField(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo("Applicant organisation");
         }
     }
 

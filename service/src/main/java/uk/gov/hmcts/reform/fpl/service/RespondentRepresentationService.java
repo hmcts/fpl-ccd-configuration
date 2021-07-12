@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -28,6 +27,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
@@ -41,7 +41,7 @@ public class RespondentRepresentationService {
     public Map<String, Object> generate(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
+        String firstApplicant = getApplicantName(caseData);
 
         List<Element<Respondent>> respondents = caseData.getRespondents1();
         int numOfRespondents = respondents.size();
@@ -105,6 +105,13 @@ public class RespondentRepresentationService {
                     .build()
             )
         );
+    }
 
+    private String getApplicantName(CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return caseData.getLocalAuthorities().get(0).getValue().getName();
+        }
+
+        return caseData.getAllApplicants().get(0).getValue().getParty().getOrganisationName();
     }
 }
