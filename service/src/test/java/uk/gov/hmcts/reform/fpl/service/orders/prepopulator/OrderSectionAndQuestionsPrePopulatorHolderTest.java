@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetail
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

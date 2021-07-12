@@ -67,13 +67,31 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("whichOthers", "YES"),
             Map.entry("appointedGuardian", "NO"),
             Map.entry("orderTitle", "NO"),
-            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO")
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
+            Map.entry("reasonForSecureAccommodation", "NO"),
+            Map.entry("orderJurisdiction", "NO"),
+            Map.entry("childLegalRepresentation", "NO"),
+            Map.entry("selectSingleChild", "NO")
         ));
     }
 
     @ParameterizedTest(name = "Show hide map for {0}")
     @MethodSource("orderWithExpectedMap")
     void calculate(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("finalManualUploadOrders")
+    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("nonFinalManualUploadOrders")
+    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
         assertThat(underTest.calculate(order))
             .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
@@ -364,13 +382,6 @@ class OrderShowHideQuestionsCalculatorTest {
         );
     }
 
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("finalManualUploadOrders")
-    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
-    }
-
     private static Stream<Arguments> finalManualUploadOrders() {
         return MANUAL_ORDERS_WITH_IS_FINAL_ORDER_QUESTION.stream()
             .map(order -> Arguments.of(order, Map.ofEntries(
@@ -408,13 +419,6 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("orderToAmend", "NO"),
                 Map.entry("uploadAmendedOrder", "NO")
             )));
-    }
-
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("nonFinalManualUploadOrders")
-    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
 
     private static Stream<Arguments> nonFinalManualUploadOrders() {
