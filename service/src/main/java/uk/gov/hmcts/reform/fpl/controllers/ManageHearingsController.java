@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
@@ -83,14 +82,18 @@ public class ManageHearingsController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
 
-        boolean isFirstHearing = isEmpty(caseData.getAllHearings());
-
         if (caseData.getAllocatedJudge() != null) {
             caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
-        caseDetails.getData().put(FIRST_HEARING_FLAG, YesNo.from(isFirstHearing).getValue());
-        caseDetails.getData().put(PRE_ATTENDANCE, isFirstHearing ? DEFAULT_PRE_ATTENDANCE : null);
+        boolean isFirstHearing = isEmpty(caseData.getAllHearings());
+
+        if (isFirstHearing) {
+            caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
+            caseDetails.getData().put(PRE_ATTENDANCE, DEFAULT_PRE_ATTENDANCE);
+        } else {
+            caseDetails.getData().put(FIRST_HEARING_FLAG, NO.getValue());
+        }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
 

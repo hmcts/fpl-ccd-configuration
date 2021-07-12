@@ -437,7 +437,7 @@ class CaseDataExtractionServiceTest {
                 .attendance(attendance)
                 .build();
 
-            assertThat(service.getHearingAttendance(hearingBooking)).isNull();
+            assertThat(service.getHearingAttendance(hearingBooking)).isEmpty();
         }
 
         @ParameterizedTest
@@ -447,7 +447,7 @@ class CaseDataExtractionServiceTest {
                 .attendance(List.of(attendance))
                 .build();
 
-            assertThat(service.getHearingAttendance(hearingBooking)).isEqualTo(attendance.getLabel());
+            assertThat(service.getHearingAttendance(hearingBooking)).contains(attendance.getLabel());
         }
 
         @Test
@@ -457,7 +457,7 @@ class CaseDataExtractionServiceTest {
                 .build();
 
             assertThat(service.getHearingAttendance(hearingBooking))
-                .isEqualTo("In person, remote - video call, remote - phone call");
+                .contains("In person, remote - video call, remote - phone call");
         }
     }
 
