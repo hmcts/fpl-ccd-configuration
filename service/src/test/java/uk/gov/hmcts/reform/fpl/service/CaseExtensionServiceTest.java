@@ -19,8 +19,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 class CaseExtensionServiceTest {
 
     private static final LocalDate DATE_SUBMITTED = LocalDate.of(2020, 1, 1);
-    private static final LocalDate CASE_COMPLETION_DATE = DATE_SUBMITTED.plusWeeks(26);
-    private static final LocalDate EXTENDED_DATE = CASE_COMPLETION_DATE.plusWeeks(8);
 
     private static final LocalDate OTHER_DATE = LocalDate.of(2020, 3, 3);
     private static final LocalDate EXTENDED_OTHER = OTHER_DATE.plusWeeks(8);
@@ -61,29 +59,20 @@ class CaseExtensionServiceTest {
 
         LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
-        assertThat(caseCompletionDate).isEqualTo(EXTENDED_DATE);
+        assertThat(caseCompletionDate).isEqualTo(DATE_SUBMITTED.plusWeeks(34));
     }
 
     @Test
-    void shouldGetCaseCompletionDateFor8WeekExtension() {
-        CaseData data = CaseData.builder().dateSubmitted(DATE_SUBMITTED).build();
-
-        LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data).plusWeeks(8);
-
-        assertThat(caseCompletionDate).isEqualTo(EXTENDED_DATE);
-    }
-
-    @Test
-    void shouldGetCaseSubmittedDateWhenNoCompletionDate() {
+    void shouldGetCaseCompletedByDateWhenNoCompletionDate() {
         CaseData data = CaseData.builder().dateSubmitted(DATE_SUBMITTED).build();
 
         LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data);
 
-        assertThat(caseCompletionDate).isEqualTo(CASE_COMPLETION_DATE);
+        assertThat(caseCompletionDate).isEqualTo(DATE_SUBMITTED.plusWeeks(26));
     }
 
     @Test
-    void shouldGetCaseCompletionDateWhenCompletionDateExists() {
+    void shouldGetCaseCompletedByDateWhenCompletionDateExists() {
         CaseData data = CaseData.builder()
             .dateSubmitted(DATE_SUBMITTED)
             .caseCompletionDate(OTHER_DATE)
