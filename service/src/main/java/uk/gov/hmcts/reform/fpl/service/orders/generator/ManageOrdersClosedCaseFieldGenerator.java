@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.IsFinalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageOrdersClosedCaseFieldGenerator {
     private final Time time;
-    private final ChildrenService childrenService;
+    private final ChildrenSmartFinalOrderUpdater childrenSmartFinalOrderUpdater;
 
     public Map<String, Object> generate(CaseData caseData) {
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
@@ -31,7 +31,7 @@ public class ManageOrdersClosedCaseFieldGenerator {
 
         if (IsFinalOrder.YES.equals(order.getIsFinalOrder())
             || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder())) {
-            data.put("children1", childrenService.updateFinalOrderIssued(caseData));
+            data.put("children1", childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData));
         }
 
         boolean shouldCloseCase = BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersCloseCase());

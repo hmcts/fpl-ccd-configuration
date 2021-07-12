@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Autowired
-    private ChildrenService childrenService;
+    private ChildrenSmartSelector childrenSmartSelector;
 
     @Autowired
     private CaseDetailsHelper caseDetailsHelper;
@@ -99,7 +99,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
     }
 
     List<Element<Child>> getSelectedChildren(CaseData caseData) {
-        return childrenService.getSelectedChildren(caseData);
+        return childrenSmartSelector.getSelectedChildren(caseData);
     }
 
     String getLocalAuthorityName(String caseLocalAuthority) {
