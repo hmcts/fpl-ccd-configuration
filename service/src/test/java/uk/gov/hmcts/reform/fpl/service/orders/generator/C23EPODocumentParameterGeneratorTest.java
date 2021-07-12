@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C23EPODocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
@@ -28,7 +28,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO_V2;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -59,7 +59,7 @@ class C23EPODocumentParameterGeneratorTest {
     @Mock
     private static Child CHILD;
     @Mock
-    private ChildrenService childrenService;
+    private ChildrenSmartSelector childrenSmartSelector;
     @Mock
     private LocalAuthorityNameLookupConfiguration laNameLookup;
 
@@ -78,7 +78,7 @@ class C23EPODocumentParameterGeneratorTest {
 
     @Test
     void template() {
-        assertThat(underTest.template()).isEqualTo(EPO);
+        assertThat(underTest.template()).isEqualTo(EPO_V2);
     }
 
     @Test
@@ -89,7 +89,7 @@ class C23EPODocumentParameterGeneratorTest {
             .build();
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
         DocmosisParameters expectedParameters = expectedParameters(EPOType.REMOVE_TO_ACCOMMODATION, false, false);
@@ -106,7 +106,7 @@ class C23EPODocumentParameterGeneratorTest {
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
         DocmosisParameters expectedParameters = expectedParameters(EPOType.PREVENT_REMOVAL, true, true);
