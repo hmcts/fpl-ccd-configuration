@@ -43,6 +43,14 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hiddenApplicationsBundle",
+    "ListElementCode": "removalReason",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hiddenApplicationsBundle",
     "ListElementCode": "c2DocumentBundle.applicantName",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
