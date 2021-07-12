@@ -32,11 +32,11 @@ public class ManageOrderEndDateWithMonthValidator implements QuestionBlockOrderV
         final LocalDate endDate = manageOrdersEventData.getManageOrdersSetDateEndDate();
         final LocalDateTime endDateTime = manageOrdersEventData.getManageOrdersSetDateAndTimeEndDate();
         final Integer expireInNumberOfMonths = manageOrdersEventData.getManageOrdersSetMonthsEndDate();
-        final LocalDate approvalDate = manageOrdersEventData.getManageOrdersApprovalDate();
+        final LocalDateTime approvalDateTime = manageOrdersEventData.getManageOrdersApprovalDateOrDateTime();
         return manageOrderEndDateCommonValidator.validate(type,
             endDate,
             endDateTime,
-            approvalDate,
+            approvalDateTime,
             expireInNumberOfMonths);
     }
 }

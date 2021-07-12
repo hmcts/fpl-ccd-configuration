@@ -18,11 +18,13 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
+import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.format.FormatStyle;
@@ -43,7 +45,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuf
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {SupervisionOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class, ChildrenService.class, CaseDetailsHelper.class})
+    FixedTimeConfiguration.class, ChildrenSmartSelector.class, ChildrenService.class, CaseDetailsHelper.class,
+    ChildSelectionUtils.class})
 class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     @Autowired

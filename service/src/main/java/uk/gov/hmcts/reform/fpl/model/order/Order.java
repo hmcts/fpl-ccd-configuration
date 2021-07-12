@@ -25,13 +25,17 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.IS_CHILD_REPRESENTED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCOMMODATION_ORDER_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -60,6 +64,17 @@ public enum Order {
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN,
             EPO_TYPE_AND_PREVENT_REMOVAL, EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE,
             FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+    ),
+    C26_SECURE_ACCOMMODATION_ORDER(
+        DIGITAL,
+        "Authority to keep a child in secure accommodation",
+        "",
+        "Authority to keep a child in secure accommodation (C26)",
+        IsFinalOrder.MAYBE,
+        List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE_TIME, SELECT_SINGLE_CHILD,
+            ORDER_BY_CONSENT, REASON_FOR_SECURE_ACCOMMODATION, IS_CHILD_REPRESENTED,
+            SECURE_ACCOMMODATION_ORDER_JURISDICTION, MANAGE_ORDER_END_DATE_WITH_MONTH, FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
     ),
     C32A_CARE_ORDER(
         DIGITAL,
