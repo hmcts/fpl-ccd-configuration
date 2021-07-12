@@ -4,12 +4,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.action.AmendOrderAction;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +32,9 @@ class AmendOrderServiceTest {
     private final AmendedOrderStamper stamper = mock(AmendedOrderStamper.class);
     private final AmendOrderAction action = mock(AmendOrderAction.class);
     private final UploadDocumentService uploadService = mock(UploadDocumentService.class);
+    private final OthersService othersService = mock(OthersService.class);
 
-    private final AmendOrderService underTest = new AmendOrderService(stamper, List.of(action), uploadService);
+    private final AmendOrderService underTest = new AmendOrderService(stamper, List.of(action), uploadService, othersService);
 
     @BeforeEach
     void setUp() {
@@ -44,6 +49,7 @@ class AmendOrderServiceTest {
         Document stampedDocument = testDocument();
         DocumentReference amendedOrder = buildFromDocument(stampedDocument);
         Map<String, Object> amendedFields = Map.of("amendedCaseField", "some amended field");
+        List<Element<Other>> selectedOthers = Collections.emptyList();
 
         when(action.accept(caseData)).thenReturn(true);
 
