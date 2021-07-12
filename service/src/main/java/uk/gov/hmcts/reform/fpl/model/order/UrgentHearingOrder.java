@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.AmendableOrderType;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 
@@ -39,5 +41,11 @@ public class UrgentHearingOrder implements AmendableOrder {
     @JsonIgnore
     public DocumentReference getDocument() {
         return order;
+    }
+
+    @JsonIgnore
+    @Override
+    public Object getAmendedOrderType() {
+        return AmendableOrderType.URGENT_HEARING_ORDER;
     }
 }

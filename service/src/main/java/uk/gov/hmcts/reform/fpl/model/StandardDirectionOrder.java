@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.AmendableOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -94,6 +95,12 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     @JsonIgnore
     public DocumentReference getDocument() {
         return orderDoc;
+    }
+
+    @JsonIgnore
+    @Override
+    public Object getAmendedOrderType() {
+        return AmendableOrderType.STANDARD_DIRECTION_ORDER;
     }
 }
 

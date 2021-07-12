@@ -11,4 +11,6 @@ public interface AmendableOrder {
     LocalDate amendableSortDate();
 
     DocumentReference getDocument();
+
+    Object getAmendedOrderType();
 }
