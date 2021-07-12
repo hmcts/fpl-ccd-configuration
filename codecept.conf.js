@@ -92,6 +92,7 @@ exports.config = {
     enterRespondentsEventPage: './e2e/pages/events/enterRespondentsEvent.page.js',
     enterRepresentativesEventPage: './e2e/pages/events/enterRepresentativesEvent.page.js',
     enterApplicantEventPage: './e2e/pages/events/enterApplicantEvent.page.js',
+    enterLocalAuthorityEventPage: './e2e/pages/events/enterLocalAuthorityEvent.page.js',
     enterOthersEventPage: './e2e/pages/events/enterOthersEvent.page.js',
     enterGroundsForApplicationEventPage: './e2e/pages/events/enterGroundsForApplicationEvent.page.js',
     enterRiskAndHarmToChildrenEventPage: './e2e/pages/events/enterRiskAndHarmToChildrenEvent.page.js',

@@ -8,11 +8,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
-import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
@@ -23,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class InboxLookupService {
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final FeatureToggleService featureToggleService;
+    private final ApplicantLocalAuthorityService localAuthorityService;
 
     @Value("${fpl.local_authority_fallback_inbox}")
     private String fallbackInbox;
@@ -37,10 +36,7 @@ public class InboxLookupService {
 
         if (recipients.isEmpty() || featureToggleService.isSendLAEmailsToSolicitorEnabled(
             caseData.getCaseLocalAuthority())) {
-            Optional.ofNullable(caseData.getSolicitor())
-                .map(Solicitor::getEmail)
-                .filter(StringUtils::isNotBlank)
-                .ifPresent(recipients::add);
+            recipients.addAll(localAuthorityService.getContactsEmails(caseData));
         }
 
         if (!request.isExcludeLegalRepresentatives()) {

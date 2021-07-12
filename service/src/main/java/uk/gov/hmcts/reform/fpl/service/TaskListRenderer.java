@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
@@ -86,7 +87,8 @@ public class TaskListRenderer {
 
         final TaskSection parties = newSection("Add information about the parties",
             List.of(
-                tasks.get(ORGANISATION_DETAILS),
+                tasks.containsKey(ORGANISATION_DETAILS)
+                    ? tasks.get(ORGANISATION_DETAILS) : tasks.get(LOCAL_AUTHORITY_DETAILS),
                 tasks.get(CHILDREN),
                 tasks.get(RESPONDENTS)
             ));

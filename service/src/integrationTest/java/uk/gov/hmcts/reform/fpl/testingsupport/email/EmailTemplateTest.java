@@ -111,4 +111,5 @@ public class EmailTemplateTest {
     protected List<SendEmailResponse> allResponses() {
         return resultsCaptor.getAllResults();
     }
+
 }

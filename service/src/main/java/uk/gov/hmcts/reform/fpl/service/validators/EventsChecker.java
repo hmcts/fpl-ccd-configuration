@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
@@ -53,6 +54,9 @@ public class EventsChecker {
 
     @Autowired
     private OrganisationDetailsChecker organisationDetailsChecker;
+
+    @Autowired
+    private LocalAuthorityDetailsChecker localAuthorityDetailsChecker;
 
     @Autowired
     private AllocationProposalChecker allocationProposalChecker;
@@ -92,6 +96,7 @@ public class EventsChecker {
         eventCheckers.put(ORDERS_SOUGHT, ordersSoughtChecker);
         eventCheckers.put(GROUNDS, groundsChecker);
         eventCheckers.put(ORGANISATION_DETAILS, organisationDetailsChecker);
+        eventCheckers.put(LOCAL_AUTHORITY_DETAILS, localAuthorityDetailsChecker);
         eventCheckers.put(ALLOCATION_PROPOSAL, allocationProposalChecker);
         eventCheckers.put(RISK_AND_HARM, riskAndHarmChecker);
         eventCheckers.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker);
@@ -109,14 +114,14 @@ public class EventsChecker {
     public List<String> validate(Event event, CaseData caseData) {
         addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
-                .map(validator -> validator.validate(caseData))
-                .orElse(emptyList());
+            .map(validator -> validator.validate(caseData))
+            .orElse(emptyList());
     }
 
     public boolean isCompleted(Event event, CaseData caseData) {
         return ofNullable(eventCheckers.get(event))
-                .map(validator -> validator.isCompleted(caseData))
-                .orElse(false);
+            .map(validator -> validator.isCompleted(caseData))
+            .orElse(false);
     }
 
     public TaskState completedState(Event event) {
@@ -127,14 +132,14 @@ public class EventsChecker {
 
     public boolean isInProgress(Event event, CaseData caseData) {
         return ofNullable(eventCheckers.get(event))
-                .map(validator -> validator.isStarted(caseData))
-                .orElse(false);
+            .map(validator -> validator.isStarted(caseData))
+            .orElse(false);
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
         addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
-                .map(validator -> validator.isAvailable(caseData))
-                .orElse(true);
+            .map(validator -> validator.isAvailable(caseData))
+            .orElse(true);
     }
 }

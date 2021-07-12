@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -26,11 +27,11 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
@@ -51,55 +52,68 @@ class TaskListServiceTest {
     @Mock
     private EventsChecker eventsChecker;
 
+    @Mock
+    private FeatureToggleService featureToggles;
+
     @InjectMocks
     private TaskListService taskListService;
 
     private CaseData caseData = CaseData.builder().build();
 
-    @Test
-    void shouldReturnTasksInProgress() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReturnTasksInProgress(boolean additionalContactsEnabled) {
         when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
         when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+        when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(additionalContactsEnabled);
 
-        final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+        final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+        final List<Task> expectedTasks = getTasks(IN_PROGRESS, additionalContactsEnabled);
 
-        assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(IN_PROGRESS));
+        assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
         verify(eventsChecker, never()).isAvailable(any(), any());
     }
 
-    @Test
-    void shouldReturnCompletedTasks() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReturnCompletedTasks(boolean additionalContactsEnabled) {
         when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
         when(eventsChecker.completedState(any(Event.class))).thenReturn(COMPLETED_TASK_STATE);
+        when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(additionalContactsEnabled);
 
-        final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+        final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+        final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, additionalContactsEnabled);
 
-        assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(COMPLETED_TASK_STATE));
+        assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
         verify(eventsChecker, never()).isAvailable(any(), any());
         verify(eventsChecker, never()).isInProgress(any(), any());
     }
 
-    @Test
-    void shouldReturnNotAvailableTasks() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReturnNotAvailableTasks(boolean additionalContactsEnabled) {
         when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
         when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
+        when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(additionalContactsEnabled);
 
-        final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+        final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+        final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, additionalContactsEnabled);
 
         verify(eventsChecker, never()).completedState(any(Event.class));
-        assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(NOT_AVAILABLE));
+        assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
     }
 
-    private List<Task> getTasks(TaskState state) {
+    private List<Task> getTasks(TaskState state, boolean additionalContactsEnabled) {
+
         return Stream.of(
             ORDERS_SOUGHT,
             HEARING_URGENCY,
             GROUNDS,
             RISK_AND_HARM,
             FACTORS_AFFECTING_PARENTING,
-            ORGANISATION_DETAILS,
+            additionalContactsEnabled ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
             ALLOCATION_PROPOSAL,
@@ -107,7 +121,6 @@ class TaskListServiceTest {
             INTERNATIONAL_ELEMENT,
             OTHERS,
             COURT_SERVICES,
-            DOCUMENTS,
             CASE_NAME,
             APPLICATION_DOCUMENTS,
             SUBMIT_APPLICATION)
