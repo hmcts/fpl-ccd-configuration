@@ -1,0 +1,77 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Name of local authority",
+    "HintText": "Local authority or authorised person",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "email",
+    "FieldType": "EmailAddress",
+    "ElementLabel": "Email",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "phone",
+    "FieldType": "Telephone",
+    "ElementLabel": "Telephone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "legalTeamManager",
+    "FieldType": "Text",
+    "ElementLabel": "Name of legal team manager or authorising officer",
+    "HintText": "The statement of truth will be signed in this person's name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "pbaNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Payment by account (PBA) number",
+    "HintText": "For example, PBA1234567",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "clientCode",
+    "FieldType": "Text",
+    "ElementLabel": "Client code",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "customerReference",
+    "FieldType": "Text",
+    "ElementLabel": "Customer reference",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "dx",
+    "FieldType": "Text",
+    "ElementLabel": "DX",
+    "SecurityClassification": "Public"
+  }
+]

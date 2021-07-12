@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ColleagueRole",
+    "ListElementCode": "CASE_SOLICITOR",
+    "ListElement": "Case solicitor",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ColleagueRole",
+    "ListElementCode": "CASE_SOCIAL_WORKER",
+    "ListElement": "Case social worker",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ColleagueRole",
+    "ListElementCode": "COLLEAGUE",
+    "ListElement": "Other colleague",
+    "DisplayOrder": 3
+  }
+]

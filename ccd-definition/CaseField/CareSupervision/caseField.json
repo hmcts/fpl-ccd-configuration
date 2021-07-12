@@ -233,6 +233,35 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorities",
+    "Label": "Local authorities",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LocalAuthority",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthority",
+    "Label": "Local authority",
+    "FieldType": "LocalAuthority",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleagues",
+    "Label": "Local authority colleagues",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Colleague",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "solicitor",
     "Label": "Solicitor",
     "FieldType": "Solicitor",

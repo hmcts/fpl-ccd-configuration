@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -161,6 +162,8 @@ public class CaseData {
     @NotEmpty(message = "Add applicant's details")
     @Valid
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
+
+    private final List<Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -938,6 +941,10 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final LocalAuthorityEventData localAuthorityEventData = LocalAuthorityEventData.builder().build();
 
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;

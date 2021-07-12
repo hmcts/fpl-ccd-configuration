@@ -1,0 +1,44 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "role",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ColleagueRole",
+    "ElementLabel": "Role",
+    "HintText": "Role hint",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "fullName",
+    "FieldType": "Text",
+    "ElementLabel": "Full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "email",
+    "FieldType": "Text",
+    "ElementLabel": "Email",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "phone",
+    "FieldType": "Text",
+    "ElementLabel": "Phone",
+    "SecurityClassification": "Public"
+  }
+]

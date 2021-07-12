@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.MlaLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -46,18 +46,18 @@ public class LocalAuthorityService {
         return namesConfig.getLocalAuthorityName(localAuthorityCode);
     }
 
-    public Optional<LocalAuthority> getUserLocalAuthority() {
+    public Optional<LocalAuthorityName> getUserLocalAuthority() {
         return getLocalAuthorityCode()
-            .map(code -> LocalAuthority.builder().code(code).name(getLocalAuthorityName(code)).build());
+            .map(code -> LocalAuthorityName.builder().code(code).name(getLocalAuthorityName(code)).build());
     }
 
     public String getLocalAuthorityId(String localAuthorityCode) {
         return idsConfig.getLocalAuthorityId(localAuthorityCode);
     }
 
-    public List<LocalAuthority> getOutsourcingLocalAuthorities(String organisationId, OutsourcingType type) {
+    public List<LocalAuthorityName> getOutsourcingLocalAuthorities(String organisationId, OutsourcingType type) {
         return getOutsourcingLocalAuthoritiesCodes(organisationId, type).stream()
-            .map(localAuthorityCode -> LocalAuthority.builder()
+            .map(localAuthorityCode -> LocalAuthorityName.builder()
                 .code(localAuthorityCode)
                 .name(getLocalAuthorityName(localAuthorityCode))
                 .build())
