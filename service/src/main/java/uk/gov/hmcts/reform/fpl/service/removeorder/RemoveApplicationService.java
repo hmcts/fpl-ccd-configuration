@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -72,8 +73,17 @@ public class RemoveApplicationService {
         caseDetailsMap.putIfNotEmpty("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
 
         List<Element<AdditionalApplicationsBundle>> hiddenApplications = caseData.getHiddenApplicationsBundle();
+        bundleElement.getValue().setRemovalReason(getReasonToRemove(caseData));
         hiddenApplications.add(bundleElement);
         caseDetailsMap.put("hiddenApplicationsBundle", hiddenApplications);
+    }
+
+    private String getReasonToRemove(CaseData caseData) {
+        if (caseData.getReasonToRemoveApplication() == OTHER) {
+            return caseData.getApplicationRemovalDetails();
+        } else {
+            return caseData.getReasonToRemoveApplication().toString();
+        }
     }
 
 }

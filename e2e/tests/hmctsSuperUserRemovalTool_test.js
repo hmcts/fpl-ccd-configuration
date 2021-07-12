@@ -129,7 +129,11 @@ Scenario('HMCTS super user removes an application from the case', async ({I, cas
   await I.runAccessibilityTest();
   await I.completeEvent('Submit');
 
-  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.otherApplications);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+  const removedApplication = 'Removed applications 1';
+  I.seeInTab([removedApplication, 'File'], 'mockFile.pdf');
+  I.seeInTab([removedApplication, 'Date and time of upload'], '16 June 2021, 11:49am');
+  I.seeInTab([removedApplication, 'Reason for removal'], 'Mistakes were made');
 });
 
 const removeOrder = async (I, caseViewPage, removalToolEventPage, labelToSelect, reasonFieldExists) => {

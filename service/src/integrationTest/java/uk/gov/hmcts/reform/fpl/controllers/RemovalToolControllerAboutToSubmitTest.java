@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -38,6 +39,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.DUPLICATE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -422,6 +424,7 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
             .removableType(APPLICATION)
             .additionalApplicationsBundle(List.of(element(applicationId, application)))
             .removableApplicationList(dynamicList)
+            .reasonToRemoveApplication(DUPLICATE)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));

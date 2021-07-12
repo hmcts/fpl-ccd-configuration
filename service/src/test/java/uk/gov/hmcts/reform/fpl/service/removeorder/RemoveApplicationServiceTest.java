@@ -22,6 +22,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.WRONG_CASE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C4_WHEREABOUTS_OF_A_MISSING_CHILD;
@@ -138,12 +140,40 @@ class RemoveApplicationServiceTest {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
             .data(Map.of("additionalApplicationsBundle", applications))
             .build());
-        CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(applications)
+            .reasonToRemoveApplication(WRONG_CASE)
+            .build();
 
         underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
         applications.remove(bundleToRemove);
+        bundleToRemove.getValue().setRemovalReason("Wrong case");
 
         assertThat(caseDetailsMap.get("additionalApplicationsBundle")).isEqualTo(applications);
+        assertThat(caseDetailsMap.get("hiddenApplicationsBundle")).isEqualTo(List.of(bundleToRemove));
+    }
+
+    @Test
+    void shouldRemoveApplicationFromCaseDetailsWithCustomRemovalReason() {
+        UUID id = UUID.randomUUID();
+        Element<AdditionalApplicationsBundle> bundleToRemove = element(id, buildC2Application("12 May 2020"));
+        List<Element<AdditionalApplicationsBundle>> applications = new ArrayList<>();
+        applications.add(bundleToRemove);
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of("additionalApplicationsBundle", applications))
+            .build());
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(applications)
+            .reasonToRemoveApplication(OTHER)
+            .applicationRemovalDetails("Custom reason")
+            .build();
+
+        underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
+        applications.remove(bundleToRemove);
+        bundleToRemove.getValue().setRemovalReason("Custom reason");
+
+        assertThat(caseDetailsMap.get("additionalApplicationsBundle")).isNull();
         assertThat(caseDetailsMap.get("hiddenApplicationsBundle")).isEqualTo(List.of(bundleToRemove));
     }
 
@@ -162,9 +192,12 @@ class RemoveApplicationServiceTest {
             .data(Map.of("additionalApplicationsBundle", applications,
                 "orderCollection", orders))
             .build());
-        CaseData caseData = CaseData.builder().additionalApplicationsBundle(applications).build();
-        underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(applications)
+            .reasonToRemoveApplication(WRONG_CASE)
+            .build();
 
+        underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
         applications.remove(bundleToRemove);
         orders.get(0).getValue().setLinkedApplicationId(null);
 

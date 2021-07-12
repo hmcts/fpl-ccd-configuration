@@ -20,6 +20,7 @@ public class AdditionalApplicationsBundle {
     private C2DocumentBundle c2DocumentBundle;
     private OtherApplicationsBundle otherApplicationsBundle;
     private PBAPayment pbaPayment;
+    private String removalReason;
 
     @JsonIgnore
     public String toLabel() {
