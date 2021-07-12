@@ -366,7 +366,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab('Date of issue', dateFormat(Date.now(), 'd mmm yyyy'));
   I.seeInTab('26-week timeline date', dateFormat(new Date().setDate(new Date().getDate() + 26 * 7), 'd mmm yyyy'));
-  I.seeInTab('Extended timeline date', '10 Oct 2030');
+  I.seeInTab('Extended timeline date', dateFormat(new Date().setDate(new Date().getDate() + 34 * 7), 'd mmm yyyy'));
   I.seeInTab('Why is this case being extended?', 'Timetable for child');
   I.seeInTab('Add comments', 'Comment');
 }).retry(1);
