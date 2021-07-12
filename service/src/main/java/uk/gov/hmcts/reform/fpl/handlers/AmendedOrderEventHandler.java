@@ -90,7 +90,7 @@ public class AmendedOrderEventHandler {
 
         if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
             final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
-                orderDocument, GENERATED_ORDER);
+                orderDocument, orderType);
 
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
@@ -113,7 +113,7 @@ public class AmendedOrderEventHandler {
         digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
         final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
-            orderDocument, GENERATED_ORDER);
+            orderDocument, orderType);
 
         sendToLocalAuthority(caseData, notifyData);
 

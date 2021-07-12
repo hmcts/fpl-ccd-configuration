@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 
@@ -35,12 +36,13 @@ public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvid
 
     public OrderAmendedNotifyData getNotifyData(final CaseData caseData,
                                                 final DocumentReference orderDocument,
-                                                final IssuedOrderType issuedOrderType) {
+                                                final String orderType) {
+
         return OrderAmendedNotifyData.builder()
             .lastName(helper.getSubjectLineLastName(caseData))
-            .orderType(typeCalculator.getTypeOfOrder(caseData, issuedOrderType))
+            .orderType(orderType)
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout(NOTICE_OF_PLACEMENT_ORDER != issuedOrderType ? buildCalloutWithNextHearing(caseData, time.now()) : "")
+            .callout(buildCallout(caseData))
             .documentLink(getDocumentUrl(orderDocument))
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .build();
