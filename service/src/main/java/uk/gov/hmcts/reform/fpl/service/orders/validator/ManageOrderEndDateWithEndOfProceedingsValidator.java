@@ -33,8 +33,9 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
         final ManageOrdersEndDateType type = manageOrdersEventData.getManageOrdersEndDateTypeWithEndOfProceedings();
         final LocalDate endDate = manageOrdersEventData.getManageOrdersSetDateEndDate();
         final LocalDateTime endDateTime = manageOrdersEventData.getManageOrdersSetDateAndTimeEndDate();
-        final LocalDate approvalDate = manageOrdersEventData.getManageOrdersApprovalDate();
+        final LocalDateTime approvalDateTime = manageOrdersEventData.getManageOrdersApprovalDateOrDateTime();
 
-        return manageOrderEndDateCommonValidator.validate(type, endDate, endDateTime, approvalDate, 0);
+        return manageOrderEndDateCommonValidator.validate(type, endDate, endDateTime, approvalDateTime, 0);
     }
+
 }

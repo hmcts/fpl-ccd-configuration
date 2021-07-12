@@ -126,6 +126,11 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .furtherDirections(NO)
             .orderDetails(YES)
             .whichChildren(YES)
+            .childLegalRepresentation(NO)
+            .orderIsByConsent(NO)
+            .reasonForSecureAccommodation(NO)
+            .orderJurisdiction(NO)
+            .selectSingleChild
             .whichOthers(YES)
             .hearingDetails(YES)
             .approvalDate(YES)

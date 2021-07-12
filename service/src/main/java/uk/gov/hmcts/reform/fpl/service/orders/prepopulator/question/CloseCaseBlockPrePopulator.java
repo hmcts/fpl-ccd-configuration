@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.order.IsFinalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CloseCaseBlockPrePopulator implements QuestionBlockOrderPrePopulator {
 
-    private final ChildrenService childrenService;
+    private final ChildrenSmartFinalOrderUpdater childrenSmartFinalOrderUpdater;
 
     @Override
     public OrderQuestionBlock accept() {
@@ -33,7 +33,7 @@ public class CloseCaseBlockPrePopulator implements QuestionBlockOrderPrePopulato
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
 
-        final List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData);
+        final List<Element<Child>> updatedChildren = childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData);
         final ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         final Order order = manageOrdersEventData.getManageOrdersType();
 

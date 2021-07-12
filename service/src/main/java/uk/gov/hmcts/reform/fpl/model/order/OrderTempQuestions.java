@@ -14,6 +14,10 @@ public class OrderTempQuestions {
     String cafcassJurisdictions;
     String whichChildren;
     String orderTitle;
+    String selectSingleChild;
+    String reasonForSecureAccommodation;
+    String childLegalRepresentation;
+    String orderJurisdiction;
     String dischargeOfCareDetails;
     String childArrangementSpecificIssueProhibitedSteps;
     String epoTypeAndPreventRemoval;
