@@ -41,6 +41,8 @@ public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvid
             .orderType(typeCalculator.getTypeOfOrder(caseData, issuedOrderType))
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
             .callout(NOTICE_OF_PLACEMENT_ORDER != issuedOrderType ? buildCalloutWithNextHearing(caseData, time.now()) : "")
+            .documentLink(getDocumentUrl(orderDocument))
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .build();
     }
 

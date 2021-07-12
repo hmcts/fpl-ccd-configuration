@@ -73,9 +73,6 @@ public class AmendedOrderEventHandler {
             allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers, element -> element.getValue()));
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
 
-            allRecipients.stream().forEach(recipient -> System.out.println("I am posting to" + recipient.getFullName()
-                + recipient.getAddress()));
-
             sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
         }
     }
@@ -92,8 +89,6 @@ public class AmendedOrderEventHandler {
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
         if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
-            System.out.println("I am sending to email reps" + emailRepresentatives);
-
             final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
                 orderDocument, GENERATED_ORDER);
 
@@ -123,7 +118,6 @@ public class AmendedOrderEventHandler {
         sendToLocalAuthority(caseData, notifyData);
 
         if(!digitalRepresentatives.isEmpty() & !orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
-            System.out.println("I am sending to digital reps" + digitalRepresentatives);
 
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
@@ -138,8 +132,6 @@ public class AmendedOrderEventHandler {
                                       final NotifyData notifyData) {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
-
-        emails.add("moleytoireasa@gmail.com");
 
         notificationService.sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE, emails, notifyData,

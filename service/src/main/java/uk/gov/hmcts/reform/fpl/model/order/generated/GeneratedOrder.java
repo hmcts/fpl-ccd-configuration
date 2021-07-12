@@ -128,8 +128,6 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     @JsonIgnore
     @Override
     public List<Element<Other>> getSelectedOthers() {
-        List<Element<Other>> othersSelected = this.isNewVersion()
-            ? defaultIfNull(this.getOthers(), new ArrayList<>()) : new ArrayList<>();
-        return othersSelected;
+        return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
 }
