@@ -299,7 +299,7 @@ public enum Order {
     C45A_PARENTAL_RESPONSIBILITY_ORDER(
         DIGITAL,
         "Parental responsibility order (C45A)",
-        "TODO: Change programmatically in C45aParentalResponsibilityOrderDocumentParameterGeneratorTest",
+        "",
         "Parental responsibility order (C45A)",
         IsFinalOrder.MAYBE,
         List.of(

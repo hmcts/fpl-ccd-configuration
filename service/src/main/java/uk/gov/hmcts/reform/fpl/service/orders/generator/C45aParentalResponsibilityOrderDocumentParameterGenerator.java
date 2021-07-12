@@ -16,9 +16,11 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild.FATHER;
+import static uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild.SECOND_FEMALE_PARENT;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -31,14 +33,16 @@ public class C45aParentalResponsibilityOrderDocumentParameterGenerator implement
     private final OrderMessageGenerator orderMessageGenerator;
 
     private static final Order ORDER = C45A_PARENTAL_RESPONSIBILITY_ORDER;
-    private static final String CHILDREN_ACT_FATHER = "Section 4(1) Children Act 1989";
-    private static final String CHILDREN_ACT_SECOND_FEMALE_PARENT = "Section 4ZA Children Act 1989";
     private static final String NOTICE_HEADER = "Notice \n";
     private static final String NOTICE_MESSAGE = "A parental responsibility order can only end\n \n"
             + "a) When the child reaches 18 years\n"
             + "b) By order of the court made\n"
             + "      * on the application of any person who has parental responsibility\n"
             + "      * with leave of the court on the application of the child\n";
+    private static final Map<RelationshipWithChild, String> ORDER_ACT = Map.of(
+        FATHER, "Section 4(1) Children Act 1989",
+        SECOND_FEMALE_PARENT, "Section 4ZA Children Act 1989"
+    );
 
     @Override
     public Order accept() {
@@ -54,11 +58,14 @@ public class C45aParentalResponsibilityOrderDocumentParameterGenerator implement
     public DocmosisParameters generate(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
+        RelationshipWithChild relationship = eventData.getManageOrdersRelationshipWithChild();
+        String orderAct = ORDER_ACT.get(relationship);
+
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
         return C45aParentalResponsibilityOrderDocmosisParameters.builder()
             .orderTitle(ORDER.getTitle())
-            .childrenAct(setChildrensAct(eventData))
+            .childrenAct(orderAct)
             .dateOfIssue(formatLocalDateTimeBaseUsingFormat(eventData.getManageOrdersApprovalDateTime(), DATE_TIME))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(getParentalResponsibilityMessage(caseData, selectedChildren.size()))
@@ -75,11 +82,5 @@ public class C45aParentalResponsibilityOrderDocumentParameterGenerator implement
 
         return format("The Court orders that %s "
             + "shall have parental responsibility for the %s.", responsibleParty, childOrChildren);
-    }
-
-    private String setChildrensAct(ManageOrdersEventData eventData) {
-        RelationshipWithChild relationship = eventData.getManageOrdersRelationshipWithChild();
-
-        return relationship.equals(FATHER) ? CHILDREN_ACT_FATHER : CHILDREN_ACT_SECOND_FEMALE_PARENT;
     }
 }
