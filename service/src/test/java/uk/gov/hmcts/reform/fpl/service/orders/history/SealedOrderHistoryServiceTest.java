@@ -20,8 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -94,7 +94,7 @@ class SealedOrderHistoryServiceTest {
     private final UUID other1ID = UUID.randomUUID();
     private final UUID other2ID = UUID.randomUUID();
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final AppointedGuardianFormatter appointedGuardianFormatter = mock(AppointedGuardianFormatter.class);
     private final IdentityService identityService = mock(IdentityService.class);
     private final OthersService othersService = mock(OthersService.class);
@@ -113,7 +113,7 @@ class SealedOrderHistoryServiceTest {
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
-        childrenService,
+        childrenSmartSelector,
         appointedGuardianFormatter,
         othersService,
         orderCreationService,
@@ -144,7 +144,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -168,7 +168,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -196,7 +196,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().orderAppliesToAllChildren("Yes").build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -226,7 +226,7 @@ class SealedOrderHistoryServiceTest {
                     .build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -252,7 +252,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -281,7 +281,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -309,7 +309,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -339,7 +339,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -369,7 +369,7 @@ class SealedOrderHistoryServiceTest {
                     )).build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
                 when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
@@ -394,7 +394,7 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData().build();
                 mockDocumentUpload(caseData);
                 mockGenerators(caseData);
-                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
                 when(appointedGuardianFormatter.getGuardiansNamesForTab(caseData)).thenReturn("Guardians names");
                 when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
                     element(other2ID, other2)));
@@ -531,4 +531,5 @@ class SealedOrderHistoryServiceTest {
         jalMock.when(() -> JudgeAndLegalAdvisorHelper.getJudgeForTabView(JUDGE_AND_LEGAL_ADVISOR, JUDGE))
             .thenReturn(TAB_JUDGE_AND_LEGAL_ADVISOR);
     }
+
 }

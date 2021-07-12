@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
@@ -41,6 +43,8 @@ class OrderDocumentGeneratorHolderTest {
     private C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     @Mock
     private C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
+    @Mock
+    private C26SecureAccommodationOrderDocumentParameterGenerator c26SecureAccommodationOrderDocumentParameterGenerator;
     @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     @Mock
@@ -69,29 +73,30 @@ class OrderDocumentGeneratorHolderTest {
     void setUp() {
         generators = List.of(
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
-            c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
-            c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
-            c35bISODocumentParameterGenerator,
-            c47AAppointmentOfAChildrensGuardianParameterGenerator,
-            c35bISODocumentParameterGenerator,
-            c43ChildArrangementOrderDocumentParameterGenerator,
+            c26SecureAccommodationOrderDocumentParameterGenerator, c32CareOrderDocumentParameterGenerator,
+            c32bDischargeOfCareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
+            c35aSupervisionOrderDocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator,
+            c35bISODocumentParameterGenerator, c43ChildArrangementOrderDocumentParameterGenerator,
             c43aSGODocumentParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
-        typeToGenerator = Map.of(
-            C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator,
-            C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator,
-            C32A_CARE_ORDER, c32CareOrderDocumentParameterGenerator,
-            C32B_DISCHARGE_OF_CARE_ORDER, c32bDischargeOfCareOrderDocumentParameterGenerator,
-            C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator,
-            C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator,
-            C35B_INTERIM_SUPERVISION_ORDER, c35bISODocumentParameterGenerator,
-            C43A_SPECIAL_GUARDIANSHIP_ORDER, c43aSGODocumentParameterGenerator,
-            C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
-            c43ChildArrangementOrderDocumentParameterGenerator,
-            C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator
-        );
+        typeToGenerator = new HashMap<>() {
+            {
+                put(C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator);
+                put(C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator);
+                put(C26_SECURE_ACCOMMODATION_ORDER, c26SecureAccommodationOrderDocumentParameterGenerator);
+                put(C32A_CARE_ORDER, c32CareOrderDocumentParameterGenerator);
+                put(C32B_DISCHARGE_OF_CARE_ORDER, c32bDischargeOfCareOrderDocumentParameterGenerator);
+                put(C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator);
+                put(C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator);
+                put(C35B_INTERIM_SUPERVISION_ORDER, c35bISODocumentParameterGenerator);
+                put(C43A_SPECIAL_GUARDIANSHIP_ORDER, c43aSGODocumentParameterGenerator);
+                put(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+                    c43ChildArrangementOrderDocumentParameterGenerator);
+                put(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator);
+            }
+        };
 
         typeToAdditionalDocsCollector = Map.of(
             C23_EMERGENCY_PROTECTION_ORDER, c23EPOAdditionalDocumentsCollector

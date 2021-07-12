@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
@@ -58,17 +58,17 @@ class DocmosisCommonElementDecoratorTest {
             .build())
         .build();
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
 
     private final DocmosisCommonElementDecorator underTest = new DocmosisCommonElementDecorator(
-        childrenService, extractionService);
+        childrenSmartSelector, extractionService);
 
     @BeforeEach
     void setUp() {
         when(extractionService.getCourtName(LA_CODE)).thenReturn(COURT_NAME);
         when(extractionService.getJudgeAndLegalAdvisor(JUDGE)).thenReturn(DOCMOSIS_JUDGE);
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(CHILDREN);
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(CHILDREN);
         when(extractionService.getChildrenDetails(CHILDREN)).thenReturn(DOCMOSIS_CHILDREN);
 
         when(ORDER_TYPE.getTitle()).thenReturn(TITLE);
@@ -112,6 +112,17 @@ class DocmosisCommonElementDecoratorTest {
             .build();
 
         assertThat(decorated).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldNotUpdateChildActWhenAlreadySet() {
+        DocmosisParameters decorated = underTest.decorate(
+            C32CareOrderDocmosisParameters.builder().childrenAct("Custom child act").build(),
+            CASE_DATA,
+            SEALED,
+            ORDER_TYPE);
+
+        assertThat(decorated.getChildrenAct()).isEqualTo("Custom child act");
     }
 
     private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters(

@@ -446,5 +446,44 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Displays a list of names for children, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "whichChildIsTheOrderFor",
+    "Label": "Which child is the order for?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersReasonForSecureAccommodation",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Order given because the child is likely to",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ReasonsForSecureAccommodation",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIsChildRepresented",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Does the child have a Legal Aid representative?",
+    "FieldType": "YesOrNo",
+    "FieldTypeParameter": "ChildLegalAidRepresentative",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersOrderJurisdiction",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Jurisdiction",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "Jurisdiction",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]
