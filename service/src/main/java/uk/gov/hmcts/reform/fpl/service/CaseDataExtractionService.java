@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
@@ -183,7 +183,7 @@ public class CaseDataExtractionService {
         return DocmosisHearingBooking.builder()
             .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
             .hearingVenue(hearingVenue)
-            .hearingAttendance(getHearingAttendance(hearing))
+            .hearingAttendance(getHearingAttendance(hearing).orElse(null))
             .hearingAttendanceDetails(hearing.getAttendanceDetails())
             .preHearingAttendance(hearing.getPreAttendanceDetails())
             .hearingTime(getHearingTime(hearing))
@@ -237,19 +237,14 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    public String getHearingAttendance(HearingBooking hearingBooking) {
-
-        if (isEmpty(hearingBooking.getAttendance())) {
-            return null;
-        }
-
-        final String joined = hearingBooking.getAttendance()
-            .stream()
-            .map(HearingAttendance::getLabel)
-            .map(StringUtils::uncapitalize)
-            .collect(joining(", "));
-
-        return StringUtils.capitalize(joined);
+    public Optional<String> getHearingAttendance(HearingBooking hearingBooking) {
+        return Optional.ofNullable(hearingBooking.getAttendance())
+            .filter(ObjectUtils::isNotEmpty)
+            .map(attendances -> attendances.stream()
+                .map(HearingAttendance::getLabel)
+                .map(StringUtils::uncapitalize)
+                .collect(joining(", ")))
+            .map(StringUtils::capitalize);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {

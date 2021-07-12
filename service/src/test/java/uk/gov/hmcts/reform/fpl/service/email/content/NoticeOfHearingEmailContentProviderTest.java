@@ -81,7 +81,6 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
         when(venueLookUp.buildHearingVenue(venue)).thenReturn(VENUE);
 
         when(extractionService.getHearingTime(HEARING_BOOKING)).thenReturn(HEARING_TIME);
-        when(extractionService.getHearingAttendance(HEARING_BOOKING)).thenReturn(PRE_HEARING_ATTENDANCE);
 
         when(helper.getEldestChildLastName(children)).thenReturn(CHILD_LAST_NAME);
 
