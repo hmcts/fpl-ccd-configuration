@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.AmendableOrderType;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -46,58 +47,53 @@ public class AmendedOrderEventHandler {
     private final RepresentativesInbox representativesInbox;
     private final RepresentativeNotificationService representativeNotificationService;
     private final SendDocumentService sendDocumentService;
-    private final SealedOrderHistoryService sealedOrderHistoryService;
     private final OtherRecipientsInbox otherRecipientsInbox;
 
     @EventListener
     public void notifyParties(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
-        //final DocumentReference orderDocument = orderEvent.getOrderDocument();
-        final DocumentReference orderDocument = DocumentReference.builder().build();
-        GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
+        final DocumentReference orderDocument = orderEvent.getAmendedDocument();
+        final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
+        final String orderType = orderEvent.getAmendedOrderType();
 
-        // TODO type may need changed to AMEND order
-        List<Element<Other>> othersSelected = getOthersSelected(lastGeneratedOrder);
-
-        sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, othersSelected);
-        sendNotificationToEmailServedRepresentatives(caseData, orderDocument, othersSelected);
+        sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, selectedOthers, orderType);
+        sendNotificationToEmailServedRepresentatives(caseData, orderDocument, selectedOthers, orderType);
     }
 
     @EventListener
     public void sendOrderByPost(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
-        final List<DocumentReference> documents = List.of(DocumentReference.builder().build());
-        //final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
-        GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
+        final List<DocumentReference> documents = List.of(orderEvent.getAmendedDocument());
+        final String orderType = orderEvent.getAmendedOrderType();
+        final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
 
-        Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+        if(!orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
+            Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
-        if (lastGeneratedOrder.isNewVersion()) {
-            List<Element<Other>> othersSelected = getOthersSelected(lastGeneratedOrder);
-            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, element -> element.getValue()
-            ));
-            allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
+            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers, element -> element.getValue()));
+            allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
+
+            allRecipients.stream().forEach(recipient -> System.out.println("I am posting to" + recipient.getFullName()
+                + recipient.getAddress()));
+
+            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
         }
-
-        System.out.println("I am posting to" + allRecipients);
-
-        sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
     }
 
     @SuppressWarnings("unchecked")
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
                                                               final DocumentReference orderDocument,
-                                                              final List<Element<Other>> othersSelected) {
+                                                              final List<Element<Other>> othersSelected,
+                                                              String orderType) {
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
         Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL, caseData, othersSelected, element -> element.getValue().getEmail()
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
-        System.out.println("I am sending to email reps" + emailRepresentatives);
+        if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
+            System.out.println("I am sending to email reps" + emailRepresentatives);
 
-        if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
                 orderDocument, GENERATED_ORDER);
 
@@ -113,7 +109,8 @@ public class AmendedOrderEventHandler {
     @SuppressWarnings("unchecked")
     private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
                                                                            final DocumentReference orderDocument,
-                                                                           List<Element<Other>> othersSelected) {
+                                                                           List<Element<Other>> othersSelected,
+                                                                           String orderType) {
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
         Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
             DIGITAL_SERVICE, caseData, othersSelected, element -> element.getValue().getEmail()
@@ -125,14 +122,16 @@ public class AmendedOrderEventHandler {
 
         sendToLocalAuthority(caseData, notifyData);
 
-        System.out.println("I am sending to digital reps" + digitalRepresentatives);
+        if(!digitalRepresentatives.isEmpty() & !orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
+            System.out.println("I am sending to digital reps" + digitalRepresentatives);
 
-        representativeNotificationService.sendNotificationToRepresentatives(
-            caseData.getId(),
-            notifyData,
-            digitalRepresentatives,
-            ORDER_AMENDED_NOTIFICATION_TEMPLATE
-        );
+            representativeNotificationService.sendNotificationToRepresentatives(
+                caseData.getId(),
+                notifyData,
+                digitalRepresentatives,
+                ORDER_AMENDED_NOTIFICATION_TEMPLATE
+            );
+        }
     }
 
     private void sendToLocalAuthority(final CaseData caseData,
@@ -140,16 +139,10 @@ public class AmendedOrderEventHandler {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        System.out.println("I am sending to local authority" + emails);
+        emails.add("moleytoireasa@gmail.com");
 
         notificationService.sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE, emails, notifyData,
             caseData.getId().toString());
-    }
-
-    private List<Element<Other>> getOthersSelected(GeneratedOrder lastGeneratedOrder) {
-        List<Element<Other>> othersSelected = lastGeneratedOrder.isNewVersion()
-            ? defaultIfNull(lastGeneratedOrder.getOthers(), new ArrayList<>()) : new ArrayList<>();
-        return othersSelected;
     }
 }

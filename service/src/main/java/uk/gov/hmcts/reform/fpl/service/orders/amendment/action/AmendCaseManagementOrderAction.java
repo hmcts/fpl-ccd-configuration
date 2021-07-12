@@ -42,6 +42,7 @@ public class AmendCaseManagementOrderAction implements AmendOrderAction {
                 HearingOrder amended = order.getValue().toBuilder()
                     .order(amendedDocument)
                     .amendedDate(time.now().toLocalDate())
+                    .others(selectedOthers)
                     .build();
 
                 orders.set(orders.indexOf(order), element(order.getId(), amended));

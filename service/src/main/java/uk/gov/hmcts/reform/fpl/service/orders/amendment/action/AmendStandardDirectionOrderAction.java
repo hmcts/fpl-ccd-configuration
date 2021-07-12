@@ -32,6 +32,7 @@ public class AmendStandardDirectionOrderAction implements AmendOrderAction {
         StandardDirectionOrder sdo = caseData.getStandardDirectionOrder().toBuilder()
             .amendedDate(time.now().toLocalDate())
             .orderDoc(amendedDocument)
+            .others(selectedOthers)
             .build();
 
         return Map.of(CASE_FIELD, sdo);

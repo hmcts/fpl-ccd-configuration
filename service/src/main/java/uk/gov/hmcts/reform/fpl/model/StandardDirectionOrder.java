@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,6 +45,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private DocumentReference lastUploadedOrder;
     private String removalReason;
     private final LocalDate amendedDate;
+    private final List<Element<Other>> others;
 
     private final DocumentReference unsealedDocumentCopy;
     private final List<Element<CustomDirection>> customDirections;
@@ -101,6 +103,12 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     @Override
     public String getAmendedOrderType() {
         return AmendableOrderType.STANDARD_DIRECTION_ORDER.getLabel();
+    }
+
+    @JsonIgnore
+    @Override
+    public List<Element<Other>> getSelectedOthers() {
+        return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
 }
 

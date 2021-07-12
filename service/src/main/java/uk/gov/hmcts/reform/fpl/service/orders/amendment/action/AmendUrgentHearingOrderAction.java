@@ -32,6 +32,7 @@ public class AmendUrgentHearingOrderAction implements AmendOrderAction {
         UrgentHearingOrder uho = caseData.getUrgentHearingOrder().toBuilder()
             .amendedDate(time.now().toLocalDate())
             .order(amendedDocument)
+            .others(selectedOthers)
             .build();
 
         return Map.of(CASE_FIELD, uho);

@@ -18,11 +18,13 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -121,5 +123,13 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     @Override
     public String getAmendedOrderType() {
         return type;
+    }
+
+    @JsonIgnore
+    @Override
+    public List<Element<Other>> getSelectedOthers() {
+        List<Element<Other>> othersSelected = this.isNewVersion()
+            ? defaultIfNull(this.getOthers(), new ArrayList<>()) : new ArrayList<>();
+        return othersSelected;
     }
 }
