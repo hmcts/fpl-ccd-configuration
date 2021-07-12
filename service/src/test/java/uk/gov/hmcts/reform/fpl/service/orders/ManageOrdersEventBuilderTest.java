@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
@@ -40,18 +41,19 @@ class ManageOrdersEventBuilderTest {
     private final SealedOrderHistoryService historyService = mock(SealedOrderHistoryService.class);
     private final AmendedGeneratedOrderFinder amendedGeneratedOrderFinder = mock(AmendedGeneratedOrderFinder.class);
     private final List<AmendedOrderFinder<? extends AmendableOrder>> finders = List.of(
-        mock(AmendedGeneratedOrderFinder.class), mock(AmendedCaseManagementOrderFinder.class), mock(AmendedUrgentHearingOrderFinder.class),
+        amendedGeneratedOrderFinder, mock(AmendedCaseManagementOrderFinder.class), mock(AmendedUrgentHearingOrderFinder.class),
         mock(AmendedCaseManagementOrderFinder.class));
     private final ManageOrdersEventBuilder underTest = new ManageOrdersEventBuilder(historyService, finders);
 
     @Test
     void buildAmended() {
+        List<Element<Other>> selectedOthers = List.of(element(testOther("Other 1")));
+        DocumentReference expectedDocument = testDocumentReference();
         GeneratedOrder generatedOrder = GeneratedOrder.builder()
-            .document(testDocumentReference())
-            .orderType("Care order")
-            .others(List.of(element(testOther("Other 1"))))
+            .document(expectedDocument)
+            .type("Care order")
+            .others(selectedOthers)
             .build();
-
 
         when(caseData.getOrderCollection()).thenReturn(orders);
         when(caseDataBefore.getOrderCollection()).thenReturn(orders);
@@ -62,7 +64,8 @@ class ManageOrdersEventBuilderTest {
 
         Optional<ManageOrdersEvent> event = underTest.build(caseData, caseDataBefore);
 
-        assertThat(event).isInstanceOf(AmendedOrderEvent.class);
+        Optional<ManageOrdersEvent> expectedEvent = Optional.of(new AmendedOrderEvent(caseData, expectedDocument, "Care order", selectedOthers));
+        assertThat(event).usingRecursiveComparison().isEqualTo(expectedEvent);
     }
 
     @Test
@@ -78,6 +81,7 @@ class ManageOrdersEventBuilderTest {
 
         Optional<ManageOrdersEvent> event = underTest.build(caseData, caseDataBefore);
 
-        assertThat(event).isInstanceOf(GeneratedOrderEvent.class);
+        Optional<ManageOrdersEvent> expectedEvent = Optional.of(new GeneratedOrderEvent(caseData, document));
+        assertThat(event).usingRecursiveComparison().isEqualTo(expectedEvent);
     }
 }
