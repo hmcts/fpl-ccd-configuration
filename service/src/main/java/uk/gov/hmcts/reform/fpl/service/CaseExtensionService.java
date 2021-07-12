@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 
 @Service
