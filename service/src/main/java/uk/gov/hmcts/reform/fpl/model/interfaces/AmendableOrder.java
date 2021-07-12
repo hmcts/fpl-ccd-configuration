@@ -12,5 +12,5 @@ public interface AmendableOrder {
 
     DocumentReference getDocument();
 
-    Object getAmendedOrderType();
+    String getAmendedOrderType();
 }

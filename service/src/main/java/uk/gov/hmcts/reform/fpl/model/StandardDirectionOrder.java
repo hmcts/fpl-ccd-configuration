@@ -99,8 +99,8 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
     @JsonIgnore
     @Override
-    public Object getAmendedOrderType() {
-        return AmendableOrderType.STANDARD_DIRECTION_ORDER;
+    public String getAmendedOrderType() {
+        return AmendableOrderType.STANDARD_DIRECTION_ORDER.getLabel();
     }
 }
 

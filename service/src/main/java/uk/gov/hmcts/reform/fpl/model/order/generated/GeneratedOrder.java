@@ -119,9 +119,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
 
     @JsonIgnore
     @Override
-    public Object getAmendedOrderType() {
-        GeneratedOrderTypeDescriptor descriptor = GeneratedOrderTypeDescriptor.fromType(this.type);
-        System.out.println("Descriptor is " + descriptor);
-        return descriptor;
+    public String getAmendedOrderType() {
+        return type;
     }
 }

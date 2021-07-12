@@ -45,7 +45,7 @@ public class UrgentHearingOrder implements AmendableOrder {
 
     @JsonIgnore
     @Override
-    public Object getAmendedOrderType() {
-        return AmendableOrderType.URGENT_HEARING_ORDER;
+    public String getAmendedOrderType() {
+        return AmendableOrderType.URGENT_HEARING_ORDER.getLabel();
     }
 }

@@ -104,7 +104,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder {
 
     @JsonIgnore
     @Override
-    public Object getAmendedOrderType() {
-        return AmendableOrderType.CASE_MANAGEMENT_ORDER;
+    public String getAmendedOrderType() {
+        return AmendableOrderType.CASE_MANAGEMENT_ORDER.getLabel();
     }
 }

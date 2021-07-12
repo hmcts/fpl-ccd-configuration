@@ -31,11 +31,9 @@ public class ManageOrdersEventBuilder {
         GeneratedOrder lastGeneratedOrder = historyService.lastGeneratedOrder(caseData);
 
         if (!isAmendedOrder(currentOrders, oldOrders)) {
-            System.out.println("I am triggering a generated order event");
             return Optional.of(new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument()));
         }
 
-        System.out.println("I am triggering an amended order event");
         Optional<? extends AmendableOrder> order = finders.stream()
             .map(finder -> finder.findOrderIfPresent(caseData, caseDataBefore))
             .filter(Optional::isPresent)
@@ -43,7 +41,8 @@ public class ManageOrdersEventBuilder {
             .findFirst();
 
         DocumentReference orderToAmend = order.get().getDocument();
-        System.out.println("Order to amend is" + orderToAmend);
+        Object amendedOrderType = order.get().getAmendedOrderType();
+        System.out.println("Order to amend is" + orderToAmend + amendedOrderType);
 
         return order.map(amendableOrder -> new AmendedOrderEvent(caseData, amendableOrder));
 
