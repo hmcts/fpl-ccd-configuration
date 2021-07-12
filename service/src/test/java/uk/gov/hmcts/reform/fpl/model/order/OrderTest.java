@@ -21,8 +21,8 @@ import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.SPECIFIC_ISSUE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
@@ -42,8 +42,8 @@ class OrderTest {
     void fileExtension() {
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c21_blank_order.pdf");
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c21_blank_order.doc");
-        assertThat(C32_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32_care_order.pdf");
-        assertThat(C32_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32_care_order.doc");
+        assertThat(C32A_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32a_care_order.pdf");
+        assertThat(C32A_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32a_care_order.doc");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo(
             "c32b_discharge_of_care_order.pdf");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo(
@@ -87,7 +87,7 @@ class OrderTest {
     void firstSection() {
         assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C23_EMERGENCY_PROTECTION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
-        assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C32A_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER.firstSection())
             .isEqualTo(HEARING_DETAILS);
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
@@ -153,12 +153,12 @@ class OrderTest {
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, OTHER_DETAILS, Optional.empty()),
-            Arguments.of(C32_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
-            Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
-            Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
-            Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
-            Arguments.of(C32_CARE_ORDER, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C32A_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
+            Arguments.of(C32A_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C32A_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C32A_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C32A_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C32A_CARE_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
                 HEARING_DETAILS,
                 Optional.of(ISSUING_DETAILS)),
@@ -182,7 +182,6 @@ class OrderTest {
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
-            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),

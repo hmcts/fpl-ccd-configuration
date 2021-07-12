@@ -13,6 +13,7 @@ public enum DocmosisTemplates {
     ORDER("FL-PLW-GOR-ENG-00218.doc", "order"),
     ORDER_V2("FL-PLW-GOR-ENG-00728.doc", "order"),
     EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order"),
+    EPO_V2("FL-PLW-GOR-ENG-00744.doc", "emergency_protection_order"),
     COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents");
 
     private final String template;
