@@ -371,10 +371,10 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.seeInTab('Add comments', 'Comment');
 }).retry(1);
 
-Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
+Scenario('HMCTS admin closes the case @f', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
-  await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation);
+  await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation, undefined, false);
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
   caseViewPage.selectTab(caseViewPage.tabs.summary);
