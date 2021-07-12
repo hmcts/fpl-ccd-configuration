@@ -13,11 +13,12 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -31,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DocmosisCommonElementDecorator {
 
-    private final ChildrenService childrenService;
+    private final ChildrenSmartSelector childrenSmartSelector;
     private final CaseDataExtractionService extractionService;
 
     public DocmosisParameters decorate(DocmosisParameters currentParameters, CaseData caseData,
@@ -39,7 +40,7 @@ public class DocmosisCommonElementDecorator {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
         String localAuthorityCode = caseData.getCaseLocalAuthority();
 
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
         List<DocmosisChild> children = extractionService.getChildrenDetails(selectedChildren);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
@@ -49,8 +50,14 @@ public class DocmosisCommonElementDecorator {
             extractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
         String dateOfIssue = currentParameters.getDateOfIssue();
-        return currentParameters.toBuilder()
-            .childrenAct(orderType.getChildrenAct())
+
+        DocmosisParameters.DocmosisParametersBuilder<?, ?> docmosisParametersBuilder = currentParameters.toBuilder();
+
+        if (Objects.isNull(currentParameters.getChildrenAct())) {
+            docmosisParametersBuilder.childrenAct(orderType.getChildrenAct());
+        }
+
+        return docmosisParametersBuilder
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder(toBuilder = true)
 public class OrderTempQuestions {
 
@@ -15,6 +15,10 @@ public class OrderTempQuestions {
     String cafcassJurisdictions;
     String whichChildren;
     String orderTitle;
+    String selectSingleChild;
+    String reasonForSecureAccommodation;
+    String childLegalRepresentation;
+    String orderJurisdiction;
     String dischargeOfCareDetails;
     String childArrangementSpecificIssueProhibitedSteps;
     String epoTypeAndPreventRemoval;

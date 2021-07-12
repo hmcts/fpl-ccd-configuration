@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32bDischargeOfCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,10 +23,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuf
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C32bDischargeOfCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
-    private static final String ORDER_HEADER = "Care order restrictions";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
-    private final OrderMessageGenerator orderMessageGenerator;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
     @Override
@@ -48,12 +45,9 @@ public class C32bDischargeOfCareOrderDocumentParameterGenerator implements Docmo
 
         return C32bDischargeOfCareOrderDocmosisParameters.builder()
             .orderTitle(Order.C32B_DISCHARGE_OF_CARE_ORDER.getTitle())
-            .orderHeader(ORDER_HEADER)
-            .orderMessage(orderMessageGenerator.getCareOrderRestrictions(caseData))
             .orderDetails(orderDetails(eventData, hearingVenue))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .localAuthorityName(localAuthorityName)
-            .showCareRestrictions(true)
             .build();
     }
 

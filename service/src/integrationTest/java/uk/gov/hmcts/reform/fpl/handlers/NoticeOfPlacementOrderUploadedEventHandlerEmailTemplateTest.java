@@ -16,12 +16,12 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGene
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
+import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.service.notify.SendEmailResponse;
@@ -55,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     IssuedOrderAdminNotificationHandler.class, NoticeOfPlacementOrderUploadedEventHandler.class,
     EmailNotificationHelper.class, CaseUrlService.class, FixedTimeConfiguration.class,
     OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class,
-    RepresentativeNotificationService.class
+    RepresentativeNotificationService.class, ChildrenSmartSelector.class, ChildSelectionUtils.class
 })
 @MockBeans({
     @MockBean(IdentityService.class), @MockBean(ChildrenService.class), @MockBean(OrderCreationService.class),
