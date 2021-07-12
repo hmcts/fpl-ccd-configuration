@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.docmosis.generator;
 
+import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -25,14 +27,27 @@ import java.util.UUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.Jurisdiction.ENGLAND;
+import static uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation.ABSCOND;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 public class DocmosisOrderCaseDataGenerator {
 
     private static final String LA_CODE = "LA_CODE";
+
+    private static final Element<Child> FIRST_CHILD = element(UUID.randomUUID(), Child.builder()
+        .party(ChildParty.builder()
+            .firstName("Kenny")
+            .lastName("Kruger")
+            .dateOfBirth(LocalDate.of(2010, 1, 1))
+            .gender("Boy")
+            .build()
+        ).build()
+    );
 
     public CaseData generateForOrder(final Order order) {
 
@@ -45,6 +60,7 @@ public class DocmosisOrderCaseDataGenerator {
 
     private CaseData.CaseDataBuilder commonCaseData(Order order) {
         return CaseData.builder()
+            .children1(List.of(FIRST_CHILD))
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(order)
                 .build())
@@ -68,6 +84,24 @@ public class DocmosisOrderCaseDataGenerator {
             case WHICH_OTHERS:
                 // Do Nothing - they won't modify the document
                 break;
+            case IS_CHILD_REPRESENTED:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersIsChildRepresented("No")
+                        .build()
+                );
+            case REASON_FOR_SECURE_ACCOMMODATION:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersReasonForSecureAccommodation(ABSCOND)
+                        .build()
+                );
+            case SECURE_ACCOMMODATION_ORDER_JURISDICTION:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersOrderJurisdiction(ENGLAND)
+                        .build()
+                );
             case APPROVER:
                 return builder.judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(MAGISTRATES)
@@ -79,15 +113,17 @@ public class DocmosisOrderCaseDataGenerator {
                     getManageOrdersEvent(builder)
                         .manageOrdersApprovalDate(LocalDate.of(2013, 10, 5))
                         .build());
+            case SELECT_SINGLE_CHILD:
+                return builder
+                    .manageOrdersEventData(
+                        getManageOrdersEvent(builder)
+                            .whichChildIsTheOrderFor(buildDynamicList(0,
+                                Pair.of(FIRST_CHILD.getId(), FIRST_CHILD.getValue().getParty().getFullName())
+                            ))
+                            .build()
+                    );
             case WHICH_CHILDREN:
-                return builder.children1(List.of(element(UUID.randomUUID(), Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Kenny")
-                        .lastName("Kruger")
-                        .dateOfBirth(LocalDate.of(2010, 1, 1))
-                        .build())
-                    .build())))
-                    .childSelector(Selector.builder().selected(List.of(1)).build());
+                return builder.childSelector(Selector.builder().selected(List.of(1)).build());
             case TITLE:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)

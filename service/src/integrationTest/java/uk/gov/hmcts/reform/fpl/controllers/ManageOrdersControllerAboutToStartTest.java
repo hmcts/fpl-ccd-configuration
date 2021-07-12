@@ -46,6 +46,7 @@ class ManageOrdersControllerAboutToStartTest extends AbstractCallbackTest {
             .orderCollection(List.of(
                 element(orderId, GeneratedOrder.builder()
                     .dateTimeIssued(LocalDateTime.of(1, 1, 1, 1, 1, 1))
+                    .approvalDate(LocalDate.of(1, 1, 1))
                     .type("some type of order")
                     .build()
                 )

@@ -29,9 +29,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 
 @Data
 @Builder(toBuilder = true)
@@ -96,8 +94,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
 
     @Override
     public LocalDate amendableSortDate() {
-        return isNewVersion() ? dateTimeIssued.toLocalDate()
-                              : parseLocalDateTimeFromStringUsingFormat(date, TIME_DATE).toLocalDate();
+        return null != approvalDate ? approvalDate : approvalDateTime.toLocalDate();
     }
 
     @JsonIgnore

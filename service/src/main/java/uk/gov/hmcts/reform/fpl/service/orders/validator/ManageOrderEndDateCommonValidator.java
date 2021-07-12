@@ -27,14 +27,14 @@ public class ManageOrderEndDateCommonValidator {
         ManageOrdersEndDateType type,
         LocalDate endDate,
         LocalDateTime endDateTime,
-        LocalDate approvalDate,
+        LocalDateTime approvalDateTime,
         Integer expireInNumberOfMonths) {
 
         switch (type) {
             case CALENDAR_DAY:
-                return validateDate(approvalDate, endDate);
+                return validateDate(approvalDateTime.toLocalDate(), endDate);
             case CALENDAR_DAY_AND_TIME:
-                return validateDateTime(approvalDate, endDateTime);
+                return validateDateTime(approvalDateTime, endDateTime);
             case NUMBER_OF_MONTHS:
                 return validateMonth(expireInNumberOfMonths);
             case END_OF_PROCEEDINGS:
@@ -73,9 +73,8 @@ public class ManageOrderEndDateCommonValidator {
     }
 
 
-    private List<String> validateDateTime(LocalDate approvalDate, LocalDateTime endDate) {
+    private List<String> validateDateTime(LocalDateTime approvalDateTime, LocalDateTime endDate) {
         List<String> errors = new ArrayList<>();
-        LocalDateTime approvalDateTime = approvalDate.atStartOfDay();
 
         if (!endDate.isAfter(approvalDateTime)) {
             errors.add(AFTER_APPROVAL_DATE_MESSAGE);
