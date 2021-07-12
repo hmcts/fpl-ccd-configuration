@@ -22,11 +22,6 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
     }
 
     @Override
-    public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER_V2;
-    }
-
-    @Override
     public DocmosisParameters generate(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
         int numberOfChildren = caseData.getAllChildren().size();
@@ -36,6 +31,11 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
             .orderTitle(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.getTitle())
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .build();
+    }
+
+    @Override
+    public DocmosisTemplates template() {
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String buildOrderDetails(ManageOrdersEventData manageOrdersEventData, int numberOfChildren) {

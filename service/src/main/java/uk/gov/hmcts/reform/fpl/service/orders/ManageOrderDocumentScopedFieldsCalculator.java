@@ -13,7 +13,7 @@ public class ManageOrderDocumentScopedFieldsCalculator {
     public List<String> calculate() {
         List<String> fields = Stream.of(Order.values())
             .flatMap(order -> order.getQuestionsBlocks().stream())
-            .flatMap(questionBlock -> questionBlock.getDataFields().stream())
+            .flatMap(questionBlock -> questionBlock.getTransientDataFields().stream())
             .distinct()
             .collect(Collectors.toList());
 

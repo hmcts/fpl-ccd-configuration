@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +15,13 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageOrderDocumentService {
-    private final ChildrenService childrenService;
+    private final ChildrenSmartSelector childrenSmartSelector;
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
 
     public Map<String, String> commonContextElements(CaseData caseData) {
         Map<String, String> context = new HashMap<>();
-        context.put("childOrChildren", getChildGrammar(childrenService.getSelectedChildren(caseData).size()));
-        context.put("childIsOrAre", getChildIsOrAreGrammar(childrenService.getSelectedChildren(caseData).size()));
+        context.put("childOrChildren", getChildGrammar(childrenSmartSelector.getSelectedChildren(caseData).size()));
+        context.put("childIsOrAre", getChildIsOrAreGrammar(childrenSmartSelector.getSelectedChildren(caseData).size()));
         context.put("localAuthorityName", laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
         return context;
     }

@@ -4,15 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +19,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class OrderDetailsWithEndTypeGeneratorTest {
 
@@ -46,9 +42,7 @@ class OrderDetailsWithEndTypeGeneratorTest {
         "childIsOrAre", "are",
         "localAuthorityName", LA_NAME));
 
-
     private final ManageOrderDocumentService manageOrderDocumentService = mock(ManageOrderDocumentService.class);
-    private final ChildrenService childrenService = mock(ChildrenService.class);
     private final LocalAuthorityNameLookupConfiguration laNameLookup = mock(
         LocalAuthorityNameLookupConfiguration.class);
 
@@ -102,7 +96,6 @@ class OrderDetailsWithEndTypeGeneratorTest {
                 .manageOrdersSetDateEndDate(MANAGE_ORDERS_SET_DATE_END_DATE)
                 .build())
             .build();
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(List.of(element(mock(Child.class))));
 
         String actual = underTest.orderDetails(CALENDAR_DAY,
             OrderDetailsWithEndTypeMessages.builder()
@@ -123,10 +116,6 @@ class OrderDetailsWithEndTypeGeneratorTest {
                 .manageOrdersSetDateEndDate(MANAGE_ORDERS_SET_DATE_END_DATE)
                 .build())
             .caseLocalAuthority(LA_CODE).build();
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(List.of(
-            element(mock(Child.class)),
-            element(mock(Child.class))
-        ));
 
         String actual = underTest.orderDetails(CALENDAR_DAY,
             OrderDetailsWithEndTypeMessages.builder()

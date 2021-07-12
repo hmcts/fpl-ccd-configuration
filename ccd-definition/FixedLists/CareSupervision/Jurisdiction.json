@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Jurisdiction",
+    "ListElementCode": "ENGLAND",
+    "ListElement": "England",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Jurisdiction",
+    "ListElementCode": "WALES",
+    "ListElement": "Wales",
+    "DisplayOrder": 2
+  }
+]
