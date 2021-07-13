@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NOT_SPECIFIED;
 import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
@@ -83,7 +85,8 @@ public class ChildController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
-        if (!OPEN.equals(caseData.getState())) {
+        if (!OPEN.equals(caseData.getState())
+            && cafcassSolicitorHasNeverBeenSet(getCaseData(caseDetails), getCaseDataBefore(callbackRequest))) {
             caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
                 getCaseData(caseDetails), getCaseDataBefore(callbackRequest), SolicitorRole.Representing.CHILD
             ));
@@ -96,6 +99,12 @@ public class ChildController extends CallbackController {
         removeTemporaryFields(caseDetails, caseData.getChildrenEventData().getTransientFields());
 
         return respond(caseDetails);
+    }
+
+    private boolean cafcassSolicitorHasNeverBeenSet(CaseData caseData,
+                                                    CaseData caseDataBefore) {
+        return NOT_SPECIFIED != YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation())
+            && YesNo.NO == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
     }
 
     @PostMapping("/submitted")
