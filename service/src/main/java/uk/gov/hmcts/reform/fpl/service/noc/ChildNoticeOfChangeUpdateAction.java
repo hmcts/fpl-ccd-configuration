@@ -1,16 +1,20 @@
 package uk.gov.hmcts.reform.fpl.service.noc;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Service
+@Component
 public class ChildNoticeOfChangeUpdateAction implements NoticeOfChangeUpdateAction {
 
     private static final SolicitorRole.Representing REPRESENTING = SolicitorRole.Representing.CHILD;
@@ -25,12 +29,20 @@ public class ChildNoticeOfChangeUpdateAction implements NoticeOfChangeUpdateActi
         child.setSolicitor(solicitor);
 
         RespondentSolicitor cafcassSolicitor = caseData.getChildrenEventData().getChildrenMainRepresentative();
-        YesNo allSameSolicitor = YesNo.from(caseData.getAllChildren().stream()
-            .allMatch(childElement -> Objects.equals(cafcassSolicitor, childElement.getValue().getSolicitor())));
+        List<Element<Child>> children = caseData.getAllChildren();
 
-        return Map.of(
-            "children1", caseData.getAllChildren(),
+        YesNo allSameSolicitor = YesNo.from(children.stream()
+            .allMatch(childElement -> Objects.equals(solicitor, childElement.getValue().getSolicitor())));
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "children1", children,
             "childrenHaveSameRepresentation", allSameSolicitor.getValue()
-        );
+        ));
+
+        if (YesNo.YES == allSameSolicitor && !Objects.equals(cafcassSolicitor, solicitor)) {
+            data.put("childrenMainRepresentative", solicitor);
+        }
+
+        return data;
     }
 }
