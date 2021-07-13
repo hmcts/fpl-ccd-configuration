@@ -29,14 +29,27 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "updateLocalAuthority",
-    "CaseFieldID": "localAuthorityColleaguesList",
+    "CaseFieldID": "localAuthorityMainContactShown",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
-    "EventElementLabel": "oooo",
+    "DisplayContext": "READONLY",
     "PageID": "MainContact",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-local-authority/main-contact/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-local-authority/main-contact/mid-event",
+    "FieldShowCondition": "localAuthorityColleaguesList=\"DO NOT SHOW\"",
+    "PageShowCondition": "localAuthorityMainContactShown=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthorityColleaguesList",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "MainContact",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]

@@ -29,6 +29,7 @@ public class LocalAuthorityEventData {
     LocalAuthority localAuthority;
     List<Element<Colleague>> localAuthorityColleagues;
     DynamicList localAuthorityColleaguesList;
+    String localAuthorityMainContactShown;
 
     @JsonIgnore
     public LocalAuthority combined() {
@@ -46,10 +47,12 @@ public class LocalAuthorityEventData {
             .collect(Collectors.toList());
     }
 
+    public void setLocalAuthorityColleagues(List<Element<Colleague>> localAuthorityColleagues) {
+        this.localAuthorityColleagues = localAuthorityColleagues;
+    }
+
     @JsonIgnore
     public DynamicList buildLocalAuthorityColleaguesList() {
-        System.out.println("XXXXX " + localAuthorityColleagues);
-
         UUID mainContact = getMainContact();
         return asDynamicList(addMissingIds(localAuthorityColleagues), mainContact, Colleague::getFullName);
     }

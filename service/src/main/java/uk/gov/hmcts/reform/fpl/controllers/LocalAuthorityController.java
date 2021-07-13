@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -94,6 +93,7 @@ public class LocalAuthorityController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
+        caseDetails.getData().put("localAuthorityMainContactShown", YesNo.from(eventData.getLocalAuthorityColleagues().size() > 1).getValue());
         caseDetails.getData().put("localAuthorityColleaguesList", eventData.buildLocalAuthorityColleaguesList());
         caseDetails.getData().put("localAuthorityColleagues", eventData.getLocalAuthorityColleagues());
 
@@ -107,14 +107,9 @@ public class LocalAuthorityController extends CallbackController {
 
         LocalAuthorityEventData eventData = caseData.getLocalAuthorityEventData();
 
-        UUID mainContactId = eventData.getLocalAuthorityColleaguesList().getValueCodeAsUUID();
-
-        System.out.println("MAIN " + mainContactId);
-
-        eventData.setMainContact(mainContactId);
+        eventData.setMainContact(eventData.getLocalAuthorityColleaguesList().getValueCodeAsUUID());
 
         caseDetails.getData().put("localAuthorityColleagues", eventData.getLocalAuthorityColleagues());
-        //caseDetails.getData().put("localAuthorityColleaguesList", eventData.getLocalAuthorityColleaguesList());
 
         return respond(caseDetails);
     }
@@ -124,7 +119,13 @@ public class LocalAuthorityController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+
         LocalAuthority updatedLocalAuthority = caseData.getLocalAuthorityEventData().combined();
+
+        if (updatedLocalAuthority.getColleagues().size() == 1) {
+            updatedLocalAuthority.getColleagues().get(0).getValue().setMainContact(YesNo.YES.getValue());
+        }
+
         Element<LocalAuthority> existingLocalAuthority = isEmpty(caseData.getLocalAuthorities()) ? element(null) : caseData.getLocalAuthorities().get(0);
         List<Element<LocalAuthority>> las = addOrReplace(caseData.getLocalAuthorities(), element(existingLocalAuthority.getId(), updatedLocalAuthority));
 
