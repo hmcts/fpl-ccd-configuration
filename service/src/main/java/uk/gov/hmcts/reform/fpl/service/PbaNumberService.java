@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -38,6 +39,12 @@ public class PbaNumberService {
                 .stream()
                 .map(this::updatePbaNumber)
                 .collect(toList()))
+            .build();
+    }
+
+    public LocalAuthority update(LocalAuthority localAuthority) {
+        return localAuthority.toBuilder()
+            .pbaNumber(update(localAuthority.getPbaNumber()))
             .build();
     }
 

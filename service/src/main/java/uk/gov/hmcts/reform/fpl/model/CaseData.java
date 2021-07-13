@@ -973,4 +973,8 @@ public class CaseData {
             .filter(StringUtils::isNotEmpty)
             .isPresent();
     }
+
+    public List<Element<LocalAuthority>> getLocalAuthorities() {
+        return defaultIfNull(localAuthorities, new ArrayList<>());
+    }
 }

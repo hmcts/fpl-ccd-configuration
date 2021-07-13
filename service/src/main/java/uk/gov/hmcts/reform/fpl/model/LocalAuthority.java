@@ -11,6 +11,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @Jacksonized
 public class LocalAuthority {
+    private final String id;
     private final String name;
     private final String email;
     private final String phone;
@@ -19,6 +20,5 @@ public class LocalAuthority {
     private final String pbaNumber;
     private final String clientCode;
     private final String customerReference;
-    private final String dx;
     private final List<Element<Colleague>> colleagues;
 }

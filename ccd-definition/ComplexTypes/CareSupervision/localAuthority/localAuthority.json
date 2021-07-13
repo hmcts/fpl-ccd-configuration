@@ -2,17 +2,25 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthority",
+    "ListElementCode": "id",
+    "FieldType": "Text",
+    "ElementLabel": "Local authority's id",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "name=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
     "ListElementCode": "name",
     "FieldType": "Text",
-    "ElementLabel": "Name of local authority",
-    "HintText": "Local authority or authorised person",
+    "ElementLabel": "Local authority's name",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthority",
     "ListElementCode": "email",
-    "FieldType": "EmailAddress",
+    "FieldType": "Text",
     "ElementLabel": "Email",
     "SecurityClassification": "Public"
   },
@@ -20,8 +28,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthority",
     "ListElementCode": "phone",
-    "FieldType": "Telephone",
-    "ElementLabel": "Telephone number",
+    "FieldType": "Text",
+    "ElementLabel": "Phone number",
     "SecurityClassification": "Public"
   },
   {
@@ -37,8 +45,7 @@
     "ID": "LocalAuthority",
     "ListElementCode": "legalTeamManager",
     "FieldType": "Text",
-    "ElementLabel": "Name of legal team manager or authorising officer",
-    "HintText": "The statement of truth will be signed in this person's name",
+    "ElementLabel": "Legal team manager's name and last name",
     "SecurityClassification": "Public"
   },
   {
@@ -69,9 +76,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthority",
-    "ListElementCode": "dx",
-    "FieldType": "Text",
-    "ElementLabel": "DX",
+    "ListElementCode": "colleagues",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Colleague",
+    "ElementLabel": "Colleagues",
     "SecurityClassification": "Public"
   }
 ]

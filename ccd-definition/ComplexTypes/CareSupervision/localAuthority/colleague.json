@@ -6,7 +6,6 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ColleagueRole",
     "ElementLabel": "Role",
-    "HintText": "Role hint",
     "SecurityClassification": "Public"
   },
   {
@@ -15,6 +14,15 @@
     "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Title",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"COLLEAGUE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "dx",
+    "FieldType": "Text",
+    "ElementLabel": "DX",
     "SecurityClassification": "Public"
   },
   {
@@ -30,7 +38,7 @@
     "ID": "Colleague",
     "ListElementCode": "email",
     "FieldType": "Text",
-    "ElementLabel": "Email",
+    "ElementLabel": "Email address",
     "SecurityClassification": "Public"
   },
   {
@@ -38,7 +46,23 @@
     "ID": "Colleague",
     "ListElementCode": "phone",
     "FieldType": "Text",
-    "ElementLabel": "Phone",
+    "ElementLabel": "Phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "notificationRecipient",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Send them case update notifications?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "mainContact",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Main contact",
     "SecurityClassification": "Public"
   }
 ]

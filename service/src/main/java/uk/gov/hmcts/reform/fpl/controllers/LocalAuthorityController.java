@@ -10,22 +10,31 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
-import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
+import uk.gov.hmcts.reform.fpl.service.LAService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.addOrReplace;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -34,6 +43,7 @@ import java.util.stream.Collectors;
 public class LocalAuthorityController extends CallbackController {
     private static final String APPLICANTS_PROPERTY = "applicants";
     private final ApplicantService applicantService;
+    private final LAService localAuthorityService;
     private final PbaNumberService pbaNumberService;
     private final OrganisationService organisationService;
     private final ValidateEmailService validateEmailService;
@@ -44,38 +54,67 @@ public class LocalAuthorityController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        Organisation organisation = getOrganisation(caseData).orElse(Organisation.builder().build());
+        LocalAuthority localAuthority = localAuthorityService.getLocalAuthority(caseData);
 
-        caseDetails.getData()
-            .put(APPLICANTS_PROPERTY, applicantService.expandApplicantCollection(caseData, organisation));
+        caseDetails.getData().put("localAuthority", localAuthority);
+        caseDetails.getData().put("localAuthorityColleagues", localAuthority.getColleagues());
 
         return respond(caseDetails);
     }
 
-    @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+    @PostMapping("/organisation/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateOrganisation(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        var data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        var updatedApplicants = pbaNumberService.update(caseData.getApplicants());
-        data.put(APPLICANTS_PROPERTY, updatedApplicants);
+        LocalAuthorityEventData eventData = caseData.getLocalAuthorityEventData();
+        LocalAuthority localAuthority = pbaNumberService.update(eventData.getLocalAuthority());
+        caseDetails.getData().put("localAuthority", localAuthority);
 
-        List<String> applicantEmails = getApplicantEmails(caseData.getApplicants());
-        List<String> errors = validateEmailService.validate(applicantEmails, "Applicant");
+        List<String> errors = new ArrayList<>();
+        errors.addAll(pbaNumberService.validate(localAuthority.getPbaNumber()));
+        errors.addAll(validateEmailService.validateEmail(localAuthority.getEmail()));
 
-        String solicitorEmail = caseData.getSolicitor().getEmail();
-        validateEmailService.validate(solicitorEmail,
-            "Solicitor: Enter an email address in the correct format,"
-                + " for example name@example.com").ifPresent(errors::add);
-
-        List<String> pbaErrors = pbaNumberService.validate(updatedApplicants);
-
-        errors.addAll(pbaErrors);
-
-        if (!errors.isEmpty()) {
+        if (isNotEmpty(errors)) {
             return respond(caseDetails, errors);
         }
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/colleagues/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateColleagues(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        LocalAuthorityEventData eventData = caseData.getLocalAuthorityEventData();
+        List<String> errors = validateEmailService.validate(eventData.getColleaguesEmails(), "Colleague");
+
+        if (isNotEmpty(errors)) {
+            return respond(caseDetails, errors);
+        }
+
+        caseDetails.getData().put("localAuthorityColleaguesList", eventData.buildLocalAuthorityColleaguesList());
+        caseDetails.getData().put("localAuthorityColleagues", eventData.getLocalAuthorityColleagues());
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/main-contact/mid-event")
+    public AboutToStartOrSubmitCallbackResponse mainContact(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        LocalAuthorityEventData eventData = caseData.getLocalAuthorityEventData();
+
+        UUID mainContactId = eventData.getLocalAuthorityColleaguesList().getValueCodeAsUUID();
+
+        System.out.println("MAIN " + mainContactId);
+
+        eventData.setMainContact(mainContactId);
+
+        caseDetails.getData().put("localAuthorityColleagues", eventData.getLocalAuthorityColleagues());
+        //caseDetails.getData().put("localAuthorityColleaguesList", eventData.getLocalAuthorityColleaguesList());
 
         return respond(caseDetails);
     }
@@ -85,17 +124,22 @@ public class LocalAuthorityController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(APPLICANTS_PROPERTY, applicantService.addHiddenValues(caseData));
+        LocalAuthority updatedLocalAuthority = caseData.getLocalAuthorityEventData().combined();
+        Element<LocalAuthority> existingLocalAuthority = isEmpty(caseData.getLocalAuthorities()) ? element(null) : caseData.getLocalAuthorities().get(0);
+        List<Element<LocalAuthority>> las = addOrReplace(caseData.getLocalAuthorities(), element(existingLocalAuthority.getId(), updatedLocalAuthority));
 
+        caseDetails.getData().put("localAuthorities", las);
+        caseDetails.getData().remove("localAuthority");
+        caseDetails.getData().remove("localAuthorityColleagues");
         return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        publishEvent(new CaseDataChanged(getCaseData(callbackRequest)));
-        publishEvent(
-            new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest), getCaseDataBefore(callbackRequest))
-        );
+//        publishEvent(new CaseDataChanged(getCaseData(callbackRequest)));
+//        publishEvent(
+//            new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest), getCaseDataBefore(callbackRequest))
+//        );
     }
 
     private Optional<Organisation> getOrganisation(CaseData caseData) {

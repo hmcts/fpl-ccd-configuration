@@ -1,0 +1,127 @@
+[
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "name",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "email",
+    "EventElementLabel": "Group email address",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "legalTeamManager",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "pbaNumber",
+    "EventElementLabel": "PBA number",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "customerReference",
+    "EventElementLabel": "Customer reference",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "clientCode",
+    "EventElementLabel": "Client code",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 7
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 8
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.AddressLine1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "address.Country",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "updateLocalAuthority",
+    "CaseFieldID": "localAuthority",
+    "ListElementCode": "phone",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 10
+  }
+]

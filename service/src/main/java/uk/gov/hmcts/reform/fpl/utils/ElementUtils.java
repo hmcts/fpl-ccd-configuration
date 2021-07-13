@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +15,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Iterables.indexOf;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -130,6 +133,27 @@ public class ElementUtils {
         return ofNullable(mapper.convertValue(dynamicList, DynamicList.class))
             .map(DynamicList::getValueCodeAsUUID)
             .orElse(null);
+    }
+
+    public static <T> List<Element<T>> addMissingIds(List<Element<T>> elements) {
+        nullSafeList(elements).stream()
+            .filter(element -> isNull(element.getId()))
+            .forEach(element -> element.setId(UUID.randomUUID()));
+
+        return elements;
+    }
+
+    public static <T> List<Element<T>> addOrReplace(List<Element<T>> elements, Element<T> element) {
+        List<Element<T>> xxx = new ArrayList<>(nullSafeCollection(elements));
+
+        int index = indexOf(xxx, el -> Objects.equals(el.getId(), element.getId()));
+        if (index < 0) {
+            xxx.add(element);
+        } else {
+            xxx.remove(index);
+            xxx.add(index, element);
+        }
+        return xxx;
     }
 
 }

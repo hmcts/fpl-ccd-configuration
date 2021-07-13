@@ -14,4 +14,7 @@ public class Colleague {
     private final String fullName;
     private final String email;
     private final String phone;
+    private final String dx;
+    private final String notificationRecipient;
+    private String mainContact;
 }
