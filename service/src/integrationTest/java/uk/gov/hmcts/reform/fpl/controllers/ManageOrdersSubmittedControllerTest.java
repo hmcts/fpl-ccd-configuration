@@ -310,12 +310,16 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @SuppressWarnings("unchecked")
     void shouldSendAmendedNotificationWhenAmendedOrder() throws NotificationClientException {
         CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
 
         ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
 
-       when(manageOrdersEventBuilder.build(any(), any())).thenReturn(Optional.of(amendedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
 
-        postSubmittedEvent(caseData);
+       postSubmittedEvent(request);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
