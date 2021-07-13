@@ -4,28 +4,31 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -37,46 +40,180 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         super("migrate-case");
     }
 
+    @MockBean
+    private CaseAccessService caseAccessService;
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla3214 {
+    class Fpla3226 {
+        String familyManNumber = "PO21C50011";
+        String migrationId = "FPLA-3226";
+        String oldLA = "SCC";
+        String newLA = "BCP";
 
-        final String migrationId = "FPLA-3214";
-
-        @ParameterizedTest
-        @EnumSource(HearingOptions.class)
-        void shouldRemoveHearingOptionIfPresent(HearingOptions hearingOptions) {
-
-            CaseDetails caseDetails = CaseDetails.builder()
-                .id(10L)
-                .state("Submitted")
-                .data(Map.of(
-                    "name", "Test",
-                    "hearingOption", hearingOptions,
-                    "migrationId", migrationId))
-                .build();
-
-            Map<String, Object> expected = new HashMap<>(caseDetails.getData());
-            expected.remove("hearingOption");
-            expected.remove("migrationId");
-
-            Map<String, Object> response = postAboutToSubmitEvent(caseDetails).getData();
-
-            assertThat(response).isEqualTo(expected);
+        private CaseDetails caseDetails(String migrationId,
+                                        CaseData caseData) {
+            CaseDetails caseDetails = asCaseDetails(caseData);
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
         }
 
         @Test
-        void shouldRemoveMigrationIdWhenHearingOptionNotPresent() {
-            CaseDetails caseDetails = CaseDetails.builder()
+        void shouldThrowExceptionWhenUnexpectedFamilyManNumber() {
+            CaseData caseData = CaseData.builder()
                 .id(10L)
-                .state("Submitted")
-                .data(Map.of(
-                    "name", "Test",
-                    "migrationId", migrationId))
+                .familyManCaseNumber("test")
+                .caseLocalAuthority(oldLA)
+                .caseLocalAuthorityName("Swansea County Council")
                 .build();
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails).getData());
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(migrationId, caseData)))
+                .getRootCause()
+                .hasMessage("Unexpected FMN: test");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenUnexpectedLocalAuthority() {
+            CaseData caseData = CaseData.builder()
+                .id(10L)
+                .familyManCaseNumber(familyManNumber)
+                .caseLocalAuthority("SCC1")
+                .caseLocalAuthorityName("Swanse County Council")
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(migrationId, caseData)))
+                .getRootCause()
+                .hasMessage("Expected local authority SCC, but got SCC1");
+        }
+
+        @Test
+        void shouldTransferCase() {
+            CaseData caseData = CaseData.builder()
+                .id(10L)
+                .familyManCaseNumber(familyManNumber)
+                .caseLocalAuthority(oldLA)
+                .caseLocalAuthorityName("Southampton City Council")
+                .localAuthorityPolicy(organisationPolicy("4NNLRCF", "Southampton City Council", LASOLICITOR))
+                .build();
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails(migrationId, caseData)));
+
+            assertThat(extractedCaseData.getCaseLocalAuthority())
+                .isEqualTo(newLA);
+
+            assertThat(extractedCaseData.getCaseLocalAuthorityName())
+                .isEqualTo("Bournemouth, Christchurch and Poole Council");
+
+            assertThat(extractedCaseData.getLocalAuthorityPolicy())
+                .isEqualTo(organisationPolicy("NAXQHHD", "Bournemouth, Christchurch and Poole Council", LASOLICITOR));
+        }
+
+        @Test
+        void shouldGrantCaseAccess() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", familyManNumber,
+                    "caseLocalAuthority", newLA))
+                .build();
+
+            CaseDetails caseDetailsBefore = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", familyManNumber,
+                    "caseLocalAuthority", oldLA))
+                .build();
+
+            postSubmittedEvent(CallbackRequest.builder()
+                .caseDetailsBefore(caseDetailsBefore)
+                .caseDetails(caseDetails)
+                .build());
+
+            Mockito.verify(caseAccessService).grantCaseRoleToUsers(
+                10L,
+                Set.of(
+                    "573d3000-d4a4-4532-941d-93534f887acd",
+                    "5bd3491b-aca1-493b-999e-d770604abe83",
+                    "cc764c80-02a3-4cd5-9f8f-94f11658a7fb",
+                    "f4b9d49f-b3ab-467a-94ff-afb758dea71e",
+                    "5655587e-2878-4934-a9ff-0cbd4e354327",
+                    "777f7d7f-5dd4-4c92-af60-35a6a98086c8",
+                    "6d839a65-0cda-4c59-96ec-92efd63e0c2e",
+                    "9eb5184b-dbfb-445b-9520-14bd5c6b7e09"
+                ),
+                LASOLICITOR);
+        }
+
+        @Test
+        void shouldNotGrantCaseAccessWhenUnexpectedFMN() {
+            final String otherFamilyManNumber = "123";
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", otherFamilyManNumber,
+                    "caseLocalAuthority", newLA))
+                .build();
+
+            CaseDetails caseDetailsBefore = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", otherFamilyManNumber,
+                    "caseLocalAuthority", oldLA))
+                .build();
+
+            postSubmittedEvent(CallbackRequest.builder()
+                .caseDetailsBefore(caseDetailsBefore)
+                .caseDetails(caseDetails)
+                .build());
+
+            Mockito.verifyNoInteractions(caseAccessService);
+        }
+
+        @Test
+        void shouldNotGrantCaseAccessWhenUnexpectedPrevLA() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", familyManNumber,
+                    "caseLocalAuthority", newLA))
+                .build();
+
+            CaseDetails caseDetailsBefore = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", familyManNumber,
+                    "caseLocalAuthority", "UNEXPECTED"))
+                .build();
+
+            postSubmittedEvent(CallbackRequest.builder()
+                .caseDetailsBefore(caseDetailsBefore)
+                .caseDetails(caseDetails)
+                .build());
+
+            Mockito.verifyNoInteractions(caseAccessService);
+        }
+
+        @Test
+        void shouldNotGrantCaseAccessWhenUnexpectedLA() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", familyManNumber,
+                    "caseLocalAuthority", "UNEXPECTED"))
+                .build();
+
+            CaseDetails caseDetailsBefore = CaseDetails.builder()
+                .id(10L)
+                .data(Map.of(
+                    "familyManCaseNumber", familyManNumber,
+                    "caseLocalAuthority", oldLA))
+                .build();
+
+            postSubmittedEvent(CallbackRequest.builder()
+                .caseDetailsBefore(caseDetailsBefore)
+                .caseDetails(caseDetails)
+                .build());
+
+            Mockito.verifyNoInteractions(caseAccessService);
         }
     }
 

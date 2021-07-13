@@ -12,10 +12,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -24,10 +26,12 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -42,6 +46,33 @@ public class MigrateCaseController extends CallbackController {
     private final DocumentListService documentListService;
     private final ManageDocumentService manageDocumentService;
     private final ConfidentialDocumentsSplitter confidentialDocumentsSplitter;
+    private final CaseAccessService caseAccessService;
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+        CaseData caseData = getCaseData(callbackRequest);
+
+        Set<String> users = Set.of(
+            "573d3000-d4a4-4532-941d-93534f887acd",
+            "5bd3491b-aca1-493b-999e-d770604abe83",
+            "cc764c80-02a3-4cd5-9f8f-94f11658a7fb",
+            "f4b9d49f-b3ab-467a-94ff-afb758dea71e",
+            "5655587e-2878-4934-a9ff-0cbd4e354327",
+            "777f7d7f-5dd4-4c92-af60-35a6a98086c8",
+            "6d839a65-0cda-4c59-96ec-92efd63e0c2e",
+            "9eb5184b-dbfb-445b-9520-14bd5c6b7e09"
+        );
+
+        final Object oldLA = caseDetailsBefore.getData().get("caseLocalAuthority");
+        final Object newLA = caseDetails.getData().get("caseLocalAuthority");
+
+        if ("PO21C50011".equals(caseData.getFamilyManCaseNumber()) && "SCC".equals(oldLA) && "BCP".equals(newLA)) {
+            caseAccessService.grantCaseRoleToUsers(caseData.getId(), users, CaseRole.LASOLICITOR);
+        }
+
+    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -56,21 +87,33 @@ public class MigrateCaseController extends CallbackController {
             run3175(caseDetails);
         }
 
-        if ("FPLA-3214".equals(migrationId)) {
-            run3214(caseDetails);
+        if ("FPLA-3226".equals(migrationId)) {
+            run3226(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run3214(CaseDetails caseDetails) {
-        if (isNotEmpty(caseDetails.getData().get("hearingOption"))) {
-            caseDetails.getData().remove("hearingOption");
+    private void run3226(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("PO21C50011".equals(caseData.getFamilyManCaseNumber())) {
+
+            if (!"SCC".equals(caseData.getCaseLocalAuthority())) {
+                throw new IllegalStateException(
+                    String.format("Expected local authority SCC, but got %s", caseData.getCaseLocalAuthority()));
+            }
+
+            caseDetails.getData().put("caseLocalAuthority", "BCP");
+            caseDetails.getData().put("caseLocalAuthorityName", "Bournemouth, Christchurch and Poole Council");
+            caseDetails.getData().put("localAuthorityPolicy", organisationPolicy(
+                "NAXQHHD", "Bournemouth, Christchurch and Poole Council", CaseRole.LASOLICITOR));
         } else {
-            throw new IllegalStateException(format("Case %s does not have hearing option", caseDetails.getId()));
+            throw new IllegalStateException("Unexpected FMN: " + caseData.getFamilyManCaseNumber());
         }
     }
+
 
     private void run3175(CaseDetails caseDetails) {
         final String familyManCaseNumber = "CV21C50026";
