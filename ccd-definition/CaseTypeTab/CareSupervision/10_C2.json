@@ -8,7 +8,7 @@
     "TabDisplayOrder": 10,
     "CaseFieldID": "uploadC2Link",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "c2DocumentBundle!=\"\" OR additionalApplicationsBundle!=\"\""
+    "TabShowCondition": "c2DocumentBundle!=\"\" OR additionalApplicationsBundle!=\"\" OR hiddenApplicationsBundle!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -30,5 +30,15 @@
     "CaseFieldID": "c2DocumentBundle",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "c2DocumentBundle!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OtherApplicationsTab",
+    "TabLabel": "Other applications",
+    "TabDisplayOrder": 10,
+    "CaseFieldID": "hiddenApplicationsBundle",
+    "TabFieldDisplayOrder": 4
   }
 ]

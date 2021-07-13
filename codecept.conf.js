@@ -123,7 +123,7 @@ exports.config = {
     returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
     uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js',
     reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js',
-    removeOrderEventPage: './e2e/pages/events/removeOrderEvent.page.js',
+    removalToolEventPage: './e2e/pages/events/removalToolEvent.page.js',
     manageDocumentsEventPage: './e2e/pages/events/manageDocumentsEvent.page.js',
     manageDocumentsLAEventPage: './e2e/pages/events/manageDocumentsLAEvent.page.js',
     changeCaseStateEventPage: './e2e/pages/events/changeCaseStateEvent.page.js',

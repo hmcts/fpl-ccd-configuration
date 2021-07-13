@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -38,7 +38,7 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
         boolean removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
 
         if (!removed) {
-            throw new RemovableOrderNotFoundException(removedOrderId);
+            throw new RemovableOrderOrApplicationNotFoundException(removedOrderId);
         }
 
         generatedRemovableOrder = generatedRemovableOrder.toBuilder()
