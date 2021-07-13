@@ -5,55 +5,101 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.CREATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.UPLOAD;
 
 class ManageOrdersCaseDataFixerTest {
-
-    private static final OrderOperation ORDER_OPERATION = OrderOperation.CREATE;
 
     private final ManageOrdersCaseDataFixer underTest = new ManageOrdersCaseDataFixer();
 
     @Test
-    void shouldNotModifyIfNotClosedState() {
-        CaseData actual = underTest.fix(CaseData.builder().build());
+    void shouldNotModifyIfNotUploadOrClosedOrAmend() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperation(CREATE)
+                .build())
+            .build();
 
-        assertThat(actual).isEqualTo(CaseData.builder().build());
+        CaseData actual = underTest.fix(caseData);
+
+        assertThat(actual).isEqualTo(caseData);
     }
 
     @Test
-    void defaultBlankAndOrderStateOrderIfInClosedState() {
+    void setOrderTypeWhenAmendInNonClosed() {
+        CaseData actual = underTest.fix(CaseData.builder()
+            .state(State.SUBMITTED)
+            .manageOrdersEventData(
+                ManageOrdersEventData.builder()
+                    .manageOrdersOperation(AMEND)
+                    .build()
+            ).build());
+
+        assertThat(actual).isEqualTo(CaseData.builder()
+            .state(State.SUBMITTED)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperation(AMEND)
+                .manageOrdersType(AMENED_ORDER)
+                .build()
+            ).build());
+    }
+
+    @Test
+    void setOrderTypeWhenAmendInClosed() {
         CaseData actual = underTest.fix(CaseData.builder()
             .state(State.CLOSED)
             .manageOrdersEventData(
                 ManageOrdersEventData.builder()
-                    .manageOrdersOperationClosedState(ORDER_OPERATION)
+                    .manageOrdersOperationClosedState(AMEND)
                     .build()
             ).build());
 
         assertThat(actual).isEqualTo(CaseData.builder()
             .state(State.CLOSED)
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersOperationClosedState(ORDER_OPERATION)
-                .manageOrdersOperation(ORDER_OPERATION)
-                .manageOrdersType(Order.C21_BLANK_ORDER)
+                .manageOrdersOperationClosedState(AMEND)
+                .manageOrdersType(AMENED_ORDER)
                 .build()
             ).build());
     }
 
     @Test
-    void fixHiddentTypeInCaseUploadFlow() {
+    void defaultBlankAndOrderStateOrderIfInClosedStateAndCreating() {
+        CaseData actual = underTest.fix(CaseData.builder()
+            .state(State.CLOSED)
+            .manageOrdersEventData(
+                ManageOrdersEventData.builder()
+                    .manageOrdersOperationClosedState(CREATE)
+                    .build()
+            ).build());
+
+        assertThat(actual).isEqualTo(CaseData.builder()
+            .state(State.CLOSED)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperationClosedState(CREATE)
+                .manageOrdersOperation(CREATE)
+                .manageOrdersType(C21_BLANK_ORDER)
+                .build()
+            ).build());
+    }
+
+    @Test
+    void fixHiddenTypeInCaseUploadFlow() {
         CaseData actual = underTest.fix(CaseData.builder().manageOrdersEventData(
             ManageOrdersEventData.builder()
-                .manageOrdersOperation(OrderOperation.UPLOAD)
+                .manageOrdersOperation(UPLOAD)
                 .manageOrdersUploadType(Order.C28_WARRANT_TO_ASSIST)
                 .build()
         ).build());
 
         assertThat(actual).isEqualTo(CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersOperation(OrderOperation.UPLOAD)
+                .manageOrdersOperation(UPLOAD)
                 .manageOrdersType(Order.C28_WARRANT_TO_ASSIST)
                 .manageOrdersUploadType(Order.C28_WARRANT_TO_ASSIST)
                 .build())

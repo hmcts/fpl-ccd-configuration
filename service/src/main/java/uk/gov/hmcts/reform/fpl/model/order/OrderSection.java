@@ -10,6 +10,8 @@ public enum OrderSection {
     CHILDREN_DETAILS,
     ORDER_DETAILS,
     REVIEW,
+    AMEND_DOWNLOAD,
+    AMEND_UPLOAD,
     OTHER_DETAILS;
 
     public static OrderSection from(final String section) {

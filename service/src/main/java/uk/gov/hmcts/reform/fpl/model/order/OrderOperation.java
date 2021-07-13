@@ -7,5 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OrderOperation {
     CREATE,
-    UPLOAD
+    UPLOAD,
+    AMEND
 }

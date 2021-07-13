@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
@@ -26,7 +28,8 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 
 @Data
 @Builder(toBuilder = true)
-public class HearingOrder implements RemovableOrder {
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public class HearingOrder implements RemovableOrder, AmendableOrder {
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
@@ -35,6 +38,7 @@ public class HearingOrder implements RemovableOrder {
     // Case management order, 21 June 2020
     private LocalDate dateSent;
     private LocalDate dateIssued;
+    private final LocalDate amendedDate;
     private CMOStatus status;
     private String judgeTitleAndName;
     private String requestedChanges;
@@ -65,6 +69,7 @@ public class HearingOrder implements RemovableOrder {
         return true;
     }
 
+    @Override
     public String asLabel() {
         if (type == C21) {
             return format("Draft order sent on %s", formatLocalDateToString(dateSent, DATE));
@@ -82,5 +87,10 @@ public class HearingOrder implements RemovableOrder {
             return format("Draft case management order sent on %s",
                 formatLocalDateToString(dateSent, DATE));
         }
+    }
+
+    @Override
+    public LocalDate amendableSortDate() {
+        return dateIssued;
     }
 }

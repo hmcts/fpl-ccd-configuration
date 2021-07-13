@@ -6,7 +6,6 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class OrderTempQuestions {
-
     String hearingDetails;
     String linkApplication;
     String approver;
@@ -38,5 +37,6 @@ public class OrderTempQuestions {
     String appointedGuardian;
     String orderIsByConsent;
     String whichOthers;
-
+    String orderToAmend;
+    String uploadAmendedOrder;
 }
