@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
@@ -39,10 +38,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -119,9 +121,8 @@ public class CaseSubmissionController extends CallbackController {
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
             data.put("submittedForm", buildFromDocument(document));
 
-            data.putAll(respondentRepresentationService.generate(caseData, SolicitorRole.Representing.RESPONDENT));
-            data.putAll(respondentRepresentationService.generate(caseData, SolicitorRole.Representing.CHILD));
-            // data.putAll(); DO we need to do it here? Yes to allow noc
+            data.putAll(respondentRepresentationService.generate(caseData, RESPONDENT));
+            data.putAll(respondentRepresentationService.generate(caseData, CHILD, BLANK));
         }
 
         removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");
