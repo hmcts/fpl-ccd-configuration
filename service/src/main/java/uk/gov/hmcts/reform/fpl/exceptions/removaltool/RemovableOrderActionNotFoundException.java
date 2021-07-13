@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.exceptions.removeorder;
+package uk.gov.hmcts.reform.fpl.exceptions.removaltool;
 
 public class RemovableOrderActionNotFoundException extends IllegalStateException {
     public RemovableOrderActionNotFoundException() {

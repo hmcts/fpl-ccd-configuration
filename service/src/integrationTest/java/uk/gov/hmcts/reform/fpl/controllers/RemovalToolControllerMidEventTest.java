@@ -7,11 +7,15 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -25,23 +29,26 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.controllers.RemoveOrderController.CMO_ERROR_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.controllers.RemovalToolController.CMO_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@WebMvcTest(RemoveOrderController.class)
+@WebMvcTest(RemovalToolController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
+class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID REMOVE_ORDER_ID = UUID.randomUUID();
     private Element<GeneratedOrder> selectedOrder;
 
-    RemoveOrderControllerMidEventTest() {
+    RemovalToolControllerMidEventTest() {
         super("remove-order");
     }
 
@@ -275,7 +282,7 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldRegenerateDynamicList() {
+    void shouldRegenerateOrderDynamicList() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(
             asCaseDetails(buildCaseData(selectedOrder))
         );
@@ -284,6 +291,47 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
         DynamicList removableOrderList = mapper.convertValue(responseData.getRemovableOrderList(), DynamicList.class);
 
         assertThat(removableOrderList).isEqualTo(buildRemovableOrderList(selectedOrder.getId()));
+    }
+
+    @Test
+    void shouldExtractApplicationFields() {
+        UUID applicationId = UUID.randomUUID();
+        AdditionalApplicationsBundle application = buildCombinedApplication(C1_WITH_SUPPLEMENT, "6 May 2020");
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(buildListElement(applicationId, "C2, C1, 6 May 2020"))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .removableType(APPLICATION)
+            .additionalApplicationsBundle(List.of(element(applicationId, application)))
+            .removableApplicationList(dynamicList)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
+
+        Map<String, Object> responseData = response.getData();
+
+        Map<String, Object> extractedFields = Map.of(
+            "applicationTypeToBeRemoved", application.toLabel(),
+            "c2ApplicationToBeRemoved", mapper.convertValue(application.getC2DocumentBundle().getDocument(),
+                new TypeReference<Map<String, Object>>() {
+                }),
+            "otherApplicationToBeRemoved", mapper.convertValue(application.getOtherApplicationsBundle().getDocument(),
+                new TypeReference<Map<String, Object>>() {
+                }),
+            "orderDateToBeRemoved", application.getUploadedDateTime()
+        );
+
+        DynamicList removableApplicationList = mapper.convertValue(responseData.get("removableApplicationList"),
+            DynamicList.class);
+
+        DynamicList expectedList = DynamicList.builder()
+            .value(buildListElement(applicationId, "C2, C1, 6 May 2020"))
+            .listItems(List.of(buildListElement(applicationId, "C2, C1, 6 May 2020"))).build();
+
+        assertThat(removableApplicationList).isEqualTo(expectedList);
+        assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
@@ -295,14 +343,15 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
     private DynamicList buildRemovableOrderList(UUID id) {
         return DynamicList.builder()
-            .value(DynamicListElement.builder()
-                .code(id)
-                .label("order - 12 March 1234")
-                .build())
-            .listItems(List.of(DynamicListElement.builder()
-                .code(id)
-                .label("order - 12 March 1234")
-                .build()))
+            .value(buildListElement(id, "order - 12 March 1234"))
+            .listItems(List.of(buildListElement(id, "order - 12 March 1234")))
+            .build();
+    }
+
+    private DynamicListElement buildListElement(UUID id, String label) {
+        return DynamicListElement.builder()
+            .code(id)
+            .label(label)
             .build();
     }
 
@@ -313,6 +362,21 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
             .dateOfIssue("12 March 1234")
             .date("11:23am, 12 March 1234")
             .document(DocumentReference.builder().build())
+            .build();
+    }
+
+    private AdditionalApplicationsBundle buildCombinedApplication(OtherApplicationType type, String date) {
+        return AdditionalApplicationsBundle.builder()
+            .uploadedDateTime(date)
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .document(testDocumentReference())
+                .uploadedDateTime(date)
+                .build())
+            .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                .document(testDocumentReference())
+                .applicationType(type)
+                .uploadedDateTime(date)
+                .build())
             .build();
     }
 }

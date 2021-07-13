@@ -78,11 +78,14 @@ public class ManageOrdersEventData {
     String manageOrdersParentResponsible;
     RelationshipWithChild manageOrdersRelationshipWithChild;
 
+    DynamicList manageOrdersAmendmentList;
+    DocumentReference manageOrdersOrderToAmend;
+    DocumentReference manageOrdersAmendedOrder;
+
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
         return Optional.ofNullable(manageOrdersApprovalDateTime)
             .or(() -> Optional.ofNullable(manageOrdersApprovalDate).map(LocalDate::atStartOfDay))
             .orElse(null);
     }
-
 }

@@ -74,7 +74,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersIsChildRepresented",
             "manageOrdersReasonForSecureAccommodation",
             "manageOrdersOrderJurisdiction",
-            "whichChildIsTheOrderFor"
+            "whichChildIsTheOrderFor",
+            "manageOrdersAmendmentList",
+            "manageOrdersOrderToAmend",
+            "manageOrdersAmendedOrder"
         );
     }
 }

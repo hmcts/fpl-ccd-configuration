@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
@@ -35,9 +37,62 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
 
+    @Test
+    void calculateAmendment() {
+        assertThat(underTest.calculate(AMENED_ORDER)).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("orderToAmend", "YES"),
+            Map.entry("uploadAmendedOrder", "YES"),
+            Map.entry("uploadOrderFile", "NO"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("approver", "NO"),
+            Map.entry("previewOrder", "NO"),
+            Map.entry("approvalDate", "NO"),
+            Map.entry("whichChildren", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("hearingDetails", "NO"),
+            Map.entry("dischargeOfCareDetails", "NO"),
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+            Map.entry("furtherDirections", "NO"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("needSealing", "NO"),
+            Map.entry("linkApplication", "NO"),
+            Map.entry("isFinalOrder", "NO"),
+            Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("closeCase", "NO"),
+            Map.entry("orderIsByConsent", "NO"),
+            Map.entry("whichOthers", "YES"),
+            Map.entry("appointedGuardian", "NO"),
+            Map.entry("orderTitle", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
+            Map.entry("reasonForSecureAccommodation", "NO"),
+            Map.entry("orderJurisdiction", "NO"),
+            Map.entry("childLegalRepresentation", "NO"),
+            Map.entry("selectSingleChild", "NO")
+        ));
+    }
+
     @ParameterizedTest(name = "Show hide map for {0}")
     @MethodSource("orderWithExpectedMap")
     void calculate(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("finalManualUploadOrders")
+    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("nonFinalManualUploadOrders")
+    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
         assertThat(underTest.calculate(order))
             .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
@@ -47,7 +102,10 @@ class OrderShowHideQuestionsCalculatorTest {
             "hearingDetails", "YES",
             "linkApplication", "YES",
             "approver", "YES",
-            "previewOrder", "YES");
+            "previewOrder", "YES",
+            "orderToAmend", "NO",
+            "uploadAmendedOrder", "NO"
+        );
 
         Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
         careOrderQuestions.put("orderTitle", "NO");
@@ -333,13 +391,6 @@ class OrderShowHideQuestionsCalculatorTest {
         );
     }
 
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("finalManualUploadOrders")
-    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
-    }
-
     private static Stream<Arguments> finalManualUploadOrders() {
         return MANUAL_ORDERS_WITH_IS_FINAL_ORDER_QUESTION.stream()
             .map(order -> Arguments.of(order, Map.ofEntries(
@@ -374,15 +425,10 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("selectSingleChild", "NO"),
                 Map.entry("reasonForSecureAccommodation", "NO"),
                 Map.entry("childLegalRepresentation", "NO"),
-                Map.entry("orderJurisdiction", "NO")
+                Map.entry("orderJurisdiction", "NO"),
+                Map.entry("orderToAmend", "NO"),
+                Map.entry("uploadAmendedOrder", "NO")
             )));
-    }
-
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("nonFinalManualUploadOrders")
-    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
 
     private static Stream<Arguments> nonFinalManualUploadOrders() {
@@ -421,6 +467,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("orderIsByConsent", "NO"),
                 Map.entry("appointedGuardian", "NO"),
                 Map.entry("whichOthers", "YES"),
+                Map.entry("orderToAmend", "NO"),
+                Map.entry("uploadAmendedOrder", "NO"),
                 Map.entry("parentResponsible", "NO")
                 )
             ));

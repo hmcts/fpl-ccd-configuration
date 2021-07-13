@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AmendOrderToDownloadPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGuardianBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
@@ -27,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetail
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
@@ -74,6 +75,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private AppointedGuardianBlockPrePopulator appointedGuardianBlockPrePopulator;
     @Mock
     private WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
+    @Mock
+    private AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
 
     // Section blocks
     @Mock
@@ -111,24 +114,23 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator,
             appointedGuardianBlockPrePopulator,
-            whichOthersBlockPrePopulator
-
+            whichOthersBlockPrePopulator,
+            amendOrderToDownloadPrePopulator
         );
-        questionBlockPrepopulatorMapping = new HashMap<>() {
-            {
-                put(LINKED_TO_HEARING, linkedToHearingBlockPrePopulator);
-                put(LINK_APPLICATION, linkApplicationBlockPrePopulator);
-                put(APPROVAL_DATE, approvalDateBlockPrePopulator);
-                put(APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator);
-                put(APPROVER, approverBlockPrePopulator);
-                put(WHICH_CHILDREN, whichChildrenBlockPrePopulator);
-                put(APPOINTED_GUARDIAN, appointedGuardianBlockPrePopulator);
-                put(SELECT_SINGLE_CHILD, singleChildSelectionBlockPrePopulator);
-                put(EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator);
-                put(CLOSE_CASE, closeCaseBlockPrePopulator);
-                put(WHICH_OTHERS, whichOthersBlockPrePopulator);
-            }
-        };
+        questionBlockPrepopulatorMapping = Map.ofEntries(
+            Map.entry(LINKED_TO_HEARING, linkedToHearingBlockPrePopulator),
+            Map.entry(LINK_APPLICATION, linkApplicationBlockPrePopulator),
+            Map.entry(APPROVAL_DATE, approvalDateBlockPrePopulator),
+            Map.entry(APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator),
+            Map.entry(APPROVER, approverBlockPrePopulator),
+            Map.entry(WHICH_CHILDREN, whichChildrenBlockPrePopulator),
+            Map.entry(APPOINTED_GUARDIAN, appointedGuardianBlockPrePopulator),
+            Map.entry(SELECT_SINGLE_CHILD, singleChildSelectionBlockPrePopulator),
+            Map.entry(EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator),
+            Map.entry(CLOSE_CASE, closeCaseBlockPrePopulator),
+            Map.entry(WHICH_OTHERS, whichOthersBlockPrePopulator),
+            Map.entry(ORDER_TO_AMEND, amendOrderToDownloadPrePopulator)
+        );
 
         sectionPrepopulatorMapping = Map.of(
             HEARING_DETAILS, hearingDetailsSectionPrePopulator,

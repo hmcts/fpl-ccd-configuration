@@ -26,12 +26,12 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.CREATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -68,7 +69,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
-    private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
+    private static final Map<String, String> EXPECTED_QUESTIONS = new HashMap<>(Map.ofEntries(
         Map.entry("orderTitle", "NO"),
         Map.entry("hearingDetails", "YES"),
         Map.entry("linkApplication", "NO"),
@@ -100,6 +101,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
         Map.entry("cafcassJurisdictions", "NO"),
         Map.entry("isFinalOrder", "NO"),
+        Map.entry("orderToAmend","NO"),
+        Map.entry("uploadAmendedOrder","NO"),
         Map.entry("parentResponsible", "NO"),
         Map.entry("relationshipWithChild","NO")
     ));
@@ -127,9 +130,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
-
-    @MockBean
-    private DocumentMerger documentMerger;
 
     @MockBean
     private UploadDocumentService uploadService;
@@ -383,6 +383,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .allocatedJudge(JUDGE)
             .state(CLOSED)
             .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperationClosedState(CREATE)
                 .manageOrdersApprovalDate(dateNow())
                 .build())
             .build();
@@ -496,6 +497,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
             Map.entry("isFinalOrder", "NO"),
+            Map.entry("orderToAmend","NO"),
+            Map.entry("uploadAmendedOrder","NO"),
             Map.entry("relationshipWithChild","NO"),
             Map.entry("parentResponsible", "NO")
         );
@@ -543,6 +546,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "YES"),
             Map.entry("isFinalOrder", "NO"),
+            Map.entry("orderToAmend","NO"),
+            Map.entry("uploadAmendedOrder","NO"),
             Map.entry("relationshipWithChild","NO"),
             Map.entry("parentResponsible", "NO")
         );
