@@ -486,6 +486,38 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
   });
 });
 
+Scenario('Create Parental responsibility order (C45A)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+  await setupScenario(I, caseViewPage);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c45a);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterJudge();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectOrderByConsent();
+  await manageOrdersEventPage.enterNameOfParentResponsible('T.J. Detweiler');
+  await manageOrdersEventPage.selectFatherAsResponsible();
+  await manageOrdersEventPage.enterFurtherDirections('Further details. '.repeat(10));
+  await manageOrdersEventPage.selectIsFinalOrder();
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.goToNextPage();
+  pause();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 1,
+    orderType: 'Parental responsibility order (C45A)',
+    approvalDate: today,
+    others: 'John Doe',
+  });
+});
+
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;
   const dateOfApproval = order.approvalDate !== undefined ? order.approvalDate : order.approvalDateTime;

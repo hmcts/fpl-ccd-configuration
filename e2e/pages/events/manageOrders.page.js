@@ -26,6 +26,7 @@ const orders = {
     c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
     c43: 'C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER',
     c43a: 'C43A_SPECIAL_GUARDIANSHIP_ORDER',
+    c45a: 'C45A_PARENTAL_RESPONSIBILITY_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
     other: 'OTHER_ORDER',
   },
@@ -39,6 +40,7 @@ const orders = {
     c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
     c43: 'Child arrangements, Prohibited steps and Specific issue order (C43)',
+    c45a: 'Parental responsibility order (C45A)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
     other: 'Other',
   },
@@ -171,6 +173,13 @@ const section4 = {
   orderByConsent: '#manageOrdersIsByConsent_Yes',
   guardianSelector: {
     selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
+  },
+  parentResponsible: '#manageOrdersParentResponsible',
+  relationshipToChild: {
+    options: {
+      father: '#manageOrdersRelationshipWithChild-FATHER',
+      second_female_parent: '#manageOrdersRelationshipWithChild-SECOND_FEMALE_PARENT',
+    },
   },
 };
 
@@ -371,6 +380,11 @@ const enterRecitalsAndPreambles = async (text) => {
   I.fillField(section4.recitalsAndPreambles, text);
 };
 
+const enterNameOfParentResponsible = async (text) => {
+  I.fillField(section4.parentResponsible, text);
+  await I.runAccessibilityTest();
+};
+
 const enterFurtherDirections = async (text) => {
   I.fillField(section4.furtherDirections, text);
   await I.runAccessibilityTest();
@@ -378,6 +392,14 @@ const enterFurtherDirections = async (text) => {
 
 const selectIsFinalOrder = async () => {
   I.checkOption(section4.isFinalOrder.options.yes);
+};
+
+const selectParentResponsible = async (responsible) => {
+  I.checkOption(`${section4.relationshipToChild.group}_${responsible}`);
+};
+
+const selectFatherAsResponsible = async () => {
+  I.click(`${section4.relationshipToChild.options.father}`);
 };
 
 const selectIsNotFinalOrder = async () => {
@@ -457,4 +479,5 @@ module.exports = {
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
+  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible,
 };
