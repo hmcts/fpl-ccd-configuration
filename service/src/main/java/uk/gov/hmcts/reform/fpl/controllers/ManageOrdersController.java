@@ -125,8 +125,6 @@ public class ManageOrdersController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         // Do i need to check first
-        Optional<ManageOrdersEvent> event = eventBuilder.build(caseData, caseDataBefore);
-
         publishEvent(eventBuilder.build(caseData, caseDataBefore).get());
 
     }

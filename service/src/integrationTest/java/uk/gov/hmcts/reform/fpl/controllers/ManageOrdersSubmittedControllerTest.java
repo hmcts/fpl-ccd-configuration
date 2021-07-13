@@ -9,8 +9,11 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -57,6 +60,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -302,15 +307,15 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSendAmendedNotificationWhenAmendedOrder() throws NotificationClientException {
         CaseData caseData = caseData();
-        CaseData caseDataBefore = caseData();
-        Document document = document();
 
-       when(manageOrdersEventBuilder.build(any(),any())).thenReturn(Optional.of(new AmendedOrderEvent(caseData, testDocumentReference(), "case management order", Collections.emptyList())));
-        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
 
-        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+       when(manageOrdersEventBuilder.build(any(), any())).thenReturn(Optional.of(amendedOrderEvent));
+
+        postSubmittedEvent(caseData);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),

@@ -73,7 +73,6 @@ public class SendLetterService {
     }
 
     private DocumentReference uploadDocument(byte[] documentBinary, String filename) {
-        System.out.println("It is" + documentBinary + filename);
 
         Document uploadedDocument = uploadDocumentService.uploadPDF(documentBinary, filename);
 
