@@ -66,21 +66,27 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldRemoveExistingRepresentativeInfoWhenMainRepresentativeIsRemoved() {
-        ChildrenEventData eventData = ChildrenEventData.builder()
-            .childrenHaveRepresentation("No")
-            .childrenMainRepresentative(MAIN_REPRESENTATIVE) // existing field from previous run of the event
-            .build();
 
-        CaseData caseData = CaseData.builder()
+        CaseData caseDataBefore = CaseData.builder()
             .applicants(APPLICANTS)
             .children1(wrapElements(Child.builder()
                 .solicitor(MAIN_REPRESENTATIVE)
                 .party(ChildParty.builder().build())
                 .build()))
-            .childrenEventData(eventData)
+            .childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("Yes")
+                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
+                .build())
             .build();
 
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+        CaseData caseData = caseDataBefore.toBuilder()
+            .childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("No")
+                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
+                .build())
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
             Child.builder().party(ChildParty.builder().build()).build()

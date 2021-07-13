@@ -23,9 +23,11 @@ import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentativeSolicitorValidator;
 
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NOT_SPECIFIED;
 import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -86,7 +88,7 @@ public class ChildController extends CallbackController {
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
         if (!OPEN.equals(caseData.getState())
-            && cafcassSolicitorHasNeverBeenSet(getCaseData(caseDetails), getCaseDataBefore(callbackRequest))) {
+            && !cafcassSolicitorHasNeverBeenSet(getCaseData(caseDetails), getCaseDataBefore(callbackRequest))) {
             caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
                 getCaseData(caseDetails), getCaseDataBefore(callbackRequest), SolicitorRole.Representing.CHILD
             ));
@@ -103,7 +105,8 @@ public class ChildController extends CallbackController {
 
     private boolean cafcassSolicitorHasNeverBeenSet(CaseData caseData,
                                                     CaseData caseDataBefore) {
-        return NOT_SPECIFIED != YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation())
+        return Set.of(NOT_SPECIFIED, NO)
+            .contains(YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation()))
             && YesNo.NO == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
     }
 
