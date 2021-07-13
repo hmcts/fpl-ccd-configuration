@@ -10,6 +10,7 @@
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 2,
     "ShowSummaryChangeOption": "N",
+    "PageShowCondition": "orderTempQuestions.approver=\"YES\" OR orderTempQuestions.approvalDate=\"YES\" OR orderTempQuestions.approvalDateTime=\"YES\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/issuing-details/mid-event"
   },
   {

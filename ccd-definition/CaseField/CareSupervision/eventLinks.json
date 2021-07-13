@@ -165,7 +165,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "createOrderLink",
     "FieldType": "Label",
-    "Label": "[Create or upload an order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/createOrder)",
+    "Label": "[Manage orders](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageOrders)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

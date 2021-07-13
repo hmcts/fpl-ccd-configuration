@@ -96,4 +96,10 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     public int getSortOrder() {
         return applicationType.getSortOrder();
     }
+
+    @JsonIgnore
+    @Override
+    public DocumentReference getApplication() {
+        return document;
+    }
 }

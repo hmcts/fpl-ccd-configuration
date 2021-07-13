@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AmendOrderToDownloadPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGuardianBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPr
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.SingleChildSelectionBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOthersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
@@ -38,11 +40,13 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ApprovalDateBlockPrePopulator approvalDateBlockPrePopulator;
     private final ApprovalDateTimeBlockPrePopulator approvalDateTimeBlockPrePopulator;
     private final WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
+    private final SingleChildSelectionBlockPrePopulator singleChildSelectionBlockPrePopulator;
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
     private final CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
     private final AppointedGuardianBlockPrePopulator appointedGuardianBlockPrePopulator;
     private final WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
+    private final AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
 
     // Sections
     private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
@@ -65,11 +69,13 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             approvalDateBlockPrePopulator,
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
+            singleChildSelectionBlockPrePopulator,
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator,
             appointedGuardianBlockPrePopulator,
-            whichOthersBlockPrePopulator
+            whichOthersBlockPrePopulator,
+            amendOrderToDownloadPrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()

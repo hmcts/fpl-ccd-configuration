@@ -27,6 +27,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "amendedDate",
+    "FieldType": "Date",
+    "ElementLabel": "Amended",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "uploadedOrderDescription",
     "FieldType": "TextArea",
     "ElementLabel": "Order description",
@@ -116,7 +124,8 @@
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

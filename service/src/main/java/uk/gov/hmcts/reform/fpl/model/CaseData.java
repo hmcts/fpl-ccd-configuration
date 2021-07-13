@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
+import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
@@ -310,8 +312,13 @@ public class CaseData {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
+    private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
+
+    public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
+        return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
+    }
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -438,8 +445,12 @@ public class CaseData {
     }
 
     private final Object removableOrderList;
+    private final Object removableApplicationList;
     private final String reasonToRemoveOrder;
     private final List<Element<GeneratedOrder>> hiddenOrders;
+    private final RemovableType removableType;
+    private final ApplicationRemovalReason reasonToRemoveApplication;
+    private final String applicationRemovalDetails;
 
     public List<Element<GeneratedOrder>> getHiddenOrders() {
         return defaultIfNull(hiddenOrders, new ArrayList<>());
