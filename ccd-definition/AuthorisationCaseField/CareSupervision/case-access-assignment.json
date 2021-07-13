@@ -144,6 +144,156 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy0",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy1",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy2",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy3",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy4",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy5",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy6",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy7",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy8",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy9",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy10",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy11",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy12",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy13",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childPolicy14",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "noticeOfChangeAnswers0",
     "UserRoles": [
       "caseworker-caa",
@@ -244,6 +394,156 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers0",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers1",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers2",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers3",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers4",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers5",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers6",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers7",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers8",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers9",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers10",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers11",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers12",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers13",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfChangeChildAnswers14",
+    "UserRoles": [
+      "caseworker-caa",
+      "caseworker-approver"
+    ],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "changeOrganisationRequestField",
     "UserRoles": [
       "caseworker-caa",
@@ -259,6 +559,15 @@
       "caseworker-approver"
     ],
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "children1",
+    "UserRoles": [
+      "caseworker-approver"
+    ],
+    "CRUD": "RU"
   },
   {
     "LiveFrom": "01/01/2017",

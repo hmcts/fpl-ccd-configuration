@@ -195,9 +195,9 @@ module.exports = {
   },
 
   enterChildrenMainRepresentation(solicitor) {
-    I.fillField(this.fields().mainSolicitor.firstName, solicitor.forename);
-    I.fillField(this.fields().mainSolicitor.lastName, solicitor.surname);
-    I.fillField(this.fields().mainSolicitor.email, solicitor.email);
+    I.fillField(this.fields().mainSolicitor.firstName, solicitor.details.forename);
+    I.fillField(this.fields().mainSolicitor.lastName, solicitor.details.surname);
+    I.fillField(this.fields().mainSolicitor.email, solicitor.details.email);
   },
 
   async enterRegisteredOrganisation(solicitor) {
@@ -208,15 +208,15 @@ module.exports = {
       I.click('//*[@id="organisation-selected-table"]/tbody//a');
     }
 
-    I.fillField('#search-org-text', solicitor.organisation);
-    let selectedItem = `//*[@id="organisation-table"]/caption/h3[contains(text(),"${solicitor.organisation}")]/../../tbody//a`;
+    I.fillField('#search-org-text', solicitor.details.organisation);
+    let selectedItem = `//*[@id="organisation-table"]/caption/h3[contains(text(),"${solicitor.details.organisation}")]/../../tbody//a`;
     I.click(selectedItem);
   },
 
   enterChildrenSpecificRepresentation(index, solicitor) {
-    I.fillField(this.fields(index).childSolicitor.specificSolicitor.firstName, solicitor.forename);
-    I.fillField(this.fields(index).childSolicitor.specificSolicitor.lastName, solicitor.surname);
-    I.fillField(this.fields(index).childSolicitor.specificSolicitor.email, solicitor.email);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.firstName, solicitor.details.forename);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.lastName, solicitor.details.surname);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.email, solicitor.details.email);
   },
 
   async enterSpecificRegisteredOrganisation(index, solicitor) {

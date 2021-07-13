@@ -128,6 +128,141 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORA]",
+    "Name": "Child Solicitor A",
+    "Description": "Child Solicitor A role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORB]",
+    "Name": "Child Solicitor B",
+    "Description": "Child Solicitor B role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORC]",
+    "Name": "Child Solicitor C",
+    "Description": "Child Solicitor C role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORD]",
+    "Name": "Child Solicitor D",
+    "Description": "Child Solicitor D role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORE]",
+    "Name": "Child Solicitor E",
+    "Description": "Child Solicitor E role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORF]",
+    "Name": "Child Solicitor F",
+    "Description": "Child Solicitor F role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORG]",
+    "Name": "Child Solicitor G",
+    "Description": "Child Solicitor G role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORH]",
+    "Name": "Child Solicitor H",
+    "Description": "Child Solicitor H role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORI]",
+    "Name": "Child Solicitor I",
+    "Description": "Child Solicitor I role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORJ]",
+    "Name": "Child Solicitor J",
+    "Description": "Child Solicitor J role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORK]",
+    "Name": "Child Solicitor K",
+    "Description": "Child Solicitor K role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORL]",
+    "Name": "Child Solicitor L",
+    "Description": "Child Solicitor L role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORM]",
+    "Name": "Child Solicitor M",
+    "Description": "Child Solicitor M role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORN]",
+    "Name": "Child Solicitor N",
+    "Description": "Child Solicitor N role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CHILDSOLICITORO]",
+    "Name": "Child Solicitor O",
+    "Description": "Child Solicitor O role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "[LABARRISTER]",
     "Name": "LA Barrister",
     "Description": "LA Barrister role",

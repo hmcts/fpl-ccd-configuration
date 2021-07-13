@@ -42,7 +42,7 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .representative(childSolicitor)
+                    .solicitor(childSolicitor)
                     .build()
             ),
             mainRepresentative
@@ -68,11 +68,11 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .representative(childSolicitor)
+                    .solicitor(childSolicitor)
                     .build(),
                 Child.builder()
                     .party(ChildParty.builder().firstName("Freddie").lastName("Mercury").build())
-                    .representative(childSolicitor)
+                    .solicitor(childSolicitor)
                     .build()
             ),
             mainRepresentative
@@ -103,7 +103,7 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .representative(mainRepresentative)
+                    .solicitor(mainRepresentative)
                     .build()
             ),
             mainRepresentative
@@ -127,7 +127,7 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .representative(null)
+                    .solicitor(null)
                     .build()
             ),
             mainRepresentative
@@ -151,7 +151,7 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .representative(RespondentSolicitor.builder().build())
+                    .solicitor(RespondentSolicitor.builder().build())
                     .build()
             ),
             mainRepresentative

@@ -342,5 +342,15 @@
     "FieldDisplayOrder": 30,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
+    "ListElementCode": "solicitor",
+    "FieldDisplayOrder": 31,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   }
 ]
