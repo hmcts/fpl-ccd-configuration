@@ -28,7 +28,6 @@ public class ChildNoticeOfChangeUpdateAction implements NoticeOfChangeUpdateActi
     public Map<String, Object> applyUpdates(WithSolicitor child, CaseData caseData, RespondentSolicitor solicitor) {
         child.setSolicitor(solicitor);
 
-        RespondentSolicitor cafcassSolicitor = caseData.getChildrenEventData().getChildrenMainRepresentative();
         List<Element<Child>> children = caseData.getAllChildren();
 
         YesNo allSameSolicitor = YesNo.from(children.stream()
@@ -39,6 +38,7 @@ public class ChildNoticeOfChangeUpdateAction implements NoticeOfChangeUpdateActi
             "childrenHaveSameRepresentation", allSameSolicitor.getValue()
         ));
 
+        RespondentSolicitor cafcassSolicitor = caseData.getChildrenEventData().getChildrenMainRepresentative();
         if (YesNo.YES == allSameSolicitor && !Objects.equals(cafcassSolicitor, solicitor)) {
             data.put("childrenMainRepresentative", solicitor);
         }

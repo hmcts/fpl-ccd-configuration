@@ -61,11 +61,12 @@ class ChildNoticeOfChangeUpdateActionTest {
 
         Map<String, Object> data = underTest.applyUpdates(childToUpdate, CASE_DATA, SOLICITOR);
 
+        Child updatedChild = Child.builder().solicitor(SOLICITOR).build();
+
         assertThat(data).isEqualTo(Map.of(
-            "children1", List.of(element(CHILD_ID, childToUpdate), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
+            "children1", List.of(element(CHILD_ID, updatedChild), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
             "childrenHaveSameRepresentation", "No"
         ));
-        assertThat(childToUpdate.getSolicitor()).isEqualTo(SOLICITOR);
     }
 
     @Test
@@ -77,11 +78,12 @@ class ChildNoticeOfChangeUpdateActionTest {
 
         Map<String, Object> data = underTest.applyUpdates(childToUpdate, CASE_DATA, CAFCASS);
 
+        Child updatedChild = Child.builder().solicitor(CAFCASS).build();
+
         assertThat(data).isEqualTo(Map.of(
-            "children1", List.of(element(CHILD_ID, childToUpdate), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
+            "children1", List.of(element(CHILD_ID, updatedChild), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
             "childrenHaveSameRepresentation", "Yes"
         ));
-        assertThat(childToUpdate.getSolicitor()).isEqualTo(CAFCASS);
     }
 
     @Test
@@ -93,11 +95,12 @@ class ChildNoticeOfChangeUpdateActionTest {
 
         Map<String, Object> data = underTest.applyUpdates(childToUpdate, CASE_DATA, SOLICITOR);
 
+        Child updatedChild = Child.builder().solicitor(SOLICITOR).build();
+
         assertThat(data).isEqualTo(Map.of(
-            "children1", List.of(element(CHILD_ID, childToUpdate), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
+            "children1", List.of(element(CHILD_ID, updatedChild), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
             "childrenHaveSameRepresentation", "Yes",
             "childrenMainRepresentative", SOLICITOR
         ));
-        assertThat(childToUpdate.getSolicitor()).isEqualTo(SOLICITOR);
     }
 }
