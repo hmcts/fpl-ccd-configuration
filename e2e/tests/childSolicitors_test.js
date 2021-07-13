@@ -9,9 +9,11 @@ const solicitor3 = config.wiltshireLocalAuthorityUserOne;
 const children = mandatoryWithMaxChildren.caseData.children1;
 
 const unregisteredSolicitor = {
-  forename: 'Rupert',
-  surname: 'Bear',
-  email: 'rupert@bear.com',
+  details: {
+    forename: 'Rupert',
+    surname: 'Bear',
+    email: 'rupert@bear.com',
+  },
   unregisteredOrganisation: {
     name: 'Swansea Managing Office',
     address: {
@@ -42,7 +44,7 @@ async function setupScenario(I) {
   }
   if (!solicitor2.details) {
     solicitor2.details = await apiHelper.getUser(solicitor2);
-    solicitor2.details.organisation = 'London Borough Hillingdon';
+    solicitor2.details.organisation = 'Hillingdon'; // org search on aat does not like London Borough Hillingdon
   }
   if (!solicitor3.details) {
     solicitor3.details = await apiHelper.getUser(solicitor3);
@@ -92,12 +94,15 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  mandatoryWithMaxChildren.caseData.children1.forEach((element, index) => assertChild(I, index + 1, element.value, solicitor1));
+  for (const [index, child] of children.entries()) {
+    assertChild(I, index + 1, child.value, solicitor1);
+  }
 });
 
 Scenario('HMCTS assign a different solicitor for some of the children', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await setupScenario(I);
-
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
   await I.goToNextPage();
   enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);
   enterChildrenEventPage.enterChildrenMainRepresentation(solicitor1);
@@ -128,7 +133,7 @@ Scenario('HMCTS assign a different solicitor for some of the children', async ({
 
 Scenario('Solicitor can request representation only after case submission and Cafcass solicitor is set', async ({I, caseListPage, noticeOfChangePage}) => {
   await setupScenario(I);
-  await I.signIn(solicitor1);
+  await I.signIn(solicitor3);
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', children[0].value.party.firstName, children[0].value.party.lastName);
@@ -165,7 +170,7 @@ function assertChild(I, idx, child, solicitor) {
       I.seeInTab([childElement, 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Postcode/Zipcode'], solicitor.unregisteredOrganisation.address.postcode);
       I.seeInTab([childElement, 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Country'], solicitor.unregisteredOrganisation.address.country);
     } else {
-      I.waitForText(solicitor.organisation, 40);
+      I.waitForText(solicitor.details.organisation, 40);
       I.seeOrganisationInTab([childElement, 'Representative', 'Name'], solicitor.details.organisation);
     }
   }

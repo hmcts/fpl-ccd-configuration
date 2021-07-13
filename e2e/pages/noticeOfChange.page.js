@@ -11,8 +11,8 @@ module.exports = {
     notifyEveryParty: '#notifyEveryParty',
   },
 
-  navigate(){
-    I.click(this.noticeOfChange);
+  async navigate(){
+    await I.retryUntilExists(() => I.click(this.noticeOfChange), this.fields.caseRefSearch);
   },
 
   async enterCaseReference(caseReference) {
@@ -36,7 +36,7 @@ module.exports = {
   },
 
   async userFillsNoC(caseReference, applicantName, firstName, lastName) {
-    this.navigate();
+    await this.navigate();
     await this.enterCaseReference(caseReference);
     await I.retryUntilExists(() => I.click('Continue'), this.fields.applicantName);
     await this.enterApplicantName(applicantName);
