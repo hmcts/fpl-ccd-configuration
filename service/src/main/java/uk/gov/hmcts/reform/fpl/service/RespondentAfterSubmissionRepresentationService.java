@@ -35,41 +35,57 @@ public class RespondentAfterSubmissionRepresentationService {
     private final ChangeOfRepresentationService changeOfRepresentationService;
 
     public Map<String, Object> updateRepresentation(CaseData caseData, CaseData caseDataBefore,
-                                                    SolicitorRole.Representing representing) {
+                                                    SolicitorRole.Representing representing,
+                                                    boolean recordChangeOrRepresentation) {
 
         HashMap<String, Object> updatedFields = new HashMap<>(nocFieldPopulator.generate(caseData, representing));
 
-        Function<CaseData, List<Element<WithSolicitor>>> target = representing.getTarget();
-        final List<Element<WithSolicitor>> respondentsAfter = defaultIfNull(target.apply(caseData), emptyList());
-        final List<Element<WithSolicitor>> respondentsBefore = defaultIfNull(target.apply(caseDataBefore), emptyList());
+        if (recordChangeOrRepresentation) {
+            Function<CaseData, List<Element<WithSolicitor>>> target = representing.getTarget();
+            final List<Element<WithSolicitor>> respondentsAfter = defaultIfNull(target.apply(caseData), emptyList());
+            final List<Element<WithSolicitor>> respondentsBefore = defaultIfNull(target.apply(caseDataBefore),
+                emptyList());
 
-        List<ChangeOrganisationRequest> representationChanges = respondentService.getRepresentationChanges(
-            respondentsAfter, respondentsBefore, representing
-        );
+            List<ChangeOrganisationRequest> representationChanges = respondentService.getRepresentationChanges(
+                respondentsAfter, respondentsBefore, representing
+            );
 
-        updatedFields.put("changeOfRepresentatives", representationChanges.stream().reduce(
-            defaultIfNull(caseData.getChangeOfRepresentatives(), new ArrayList<>()),
-            generateRequest(respondentsAfter, respondentsBefore),
-            (v, v2) -> v2
-        ));
+            updatedFields.put("changeOfRepresentatives", representationChanges.stream().reduce(
+                defaultIfNull(caseData.getChangeOfRepresentatives(), new ArrayList<>()),
+                generateRequest(respondentsAfter, respondentsBefore, representing),
+                (v, v2) -> v2
+            ));
+        }
 
         return updatedFields;
     }
 
     private BiFunction<List<Element<ChangeOfRepresentation>>, ChangeOrganisationRequest,
         List<Element<ChangeOfRepresentation>>> generateRequest(List<Element<WithSolicitor>> respondentsAfter,
-                                                               List<Element<WithSolicitor>> respondentsBefore) {
+                                                               List<Element<WithSolicitor>> respondentsBefore,
+                                                               SolicitorRole.Representing representing) {
         return (changeOfRepresentations, changeOrganisationRequest) ->
             changeOfRepresentationService.changeRepresentative(
                 ChangeOfRepresentationRequest.builder()
                     .method(RESPONDENTS_EVENT)
                     .by("HMCTS") // this event is only allowed from judicial users
-                    .respondent((ConfidentialParty<?>) respondentsAfter.get(changeOrganisationRequest.getCaseRole()
-                        .getIndex()).getValue())
+                    .respondent(getPartyIf(respondentsAfter, representing, changeOrganisationRequest,
+                        SolicitorRole.Representing.RESPONDENT))
+                    .child(getPartyIf(respondentsAfter, representing, changeOrganisationRequest,
+                        SolicitorRole.Representing.CHILD))
                     .current(changeOfRepresentations)
                     .addedRepresentative(getSolicitor(respondentsAfter, changeOrganisationRequest))
                     .removedRepresentative(getSolicitor(respondentsBefore, changeOrganisationRequest))
                     .build());
+    }
+
+    private ConfidentialParty<?> getPartyIf(List<Element<WithSolicitor>> respondentsAfter,
+                                         SolicitorRole.Representing representing,
+                                         ChangeOrganisationRequest changeOrganisationRequest,
+                                         SolicitorRole.Representing representingMatch) {
+        return representing == representingMatch
+            ? (ConfidentialParty<?>) respondentsAfter.get(changeOrganisationRequest.getCaseRole().getIndex()).getValue()
+            : null;
     }
 
     private RespondentSolicitor getSolicitor(List<Element<WithSolicitor>> respondents,

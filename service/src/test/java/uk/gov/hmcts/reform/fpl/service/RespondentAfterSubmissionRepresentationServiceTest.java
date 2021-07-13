@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
@@ -64,7 +65,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
         when(respondentService.getRepresentationChanges((List) RESPONDENTS_AFTER, (List) RESPONDENTS_BEFORE,
             RESPONDENT)).thenReturn(List.of());
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT, true);
 
         Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", List.of());
@@ -72,6 +73,24 @@ class RespondentAfterSubmissionRepresentationServiceTest {
         assertThat(actual).isEqualTo(
             expected
         );
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void testDoNotRecordChangeOfRepresentatives() {
+
+        CaseData caseDataAfter = CaseData.builder().respondents1(RESPONDENTS_AFTER).build();
+        CaseData caseDataBefore = CaseData.builder().respondents1(RESPONDENTS_BEFORE).build();
+
+        when(nocFieldPopulator.generate(caseDataAfter, RESPONDENT)).thenReturn(NOC_FIELDS);
+
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT, false);
+
+        Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
+        assertThat(actual).isEqualTo(
+            expected
+        );
+        verifyNoInteractions(respondentService);
     }
 
     @Test
@@ -90,7 +109,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
         when(respondentService.getRepresentationChanges((List) RESPONDENTS_AFTER, (List) RESPONDENTS_BEFORE,
             RESPONDENT)).thenReturn(List.of());
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT, true);
 
         Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", CHANGE_OF_REPRESENTATION_BEFORE);
@@ -142,7 +161,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
         )).thenReturn(CHANGE_OF_REPRESENTATION);
 
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT, true);
 
         Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", CHANGE_OF_REPRESENTATION);
@@ -193,7 +212,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
 
 
         Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore,
-            RESPONDENT);
+            RESPONDENT, true);
 
         Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", CHANGE_OF_REPRESENTATION);
@@ -268,7 +287,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
                 .build()
         )).thenReturn(ANOTHER_CHANGE_OF_REPRESENTATION);
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT, true);
 
         Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", ANOTHER_CHANGE_OF_REPRESENTATION);

@@ -85,7 +85,7 @@ public class RespondentController extends CallbackController {
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
         if (!OPEN.equals(caseData.getState())) {
             caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
-                caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT
+                caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT, true
             ));
         }
         return respond(caseDetails);

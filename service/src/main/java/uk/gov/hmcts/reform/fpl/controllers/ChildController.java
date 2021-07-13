@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NOT_SPECIFIED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
@@ -90,7 +91,8 @@ public class ChildController extends CallbackController {
         if (!OPEN.equals(caseData.getState())
             && !cafcassSolicitorHasNeverBeenSet(getCaseData(caseDetails), getCaseDataBefore(callbackRequest))) {
             caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
-                getCaseData(caseDetails), getCaseDataBefore(callbackRequest), SolicitorRole.Representing.CHILD
+                getCaseData(caseDetails), getCaseDataBefore(callbackRequest), SolicitorRole.Representing.CHILD,
+                isNotFirstTimeRecordingSolicitor(getCaseData(caseDetails), getCaseDataBefore(callbackRequest))
             ));
         }
 
@@ -108,6 +110,12 @@ public class ChildController extends CallbackController {
         return Set.of(NOT_SPECIFIED, NO)
             .contains(YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation()))
             && YesNo.NO == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
+    }
+
+    private boolean isNotFirstTimeRecordingSolicitor(CaseData caseData,
+                                                     CaseData caseDataBefore) {
+        return YES == YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation())
+            && YES == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
     }
 
     @PostMapping("/submitted")

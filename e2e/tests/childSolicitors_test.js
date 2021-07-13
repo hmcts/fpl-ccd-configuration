@@ -2,6 +2,7 @@ const config = require('../config.js');
 const mandatoryWithMaxChildren = require('../fixtures/caseData/mandatoryWithMaxChildren.json');
 const apiHelper = require('../helpers/api_helper.js');
 const moment = require('moment');
+const dateFormat = require('dateformat');
 
 const solicitor1 = config.privateSolicitorOne;
 const solicitor2 = config.hillingdonLocalAuthorityUserOne;
@@ -97,6 +98,7 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   for (const [index, child] of children.entries()) {
     assertChild(I, index + 1, child.value, solicitor1);
   }
+  I.dontSeeTab(caseViewPage.tabs.changeOfRepresentatives);
 });
 
 Scenario('HMCTS assign a different solicitor for some of the children', async ({I, caseViewPage, enterChildrenEventPage}) => {
@@ -129,14 +131,24 @@ Scenario('HMCTS assign a different solicitor for some of the children', async ({
     const solicitor = index === childWithDifferentRegisteredSolicitorIdx ? solicitor2 : (index === childWithUnregisteredSolicitorIdx ? unregisteredSolicitor : solicitor1);
     assertChild(I, index + 1, child.value, solicitor);
   }
+
+  caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
+  assertChangeOfRepresentative(I, 1, 'FPL', `${children[childWithDifferentRegisteredSolicitorIdx].value.party.firstName} ${children[childWithDifferentRegisteredSolicitorIdx].value.party.lastName}`, 'HMCTS', {removedUser: solicitor1.details, addedUser: solicitor2.details });
+  assertChangeOfRepresentative(I, 2, 'FPL', `${children[childWithUnregisteredSolicitorIdx].value.party.firstName} ${children[childWithUnregisteredSolicitorIdx].value.party.lastName}`, 'HMCTS', {removedUser: solicitor1.details, addedUser: unregisteredSolicitor.details });
 });
 
-Scenario('Solicitor can request representation only after case submission and Cafcass solicitor is set', async ({I, caseListPage, noticeOfChangePage}) => {
+Scenario('Solicitor can request representation via NOC only after case submission and Cafcass solicitor is set', async ({I, caseListPage, noticeOfChangePage, caseViewPage}) => {
   await setupScenario(I);
   await I.signIn(solicitor3);
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
-  await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', children[0].value.party.firstName, children[0].value.party.lastName);
+  await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', children[11].value.party.firstName, children[11].value.party.lastName);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  assertChild(I, 12, children[11].value, solicitor3);
+
+  caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
+  assertChangeOfRepresentative(I, 3, 'Notice of change', `${children[11].value.party.firstName} ${children[11].value.party.lastName}`, solicitor3.details.email, {removedUser: solicitor1.details, addedUser: solicitor3.details });
 });
 
 async function setSpecificRepresentative(enterChildrenEventPage, idx, child, solicitor) {
@@ -182,3 +194,34 @@ async function attemptAndFailNoticeOfChange(I, noticeOfChangePage, solicitor, ch
   I.click('Continue');
   I.see('Enter the client details exactly as they’re written on the case, including any mistakes');
 }
+
+const assertChangeOfRepresentative = (I, index, method, respondentName, actingUserEmail, change) => {
+  let representative = `Change of representative ${index}`;
+  let addedUser = change.addedUser;
+  let removedUser = change.removedUser;
+
+  I.seeInTab([representative, 'Child'], respondentName);
+  I.seeInTab([representative, 'Date'], dateFormat(new Date(), 'd mmm yyyy'));
+  I.seeInTab([representative, 'Updated by'], actingUserEmail);
+  I.seeInTab([representative, 'Updated via'], method);
+
+  if (addedUser) {
+    I.seeInTab([representative, 'Added representative', 'First name'], addedUser.forename);
+    I.seeInTab([representative, 'Added representative', 'Last name'], addedUser.surname);
+    I.seeInTab([representative, 'Added representative', 'Email'], addedUser.email);
+    if (addedUser.organisation) {
+      I.waitForText(addedUser.organisation, 40);
+      I.seeOrganisationInTab([representative, 'Added representative', 'Name'], addedUser.organisation);
+    }
+  }
+
+  if (removedUser) {
+    I.seeInTab([representative, 'Removed representative', 'First name'], removedUser.forename);
+    I.seeInTab([representative, 'Removed representative', 'Last name'], removedUser.surname);
+    I.seeInTab([representative, 'Removed representative', 'Email'], removedUser.email);
+    if (removedUser.organisation) {
+      I.waitForText(removedUser.organisation, 40);
+      I.seeOrganisationInTab([representative, 'Removed representative', 'Name'], removedUser.organisation);
+    }
+  }
+};
