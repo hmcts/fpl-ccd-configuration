@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.noc.UpdateRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
@@ -53,7 +54,7 @@ class NoticeOfChangeServiceTest {
     private CoreCaseDataService coreCaseDataService;
 
     @Mock
-    private RespondentRepresentationService respondentRepresentationService;
+    private UpdateRepresentationService updateRepresentationService;
 
     @InjectMocks
     private NoticeOfChangeService underTest;
@@ -100,7 +101,7 @@ class NoticeOfChangeServiceTest {
             when(userService.getUserDetailsById(USER_ID))
                 .thenReturn(solicitorUser);
 
-            when(respondentRepresentationService.updateRepresentation(caseData, solicitorUser))
+            when(updateRepresentationService.updateRepresentation(caseData, solicitorUser))
                 .thenReturn(UPDATED_REPRESENTATION);
 
             final Map<String, Object> actual = underTest.updateRepresentation(caseData);
@@ -109,7 +110,7 @@ class NoticeOfChangeServiceTest {
 
             verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
             verify(userService).getUserDetailsById(USER_ID);
-            verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
+            verifyNoMoreInteractions(auditEventService, userService, updateRepresentationService);
         }
 
         @Test
@@ -127,12 +128,12 @@ class NoticeOfChangeServiceTest {
                 .hasMessage("Could not find nocRequest event in audit");
 
             verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
-            verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
+            verifyNoMoreInteractions(auditEventService, userService, updateRepresentationService);
         }
     }
 
     @Nested
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     class UpdateRepresentationAccess {
 
         @Test

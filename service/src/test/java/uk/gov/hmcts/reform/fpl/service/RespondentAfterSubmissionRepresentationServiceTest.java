@@ -2,13 +2,13 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
-import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
+import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
 import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
@@ -19,6 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod.RESPONDENTS_EVENT;
@@ -39,36 +40,33 @@ class RespondentAfterSubmissionRepresentationServiceTest {
     private static final RespondentSolicitor A_SOLICITOR_2 = mock(RespondentSolicitor.class);
     private static final RespondentSolicitor ANOTHER_SOLICITOR = mock(RespondentSolicitor.class);
     private static final RespondentSolicitor ANOTHER_SOLICITOR_2 = mock(RespondentSolicitor.class);
+
     private final RespondentService respondentService = mock(RespondentService.class);
-    private final RespondentRepresentationService respondentRepresentationService =
-        mock(RespondentRepresentationService.class);
+    private final NoticeOfChangeFieldPopulator nocFieldPopulator = mock(NoticeOfChangeFieldPopulator.class);
     private final ChangeOfRepresentationService changeOfRepresentationService =
         mock(ChangeOfRepresentationService.class);
 
     private final RespondentAfterSubmissionRepresentationService underTest =
         new RespondentAfterSubmissionRepresentationService(
             respondentService,
-            respondentRepresentationService,
+            nocFieldPopulator,
             changeOfRepresentationService
         );
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void testNoChanges() {
 
         CaseData caseDataAfter = CaseData.builder().respondents1(RESPONDENTS_AFTER).build();
         CaseData caseDataBefore = CaseData.builder().respondents1(RESPONDENTS_BEFORE).build();
 
-        when(respondentRepresentationService.generate(caseDataAfter, SolicitorRole.Representing.RESPONDENT)).thenReturn(
-            NOC_FIELDS);
+        when(nocFieldPopulator.generate(caseDataAfter, RESPONDENT)).thenReturn(NOC_FIELDS);
         when(respondentService.getRepresentationChanges((List) RESPONDENTS_AFTER, (List) RESPONDENTS_BEFORE,
-            SolicitorRole.Representing.RESPONDENT)).thenReturn(List.of());
+            RESPONDENT)).thenReturn(List.of());
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore,
-            SolicitorRole.Representing.RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
 
-        Map<String, Object> expected = new HashMap<>();
-        expected.putAll(NOC_FIELDS);
+        Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", List.of());
 
         assertThat(actual).isEqualTo(
@@ -77,7 +75,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void testNoChangesMaintainHistory() {
 
         CaseData caseDataAfter = CaseData.builder()
@@ -88,16 +86,13 @@ class RespondentAfterSubmissionRepresentationServiceTest {
             .respondents1(RESPONDENTS_BEFORE)
             .build();
 
-        when(respondentRepresentationService.generate(caseDataAfter, SolicitorRole.Representing.RESPONDENT)).thenReturn(
-            NOC_FIELDS);
+        when(nocFieldPopulator.generate(caseDataAfter, RESPONDENT)).thenReturn(NOC_FIELDS);
         when(respondentService.getRepresentationChanges((List) RESPONDENTS_AFTER, (List) RESPONDENTS_BEFORE,
-            SolicitorRole.Representing.RESPONDENT)).thenReturn(List.of());
+            RESPONDENT)).thenReturn(List.of());
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore,
-            SolicitorRole.Representing.RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
 
-        Map<String, Object> expected = new HashMap<>();
-        expected.putAll(NOC_FIELDS);
+        Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", CHANGE_OF_REPRESENTATION_BEFORE);
 
         assertThat(actual).isEqualTo(
@@ -106,7 +101,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void testSingleRespondentChanged() {
 
         Respondent currentRespondent = Respondent.builder()
@@ -128,14 +123,13 @@ class RespondentAfterSubmissionRepresentationServiceTest {
             .respondents1(respondentsBefore)
             .build();
 
-        when(respondentRepresentationService.generate(caseDataAfter, SolicitorRole.Representing.RESPONDENT)).thenReturn(
-            NOC_FIELDS);
-        when(respondentService.getRepresentationChanges((List) respondentsAfter, (List) respondentsBefore,
-            SolicitorRole.Representing.RESPONDENT)).thenReturn(List.of(
-            ChangeOrganisationRequest.builder()
-                .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORA))
-                .build()
-        ));
+        when(nocFieldPopulator.generate(caseDataAfter, RESPONDENT)).thenReturn(NOC_FIELDS);
+        when(respondentService.getRepresentationChanges((List) respondentsAfter, (List) respondentsBefore, RESPONDENT))
+            .thenReturn(List.of(
+                ChangeOrganisationRequest.builder()
+                    .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORA))
+                    .build()
+            ));
         when(changeOfRepresentationService.changeRepresentative(
             ChangeOfRepresentationRequest.builder()
                 .current(CHANGE_OF_REPRESENTATION_BEFORE)
@@ -148,11 +142,9 @@ class RespondentAfterSubmissionRepresentationServiceTest {
         )).thenReturn(CHANGE_OF_REPRESENTATION);
 
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore,
-            SolicitorRole.Representing.RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
 
-        Map<String, Object> expected = new HashMap<>();
-        expected.putAll(NOC_FIELDS);
+        Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", CHANGE_OF_REPRESENTATION);
 
         assertThat(actual).isEqualTo(
@@ -161,7 +153,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void testSingleRespondentAdded() {
 
         Respondent currentRespondent = Respondent.builder()
@@ -181,14 +173,13 @@ class RespondentAfterSubmissionRepresentationServiceTest {
             .respondents1(respondentsBefore)
             .build();
 
-        when(respondentRepresentationService.generate(caseDataAfter, SolicitorRole.Representing.RESPONDENT)).thenReturn(
-            NOC_FIELDS);
-        when(respondentService.getRepresentationChanges((List) respondentsAfter, (List) respondentsBefore,
-            SolicitorRole.Representing.RESPONDENT)).thenReturn(List.of(
-            ChangeOrganisationRequest.builder()
-                .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORA))
-                .build()
-        ));
+        when(nocFieldPopulator.generate(caseDataAfter, RESPONDENT)).thenReturn(NOC_FIELDS);
+        when(respondentService.getRepresentationChanges((List) respondentsAfter, (List) respondentsBefore, RESPONDENT))
+            .thenReturn(List.of(
+                ChangeOrganisationRequest.builder()
+                    .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORA))
+                    .build()
+            ));
         when(changeOfRepresentationService.changeRepresentative(
             ChangeOfRepresentationRequest.builder()
                 .current(CHANGE_OF_REPRESENTATION_BEFORE)
@@ -202,10 +193,9 @@ class RespondentAfterSubmissionRepresentationServiceTest {
 
 
         Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore,
-            SolicitorRole.Representing.RESPONDENT);
+            RESPONDENT);
 
-        Map<String, Object> expected = new HashMap<>();
-        expected.putAll(NOC_FIELDS);
+        Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", CHANGE_OF_REPRESENTATION);
 
         assertThat(actual).isEqualTo(
@@ -214,7 +204,7 @@ class RespondentAfterSubmissionRepresentationServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void testMultipleRespondentChanged() {
 
         Respondent beforeRespondent = Respondent.builder()
@@ -246,17 +236,16 @@ class RespondentAfterSubmissionRepresentationServiceTest {
             .respondents1(respondentsBefore)
             .build();
 
-        when(respondentRepresentationService.generate(caseDataAfter, SolicitorRole.Representing.RESPONDENT)).thenReturn(
-            NOC_FIELDS);
-        when(respondentService.getRepresentationChanges((List) respondentsAfter, (List) respondentsBefore,
-            SolicitorRole.Representing.RESPONDENT)).thenReturn(List.of(
-            ChangeOrganisationRequest.builder()
-                .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORA))
-                .build(),
-            ChangeOrganisationRequest.builder()
-                .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORB))
-                .build()
-        ));
+        when(nocFieldPopulator.generate(caseDataAfter, RESPONDENT)).thenReturn(NOC_FIELDS);
+        when(respondentService.getRepresentationChanges((List) respondentsAfter, (List) respondentsBefore, RESPONDENT))
+            .thenReturn(List.of(
+                ChangeOrganisationRequest.builder()
+                    .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORA))
+                    .build(),
+                ChangeOrganisationRequest.builder()
+                    .caseRoleId(TestDataHelper.caseRoleDynamicList(SOLICITORB))
+                    .build()
+            ));
         when(changeOfRepresentationService.changeRepresentative(
             ChangeOfRepresentationRequest.builder()
                 .current(CHANGE_OF_REPRESENTATION_BEFORE)
@@ -279,11 +268,9 @@ class RespondentAfterSubmissionRepresentationServiceTest {
                 .build()
         )).thenReturn(ANOTHER_CHANGE_OF_REPRESENTATION);
 
-        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore,
-            SolicitorRole.Representing.RESPONDENT);
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore, RESPONDENT);
 
-        Map<String, Object> expected = new HashMap<>();
-        expected.putAll(NOC_FIELDS);
+        Map<String, Object> expected = new HashMap<>(NOC_FIELDS);
         expected.put("changeOfRepresentatives", ANOTHER_CHANGE_OF_REPRESENTATION);
 
         assertThat(actual).isEqualTo(

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.noc.UpdateRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class NoticeOfChangeService {
 
     private final UserService userService;
     private final AuditEventService auditEventService;
-    private final RespondentRepresentationService respondentRepresentationService;
+    private final UpdateRepresentationService updateRepresentationService;
     private final RespondentService respondentService;
     private final CoreCaseDataService coreCaseDataService;
 
@@ -36,7 +37,7 @@ public class NoticeOfChangeService {
 
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
 
-        return respondentRepresentationService.updateRepresentation(caseData, solicitor);
+        return updateRepresentationService.updateRepresentation(caseData, solicitor);
     }
 
     public void updateRepresentativesAccess(CaseData caseData, CaseData caseDataBefore,
