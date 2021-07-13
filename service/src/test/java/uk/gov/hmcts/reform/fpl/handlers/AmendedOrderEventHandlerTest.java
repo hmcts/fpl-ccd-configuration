@@ -39,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -59,18 +60,14 @@ class AmendedOrderEventHandlerTest {
     private static final Set<String> EMAIL_REPS = new HashSet<>(Arrays.asList(EMAIL_REP_1, EMAIL_REP_2));
     private static final String DIGITAL_REP_1 = "fred@flinstones.com";
     private static final String DIGITAL_REP_2 = "fred2@flinstones.com";
-    private final static String AMENDED_ORDER_TYPE = "Case management order";
+    private final static String AMENDED_ORDER_TYPE = "case management order";
     private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList(DIGITAL_REP_1, DIGITAL_REP_2));
     private static final Long CASE_ID = 12345L;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocumentReference TEST_DOCUMENT = mock(DocumentReference.class);
     private static final OrderAmendedNotifyData NOTIFY_DATA = mock(OrderAmendedNotifyData.class);
-    private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
     private static final List<Element<Other>> SELECTED_OTHERS = List.of(element(mock(Other.class)));
     private static final AmendedOrderEvent EVENT = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, AMENDED_ORDER_TYPE, SELECTED_OTHERS);
-
-    @Mock
-    private GeneratedOrder lastGeneratedOrder;
     @Mock
     private AmendedOrderEmailContentProvider amendedOrderEmailContentProvider;
     @Mock
@@ -83,10 +80,6 @@ class AmendedOrderEventHandlerTest {
     private SendDocumentService sendDocumentService;
     @Mock
     private RepresentativesInbox representativesInbox;
-    @Mock
-    private SealedOrderHistoryService sealedOrderHistoryService;
-    @Mock
-    private OthersService othersService;
     @Mock
     private OtherRecipientsInbox otherRecipientsInbox;
 
@@ -101,57 +94,16 @@ class AmendedOrderEventHandlerTest {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
         )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "Case management order"))
+        given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "case management order"))
             .willReturn(NOTIFY_DATA);
 
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(
             DIGITAL_REPS);
-        given(othersService.getSelectedOthers(CASE_DATA)).willReturn(Collections.emptyList());
-        given(sealedOrderHistoryService.lastGeneratedOrder(any())).willReturn(lastGeneratedOrder);
-    }
-
-
-    @Test
-    void shouldNotifyPartiesOnOrderSubmissionWhenOldOrderCollection() {
-        given(lastGeneratedOrder.isNewVersion()).willReturn(false);
-        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
-        given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(NO_RECIPIENTS), any()))
-            .willReturn(Collections.emptySet());
-        given(otherRecipientsInbox.getNonSelectedRecipients(
-            eq(DIGITAL_SERVICE), eq(CASE_DATA), eq(NO_RECIPIENTS), any()))
-            .willReturn(Collections.emptySet());
-
-        underTest.notifyParties(EVENT);
-
-        verify(notificationService).sendEmail(
-            ORDER_AMENDED_NOTIFICATION_TEMPLATE,
-            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            NOTIFY_DATA,
-            CASE_ID.toString()
-        );
-
-        verify(representativeNotificationService).sendNotificationToRepresentatives(
-            CASE_ID,
-            NOTIFY_DATA,
-            DIGITAL_REPS,
-            ORDER_AMENDED_NOTIFICATION_TEMPLATE
-        );
-
-        verify(representativeNotificationService).sendNotificationToRepresentatives(
-            CASE_ID,
-            NOTIFY_DATA,
-            EMAIL_REPS,
-            ORDER_AMENDED_NOTIFICATION_TEMPLATE
-        );
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldNotifyPartiesOnOrderSubmissionWhenNewOrderCollection() {
-        given(lastGeneratedOrder.isNewVersion()).willReturn(true);
-        given(lastGeneratedOrder.getOthers()).willReturn(SELECTED_OTHERS);
-
+    void shouldNotifyPartiesOnOrderSubmission() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
@@ -191,9 +143,7 @@ class AmendedOrderEventHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndNewOrdersCollection() {
-        given(lastGeneratedOrder.isNewVersion()).willReturn(true);
-        given(lastGeneratedOrder.getOthers()).willReturn(SELECTED_OTHERS);
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPost() {
         final Representative representative = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
         final RespondentParty otherRespondent = mock(RespondentParty.class);
@@ -215,20 +165,46 @@ class AmendedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndOldOrdersCollection() {
-        given(lastGeneratedOrder.isNewVersion()).willReturn(false);
-        final Representative representative = mock(Representative.class);
-        final RespondentParty respondent = mock(RespondentParty.class);
-        final List<Recipient> recipients = List.of(representative, respondent);
+    @SuppressWarnings("unchecked")
+    void shouldSendOrderToLAOnlyWhenOrderTypeIsSDO() {
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
+            eq(CASE_DATA),
+            eq(SELECTED_OTHERS),
+            any()))
+            .willReturn((Set) Set.of(EMAIL_REP_1));
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
+            eq(CASE_DATA),
+            eq(SELECTED_OTHERS),
+            any()))
+            .willReturn((Set) Set.of(DIGITAL_REP_1));
+        given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "standard direction order"))
+            .willReturn(NOTIFY_DATA);
 
-        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(recipients);
+        AmendedOrderEvent event = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, "standard direction order", SELECTED_OTHERS);
 
-        underTest.sendOrderByPost(EVENT);
+        underTest.notifyParties(event);
 
-        verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(TEST_DOCUMENT), recipients);
-        verify(sendDocumentService).getStandardRecipients(CASE_DATA);
+        verify(notificationService).sendEmail(
+            ORDER_AMENDED_NOTIFICATION_TEMPLATE,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            NOTIFY_DATA,
+            CASE_ID.toString()
+        );
 
-        verifyNoMoreInteractions(sendDocumentService);
-        verifyNoInteractions(notificationService);
+        verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
+            CASE_ID,
+            NOTIFY_DATA,
+            Set.of(EMAIL_REP_2),
+            ORDER_AMENDED_NOTIFICATION_TEMPLATE
+        );
+
+        verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
+            CASE_ID,
+            NOTIFY_DATA,
+            Set.of(DIGITAL_REP_2),
+            ORDER_AMENDED_NOTIFICATION_TEMPLATE
+        );
     }
 }

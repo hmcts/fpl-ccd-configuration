@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -124,6 +125,8 @@ public class ManageOrdersController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         // Do i need to check first
+        Optional<ManageOrdersEvent> event = eventBuilder.build(caseData, caseDataBefore);
+
         publishEvent(eventBuilder.build(caseData, caseDataBefore).get());
 
     }
