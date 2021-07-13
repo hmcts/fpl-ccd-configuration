@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 
 @Component
@@ -25,10 +27,10 @@ public class AmendableOrderListBuilder {
 
     public DynamicList buildList(CaseData caseData) {
         Comparator<Element<? extends AmendableOrder>> comparator = comparing(
-            order -> order.getValue().amendableSortDate(), reverseOrder()
+            order -> order.getValue().amendableSortDate(), nullsLast(reverseOrder())
         );
 
-        comparator = comparator.thenComparing(order -> order.getValue().asLabel());
+        comparator = comparator.thenComparing(order -> order.getValue().asLabel(), nullsLast(naturalOrder()));
 
         List<Element<? extends AmendableOrder>> amendableOrders = providers.stream()
             .map(provider -> provider.provideListItems(caseData))
