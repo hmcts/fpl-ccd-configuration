@@ -10,5 +10,6 @@ import java.util.Map;
 public interface NoticeOfChangeUpdateAction {
     boolean accepts(SolicitorRole.Representing representing);
 
-    Map<String, Object> applyUpdates(WithSolicitor solicitorContainer, CaseData caseData, RespondentSolicitor solicitor);
+    Map<String, Object> applyUpdates(WithSolicitor solicitorContainer, CaseData caseData,
+                                     RespondentSolicitor solicitor);
 }

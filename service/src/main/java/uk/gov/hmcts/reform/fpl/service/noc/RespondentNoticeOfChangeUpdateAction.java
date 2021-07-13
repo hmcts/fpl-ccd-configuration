@@ -21,7 +21,8 @@ public class RespondentNoticeOfChangeUpdateAction implements NoticeOfChangeUpdat
     }
 
     @Override
-    public Map<String, Object> applyUpdates(WithSolicitor respondent, CaseData caseData, RespondentSolicitor solicitor) {
+    public Map<String, Object> applyUpdates(WithSolicitor respondent, CaseData caseData,
+                                            RespondentSolicitor solicitor) {
         respondent.setSolicitor(solicitor);
         ((Respondent) respondent).setLegalRepresentation(YesNo.YES.getValue());
 
