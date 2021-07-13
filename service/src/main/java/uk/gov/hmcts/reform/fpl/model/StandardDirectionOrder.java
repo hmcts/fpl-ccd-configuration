@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
+@Slf4j
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -38,15 +41,14 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;
+    private final LocalDate amendedDate;
+    private final DocumentReference unsealedDocumentCopy;
+    private final List<Element<CustomDirection>> customDirections;
+    private final List<Element<StandardDirection>> standardDirections;
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
-    private final LocalDate amendedDate;
-
-    private final DocumentReference unsealedDocumentCopy;
-    private final List<Element<CustomDirection>> customDirections;
-    private final List<Element<StandardDirection>> standardDirections;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -86,8 +88,20 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
     @Override
     public LocalDate amendableSortDate() {
-        return null != dateOfUpload ? dateOfUpload
-                                    : parseLocalDateFromStringUsingFormat(dateOfIssue, DATE);
+        if (null != dateOfUpload) {
+            return dateOfUpload;
+        }
+
+        try {
+            if (null != dateOfIssue) {
+                return parseLocalDateFromStringUsingFormat(dateOfIssue, DATE);
+            }
+        } catch (DateTimeParseException ignored) {
+            log.warn("Could not parse {} with format {}", dateOfIssue, DATE);
+        }
+
+        log.warn("Could not find any date to sort amendable list by, falling back to null");
+        return null;
     }
 }
 
