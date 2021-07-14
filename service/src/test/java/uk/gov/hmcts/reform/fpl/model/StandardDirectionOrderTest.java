@@ -98,4 +98,23 @@ class StandardDirectionOrderTest {
             assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
         }
     }
+
+    @Test
+    void amendableSortDateDateOfUpload() {
+        LocalDate date = LocalDate.of(1, 1, 1);
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfUpload(date).build();
+        assertThat(sdo.amendableSortDate()).isEqualTo(date);
+    }
+
+    @Test
+    void amendableSortDateDateOfIssue() {
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfIssue("1 January 0001").build();
+        assertThat(sdo.amendableSortDate()).isEqualTo(LocalDate.of(1, 1, 1));
+    }
+
+    @Test
+    void amendableSortDateNull() {
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().build();
+        assertThat(sdo.amendableSortDate()).isNull();
+    }
 }

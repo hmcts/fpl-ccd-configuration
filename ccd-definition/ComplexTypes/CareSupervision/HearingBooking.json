@@ -56,6 +56,36 @@
     "FieldTypeParameter": "HearingPresence",
     "ElementLabel": "In person or remote",
     "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "attendance != \"*\"",
+    "Comment": "Backward compatibility - needed until data migration"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "attendance",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingAttendance",
+    "ElementLabel": "Hearing attendance",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "attendanceDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Hearing attendance details",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "preAttendanceDetails",
+    "FieldType": "Text",
+    "ElementLabel": "Pre-hearing attendance",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
