@@ -485,5 +485,33 @@
     "FieldTypeParameter": "Jurisdiction",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersAmendmentList",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Select order to amend",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersOrderToAmend",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersAmendedOrder",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Upload the amended order. It will then be dated and stamped as amended.",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".pdf",
+    "Searchable": "N"
   }
 ]

@@ -1,16 +1,16 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mockStatic;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class StandardDirectionOrderTest {
@@ -38,7 +38,7 @@ class StandardDirectionOrderTest {
             .orderStatus(SEALED)
             .build();
 
-        assertThat(standardDirectionOrder.isSealed()).isTrue();
+        assertThat(standardDirectionOrder.isRemovable()).isTrue();
     }
 
     @Test
@@ -47,7 +47,7 @@ class StandardDirectionOrderTest {
             .orderStatus(DRAFT)
             .build();
 
-        assertThat(standardDirectionOrder.isSealed()).isFalse();
+        assertThat(standardDirectionOrder.isRemovable()).isFalse();
     }
 
     @Test
@@ -77,15 +77,44 @@ class StandardDirectionOrderTest {
             .dateOfIssue("1 January 2020")
             .build();
 
-        assertThat(standardDirectionOrder.asLabel()).isEqualTo(
-            String.format("Gatekeeping order - %s", "1 January 2020"));
+        assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
+    }
+
+    @Test
+    void shouldFormatStandardDirectionOrderAsLabelWithProvidedDateOfUpload() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .dateOfUpload(LocalDate.of(2020, 1, 1))
+            .build();
+
+        assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
     }
 
     @Test
     void shouldFormatStandardDirectionOrderAsLabelWithoutProvidedDateOfIssue() {
-        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
+        LocalDate now = LocalDate.of(2020, 1, 1);
+        try (MockedStatic<LocalDate> date = mockStatic(LocalDate.class)) {
+            date.when(LocalDate::now).thenReturn(now);
+            StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
+            assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
+        }
+    }
 
-        assertThat(standardDirectionOrder.asLabel()).isEqualTo(
-            String.format("Gatekeeping order - %s", formatLocalDateToString(LocalDate.now(), "d MMMM yyyy")));
+    @Test
+    void amendableSortDateDateOfUpload() {
+        LocalDate date = LocalDate.of(1, 1, 1);
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfUpload(date).build();
+        assertThat(sdo.amendableSortDate()).isEqualTo(date);
+    }
+
+    @Test
+    void amendableSortDateDateOfIssue() {
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfIssue("1 January 0001").build();
+        assertThat(sdo.amendableSortDate()).isEqualTo(LocalDate.of(1, 1, 1));
+    }
+
+    @Test
+    void amendableSortDateNull() {
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().build();
+        assertThat(sdo.amendableSortDate()).isNull();
     }
 }
