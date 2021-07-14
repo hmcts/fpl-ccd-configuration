@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -10,11 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;

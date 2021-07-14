@@ -20,8 +20,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class NoticeOfHearingNoOtherAddressEmailContentProvider extends AbstractEmailContentProvider {
 
     public NoticeOfHearingNoOtherAddressTemplate buildNewNoticeOfHearingNoOtherAddressNotification(CaseData caseData,
-                                                                                                   HearingBooking hearingBooking,
-                                                                                                   Other other) {
+                                                                                       HearingBooking hearingBooking,
+                                                                                       Other other) {
 
         return NoticeOfHearingNoOtherAddressTemplate.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
