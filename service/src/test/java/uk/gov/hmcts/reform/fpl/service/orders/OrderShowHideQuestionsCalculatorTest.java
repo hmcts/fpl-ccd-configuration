@@ -421,18 +421,16 @@ class OrderShowHideQuestionsCalculatorTest {
         parentalResponsibilityOrder.put("parentResponsible", "YES");
 
         return Stream.of(
-            Arguments.of(C32A_CARE_ORDER, careOrderQuestions),
-            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, dischargeOfCareQuestions),
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
-            Arguments.of(C35A_SUPERVISION_ORDER, supervisionOrderQuestions),
-            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
-            Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, specialGuardianshipOrderQuestions),
-            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
-                childArrangementSpecificOrder),
-            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, appointmentOfChildrensGuardianQuestions),
             Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, secureAccommodationOrderQuestions),
-            Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, parentalResponsibilityOrder)
+            Arguments.of(C32A_CARE_ORDER, careOrderQuestions),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, dischargeOfCareQuestions),
+            Arguments.of(C35A_SUPERVISION_ORDER, supervisionOrderQuestions),
+            Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, specialGuardianshipOrderQuestions),
+            Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER, childArrangementSpecificOrder),
+            Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, parentalResponsibilityOrder),
+            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, appointmentOfChildrensGuardianQuestions)
         );
     }
 
