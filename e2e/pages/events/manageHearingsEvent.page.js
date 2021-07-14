@@ -33,6 +33,16 @@ module.exports = {
     sendNotice: '#sendNoticeOfHearing_Yes',
     dontSendNotice: '#sendNoticeOfHearing_No',
     noticeNotes: '#noticeOfHearingNotes',
+    allOthers: {
+      group: '#sendOrderToAllOthers',
+      options: {
+        all: 'Yes',
+        select: 'No',
+      },
+    },
+    otherSelector: {
+      selector: index => `#othersSelector_option${index}-SELECTED`,
+    },
     confirmHearingDate: {
       hearingDateCorrect: '#confirmHearingDate_Yes',
       hearingDateIncorrect: '#confirmHearingDate_No',
@@ -147,6 +157,15 @@ module.exports = {
 
   dontSendNoticeOfHearing() {
     I.click(this.fields.dontSendNotice);
+  },
+
+  selectOthers(option, indexes = []) {
+    I.click(`${this.fields.allOthers.group}_${option}`);
+
+    indexes.forEach((selectorIndex) => {
+      I.checkOption(this.fields.otherSelector.selector(selectorIndex));
+    });
+
   },
 
   selectHearingDateIncorrect() {

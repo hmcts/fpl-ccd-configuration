@@ -35,6 +35,8 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
   manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  await I.goToNextPage();
+  manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
@@ -65,6 +67,8 @@ Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, man
   manageHearingsEventPage.selectedAllocatedJudge();
   await I.goToNextPage();
   manageHearingsEventPage.dontSendNoticeOfHearing();
+  await I.goToNextPage();
+  manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);

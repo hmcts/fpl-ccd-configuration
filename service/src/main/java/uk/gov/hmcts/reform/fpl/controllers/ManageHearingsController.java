@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
@@ -72,6 +75,7 @@ public class ManageHearingsController extends CallbackController {
     private final ManageHearingsService hearingsService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
     private final ValidateEmailService validateEmailService;
+    private final OthersService othersService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -87,8 +91,15 @@ public class ManageHearingsController extends CallbackController {
         }
 
         caseDetails.getData().put(FIRST_HEARING_FLAG, (isEmpty(caseData.getHearingDetails()) ? YES : NO).getValue());
-
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
+
+        if (caseData.getAllOthers().size() > 0) {
+            caseDetails.getData().putAll(Map.of(
+                "hasOthers", YES.getValue(),
+                "othersSelector", newSelector(caseData.getAllOthers().size()),
+                "others_label", othersService.getOthersLabel(caseData.getAllOthers())
+            ));
+        }
 
         return respond(caseDetails);
     }
@@ -231,7 +242,7 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
+        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
 
         if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
             Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
