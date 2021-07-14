@@ -41,6 +41,14 @@ Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseV
   I.seeFamilyManNumber('newMockCaseID');
 });
 
+Scenario('HMCTS super user updates language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
+  await setupScenario(I);
+  await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
+  await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
+});
+
 Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
   await setupScenario(I);
 

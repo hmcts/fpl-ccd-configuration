@@ -104,6 +104,10 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements</a>
+
+<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
+
 <br/>
 
 ## Send application

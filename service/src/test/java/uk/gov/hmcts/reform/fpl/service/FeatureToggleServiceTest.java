@@ -152,6 +152,18 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsLanguageRequirementsEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isLanguageRequirementsEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("language-requirements"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsEldestChildNameEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
