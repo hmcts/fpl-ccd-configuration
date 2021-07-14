@@ -47,6 +47,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -74,8 +75,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
-import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.REMOTE;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
@@ -108,9 +110,9 @@ class ManageHearingsServiceTest {
 
     private static final Document DOCUMENT = testDocument();
 
-    public static final UUID RE_LISTED_HEARING_ID = randomUUID();
-    public static final UUID LINKED_CMO_ID = randomUUID();
-    public static final UUID HEARING_BUNDLE_ID = randomUUID();
+    private static final UUID RE_LISTED_HEARING_ID = randomUUID();
+    private static final UUID LINKED_CMO_ID = randomUUID();
+    private static final UUID HEARING_BUNDLE_ID = randomUUID();
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final HearingVenueLookUpService hearingVenueLookUpService = mock(HearingVenueLookUpService.class);
@@ -340,13 +342,13 @@ class ManageHearingsServiceTest {
     }
 
     @Nested
-    class PreviousVenue {
+    class NewHearingInitiation {
 
         @Test
         void shouldReturnEmptyMapWhenNoHearingsAvailable() {
             CaseData caseData = CaseData.builder().build();
 
-            assertThat(service.populatePreviousVenueFields(caseData)).isEmpty();
+            assertThat(service.initiateNewHearing(caseData)).isEmpty();
         }
 
         @Test
@@ -359,15 +361,16 @@ class ManageHearingsServiceTest {
                     time.now().plusHours(1), time.now().plusHours(2)))))
                 .build();
 
-            Map<String, Object> previousVenueFields = service.populatePreviousVenueFields(caseData);
+            Map<String, Object> previousVenueFields = service.initiateNewHearing(caseData);
 
             PreviousHearingVenue hearingVenue = PreviousHearingVenue.builder()
                 .previousVenue("custom, address")
                 .newVenueCustomAddress(VENUE_CUSTOM_ADDRESS)
                 .build();
 
-            assertThat(previousVenueFields).hasSize(1)
-                .extracting("previousHearingVenue").isEqualTo(hearingVenue);
+            assertThat(previousVenueFields).containsOnly(
+                entry("previousHearingVenue", hearingVenue),
+                entry("preHearingAttendanceDetails", "1 hour before the hearing"));
         }
 
         @Test
@@ -382,15 +385,15 @@ class ManageHearingsServiceTest {
                 .hearingDetails(List.of(element(hearing)))
                 .build();
 
-            Map<String, Object> previousVenueFields = service.populatePreviousVenueFields(caseData);
+            Map<String, Object> previousVenueFields = service.initiateNewHearing(caseData);
 
             PreviousHearingVenue hearingVenue = PreviousHearingVenue.builder()
                 .previousVenue(venueAddress)
                 .build();
 
-            assertThat(previousVenueFields).hasSize(1)
-                .extracting("previousHearingVenue").isEqualTo((hearingVenue));
-
+            assertThat(previousVenueFields).containsOnly(
+                entry("previousHearingVenue", hearingVenue),
+                entry("preHearingAttendanceDetails", "1 hour before the hearing"));
         }
     }
 
@@ -405,7 +408,9 @@ class ManageHearingsServiceTest {
             .type(CASE_MANAGEMENT)
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
-            .presence(REMOTE)
+            .attendance(List.of(IN_PERSON, VIDEO))
+            .attendanceDetails("Test attendance details")
+            .preAttendanceDetails("Test pre attendance details")
             .startDate(startDate)
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -420,7 +425,9 @@ class ManageHearingsServiceTest {
             "hearingEndDate", endDate,
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
             "previousHearingVenue", previousHearingVenue,
-            "hearingPresence", REMOTE
+            "hearingAttendance", List.of(IN_PERSON, VIDEO),
+            "hearingAttendanceDetails", "Test attendance details",
+            "preHearingAttendanceDetails", "Test pre attendance details"
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -438,7 +445,9 @@ class ManageHearingsServiceTest {
             .typeDetails("Fact finding")
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
-            .presence(IN_PERSON)
+            .attendance(List.of(IN_PERSON))
+            .attendanceDetails("Attendance details")
+            .preAttendanceDetails("Pre attendance details")
             .startDate(startDate)
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -455,7 +464,9 @@ class ManageHearingsServiceTest {
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
             "hearingVenue", "OTHER",
             "hearingVenueCustom", VENUE_CUSTOM_ADDRESS,
-            "hearingPresence", IN_PERSON
+            "hearingAttendance", List.of(IN_PERSON),
+            "hearingAttendanceDetails", "Attendance details",
+            "preHearingAttendanceDetails", "Pre attendance details"
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -469,7 +480,7 @@ class ManageHearingsServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(VENUE)
-            .hearingPresence(IN_PERSON)
+            .hearingAttendance(List.of(PHONE))
             .hearingStartDate(startDate)
             .hearingEndDate(endDate)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -481,7 +492,7 @@ class ManageHearingsServiceTest {
         HearingBooking expectedHearingBooking = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .venue(VENUE)
-            .presence(IN_PERSON)
+            .attendance(List.of(PHONE))
             .startDate(startDate)
             .endDate(endDate)
             .hearingJudgeLabel("Her Honour Judge Judy")
@@ -504,7 +515,7 @@ class ManageHearingsServiceTest {
 
         CaseData caseData = CaseData.builder()
             .hearingType(CASE_MANAGEMENT)
-            .hearingPresence(REMOTE)
+            .hearingAttendance(List.of(VIDEO))
             .hearingStartDate(startDate)
             .hearingEndDate(endDate)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -519,7 +530,7 @@ class ManageHearingsServiceTest {
             .venue(VENUE)
             .startDate(startDate)
             .endDate(endDate)
-            .presence(REMOTE)
+            .attendance(List.of(VIDEO))
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -1563,7 +1574,9 @@ class ManageHearingsServiceTest {
             "startDateFlag",
             "endDateFlag",
             "hasSession",
-            "hearingPresence",
+            "hearingAttendance",
+            "preHearingAttendanceDetails",
+            "hearingAttendanceDetails",
             "hearingOption");
     }
 
