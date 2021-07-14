@@ -83,14 +83,15 @@ public class ManageHearingsService {
     public static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
     public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
     public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
-    public static final String HEARING_START_DATE = "hearingStartDate";
-    public static final String HEARING_END_DATE = "hearingEndDate";
-    public static final String HEARING_START_DATE_LABEL = "hearingStartDateLabel";
-    public static final String HEARING_END_DATE_LABEL = "hearingEndDateLabel";
-    public static final String START_DATE_FLAG = "startDateFlag";
-    public static final String END_DATE_FLAG = "endDateFlag";
-    public static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
+    private static final String HEARING_START_DATE = "hearingStartDate";
+    private static final String HEARING_END_DATE = "hearingEndDate";
+    private static final String HEARING_START_DATE_LABEL = "hearingStartDateLabel";
+    private static final String HEARING_END_DATE_LABEL = "hearingEndDateLabel";
+    private static final String START_DATE_FLAG = "startDateFlag";
+    private static final String END_DATE_FLAG = "endDateFlag";
+    private static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
     public static final String TO_RE_LIST_HEARING_LABEL = "toReListHearingsLabel";
+    public static final String DEFAULT_PRE_ATTENDANCE = "1 hour before the hearing";
 
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -185,7 +186,7 @@ public class ManageHearingsService {
         return reListedBooking.getId();
     }
 
-    public Map<String, Object> populatePreviousVenueFields(CaseData caseData) {
+    public Map<String, Object> initiateNewHearing(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         if (isEmpty(caseData.getHearingDetails())) {
@@ -202,6 +203,8 @@ public class ManageHearingsService {
                 .previousVenue(hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
                 .newVenueCustomAddress(customAddress)
                 .build());
+
+        data.put("preHearingAttendanceDetails", DEFAULT_PRE_ATTENDANCE);
 
         return data;
     }
@@ -234,7 +237,9 @@ public class ManageHearingsService {
         caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
         caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
-        caseFields.put("hearingPresence", hearingBooking.getPresence());
+        caseFields.put("hearingAttendance", hearingBooking.getAttendance());
+        caseFields.put("hearingAttendanceDetails", hearingBooking.getAttendanceDetails());
+        caseFields.put("preHearingAttendanceDetails", hearingBooking.getPreAttendanceDetails());
 
         if (hearingBooking.getPreviousHearingVenue() == null
             || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
@@ -346,7 +351,9 @@ public class ManageHearingsService {
             START_DATE_FLAG,
             END_DATE_FLAG,
             "hasSession",
-            "hearingPresence",
+            "hearingAttendance",
+            "hearingAttendanceDetails",
+            "preHearingAttendanceDetails",
             "hearingOption"
         );
     }
@@ -421,7 +428,9 @@ public class ManageHearingsService {
             .typeDetails(caseData.getHearingTypeDetails())
             .venue(caseData.getHearingVenue())
             .venueCustomAddress(caseData.getHearingVenueCustom())
-            .presence(caseData.getHearingPresence())
+            .attendance(caseData.getHearingAttendance())
+            .attendanceDetails(caseData.getHearingAttendanceDetails())
+            .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
@@ -455,7 +464,9 @@ public class ManageHearingsService {
             .venue(venue)
             .venueCustomAddress(caseData.getPreviousHearingVenue().getNewVenueCustomAddress())
             .customPreviousVenue(customPreviousVenue)
-            .presence(caseData.getHearingPresence())
+            .attendance(caseData.getHearingAttendance())
+            .attendanceDetails(caseData.getHearingAttendanceDetails())
+            .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
