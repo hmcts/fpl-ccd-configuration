@@ -7,15 +7,17 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.RespondentsSubmitted;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 
@@ -33,16 +35,17 @@ public class RespondentsSubmittedEventHandler {
     public void notifyRegisteredRespondentSolicitors(final RespondentsSubmitted event) {
         CaseData caseData = event.getCaseData();
 
-        List<RespondentSolicitor> solicitors = respondentService.getRegisteredSolicitors(caseData.getRespondents1());
+        List<Respondent> respondentsWithRegisteredSolicitors
+            = respondentService.getRespondentsWithRegisteredSolicitors(caseData.getRespondents1());
 
-        solicitors.forEach(recipient -> {
+        respondentsWithRegisteredSolicitors.forEach(respondent -> {
             NotifyData notifyData = registeredContentProvider.buildRespondentSolicitorSubmissionNotification(
-                caseData, recipient
-            );
+                caseData, respondent);
 
             notificationService.sendEmail(
-                REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, recipient.getEmail(), notifyData, caseData.getId()
-            );
+                REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
+                respondent.getSolicitor().getEmail(),
+                notifyData, caseData.getId());
         });
     }
 
@@ -51,12 +54,15 @@ public class RespondentsSubmittedEventHandler {
     public void notifyUnregisteredRespondentSolicitors(final RespondentsSubmitted event) {
         CaseData caseData = event.getCaseData();
 
-        NotifyData notifyData = unregisteredContentProvider.buildContent(caseData);
+        List<Respondent> respondents = respondentService.getRespondentsWithUnregisteredSolicitors(
+            defaultIfNull(caseData.getRespondents1(), new ArrayList<>()));
 
-        List<RespondentSolicitor> solicitors = respondentService.getUnregisteredSolicitors(caseData.getRespondents1());
-
-        solicitors.forEach(recipient -> notificationService.sendEmail(
-            UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, recipient.getEmail(), notifyData, caseData.getId()
-        ));
+        respondents.forEach(respondent -> {
+            NotifyData notifyData = unregisteredContentProvider.buildContent(caseData, respondent);
+            notificationService.sendEmail(
+                UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
+                respondent.getSolicitor().getEmail(),
+                notifyData, caseData.getId());
+        });
     }
 }
