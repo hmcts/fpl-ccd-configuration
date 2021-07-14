@@ -33,7 +33,9 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RELATIONSHIP_WITH_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCOMMODATION_ORDER_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
@@ -313,12 +315,23 @@ public enum Order {
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C45A_PARENTAL_RESPONSIBILITY_ORDER(
-        MANUAL_UPLOAD,
+        DIGITAL,
         "Parental responsibility order (C45A)",
         "",
         "Parental responsibility order (C45A)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
+        IsFinalOrder.MAYBE,
+        List.of(
+            LINKED_TO_HEARING,
+            LINK_APPLICATION,
+            APPROVER,
+            APPROVAL_DATE_TIME,
+            WHICH_CHILDREN,
+            ORDER_BY_CONSENT,
+            PARENTAL_RESPONSIBILITY,
+            RELATIONSHIP_WITH_CHILD,
+            FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER
+        )
     ),
     C45B_DISCHARGE_OF_PARENTAL_RESPONSIBILITY(
         MANUAL_UPLOAD,

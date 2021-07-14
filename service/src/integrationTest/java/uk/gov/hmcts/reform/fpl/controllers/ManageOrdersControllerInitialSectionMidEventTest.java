@@ -107,6 +107,14 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .uploadAmendedOrder(YES)
             .appointedGuardian(NO)
             .orderIsByConsent(NO)
+            .parentResponsible(NO)
+            .relationshipWithChild(NO)
+            .parentResponsible(NO)
+            .relationshipWithChild(NO)
+            .parentResponsible(NO)
+            .relationshipWithChild(NO)
+            .parentResponsible(NO)
+            .relationshipWithChild(NO)
             .build()
         );
     }
@@ -161,6 +169,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .appointedGuardian(NO)
             .orderIsByConsent(NO)
             .orderTitle(YES)
+            .parentResponsible(NO)
+            .relationshipWithChild(NO)
             .build()
         );
     }
