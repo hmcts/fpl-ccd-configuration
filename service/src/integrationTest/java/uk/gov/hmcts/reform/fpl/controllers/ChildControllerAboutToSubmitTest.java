@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
@@ -19,12 +21,17 @@ import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -33,19 +40,27 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final String ORGANISATION_ID = "dun dun duuuuuuuun *synthy*";
+    private static final String ANOTHER_ORGANISATION_ID = "whistling tune that sounds like";
+    private static final String MAIN_SOLICITOR_FIRST_NAME = "dun dun duuuuuuuun *orchestral*";
+    private static final String MAIN_SOLICITOR_LAST_NAME = "dun dun duuuuuuuun *orchestral* x3";
+    private static final String MAIN_SOLICITOR_EMAIL = "emaial* x3";
     private static final RespondentSolicitor MAIN_REPRESENTATIVE = RespondentSolicitor.builder()
-        .firstName("dun dun duuuuuuuun *orchestral*")
-        .lastName("dun dun duuuuuuuun *orchestral* x3")
+        .firstName(MAIN_SOLICITOR_FIRST_NAME)
+        .lastName(MAIN_SOLICITOR_LAST_NAME)
+        .email(MAIN_SOLICITOR_EMAIL)
         .organisation(Organisation.builder()
             .organisationID(ORGANISATION_ID)
             .build())
         .build();
+    private static final String ANOTHER_SOLICITOR_FIRST_NAME = "dun dun duuuun *now with synth and orchestra*";
+    private static final String ANOTHER_SOLICITOR_LAST_NAME = "dun dun dun, dun dun dun *quickly*";
+    private static final String ANOTHER_SOLICITOR_EMAIL = "email*";
     private static final RespondentSolicitor ANOTHER_REPRESENTATIVE = RespondentSolicitor.builder()
-        .firstName("dun dun duuuun *now with synth and orchestra*")
-        .lastName("dun dun dun, dun dun dun *quickly*")
+        .firstName(ANOTHER_SOLICITOR_FIRST_NAME)
+        .lastName(ANOTHER_SOLICITOR_LAST_NAME)
+        .email(ANOTHER_SOLICITOR_EMAIL)
         .organisation(Organisation.builder()
-            .organisationID("whistling tune that sounds like")
-            .organisationName("\"The chances of anything coming from Mars are a million to one, he said\"")
+            .organisationID(ANOTHER_ORGANISATION_ID)
             .build())
         .build();
     private static final String ORGANISATION_NAME = "Test organisation";
@@ -59,6 +74,14 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final String CHILD_NAME_2 = "James";
     private static final String CHILD_SURNAME_1 = "Smith";
     private static final String CHILD_SURNAME_2 = "Mandy";
+    private static final UUID UUID_1 = UUID.randomUUID();
+    private static final UUID UUID_2 = UUID.randomUUID();
+
+    @MockBean
+    private IdentityService identityService;
+
+    @Autowired
+    private Time time;
 
     ChildControllerAboutToSubmitTest() {
         super("enter-children");
@@ -112,7 +135,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
             .build());
 
-        // TODO: HERE NOC ANSWERS SHOULD BE ALL NULL
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
                 .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, null, null))
@@ -121,14 +143,9 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIsSelected() {
-        ChildrenEventData eventData = ChildrenEventData.builder()
-            .childrenHaveRepresentation("Yes")
-            .childrenMainRepresentative(MAIN_REPRESENTATIVE)
-            .childrenHaveSameRepresentation("Yes")
-            .build();
+    void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIsSelectedForTheFirstTime() {
 
-        CaseData caseData = CaseData.builder()
+        CaseData caseDataBefore = CaseData.builder()
             .applicants(APPLICANTS)
             .children1(wrapElements(
                 Child.builder().party(ChildParty.builder()
@@ -139,11 +156,17 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                     .firstName(CHILD_NAME_2)
                     .lastName(CHILD_SURNAME_2)
                     .build()).build()
-            ))
-            .childrenEventData(eventData)
+            )).build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("Yes")
+                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
+                .childrenHaveSameRepresentation("Yes")
+                .build())
             .build();
 
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
             Child.builder().party(ChildParty.builder()
@@ -174,13 +197,200 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
             .build());
 
-        // TODO: HERE NOC ANSWERS SHOULD BE ALL NULL
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
                 .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, CHILD_NAME_1, CHILD_SURNAME_1))
                 .noticeOfChangeChildAnswers1(nocAnswers(ORGANISATION_NAME, CHILD_NAME_2, CHILD_SURNAME_2))
                 .build()
         );
+
+        assertThat(responseData.getChangeOfRepresentatives()).isNull();
+
+    }
+
+    @Test
+    void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIfBeforeNotSelected() {
+
+        CaseData caseDataBefore = CaseData.builder()
+            .applicants(APPLICANTS)
+            .children1(wrapElements(
+                Child.builder().party(ChildParty.builder()
+                    .firstName(CHILD_NAME_1)
+                    .lastName(CHILD_SURNAME_1)
+                    .build()).build(),
+                Child.builder().party(ChildParty.builder()
+                    .firstName(CHILD_NAME_2)
+                    .lastName(CHILD_SURNAME_2)
+                    .build()).build()
+            )).childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("No")
+                .build())
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("Yes")
+                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
+                .childrenHaveSameRepresentation("Yes")
+                .build())
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
+
+        assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
+            Child.builder().party(ChildParty.builder()
+                .firstName(CHILD_NAME_1)
+                .lastName(CHILD_SURNAME_1)
+                .build()).solicitor(MAIN_REPRESENTATIVE).build(),
+            Child.builder().party(ChildParty.builder()
+                .firstName(CHILD_NAME_2)
+                .lastName(CHILD_SURNAME_2)
+                .build()).solicitor(MAIN_REPRESENTATIVE).build()
+        );
+
+        assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
+            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ORGANISATION_ID))
+            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ORGANISATION_ID))
+            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
+            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
+            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
+            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
+            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
+            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
+            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
+            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
+            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
+            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
+            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
+            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
+            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
+            .build());
+
+        assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
+            NoticeOfChangeChildAnswersData.builder()
+                .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, CHILD_NAME_1, CHILD_SURNAME_1))
+                .noticeOfChangeChildAnswers1(nocAnswers(ORGANISATION_NAME, CHILD_NAME_2, CHILD_SURNAME_2))
+                .build()
+        );
+
+        assertThat(responseData.getChangeOfRepresentatives()).isNull();
+    }
+
+    @Test
+    void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresent() {
+
+        when(identityService.generateId()).thenReturn(UUID_1, UUID_2);
+
+        CaseData caseDataBefore = CaseData.builder()
+            .applicants(APPLICANTS)
+            .children1(wrapElements(
+                Child.builder().party(ChildParty.builder()
+                    .firstName(CHILD_NAME_1)
+                    .lastName(CHILD_SURNAME_1)
+                    .build()).solicitor(MAIN_REPRESENTATIVE).build(),
+                Child.builder().party(ChildParty.builder()
+                    .firstName(CHILD_NAME_2)
+                    .lastName(CHILD_SURNAME_2)
+                    .build()).solicitor(MAIN_REPRESENTATIVE).build()
+            )).childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("Yes")
+                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
+                .childrenHaveSameRepresentation("Yes")
+                .build())
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("Yes")
+                .childrenMainRepresentative(ANOTHER_REPRESENTATIVE)
+                .childrenHaveSameRepresentation("Yes")
+                .build())
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
+
+        assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
+            Child.builder().party(ChildParty.builder()
+                .firstName(CHILD_NAME_1)
+                .lastName(CHILD_SURNAME_1)
+                .build()).solicitor(ANOTHER_REPRESENTATIVE).build(),
+            Child.builder().party(ChildParty.builder()
+                .firstName(CHILD_NAME_2)
+                .lastName(CHILD_SURNAME_2)
+                .build()).solicitor(ANOTHER_REPRESENTATIVE).build()
+        );
+
+        assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
+            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ANOTHER_ORGANISATION_ID))
+            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ANOTHER_ORGANISATION_ID))
+            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
+            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
+            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
+            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
+            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
+            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
+            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
+            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
+            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
+            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
+            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
+            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
+            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
+            .build());
+
+        assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
+            NoticeOfChangeChildAnswersData.builder()
+                .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, CHILD_NAME_1, CHILD_SURNAME_1))
+                .noticeOfChangeChildAnswers1(nocAnswers(ORGANISATION_NAME, CHILD_NAME_2, CHILD_SURNAME_2))
+                .build()
+        );
+
+        assertThat(responseData.getChangeOfRepresentatives()).isEqualTo(List.of(
+            element(UUID_1, ChangeOfRepresentation.builder()
+                .child(String.format("%s %s", CHILD_NAME_1, CHILD_SURNAME_1))
+                .date(time.now().toLocalDate())
+                .by("HMCTS")
+                .via("FPL")
+                .added(ChangedRepresentative.builder()
+                    .firstName(ANOTHER_SOLICITOR_FIRST_NAME)
+                    .lastName(ANOTHER_SOLICITOR_LAST_NAME)
+                    .organisation(Organisation.builder()
+                        .organisationID(ANOTHER_ORGANISATION_ID)
+                        .build())
+                    .email(ANOTHER_SOLICITOR_EMAIL)
+                    .build())
+                .removed(ChangedRepresentative.builder()
+                    .firstName(MAIN_SOLICITOR_FIRST_NAME)
+                    .lastName(MAIN_SOLICITOR_LAST_NAME)
+                    .organisation(Organisation.builder()
+                        .organisationID(ORGANISATION_ID)
+                        .build())
+                    .email(MAIN_SOLICITOR_EMAIL)
+                    .build())
+                .build()),
+            element(UUID_2, ChangeOfRepresentation.builder()
+                .child(String.format("%s %s", CHILD_NAME_2, CHILD_SURNAME_2))
+                .date(time.now().toLocalDate())
+                .by("HMCTS")
+                .via("FPL")
+                .added(ChangedRepresentative.builder()
+                    .firstName(ANOTHER_SOLICITOR_FIRST_NAME)
+                    .lastName(ANOTHER_SOLICITOR_LAST_NAME)
+                    .organisation(Organisation.builder()
+                        .organisationID(ANOTHER_ORGANISATION_ID)
+                        .build())
+                    .email(ANOTHER_SOLICITOR_EMAIL)
+                    .build())
+                .removed(ChangedRepresentative.builder()
+                    .firstName(MAIN_SOLICITOR_FIRST_NAME)
+                    .lastName(MAIN_SOLICITOR_LAST_NAME)
+                    .organisation(Organisation.builder()
+                        .organisationID(ORGANISATION_ID)
+                        .build())
+                    .email(MAIN_SOLICITOR_EMAIL)
+                    .build())
+                .build())
+        ));
     }
 
     @Test

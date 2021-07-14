@@ -8,7 +8,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
@@ -31,8 +32,8 @@ public class NoticeOfChangeEventHandler {
     public void notifySolicitorAccessGranted(final NoticeOfChangeEvent event) {
         CaseData caseData = event.getCaseData();
 
-        Respondent newRespondent = event.getNewRespondent();
-        String recipient = newRespondent.getSolicitor().getEmail();
+        ConfidentialParty<?> newRespondent = event.getNewRespondent();
+        String recipient = ((WithSolicitor) newRespondent).getSolicitor().getEmail();
 
         NotifyData notifyData =
             noticeOfChangeContentProvider.buildNoticeOfChangeRespondentSolicitorTemplate(caseData, newRespondent);
@@ -45,11 +46,11 @@ public class NoticeOfChangeEventHandler {
     public void notifySolicitorAccessRevoked(final NoticeOfChangeEvent event) {
         CaseData caseData = event.getCaseData();
 
-        Respondent oldRespondent = event.getOldRespondent();
-        if (isNull(oldRespondent.getSolicitor())) {
+        ConfidentialParty<?> oldRespondent = event.getOldRespondent();
+        if (isNull(((WithSolicitor) oldRespondent).getSolicitor())) {
             log.info("No previous oldRespondent for respondent");
         } else {
-            String recipient = oldRespondent.getSolicitor().getEmail();
+            String recipient = ((WithSolicitor) oldRespondent).getSolicitor().getEmail();
             if (isBlank(recipient)) {
                 log.info("No email address for previous respondent oldRespondent");
             } else {
