@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -200,10 +201,18 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSendOrdersByPost() {
+    void shouldSendOrdersByPostWhenOrderIssued() {
         CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
 
-        postSubmittedEvent(caseData);
+        ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+
+        postSubmittedEvent(request);
 
         verify(sendLetterApi, times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture());
         verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
@@ -241,10 +250,18 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesServedDigitally() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedDigitallyWhenOrderIssued() throws NotificationClientException {
         CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
 
-        postSubmittedEvent(caseData);
+        ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+
+        postSubmittedEvent(request);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
@@ -254,10 +271,18 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesServedByEmail() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() throws NotificationClientException {
         CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
 
-        postSubmittedEvent(caseData);
+        ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+
+        postSubmittedEvent(request);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
@@ -266,10 +291,19 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthority() throws NotificationClientException {
+    void shouldNotifyLocalAuthorityWhenOrderIssued() throws NotificationClientException {
         CaseData caseData = caseData();
 
-        postSubmittedEvent(caseData);
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
+
+        ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+
+        postSubmittedEvent(request);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
@@ -279,10 +313,18 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyAdmin() throws NotificationClientException {
+    void shouldNotifyAdminWhenOrderIssued() throws NotificationClientException {
         CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
 
-        postSubmittedEvent(caseData);
+        ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+
+        postSubmittedEvent(request);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL),
@@ -291,10 +333,18 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyCtscWhenEnabled() throws NotificationClientException {
+    void shouldNotifyCtscWhenEnabledWhenOrderIssued() throws NotificationClientException {
         CaseData caseData = caseData().toBuilder().sendToCtsc("Yes").build();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
 
-        postSubmittedEvent(caseData);
+        ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+
+        postSubmittedEvent(request);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_CTSC_EMAIL),
@@ -308,7 +358,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldSendAmendedNotificationWhenAmendedOrder() throws NotificationClientException {
+    void shouldSendAmendedNotificationToLocalAuthorityWhenAmendedOrder() throws NotificationClientException {
         CaseData caseData = caseData();
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(asCaseDetails(caseData))
@@ -327,6 +377,97 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             eq(NOTIFICATION_REFERENCE)
         );
     }
+
+    @Test
+    void shouldSendOrdersByPostWhenOrderAmended() {
+        CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
+
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+
+        postSubmittedEvent(request);
+
+        verify(sendLetterApi, times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture());
+        verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
+
+        LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
+            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
+        );
+
+        LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
+            CASE_ID, ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
+        );
+
+        assertThat(printRequest.getAllValues()).usingRecursiveComparison()
+            .isEqualTo(List.of(expectedPrintRequest1, expectedPrintRequest2));
+
+        List<Element<SentDocuments>> documentsSent = mapper.convertValue(
+            caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {}
+        );
+
+        SentDocument expectedRepresentativeDocument = documentSent(
+            REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID, now()
+        );
+
+        SentDocument expectedRespondentDocument = documentSent(
+            RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT, ORDER_DOCUMENT, LETTER_2_ID, now()
+        );
+
+        assertThat(documentsSent.get(0).getValue().getDocumentsSentToParty())
+            .extracting(Element::getValue)
+            .containsExactly(expectedRepresentativeDocument);
+
+        assertThat(documentsSent.get(1).getValue().getDocumentsSentToParty())
+            .extracting(Element::getValue)
+            .containsExactly(expectedRespondentDocument);
+    }
+
+    @Test
+    void shouldNotifyRepresentativesServedDigitallyWhenOrderAmended() throws NotificationClientException {
+        CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
+
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+
+        postSubmittedEvent(request);
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
+            eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
+            eq(NOTIFICATION_REFERENCE)
+        );
+    }
+
+    @Test
+    void shouldNotifyRepresentativesServedByEmailWhenOrderAmended() throws NotificationClientException {
+        CaseData caseData = caseData();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseData))
+            .build();
+
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
+
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+
+        postSubmittedEvent(request);
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
+            eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
+        );
+    }
+
 
     private CaseData caseData() {
         return CaseData.builder()
