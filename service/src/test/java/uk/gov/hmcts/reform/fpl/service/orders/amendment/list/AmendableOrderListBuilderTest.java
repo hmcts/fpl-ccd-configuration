@@ -52,8 +52,7 @@ class AmendableOrderListBuilderTest {
         CaseData caseData = mock(CaseData.class);
 
         when(provider.provideListItems(caseData)).thenReturn(List.of(
-            element(order1Id, order1), order2Element, element(order3Id, order3),
-            element(order4Id, order4)
+            element(order1Id, order1), order2Element, element(order3Id, order3), element(order4Id, order4)
         ));
 
         // order1 and order4 label methods are not called as the comparator doesn't need to evaluate those methods
