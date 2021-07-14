@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 
 @ExtendWith({MockitoExtension.class})
 public class ManageOrdersClosedCaseFieldGeneratorTest {
@@ -32,16 +32,16 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     private Time time;
 
     @Mock
-    private ChildrenService childrenService;
+    private ChildrenSmartFinalOrderUpdater childrenSmartFinalOrderUpdater;
 
     @InjectMocks
     private ManageOrdersClosedCaseFieldGenerator underTest;
 
     @Test
     void shouldCloseCase() {
-        CaseData caseData = buildCaseData("Yes", "No", C32_CARE_ORDER);
+        CaseData caseData = buildCaseData("Yes", "No", C32A_CARE_ORDER);
 
-        when(childrenService.updateFinalOrderIssued(caseData))
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
         when(time.now()).thenReturn(NOW);
 
@@ -58,8 +58,8 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     @Test
     void shouldUpdateChildrenAndNotCloseCase() {
 
-        CaseData caseData = buildCaseData("No", "No", C32_CARE_ORDER);
-        when(childrenService.updateFinalOrderIssued(caseData))
+        CaseData caseData = buildCaseData("No", "No", C32A_CARE_ORDER);
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
 
         Map<String, Object> generatedData = underTest.generate(caseData);
@@ -82,7 +82,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     void shouldUpdateChildrenWhenUserHasSelectedFinalOrder() {
         CaseData caseData = buildCaseData("No", "Yes", C21_BLANK_ORDER);
 
-        when(childrenService.updateFinalOrderIssued(caseData))
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
 
         Map<String, Object> generatedData = underTest.generate(caseData);

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderActionNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderActionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.util.stream.Stream;

@@ -12,8 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
@@ -32,6 +32,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -42,7 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeF
 public class SealedOrderHistoryService {
 
     private final IdentityService identityService;
-    private final ChildrenService childrenService;
+    private final ChildrenSmartSelector childrenSmartSelector;
     private final AppointedGuardianFormatter appointedGuardianFormatter;
     private final OthersService othersService;
     private final OrderCreationService orderCreationService;
@@ -57,7 +58,7 @@ public class SealedOrderHistoryService {
     public Map<String, Object> generate(CaseData caseData) {
         List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
         List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData);
 
         DocumentReference sealedPdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
@@ -74,7 +75,7 @@ public class SealedOrderHistoryService {
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
-            .childrenDescription(getChildrenForOrder(selectedChildren))
+            .childrenDescription(getChildrenForOrder(selectedChildren, caseData))
             .specialGuardians(appointedGuardianFormatter.getGuardiansNamesForTab(caseData))
             .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
             .document(sealedPdfOrder)
@@ -124,7 +125,13 @@ public class SealedOrderHistoryService {
             Comparator.nullsLast(reverseOrder()));
     }
 
-    private String getChildrenForOrder(List<Element<Child>> selectedChildren) {
+    private String getChildrenForOrder(List<Element<Child>> selectedChildren, CaseData caseData) {
+        String appliesToAllChildren = caseData.getOrderAppliesToAllChildren();
+
+        if (YES.getValue().equals(appliesToAllChildren)) {
+            return null;
+        }
+
         return Optional.ofNullable(selectedChildren).map(
             children -> children.stream().map(
                 child -> child.getValue().asLabel()

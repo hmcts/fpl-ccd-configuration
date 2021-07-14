@@ -11,16 +11,15 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -32,22 +31,27 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
     }
 
     @Test
-    void shouldSetFirstHearingFlagWhenHearingsEmpty() {
+    void shouldSetFirstHearingFlagAndDefaultPreAttendanceWhenHearingsEmpty() {
 
-        CaseData initialCaseData = CaseData.builder()
-            .id(nextLong())
-            .selectedHearingId(randomUUID())
-            .hearingOption(VACATE_HEARING)
-            .hearingReListOption(RE_LIST_LATER)
-            .build();
+        CaseData initialCaseData = CaseData.builder().build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(initialCaseData));
 
         assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo(YES.getValue());
-        assertThat(updatedCaseData.getHasExistingHearings()).isNull();
-        assertThat(updatedCaseData.getSelectedHearingId()).isNull();
-        assertThat(updatedCaseData.getHearingOption()).isNull();
-        assertThat(updatedCaseData.getHearingReListOption()).isNull();
+        assertThat(updatedCaseData.getPreHearingAttendanceDetails()).isEqualTo("1 hour before the hearing");
+    }
+
+    @Test
+    void shouldNotSetFirstHearingFlagAndDefaultPreAttendanceWhenHearingsPresent() {
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingDetails(wrapElements(TestDataHelper.testHearing()))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(initialCaseData));
+
+        assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo(NO.getValue());
+        assertThat(updatedCaseData.getPreHearingAttendanceDetails()).isNull();
     }
 
     @Test
@@ -69,7 +73,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
     }
 
     @Test
-    void shouldSetHearingDynamicLists() {
+    void shouldSetHearingsDetails() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(3)));
         Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(3)));
         Element<HearingBooking> todayHearing = element(testHearing(now()));
@@ -91,6 +95,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
             .isEqualTo(dynamicList(todayHearing, pastHearing1, pastHearing2));
         assertThat(updatedCaseData.getFutureAndTodayHearingDateList())
             .isEqualTo(dynamicList(futureHearing1, futureHearing2, todayHearing));
+        assertThat(updatedCaseData.getSelectedHearingId()).isNull();
     }
 
     @Test

@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -42,6 +44,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
@@ -82,7 +85,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinaries();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinaries();
     private static final DocumentReference ORDER = testDocumentReference();
-    private static final String ORDER_TYPE = "C32 - Care order";
+    private static final String ORDER_TYPE = "Care order (C32A)";
     private static final Map<String, Object> NOTIFICATION_PARAMETERS = getExpectedParametersMap(ORDER_TYPE, true);
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
         .fullName("First Representative")
@@ -144,6 +147,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private DocmosisCoverDocumentsService documentService;
+
+    @SpyBean
+    private EventService eventPublisher;
 
     ManageOrdersSubmittedControllerTest() {
         super("manage-orders");
@@ -278,13 +284,29 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         );
     }
 
+    @Test
+    void shouldNotSendNotificationWhenAmendedOrder() {
+        CaseData caseData = caseData();
+
+        Element<GeneratedOrder> orderElement = caseData.getOrderCollection().get(0);
+        orderElement = orderElement.toBuilder()
+            .value(orderElement.getValue().toBuilder().amendedDate(dateNow()).build())
+            .build();
+
+        CaseData caseDataBefore = caseData.toBuilder().orderCollection(List.of(orderElement)).build();
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+
+        verifyNoInteractions(eventPublisher);
+    }
+
     private CaseData caseData() {
         return CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .orderCollection(wrapElements(GeneratedOrder.builder()
-                .orderType("C32_CARE_ORDER")
+                .orderType("C32A_CARE_ORDER")
                 .type(ORDER_TYPE)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)

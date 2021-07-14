@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C23EPODocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
@@ -36,7 +36,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
     private static final GeneratedOrderType TYPE = GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
-    private final ChildrenService childrenService;
+    private final ChildrenSmartSelector childrenSmartSelector;
 
     @Override
     public Order accept() {
@@ -50,7 +50,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
         String localAuthorityCode = caseData.getCaseLocalAuthority();
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
 
         return C23EPODocmosisParameters.builder()
             .orderType(TYPE)
@@ -72,7 +72,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.EPO;
+        return DocmosisTemplates.EPO_V2;
     }
 
     private String orderDetails(int numOfChildren, String caseLocalAuthority) {

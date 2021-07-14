@@ -124,7 +124,11 @@ public class TestDataHelper {
     }
 
     public static Element<Child> testChild() {
-        return testChild(randomAlphanumeric(10), randomAlphanumeric(10), null, now());
+        return testChild(null);
+    }
+
+    public static Element<Child> testChild(ChildGender childGender) {
+        return testChild(randomAlphanumeric(10), randomAlphanumeric(10), childGender, now());
     }
 
     public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {
@@ -330,7 +334,17 @@ public class TestDataHelper {
 
     @SafeVarargs
     public static DynamicList buildDynamicList(int selected, Pair<UUID, String>... listElements) {
-        List<DynamicListElement> listItems = Arrays.stream(listElements)
+        Stream<Pair<UUID, String>> pairStream = Arrays.stream(listElements);
+        return buildDynamicList(selected, pairStream);
+    }
+
+    public static DynamicList buildDynamicList(int selected, List<Pair<UUID, String>> listElements) {
+        Stream<Pair<UUID, String>> pairStream = listElements.stream();
+        return buildDynamicList(selected, pairStream);
+    }
+
+    private static DynamicList buildDynamicList(int selected, Stream<Pair<UUID, String>> pairStream) {
+        List<DynamicListElement> listItems = pairStream
             .map(listElement -> DynamicListElement.builder()
                 .code(listElement.getKey())
                 .label(listElement.getValue())

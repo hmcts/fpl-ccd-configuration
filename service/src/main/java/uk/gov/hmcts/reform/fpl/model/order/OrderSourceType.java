@@ -7,5 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OrderSourceType {
     DIGITAL,
-    MANUAL_UPLOAD
+    MANUAL_UPLOAD,
+    AMENDED
 }

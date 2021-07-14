@@ -102,7 +102,7 @@ public class FeeRegisterApiConsumerTest {
                                                        double feeAmount, String event) {
         return builder
             .given("Fees exist for CCD")
-            .uponReceiving("a request for CCD fees")
+            .uponReceiving(String.format("a request for '%s' CCD fee", keyword))
             .path("/fees-register/fees/lookup")
             .method("GET")
             .matchQuery("service", service, service)

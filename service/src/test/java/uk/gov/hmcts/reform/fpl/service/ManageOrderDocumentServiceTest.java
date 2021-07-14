@@ -7,6 +7,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 
 import java.util.Map;
 
@@ -21,11 +22,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class ManageOrderDocumentServiceTest {
     private static final CaseData CASE_DATA = CaseData.builder().caseLocalAuthority(LOCAL_AUTHORITY_1_CODE).build();
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final LocalAuthorityNameLookupConfiguration laNameLookup =
         mock(LocalAuthorityNameLookupConfiguration.class);
     private final ManageOrderDocumentService manageOrderDocumentService =
-        new ManageOrderDocumentService(childrenService,
+        new ManageOrderDocumentService(childrenSmartSelector,
             laNameLookup);
 
     @BeforeEach
@@ -35,7 +36,7 @@ public class ManageOrderDocumentServiceTest {
 
     @Test
     void shouldReturnExpectedSingularGrammar() {
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class)));
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class)));
 
         Map<String, String> expectedGrammar = Map.of(
             "childOrChildren", "child",
@@ -48,7 +49,7 @@ public class ManageOrderDocumentServiceTest {
 
     @Test
     void shouldReturnExpectedPluralGrammar() {
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class),
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class),
             mock(Child.class)));
 
         Map<String, String> expectedGrammar = Map.of(

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,10 +14,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
@@ -26,16 +29,69 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.OTHER_ORDER;
 
 class OrderShowHideQuestionsCalculatorTest {
 
-    private static final Set<Order> ORDERS_WITH_IS_FINAL_ORDER_QUESTION = Set.of(
+    private static final Set<Order> MANUAL_ORDERS_WITH_IS_FINAL_ORDER_QUESTION = Set.of(
         C37_EDUCATION_SUPERVISION_ORDER,
         OTHER_ORDER
     );
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
 
+    @Test
+    void calculateAmendment() {
+        assertThat(underTest.calculate(AMENED_ORDER)).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("orderToAmend", "YES"),
+            Map.entry("uploadAmendedOrder", "YES"),
+            Map.entry("uploadOrderFile", "NO"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("approver", "NO"),
+            Map.entry("previewOrder", "NO"),
+            Map.entry("approvalDate", "NO"),
+            Map.entry("whichChildren", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("hearingDetails", "NO"),
+            Map.entry("dischargeOfCareDetails", "NO"),
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+            Map.entry("furtherDirections", "NO"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("needSealing", "NO"),
+            Map.entry("linkApplication", "NO"),
+            Map.entry("isFinalOrder", "NO"),
+            Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("closeCase", "NO"),
+            Map.entry("orderIsByConsent", "NO"),
+            Map.entry("whichOthers", "YES"),
+            Map.entry("appointedGuardian", "NO"),
+            Map.entry("orderTitle", "NO"),
+            Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
+            Map.entry("reasonForSecureAccommodation", "NO"),
+            Map.entry("orderJurisdiction", "NO"),
+            Map.entry("childLegalRepresentation", "NO"),
+            Map.entry("selectSingleChild", "NO")
+        ));
+    }
+
     @ParameterizedTest(name = "Show hide map for {0}")
     @MethodSource("orderWithExpectedMap")
     void calculate(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("finalManualUploadOrders")
+    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("nonFinalManualUploadOrders")
+    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
         assertThat(underTest.calculate(order))
             .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
@@ -45,7 +101,10 @@ class OrderShowHideQuestionsCalculatorTest {
             "hearingDetails", "YES",
             "linkApplication", "YES",
             "approver", "YES",
-            "previewOrder", "YES");
+            "previewOrder", "YES",
+            "orderToAmend", "NO",
+            "uploadAmendedOrder", "NO"
+        );
 
         Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
         careOrderQuestions.put("orderTitle", "NO");
@@ -61,6 +120,10 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("orderDetails", "NO");
         careOrderQuestions.put("cafcassJurisdictions", "NO");
         careOrderQuestions.put("whichChildren", "YES");
+        careOrderQuestions.put("selectSingleChild", "NO");
+        careOrderQuestions.put("reasonForSecureAccommodation", "NO");
+        careOrderQuestions.put("childLegalRepresentation", "NO");
+        careOrderQuestions.put("orderJurisdiction", "NO");
         careOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         careOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         careOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
@@ -86,6 +149,10 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("orderDetails", "NO");
         dischargeOfCareQuestions.put("cafcassJurisdictions", "NO");
         dischargeOfCareQuestions.put("whichChildren", "YES");
+        dischargeOfCareQuestions.put("selectSingleChild", "NO");
+        dischargeOfCareQuestions.put("reasonForSecureAccommodation", "NO");
+        dischargeOfCareQuestions.put("childLegalRepresentation", "NO");
+        dischargeOfCareQuestions.put("orderJurisdiction", "NO");
         dischargeOfCareQuestions.put("dischargeOfCareDetails", "YES");
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         dischargeOfCareQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -111,6 +178,10 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("orderDetails", "NO");
         epoQuestions.put("cafcassJurisdictions", "NO");
         epoQuestions.put("whichChildren", "YES");
+        epoQuestions.put("selectSingleChild", "NO");
+        epoQuestions.put("reasonForSecureAccommodation", "NO");
+        epoQuestions.put("childLegalRepresentation", "NO");
+        epoQuestions.put("orderJurisdiction", "NO");
         epoQuestions.put("dischargeOfCareDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         epoQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -135,6 +206,10 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("epoExpiryDate", "NO");
         blankOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         blankOrderQuestions.put("whichChildren", "YES");
+        blankOrderQuestions.put("selectSingleChild", "NO");
+        blankOrderQuestions.put("reasonForSecureAccommodation", "NO");
+        blankOrderQuestions.put("childLegalRepresentation", "NO");
+        blankOrderQuestions.put("orderJurisdiction", "NO");
         blankOrderQuestions.put("dischargeOfCareDetails", "NO");
         blankOrderQuestions.put("cafcassJurisdictions", "NO");
         blankOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
@@ -161,6 +236,10 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         supervisionOrderQuestions.put("cafcassJurisdictions", "NO");
         supervisionOrderQuestions.put("whichChildren", "YES");
+        supervisionOrderQuestions.put("selectSingleChild", "NO");
+        supervisionOrderQuestions.put("reasonForSecureAccommodation", "NO");
+        supervisionOrderQuestions.put("childLegalRepresentation", "NO");
+        supervisionOrderQuestions.put("orderJurisdiction", "NO");
         supervisionOrderQuestions.put("dischargeOfCareDetails", "NO");
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithMonth", "YES");
         supervisionOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -186,6 +265,10 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         specialGuardianshipOrderQuestions.put("cafcassJurisdictions", "NO");
         specialGuardianshipOrderQuestions.put("whichChildren", "YES");
+        specialGuardianshipOrderQuestions.put("selectSingleChild", "NO");
+        specialGuardianshipOrderQuestions.put("reasonForSecureAccommodation", "NO");
+        specialGuardianshipOrderQuestions.put("childLegalRepresentation", "NO");
+        specialGuardianshipOrderQuestions.put("orderJurisdiction", "NO");
         specialGuardianshipOrderQuestions.put("dischargeOfCareDetails", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -211,6 +294,10 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("epoTypeAndPreventRemoval", "NO");
         appointmentOfChildrensGuardianQuestions.put("cafcassJurisdictions", "YES");
         appointmentOfChildrensGuardianQuestions.put("whichChildren", "NO");
+        appointmentOfChildrensGuardianQuestions.put("selectSingleChild", "NO");
+        appointmentOfChildrensGuardianQuestions.put("reasonForSecureAccommodation", "NO");
+        appointmentOfChildrensGuardianQuestions.put("childLegalRepresentation", "NO");
+        appointmentOfChildrensGuardianQuestions.put("orderJurisdiction", "NO");
         appointmentOfChildrensGuardianQuestions.put("dischargeOfCareDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -236,6 +323,10 @@ class OrderShowHideQuestionsCalculatorTest {
         childArrangementSpecificOrder.put("epoTypeAndPreventRemoval", "NO");
         childArrangementSpecificOrder.put("cafcassJurisdictions", "NO");
         childArrangementSpecificOrder.put("whichChildren", "YES");
+        childArrangementSpecificOrder.put("selectSingleChild", "NO");
+        childArrangementSpecificOrder.put("reasonForSecureAccommodation", "NO");
+        childArrangementSpecificOrder.put("childLegalRepresentation", "NO");
+        childArrangementSpecificOrder.put("orderJurisdiction", "NO");
         childArrangementSpecificOrder.put("dischargeOfCareDetails", "NO");
         childArrangementSpecificOrder.put("manageOrdersExpiryDateWithMonth", "NO");
         childArrangementSpecificOrder.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -247,8 +338,37 @@ class OrderShowHideQuestionsCalculatorTest {
         childArrangementSpecificOrder.put("appointedGuardian", "NO");
         childArrangementSpecificOrder.put("whichOthers", "YES");
 
+        Map<String, String> secureAccommodationOrderQuestions = new HashMap<>(commonQuestions);
+        secureAccommodationOrderQuestions.put("orderTitle", "NO");
+        secureAccommodationOrderQuestions.put("approvalDate", "NO");
+        secureAccommodationOrderQuestions.put("furtherDirections", "YES");
+        secureAccommodationOrderQuestions.put("orderDetails", "NO");
+        secureAccommodationOrderQuestions.put("approvalDateTime", "YES");
+        secureAccommodationOrderQuestions.put("epoIncludePhrase", "NO");
+        secureAccommodationOrderQuestions.put("uploadOrderFile", "NO");
+        secureAccommodationOrderQuestions.put("needSealing", "NO");
+        secureAccommodationOrderQuestions.put("epoChildrenDescription", "NO");
+        secureAccommodationOrderQuestions.put("epoExpiryDate", "NO");
+        secureAccommodationOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
+        secureAccommodationOrderQuestions.put("cafcassJurisdictions", "NO");
+        secureAccommodationOrderQuestions.put("whichChildren", "NO");
+        secureAccommodationOrderQuestions.put("selectSingleChild", "YES");
+        secureAccommodationOrderQuestions.put("reasonForSecureAccommodation", "YES");
+        secureAccommodationOrderQuestions.put("childLegalRepresentation", "YES");
+        secureAccommodationOrderQuestions.put("orderIsByConsent", "YES");
+        secureAccommodationOrderQuestions.put("orderJurisdiction", "YES");
+        secureAccommodationOrderQuestions.put("manageOrdersExpiryDateWithMonth", "YES");
+        secureAccommodationOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
+        secureAccommodationOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        secureAccommodationOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
+        secureAccommodationOrderQuestions.put("dischargeOfCareDetails", "NO");
+        secureAccommodationOrderQuestions.put("closeCase", "YES");
+        secureAccommodationOrderQuestions.put("isFinalOrder", "YES");
+        secureAccommodationOrderQuestions.put("appointedGuardian", "NO");
+        secureAccommodationOrderQuestions.put("whichOthers", "YES");
+
         return Stream.of(
-            Arguments.of(C32_CARE_ORDER, careOrderQuestions),
+            Arguments.of(C32A_CARE_ORDER, careOrderQuestions),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, dischargeOfCareQuestions),
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
@@ -257,19 +377,13 @@ class OrderShowHideQuestionsCalculatorTest {
             Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, specialGuardianshipOrderQuestions),
             Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
                 childArrangementSpecificOrder),
-            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, appointmentOfChildrensGuardianQuestions)
+            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, appointmentOfChildrensGuardianQuestions),
+            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, secureAccommodationOrderQuestions)
         );
     }
 
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("finalManualUploadOrders")
-    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
-    }
-
     private static Stream<Arguments> finalManualUploadOrders() {
-        return ORDERS_WITH_IS_FINAL_ORDER_QUESTION.stream()
+        return MANUAL_ORDERS_WITH_IS_FINAL_ORDER_QUESTION.stream()
             .map(order -> Arguments.of(order, Map.ofEntries(
                 Map.entry("approver", "NO"),
                 Map.entry("previewOrder", "YES"),
@@ -297,22 +411,20 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("closeCase", "YES"),
                 Map.entry("orderIsByConsent", "NO"),
                 Map.entry("appointedGuardian", "NO"),
-                Map.entry("whichOthers", "YES")
-                )
-            ));
-    }
-
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("nonFinalManualUploadOrders")
-    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+                Map.entry("whichOthers", "YES"),
+                Map.entry("selectSingleChild", "NO"),
+                Map.entry("reasonForSecureAccommodation", "NO"),
+                Map.entry("childLegalRepresentation", "NO"),
+                Map.entry("orderJurisdiction", "NO"),
+                Map.entry("orderToAmend", "NO"),
+                Map.entry("uploadAmendedOrder", "NO")
+            )));
     }
 
     private static Stream<Arguments> nonFinalManualUploadOrders() {
         return Arrays.stream(Order.values())
             .filter(order -> OrderSourceType.MANUAL_UPLOAD == order.getSourceType())
-            .filter(order -> !ORDERS_WITH_IS_FINAL_ORDER_QUESTION.contains(order))
+            .filter(order -> !MANUAL_ORDERS_WITH_IS_FINAL_ORDER_QUESTION.contains(order))
             .map(order -> Arguments.of(order, Map.ofEntries(
                 Map.entry("approver", "NO"),
                 Map.entry("previewOrder", "YES"),
@@ -322,6 +434,10 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("whichChildren", "YES"),
                 Map.entry("hearingDetails", "NO"),
                 Map.entry("linkApplication", "NO"),
+                Map.entry("reasonForSecureAccommodation", "NO"),
+                Map.entry("childLegalRepresentation", "NO"),
+                Map.entry("selectSingleChild", "NO"),
+                Map.entry("orderJurisdiction", "NO"),
                 Map.entry("approvalDate", "YES"),
                 Map.entry("approvalDateTime", "NO"),
                 Map.entry("dischargeOfCareDetails", "NO"),
@@ -340,8 +456,9 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("closeCase", "YES"),
                 Map.entry("orderIsByConsent", "NO"),
                 Map.entry("appointedGuardian", "NO"),
-                Map.entry("whichOthers", "YES")
-                )
-            ));
+                Map.entry("whichOthers", "YES"),
+                Map.entry("orderToAmend", "NO"),
+                Map.entry("uploadAmendedOrder", "NO")
+            )));
     }
 }

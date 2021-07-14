@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AmendOrderToDownloadPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGuardianBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPr
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.SingleChildSelectionBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOthersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
@@ -40,6 +42,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
@@ -53,6 +57,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
 
     @Mock
     private WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
+    @Mock
+    private SingleChildSelectionBlockPrePopulator singleChildSelectionBlockPrePopulator;
     @Mock
     private ApproverBlockPrePopulator approverBlockPrePopulator;
     @Mock
@@ -69,6 +75,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private AppointedGuardianBlockPrePopulator appointedGuardianBlockPrePopulator;
     @Mock
     private WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
+    @Mock
+    private AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
 
     // Section blocks
     @Mock
@@ -101,24 +109,27 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             approvalDateBlockPrePopulator,
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
+            singleChildSelectionBlockPrePopulator,
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator,
             appointedGuardianBlockPrePopulator,
-            whichOthersBlockPrePopulator
-
+            whichOthersBlockPrePopulator,
+            amendOrderToDownloadPrePopulator
         );
-        questionBlockPrepopulatorMapping = Map.of(
-            LINKED_TO_HEARING, linkedToHearingBlockPrePopulator,
-            LINK_APPLICATION, linkApplicationBlockPrePopulator,
-            APPROVAL_DATE, approvalDateBlockPrePopulator,
-            APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator,
-            APPROVER, approverBlockPrePopulator,
-            WHICH_CHILDREN, whichChildrenBlockPrePopulator,
-            APPOINTED_GUARDIAN, appointedGuardianBlockPrePopulator,
-            EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator,
-            CLOSE_CASE, closeCaseBlockPrePopulator,
-            WHICH_OTHERS, whichOthersBlockPrePopulator
+        questionBlockPrepopulatorMapping = Map.ofEntries(
+            Map.entry(LINKED_TO_HEARING, linkedToHearingBlockPrePopulator),
+            Map.entry(LINK_APPLICATION, linkApplicationBlockPrePopulator),
+            Map.entry(APPROVAL_DATE, approvalDateBlockPrePopulator),
+            Map.entry(APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator),
+            Map.entry(APPROVER, approverBlockPrePopulator),
+            Map.entry(WHICH_CHILDREN, whichChildrenBlockPrePopulator),
+            Map.entry(APPOINTED_GUARDIAN, appointedGuardianBlockPrePopulator),
+            Map.entry(SELECT_SINGLE_CHILD, singleChildSelectionBlockPrePopulator),
+            Map.entry(EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator),
+            Map.entry(CLOSE_CASE, closeCaseBlockPrePopulator),
+            Map.entry(WHICH_OTHERS, whichOthersBlockPrePopulator),
+            Map.entry(ORDER_TO_AMEND, amendOrderToDownloadPrePopulator)
         );
 
         sectionPrepopulatorMapping = Map.of(

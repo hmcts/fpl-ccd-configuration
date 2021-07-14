@@ -9,6 +9,7 @@ const operations = {
   options: {
     create: 'CREATE',
     upload: 'UPLOAD',
+    amend: 'AMEND',
   },
 };
 
@@ -18,7 +19,8 @@ const orders = {
   options: {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
-    c32: 'C32_CARE_ORDER',
+    c26: 'C26_SECURE_ACCOMMODATION_ORDER',
+    c32: 'C32A_CARE_ORDER',
     c32b: 'C32B_DISCHARGE_OF_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
@@ -31,7 +33,8 @@ const orders = {
   title: {
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
-    c32: 'Care order (C32)',
+    c26: 'Authority to keep a child in secure accommodation (C26)',
+    c32: 'Care order (C32A)',
     c32b: 'Discharge of care order (C32B)',
     c33: 'Interim care order (C33)',
     c35B: 'Interim supervision order (C35B)',
@@ -80,7 +83,7 @@ const section4 = {
   title: '#manageOrdersTitle',
   directions: '#manageOrdersDirections',
   furtherDirections: '#manageOrdersFurtherDirections',
-  careOrderIssuedDate:  '#manageOrdersCareOrderIssuedDate',
+  careOrderIssuedDate: '#manageOrdersCareOrderIssuedDate',
   careOrderIssuedVenue: '#manageOrdersCareOrderIssuedCourt',
   epoTypes: {
     group: '#manageOrdersEpoType',
@@ -200,6 +203,11 @@ const preview = {
   },
 };
 
+const amendment = {
+  list: '#manageOrdersAmendmentList',
+  upload: '#manageOrdersAmendedOrder',
+};
+
 // Actions
 const selectOperation = async (operationType) => {
   I.click(`${operations.group}-${operationType}`);
@@ -209,6 +217,10 @@ const selectOperation = async (operationType) => {
 const selectOperationInClosedState = async (operationType) => {
   I.click(`${operations.groupInClosedState}-${operationType}`);
   await I.runAccessibilityTest();
+};
+
+const selectOrderToAmend = order => {
+  I.selectOption(amendment.list, order);
 };
 
 const selectRelatedToHearing = (answer) => {
@@ -427,14 +439,41 @@ const selectGuardian = async (indexes = []) => {
   await I.runAccessibilityTest();
 };
 
+const selectSingleChild = async (childName) => {
+  I.see('Which child is the order for?');
+  I.selectOption('Which child is the order for?', childName);
+  await I.goToNextPage();
+};
+
+const selectReasonForSecureAccommodation = (reason) => {
+  I.click('#manageOrdersReasonForSecureAccommodation-'+reason);
+};
+
+const selectWhetherChildIsRepresented = (answer) => {
+  I.click('#manageOrdersIsChildRepresented_'+answer);
+};
+
+const selectJurisdiction = (jurisdiction) => {
+  I.click('#manageOrdersOrderJurisdiction-'+jurisdiction);
+};
+
+const reviewOrderToAmend = fileName => {
+  I.see('Open the attached order in PDF-Xchange Editor to make changes.');
+  I.see(fileName);
+};
+
+const uploadAmendedOrder = amendedOrder => {
+  I.attachFile(amendment.upload, amendedOrder);
+};
+
 module.exports = {
-  operations, hearingDetails, orders, section2, section3, section4, whichOthers,
+  operations, hearingDetails, orders, section2, section3, section4, whichOthers, amendment,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, selectIsFinalOrder, selectIsNotFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
-  enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest, reviewOrderToAmend, uploadAmendedOrder, selectOrderToAmend,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
-  selectC43Orders, enterRecitalsAndPreambles,
+  selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
 };

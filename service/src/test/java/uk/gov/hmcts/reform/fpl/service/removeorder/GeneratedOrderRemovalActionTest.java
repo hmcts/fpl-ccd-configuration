@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -41,7 +41,7 @@ class GeneratedOrderRemovalActionTest {
     private static final GeneratedOrderType NON_FINAL_ORDER = SUPERVISION_ORDER;
     private static final Order NON_FINAL_ORDER_NEW = Order.C21_BLANK_ORDER;
     private static final GeneratedOrderType FINAL_ORDER = EMERGENCY_PROTECTION_ORDER;
-    private static final Order FINAL_ORDER_NEW = Order.C32_CARE_ORDER;
+    private static final Order FINAL_ORDER_NEW = Order.C32A_CARE_ORDER;
     private static final LocalDateTime DATE_OF_ISSUE = LocalDateTime.of(2020, 6, 15, 1, 2);
 
     private final GeneratedOrderRemovalAction underTest = new GeneratedOrderRemovalAction();
@@ -163,8 +163,8 @@ class GeneratedOrderRemovalActionTest {
 
             assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
                 generatedOrder))
-                .isInstanceOf(RemovableOrderNotFoundException.class)
-                .hasMessage("Removable order with id %s not found", ALREADY_REMOVED_ORDER_ID);
+                .isInstanceOf(RemovableOrderOrApplicationNotFoundException.class)
+                .hasMessage("Removable order or application with id %s not found", ALREADY_REMOVED_ORDER_ID);
         }
 
         @Test
@@ -600,8 +600,8 @@ class GeneratedOrderRemovalActionTest {
 
             assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
                 generatedOrder))
-                .isInstanceOf(RemovableOrderNotFoundException.class)
-                .hasMessage("Removable order with id %s not found", ALREADY_REMOVED_ORDER_ID);
+                .isInstanceOf(RemovableOrderOrApplicationNotFoundException.class)
+                .hasMessage("Removable order or application with id %s not found", ALREADY_REMOVED_ORDER_ID);
         }
 
         @Test

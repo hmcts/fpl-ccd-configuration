@@ -221,42 +221,42 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
 }).retry(1); //Async case update in prev test
 
-Scenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
 }).retry(1); //Async case update in prev test
 
-Scenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
 }).retry(1); //Async case update in prev test
 
-Scenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
 }).retry(1); //Async case update in prev test
 
-Scenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
 }).retry(1); //Async case update in prev test
 
-Scenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
 }).retry(1); //Async case update in prev test
 
-Scenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
 }).retry(1); //Async case update in prev test
 
-Scenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
+xScenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await setupScenario(I);
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
 }).retry(1); //Async case update in prev test
@@ -374,7 +374,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
-  await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation);
+  await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation, undefined, false);
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
   caseViewPage.selectTab(caseViewPage.tabs.summary);

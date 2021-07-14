@@ -12,10 +12,9 @@ module.exports = {
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
-    presence: {
-      inPerson: '#hearingPresence-IN_PERSON',
-      remote: '#hearingPresence-REMOTE',
-    },
+    attendance: '#hearingAttendance',
+    attendanceDetails: '#hearingAttendanceDetails',
+    preAttendanceDetails: '#preHearingAttendanceDetails',
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
@@ -90,16 +89,20 @@ module.exports = {
   async enterHearingDetails(hearingDetails) {
     I.click(this.fields.hearingType.caseManagement);
 
-    if (hearingDetails.presence) {
-      if (hearingDetails.presence === 'Remote') {
-        this.selectRemoteHearing();
-      } else {
-        this.selectInPersonHearing();
-      }
+    if (hearingDetails.attendance) {
+      hearingDetails.attendance.forEach(I.checkOption);
+    }
+
+    if (hearingDetails.attendanceDetails) {
+      I.fillField(this.fields.attendanceDetails, hearingDetails.attendanceDetails);
     }
 
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
+
+    if (hearingDetails.preAttendanceDetails) {
+      I.fillField(this.fields.preAttendanceDetails, hearingDetails.preAttendanceDetails);
+    }
   },
 
   enterVenue(hearingDetails) {
@@ -119,14 +122,6 @@ module.exports = {
         postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
       });
     }
-  },
-
-  selectInPersonHearing() {
-    I.click(this.fields.presence.inPerson);
-  },
-
-  selectRemoteHearing() {
-    I.click(this.fields.presence.remote);
   },
 
   enterJudgeDetails(hearingDetails) {
@@ -176,6 +171,10 @@ module.exports = {
     await I.runAccessibilityTest();
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
+  },
+
+  async grabPreHearingAttendance(){
+    return await I.grabValueFrom(this.fields.preAttendanceDetails);
   },
 
 };

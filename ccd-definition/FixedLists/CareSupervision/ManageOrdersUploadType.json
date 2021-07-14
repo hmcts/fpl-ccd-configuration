@@ -30,13 +30,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER",
-    "ListElement": "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-    "DisplayOrder": 50
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
     "ListElementCode": "C39_CHILD_ASSESSMENT_ORDER",
     "ListElement": "Child assessment order (C39)",
     "DisplayOrder": 60
