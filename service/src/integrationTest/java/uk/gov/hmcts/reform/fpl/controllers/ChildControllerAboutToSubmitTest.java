@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
@@ -25,13 +26,15 @@ import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -81,16 +84,23 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     @MockBean
     private IdentityService identityService;
 
-    @Autowired
-    private Time time;
+    @MockBean
+    private FeatureToggleService toggleService;
+
+    @SpyBean
+    private RespondentAfterSubmissionRepresentationService representationService;
 
     ChildControllerAboutToSubmitTest() {
         super("enter-children");
     }
 
+    @BeforeEach
+    void setUp() {
+        when(toggleService.isChildRepresentativeSolicitorEnabled()).thenReturn(true);
+    }
+
     @Test
     void shouldRemoveExistingRepresentativeInfoWhenMainRepresentativeIsRemoved() {
-
         CaseData caseDataBefore = CaseData.builder()
             .applicants(APPLICANTS)
             .children1(wrapElements(Child.builder()
@@ -118,23 +128,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(responseData.getChildrenEventData().getChildrenMainRepresentative()).isNull();
 
-        assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
-            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA))
-            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB))
-            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
-            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
-            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
-            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
-            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
-            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
-            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
-            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
-            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
-            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
-            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
-            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
-            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
-            .build());
+        assertThat(responseData.getChildPolicyData()).isEqualTo(basePolicyData().build());
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
@@ -145,7 +139,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldDoNothingIfOpenState() {
-
         CaseData caseData = CaseData.builder()
             .state(State.OPEN)
             .applicants(APPLICANTS)
@@ -176,7 +169,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIsSelectedForTheFirstTime() {
-
         CaseData caseDataBefore = CaseData.builder()
             .applicants(APPLICANTS)
             .children1(wrapElements(
@@ -211,23 +203,12 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()).solicitor(MAIN_REPRESENTATIVE).build()
         );
 
-        assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
-            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ORGANISATION_ID))
-            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ORGANISATION_ID))
-            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
-            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
-            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
-            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
-            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
-            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
-            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
-            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
-            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
-            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
-            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
-            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
-            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
-            .build());
+        assertThat(responseData.getChildPolicyData()).isEqualTo(
+            basePolicyData()
+                .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ORGANISATION_ID))
+                .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ORGANISATION_ID))
+                .build()
+        );
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
@@ -280,23 +261,12 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()).solicitor(MAIN_REPRESENTATIVE).build()
         );
 
-        assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
-            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ORGANISATION_ID))
-            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ORGANISATION_ID))
-            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
-            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
-            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
-            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
-            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
-            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
-            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
-            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
-            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
-            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
-            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
-            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
-            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
-            .build());
+        assertThat(responseData.getChildPolicyData()).isEqualTo(
+            basePolicyData()
+                .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ORGANISATION_ID))
+                .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ORGANISATION_ID))
+                .build()
+        );
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
@@ -310,7 +280,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresent() {
-
         when(identityService.generateId()).thenReturn(UUID_1, UUID_2);
 
         CaseData caseDataBefore = CaseData.builder()
@@ -352,23 +321,12 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()).solicitor(ANOTHER_REPRESENTATIVE).build()
         );
 
-        assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
-            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ANOTHER_ORGANISATION_ID))
-            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ANOTHER_ORGANISATION_ID))
-            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
-            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
-            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
-            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
-            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
-            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
-            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
-            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
-            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
-            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
-            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
-            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
-            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
-            .build());
+        assertThat(responseData.getChildPolicyData()).isEqualTo(
+            basePolicyData()
+                .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ANOTHER_ORGANISATION_ID))
+                .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ANOTHER_ORGANISATION_ID))
+                .build()
+        );
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
@@ -380,7 +338,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(responseData.getChangeOfRepresentatives()).isEqualTo(List.of(
             element(UUID_1, ChangeOfRepresentation.builder()
                 .child(String.format("%s %s", CHILD_NAME_1, CHILD_SURNAME_1))
-                .date(time.now().toLocalDate())
+                .date(dateNow())
                 .by("HMCTS")
                 .via("FPL")
                 .added(ChangedRepresentative.builder()
@@ -402,7 +360,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()),
             element(UUID_2, ChangeOfRepresentation.builder()
                 .child(String.format("%s %s", CHILD_NAME_2, CHILD_SURNAME_2))
-                .date(time.now().toLocalDate())
+                .date(dateNow())
                 .by("HMCTS")
                 .via("FPL")
                 .added(ChangedRepresentative.builder()
@@ -426,8 +384,29 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresentAndThenRemoved() {
+    void shouldNotInteractWithRepresentativeServiceWhenToggleIsOff() {
+        when(toggleService.isChildRepresentativeSolicitorEnabled()).thenReturn(false);
 
+        CaseData caseData = CaseData.builder()
+            .children1(wrapElements(
+                Child.builder().party(ChildParty.builder()
+                    .firstName(CHILD_NAME_1)
+                    .lastName(CHILD_SURNAME_1)
+                    .build()).solicitor(MAIN_REPRESENTATIVE).build(),
+                Child.builder().party(ChildParty.builder()
+                    .firstName(CHILD_NAME_2)
+                    .lastName(CHILD_SURNAME_2)
+                    .build()).solicitor(MAIN_REPRESENTATIVE).build()
+                )
+            ).build();
+
+        postAboutToSubmitEvent(caseData);
+
+        verifyNoInteractions(representationService);
+    }
+
+    @Test
+    void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresentAndThenRemoved() {
         when(identityService.generateId()).thenReturn(UUID_1, UUID_2);
 
         CaseData caseDataBefore = CaseData.builder()
@@ -467,22 +446,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()).build()
         );
 
-        assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder()
-            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA))
-            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB))
-            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
-            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
-            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
-            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
-            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
-            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
-            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
-            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
-            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
-            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
-            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
-            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
-            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO))
+        assertThat(responseData.getChildPolicyData()).isEqualTo(basePolicyData()
             .build());
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
@@ -568,6 +532,25 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             confidentialParty.toBuilder().address(null).telephoneNumber(null).build(),
             nonConfidentialParty
         );
+    }
+
+    private ChildPolicyData.ChildPolicyDataBuilder basePolicyData() {
+        return ChildPolicyData.builder()
+            .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA))
+            .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB))
+            .childPolicy2(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORC))
+            .childPolicy3(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORD))
+            .childPolicy4(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORE))
+            .childPolicy5(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORF))
+            .childPolicy6(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORG))
+            .childPolicy7(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORH))
+            .childPolicy8(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORI))
+            .childPolicy9(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORJ))
+            .childPolicy10(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORK))
+            .childPolicy11(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORL))
+            .childPolicy12(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORM))
+            .childPolicy13(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORN))
+            .childPolicy14(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORO));
     }
 
     private OrganisationPolicy buildOrganisationPolicy(SolicitorRole solicitorRole) {

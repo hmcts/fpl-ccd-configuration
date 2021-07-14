@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
@@ -44,6 +45,7 @@ public class ChildController extends CallbackController {
     private final ChildRepresentativeSolicitorValidator validator;
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
+    private final FeatureToggleService toggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -88,32 +90,38 @@ public class ChildController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
-        if (!OPEN.equals(caseData.getState())
-            && !cafcassSolicitorHasNeverBeenSet(getCaseData(caseDetails), getCaseDataBefore(callbackRequest))) {
-            caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
-                getCaseData(caseDetails), getCaseDataBefore(callbackRequest), SolicitorRole.Representing.CHILD,
-                isNotFirstTimeRecordingSolicitor(getCaseData(caseDetails), getCaseDataBefore(callbackRequest))
-            ));
+
+        if (toggleService.isChildRepresentativeSolicitorEnabled()) {
+            caseData = getCaseData(caseDetails);
+            CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+            if (shouldUpdateRepresentation(caseData, caseDataBefore)) {
+                caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
+                    caseData, caseDataBefore, SolicitorRole.Representing.CHILD,
+                    isNotFirstTimeRecordingSolicitor(caseData, caseDataBefore)
+                ));
+            }
         }
 
-        confidentialDetailsService.addConfidentialDetailsToCase(
-            caseDetails, getCaseData(caseDetails).getAllChildren(), CHILD
-        );
+        caseData = getCaseData(caseDetails);
+
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllChildren(), CHILD);
 
         removeTemporaryFields(caseDetails, caseData.getChildrenEventData().getTransientFields());
 
         return respond(caseDetails);
     }
 
-    private boolean cafcassSolicitorHasNeverBeenSet(CaseData caseData,
-                                                    CaseData caseDataBefore) {
+    private boolean shouldUpdateRepresentation(CaseData caseData, CaseData caseDataBefore) {
+        return OPEN != caseData.getState() && !cafcassSolicitorHasNeverBeenSet(caseData, caseDataBefore);
+    }
+
+    private boolean cafcassSolicitorHasNeverBeenSet(CaseData caseData, CaseData caseDataBefore) {
         return Set.of(NOT_SPECIFIED, NO)
             .contains(YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation()))
             && YesNo.NO == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
     }
 
-    private boolean isNotFirstTimeRecordingSolicitor(CaseData caseData,
-                                                     CaseData caseDataBefore) {
+    private boolean isNotFirstTimeRecordingSolicitor(CaseData caseData, CaseData caseDataBefore) {
         return YES == YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation())
             && YES == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
     }
