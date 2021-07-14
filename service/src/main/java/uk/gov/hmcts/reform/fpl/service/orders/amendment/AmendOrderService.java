@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AmendOrderService {
     private static final String MEDIA_TYPE = RenderFormat.PDF.getMediaType();
+    private static final String FILE_NAME_PREFIX = "amended_";
 
     private final AmendedOrderStamper stamper;
     private final List<AmendOrderAction> amendmentActions;
@@ -44,6 +45,7 @@ public class AmendOrderService {
     }
 
     private String updateFileName(DocumentReference original) {
-        return "amended_" + original.getFilename();
+        String filename = original.getFilename();
+        return filename.startsWith(FILE_NAME_PREFIX) ? filename : FILE_NAME_PREFIX + filename;
     }
 }
