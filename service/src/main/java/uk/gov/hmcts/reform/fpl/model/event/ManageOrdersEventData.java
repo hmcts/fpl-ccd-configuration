@@ -77,7 +77,6 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersLinkedApplication;
     String manageOrdersParentResponsible;
     RelationshipWithChild manageOrdersRelationshipWithChild;
-
     DynamicList manageOrdersAmendmentList;
     DocumentReference manageOrdersOrderToAmend;
     DocumentReference manageOrdersAmendedOrder;

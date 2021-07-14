@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CO
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RELATIONSHIP_WITH_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCOMMODATION_ORDER_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
@@ -328,7 +327,6 @@ public enum Order {
             WHICH_CHILDREN,
             ORDER_BY_CONSENT,
             PARENTAL_RESPONSIBILITY,
-            RELATIONSHIP_WITH_CHILD,
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER
         )

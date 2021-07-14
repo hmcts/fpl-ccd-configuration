@@ -296,7 +296,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.relationshipWithChild=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.parentResponsible=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

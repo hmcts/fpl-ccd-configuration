@@ -104,7 +104,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("orderToAmend","NO"),
         Map.entry("uploadAmendedOrder","NO"),
         Map.entry("parentResponsible", "NO"),
-        Map.entry("relationshipWithChild","NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -499,7 +498,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("isFinalOrder", "NO"),
             Map.entry("orderToAmend","NO"),
             Map.entry("uploadAmendedOrder","NO"),
-            Map.entry("relationshipWithChild","NO"),
             Map.entry("parentResponsible", "NO")
         );
 
@@ -548,7 +546,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("isFinalOrder", "NO"),
             Map.entry("orderToAmend","NO"),
             Map.entry("uploadAmendedOrder","NO"),
-            Map.entry("relationshipWithChild","NO"),
             Map.entry("parentResponsible", "NO")
         );
 
