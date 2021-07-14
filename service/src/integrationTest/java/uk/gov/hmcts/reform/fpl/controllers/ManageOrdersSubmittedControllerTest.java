@@ -476,7 +476,6 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         );
     }
 
-
     private CaseData caseData() {
         return CaseData.builder()
             .id(CASE_ID)

@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.AmendableOrderType;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -40,17 +41,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {AmendedOrderEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class, ManageOrdersClosedCaseFieldGenerator.class,
-    SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryTypeGenerator.class,
-    LookupTestConfig.class, ChildrenService.class, AppointedGuardianFormatter.class,
-    SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryExtraOthersNotifiedGenerator.class,
-    OthersService.class, OrderIssuedEmailContentProviderTypeOfOrderCalculator.class,
-    SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class,
-    ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class, ChildSelectionUtils.class})
-@MockBeans({
-    @MockBean(OrderCreationService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(SealedOrderHistoryFinalMarker.class)
-})
+    EmailNotificationHelper.class, FixedTimeConfiguration.class,
+    ChildrenService.class, AppointedGuardianFormatter.class,
+    OthersService.class})
 class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final CaseData CASE_DATA = CaseData.builder()
@@ -72,9 +65,6 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
     @MockBean
     private EmailNotificationHelper helper;
 
-    @MockBean
-    private OrderIssuedEmailContentProviderTypeOfOrderCalculator calculator;
-
     @BeforeEach
     void setUp() {
         when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("Jones");
@@ -84,7 +74,7 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
     void shouldBuildAmendedOrderParameters() {
         NotifyData expectedParameters = getExpectedParameters();
         NotifyData actualParameters = underTest.getNotifyData(
-            CASE_DATA, testDocument, AmendableOrderType.CASE_MANAGEMENT_ORDER.getLabel());
+            CASE_DATA, testDocument, AmendedOrderType.CASE_MANAGEMENT_ORDER.getLabel());
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }

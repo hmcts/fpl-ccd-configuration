@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.AmendableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -108,7 +108,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder {
     @JsonIgnore
     @Override
     public String getAmendedOrderType() {
-        return AmendableOrderType.CASE_MANAGEMENT_ORDER.getLabel();
+        return AmendedOrderType.CASE_MANAGEMENT_ORDER.getLabel();
     }
 
     @JsonIgnore

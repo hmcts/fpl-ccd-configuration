@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -169,8 +170,8 @@ class GeneratedOrderTest {
 
         GeneratedOrder order = GeneratedOrder.builder()
             .children(List.of(
-                element(childOneId, Child.builder().build()),
-                element(childTwoId, Child.builder().build())
+                ElementUtils.element(childOneId, Child.builder().build()),
+                ElementUtils.element(childTwoId, Child.builder().build())
             )).build();
 
         assertThat(order.getChildrenIDs()).isEqualTo(List.of(childOneId, childTwoId));

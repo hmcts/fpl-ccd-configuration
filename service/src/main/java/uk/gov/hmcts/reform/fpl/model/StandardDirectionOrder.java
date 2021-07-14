@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.AmendableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -116,7 +116,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     @JsonIgnore
     @Override
     public String getAmendedOrderType() {
-        return AmendableOrderType.STANDARD_DIRECTION_ORDER.getLabel();
+        return AmendedOrderType.STANDARD_DIRECTION_ORDER.getLabel();
     }
 
     @JsonIgnore

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.AmendableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -63,7 +63,7 @@ public class AmendedOrderEventHandler {
         final String orderType = orderEvent.getAmendedOrderType();
         final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
 
-        if (!orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
+        if (!orderType.equals(AmendedOrderType.STANDARD_DIRECTION_ORDER)) {
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
             allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers,
@@ -85,7 +85,7 @@ public class AmendedOrderEventHandler {
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
-        if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendableOrderType
+        if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendedOrderType
             .STANDARD_DIRECTION_ORDER.getLabel())) {
             final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
                 orderDocument, orderType);
@@ -115,7 +115,7 @@ public class AmendedOrderEventHandler {
 
         sendToLocalAuthority(caseData, notifyData);
 
-        if (!digitalRepresentatives.isEmpty() & !orderType.equals(AmendableOrderType
+        if (!digitalRepresentatives.isEmpty() & !orderType.equals(AmendedOrderType
             .STANDARD_DIRECTION_ORDER.getLabel())) {
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),

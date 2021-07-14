@@ -20,8 +20,6 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
-    private final Time time;
-    private final OrderIssuedEmailContentProviderTypeOfOrderCalculator typeCalculator;
     private final EmailNotificationHelper helper;
 
     public OrderAmendedNotifyData getNotifyData(final CaseData caseData,
