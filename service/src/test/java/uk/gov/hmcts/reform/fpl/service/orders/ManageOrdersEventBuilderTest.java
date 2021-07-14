@@ -14,20 +14,12 @@ import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedCaseManageme
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedGeneratedOrderFinder;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedOrderFinder;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedUrgentHearingOrderFinder;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,6 +41,7 @@ class ManageOrdersEventBuilderTest {
         amendedGeneratedOrderFinder, mock(AmendedCaseManagementOrderFinder.class),
         mock(AmendedUrgentHearingOrderFinder.class), mock(AmendedCaseManagementOrderFinder.class));
     private final ManageOrdersEventBuilder underTest = new ManageOrdersEventBuilder(historyService, finders);
+
 
     @Test
     void buildAmended() {
@@ -72,17 +65,8 @@ class ManageOrdersEventBuilderTest {
         Optional<ManageOrdersEvent> expectedEvent = Optional.of(new AmendedOrderEvent(caseData, expectedDocument,
             "Care order", selectedOthers));
         assertThat(event).usingRecursiveComparison().isEqualTo(expectedEvent);
-    private final ManageOrdersEventBuilder underTest = new ManageOrdersEventBuilder(historyService);
-
-    @Test
-    void buildAmended() {
-        when(caseData.getOrderCollection()).thenReturn(orders);
-        when(caseDataBefore.getOrderCollection()).thenReturn(orders);
-
-        Optional<GeneratedOrderEvent> event = underTest.build(caseData, caseDataBefore);
-
-        assertThat(event).isEmpty();
     }
+
 
     @Test
     void buildNonAmended() {
@@ -91,18 +75,11 @@ class ManageOrdersEventBuilderTest {
         when(caseDataBefore.getOrderCollection()).thenReturn(ordersBefore);
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(order);
         when(order.getDocument()).thenReturn(document);
-
-        Optional<GeneratedOrderEvent> event = underTest.build(caseData, caseDataBefore);
-
-        assertThat(event).isPresent();
-        assertThat(event.get().getCaseData()).isEqualTo(caseData);
-        assertThat(event.get().getOrderDocument()).isEqualTo(document);
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(GeneratedOrder.builder()
             .document(document)
             .build());
 
         Optional<ManageOrdersEvent> event = underTest.build(caseData, caseDataBefore);
-
         Optional<ManageOrdersEvent> expectedEvent = Optional.of(new GeneratedOrderEvent(caseData, document));
         assertThat(event).usingRecursiveComparison().isEqualTo(expectedEvent);
     }

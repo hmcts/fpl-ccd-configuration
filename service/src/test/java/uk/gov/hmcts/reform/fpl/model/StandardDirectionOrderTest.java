@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import org.mockito.MockedStatic;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import org.mockito.MockedStatic;
 
 import java.time.LocalDate;
 import java.util.List;

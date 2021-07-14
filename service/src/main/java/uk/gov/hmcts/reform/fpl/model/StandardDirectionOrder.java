@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,7 +51,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
-    private final LocalDate amendedDate;
     private final List<Element<Other>> others;
 
     @JsonIgnore

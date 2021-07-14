@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
@@ -52,7 +51,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
@@ -156,9 +154,6 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private DocmosisCoverDocumentsService documentService;
-
-    @SpyBean
-    private EventService eventPublisher;
 
     @MockBean
     private ManageOrdersEventBuilder manageOrdersEventBuilder;
