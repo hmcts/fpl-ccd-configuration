@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.converter.BasicChildConverter;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,8 +31,13 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 
+@Slf4j
 @Data
 @Builder(toBuilder = true)
 public class GeneratedOrder implements RemovableOrder, AmendableOrder {
@@ -94,7 +101,32 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
 
     @Override
     public LocalDate amendableSortDate() {
-        return null != approvalDate ? approvalDate : approvalDateTime.toLocalDate();
+        if (null != approvalDate) {
+            return approvalDate;
+        }
+
+        if (null != approvalDateTime) {
+            return approvalDateTime.toLocalDate();
+        }
+
+        try {
+            if (null != dateOfIssue) {
+                return parseLocalDateFromStringUsingFormat(dateOfIssue, DATE);
+            }
+        } catch (DateTimeParseException ignored) {
+            log.warn("Could not parse {} with format {}", dateOfIssue, DATE);
+        }
+
+        try {
+            if (null != date) {
+                return parseLocalDateTimeFromStringUsingFormat(date, TIME_DATE).toLocalDate();
+            }
+        } catch (DateTimeParseException ignored) {
+            log.warn("Could not parse {} with format {}", date, TIME_DATE);
+        }
+
+        log.warn("Could not find any date to sort amendable list by, falling back to null");
+        return null;
     }
 
     @JsonIgnore

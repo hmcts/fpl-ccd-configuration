@@ -14,6 +14,16 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.action.AmendOrderAction;
 
 import java.util.Collections;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.orders.amendment.action.AmendOrderAction;
+
 import java.util.List;
 import java.util.Map;
 
@@ -37,13 +47,16 @@ class AmendOrderServiceTest {
     private final AmendOrderService underTest = new AmendOrderService(stamper, List.of(action), uploadService,
         othersService);
 
+    private final AmendOrderService underTest = new AmendOrderService(stamper, List.of(action), uploadService);
+
     @BeforeEach
     void setUp() {
         when(caseData.getManageOrdersEventData()).thenReturn(eventData);
     }
 
-    @Test
-    void updateOrder() {
+    @ParameterizedTest
+    @ValueSource(strings = {"file.pdf", "amended_file.pdf"})
+    void updateOrder(String filename) {
         DocumentReference originalOrder = mock(DocumentReference.class);
         DocumentReference uploadedOrder = mock(DocumentReference.class);
         byte[] stampedBinaries = new byte[]{1,2,3,4,5};
@@ -62,6 +75,11 @@ class AmendOrderServiceTest {
             .thenReturn(stampedDocument);
 
         when(action.applyAmendedOrder(caseData, amendedOrder, selectedOthers)).thenReturn(amendedFields);
+        when(originalOrder.getFilename()).thenReturn(filename);
+        when(uploadService.uploadDocument(stampedBinaries, "amended_file.pdf", "application/pdf"))
+            .thenReturn(stampedDocument);
+
+        when(action.applyAmendedOrder(caseData, amendedOrder)).thenReturn(amendedFields);
 
         assertThat(underTest.updateOrder(caseData)).isEqualTo(amendedFields);
     }

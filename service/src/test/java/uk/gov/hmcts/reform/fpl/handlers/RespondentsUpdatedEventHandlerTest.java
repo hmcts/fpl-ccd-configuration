@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -61,27 +61,31 @@ class RespondentsUpdatedEventHandlerTest {
         final String recipient1 = "solicitor1@test.com";
         final String recipient2 = "solicitor2@test.com";
 
-        final RespondentSolicitor solicitor1 = RespondentSolicitor.builder().email(recipient1).build();
-        final RespondentSolicitor solicitor2 = RespondentSolicitor.builder().email(recipient2).build();
+        final Respondent respondent1 = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder().email(recipient1).build())
+            .party(RespondentParty.builder().firstName("David").lastName("Jones").build()).build();
+        final Respondent respondent2 = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder().email(recipient2).build())
+            .party(RespondentParty.builder().firstName("Emma").lastName("White").build()).build();
 
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
-            .respondents1(wrapElements(mock(Respondent.class), mock(Respondent.class)))
+            .respondents1(wrapElements(respondent1, respondent2))
             .build();
 
         final CaseData caseDataBefore = CaseData.builder()
-            .respondents1(wrapElements(mock(Respondent.class)))
+            .respondents1(wrapElements(respondent1))
             .build();
 
         final RespondentsUpdated respondentsUpdated = new RespondentsUpdated(caseData, caseDataBefore);
 
-        when(respondentService.getRegisteredSolicitors(caseData.getRespondents1()))
-            .thenReturn(new ArrayList<>(List.of(solicitor1, solicitor2)));
+        when(respondentService.getRespondentsWithRegisteredSolicitors(caseData.getRespondents1()))
+            .thenReturn(new ArrayList<>(List.of(respondent1, respondent2)));
 
-        when(respondentService.getRegisteredSolicitors(caseDataBefore.getRespondents1()))
-            .thenReturn(new ArrayList<>(List.of(solicitor1)));
+        when(respondentService.getRespondentsWithRegisteredSolicitors(caseDataBefore.getRespondents1()))
+            .thenReturn(new ArrayList<>(List.of(respondent1)));
 
-        when(registeredContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, solicitor2))
+        when(registeredContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, respondent2))
             .thenReturn(registeredTemplate);
 
         underTest.notifyRegisteredRespondentSolicitors(respondentsUpdated);
@@ -98,19 +102,23 @@ class RespondentsUpdatedEventHandlerTest {
         final String expectedEmail = "test@test.com";
         final CaseData caseDataBefore = CaseData.builder().build();
 
-        final RespondentSolicitor unregisteredSolicitor = RespondentSolicitor.builder().email(expectedEmail).build();
+        final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+            .solicitor(RespondentSolicitor.builder().email(expectedEmail).build())
+            .build();
 
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
-            .respondents1(wrapElements(mock(Respondent.class)))
+            .respondents1(wrapElements(respondent))
             .build();
 
         final RespondentsUpdated submittedCaseEvent = new RespondentsUpdated(caseData, caseDataBefore);
 
-        when(respondentService.getUnregisteredSolicitors(caseData.getRespondents1()))
-            .thenReturn(new ArrayList<>(List.of(unregisteredSolicitor)));
+        when(respondentService.getRespondentsWithUnregisteredSolicitors(caseData.getRespondents1()))
+            .thenReturn(new ArrayList<>(List.of(respondent)));
 
-        when(unregisteredContentProvider.buildContent(caseData)).thenReturn(unregisteredTemplate);
+        when(unregisteredContentProvider.buildContent(caseData, respondent))
+            .thenReturn(unregisteredTemplate);
 
         underTest.notifyUnregisteredRespondentSolicitors(submittedCaseEvent);
 

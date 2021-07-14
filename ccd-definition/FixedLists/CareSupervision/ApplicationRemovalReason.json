@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationRemovalReason",
+    "ListElementCode": "DUPLICATE",
+    "ListElement": "Duplicate",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationRemovalReason",
+    "ListElementCode": "WRONG_CASE",
+    "ListElement": "Wrong case",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationRemovalReason",
+    "ListElementCode": "OTHER",
+    "ListElement": "Other (with details)",
+    "DisplayOrder": 3
+  }
+]

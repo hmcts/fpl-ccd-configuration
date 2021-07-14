@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import org.mockito.MockedStatic;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import org.mockito.MockedStatic;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -100,6 +102,25 @@ class StandardDirectionOrderTest {
             StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
             assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
         }
+    }
+
+    @Test
+    void amendableSortDateDateOfUpload() {
+        LocalDate date = LocalDate.of(1, 1, 1);
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfUpload(date).build();
+        assertThat(sdo.amendableSortDate()).isEqualTo(date);
+    }
+
+    @Test
+    void amendableSortDateDateOfIssue() {
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfIssue("1 January 0001").build();
+        assertThat(sdo.amendableSortDate()).isEqualTo(LocalDate.of(1, 1, 1));
+    }
+
+    @Test
+    void amendableSortDateNull() {
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().build();
+        assertThat(sdo.amendableSortDate()).isNull();
     }
 
     @Test

@@ -59,6 +59,12 @@ public class C2DocumentBundle implements ApplicationsBundle {
         return 2;
     }
 
+    @JsonIgnore
+    @Override
+    public DocumentReference getApplication() {
+        return document;
+    }
+
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
