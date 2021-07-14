@@ -195,6 +195,12 @@ task crossbrowser(description: 'Runs crossbrowser tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
 }
 
+task fortifyScan(type: JavaExec)  {
+  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = "8.25"
@@ -341,6 +347,7 @@ dependencies {
   testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
+  testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 
   functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
@@ -373,6 +380,9 @@ dependencies {
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+
+  // Fortify client for Fortify scan
+  testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 
 }
 
