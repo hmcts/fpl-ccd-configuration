@@ -61,11 +61,6 @@ class AmendOrderServiceTest {
         when(eventData.getManageOrdersAmendedOrder()).thenReturn(uploadedOrder);
         when(stamper.amendDocument(uploadedOrder)).thenReturn(stampedBinaries);
         when(eventData.getManageOrdersOrderToAmend()).thenReturn(originalOrder);
-        when(originalOrder.getFilename()).thenReturn("file.pdf");
-        when(uploadService.uploadDocument(stampedBinaries, "amended_file.pdf", "application/pdf"))
-            .thenReturn(stampedDocument);
-
-        when(action.applyAmendedOrder(caseData, amendedOrder, selectedOthers)).thenReturn(amendedFields);
         when(originalOrder.getFilename()).thenReturn(filename);
         when(uploadService.uploadDocument(stampedBinaries, "amended_file.pdf", "application/pdf"))
             .thenReturn(stampedDocument);
