@@ -347,6 +347,8 @@ dependencies {
   testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
+
+  // Fortify client for Fortify scans
   testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 
   functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
@@ -380,9 +382,6 @@ dependencies {
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
-
-  // Fortify client for Fortify scan
-  testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 
 }
 
