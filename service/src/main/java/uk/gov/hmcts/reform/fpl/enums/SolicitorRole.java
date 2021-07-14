@@ -96,8 +96,5 @@ public enum SolicitorRole {
             return nocAnswersTemplate;
         }
 
-        public String getCaseField() {
-            return caseField;
-        }
     }
 }

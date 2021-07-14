@@ -5,6 +5,8 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -150,6 +152,70 @@ class UpdateRepresentationServiceTest {
 
         assertThat(actual).isEqualTo(Map.of(
             "respondents1", List.of(updatedRespondent, respondent2),
+            "changeOfRepresentatives", UPDATED_CHANGE_OF_REPRESENTATIVES
+        ));
+    }
+
+    @Test
+    void shouldUpdateChildSolicitorWhenRepresentationAddedViaNoC() {
+        final Element<Child> child1 = element(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .build())
+            .build());
+
+        final Element<Child> child2 = element(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Emma")
+                .lastName("Green")
+                .build())
+            .build());
+
+        final Organisation organisation = organisation("ORG");
+
+        final ChangeOrganisationRequest changeOrganisationRequest = ChangeOrganisationRequest.builder()
+            .organisationToAdd(organisation)
+            .caseRoleId(caseRoleDynamicList("[CHILDSOLICITORA]"))
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .children1(List.of(child1, child2))
+            .changeOrganisationRequestField(changeOrganisationRequest)
+            .changeOfRepresentatives(CHANGE_OF_REPRESENTATIVES)
+            .build();
+
+        RespondentSolicitor updatedChildSolicitor = RespondentSolicitor.builder()
+            .firstName("Tom")
+            .lastName("Wilson")
+            .email(SOLICITOR_EMAIL)
+            .organisation(organisation)
+            .build();
+
+        when(changeService.changeRepresentative(
+            ChangeOfRepresentationRequest.builder()
+                .method(NOC)
+                .current(CHANGE_OF_REPRESENTATIVES)
+                .child(child1.getValue())
+                .removedRepresentative(null)
+                .addedRepresentative(updatedChildSolicitor)
+                .by(SOLICITOR_EMAIL)
+                .build()
+        )).thenReturn(UPDATED_CHANGE_OF_REPRESENTATIVES);
+
+        final Element<Child> updatedChild =
+            element(child1.getId(), child1.getValue().toBuilder()
+                .solicitor(updatedChildSolicitor)
+                .build());
+
+        when(updateAction.accepts(SolicitorRole.Representing.CHILD)).thenReturn(true);
+        when(updateAction.applyUpdates(child1.getValue(), caseData, updatedChildSolicitor))
+            .thenReturn(Map.of("children1", List.of(updatedChild, child2)));
+
+        final Map<String, Object> actual = underTest.updateRepresentation(caseData, USER);
+
+        assertThat(actual).isEqualTo(Map.of(
+            "children1", List.of(updatedChild, child2),
             "changeOfRepresentatives", UPDATED_CHANGE_OF_REPRESENTATIVES
         ));
     }
