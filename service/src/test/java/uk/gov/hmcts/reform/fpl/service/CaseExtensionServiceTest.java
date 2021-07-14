@@ -18,94 +18,68 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseExtensionService.class})
 class CaseExtensionServiceTest {
 
+    private static final LocalDate DATE_SUBMITTED = LocalDate.of(2020, 1, 1);
+
+    private static final LocalDate OTHER_DATE = LocalDate.of(2020, 3, 3);
+    private static final LocalDate EXTENDED_OTHER = OTHER_DATE.plusWeeks(8);
     @Autowired
     private CaseExtensionService service;
 
     @Test
     void shouldGetCaseCompletionDateWhenSubmittingWithOtherExtensionDate() {
-        LocalDate extensionDateOther = LocalDate.of(2030, 11, 12);
-
         CaseData data = CaseData.builder()
-            .extensionDateOther(extensionDateOther)
+            .extensionDateOther(OTHER_DATE)
             .caseExtensionTimeList(OTHER_EXTENSION).build();
 
         LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
-        assertThat(caseCompletionDate)
-            .isEqualTo(extensionDateOther);
+        assertThat(caseCompletionDate).isEqualTo(OTHER_DATE);
     }
 
     @Test
     void shouldGetCaseCompletionDateWhenSubmittingWith8WeekExtensionOther() {
-        LocalDate eightWeeksExtensionDateOther = LocalDate.of(2030, 11, 12);
-
         CaseData data = CaseData.builder()
             .caseExtensionTimeList(EIGHT_WEEK_EXTENSION)
             .caseExtensionTimeConfirmationList(OTHER_EXTENSION)
-            .eightWeeksExtensionDateOther(eightWeeksExtensionDateOther)
+            .eightWeeksExtensionDateOther(EXTENDED_OTHER)
             .build();
 
         LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
-        assertThat(caseCompletionDate)
-            .isEqualTo(eightWeeksExtensionDateOther);
+        assertThat(caseCompletionDate).isEqualTo(EXTENDED_OTHER);
     }
 
     @Test
-    void shouldGetCaseCompletionDateWhenSubmittingWhenSubmittingWith8WeekExtension() {
-        LocalDate dateSubmitted = LocalDate.of(2030,11,11);
-
+    void shouldGetCaseCompletionDateSubmittingWith8WeekExtension() {
         CaseData data = CaseData.builder()
             .caseExtensionTimeList(EIGHT_WEEK_EXTENSION)
             .caseExtensionTimeConfirmationList(EIGHT_WEEK_EXTENSION)
-            .dateSubmitted(dateSubmitted)
+            .dateSubmitted(DATE_SUBMITTED)
             .build();
 
         LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
-        assertThat(caseCompletionDate)
-            .isEqualTo(dateSubmitted.plusWeeks(8));
+        assertThat(caseCompletionDate).isEqualTo(DATE_SUBMITTED.plusWeeks(34));
     }
 
     @Test
-    void shouldGetCaseCompletionDateFor8WeekExtension() {
-        CaseData data = CaseData.builder().dateSubmitted(LocalDate
-            .of(2020, 11, 20)).build();
-
-        LocalDate expectedCaseCompletionDate = data.getDateSubmitted().plusWeeks(8);
-
-        LocalDate caseCompletionDate = service.getCaseCompletionDateFor8WeekExtension(data);
-
-        assertThat(caseCompletionDate)
-            .isEqualTo(expectedCaseCompletionDate);
-    }
-
-    @Test
-    void shouldGetCaseSubmittedDateWhenNoCompletionDate() {
-        CaseData data = CaseData.builder().dateSubmitted(LocalDate
-            .of(2020, 11, 20))
-            .caseCompletionDate(LocalDate.of(2030, 11, 20)).build();
-
-        LocalDate expectedCaseCompletionDate = data.getCaseCompletionDate();
+    void shouldGetCaseCompletedByDateWhenNoCompletionDate() {
+        CaseData data = CaseData.builder().dateSubmitted(DATE_SUBMITTED).build();
 
         LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data);
 
-        assertThat(caseCompletionDate)
-            .isEqualTo(expectedCaseCompletionDate);
+        assertThat(caseCompletionDate).isEqualTo(DATE_SUBMITTED.plusWeeks(26));
     }
 
     @Test
-    void shouldGetCaseCompletionDateWhenCompletionDateExists() {
+    void shouldGetCaseCompletedByDateWhenCompletionDateExists() {
         CaseData data = CaseData.builder()
-            .dateSubmitted(LocalDate.of(2020, 11, 20))
-            .caseCompletionDate(LocalDate.of(2021, 1, 15))
+            .dateSubmitted(DATE_SUBMITTED)
+            .caseCompletionDate(OTHER_DATE)
             .build();
 
-        LocalDate expectedCaseCompletionDate = data.getDateSubmitted().plusWeeks(8);
-
         LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data);
 
-        assertThat(caseCompletionDate)
-            .isEqualTo(expectedCaseCompletionDate);
+        assertThat(caseCompletionDate).isEqualTo(OTHER_DATE);
     }
 }

@@ -57,7 +57,7 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
     @Test
     void shouldPopulateCaseCompletionDateWhenSubmittingWith8WeekExtension() {
         LocalDate dateSubmitted = LocalDate.of(2030, 11, 11);
-        LocalDate eightWeekExtensionDate = dateSubmitted.plusWeeks(8);
+        LocalDate extendedDate = dateSubmitted.plusWeeks(34);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseExtensionTimeList", EIGHT_WEEK_EXTENSION,
@@ -67,6 +67,6 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(callbackResponse.getData().get("caseCompletionDate")).isEqualTo(eightWeekExtensionDate.toString());
+        assertThat(callbackResponse.getData().get("caseCompletionDate")).isEqualTo(extendedDate.toString());
     }
 }
