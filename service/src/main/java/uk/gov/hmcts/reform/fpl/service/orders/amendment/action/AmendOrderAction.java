@@ -11,5 +11,6 @@ import java.util.Map;
 public interface AmendOrderAction {
     boolean accept(CaseData caseData);
 
-    Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument, List<Element<Other>> selectedOthers);
+    Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument,
+                                          List<Element<Other>> selectedOthers);
 }

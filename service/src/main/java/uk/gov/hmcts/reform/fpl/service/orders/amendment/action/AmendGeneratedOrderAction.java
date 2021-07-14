@@ -31,7 +31,8 @@ public class AmendGeneratedOrderAction implements AmendOrderAction {
     }
 
     @Override
-    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument, List<Element<Other>> selectedOthers) {
+    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument,
+                                                 List<Element<Other>> selectedOthers) {
         UUID selectedOrderId = caseData.getManageOrdersEventData().getManageOrdersAmendmentList().getValueCodeAsUUID();
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 

@@ -14,13 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AmendedOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
@@ -30,9 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_AMENDED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -67,10 +63,11 @@ public class AmendedOrderEventHandler {
         final String orderType = orderEvent.getAmendedOrderType();
         final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
 
-        if(!orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
+        if (!orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER)) {
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
-            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers, element -> element.getValue()));
+            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers,
+                element -> element.getValue()));
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
 
             sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
@@ -88,7 +85,8 @@ public class AmendedOrderEventHandler {
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
-        if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER.getLabel())) {
+        if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendableOrderType
+            .STANDARD_DIRECTION_ORDER.getLabel())) {
             final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
                 orderDocument, orderType);
 
@@ -117,7 +115,8 @@ public class AmendedOrderEventHandler {
 
         sendToLocalAuthority(caseData, notifyData);
 
-        if(!digitalRepresentatives.isEmpty() & !orderType.equals(AmendableOrderType.STANDARD_DIRECTION_ORDER.getLabel())) {
+        if (!digitalRepresentatives.isEmpty() & !orderType.equals(AmendableOrderType
+            .STANDARD_DIRECTION_ORDER.getLabel())) {
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
                 notifyData,

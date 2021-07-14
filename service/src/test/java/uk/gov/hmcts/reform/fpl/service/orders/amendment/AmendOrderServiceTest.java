@@ -34,7 +34,8 @@ class AmendOrderServiceTest {
     private final UploadDocumentService uploadService = mock(UploadDocumentService.class);
     private final OthersService othersService = mock(OthersService.class);
 
-    private final AmendOrderService underTest = new AmendOrderService(stamper, List.of(action), uploadService, othersService);
+    private final AmendOrderService underTest = new AmendOrderService(stamper, List.of(action), uploadService,
+        othersService);
 
     @BeforeEach
     void setUp() {

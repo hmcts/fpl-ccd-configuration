@@ -3,16 +3,14 @@ package uk.gov.hmcts.reform.fpl.service.orders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.OrderEvent;
+import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedOrderFinder;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
@@ -45,7 +43,8 @@ public class ManageOrdersEventBuilder {
         String amendedOrderType = order.get().getAmendedOrderType();
         List<Element<Other>> selectedOthers = order.get().getSelectedOthers();
 
-        return order.map(amendableOrder -> new AmendedOrderEvent(caseData, amendedDocument, amendedOrderType, selectedOthers ));
+        return order.map(amendableOrder -> new AmendedOrderEvent(caseData, amendedDocument, amendedOrderType,
+            selectedOthers));
 
     }
 

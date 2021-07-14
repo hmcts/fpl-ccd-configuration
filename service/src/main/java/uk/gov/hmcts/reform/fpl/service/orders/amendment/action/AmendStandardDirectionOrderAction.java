@@ -28,7 +28,8 @@ public class AmendStandardDirectionOrderAction implements AmendOrderAction {
     }
 
     @Override
-    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument, List<Element<Other>> selectedOthers) {
+    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument,
+                                                 List<Element<Other>> selectedOthers) {
         StandardDirectionOrder sdo = caseData.getStandardDirectionOrder().toBuilder()
             .amendedDate(time.now().toLocalDate())
             .orderDoc(amendedDocument)

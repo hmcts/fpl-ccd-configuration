@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -33,10 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrdersEventBuilder;
-import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedCaseManagementOrderFinder;
-import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedGeneratedOrderFinder;
-import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedOrderFinder;
-import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedUrgentHearingOrderFinder;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -54,15 +48,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -75,12 +64,10 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMapForRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -210,7 +197,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetailsBefore())))
+            .thenReturn(Optional.of(generatedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -259,7 +248,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -280,7 +270,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetailsBefore())))
+            .thenReturn(Optional.of(generatedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -301,7 +293,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -322,7 +315,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetailsBefore())))
+            .thenReturn(Optional.of(generatedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -342,7 +337,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetailsBefore())))
+            .thenReturn(Optional.of(generatedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -365,11 +362,13 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(asCaseDetails(caseData))
             .build();
 
-        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order",
+            Collections.emptyList());
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
 
-       postSubmittedEvent(request);
+        postSubmittedEvent(request);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
@@ -386,9 +385,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(asCaseDetails(caseData))
             .build();
 
-        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order",
+            Collections.emptyList());
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetails())))
+            .thenReturn(Optional.of(amendedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -435,9 +437,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(asCaseDetails(caseData))
             .build();
 
-        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order",
+            Collections.emptyList());
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetails())))
+            .thenReturn(Optional.of(amendedOrderEvent));
 
         postSubmittedEvent(request);
 
@@ -456,9 +461,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(asCaseDetails(caseData))
             .build();
 
-        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order", Collections.emptyList());
+        ManageOrdersEvent amendedOrderEvent = new AmendedOrderEvent(caseData, ORDER, "case management order",
+            Collections.emptyList());
 
-        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()), extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+        when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
+            extractCaseData(request.getCaseDetails())))
+            .thenReturn(Optional.of(amendedOrderEvent));
 
         postSubmittedEvent(request);
 

@@ -11,26 +11,21 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderAmendedNotifyData;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AmendedOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,9 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_AMENDED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -60,14 +53,15 @@ class AmendedOrderEventHandlerTest {
     private static final Set<String> EMAIL_REPS = new HashSet<>(Arrays.asList(EMAIL_REP_1, EMAIL_REP_2));
     private static final String DIGITAL_REP_1 = "fred@flinstones.com";
     private static final String DIGITAL_REP_2 = "fred2@flinstones.com";
-    private final static String AMENDED_ORDER_TYPE = "case management order";
+    private static final String AMENDED_ORDER_TYPE = "case management order";
     private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList(DIGITAL_REP_1, DIGITAL_REP_2));
     private static final Long CASE_ID = 12345L;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocumentReference TEST_DOCUMENT = mock(DocumentReference.class);
     private static final OrderAmendedNotifyData NOTIFY_DATA = mock(OrderAmendedNotifyData.class);
     private static final List<Element<Other>> SELECTED_OTHERS = List.of(element(mock(Other.class)));
-    private static final AmendedOrderEvent EVENT = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, AMENDED_ORDER_TYPE, SELECTED_OTHERS);
+    private static final AmendedOrderEvent EVENT = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, AMENDED_ORDER_TYPE,
+        SELECTED_OTHERS);
     @Mock
     private AmendedOrderEmailContentProvider amendedOrderEmailContentProvider;
     @Mock
@@ -182,7 +176,8 @@ class AmendedOrderEventHandlerTest {
         given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "standard direction order"))
             .willReturn(NOTIFY_DATA);
 
-        AmendedOrderEvent event = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, "standard direction order", SELECTED_OTHERS);
+        AmendedOrderEvent event = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, "standard direction order",
+            SELECTED_OTHERS);
 
         underTest.notifyParties(event);
 

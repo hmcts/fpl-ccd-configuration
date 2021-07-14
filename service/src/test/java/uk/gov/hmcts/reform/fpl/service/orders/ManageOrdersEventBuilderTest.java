@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
-import org.checkerframework.checker.nullness.Opt;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -17,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedGeneratedOrd
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedOrderFinder;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedUrgentHearingOrderFinder;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +38,8 @@ class ManageOrdersEventBuilderTest {
     private final SealedOrderHistoryService historyService = mock(SealedOrderHistoryService.class);
     private final AmendedGeneratedOrderFinder amendedGeneratedOrderFinder = mock(AmendedGeneratedOrderFinder.class);
     private final List<AmendedOrderFinder<? extends AmendableOrder>> finders = List.of(
-        amendedGeneratedOrderFinder, mock(AmendedCaseManagementOrderFinder.class), mock(AmendedUrgentHearingOrderFinder.class),
-        mock(AmendedCaseManagementOrderFinder.class));
+        amendedGeneratedOrderFinder, mock(AmendedCaseManagementOrderFinder.class),
+        mock(AmendedUrgentHearingOrderFinder.class), mock(AmendedCaseManagementOrderFinder.class));
     private final ManageOrdersEventBuilder underTest = new ManageOrdersEventBuilder(historyService, finders);
 
     @Test
@@ -64,7 +61,8 @@ class ManageOrdersEventBuilderTest {
 
         Optional<ManageOrdersEvent> event = underTest.build(caseData, caseDataBefore);
 
-        Optional<ManageOrdersEvent> expectedEvent = Optional.of(new AmendedOrderEvent(caseData, expectedDocument, "Care order", selectedOthers));
+        Optional<ManageOrdersEvent> expectedEvent = Optional.of(new AmendedOrderEvent(caseData, expectedDocument,
+            "Care order", selectedOthers));
         assertThat(event).usingRecursiveComparison().isEqualTo(expectedEvent);
     }
 

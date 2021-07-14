@@ -28,7 +28,8 @@ public class AmendUrgentHearingOrderAction implements AmendOrderAction {
     }
 
     @Override
-    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument, List<Element<Other>> selectedOthers) {
+    public Map<String, Object> applyAmendedOrder(CaseData caseData, DocumentReference amendedDocument,
+                                                 List<Element<Other>> selectedOthers) {
         UrgentHearingOrder uho = caseData.getUrgentHearingOrder().toBuilder()
             .amendedDate(time.now().toLocalDate())
             .order(amendedDocument)
