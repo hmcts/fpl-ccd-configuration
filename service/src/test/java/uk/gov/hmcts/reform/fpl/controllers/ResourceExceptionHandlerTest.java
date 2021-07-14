@@ -86,11 +86,11 @@ class ResourceExceptionHandlerTest {
     }
 
     @Test
-    void testMalformedHeaderRoles() {
+    void testMalformedForgedHeaderRoles() {
 
         when(httpServletRequest.getHeader(USER_ID_HEADER)).thenReturn("e24fb55f-4911-4705-a07e-4f0ed5f62539");
         when(httpServletRequest.getHeader(USER_ROLES_HEADER)).thenReturn(
-            "caseworker-publiclaw-bulkscan,payments3,caseworker-publiclaw-courtadmin");
+            "caseworker-publiclaw-bulkscan,payments\n\n,caseworker-publiclaw-courtadmin");
 
         ResponseEntity<AboutToStartOrSubmitCallbackResponse> actual =
             underTest.handleAboutToStartOrSubmitCallbackException(
@@ -100,7 +100,7 @@ class ResourceExceptionHandlerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build()));
         assertThat(logs.get()).isEqualTo(List.of(
-            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles=''). " + MESSAGE));
+            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles='caseworker-publiclaw-bulkscan,payments%0A%0A,caseworker-publiclaw-courtadmin'). " + MESSAGE));
 
     }
 

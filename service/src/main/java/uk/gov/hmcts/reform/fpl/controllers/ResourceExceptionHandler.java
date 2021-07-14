@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 import uk.gov.hmcts.reform.fpl.exceptions.LogAsWarningException;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Slf4j
 @ControllerAdvice
@@ -51,14 +51,16 @@ public class ResourceExceptionHandler {
         return String.format("(id='%s', roles='%s')", getUserId(request), getUserRoles(request));
     }
 
+    @SuppressWarnings("EmptyCatchBlock")
     private String getUserRoles(HttpServletRequest request) {
-        String userRoles = request.getHeader("user-roles");
-        if (isEmpty(userRoles) || !userRoles.matches("[a-zA-Z\\-,]+")) {
-            return "";
+        try {
+            return URLEncoder.encode(request.getHeader("user-roles"), StandardCharsets.UTF_8).replaceAll("%2C",",");
+        } catch (Exception e) {
         }
-        return userRoles;
+        return "";
     }
 
+    @SuppressWarnings("EmptyCatchBlock")
     private String getUserId(HttpServletRequest request) {
         try {
             return UUID.fromString(request.getHeader("user-id")).toString();
