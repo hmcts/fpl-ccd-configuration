@@ -52,7 +52,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         CaseData caseData = buildCaseData();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Davies");
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
@@ -85,7 +85,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .build()))
             .build();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Davies");
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters =

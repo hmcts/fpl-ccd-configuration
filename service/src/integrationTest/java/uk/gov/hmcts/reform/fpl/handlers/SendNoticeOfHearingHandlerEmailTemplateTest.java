@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
@@ -30,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,8 +65,6 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @MockBean
     private HearingVenueLookUpService venueLookUp;
-    @MockBean
-    private FeatureToggleService toggleService;
     @Autowired
     private SendNoticeOfHearingHandler underTest;
 
@@ -81,15 +75,12 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
         when(venueLookUp.buildHearingVenue(venue)).thenReturn("some building, somewhere");
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyCafcass(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyCafcass() {
         underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         assertThat(response())
-            .hasSubject("New case management hearing, " + name)
+            .hasSubject("New case management hearing, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("There's a new case management hearing for:")
                 .line()
@@ -115,15 +106,12 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyLocalAuthority(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyLocalAuthority() {
         underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         assertThat(response())
-            .hasSubject("New case management hearing, " + name)
+            .hasSubject("New case management hearing, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("There's a new case management hearing for:")
                 .line()
@@ -149,15 +137,12 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyRepresentatives(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyRepresentatives() {
         underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         assertThat(response())
-            .hasSubject("New case management hearing, " + name)
+            .hasSubject("New case management hearing, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("There's a new case management hearing for:")
                 .line()
@@ -181,12 +166,5 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
                 .end("Please do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                      + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

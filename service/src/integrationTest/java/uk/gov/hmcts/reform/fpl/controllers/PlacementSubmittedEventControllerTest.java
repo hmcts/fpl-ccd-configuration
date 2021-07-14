@@ -90,18 +90,22 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
     @Nested
     class PlacementOrderNotification {
+        private final Element<Child> child1 = testChild();
+        private final Element<Child> child2 = element(child1.getValue().toBuilder()
+            .party(child1.getValue().getParty().toBuilder()
+                .dateOfBirth(dateNow().minusMonths(1))
+                .lastName("Watson")
+                .build())
+            .build());
+
+        private final DocumentReference child1Application = testDocumentReference();
+        private final DocumentReference child2Application = testDocumentReference();
+
+        private final Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
+        private final Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
 
         @Test
         void shouldNotifyHmctsAdminWhenAddingNewChildPlacementAndCtscIsDisabled() throws Exception {
-            Element<Child> child1 = testChild();
-            Element<Child> child2 = testChild();
-
-            DocumentReference child1Application = testDocumentReference();
-            DocumentReference child2Application = testDocumentReference();
-
-            Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
-            Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
-
             CallbackRequest callbackRequest = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
                     .id(parseLong(CASE_ID))
@@ -131,15 +135,6 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldNotifyCtscAdminWhenAddingNewChildPlacementAndCtscIsEnabled() throws Exception {
-            Element<Child> child1 = testChild();
-            Element<Child> child2 = testChild();
-
-            DocumentReference child1Application = testDocumentReference();
-            DocumentReference child2Application = testDocumentReference();
-
-            Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
-            Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
-
             CallbackRequest callbackRequest = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
                     .id(parseLong(CASE_ID))
@@ -320,7 +315,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
         private Map<String, Object> expectedParameters() {
             return Map.of(
-                "respondentLastName", "Jones",
+                "respondentLastName", childElement.getValue().getParty().getLastName(),
                 "caseUrl", "http://fake-url/cases/case-details/12345#Placement");
         }
 

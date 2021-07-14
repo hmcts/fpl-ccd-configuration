@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -21,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -45,9 +42,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
@@ -74,16 +69,11 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
     private static final long CASE_ID = 123456L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
 
-    @MockBean
-    private FeatureToggleService toggleService;
-
     @Autowired
     private CaseManagementOrderIssuedEventHandler underTest;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyParties(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+    @Test
+    void notifyParties() {
         UUID hearingId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -113,7 +103,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         SendEmailResponse digitalRepResponse = responses.get(2);
         List.of(laResponse, digitalRepResponse).forEach(response ->
             assertThat(response)
-                .hasSubject("CMO issued, " + name)
+                .hasSubject("CMO issued, " + CHILD_LAST_NAME)
                 .hasBody(emailContent()
                     .line("The case management order has been issued for:")
                     .line()
@@ -139,7 +129,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         SendEmailResponse emailRepResponse = responses.get(3);
         List.of(cafcassResponse, emailRepResponse).forEach(response ->
             assertThat(response)
-                .hasSubject("CMO issued, " + name)
+                .hasSubject("CMO issued, " + CHILD_LAST_NAME)
                 .hasBody(emailContent()
                     .line("The case management order has been issued for:")
                     .line()
@@ -163,7 +153,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
 
         SendEmailResponse hmctsResponse = responses.get(4);
         assertThat(hmctsResponse)
-            .hasSubject("New case management order issued, " + name)
+            .hasSubject("New case management order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("A new case management order has been issued by Family Court")
                 .line()
@@ -181,12 +171,5 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

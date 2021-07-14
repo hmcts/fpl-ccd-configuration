@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -27,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailCon
 
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,7 +30,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
@@ -53,6 +47,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private static final HearingOrder CMO = mock(HearingOrder.class);
     private static final DocumentReference ORDER = mock(DocumentReference.class);
     private static final CaseManagementOrderIssuedEvent EVENT = new CaseManagementOrderIssuedEvent(CASE_DATA, CMO);
+
     @Mock
     private InboxLookupService inboxLookupService;
     @Mock
@@ -67,8 +62,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private CoreCaseDataService coreCaseDataService;
     @Mock
     private RepresentativesInbox representativesInbox;
-    @Mock
-    private FeatureToggleService toggleService;
+
     @InjectMocks
     private CaseManagementOrderIssuedEventHandler underTest;
 
@@ -78,10 +72,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
         when(CMO.getOrder()).thenReturn(ORDER);
     }
 
-    @ParameterizedTest
-    @MethodSource("templateSource")
-    void shouldNotifyPartiesOfCMOIssued(String template, boolean toggle) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+    @Test
+    void shouldNotifyPartiesOfCMOIssued() {
         when(CASE_DATA.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
         when(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
@@ -100,19 +92,23 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyParties(EVENT);
 
         verify(notificationService).sendEmail(
-            template, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_CMO_TEMPLATE_DATA, String.valueOf(CASE_ID)
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            DIGITAL_REP_CMO_TEMPLATE_DATA, String.valueOf(CASE_ID)
         );
 
         verify(notificationService).sendEmail(
-            template, "FamilyPublicLaw+cafcass@gmail.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+cafcass@gmail.com",
+            EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
         );
 
         verify(notificationService).sendEmail(
-            template, "fred@flinstone.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "fred@flinstone.com",
+            DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID
         );
 
         verify(notificationService).sendEmail(
-            template, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com",
+            EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
         );
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(CASE_DATA, CMO.getOrder(), IssuedOrderType.CMO);
@@ -124,13 +120,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION, CASE_TYPE, CASE_ID, SEND_DOCUMENT_EVENT, Map.of("documentToBeSent", ORDER)
-        );
-    }
-
-    private static Stream<Arguments> templateSource() {
-        return Stream.of(
-            Arguments.of(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, false),
-            Arguments.of(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME, true)
         );
     }
 }

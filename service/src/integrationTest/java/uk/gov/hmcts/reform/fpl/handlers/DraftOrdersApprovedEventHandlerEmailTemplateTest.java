@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -33,9 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -51,24 +46,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBean(SendDocumentService.class)
 class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Jones";
-    private static final String RESPONDENT_LAST_NAME = "Smith";
-
-    @MockBean
-    private FeatureToggleService toggleService;
 
     @Autowired
     private DraftOrdersApprovedEventHandler underTest;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyLAAndAdmin(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyLAAndAdmin() {
         underTest.sendNotificationToAdminAndLA(buildEvent());
 
         allResponses().forEach(response ->
             assertThat(response)
-                .hasSubject("New orders issued, " + name)
+                .hasSubject("New orders issued, " + CHILD_LAST_NAME)
                 .hasBody(emailContent()
                     .line("New orders have been issued for:")
                     .line()
@@ -95,11 +83,8 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyCafcassAndRepresentatives(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyCafcassAndRepresentatives() {
         underTest.sendNotificationToCafcassAndRepresentatives(buildEvent());
 
         List<SendEmailResponse> responses = allResponses();
@@ -107,7 +92,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
         // cafcass and email rep
         responses.subList(0,2).forEach(response ->
             assertThat(response)
-                .hasSubject("New orders issued, " + name)
+                .hasSubject("New orders issued, " + CHILD_LAST_NAME)
                 .hasBody(emailContent()
                     .line("New orders have been issued for:")
                     .line()
@@ -138,7 +123,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
         // digital rep
         assertThat(responses.get(2))
-            .hasSubject("New orders issued, " + name)
+            .hasSubject("New orders issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("New orders have been issued for:")
                 .line()
@@ -162,13 +147,6 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .end("Do not reply to this email. If you need to contact us, "
                      + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 
     private DraftOrdersApproved buildEvent() {
@@ -198,7 +176,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
             .id(100L)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
+                .party(RespondentParty.builder().lastName("Smith").build())
                 .build()))
             .children1(wrapElements(Child.builder()
                 .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())

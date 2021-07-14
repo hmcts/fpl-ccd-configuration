@@ -55,7 +55,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -308,19 +308,19 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         postSubmittedEvent(toCallBackRequest(cd, cdb));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(NOTICE_OF_NEW_HEARING),
+            eq(NOTICE_OF_NEW_HEARING_CHILD_NAME),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(NOTICE_OF_NEW_HEARING),
+            eq(NOTICE_OF_NEW_HEARING_CHILD_NAME),
             eq(CAFCASS_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(NOTICE_OF_NEW_HEARING),
+            eq(NOTICE_OF_NEW_HEARING_CHILD_NAME),
             eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -31,7 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -58,8 +57,6 @@ class SendNoticeOfHearingHandlerTest {
     @Mock
     private SendDocumentService sendDocumentService;
     @Mock
-    private FeatureToggleService toggleService;
-    @Mock
     private CafcassLookupConfiguration cafcassLookup;
 
     @InjectMocks
@@ -67,8 +64,6 @@ class SendNoticeOfHearingHandlerTest {
 
     @Test
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
-
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(inboxLookup.getRecipients(LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
@@ -79,14 +74,13 @@ class SendNoticeOfHearingHandlerTest {
         underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
-            NOTICE_OF_NEW_HEARING, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA, CASE_ID.toString()
+            NOTICE_OF_NEW_HEARING_CHILD_NAME, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA,
+            CASE_ID.toString()
         );
     }
 
     @Test
     void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
-
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(new Cafcass("", CAFCASS_EMAIL_ADDRESS));
@@ -96,14 +90,12 @@ class SendNoticeOfHearingHandlerTest {
         underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
-            NOTICE_OF_NEW_HEARING, CAFCASS_EMAIL_ADDRESS, EMAIL_REP_NOTIFY_DATA, CASE_ID
+            NOTICE_OF_NEW_HEARING_CHILD_NAME, CAFCASS_EMAIL_ADDRESS, EMAIL_REP_NOTIFY_DATA, CASE_ID
         );
     }
 
     @Test
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
-
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REP_NOTIFY_DATA);
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, EMAIL))
@@ -113,14 +105,14 @@ class SendNoticeOfHearingHandlerTest {
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(
             RepresentativeServingPreferences.EMAIL,
-            NOTICE_OF_NEW_HEARING,
+            NOTICE_OF_NEW_HEARING_CHILD_NAME,
             EMAIL_REP_NOTIFY_DATA,
             CASE_DATA
         );
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(
             RepresentativeServingPreferences.DIGITAL_SERVICE,
-            NOTICE_OF_NEW_HEARING,
+            NOTICE_OF_NEW_HEARING_CHILD_NAME,
             DIGITAL_REP_NOTIFY_DATA,
             CASE_DATA
         );
