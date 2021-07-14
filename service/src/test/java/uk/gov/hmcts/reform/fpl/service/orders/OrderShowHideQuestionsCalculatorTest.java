@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.OTHER_ORDER;
 
@@ -72,7 +73,9 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("reasonForSecureAccommodation", "NO"),
             Map.entry("orderJurisdiction", "NO"),
             Map.entry("childLegalRepresentation", "NO"),
-            Map.entry("selectSingleChild", "NO")
+            Map.entry("selectSingleChild", "NO"),
+            Map.entry("relationshipWithChild", "NO"),
+            Map.entry("parentResponsible", "NO")
         ));
     }
 
@@ -136,6 +139,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("orderIsByConsent", "NO");
         careOrderQuestions.put("appointedGuardian", "NO");
         careOrderQuestions.put("parentResponsible", "NO");
+        careOrderQuestions.put("relationshipWithChild", "NO");
 
         Map<String, String> dischargeOfCareQuestions = new HashMap<>(commonQuestions);
         dischargeOfCareQuestions.put("orderTitle", "NO");
@@ -166,6 +170,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("orderIsByConsent", "NO");
         dischargeOfCareQuestions.put("appointedGuardian", "NO");
         dischargeOfCareQuestions.put("parentResponsible", "NO");
+        dischargeOfCareQuestions.put("relationshipWithChild", "NO");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.put("orderTitle", "NO");
@@ -196,6 +201,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("orderIsByConsent", "NO");
         epoQuestions.put("appointedGuardian", "NO");
         epoQuestions.put("parentResponsible", "NO");
+        epoQuestions.put("relationshipWithChild", "NO");
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
         blankOrderQuestions.put("orderTitle", "YES");
@@ -226,6 +232,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("orderIsByConsent", "NO");
         blankOrderQuestions.put("appointedGuardian", "NO");
         blankOrderQuestions.put("parentResponsible", "NO");
+        blankOrderQuestions.put("relationshipWithChild", "NO");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
         supervisionOrderQuestions.put("orderTitle", "NO");
@@ -256,6 +263,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("orderIsByConsent", "NO");
         supervisionOrderQuestions.put("appointedGuardian", "NO");
         supervisionOrderQuestions.put("parentResponsible", "NO");
+        supervisionOrderQuestions.put("relationshipWithChild", "NO");
 
         Map<String, String> specialGuardianshipOrderQuestions = new HashMap<>(commonQuestions);
         specialGuardianshipOrderQuestions.put("orderTitle", "NO");
@@ -286,6 +294,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("whichOthers", "YES");
         specialGuardianshipOrderQuestions.put("appointedGuardian", "YES");
         specialGuardianshipOrderQuestions.put("parentResponsible", "NO");
+        specialGuardianshipOrderQuestions.put("relationshipWithChild", "NO");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
         appointmentOfChildrensGuardianQuestions.put("orderTitle", "NO");
@@ -316,6 +325,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("appointedGuardian", "NO");
         appointmentOfChildrensGuardianQuestions.put("whichOthers", "YES");
         appointmentOfChildrensGuardianQuestions.put("parentResponsible", "NO");
+        appointmentOfChildrensGuardianQuestions.put("relationshipWithChild", "NO");
 
         Map<String, String> childArrangementSpecificOrder = new HashMap<>(commonQuestions);
         childArrangementSpecificOrder.put("orderTitle", "NO");
@@ -346,6 +356,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childArrangementSpecificOrder.put("appointedGuardian", "NO");
         childArrangementSpecificOrder.put("whichOthers", "YES");
         childArrangementSpecificOrder.put("parentResponsible", "NO");
+        childArrangementSpecificOrder.put("relationshipWithChild", "NO");
 
         Map<String, String> secureAccommodationOrderQuestions = new HashMap<>(commonQuestions);
         secureAccommodationOrderQuestions.put("orderTitle", "NO");
@@ -375,6 +386,39 @@ class OrderShowHideQuestionsCalculatorTest {
         secureAccommodationOrderQuestions.put("isFinalOrder", "YES");
         secureAccommodationOrderQuestions.put("appointedGuardian", "NO");
         secureAccommodationOrderQuestions.put("whichOthers", "YES");
+        secureAccommodationOrderQuestions.put("relationshipWithChild", "NO");
+        secureAccommodationOrderQuestions.put("parentResponsible", "NO");
+
+        Map<String, String> parentalResponsibilityOrder = new HashMap<>(commonQuestions);
+        parentalResponsibilityOrder.put("orderTitle", "NO");
+        parentalResponsibilityOrder.put("approvalDate", "NO");
+        parentalResponsibilityOrder.put("orderDetails", "NO");
+        parentalResponsibilityOrder.put("approvalDateTime", "YES");
+        parentalResponsibilityOrder.put("epoIncludePhrase", "NO");
+        parentalResponsibilityOrder.put("uploadOrderFile", "NO");
+        parentalResponsibilityOrder.put("needSealing", "NO");
+        parentalResponsibilityOrder.put("epoChildrenDescription", "NO");
+        parentalResponsibilityOrder.put("epoExpiryDate", "NO");
+        parentalResponsibilityOrder.put("epoTypeAndPreventRemoval", "NO");
+        parentalResponsibilityOrder.put("cafcassJurisdictions", "NO");
+        parentalResponsibilityOrder.put("selectSingleChild", "NO");
+        parentalResponsibilityOrder.put("reasonForSecureAccommodation", "NO");
+        parentalResponsibilityOrder.put("childLegalRepresentation", "NO");
+        parentalResponsibilityOrder.put("orderJurisdiction", "NO");
+        parentalResponsibilityOrder.put("manageOrdersExpiryDateWithMonth", "NO");
+        parentalResponsibilityOrder.put("manageOrdersExclusionRequirementDetails", "NO");
+        parentalResponsibilityOrder.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        parentalResponsibilityOrder.put("childArrangementSpecificIssueProhibitedSteps", "NO");
+        parentalResponsibilityOrder.put("whichOthers", "NO");
+        parentalResponsibilityOrder.put("dischargeOfCareDetails", "NO");
+        parentalResponsibilityOrder.put("closeCase", "NO");
+        parentalResponsibilityOrder.put("whichChildren", "YES");
+        parentalResponsibilityOrder.put("orderIsByConsent", "YES");
+        parentalResponsibilityOrder.put("furtherDirections", "YES");
+        parentalResponsibilityOrder.put("isFinalOrder", "YES");
+        parentalResponsibilityOrder.put("appointedGuardian", "NO");
+        parentalResponsibilityOrder.put("relationshipWithChild", "YES");
+        parentalResponsibilityOrder.put("parentResponsible", "YES");
 
         return Stream.of(
             Arguments.of(C32A_CARE_ORDER, careOrderQuestions),
@@ -387,7 +431,8 @@ class OrderShowHideQuestionsCalculatorTest {
             Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
                 childArrangementSpecificOrder),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, appointmentOfChildrensGuardianQuestions),
-            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, secureAccommodationOrderQuestions)
+            Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, secureAccommodationOrderQuestions),
+            Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, parentalResponsibilityOrder)
         );
     }
 
@@ -427,7 +472,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("childLegalRepresentation", "NO"),
                 Map.entry("orderJurisdiction", "NO"),
                 Map.entry("orderToAmend", "NO"),
-                Map.entry("uploadAmendedOrder", "NO")
+                Map.entry("uploadAmendedOrder", "NO"),
+                Map.entry("relationshipWithChild", "NO")
             )));
     }
 
@@ -469,7 +515,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("whichOthers", "YES"),
                 Map.entry("orderToAmend", "NO"),
                 Map.entry("uploadAmendedOrder", "NO"),
-                Map.entry("parentResponsible", "NO")
+                Map.entry("parentResponsible", "NO"),
+                Map.entry("relationshipWithChild", "NO")
                 )
             ));
     }
