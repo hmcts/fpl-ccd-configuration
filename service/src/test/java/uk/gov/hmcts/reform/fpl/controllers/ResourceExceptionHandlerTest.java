@@ -16,7 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith( {TestLogsExtension.class})
+@ExtendWith({TestLogsExtension.class})
 class ResourceExceptionHandlerTest {
 
     private static final String MESSAGE = "message";
