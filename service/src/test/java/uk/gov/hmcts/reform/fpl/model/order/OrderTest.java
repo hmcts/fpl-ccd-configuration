@@ -72,9 +72,9 @@ class OrderTest {
         assertThat(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.fileName(RenderFormat.WORD))
             .isEqualTo("c47a_appointment_of_a_childrens_guardian.doc");
         assertThat(C45A_PARENTAL_RESPONSIBILITY_ORDER.fileName(RenderFormat.WORD))
-            .isEqualTo("c45b_parental_responsibility_order.doc");
+            .isEqualTo("c45a_parental_responsibility_order.doc");
         assertThat(C45A_PARENTAL_RESPONSIBILITY_ORDER.fileName(RenderFormat.PDF))
-            .isEqualTo("c45b_parental_responsibility_order.pdf");
+            .isEqualTo("c45a_parental_responsibility_order.pdf");
     }
 
     @ParameterizedTest
@@ -106,7 +106,6 @@ class OrderTest {
         assertThat(C33_INTERIM_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35A_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35B_INTERIM_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
-        assertThat(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.firstSection()).isEqualTo(HEARING_DETAILS);
     }
 
     @ParameterizedTest
@@ -223,7 +222,7 @@ class OrderTest {
             Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, REVIEW, Optional.empty()),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.of(OTHER_DETAILS)),
