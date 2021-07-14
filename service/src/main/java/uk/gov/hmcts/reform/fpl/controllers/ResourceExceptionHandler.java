@@ -10,7 +10,10 @@ import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 import uk.gov.hmcts.reform.fpl.exceptions.LogAsWarningException;
 
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Slf4j
 @ControllerAdvice
@@ -38,13 +41,29 @@ public class ResourceExceptionHandler {
     public ResponseEntity<AboutToStartOrSubmitCallbackResponse> handleLogAsWarningException(
         LogAsWarningException exception, HttpServletRequest request) {
         log.warn("Ignorable exception for caller {}. {}", getCaller(request), exception.getMessage());
-        
+
         return ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
             .errors(List.of(exception.getUserMessage()))
             .build());
     }
 
     private String getCaller(HttpServletRequest request) {
-        return String.format("(id='%s', roles='%s')", request.getHeader("user-id"), request.getHeader("user-roles"));
+        return String.format("(id='%s', roles='%s')", getUserId(request), getUserRoles(request));
+    }
+
+    private String getUserRoles(HttpServletRequest request) {
+        String userRoles = request.getHeader("user-roles");
+        if (isEmpty(userRoles) || !userRoles.matches("[a-zA-Z\\-,]+")) {
+            return "";
+        }
+        return userRoles;
+    }
+
+    private String getUserId(HttpServletRequest request) {
+        try {
+            return UUID.fromString(request.getHeader("user-id")).toString();
+        } catch (Exception e) {
+        }
+        return "";
     }
 }
