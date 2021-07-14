@@ -9,4 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 public class UnregisteredRespondentSolicitorTemplate implements NotifyData {
     String ccdNumber;
     String localAuthority;
+    String clientFullName;
+    String caseName;
+    String childLastName;
 }

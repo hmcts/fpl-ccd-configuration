@@ -11,4 +11,6 @@ public class NoticeOfChangeRespondentSolicitorTemplate implements NotifyData {
     private String caseName;
     private String ccdNumber;
     private String caseUrl;
+    private String clientFullName;
+    private String childLastName;
 }

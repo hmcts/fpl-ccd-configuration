@@ -60,8 +60,8 @@ public class NoticeOfChangeController extends CallbackController {
                 int solicitorIndex = changeRequest.getCaseRole().getIndex();
                 publishEvent(new NoticeOfChangeEvent(
                     newCaseData,
-                    oldCaseData.getRespondents1().get(solicitorIndex).getValue().getSolicitor(),
-                    newCaseData.getRespondents1().get(solicitorIndex).getValue().getSolicitor())
+                    oldCaseData.getRespondents1().get(solicitorIndex).getValue(),
+                    newCaseData.getRespondents1().get(solicitorIndex).getValue())
                 );
             });
     }

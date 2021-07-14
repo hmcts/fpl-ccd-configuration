@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -34,21 +34,21 @@ public class RespondentsUpdatedEventHandler {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
-        List<RespondentSolicitor> registeredSolicitors = respondentService.getRegisteredSolicitors(
-            caseData.getRespondents1());
+        List<Respondent> respondentsWithRegisteredSolicitors
+            = respondentService.getRespondentsWithRegisteredSolicitors(caseData.getRespondents1());
 
-        List<RespondentSolicitor> registeredSolicitorsBefore = respondentService.getRegisteredSolicitors(
-            caseDataBefore.getRespondents1());
+        List<Respondent> respondentsWithRegisteredSolicitorsBefore
+            = respondentService.getRespondentsWithRegisteredSolicitors(caseDataBefore.getRespondents1());
 
-        registeredSolicitors.removeAll(registeredSolicitorsBefore);
+        respondentsWithRegisteredSolicitors.removeAll(respondentsWithRegisteredSolicitorsBefore);
 
-        registeredSolicitors.forEach(recipient -> {
+        respondentsWithRegisteredSolicitors.forEach(recipient -> {
             NotifyData notifyData = registeredContentProvider.buildRespondentSolicitorSubmissionNotification(
                 caseData, recipient
             );
 
-            notificationService.sendEmail(
-                REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, recipient.getEmail(), notifyData, caseData.getId()
+            notificationService.sendEmail(REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
+                recipient.getSolicitor().getEmail(), notifyData, caseData.getId()
             );
         });
     }
@@ -59,20 +59,19 @@ public class RespondentsUpdatedEventHandler {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
-        NotifyData notifyData = unregisteredContentProvider.buildContent(caseData);
+        List<Respondent> respondentsWithUnregisteredSolicitors
+            = respondentService.getRespondentsWithUnregisteredSolicitors(caseData.getRespondents1());
 
-        List<RespondentSolicitor> unregisteredSolicitors = respondentService.getUnregisteredSolicitors(
-            caseData.getRespondents1());
+        List<Respondent> respondentsWithUnregisteredSolicitorsBefore
+            = respondentService.getRespondentsWithUnregisteredSolicitors(caseDataBefore.getRespondents1());
 
-        List<RespondentSolicitor> unregisteredSolicitorsBefore = respondentService.getUnregisteredSolicitors(
-            caseDataBefore.getRespondents1());
+        respondentsWithUnregisteredSolicitors.removeAll(respondentsWithUnregisteredSolicitorsBefore);
 
-        unregisteredSolicitors.removeAll(unregisteredSolicitorsBefore);
-
-        unregisteredSolicitors.forEach(recipient -> notificationService.sendEmail(
-            UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, recipient.getEmail(),
-            notifyData, caseData.getId()
-        ));
+        respondentsWithUnregisteredSolicitors.forEach(recipient -> {
+            NotifyData notifyData = unregisteredContentProvider.buildContent(caseData, recipient);
+            notificationService.sendEmail(UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
+                recipient.getSolicitor().getEmail(), notifyData, caseData.getId());
+        });
     }
 
 }

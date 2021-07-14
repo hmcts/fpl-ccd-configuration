@@ -9,4 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 public class RegisteredRespondentSolicitorTemplate implements NotifyData {
     String salutation;
     String localAuthority;
+    String clientFullName;
+    String ccdNumber;
+    String caseName;
+    String manageOrgLink;
+    String childLastName;
 }
