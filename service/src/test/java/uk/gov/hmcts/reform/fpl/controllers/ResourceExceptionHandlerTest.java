@@ -60,8 +60,8 @@ class ResourceExceptionHandlerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build()));
         assertThat(logs.get()).isEqualTo(List.of(
-            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles='caseworker-publiclaw-bulkscan," +
-                "payments,caseworker-publiclaw-courtadmin'). " + MESSAGE));
+            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles='caseworker-publiclaw-bulkscan,"
+                + "payments,caseworker-publiclaw-courtadmin'). " + MESSAGE));
 
     }
 
@@ -80,8 +80,8 @@ class ResourceExceptionHandlerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build()));
         assertThat(logs.get()).isEqualTo(List.of(
-            "Exception for caller (id='', roles='caseworker-publiclaw-bulkscan,payments," +
-                "caseworker-publiclaw-courtadmin'). " + MESSAGE));
+            "Exception for caller (id='', roles='caseworker-publiclaw-bulkscan,payments,"
+                + "caseworker-publiclaw-courtadmin'). " + MESSAGE));
 
     }
 
@@ -100,7 +100,8 @@ class ResourceExceptionHandlerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build()));
         assertThat(logs.get()).isEqualTo(List.of(
-            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles='caseworker-publiclaw-bulkscan,payments%0A%0A,caseworker-publiclaw-courtadmin'). " + MESSAGE));
+            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles='caseworker-publiclaw-bulkscan,"
+                + "payments%0A%0A,caseworker-publiclaw-courtadmin'). " + MESSAGE));
 
     }
 
