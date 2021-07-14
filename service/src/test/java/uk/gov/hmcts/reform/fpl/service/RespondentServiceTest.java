@@ -175,7 +175,7 @@ class RespondentServiceTest {
     }
 
     @Test
-    void shouldReturnRegisteredSolicitor() {
+    void shouldReturnRespondentsWithRegisteredSolicitors() {
         RespondentSolicitor registeredSolicitor = RespondentSolicitor.builder()
             .firstName("Steven")
             .organisation(Organisation.builder().organisationID("Organisation ID").build())
@@ -186,22 +186,23 @@ class RespondentServiceTest {
             .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
             .build();
 
-        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
-                .legalRepresentation(YES.getValue())
-                .solicitor(registeredSolicitor)
-                .build()),
+        Respondent respondentWithRegisteredSolicitor = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(registeredSolicitor)
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(element(respondentWithRegisteredSolicitor),
             element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
                 .solicitor(unregisteredSolicitor)
                 .build()));
 
-        List<RespondentSolicitor> registeredSolicitors = service.getRegisteredSolicitors(respondents);
-
-        assertThat(registeredSolicitors).containsOnly(registeredSolicitor);
+        assertThat(service.getRespondentsWithRegisteredSolicitors(respondents))
+            .containsOnly(respondentWithRegisteredSolicitor);
     }
 
     @Test
-    void shouldReturnUnregisteredSolicitor() {
+    void shouldReturnRespondentsWithUnregisteredSolicitors() {
         RespondentSolicitor unregisteredSolicitor = RespondentSolicitor.builder()
             .firstName("Steven")
             .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
@@ -212,18 +213,19 @@ class RespondentServiceTest {
             .organisation(Organisation.builder().organisationID("Organisation ID").build())
             .build();
 
-        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
-                .legalRepresentation(YES.getValue())
-                .solicitor(unregisteredSolicitor)
-                .build()),
+        Respondent respondentWithUnregisteredSolicitor = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(unregisteredSolicitor)
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(element(respondentWithUnregisteredSolicitor),
             element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
                 .solicitor(registeredSolicitor)
                 .build()));
 
-        List<RespondentSolicitor> unregisteredSolicitors = service.getUnregisteredSolicitors(respondents);
-
-        assertThat(unregisteredSolicitors).containsOnly(unregisteredSolicitor);
+        assertThat(service.getRespondentsWithUnregisteredSolicitors(respondents))
+            .containsOnly(respondentWithUnregisteredSolicitor);
     }
 
     @Test
@@ -235,8 +237,8 @@ class RespondentServiceTest {
                 .legalRepresentation(NO.getValue())
                 .build()));
 
-        List<RespondentSolicitor> registeredSolicitors = service.getRegisteredSolicitors(respondents);
-        List<RespondentSolicitor> unregisteredSolicitors = service.getUnregisteredSolicitors(respondents);
+        List<Respondent> registeredSolicitors = service.getRespondentsWithRegisteredSolicitors(respondents);
+        List<Respondent> unregisteredSolicitors = service.getRespondentsWithUnregisteredSolicitors(respondents);
 
         assertThat(registeredSolicitors).isEmpty();
         assertThat(unregisteredSolicitors).isEmpty();

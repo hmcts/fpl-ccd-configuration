@@ -1,29 +1,32 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
-import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -33,20 +36,18 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@SpringBootTest(classes = {
+@ContextConfiguration(classes = {
     RespondentsUpdatedEventHandler.class,
-    NotificationService.class,
     RespondentService.class,
     RegisteredRespondentSolicitorContentProvider.class,
     UnregisteredRespondentSolicitorContentProvider.class,
-    LocalAuthorityNameLookupConfiguration.class,
-    CaseDetailsHelper.class,
-    CaseUrlService.class,
-    ObjectMapper.class,
+    EmailNotificationHelper.class,
     FixedTimeConfiguration.class
 })
+@MockBeans({@MockBean(FeatureToggleService.class)})
 class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_FIRST_NAME = "John";
@@ -55,6 +56,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
         .lastName(RESPONDENT_LAST_NAME).build())
         .build();
     private static final long CASE_ID = 1234567890123456L;
+    public static final String CASE_NAME = "FPL case test";
 
     @Autowired
     private RespondentsUpdatedEventHandler underTest;
@@ -64,6 +66,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
     void notifyRegisteredSolicitor(String firstName, String lastName, String expectedSalutation) {
         final Respondent respondent1 = Respondent.builder()
             .legalRepresentation(YES.getValue())
+            .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
             .solicitor(RespondentSolicitor.builder()
                 .email("solicitor@test.com")
                 .firstName(firstName)
@@ -73,28 +76,40 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
             .build();
 
         CaseData caseData = CaseData.builder()
-            .id(123L)
+            .id(CASE_ID)
             .respondents1(wrapElements(respondent1))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseName("FPL case test")
+            .children1(List.of(element(Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Timothy").lastName("Jones")
+                    .dateOfBirth(LocalDate.of(2010, 1, 1)).build())
+                .build())))
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
             .state(OPEN)
+            .caseName("test1")
             .build();
 
         underTest.notifyRegisteredRespondentSolicitors(new RespondentsUpdated(caseData, caseDataBefore));
 
         assertThat(response())
-            .hasSubject("New C110A application for your client")
+            .hasSubject("New C110A application, FPL case test, Jones")
             .hasBody(emailContent()
                 .start()
-                .line(expectedSalutation + LOCAL_AUTHORITY_NAME + " has made a new C110A application on the Family"
-                    + " Public Law (FPL) digital service.")
+                .line(String.format("%s%s has made the following C110A application on the Family"
+                    + " Public Law (FPL) digital service:", expectedSalutation, LOCAL_AUTHORITY_NAME))
                 .line()
-                .line("They’ve given your details as a respondent’s legal representative.")
+                .callout(String.format(" %s, %s", CASE_NAME, CASE_ID))
+                .line()
+                .line(String.format("They’ve given your details as the legal representative for %s %s.",
+                    RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
                 .line()
                 .line(
                     "You should now ask your organisation's FPL case access administrator to assign the case to you.")
+                .line()
+                .line("They'll need to sign into https://manage-org.platform.hmcts.net")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
@@ -107,6 +122,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
     void notifyUnregisteredSolicitors() {
         Respondent respondent = RESPONDENT.toBuilder()
             .legalRepresentation(YES.getValue())
+            .party(RespondentParty.builder().firstName("Emma").lastName("Jones").build())
             .solicitor(RespondentSolicitor.builder()
                 .email("RespondentSolicitor@test.com")
                 .unregisteredOrganisation(UnregisteredOrganisation.builder().name("Unregistered Org Name").build())
@@ -117,6 +133,12 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
             .id(CASE_ID)
             .respondents1(wrapElements(respondent))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseName("FPL case test")
+            .children1(List.of(element(Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Timothy").lastName("Jones")
+                    .dateOfBirth(LocalDate.of(2010, 1, 1)).build())
+                .build())))
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
@@ -126,13 +148,13 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
         underTest.notifyUnregisteredRespondentSolicitors(new RespondentsUpdated(caseData, caseDataBefore));
 
         assertThat(response())
-            .hasSubject("New C110a application involving your client")
+            .hasSubject("New C110a application involving your client, FPL case test, Jones")
             .hasBody(emailContent()
                 .start()
                 .line(LOCAL_AUTHORITY_NAME + " has made a new C110a application on the Family Public Law digital "
                     + "service.")
                 .line()
-                .line("They’ve given your details as a respondent’s legal representative.")
+                .line("They’ve given your details as the legal representative for Emma Jones.")
                 .line()
                 .line("Legal representatives must be registered to use the service.")
                 .line()
