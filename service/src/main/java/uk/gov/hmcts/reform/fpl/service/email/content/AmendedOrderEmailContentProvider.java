@@ -42,7 +42,7 @@ public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvid
             .lastName(helper.getSubjectLineLastName(caseData))
             .orderType(orderType)
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout(buildCallout(caseData))
+            .callout("^" + buildCallout(caseData))
             .documentLink(getDocumentUrl(orderDocument))
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .build();
