@@ -1577,7 +1577,10 @@ class ManageHearingsServiceTest {
             "hearingAttendance",
             "preHearingAttendanceDetails",
             "hearingAttendanceDetails",
-            "hearingOption");
+            "hearingOption",
+            "hasOthers",
+            "others_label",
+            "othersSelector");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {

@@ -355,7 +355,6 @@ public class ManageHearingsService {
             "hearingAttendanceDetails",
             "preHearingAttendanceDetails",
             "hearingOption",
-            "hearingPresence",
             "hasOthers",
             "othersSelector",
             "others_label"
