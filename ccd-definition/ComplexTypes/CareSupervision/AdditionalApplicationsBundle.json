@@ -45,5 +45,14 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "c2DocumentBundle=\"Do Not Show\"",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "removalReason",
+    "FieldType": "Text",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
