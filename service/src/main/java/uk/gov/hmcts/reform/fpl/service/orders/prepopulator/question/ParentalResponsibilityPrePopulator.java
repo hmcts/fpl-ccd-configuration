@@ -52,8 +52,6 @@ public class ParentalResponsibilityPrePopulator implements QuestionBlockOrderPre
         if (selectedApplicationBundle instanceof C2DocumentBundle) {
             C2DocumentBundle c2DocumentBundle = (C2DocumentBundle) selectedApplicationBundle;
 
-            System.out.println("c2DocumentBundle = " + c2DocumentBundle);
-
             if (c2DocumentBundle.getC2AdditionalOrdersRequested().contains(PARENTAL_RESPONSIBILITY)) {
                 data.put(PARENT_RESPONSIBLE,
                     StringUtils.substringBefore(c2DocumentBundle.getApplicantName(), SEPARATOR));
@@ -81,9 +79,6 @@ public class ParentalResponsibilityPrePopulator implements QuestionBlockOrderPre
     }
 
     private boolean hasDataAlreadySet(CaseData caseData) {
-        System.out.println(caseData.getManageOrdersEventData().getManageOrdersLinkedApplication());
-        System.out.println(caseData.getManageOrdersEventData().getManageOrdersParentResponsible());
-        System.out.println(caseData.getManageOrdersEventData().getManageOrdersRelationshipWithChild());
         return caseData.getManageOrdersEventData().getManageOrdersLinkedApplication() != null
             && caseData.getManageOrdersEventData().getManageOrdersParentResponsible() != null
             && caseData.getManageOrdersEventData().getManageOrdersRelationshipWithChild() != null;
