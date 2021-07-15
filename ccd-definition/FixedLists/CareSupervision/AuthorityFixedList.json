@@ -37,6 +37,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BLA",
+    "ListElement": "Blackpool Borough Council",
+    "DisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BGW",
     "ListElement": "Blaenau Gwent County Borough Council",
     "DisplayOrder": 13
