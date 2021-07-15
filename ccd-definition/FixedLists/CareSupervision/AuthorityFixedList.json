@@ -534,6 +534,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NTY",
+    "ListElement": "North Tyneside Council",
+    "DisplayOrder": 257
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NYS",
     "ListElement": "North Yorkshire County Council",
     "DisplayOrder": 260
