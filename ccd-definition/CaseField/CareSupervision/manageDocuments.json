@@ -106,7 +106,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsRelatedToHearing",
     "FieldType": "YesOrNo",
-    "Label": "Does the evidence document relate to a hearing?",
+    "Label": "Does the document relate to a hearing?",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -116,7 +116,7 @@
     "ID": "manageDocumentSubtypeList",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ManageDocumentSubtypeList",
-    "Label": "Choose a further evidence document type",
+    "Label": "Choose a document type",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
