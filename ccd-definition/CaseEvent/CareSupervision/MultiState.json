@@ -413,7 +413,7 @@
     "Name": "Change case name",
     "Description": "Change case name",
     "DisplayOrder": 15,
-    "PreConditionState(s)": "Open;RETURNED",
+    "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
