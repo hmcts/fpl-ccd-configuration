@@ -142,7 +142,7 @@ ccd:
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
-      memoryRequests: '1524Mi'
+      memoryRequests: '2048Mi'
       cpuRequests: '900m'
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
