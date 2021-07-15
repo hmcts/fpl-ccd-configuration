@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -17,10 +16,8 @@ import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -52,25 +49,6 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
         String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
 
         return hiddenValue.equals("Yes");
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean hasRegisteredOrganisation() {
-        return ofNullable(getSolicitor()).flatMap(
-            respondentSolicitor -> ofNullable(respondentSolicitor.getOrganisation()).map(
-                organisation -> isNotBlank(organisation.getOrganisationID())
-            )
-        ).orElse(false);
-    }
-
-    @JsonIgnore
-    public boolean hasUnregisteredOrganisation() {
-        return ofNullable(getSolicitor()).flatMap(
-            respondentSolicitor -> ofNullable(respondentSolicitor.getUnregisteredOrganisation()).map(
-                organisation -> isNotBlank(organisation.getName())
-            )
-        ).orElse(false);
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -21,12 +22,12 @@ public class UnregisteredRepresentativeSolicitorContentProvider {
 
     public <R extends WithSolicitor> UnregisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData,
                                                                                               R representable) {
-        String respondentName = isNull(representable.toParty()) ? EMPTY : representable.toParty().getFullName();
+        Party party = representable.toParty();
 
         return UnregisteredRepresentativeSolicitorTemplate.builder()
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
             .localAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
-            .clientFullName(respondentName)
+            .clientFullName(isNull(party) ? EMPTY : party.getFullName())
             .caseName(caseData.getCaseName())
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -23,11 +24,11 @@ public class RegisteredRepresentativeSolicitorContentProvider {
     private final EmailNotificationHelper helper;
 
     public <R extends WithSolicitor> RegisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData, R representable) {
-        String respondentName = isNull(representable.toParty()) ? EMPTY : representable.toParty().getFullName();
+        Party party = representable.toParty();
 
         return RegisteredRepresentativeSolicitorTemplate.builder()
             .salutation(getSalutation(representable.getSolicitor()))
-            .clientFullName(respondentName)
+            .clientFullName(isNull(party) ? EMPTY : party.getFullName())
             .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .ccdNumber(caseData.getId().toString())
             .caseName(caseData.getCaseName())
