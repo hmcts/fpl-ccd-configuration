@@ -79,6 +79,7 @@ class AmendGeneratedOrderActionTest {
         GeneratedOrder amendedOrder = orderToAmend.toBuilder()
             .document(AMENDED_DOCUMENT)
             .amendedDate(AMENDED_DATE)
+            .others(Collections.emptyList())
             .build();
 
         List<Element<GeneratedOrder>> amendedOrders = List.of(
