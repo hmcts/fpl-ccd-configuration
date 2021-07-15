@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
 @Service
@@ -26,7 +27,7 @@ public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvid
                                                 final String orderType) {
 
         return OrderAmendedNotifyData.builder()
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .orderType(orderType)
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
             .callout("^" + buildCallout(caseData))

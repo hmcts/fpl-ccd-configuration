@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -60,10 +60,10 @@ class ManageOrdersEventBuilderTest {
             .build());
         when(amendedGeneratedOrderFinder.findOrderIfPresent(any(), any())).thenReturn(Optional.of(generatedOrder));
 
-        Optional<ManageOrdersEvent> event = underTest.build(caseData, caseDataBefore);
+        ManageOrdersEvent event = underTest.build(caseData, caseDataBefore);
 
-        Optional<ManageOrdersEvent> expectedEvent = Optional.of(new AmendedOrderEvent(caseData, expectedDocument,
-            "Care order", selectedOthers));
+        ManageOrdersEvent expectedEvent = new AmendedOrderEvent(caseData, expectedDocument,
+            "Care order", selectedOthers);
         assertThat(event).usingRecursiveComparison().isEqualTo(expectedEvent);
     }
 
@@ -79,8 +79,8 @@ class ManageOrdersEventBuilderTest {
             .document(document)
             .build());
 
-        Optional<ManageOrdersEvent> event = underTest.build(caseData, caseDataBefore);
-        Optional<ManageOrdersEvent> expectedEvent = Optional.of(new GeneratedOrderEvent(caseData, document));
+        ManageOrdersEvent event = underTest.build(caseData, caseDataBefore);
+        ManageOrdersEvent expectedEvent = new GeneratedOrderEvent(caseData, document);
         assertThat(event).usingRecursiveComparison().isEqualTo(expectedEvent);
     }
 }

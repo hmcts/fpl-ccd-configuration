@@ -3,12 +3,10 @@ package uk.gov.hmcts.reform.fpl.service.orders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.events.AmendedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -24,28 +22,23 @@ public class ManageOrdersEventBuilder {
     private final SealedOrderHistoryService historyService;
     private final List<AmendedOrderFinder<? extends AmendableOrder>> finders;
 
-    public Optional<ManageOrdersEvent> build(CaseData caseData, CaseData caseDataBefore) {
+    public ManageOrdersEvent build(CaseData caseData, CaseData caseDataBefore) {
         List<Element<GeneratedOrder>> currentOrders = caseData.getOrderCollection();
         List<Element<GeneratedOrder>> oldOrders = caseDataBefore.getOrderCollection();
         GeneratedOrder lastGeneratedOrder = historyService.lastGeneratedOrder(caseData);
 
         if (!isAmendedOrder(currentOrders, oldOrders)) {
-            return Optional.of(new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument()));
+            return new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument());
         }
 
-        Optional<? extends AmendableOrder> order = finders.stream()
+        return finders.stream()
             .map(finder -> finder.findOrderIfPresent(caseData, caseDataBefore))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .findFirst();
-
-        DocumentReference amendedDocument = order.get().getDocument();
-        String amendedOrderType = order.get().getAmendedOrderType();
-        List<Element<Other>> selectedOthers = order.get().getSelectedOthers();
-
-        return order.map(amendableOrder -> new AmendedOrderEvent(caseData, amendedDocument, amendedOrderType,
-            selectedOthers));
-
+            .findFirst()
+            .map(order -> new AmendedOrderEvent(
+                    caseData, order.getDocument(), order.getAmendedOrderType(), order.getSelectedOthers()
+            )).orElseThrow();
     }
 
     private boolean isAmendedOrder(List<Element<GeneratedOrder>> orders, List<Element<GeneratedOrder>> ordersBefore) {

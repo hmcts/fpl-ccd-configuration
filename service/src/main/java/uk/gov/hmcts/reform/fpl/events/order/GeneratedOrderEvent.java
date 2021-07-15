@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.events;
+package uk.gov.hmcts.reform.fpl.events.order;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

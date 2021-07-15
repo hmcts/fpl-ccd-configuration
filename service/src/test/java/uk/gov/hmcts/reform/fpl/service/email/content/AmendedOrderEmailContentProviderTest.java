@@ -7,6 +7,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -33,6 +35,11 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
         .hearingDetails(createHearingBookings(
             LocalDateTime.now().plusMonths(3), LocalDateTime.now().plusMonths(3).plusHours(1)
         ))
+        .children1(wrapElements(Child.builder()
+            .party(ChildParty.builder()
+                .lastName("McDonnell")
+                .build())
+            .build()))
         .respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder().lastName("Jones").build())
             .build()))
@@ -46,7 +53,7 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
 
     @BeforeEach
     void setUp() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("Jones");
+        when(helper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
     }
 
     @Test
@@ -58,14 +65,14 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    public static OrderAmendedNotifyData getExpectedParameters() {
+    public OrderAmendedNotifyData getExpectedParameters() {
         return OrderAmendedNotifyData.builder()
             .orderType("case management order")
-            .callout("^Jones, SACCCCCCCC5676576567, hearing 14 Oct 2021")
+            .callout("^Jones, SACCCCCCCC5676576567, hearing 15 Oct 2021")
             .courtName("Family Court")
             .documentLink("http://fake-url/testUrl")
             .caseUrl("http://fake-url/cases/case-details/12345#Orders")
-            .lastName("Jones")
+            .lastName("McDonell")
             .build();
     }
 }
