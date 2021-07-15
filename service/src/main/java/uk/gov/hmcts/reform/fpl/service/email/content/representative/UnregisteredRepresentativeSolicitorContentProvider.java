@@ -1,12 +1,12 @@
-package uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor;
+package uk.gov.hmcts.reform.fpl.service.email.content.representative;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static java.util.Objects.isNull;
@@ -15,20 +15,20 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumbe
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class UnregisteredRespondentSolicitorContentProvider {
+public class UnregisteredRepresentativeSolicitorContentProvider {
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final EmailNotificationHelper helper;
 
-    public UnregisteredRespondentSolicitorTemplate buildContent(CaseData caseData,
-                                                                Respondent respondent) {
-        String respondentName = isNull(respondent.getParty()) ? EMPTY : respondent.getParty().getFullName();
+    public <R extends WithSolicitor> UnregisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData,
+                                                                                              R representable) {
+        String respondentName = isNull(representable.toParty()) ? EMPTY : representable.toParty().getFullName();
 
-        return UnregisteredRespondentSolicitorTemplate.builder()
+        return UnregisteredRepresentativeSolicitorTemplate.builder()
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
             .localAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .clientFullName(respondentName)
             .caseName(caseData.getCaseName())
-            .childLastName(helper.getEldestChildLastName(caseData.getChildren1()))
+            .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();
     }
 }

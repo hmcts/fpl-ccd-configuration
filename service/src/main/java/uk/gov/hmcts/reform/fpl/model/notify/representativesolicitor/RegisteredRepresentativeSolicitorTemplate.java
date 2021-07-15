@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor;
+package uk.gov.hmcts.reform.fpl.model.notify.representativesolicitor;
 
 import lombok.Builder;
 import lombok.Value;
@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 @Value
 @Builder
-public class RegisteredRespondentSolicitorTemplate implements NotifyData {
+public class RegisteredRepresentativeSolicitorTemplate implements NotifyData {
     String salutation;
     String localAuthority;
     String clientFullName;
