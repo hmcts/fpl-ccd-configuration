@@ -29,6 +29,6 @@ public class CaseExtensionService {
     }
 
     public LocalDate getCaseShouldBeCompletedByDate(CaseData caseData) {
-        return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted());
+        return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted().plusWeeks(26));
     }
 }
