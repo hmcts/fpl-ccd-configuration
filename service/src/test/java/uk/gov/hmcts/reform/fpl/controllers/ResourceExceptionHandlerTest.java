@@ -3,18 +3,17 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
+import uk.gov.hmcts.reform.fpl.logging.HeaderInformationExtractor;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith({TestLogsExtension.class})
 class ResourceExceptionHandlerTest {
@@ -22,17 +21,14 @@ class ResourceExceptionHandlerTest {
     private static final String MESSAGE = "message";
     private static final String USER_ID_HEADER = "user-id";
     private static final String USER_ROLES_HEADER = "user-roles";
-    private final ResourceExceptionHandler underTest = new ResourceExceptionHandler();
+    private final ResourceExceptionHandler underTest = new ResourceExceptionHandler(new HeaderInformationExtractor());
 
     @TestLogs
     private final TestLogger logs = new TestLogger(ResourceExceptionHandler.class);
-    private final HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
 
     @Test
     void testEmptyHeaders() {
-
-        when(httpServletRequest.getHeader(USER_ID_HEADER)).thenReturn(null);
-        when(httpServletRequest.getHeader(USER_ROLES_HEADER)).thenReturn(null);
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
 
         ResponseEntity<AboutToStartOrSubmitCallbackResponse> actual =
             underTest.handleAboutToStartOrSubmitCallbackException(
@@ -41,15 +37,15 @@ class ResourceExceptionHandlerTest {
         assertThat(actual).isEqualTo(ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build()));
-        assertThat(logs.get()).isEqualTo(List.of("Exception for caller (id='', roles=''). " + MESSAGE));
+        assertThat(logs.get()).isEqualTo(List.of("Exception for caller (id='',roles=''). " + MESSAGE));
 
     }
 
     @Test
     void testValidHeaders() {
-
-        when(httpServletRequest.getHeader(USER_ID_HEADER)).thenReturn("e24fb55f-4911-4705-a07e-4f0ed5f62539");
-        when(httpServletRequest.getHeader(USER_ROLES_HEADER)).thenReturn(
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+        httpServletRequest.addHeader(USER_ID_HEADER, "e24fb55f-4911-4705-a07e-4f0ed5f62539");
+        httpServletRequest.addHeader(USER_ROLES_HEADER,
             "caseworker-publiclaw-bulkscan,payments,caseworker-publiclaw-courtadmin");
 
         ResponseEntity<AboutToStartOrSubmitCallbackResponse> actual =
@@ -60,16 +56,60 @@ class ResourceExceptionHandlerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build()));
         assertThat(logs.get()).isEqualTo(List.of(
-            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles='caseworker-publiclaw-bulkscan,"
+            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539',roles='caseworker-publiclaw-bulkscan,"
                 + "payments,caseworker-publiclaw-courtadmin'). " + MESSAGE));
 
     }
 
     @Test
-    void testMalformedHeaderID() {
+    void testSanitisedValidHeaders() {
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+        httpServletRequest.addHeader(USER_ID_HEADER, "e24fb55f-4911-4705-a07e-4f0ed5f62539");
+        httpServletRequest.addHeader(USER_ROLES_HEADER,
+            "caseworker-publiclaw-bulkscan,         payments,caseworker-publiclaw-courtadmin");
 
-        when(httpServletRequest.getHeader(USER_ID_HEADER)).thenReturn("e24911-4705-a07e-4f0ed5f62539");
-        when(httpServletRequest.getHeader(USER_ROLES_HEADER)).thenReturn(
+        ResponseEntity<AboutToStartOrSubmitCallbackResponse> actual =
+            underTest.handleAboutToStartOrSubmitCallbackException(
+                new UnknownLocalAuthorityDomainException(MESSAGE), httpServletRequest);
+
+        assertThat(actual).isEqualTo(ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
+            .errors(List.of("The email address was not linked to a known Local Authority"))
+            .build()));
+        assertThat(logs.get()).isEqualTo(List.of(
+            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539',roles='caseworker-publiclaw-bulkscan,"
+                + "payments,caseworker-publiclaw-courtadmin'). " + MESSAGE));
+
+    }
+
+
+    @Test
+    void testMultipleValidHeaders() {
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+        httpServletRequest.addHeader(USER_ID_HEADER, "e24fb55f-4911-4705-a07e-4f0ed5f62539");
+        httpServletRequest.addHeader(USER_ID_HEADER, "e24fb55f-4911-4705-a07e-4f0ed5f62538");
+        httpServletRequest.addHeader(USER_ROLES_HEADER,
+            "caseworker-publiclaw-bulkscan,payments,caseworker-publiclaw-courtadmin");
+        httpServletRequest.addHeader(USER_ROLES_HEADER,
+            "caseworker-publiclaw-bulkscan2");
+
+        ResponseEntity<AboutToStartOrSubmitCallbackResponse> actual =
+            underTest.handleAboutToStartOrSubmitCallbackException(
+                new UnknownLocalAuthorityDomainException(MESSAGE), httpServletRequest);
+
+        assertThat(actual).isEqualTo(ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
+            .errors(List.of("The email address was not linked to a known Local Authority"))
+            .build()));
+        assertThat(logs.get()).isEqualTo(List.of(
+            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539,e24fb55f-4911-4705-a07e-4f0ed5f62538',"
+                + "roles='caseworker-publiclaw-bulkscan,payments,caseworker-publiclaw-courtadmin,"
+                + "caseworker-publiclaw-bulkscan2'). " + MESSAGE));
+    }
+
+    @Test
+    void testMalformedHeaderID() {
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+        httpServletRequest.addHeader(USER_ID_HEADER, "e24911-4705-a07e-4f0ed5f62539");
+        httpServletRequest.addHeader(USER_ROLES_HEADER,
             "caseworker-publiclaw-bulkscan,payments,caseworker-publiclaw-courtadmin");
 
         ResponseEntity<AboutToStartOrSubmitCallbackResponse> actual =
@@ -80,28 +120,8 @@ class ResourceExceptionHandlerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build()));
         assertThat(logs.get()).isEqualTo(List.of(
-            "Exception for caller (id='', roles='caseworker-publiclaw-bulkscan,payments,"
+            "Exception for caller (id='e24911-4705-a07e-4f0ed5f62539',roles='caseworker-publiclaw-bulkscan,payments,"
                 + "caseworker-publiclaw-courtadmin'). " + MESSAGE));
-
-    }
-
-    @Test
-    void testMalformedForgedHeaderRoles() {
-
-        when(httpServletRequest.getHeader(USER_ID_HEADER)).thenReturn("e24fb55f-4911-4705-a07e-4f0ed5f62539");
-        when(httpServletRequest.getHeader(USER_ROLES_HEADER)).thenReturn(
-            "caseworker-publiclaw-bulkscan,payments\n\n,caseworker-publiclaw-courtadmin");
-
-        ResponseEntity<AboutToStartOrSubmitCallbackResponse> actual =
-            underTest.handleAboutToStartOrSubmitCallbackException(
-                new UnknownLocalAuthorityDomainException(MESSAGE), httpServletRequest);
-
-        assertThat(actual).isEqualTo(ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
-            .errors(List.of("The email address was not linked to a known Local Authority"))
-            .build()));
-        assertThat(logs.get()).isEqualTo(List.of(
-            "Exception for caller (id='e24fb55f-4911-4705-a07e-4f0ed5f62539', roles='caseworker-publiclaw-bulkscan,"
-                + "payments%0A%0A,caseworker-publiclaw-courtadmin'). " + MESSAGE));
 
     }
 
