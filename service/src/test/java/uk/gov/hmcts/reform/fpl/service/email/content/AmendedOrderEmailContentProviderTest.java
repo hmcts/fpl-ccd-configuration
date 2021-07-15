@@ -58,14 +58,14 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
 
     @Test
     void shouldBuildAmendedOrderParameters() {
-        NotifyData expectedParameters = getExpectedParameters();
-        NotifyData actualParameters = underTest.getNotifyData(
+        OrderAmendedNotifyData expectedParameters = getExpectedParameters();
+        OrderAmendedNotifyData actualParameters = underTest.getNotifyData(
             CASE_DATA, testDocument, AmendedOrderType.CASE_MANAGEMENT_ORDER.getLabel());
 
-        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
+        assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    public NotifyData getExpectedParameters() {
+    public OrderAmendedNotifyData getExpectedParameters() {
         return OrderAmendedNotifyData.builder()
             .orderType("case management order")
             .callout("^Jones, SACCCCCCCC5676576567, hearing 15 Oct 2021")
