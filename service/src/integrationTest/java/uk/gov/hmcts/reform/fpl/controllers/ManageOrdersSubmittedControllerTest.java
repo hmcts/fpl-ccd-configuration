@@ -40,7 +40,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
@@ -199,7 +198,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
             extractCaseData(request.getCaseDetailsBefore())))
-            .thenReturn(Optional.of(generatedOrderEvent));
+            .thenReturn(generatedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -249,7 +248,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
-            extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+            extractCaseData(request.getCaseDetailsBefore()))).thenReturn(generatedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -272,7 +271,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
             extractCaseData(request.getCaseDetailsBefore())))
-            .thenReturn(Optional.of(generatedOrderEvent));
+            .thenReturn(generatedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -294,7 +293,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         ManageOrdersEvent generatedOrderEvent = new GeneratedOrderEvent(caseData, ORDER);
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
-            extractCaseData(request.getCaseDetailsBefore()))).thenReturn(Optional.of(generatedOrderEvent));
+            extractCaseData(request.getCaseDetailsBefore()))).thenReturn(generatedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -317,7 +316,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
             extractCaseData(request.getCaseDetailsBefore())))
-            .thenReturn(Optional.of(generatedOrderEvent));
+            .thenReturn(generatedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -339,7 +338,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
             extractCaseData(request.getCaseDetailsBefore())))
-            .thenReturn(Optional.of(generatedOrderEvent));
+            .thenReturn(generatedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -366,7 +365,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             Collections.emptyList());
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
-            extractCaseData(request.getCaseDetails()))).thenReturn(Optional.of(amendedOrderEvent));
+            extractCaseData(request.getCaseDetails()))).thenReturn(amendedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -390,7 +389,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
             extractCaseData(request.getCaseDetails())))
-            .thenReturn(Optional.of(amendedOrderEvent));
+            .thenReturn(amendedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -442,7 +441,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
             extractCaseData(request.getCaseDetails())))
-            .thenReturn(Optional.of(amendedOrderEvent));
+            .thenReturn(amendedOrderEvent);
 
         postSubmittedEvent(request);
 
@@ -466,7 +465,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(manageOrdersEventBuilder.build(extractCaseData(request.getCaseDetails()),
             extractCaseData(request.getCaseDetails())))
-            .thenReturn(Optional.of(amendedOrderEvent));
+            .thenReturn(amendedOrderEvent);
 
         postSubmittedEvent(request);
 

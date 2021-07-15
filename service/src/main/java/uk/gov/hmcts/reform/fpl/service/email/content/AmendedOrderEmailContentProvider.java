@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
 @Service

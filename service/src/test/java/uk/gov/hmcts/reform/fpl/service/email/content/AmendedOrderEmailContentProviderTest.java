@@ -62,17 +62,17 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
         NotifyData actualParameters = underTest.getNotifyData(
             CASE_DATA, testDocument, AmendedOrderType.CASE_MANAGEMENT_ORDER.getLabel());
 
-        assertThat(actualParameters).isEqualTo(expectedParameters);
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
-    public OrderAmendedNotifyData getExpectedParameters() {
+    public NotifyData getExpectedParameters() {
         return OrderAmendedNotifyData.builder()
             .orderType("case management order")
             .callout("^Jones, SACCCCCCCC5676576567, hearing 15 Oct 2021")
             .courtName("Family Court")
             .documentLink("http://fake-url/testUrl")
             .caseUrl("http://fake-url/cases/case-details/12345#Orders")
-            .lastName("McDonell")
+            .lastName("McDonnell")
             .build();
     }
 }
