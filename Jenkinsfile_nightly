@@ -83,6 +83,7 @@ withNightlyPipeline(type, product, component) {
   enableMutationTest()
   enableFullFunctionalTest(120)
   enableCrossBrowserTest(['chrome', 'firefox', 'safari', 'microsoft'])
+  enableFortifyScan()
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -114,5 +115,9 @@ withNightlyPipeline(type, product, component) {
 
   after('crossBrowserTest') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  after('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }

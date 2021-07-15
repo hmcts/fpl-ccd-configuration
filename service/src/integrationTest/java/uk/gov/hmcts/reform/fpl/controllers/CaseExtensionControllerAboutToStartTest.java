@@ -20,7 +20,7 @@ class CaseExtensionControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldPopulateShouldBeCompletedByDateWithDateSubmitted() {
+    void shouldPopulateShouldBeCompletedByDateWith26WeekTimeline() {
         LocalDate dateSubmitted = LocalDate.of(2030, 11, 12);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -30,7 +30,7 @@ class CaseExtensionControllerAboutToStartTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getData().get("shouldBeCompletedByDate")).isEqualTo("12 November 2030");
+        assertThat(callbackResponse.getData().get("shouldBeCompletedByDate")).isEqualTo("13 May 2031");
     }
 
     @Test
