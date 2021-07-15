@@ -97,21 +97,8 @@ class AmendedOrderEventHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldNotifyPartiesOnOrderSubmission() {
-        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
-        given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
-            eq(CASE_DATA),
-            eq(SELECTED_OTHERS),
-            any()))
-            .willReturn((Set) Set.of(EMAIL_REP_1));
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
-            eq(CASE_DATA),
-            eq(SELECTED_OTHERS),
-            any()))
-            .willReturn((Set) Set.of(DIGITAL_REP_1));
-
-        underTest.notifyParties(EVENT);
+    void shouldNotifyLocalAuthorityWhenOrderAmended() {
+        underTest.notifyLocalAuthority(EVENT);
 
         verify(notificationService).sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE,
@@ -119,18 +106,44 @@ class AmendedOrderEventHandlerTest {
             NOTIFY_DATA,
             CASE_ID.toString()
         );
+    }
 
-        verify(representativeNotificationService).sendNotificationToRepresentatives(
-            CASE_ID,
-            NOTIFY_DATA,
-            Set.of(DIGITAL_REP_2),
-            ORDER_AMENDED_NOTIFICATION_TEMPLATE
-        );
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldNotifyEmailRepsWhenOrderAmended() {
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
+            eq(CASE_DATA),
+            eq(SELECTED_OTHERS),
+            any()))
+            .willReturn((Set) Set.of(EMAIL_REP_1));
+
+        underTest.notifyEmailRepresentatives(EVENT);
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             CASE_ID,
             NOTIFY_DATA,
             Set.of(EMAIL_REP_2),
+            ORDER_AMENDED_NOTIFICATION_TEMPLATE
+        );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldNotifyDigitalRepsWhenOrderAmended() {
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
+            eq(CASE_DATA),
+            eq(SELECTED_OTHERS),
+            any()))
+            .willReturn((Set) Set.of(DIGITAL_REP_1));
+
+        underTest.notifyDigitalRepresentatives(EVENT);
+
+        verify(representativeNotificationService).sendNotificationToRepresentatives(
+            CASE_ID,
+            NOTIFY_DATA,
+            Set.of(DIGITAL_REP_2),
             ORDER_AMENDED_NOTIFICATION_TEMPLATE
         );
     }
@@ -160,7 +173,7 @@ class AmendedOrderEventHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldSendOrderToLAOnlyWhenOrderTypeIsSDO() {
+    void shouldOnlySendNotificationToLAWhenOrderTypeIsSDO() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
@@ -179,7 +192,9 @@ class AmendedOrderEventHandlerTest {
         AmendedOrderEvent event = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, "standard direction order",
             SELECTED_OTHERS);
 
-        underTest.notifyParties(event);
+        underTest.notifyDigitalRepresentatives(event);
+        underTest.notifyEmailRepresentatives(event);
+        underTest.notifyLocalAuthority(event);
 
         verify(notificationService).sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE,

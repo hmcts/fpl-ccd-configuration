@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
@@ -45,43 +46,47 @@ public class AmendedOrderEventHandler {
     private final SendDocumentService sendDocumentService;
     private final OtherRecipientsInbox otherRecipientsInbox;
 
+    @Async
     @EventListener
-    public void notifyParties(final AmendedOrderEvent orderEvent) {
+    @SuppressWarnings("unchecked")
+    public void notifyDigitalRepresentatives(final AmendedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getAmendedDocument();
         final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
         final String orderType = orderEvent.getAmendedOrderType();
 
-        sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, selectedOthers, orderType);
-        sendNotificationToEmailServedRepresentatives(caseData, orderDocument, selectedOthers, orderType);
-    }
+        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
+        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+            DIGITAL_SERVICE, caseData, selectedOthers, element -> element.getValue().getEmail()
+        );
+        digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
-    @EventListener
-    public void sendOrderByPost(final AmendedOrderEvent orderEvent) {
-        final CaseData caseData = orderEvent.getCaseData();
-        final List<DocumentReference> documents = List.of(orderEvent.getAmendedDocument());
-        final String orderType = orderEvent.getAmendedOrderType();
-        final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
+        final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
+            orderDocument, orderType);
 
-        if (!orderType.equals(AmendedOrderType.STANDARD_DIRECTION_ORDER)) {
-            Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
-
-            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers,
-                element -> element.getValue()));
-            allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
-
-            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
+        if (!digitalRepresentatives.isEmpty() & !orderType.equals(AmendedOrderType
+            .STANDARD_DIRECTION_ORDER.getLabel())) {
+            representativeNotificationService.sendNotificationToRepresentatives(
+                caseData.getId(),
+                notifyData,
+                digitalRepresentatives,
+                ORDER_AMENDED_NOTIFICATION_TEMPLATE
+            );
         }
     }
 
+    @Async
+    @EventListener
     @SuppressWarnings("unchecked")
-    private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
-                                                              final DocumentReference orderDocument,
-                                                              final List<Element<Other>> othersSelected,
-                                                              String orderType) {
+    public void notifyEmailRepresentatives(final AmendedOrderEvent orderEvent) {
+        final CaseData caseData = orderEvent.getCaseData();
+        final DocumentReference orderDocument = orderEvent.getAmendedDocument();
+        final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
+        final String orderType = orderEvent.getAmendedOrderType();
+
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
         Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-            EMAIL, caseData, othersSelected, element -> element.getValue().getEmail()
+            EMAIL, caseData, selectedOthers, element -> element.getValue().getEmail()
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
@@ -99,40 +104,41 @@ public class AmendedOrderEventHandler {
         }
     }
 
+    @Async
+    @EventListener
     @SuppressWarnings("unchecked")
-    private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
-                                                                           final DocumentReference orderDocument,
-                                                                           List<Element<Other>> othersSelected,
-                                                                           String orderType) {
-        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-            DIGITAL_SERVICE, caseData, othersSelected, element -> element.getValue().getEmail()
-        );
-        digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+    public void notifyLocalAuthority(final AmendedOrderEvent orderEvent) {
+        final CaseData caseData = orderEvent.getCaseData();
+        final DocumentReference orderDocument = orderEvent.getAmendedDocument();
+        final String orderType = orderEvent.getAmendedOrderType();
 
         final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
             orderDocument, orderType);
 
-        sendToLocalAuthority(caseData, notifyData);
-
-        if (!digitalRepresentatives.isEmpty() & !orderType.equals(AmendedOrderType
-            .STANDARD_DIRECTION_ORDER.getLabel())) {
-            representativeNotificationService.sendNotificationToRepresentatives(
-                caseData.getId(),
-                notifyData,
-                digitalRepresentatives,
-                ORDER_AMENDED_NOTIFICATION_TEMPLATE
-            );
-        }
-    }
-
-    private void sendToLocalAuthority(final CaseData caseData,
-                                      final NotifyData notifyData) {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
         notificationService.sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE, emails, notifyData,
             caseData.getId().toString());
+    }
+
+    @Async
+    @EventListener
+    public void sendOrderByPost(final AmendedOrderEvent orderEvent) {
+        final CaseData caseData = orderEvent.getCaseData();
+        final List<DocumentReference> documents = List.of(orderEvent.getAmendedDocument());
+        final String orderType = orderEvent.getAmendedOrderType();
+        final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
+
+        if (!orderType.equals(AmendedOrderType.STANDARD_DIRECTION_ORDER)) {
+            Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+
+            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers,
+                element -> element.getValue()));
+            allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
+
+            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
+        }
     }
 }
