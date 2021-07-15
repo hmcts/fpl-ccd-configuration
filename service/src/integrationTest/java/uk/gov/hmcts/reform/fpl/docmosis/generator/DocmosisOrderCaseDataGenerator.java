@@ -200,13 +200,8 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersParentResponsible("Remmy Responsible")
+                        .manageOrdersRelationshipWithChild(RelationshipWithChild.FATHER)
                         .build()
-                );
-            case RELATIONSHIP_WITH_CHILD:
-                return builder.manageOrdersEventData(
-                    getManageOrdersEvent(builder)
-                    .manageOrdersRelationshipWithChild(RelationshipWithChild.FATHER)
-                    .build()
                 );
             case ICO_EXCLUSION:
                 return builder.manageOrdersEventData(
