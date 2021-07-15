@@ -54,6 +54,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
         return hiddenValue.equals("Yes");
     }
 
+    @Override
     @JsonIgnore
     public boolean hasRegisteredOrganisation() {
         return ofNullable(getSolicitor()).flatMap(

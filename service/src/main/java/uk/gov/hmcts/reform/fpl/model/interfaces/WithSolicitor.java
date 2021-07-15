@@ -11,4 +11,6 @@ public interface WithSolicitor {
     void setSolicitor(RespondentSolicitor solicitor);
 
     Party toParty();
+
+    boolean hasRegisteredOrganisation();
 }

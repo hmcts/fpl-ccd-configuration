@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +13,10 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Data
 @Builder(toBuilder = true)
@@ -87,5 +90,15 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
     public String asLabel() {
         return this.getParty().getFullName();
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean hasRegisteredOrganisation() {
+        return ofNullable(getSolicitor()).flatMap(
+            respondentSolicitor -> ofNullable(respondentSolicitor.getOrganisation()).map(
+                organisation -> isNotBlank(organisation.getOrganisationID())
+            )
+        ).orElse(false);
     }
 }
