@@ -48,6 +48,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -129,6 +130,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .build())
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
         .build();
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;
@@ -189,7 +191,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(sendLetterApi, times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture());
+        verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture());
         verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
@@ -229,7 +231,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         CaseData caseData = caseData();
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
@@ -242,7 +244,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
         );
@@ -254,7 +256,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
@@ -267,7 +269,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL),
             eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
         );
@@ -279,7 +281,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_CTSC_EMAIL),
             eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
         );
@@ -301,7 +303,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
             eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
@@ -319,7 +321,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(sendLetterApi, times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture());
+        verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture());
         verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
@@ -365,7 +367,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
             eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
@@ -383,7 +385,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
         );

@@ -31,7 +31,7 @@ public class ManageOrdersEventBuilder {
             return new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument());
         }
 
-        return finders.stream()
+        AmendedOrderEvent event = finders.stream()
             .map(finder -> finder.findOrderIfPresent(caseData, caseDataBefore))
             .filter(Optional::isPresent)
             .map(Optional::get)
@@ -39,6 +39,8 @@ public class ManageOrdersEventBuilder {
             .map(order -> new AmendedOrderEvent(
                     caseData, order.getDocument(), order.getAmendedOrderType(), order.getSelectedOthers()
             )).orElseThrow();
+
+        return event;
     }
 
     private boolean isAmendedOrder(List<Element<GeneratedOrder>> orders, List<Element<GeneratedOrder>> ordersBefore) {
