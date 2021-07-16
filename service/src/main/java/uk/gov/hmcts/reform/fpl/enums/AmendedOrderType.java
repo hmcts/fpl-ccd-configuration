@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 public enum AmendedOrderType {
-    URGENT_HEARING_ORDER("urgent hearing order"),
-    STANDARD_DIRECTION_ORDER("standard direction order"),
-    CASE_MANAGEMENT_ORDER("case management order");
+    URGENT_HEARING_ORDER("Urgent hearing order"),
+    STANDARD_DIRECTION_ORDER("Standard direction order"),
+    CASE_MANAGEMENT_ORDER("Case management order");
 
     private final String label;
 

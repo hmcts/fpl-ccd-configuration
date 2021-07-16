@@ -64,7 +64,7 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
 
     public OrderAmendedNotifyData getExpectedParameters() {
         return OrderAmendedNotifyData.builder()
-            .orderType("case management order")
+            .orderType("Case management order")
             .callout("^Jones, SACCCCCCCC5676576567")
             .courtName("Family Court")
             .documentLink("http://fake-url/testUrl")
