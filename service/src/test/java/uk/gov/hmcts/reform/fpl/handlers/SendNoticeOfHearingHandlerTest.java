@@ -12,18 +12,19 @@ import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingNoOtherAddressTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.List;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -43,11 +45,14 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class SendNoticeOfHearingHandlerTest {
     private static final NoticeOfHearingTemplate DIGITAL_REP_NOTIFY_DATA = mock(NoticeOfHearingTemplate.class);
     private static final NoticeOfHearingTemplate EMAIL_REP_NOTIFY_DATA = mock(NoticeOfHearingTemplate.class);
+    private static final NoticeOfHearingNoOtherAddressTemplate NO_OTHER_ADDRESS_NOTIFY_DATA = mock(
+        NoticeOfHearingNoOtherAddressTemplate.class);
     private static final HearingBooking HEARING = mock(HearingBooking.class);
     private static final Other OTHER = mock(Other.class);
     private static final CaseData CASE_DATA = mock(CaseData.class);
@@ -59,6 +64,8 @@ class SendNoticeOfHearingHandlerTest {
     private NotificationService notificationService;
     @Mock
     private NoticeOfHearingEmailContentProvider contentProvider;
+    @Mock
+    private NoticeOfHearingNoOtherAddressEmailContentProvider noticeOfHearingNoOtherAddressEmailContentProvider;
     @Mock
     private RepresentativeNotificationService representativeNotificationService;
     @Mock
@@ -110,13 +117,19 @@ class SendNoticeOfHearingHandlerTest {
 
     @Test
     void shouldSendNotificationToCtscWhenOtherDoesNotHaveRepresentationAndAddressWhenNewHearingIsAdded() {
-
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
-        given(CASE_DATA.getOthers()).willReturn(Others.builder().firstOther(OTHER).build());
+        given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.getRepresentedBy()).willReturn(emptyList());
         given(OTHER.hasAddressAdded()).willReturn(false);
+        given(noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
+            CASE_DATA, HEARING, OTHER)).willReturn(NO_OTHER_ADDRESS_NOTIFY_DATA);
 
         underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+
+        verify(notificationService).sendEmail(
+            NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
+
     }
 
     @Test
@@ -127,6 +140,7 @@ class SendNoticeOfHearingHandlerTest {
             .willReturn(DIGITAL_REP_NOTIFY_DATA);
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, EMAIL))
             .willReturn(EMAIL_REP_NOTIFY_DATA);
+        given(HEARING.getOthers()).willReturn(emptyList());
 
         underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING));
 

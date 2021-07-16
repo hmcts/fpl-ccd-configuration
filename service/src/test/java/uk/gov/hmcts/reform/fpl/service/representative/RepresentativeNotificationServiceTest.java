@@ -16,8 +16,12 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 
 import java.util.List;
+import java.util.Set;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE;
@@ -35,6 +39,9 @@ class RepresentativeNotificationServiceTest {
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private OtherRecipientsInbox otherRecipientsInbox;
 
     @Autowired
     private RepresentativeNotificationService representativeNotificationService;
@@ -77,6 +84,29 @@ class RepresentativeNotificationServiceTest {
             EMAIL, TEMPLATE_NAME, TEMPLATE_DATA, caseData);
 
         verify(notificationService).sendEmail(
+            TEMPLATE_NAME,
+            "sam@test.co.uk",
+            TEMPLATE_DATA,
+            CASE_ID);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldNotNotifyRepresentativesOfNonSelectedOthers() {
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .representatives(getRepresentativesOfMixedServingPreferences())
+            .build();
+
+        given(otherRecipientsInbox.getNonSelectedRecipients(EMAIL,
+            caseData,
+            emptyList(),
+            element -> element.getValue().getEmail())).willReturn((Set) Set.of("sam@test.co.uk"));
+
+        representativeNotificationService.sendToRepresentativesByServedPreference(
+            DIGITAL_SERVICE, TEMPLATE_NAME, TEMPLATE_DATA, caseData, emptyList());
+
+        verify(notificationService, never()).sendEmail(
             TEMPLATE_NAME,
             "sam@test.co.uk",
             TEMPLATE_DATA,

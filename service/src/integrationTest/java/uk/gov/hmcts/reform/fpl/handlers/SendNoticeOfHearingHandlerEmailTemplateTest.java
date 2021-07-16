@@ -56,7 +56,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "Lorgar";
     private static final String OTHER_NAME = "Other Person";
     private static final String FAMILY_MAN_NUMBER = "FAM_NUM";
-    private static final long CASE_ID = 12345L;
+    private static final long CASE_ID = 1111111111111111L;
     private static final HearingBooking HEARING = HearingBooking.builder()
         .type(HearingType.CASE_MANAGEMENT)
         .startDate(LocalDateTime.of(2021, 12, 12, 12, 0, 0))
@@ -196,7 +196,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyCtsc() {
         underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
-        String caseName = "FAM_NUM, 12345, case management, 12 December 2021";
+        String caseName = "FAM_NUM, 1111-1111-1111-1111, case management, 12 December 2021";
 
         assertThat(response())
             .hasSubject("No address for notice of hearing")

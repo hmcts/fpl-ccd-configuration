@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 @SuperBuilder(toBuilder = true)
 public class NoticeOfHearingNoOtherAddressTemplate extends BaseCaseNotifyData {
     private String familyManCaseNumber;
-    private Long ccdNumber;
+    private String ccdNumber;
     private String hearingType;
     private String hearingDate;
     private String partyName;
