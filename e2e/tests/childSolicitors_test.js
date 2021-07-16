@@ -61,7 +61,7 @@ Scenario('Solicitor cannot request representation before case submission and Caf
   await noticeOfChangePage.navigate();
   await noticeOfChangePage.enterCaseReference(caseId);
   I.click('Continue');
-  I.see('Your notice of change request has not been submitted');
+  I.waitForText('Your notice of change request has not been submitted');
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
@@ -98,7 +98,7 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   for (const [index, child] of children.entries()) {
     assertChild(I, index + 1, child.value, solicitor1);
   }
-  I.dontSeeTab(caseViewPage.tabs.changeOfRepresentatives);
+  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.changeOfRepresentatives);
 });
 
 Scenario('HMCTS assign a different solicitor for some of the children', async ({I, caseViewPage, enterChildrenEventPage}) => {
@@ -192,7 +192,7 @@ async function attemptAndFailNoticeOfChange(I, noticeOfChangePage, solicitor, ch
   await I.signIn(solicitor);
   await noticeOfChangePage.userFillsNoC(caseId, 'Swansea City Council', child.value.party.firstName, child.value.party.lastName);
   I.click('Continue');
-  I.see('Enter the client details exactly as they’re written on the case, including any mistakes');
+  I.waitForText('Enter the client details exactly as they’re written on the case, including any mistakes');
 }
 
 const assertChangeOfRepresentative = (I, index, method, respondentName, actingUserEmail, change) => {
