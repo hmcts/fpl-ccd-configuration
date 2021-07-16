@@ -143,7 +143,8 @@ ccd:
     java:
       imagePullPolicy: Always
       devmemoryRequests: '1524Mi'
-      cpuRequests: '900m'
+      devmemoryLimits: '2048Mi'
+      devcpuRequests: '900m'
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
