@@ -41,9 +41,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ContextConfiguration(classes = {
-    AmendedOrderEventHandler.class, AmendedOrderEmailContentProvider.class, FixedTimeConfiguration.class,
-    OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, EmailNotificationHelper.class,
-    CaseUrlService.class, RepresentativeNotificationService.class
+    AmendedOrderEventHandler.class, AmendedOrderEmailContentProvider.class,
+    EmailNotificationHelper.class, CaseUrlService.class, RepresentativeNotificationService.class
 })
 @MockBeans({
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
