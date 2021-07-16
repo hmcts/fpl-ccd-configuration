@@ -124,7 +124,7 @@ class StandardDirectionOrderTest {
     @Test
     void shouldReturnAmendedOrderType() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
-        assertThat(standardDirectionOrder.getAmendedOrderType()).isEqualTo("standard direction order");
+        assertThat(standardDirectionOrder.getAmendedOrderType()).isEqualTo("Standard direction order");
     }
 
     @Test
