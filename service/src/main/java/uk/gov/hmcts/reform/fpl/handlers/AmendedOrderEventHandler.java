@@ -64,8 +64,8 @@ public class AmendedOrderEventHandler {
         final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
             orderDocument, orderType);
 
-        if (!digitalRepresentatives.isEmpty() & !orderType.equals(AmendedOrderType
-            .STANDARD_DIRECTION_ORDER.getLabel())) {
+        if (!digitalRepresentatives.isEmpty() & !AmendedOrderType
+            .STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
                 notifyData,
@@ -90,8 +90,8 @@ public class AmendedOrderEventHandler {
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
-        if (!emailRepresentatives.isEmpty() && !orderType.equals(AmendedOrderType
-            .STANDARD_DIRECTION_ORDER.getLabel())) {
+        if (!emailRepresentatives.isEmpty() && !AmendedOrderType
+            .STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
             final NotifyData notifyData = amendedOrderEmailContentProvider.getNotifyData(caseData,
                 orderDocument, orderType);
 
@@ -131,7 +131,7 @@ public class AmendedOrderEventHandler {
         final String orderType = orderEvent.getAmendedOrderType();
         final List<Element<Other>> selectedOthers = orderEvent.getSelectedOthers();
 
-        if (!orderType.equals(AmendedOrderType.STANDARD_DIRECTION_ORDER)) {
+        if (!AmendedOrderType.STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
             allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers,
