@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTi
 @Slf4j
 @Data
 @Builder(toBuilder = true)
-public class GeneratedOrder implements RemovableOrder, AmendableOrder {
+public class GeneratedOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
 
     // this is the new type
     private final String orderType;
@@ -45,6 +46,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     private final String title;
     private final String details;
     private final DocumentReference document;
+    private final DocumentReference translatedDocument;
     private final DocumentReference unsealedDocumentCopy;
     private final LocalDate amendedDate;
     private final String dateOfIssue;
@@ -71,6 +73,12 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder {
     @JsonIgnore
     public boolean isRemovable() {
         return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean hasBeenTranslated() {
+        return Objects.nonNull(translatedDocument);
     }
 
     @JsonIgnore

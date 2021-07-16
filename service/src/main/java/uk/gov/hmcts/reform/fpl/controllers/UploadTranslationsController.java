@@ -1,0 +1,71 @@
+package uk.gov.hmcts.reform.fpl.controllers;
+
+import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.translations.AvailableTranslationListBuilder;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
+
+@Api
+@RestController
+@RequestMapping("/callback/upload-translations")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class UploadTranslationsController extends CallbackController {
+
+    private final AvailableTranslationListBuilder availableTranslationListBuilder;
+    private final TranslatableItemService translatableItemService;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        caseDetails.getData().put("uploadTranslationsRelatedToDocument",
+            availableTranslationListBuilder.build(getCaseData(caseDetails))
+        );
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/select-document/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().put("uploadTranslationsOriginalDoc", translatableItemService.getSelectedOrder(caseData));
+
+
+        return respond(caseDetails);
+    }
+
+
+
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(translatableItemService.finalise(caseData));
+
+        caseData.getUploadTranslationsEventData()
+            .getTransientFields()
+            .forEach(field -> caseDetails.getData().remove(field));
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        // send notification.
+    }
+}

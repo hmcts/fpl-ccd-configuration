@@ -63,6 +63,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "translatedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Welsh translation",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "unsealedDocumentCopy",
     "FieldType": "Document",
     "ElementLabel": "Unsealed document copy",

@@ -1,0 +1,31 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadTranslationsRelatedToDocument",
+    "Label": "Choose the document that's been translated",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "uploadTranslationsOriginalDoc",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Document",
+    "Label": "English version",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "uploadTranslationsTranslatedDoc",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Upload translated document",
+    "HintText": "Orders will be sealed before sending to relevant parties",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".doc,.docx,.pdf",
+    "Searchable": "N"
+  }
+]
