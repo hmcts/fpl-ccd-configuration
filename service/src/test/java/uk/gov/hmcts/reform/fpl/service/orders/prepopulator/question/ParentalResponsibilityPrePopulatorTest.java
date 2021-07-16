@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 class ParentalResponsibilityPrePopulatorTest {
-
 
     private static final String PARENT_RESPONSIBLE = "manageOrdersParentResponsible";
     private static final String RELATIONSHIP_TO_CHILD = "manageOrdersRelationshipWithChild";
@@ -37,7 +37,7 @@ class ParentalResponsibilityPrePopulatorTest {
 
     @BeforeEach
     void setup() {
-        linkedApplicationId = UUID.randomUUID();
+        linkedApplicationId = randomUUID();
         selectedLinkedApplicationList = buildDynamicList(0, Pair.of(linkedApplicationId, "My application"));
     }
 
@@ -82,8 +82,166 @@ class ParentalResponsibilityPrePopulatorTest {
         );
     }
 
+    @Test
+    public void shouldReturnEmptyMapWhen_RelationshipWithChildIsSet() {
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+            buildAdditionalApplicationsBundle(
+                linkedApplicationId,
+                ParentalResponsibilityType.PR_BY_FATHER
+            );
+
+        CaseData caseData = buildCaseData(selectedLinkedApplicationList, additionalApplicationsBundle).toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersRelationshipWithChild(RelationshipWithChild.FATHER)
+                .manageOrdersParentResponsible(null)
+                .build()
+            )
+            .build();
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhen_ParentResponsibleIsSet() {
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+            buildAdditionalApplicationsBundle(
+                linkedApplicationId,
+                ParentalResponsibilityType.PR_BY_FATHER
+            );
+
+        CaseData caseData = buildCaseData(selectedLinkedApplicationList, additionalApplicationsBundle).toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersRelationshipWithChild(null)
+                .manageOrdersParentResponsible(APPLICANT_NAME)
+                .build()
+            )
+            .build();
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhen_LinkedApplicationIsNull() {
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+            buildAdditionalApplicationsBundle(
+                null,
+                null
+            );
+
+        CaseData caseData = buildCaseData(selectedLinkedApplicationList, additionalApplicationsBundle).toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersRelationshipWithChild(null)
+                .manageOrdersParentResponsible(null)
+                .build()
+            )
+            .build();
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhen_SelectedApplicationIdIsNull() {
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+            List.of(element(
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .id(null)
+                        .applicantName(APPLICANT_NAME)
+                        .c2AdditionalOrdersRequested(List.of(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
+                        .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
+                        .build())
+                    .build())
+            );
+
+        CaseData caseData = buildCaseData(selectedLinkedApplicationList, additionalApplicationsBundle).toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersRelationshipWithChild(null)
+                .manageOrdersParentResponsible(null)
+                .build()
+            )
+            .build();
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhen_SelectedApplicationBundleIsNull() {
+        CaseData caseData = buildCaseData(selectedLinkedApplicationList, null).toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersRelationshipWithChild(null)
+                .manageOrdersParentResponsible(null)
+                .build()
+            )
+            .build();
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhen_selectedApplicationIdIsNull() {
+        CaseData caseData = buildCaseData(null, null).toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersRelationshipWithChild(null)
+                .manageOrdersParentResponsible(null)
+                .build()
+            )
+            .build();
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
+    }
+
+
+    @Test
+    void shouldReturnEmptyMapWhen_NotC2andOtherApplicationIsNot_C1_Parental_Responsibility() {
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .id(linkedApplicationId)
+            .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
+            .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_SECOND_FEMALE_PARENT)
+            .applicantName(APPLICANT_NAME)
+            .build();
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+            List.of(element(linkedApplicationId,
+                AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(otherApplicationsBundle)
+                    .build())
+            );
+
+        CaseData caseData = buildCaseData(selectedLinkedApplicationList, additionalApplicationsBundle);
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(
+            Map.of()
+        );
+    }
+
+    @Test
+    void shouldPrePopulateWithMotherRelationshipDetailsAndApplicantName_WithC1Application() {
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .id(linkedApplicationId)
+            .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
+            .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_SECOND_FEMALE_PARENT)
+            .applicantName(APPLICANT_NAME)
+            .build();
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+            List.of(element(linkedApplicationId,
+                AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(otherApplicationsBundle)
+                    .build())
+            );
+
+        CaseData caseData = buildCaseData(selectedLinkedApplicationList, additionalApplicationsBundle);
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(
+            Map.of(
+                PARENT_RESPONSIBLE, ParentalResponsibilityPrePopulatorTest.APPLICANT_NAME,
+                RELATIONSHIP_TO_CHILD, RelationshipWithChild.SECOND_FEMALE_PARENT
+            )
+        );
+    }
+
     private CaseData buildCaseData(DynamicList selectedLinkedApplicationList,
-                              List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
+                                   List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
         return CaseData.builder()
             .additionalApplicationsBundle(additionalApplicationsBundle)
             .manageOrdersEventData(ManageOrdersEventData.builder()

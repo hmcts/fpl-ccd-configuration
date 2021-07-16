@@ -20,7 +20,6 @@ import java.util.UUID;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FATHER;
-import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_SECOND_FEMALE_PARENT;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -46,42 +45,49 @@ public class ParentalResponsibilityPrePopulator implements QuestionBlockOrderPre
 
         DynamicList linkedApplication = caseData.getManageOrdersEventData().getManageOrdersLinkedApplication();
 
+        if (linkedApplication == null) {
+            return Map.of();
+        }
+
         UUID selectedApplicationId = linkedApplication.getValueCodeAsUUID();
         ApplicationsBundle selectedApplicationBundle = caseData.getApplicationBundleByUUID(selectedApplicationId);
 
-        if (selectedApplicationBundle instanceof C2DocumentBundle) {
-            C2DocumentBundle c2DocumentBundle = (C2DocumentBundle) selectedApplicationBundle;
-
-            if (c2DocumentBundle.getC2AdditionalOrdersRequested().contains(PARENTAL_RESPONSIBILITY)) {
-                data.put(PARENT_RESPONSIBLE,
-                    StringUtils.substringBefore(c2DocumentBundle.getApplicantName(), SEPARATOR));
-                mapParentResponsibility(data, c2DocumentBundle.getParentalResponsibilityType());
-            }
-
-        } else {
-            OtherApplicationsBundle otherApplicationsBundle = (OtherApplicationsBundle) selectedApplicationBundle;
-            if (otherApplicationsBundle.getApplicationType() == C1_PARENTAL_RESPONSIBILITY) {
-                data.put(PARENT_RESPONSIBLE,
-                    StringUtils.substringBefore(otherApplicationsBundle.getApplicantName(), SEPARATOR));
-
-                mapParentResponsibility(data, otherApplicationsBundle.getParentalResponsibilityType());
-            }
+        if (selectedApplicationId == null || selectedApplicationBundle == null) {
+            return Map.of();
         }
-        return data;
+
+        if (selectedApplicationBundle instanceof C2DocumentBundle
+            && ((C2DocumentBundle) selectedApplicationBundle).getC2AdditionalOrdersRequested().contains(
+                PARENTAL_RESPONSIBILITY)) {
+
+            C2DocumentBundle c2DocumentBundle = (C2DocumentBundle) selectedApplicationBundle;
+            data.put(PARENT_RESPONSIBLE,
+                StringUtils.substringBefore(c2DocumentBundle.getApplicantName(), SEPARATOR));
+            data.putAll(mapParentResponsibility(c2DocumentBundle.getParentalResponsibilityType()));
+            return data;
+        }
+
+        OtherApplicationsBundle otherApplicationsBundle = (OtherApplicationsBundle) selectedApplicationBundle;
+        if (otherApplicationsBundle.getApplicationType() == C1_PARENTAL_RESPONSIBILITY) {
+            data.put(PARENT_RESPONSIBLE,
+                StringUtils.substringBefore(otherApplicationsBundle.getApplicantName(), SEPARATOR));
+
+            data.putAll(mapParentResponsibility(otherApplicationsBundle.getParentalResponsibilityType()));
+            return data;
+        }
+
+        return Map.of();
     }
 
-    private void mapParentResponsibility(Map<String, Object> data, ParentalResponsibilityType type) {
-        if (type == PR_BY_FATHER) {
-            data.put(RELATIONSHIP_TO_CHILD, RelationshipWithChild.FATHER);
-        } else if (type == PR_BY_SECOND_FEMALE_PARENT) {
-            data.put(RELATIONSHIP_TO_CHILD, RelationshipWithChild.SECOND_FEMALE_PARENT);
-        }
+    private Map<String, Object> mapParentResponsibility(ParentalResponsibilityType type) {
+        return Map.of(RELATIONSHIP_TO_CHILD,
+            type == PR_BY_FATHER ? RelationshipWithChild.FATHER : RelationshipWithChild.SECOND_FEMALE_PARENT
+        );
     }
 
     private boolean hasDataAlreadySet(CaseData caseData) {
-        return caseData.getManageOrdersEventData().getManageOrdersLinkedApplication() != null
-            && caseData.getManageOrdersEventData().getManageOrdersParentResponsible() != null
-            && caseData.getManageOrdersEventData().getManageOrdersRelationshipWithChild() != null;
+        return caseData.getManageOrdersEventData().getManageOrdersParentResponsible() != null
+            || caseData.getManageOrdersEventData().getManageOrdersRelationshipWithChild() != null;
     }
 }
 

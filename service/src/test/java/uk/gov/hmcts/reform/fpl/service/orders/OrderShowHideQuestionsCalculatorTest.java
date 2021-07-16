@@ -399,7 +399,7 @@ class OrderShowHideQuestionsCalculatorTest {
         parentalResponsibilityOrder.put("manageOrdersExclusionRequirementDetails", "NO");
         parentalResponsibilityOrder.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         parentalResponsibilityOrder.put("childArrangementSpecificIssueProhibitedSteps", "NO");
-        parentalResponsibilityOrder.put("whichOthers", "NO");
+        parentalResponsibilityOrder.put("whichOthers", "YES");
         parentalResponsibilityOrder.put("dischargeOfCareDetails", "NO");
         parentalResponsibilityOrder.put("closeCase", "NO");
         parentalResponsibilityOrder.put("whichChildren", "YES");
