@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -29,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -47,7 +47,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     SendNoticeOfHearingHandler.class, NoticeOfHearingEmailContentProvider.class, CaseUrlService.class,
     NoticeOfHearingNoOtherAddressEmailContentProvider.class, RepresentativeNotificationService.class,
-    CtscEmailLookupConfiguration.class, CaseDataExtractionService.class, EmailNotificationHelper.class
+    CtscEmailLookupConfiguration.class, CaseDataExtractionService.class, EmailNotificationHelper.class,
+    OtherRecipientsInbox.class
 })
 @MockBean(SendDocumentService.class)
 class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
@@ -62,6 +63,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
         .endDate(LocalDateTime.of(2021, 12, 21, 0, 0, 0))
         .noticeOfHearing(DocumentReference.builder().binaryUrl("/binary/url").build())
         .preAttendanceDetails("20 minutes before the hearing")
+        .others(wrapElements(Other.builder().name(OTHER_NAME).build()))
         .build();
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(CASE_ID)
@@ -73,7 +75,6 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
         .children1(wrapElements(Child.builder()
             .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
             .build()))
-        .others(Others.builder().firstOther(Other.builder().name(OTHER_NAME).build()).build())
         .build();
 
     @MockBean

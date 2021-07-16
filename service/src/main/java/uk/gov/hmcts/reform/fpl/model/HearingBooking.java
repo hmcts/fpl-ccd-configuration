@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
@@ -76,6 +77,7 @@ public class HearingBooking {
     private final String legalAdvisorLabel;
     //judgeAndLegalAdvisor field not shown in tab for new hearings but shown for hearings before FPLA-2030
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private final List<Element<Other>> others;
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
     private final PreviousHearingVenue previousHearingVenue;

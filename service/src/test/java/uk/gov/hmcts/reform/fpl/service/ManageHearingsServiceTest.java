@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -108,6 +109,8 @@ class ManageHearingsServiceTest {
         .addressLine2("address")
         .build();
 
+    private static final List<Element<Other>> SELECTED_OTHERS = wrapElements(Other.builder().build());
+
     private static final Document DOCUMENT = testDocument();
 
     private static final UUID RE_LISTED_HEARING_ID = randomUUID();
@@ -122,12 +125,13 @@ class ManageHearingsServiceTest {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService = mock(
         DocmosisDocumentGeneratorService.class
     );
+    private final OthersService othersService = mock(OthersService.class);
     private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
     private final IdentityService identityService = mock(IdentityService.class);
 
     private final ManageHearingsService service = new ManageHearingsService(
         noticeOfHearingGenerationService, docmosisDocumentGeneratorService, uploadDocumentService,
-        hearingVenueLookUpService, new ObjectMapper(), identityService, time
+        othersService, hearingVenueLookUpService, new ObjectMapper(), identityService, time
     );
 
     @Nested
@@ -487,6 +491,8 @@ class ManageHearingsServiceTest {
             .noticeOfHearingNotes("notes")
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
@@ -498,6 +504,7 @@ class ManageHearingsServiceTest {
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .build();
 
@@ -523,6 +530,8 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(previousHearingVenue)
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
@@ -534,6 +543,7 @@ class ManageHearingsServiceTest {
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
             .build();
@@ -560,6 +570,8 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(previousHearingVenue)
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
@@ -571,6 +583,7 @@ class ManageHearingsServiceTest {
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
             .build();

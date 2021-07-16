@@ -10,9 +10,11 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -81,16 +83,18 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void notifyRepresentatives(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-
-        String template = getTemplate();
+        final HearingBooking hearingBooking = event.getSelectedHearing();
+        final String template = getTemplate();
 
         SERVING_PREFERENCES.forEach(servingPreference -> {
             NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
                 caseData, event.getSelectedHearing(), servingPreference
             );
 
+            List<Element<Other>> othersSelected = hearingBooking.getOthers();
+
             representativeNotificationService.sendToRepresentativesByServedPreference(
-                servingPreference, template, notifyData, caseData
+                servingPreference, template, notifyData, caseData, othersSelected
             );
         });
     }
@@ -110,10 +114,11 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void notifyCtsc(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
+        final HearingBooking hearingBooking = event.getSelectedHearing();
 
         String recipient = ctscEmailLookupConfiguration.getEmail();
 
-        List<Other> others = unwrapElements(caseData.getAllOthers());
+        List<Other> others = unwrapElements(hearingBooking.getOthers());
 
         others.forEach(other -> {
             if (other.getRepresentedBy().isEmpty() && !other.hasAddressAdded()) {

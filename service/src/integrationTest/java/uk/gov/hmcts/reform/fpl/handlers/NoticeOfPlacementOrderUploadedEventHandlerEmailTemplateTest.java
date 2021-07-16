@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTit
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -54,7 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     OrderIssuedEmailContentProvider.class, LocalAuthorityEmailContentProvider.class,
     IssuedOrderAdminNotificationHandler.class, NoticeOfPlacementOrderUploadedEventHandler.class,
-    EmailNotificationHelper.class, CaseUrlService.class, FixedTimeConfiguration.class,
+    EmailNotificationHelper.class, CaseUrlService.class, FixedTimeConfiguration.class, OtherRecipientsInbox.class,
     OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class,
     RepresentativeNotificationService.class, ChildrenSmartSelector.class, ChildSelectionUtils.class
 })

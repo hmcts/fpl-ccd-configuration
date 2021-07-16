@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 
 import java.util.List;
 
@@ -26,7 +27,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {RepresentativeNotificationService.class, RepresentativesInbox.class})
+@SpringBootTest(classes = {RepresentativeNotificationService.class, RepresentativesInbox.class,
+    OtherRecipientsInbox.class})
 class RepresentativeNotificationServiceTest {
     @MockBean
     private NotificationService notificationService;

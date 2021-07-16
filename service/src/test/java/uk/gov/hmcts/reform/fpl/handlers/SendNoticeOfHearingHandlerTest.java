@@ -6,10 +6,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -36,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 
@@ -44,6 +49,7 @@ class SendNoticeOfHearingHandlerTest {
     private static final NoticeOfHearingTemplate DIGITAL_REP_NOTIFY_DATA = mock(NoticeOfHearingTemplate.class);
     private static final NoticeOfHearingTemplate EMAIL_REP_NOTIFY_DATA = mock(NoticeOfHearingTemplate.class);
     private static final HearingBooking HEARING = mock(HearingBooking.class);
+    private static final Other OTHER = mock(Other.class);
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final Long CASE_ID = 12345L;
 
@@ -61,6 +67,8 @@ class SendNoticeOfHearingHandlerTest {
     private FeatureToggleService toggleService;
     @Mock
     private CafcassLookupConfiguration cafcassLookup;
+    @Mock
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @InjectMocks
     private SendNoticeOfHearingHandler underTest;
@@ -101,6 +109,17 @@ class SendNoticeOfHearingHandlerTest {
     }
 
     @Test
+    void shouldSendNotificationToCtscWhenOtherDoesNotHaveRepresentationAndAddressWhenNewHearingIsAdded() {
+
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+        given(CASE_DATA.getOthers()).willReturn(Others.builder().firstOther(OTHER).build());
+        given(OTHER.getRepresentedBy()).willReturn(emptyList());
+        given(OTHER.hasAddressAdded()).willReturn(false);
+
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+    }
+
+    @Test
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
 
@@ -115,14 +134,16 @@ class SendNoticeOfHearingHandlerTest {
             RepresentativeServingPreferences.EMAIL,
             NOTICE_OF_NEW_HEARING,
             EMAIL_REP_NOTIFY_DATA,
-            CASE_DATA
+            CASE_DATA,
+            emptyList()
         );
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(
             RepresentativeServingPreferences.DIGITAL_SERVICE,
             NOTICE_OF_NEW_HEARING,
             DIGITAL_REP_NOTIFY_DATA,
-            CASE_DATA
+            CASE_DATA,
+            emptyList()
         );
     }
 

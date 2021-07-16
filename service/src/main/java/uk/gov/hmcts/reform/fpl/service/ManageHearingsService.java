@@ -96,6 +96,7 @@ public class ManageHearingsService {
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final OthersService othersService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final ObjectMapper mapper;
     private final IdentityService identityService;
@@ -441,6 +442,7 @@ public class ManageHearingsService {
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
+            .others(othersService.getSelectedOthers(caseData))
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
     }
@@ -477,6 +479,7 @@ public class ManageHearingsService {
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
+            .others(othersService.getSelectedOthers(caseData))
             .previousHearingVenue(caseData.getPreviousHearingVenue())
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
