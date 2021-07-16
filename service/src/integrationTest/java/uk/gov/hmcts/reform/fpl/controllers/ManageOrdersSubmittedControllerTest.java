@@ -58,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
@@ -222,73 +223,75 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesServedDigitallyWhenOrderIssued() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedDigitallyWhenOrderIssued() {
         CaseData caseData = caseData();
         postSubmittedEvent(caseData);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() {
         CaseData caseData = caseData();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyLocalAuthorityWhenOrderIssued() throws NotificationClientException {
+    void shouldNotifyLocalAuthorityWhenOrderIssued() {
         CaseData caseData = caseData();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyAdminWhenOrderIssued() throws NotificationClientException {
+    void shouldNotifyAdminWhenOrderIssued() {
         CaseData caseData = caseData();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL),
             eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyCtscWhenEnabledWhenOrderIssued() throws NotificationClientException {
+    void shouldNotifyCtscWhenEnabledWhenOrderIssued() {
         CaseData caseData = caseData().toBuilder().sendToCtsc("Yes").build();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_CTSC_EMAIL),
-            eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
-        );
+        checkUntil(() -> {
+            verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_CTSC_EMAIL),
+                eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
+            );
 
-        verify(notificationClient, never()).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL), any(), any()
-        );
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL), any(), any()
+            );
+        });
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldSendAmendedNotificationToLocalAuthorityWhenAmendedOrder() throws NotificationClientException {
+    void shouldSendAmendedNotificationToLocalAuthorityWhenAmendedOrder() {
         CaseData caseData = caseData();
         CaseData caseDataBefore = caseDataBefore();
         CallbackRequest request = CallbackRequest.builder()
@@ -298,11 +301,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
             eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
@@ -316,9 +319,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
-            printRequest.capture());
-        verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
+        checkUntil(() -> {
+            verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
+                printRequest.capture());
+            verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
+        });
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
             CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
@@ -353,7 +358,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesServedDigitallyWhenOrderAmended() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedDigitallyWhenOrderAmended() {
         CaseData caseData = caseData();
         CaseData caseDataBefore = caseDataBefore();
         CallbackRequest request = CallbackRequest.builder()
@@ -363,15 +368,15 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
             eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyRepresentativesServedByEmailWhenOrderAmended() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedByEmailWhenOrderAmended() {
         CaseData caseData = caseData();
         CaseData caseDataBefore = caseDataBefore();
         CallbackRequest request = CallbackRequest.builder()
@@ -381,10 +386,10 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     private CaseData caseData() {
