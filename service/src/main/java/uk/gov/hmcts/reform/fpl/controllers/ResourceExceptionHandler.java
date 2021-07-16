@@ -1,20 +1,30 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 import uk.gov.hmcts.reform.fpl.exceptions.LogAsWarningException;
+import uk.gov.hmcts.reform.fpl.logging.HeaderInformationExtractor;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @ControllerAdvice
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ResourceExceptionHandler {
+
+    private final HeaderInformationExtractor extractor;
 
     @ExceptionHandler(value = AboutToStartOrSubmitCallbackException.class)
     public ResponseEntity<AboutToStartOrSubmitCallbackResponse> handleAboutToStartOrSubmitCallbackException(
@@ -38,13 +48,21 @@ public class ResourceExceptionHandler {
     public ResponseEntity<AboutToStartOrSubmitCallbackResponse> handleLogAsWarningException(
         LogAsWarningException exception, HttpServletRequest request) {
         log.warn("Ignorable exception for caller {}. {}", getCaller(request), exception.getMessage());
-        
+
         return ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
             .errors(List.of(exception.getUserMessage()))
             .build());
     }
 
-    private String getCaller(HttpServletRequest request) {
-        return String.format("(id='%s', roles='%s')", request.getHeader("user-id"), request.getHeader("user-roles"));
+    private String getCaller(HttpServletRequest httpRequest) {
+        HttpHeaders httpHeaders = Collections.list(httpRequest.getHeaderNames())
+            .stream()
+            .collect(Collectors.toMap(
+                Function.identity(),
+                h -> Collections.list(httpRequest.getHeaders(h)),
+                (oldValue, newValue) -> newValue,
+                HttpHeaders::new
+            ));
+        return String.format("(%s)", extractor.getUser(httpHeaders));
     }
 }
