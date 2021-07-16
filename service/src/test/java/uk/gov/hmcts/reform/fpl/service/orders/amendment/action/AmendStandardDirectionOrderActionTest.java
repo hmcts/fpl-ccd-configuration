@@ -69,6 +69,7 @@ class AmendStandardDirectionOrderActionTest {
         StandardDirectionOrder amendedSDO = sdo.toBuilder()
             .amendedDate(AMENDED_DATE)
             .orderDoc(AMENDED_DOCUMENT)
+            .others(Collections.emptyList())
             .build();
 
         assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(

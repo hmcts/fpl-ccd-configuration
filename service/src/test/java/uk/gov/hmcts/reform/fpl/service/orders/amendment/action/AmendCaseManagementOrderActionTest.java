@@ -83,6 +83,7 @@ class AmendCaseManagementOrderActionTest {
         HearingOrder amendedCMO = cmoToAmend.toBuilder()
             .order(AMENDED_DOCUMENT)
             .amendedDate(AMENDED_DATE)
+            .others(Collections.emptyList())
             .build();
 
         List<Element<HearingOrder>> amendedOrders = List.of(
