@@ -66,7 +66,9 @@ class AmendUrgentHearingOrderActionTest {
 
         when(caseData.getUrgentHearingOrder()).thenReturn(uho);
 
-        UrgentHearingOrder amendedUHO = uho.toBuilder().amendedDate(AMENDED_DATE).order(AMENDED_ORDER).build();
+        UrgentHearingOrder amendedUHO = uho.toBuilder().amendedDate(AMENDED_DATE).order(AMENDED_ORDER)
+            .others(Collections.emptyList())
+            .build();
 
         assertThat(underTest.applyAmendedOrder(caseData, AMENDED_ORDER, selectedOthers)).isEqualTo(
             Map.of("urgentHearingOrder", amendedUHO)
