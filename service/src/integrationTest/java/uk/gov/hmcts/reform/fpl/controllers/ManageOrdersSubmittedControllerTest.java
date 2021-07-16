@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;

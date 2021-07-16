@@ -109,7 +109,7 @@ class AmendedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldNotifyEmailRepsWhenOrderAmended() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
@@ -129,7 +129,7 @@ class AmendedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldNotifyDigitalRepsWhenOrderAmended() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
@@ -149,7 +149,7 @@ class AmendedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPost() {
         final Representative representative = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
@@ -172,7 +172,7 @@ class AmendedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldOnlySendNotificationToLAWhenOrderTypeIsSDO() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
