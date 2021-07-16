@@ -53,7 +53,7 @@ class AmendedOrderEventHandlerTest {
     private static final Set<String> EMAIL_REPS = new HashSet<>(Arrays.asList(EMAIL_REP_1, EMAIL_REP_2));
     private static final String DIGITAL_REP_1 = "fred@flinstones.com";
     private static final String DIGITAL_REP_2 = "fred2@flinstones.com";
-    private static final String AMENDED_ORDER_TYPE = "case management order";
+    private static final String AMENDED_ORDER_TYPE = "Case management order";
     private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList(DIGITAL_REP_1, DIGITAL_REP_2));
     private static final Long CASE_ID = 12345L;
     private static final CaseData CASE_DATA = mock(CaseData.class);
@@ -88,7 +88,7 @@ class AmendedOrderEventHandlerTest {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
         )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "case management order"))
+        given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "Case management order"))
             .willReturn(NOTIFY_DATA);
 
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(
@@ -186,10 +186,10 @@ class AmendedOrderEventHandlerTest {
             eq(SELECTED_OTHERS),
             any()))
             .willReturn((Set) Set.of(DIGITAL_REP_1));
-        given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "standard direction order"))
+        given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "Standard direction order"))
             .willReturn(NOTIFY_DATA);
 
-        AmendedOrderEvent event = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, "standard direction order",
+        AmendedOrderEvent event = new AmendedOrderEvent(CASE_DATA, TEST_DOCUMENT, "Standard direction order",
             SELECTED_OTHERS);
 
         underTest.notifyDigitalRepresentatives(event);
