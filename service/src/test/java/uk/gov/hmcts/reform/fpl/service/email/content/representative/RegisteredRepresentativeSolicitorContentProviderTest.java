@@ -96,7 +96,9 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
         when(representable.getSolicitor()).thenReturn(solicitor);
         when(representable.toParty()).thenReturn(null);
 
-        RegisteredRepresentativeSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate("Dear John Smith", "");
+        RegisteredRepresentativeSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate(
+            "Dear John Smith", ""
+        );
 
         assertThat(underTest.buildContent(caseData, representable)).isEqualTo(expectedTemplate);
     }

@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
+    private static final State NON_RESTRICTED_STATE = State.SUBMITTED;
     private static final String ORGANISATION_ID = "dun dun duuuuuuuun *synthy*";
     private static final String ANOTHER_ORGANISATION_ID = "whistling tune that sounds like";
     private static final String MAIN_SOLICITOR_FIRST_NAME = "dun dun duuuuuuuun *orchestral*";
@@ -114,6 +115,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = caseDataBefore.toBuilder()
+            .state(NON_RESTRICTED_STATE)
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("No")
                 .childrenMainRepresentative(MAIN_REPRESENTATIVE)
@@ -183,6 +185,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             )).build();
 
         CaseData caseData = caseDataBefore.toBuilder()
+            .state(NON_RESTRICTED_STATE)
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("Yes")
                 .childrenMainRepresentative(MAIN_REPRESENTATIVE)
@@ -241,6 +244,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = caseDataBefore.toBuilder()
+            .state(NON_RESTRICTED_STATE)
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("Yes")
                 .childrenMainRepresentative(MAIN_REPRESENTATIVE)
@@ -301,6 +305,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = caseDataBefore.toBuilder()
+            .state(NON_RESTRICTED_STATE)
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("Yes")
                 .childrenMainRepresentative(ANOTHER_REPRESENTATIVE)
@@ -428,6 +433,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = caseDataBefore.toBuilder()
+            .state(NON_RESTRICTED_STATE)
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("No")
                 .build())
@@ -475,6 +481,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .state(NON_RESTRICTED_STATE)
             .applicants(APPLICANTS)
             .children1(wrapElements(
                 Child.builder().party(ChildParty.builder().build()).build(),
@@ -510,6 +517,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         UUID confidentialChildID = UUID.randomUUID();
         CaseData initialCaseData = CaseData.builder()
+            .state(NON_RESTRICTED_STATE)
             .applicants(APPLICANTS)
             .children1(List.of(
                 element(confidentialChildID, Child.builder().party(confidentialParty).build()),

@@ -23,7 +23,8 @@ public class RegisteredRepresentativeSolicitorContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookup;
     private final EmailNotificationHelper helper;
 
-    public <R extends WithSolicitor> RegisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData, R representable) {
+    public <R extends WithSolicitor> RegisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData,
+                                                                                            R representable) {
         Party party = representable.toParty();
 
         return RegisteredRepresentativeSolicitorTemplate.builder()
