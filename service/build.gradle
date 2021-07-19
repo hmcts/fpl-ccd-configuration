@@ -7,6 +7,7 @@ buildscript {
     classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.2.3") {
       exclude group: 'com.vladsch.flexmark'
     }
+    classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.6.0'
   }
 }
 
@@ -22,12 +23,12 @@ plugins {
   id 'org.sonarqube' version '3.3'
   id 'project-report'
   id "idea"
-  id 'info.solidsoft.pitest' version '1.5.2'
+//  id 'info.solidsoft.pitest' version '1.6.0'
 }
 
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-//apply plugin: 'info.solidsoft.pitest'
+apply plugin: 'info.solidsoft.pitest'
 apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'au.com.dius.pact'
 
@@ -410,8 +411,8 @@ integration {
 }
 
 pitest {
-//  pitestVersion.set('1.6.2')
-//  junit5PluginVersion.set('0.14')   // This line is expected to be causing the mutation test failures in nightly
+  pitestVersion.set('1.6.7')
+  junit5PluginVersion.set('0.14')
   targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
   excludedClasses.set([
     'uk.gov.hmcts.reform.fpl.config.*',
