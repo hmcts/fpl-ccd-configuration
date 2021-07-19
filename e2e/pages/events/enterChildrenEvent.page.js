@@ -217,7 +217,7 @@ module.exports = {
     await clearOldSolicitorOrg();
     I.waitForEnabled('#search-org-text');
     I.fillField('#search-org-text', solicitor.details.organisation);
-    I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(solicitor.organisation))));
+    I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(solicitor.details.organisation))));
   },
 
   enterChildrenSpecificRepresentation(index, solicitor) {
