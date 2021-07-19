@@ -160,6 +160,7 @@ module.exports = {
     manageDocuments: 'Manage documents',
     uploadAdditionalApplications: 'Upload additional applications',
     manageOrders: 'Manage orders',
+    uploadWelshTranslations: 'Upload Welsh translations',
   },
   superUserActions: {
     removeOrdersAndApplications: 'Remove orders and applications',
