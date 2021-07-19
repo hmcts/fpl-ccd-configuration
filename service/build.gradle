@@ -405,7 +405,7 @@ integration {
 
 pitest {
   pitestVersion.set('1.6.2')
-  junit5PluginVersion.set('0.12')
+//  junit5PluginVersion.set('0.12')   // This line is expected to be causing the mutation test failures in nightly
   targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
   excludedClasses.set([
     'uk.gov.hmcts.reform.fpl.config.*',
