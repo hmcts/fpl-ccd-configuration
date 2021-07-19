@@ -59,6 +59,9 @@ public class MigrateCaseController extends CallbackController {
         if ("FPLA-3214".equals(migrationId)) {
             run3214(caseDetails);
         }
+        if ("FPLA-3126".equals(migrationId)) {
+            run3126(caseDetails);
+        }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
@@ -69,6 +72,22 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().remove("hearingOption");
         } else {
             throw new IllegalStateException(format("Case %s does not have hearing option", caseDetails.getId()));
+        }
+    }
+
+    private void run3126(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        validateFamilyManNumber("FPLA-3126", caseData.getFamilyManCaseNumber(), caseData);
+
+        if (isNotEmpty(caseDetails.getData().get("draftUploadedCMOs"))) {
+            caseDetails.getData().remove("draftUploadedCMOs");
+        } else {
+            throw new IllegalStateException(format("Case %s does not any draft CMOs", caseDetails.getId()));
+        }
+
+        if (isNotEmpty(caseDetails.getData().get("cancelledHearingDetails"))) {
+            caseData.getCancelledHearingDetails().get(0).getValue().setCaseManagementOrderId(null);
+            caseDetails.getData().put("cancelledHearingDetails", caseData.getCancelledHearingDetails());
         }
     }
 

@@ -15,9 +15,11 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +70,49 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldRemoveMigrationIdWhenHearingOptionNotPresent() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "migrationId", migrationId))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails).getData());
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Fpla3126 {
+
+        final String migrationId = "FPLA-3126";
+
+        @Test
+        void shouldRemoveDraftCMOIfPresent() {
+            UUID id = UUID.randomUUID();
+            List<Element<HearingBooking>> cancelledHearings =
+                List.of(element(HearingBooking.builder().caseManagementOrderId(id).build()));
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "draftUploadedCMOs", List.of(element(id, HearingOrder.builder().title("remove me").build())),
+                    "cancelledHearingDetails", cancelledHearings,
+                    "migrationId", migrationId))
+                .build();
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            cancelledHearings.get(0).getValue().setCaseManagementOrderId(null);
+
+            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEmpty();
+            assertThat(extractedCaseData.getCancelledHearingDetails()).isEqualTo(cancelledHearings);
+        }
+
+        @Test
+        void shouldRemoveMigrationIdWhenNoDraftCMOs() {
             CaseDetails caseDetails = CaseDetails.builder()
                 .id(10L)
                 .state("Submitted")
