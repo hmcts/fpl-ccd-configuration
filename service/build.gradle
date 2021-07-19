@@ -22,7 +22,7 @@ plugins {
   id 'org.sonarqube' version '3.3'
   id 'project-report'
   id "idea"
-  id 'info.solidsoft.pitest' version '1.6.0'
+  id 'info.solidsoft.pitest' version '1.5.2'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -331,6 +331,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
+//  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.2'
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
