@@ -1592,6 +1592,7 @@ class ManageHearingsServiceTest {
             "hearingAttendanceDetails",
             "hearingOption",
             "hasOthers",
+            "sendOrderToAllOthers",
             "others_label",
             "othersSelector");
     }
