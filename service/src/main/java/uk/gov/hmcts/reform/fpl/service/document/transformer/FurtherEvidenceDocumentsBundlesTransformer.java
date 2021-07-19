@@ -68,8 +68,11 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
             .filter(doc -> (view.isIncludeConfidentialLA() || !doc.getValue().isConfidentialDocument()))
             .collect(toList());
 
+        List<Element<SupportingEvidenceBundle>> solicitorDocuments = nullSafeList(caseData.getFurtherEvidenceDocumentsSolicitor());
+
         List<Element<SupportingEvidenceBundle>> combinedDocuments = new ArrayList<>(hmctsDocuments);
         combinedDocuments.addAll(laDocuments);
+        combinedDocuments.addAll(solicitorDocuments);
 
         return combinedDocuments;
     }

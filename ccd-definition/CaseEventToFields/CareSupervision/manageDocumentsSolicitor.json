@@ -23,7 +23,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocumentSolicitor.hasC2s=\"No\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocument.hasC2s=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -36,7 +36,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocumentSolicitor.hasC2s=\"Yes\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocument.hasC2s=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,7 +49,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "manageDocumentSolicitor.type=\"FURTHER_EVIDENCE_DOCUMENTS\"",
+    "PageShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-solicitor/further-evidence-documents/mid-event"
   },
   {
@@ -63,7 +63,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentSubtypeList=\"OTHER\" AND manageDocumentSolicitor.hasHearings=\"Yes\""
+    "FieldShowCondition": "manageDocumentSubtypeList=\"OTHER\" AND manageDocument.hasHearings=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -102,9 +102,9 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\"",
+    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/validate-supporting-evidence/mid-event",
-    "PageShowCondition": "manageDocumentSolicitor.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" OR manageDocumentSubtypeList=\"OTHER\" OR manageDocumentSolicitor.type=\"CORRESPONDENCE\" OR  manageDocumentSubtypeList=\"RESPONDENT_STATEMENT\""
+    "PageShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" OR manageDocumentSubtypeList=\"OTHER\" OR manageDocument.type=\"CORRESPONDENCE\" OR  manageDocumentSubtypeList=\"RESPONDENT_STATEMENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -117,7 +117,7 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"CORRESPONDENCE\""
+    "FieldShowCondition": "manageDocument.type=\"CORRESPONDENCE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -130,7 +130,7 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -169,7 +169,7 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",

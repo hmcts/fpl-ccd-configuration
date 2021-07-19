@@ -208,6 +208,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsSolicitorLink",
+    "FieldType": "Label",
+    "Label": "[Manage documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageDocumentsSolicitor)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "messageJudgeLegalAdviserLink",
     "FieldType": "Label",
     "Label": "[Send and reply to messages](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/messageJudgeOrLegalAdviser)",

@@ -3,35 +3,35 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsSolicitor",
-    "CaseFieldID": "manageDocumentSolicitor",
+    "CaseFieldID": "manageDocument",
     "ListElementCode": "type",
-    "EventElementLabel": "File name",
+    "EventElementLabel": "Choose a document category",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "EventHintText": "Add a descriptive name. For example, ‘Parenting assessment’, ‘Email with evidence attached’ or ‘Form C110a’."
+    "EventHintText": "Your document will be stored in the corresponding tab"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsSolicitor",
-    "CaseFieldID": "manageDocumentSolicitor",
+    "CaseFieldID": "manageDocument",
     "ListElementCode": "hasHearings",
     "EventElementLabel": "Has hearings",
     "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"DO NOT SHOW\"",
+    "FieldShowCondition": "manageDocument.type=\"DO NOT SHOW\"",
     "Comment": "Hidden field, must be READONLY to workaround hidden fields deletion"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsSolicitor",
-    "CaseFieldID": "manageDocumentSolicitor",
+    "CaseFieldID": "manageDocument",
     "ListElementCode": "hasC2s",
     "EventElementLabel": "has c2s",
     "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"DO NOT SHOW\"",
+    "FieldShowCondition": "manageDocument.type=\"DO NOT SHOW\"",
     "Comment": "Hidden field, must be READONLY to workaround hidden fields deletion"
   },
   {
@@ -61,7 +61,7 @@
     "ListElementCode": "dateTimeReceived",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -81,7 +81,7 @@
     "ListElementCode": "type",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeListLA!=\"RESPONDENT_STATEMENT\""
+    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeListLA!=\"RESPONDENT_STATEMENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -91,7 +91,7 @@
     "ListElementCode": "uploadedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -101,6 +101,6 @@
     "ListElementCode": "dateTimeUploaded",
     "FieldDisplayOrder": 7,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "manageDocumentSolicitor.type=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   }
 ]

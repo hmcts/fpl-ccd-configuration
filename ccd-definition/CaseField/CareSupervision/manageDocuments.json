@@ -51,7 +51,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsHearingLabel",
     "FieldType": "Text",
-    "Label": "Upload further evidence documents for:",
+    "Label": "Upload other documents relating to:",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -69,7 +69,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsFurtherEvidenceHeading",
     "FieldType": "Label",
-    "Label": "## Further evidence",
+    "Label": "## Other documents",
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Update label in 2770 when new page added for admin"
@@ -97,7 +97,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsRespondentStatementsHeading",
     "FieldType": "Label",
-    "Label": "## Further evidence - respondent statement",
+      "Label": "## Respondent statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
