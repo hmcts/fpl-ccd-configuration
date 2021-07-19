@@ -94,7 +94,8 @@ class UploadedOrderDocumentGeneratorTest {
     void testTargetPdfAndSealingNeeded() {
 
         when(documentConversionService.convertToPdf(BYTES, DOC_X_FILENAME)).thenReturn(CONVERTED_BYTES);
-        when(documentSealingService.sealDocument(CONVERTED_BYTES, SealType.ENGLISH)).thenReturn(CONVERTED_AND_SEALED_BYTES);
+        when(documentSealingService.sealDocument(CONVERTED_BYTES, SealType.ENGLISH)).thenReturn(
+            CONVERTED_AND_SEALED_BYTES);
 
         OrderDocumentGeneratorResult actual = underTest.generate(
             CaseData.builder()

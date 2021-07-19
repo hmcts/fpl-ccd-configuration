@@ -953,7 +953,8 @@ public class CaseData {
 
     @JsonUnwrapped
     @Builder.Default
-    private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder().build();
+    private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder()
+        .build();
 
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;

@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
@@ -29,10 +31,11 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class HearingOrder implements RemovableOrder, AmendableOrder {
+public class HearingOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
+    private DocumentReference translatedOrder;
     private DocumentReference lastUploadedOrder;
     private String hearing;
     // Case management order, 21 June 2020
@@ -67,6 +70,12 @@ public class HearingOrder implements RemovableOrder, AmendableOrder {
     @JsonIgnore
     public boolean isRemovable() {
         return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean hasBeenTranslated() {
+        return Objects.nonNull(translatedOrder);
     }
 
     @Override

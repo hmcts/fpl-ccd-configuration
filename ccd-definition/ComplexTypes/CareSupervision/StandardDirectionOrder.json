@@ -10,6 +10,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
+    "ListElementCode": "translatedOrderDoc",
+    "FieldType": "Document",
+    "ElementLabel": "Welsh translation",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
     "ListElementCode": "lastUploadedOrder",
     "FieldType": "Document",
     "ElementLabel": "File",

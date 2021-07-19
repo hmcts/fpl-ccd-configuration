@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.translations;
+package uk.gov.hmcts.reform.fpl.service.translations.provider;
 
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;

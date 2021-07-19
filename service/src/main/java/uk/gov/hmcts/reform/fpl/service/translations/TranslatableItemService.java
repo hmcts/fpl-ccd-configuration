@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.translations.provider.TranslatableListItemProvider;
+import uk.gov.hmcts.reform.fpl.service.translations.provider.TranslatableListItemProviders;
 
 import java.util.Map;
 import java.util.UUID;
@@ -35,7 +37,7 @@ public class TranslatableItemService {
             .filter(provider -> provider.accept(caseData, selectedOrderId))
             .findFirst()
             .orElseThrow(() -> new UnsupportedOperationException(String.format(
-                "Could not find action to amend order for order with id \"%s\"",
+                "Could not find action to translate item with id \"%s\"",
                 eventData.getUploadTranslationsRelatedToDocument().getValueCode()
             )));
 
@@ -54,7 +56,7 @@ public class TranslatableItemService {
             .filter(provider -> provider.accept(caseData, selectedOrderId))
             .findFirst()
             .orElseThrow(() -> new UnsupportedOperationException(String.format(
-                "Could not find action to amend order for order with id \"%s\"",
+                "Could not find action to translate item with id \"%s\"",
                 eventData.getUploadTranslationsRelatedToDocument().getValueCode()
             )));
 

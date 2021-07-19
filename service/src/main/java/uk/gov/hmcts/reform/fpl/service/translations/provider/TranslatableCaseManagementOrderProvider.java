@@ -1,13 +1,11 @@
-package uk.gov.hmcts.reform.fpl.service.translations;
+package uk.gov.hmcts.reform.fpl.service.translations.provider;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.List;
 import java.util.Map;
@@ -18,43 +16,42 @@ import static java.util.Collections.unmodifiableList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class TranslatableGeneratedOrderListItemProvider implements TranslatableListItemProvider {
+public class TranslatableCaseManagementOrderProvider implements TranslatableListItemProvider {
 
-    private static final String CASE_FIELD = "orderCollection";
+    private static final String CASE_FIELD = "sealedCMOs";
 
     @Override
     public List<Element<? extends TranslatableItem>> provideListItems(CaseData caseData) {
-        return unmodifiableList(caseData.getOrderCollection());
+        return unmodifiableList(caseData.getSealedCMOs());
     }
 
     @Override
     public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
-        return caseData.getOrderCollection()
+        return caseData.getSealedCMOs()
             .stream()
             .filter(order -> order.getId().equals(selectedOrderId))
-            .findFirst().map(it -> it.getValue().getDocument())
+            .findFirst().map(it -> it.getValue().getOrder())
             .orElseThrow(IllegalArgumentException::new);
     }
 
     @Override
     public boolean accept(CaseData caseData, UUID selectedOrderId) {
-        return caseData.getOrderCollection().stream().anyMatch(order -> Objects.equals(selectedOrderId, order.getId()));
+        return caseData.getSealedCMOs().stream().anyMatch(cmo -> Objects.equals(selectedOrderId, cmo.getId()));
     }
 
     @Override
-    public Map<String, Object> applyTranslatedOrder(CaseData caseData, DocumentReference document, UUID selectedOrderId) {
-        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+    public Map<String, Object> applyTranslatedOrder(CaseData caseData,
+                                                    DocumentReference document, UUID selectedOrderId) {
+        List<Element<HearingOrder>> orders = caseData.getSealedCMOs();
 
         orders.stream()
             .filter(order -> Objects.equals(order.getId(), selectedOrderId))
             .findFirst()
             .ifPresent(order -> {
-                GeneratedOrder amended = order.getValue().toBuilder()
-                    .translatedDocument(document)
+                HearingOrder translated = order.getValue().toBuilder()
+                    .translatedOrder(document)
                     .build();
-
-                orders.set(orders.indexOf(order), element(order.getId(), amended));
+                orders.set(orders.indexOf(order), element(order.getId(), translated));
             });
 
         return Map.of(CASE_FIELD, orders);

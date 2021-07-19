@@ -29,6 +29,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "translatedOrder",
+    "FieldType": "Document",
+    "ElementLabel": "Welsh translation",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "lastUploadedOrder",
     "FieldType": "Document",
     "ElementLabel": "Last Uploaded Order",

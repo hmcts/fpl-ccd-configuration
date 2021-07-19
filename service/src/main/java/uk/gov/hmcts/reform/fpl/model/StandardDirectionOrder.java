@@ -13,10 +13,12 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder {
+public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder, TranslatableItem {
     public static final UUID COLLECTION_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
     private final String hearingDate;
@@ -47,6 +49,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private final List<Element<StandardDirection>> standardDirections;
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
+    private DocumentReference translatedOrderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
 
@@ -76,6 +79,12 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     @JsonIgnore
     public boolean isRemovable() {
         return isSealed();
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean hasBeenTranslated() {
+        return Objects.nonNull(translatedOrderDoc);
     }
 
     @Override
