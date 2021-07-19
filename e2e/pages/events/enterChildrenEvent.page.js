@@ -2,6 +2,18 @@ const {I} = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 const output = require('codeceptjs').output;
 
+async function clearOldSolicitorOrg() {
+  I.waitForElement(locate('h2').withText('Search for an organisation'));
+  const selectedTable = locate('#organisation-selected-table');
+  const numOfElements = await I.grabNumberOfVisibleElements(selectedTable);
+
+  if (numOfElements !== 0) {
+    output.debug('Clearing old solicitor info');
+    I.click(locate('a').withText('Clear').inside(selectedTable));
+    I.waitForInvisible(selectedTable);
+  }
+}
+
 module.exports = {
   fields: function (index) {
     return {
@@ -25,6 +37,7 @@ module.exports = {
         email: '#childrenMainRepresentative_email',
       },
       childSolicitor: {
+        id: `#childRepresentationDetails${index}_childRepresentationDetails${index}`,
         useMainSolicitor: {
           group: `#childRepresentationDetails${index}_useMainSolicitor`,
           options: {
@@ -190,7 +203,7 @@ module.exports = {
   },
 
   async selectChildUseMainRepresentation(answer, index, child) {
-    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => I.see(`Child ${index + 1} - ${child.firstName} ${child.lastName}`));
+    await within(this.fields(index).childSolicitor.id, () => I.see(`Child ${index + 1} - ${child.firstName} ${child.lastName}`));
     I.click(`${this.fields(index).childSolicitor.useMainSolicitor.group}_${answer}`);
   },
 
@@ -201,16 +214,10 @@ module.exports = {
   },
 
   async enterRegisteredOrganisation(solicitor) {
-    const numOfElements = await I.grabNumberOfVisibleElements('#organisation-selected-table');
-
-    if (numOfElements !== 0) {
-      output.debug('Clearing old solicitor info');
-      I.click('//*[@id="organisation-selected-table"]/tbody//a');
-    }
-
+    await clearOldSolicitorOrg();
+    I.waitForEnabled('#search-org-text');
     I.fillField('#search-org-text', solicitor.details.organisation);
-    let selectedItem = `//*[@id="organisation-table"]/caption/h3[contains(text(),"${solicitor.details.organisation}")]/../../tbody//a`;
-    I.click(selectedItem);
+    I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(solicitor.organisation))));
   },
 
   enterChildrenSpecificRepresentation(index, solicitor) {
@@ -220,14 +227,15 @@ module.exports = {
   },
 
   async enterSpecificRegisteredOrganisation(index, solicitor) {
-    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => {
-      await this.enterRegisteredOrganisation(solicitor);
-    });
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => await this.enterRegisteredOrganisation(solicitor));
   },
 
   async enterSpecificUnregisteredOrganisation(index, solicitor) {
-    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, async () => {
-      I.fillField(this.fields(index).childSolicitor.unregisteredOrganisation.name, solicitor.unregisteredOrganisation.name);
+    const indexedFields = this.fields(index);
+
+    await within(indexedFields.childSolicitor.id, async () => {
+      await clearOldSolicitorOrg();
+      I.fillField(indexedFields.childSolicitor.unregisteredOrganisation.name, solicitor.unregisteredOrganisation.name);
       postcodeLookup.enterAddressManually(solicitor.unregisteredOrganisation.address);
     });
   },
