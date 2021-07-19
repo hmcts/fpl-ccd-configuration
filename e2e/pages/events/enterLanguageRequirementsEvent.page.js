@@ -3,8 +3,8 @@ const { I } = inject();
 module.exports = {
   fields: {
     languageRequirement: {
-      yes: '#languageRequirement-Yes',
-      no: '#languageRequirement-No',
+      yes: '#languageRequirement_Yes',
+      no: '#languageRequirement_No',
     },
   },
 
