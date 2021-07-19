@@ -29,13 +29,13 @@ module.exports = {
     await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
-    this.enterRecipientsAddress(elementIndex, recipients);
+    await this.enterRecipientsAddress(elementIndex, recipients);
     I.fillField(this.fields(elementIndex).recipients.documents, recipients.documents);
     I.fillDate(recipients.date, this.fields(elementIndex).recipients.date);
     I.fillField(this.fields(elementIndex).recipients.timeSent, recipients.timeSent);
     I.click(this.fields(elementIndex).recipients.sentBy.email);
     I.waitForText('Recipient\'s email address');
-    within(this.fields(elementIndex).recipients.sentBy.email, () => {
+    await within(this.fields(elementIndex).recipients.sentBy.email, () => {
       I.fillField(this.fields(elementIndex).recipients.emailAddress, 'email@email.com');
     },);
   },
@@ -48,8 +48,8 @@ module.exports = {
     return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
   },
 
-  enterRecipientsAddress: function (elementIndex, recipients) {
-    within(this.fields(elementIndex).recipients.address, () => {
+  enterRecipientsAddress: async function (elementIndex, recipients) {
+    await within(this.fields(elementIndex).recipients.address, () => {
       //XXX removed postcode lookup due to instability
       postcodeLookup.enterAddressManually(recipients.address);
     });
