@@ -331,7 +331,8 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
-//  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.2'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.5.2'
+  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.2'
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
@@ -405,8 +406,8 @@ integration {
 }
 
 pitest {
-  pitestVersion.set('1.6.2')
-  junit5PluginVersion.set('0.14')   // This line is expected to be causing the mutation test failures in nightly
+//  pitestVersion.set('1.6.2')
+//  junit5PluginVersion.set('0.14')   // This line is expected to be causing the mutation test failures in nightly
   targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
   excludedClasses.set([
     'uk.gov.hmcts.reform.fpl.config.*',
