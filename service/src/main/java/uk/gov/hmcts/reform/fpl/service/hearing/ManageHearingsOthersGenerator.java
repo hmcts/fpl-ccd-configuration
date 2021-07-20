@@ -31,7 +31,7 @@ public class ManageHearingsOthersGenerator {
 
         Map<String, Object> data = new HashMap<>();
 
-        if (allOthers.size() > 0) {
+        if (!allOthers.isEmpty()) {
             data.put("hasOthers", YES.getValue());
             data.put("othersSelector", buildOtherSelector(allOthers, selectedOthers));
             data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
@@ -57,13 +57,13 @@ public class ManageHearingsOthersGenerator {
         return Selector.builder().selected(selected).build().setNumberOfOptions(allOthers.size());
     }
 
-    private Boolean sendNoticeOfHearing(HearingBooking hearingBooking) {
+    private boolean sendNoticeOfHearing(HearingBooking hearingBooking) {
         List<Element<Other>> hearingOthers = hearingBooking.getOthers();
 
         return (hearingOthers != null && !hearingOthers.isEmpty());
     }
 
-    private Boolean sendOrderToAllOthers(List<Element<Other>> allOthers, List<Element<Other>> selectedOthers) {
+    private boolean sendOrderToAllOthers(List<Element<Other>> allOthers, List<Element<Other>> selectedOthers) {
         return unwrapElements(allOthers).equals(unwrapElements(selectedOthers));
     }
 }

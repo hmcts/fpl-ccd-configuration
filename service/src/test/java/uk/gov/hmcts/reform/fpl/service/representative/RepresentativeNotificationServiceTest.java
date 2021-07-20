@@ -20,6 +20,8 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -98,13 +100,14 @@ class RepresentativeNotificationServiceTest {
             .representatives(getRepresentativesOfMixedServingPreferences())
             .build();
 
-        given(otherRecipientsInbox.getNonSelectedRecipients(EMAIL,
-            caseData,
-            emptyList(),
-            element -> element.getValue().getEmail())).willReturn((Set) Set.of("sam@test.co.uk"));
+        given(otherRecipientsInbox.getNonSelectedRecipients(
+            eq(EMAIL),
+            eq(caseData),
+            eq(emptyList()),
+            any())).willReturn((Set) Set.of("sam@test.co.uk"));
 
         representativeNotificationService.sendToRepresentativesByServedPreference(
-            DIGITAL_SERVICE, TEMPLATE_NAME, TEMPLATE_DATA, caseData, emptyList());
+            EMAIL, TEMPLATE_NAME, TEMPLATE_DATA, caseData, emptyList());
 
         verify(notificationService, never()).sendEmail(
             TEMPLATE_NAME,

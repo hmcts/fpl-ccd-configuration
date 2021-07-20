@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
-public class ManageHearingsOthersGeneratorTest {
+class ManageHearingsOthersGeneratorTest {
     private static final String OTHER_LABEL = "Other label";
 
     @Mock
@@ -34,10 +35,10 @@ public class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersInCaseAndHearingBooking() {
-        Other others = Other.builder().build();
+        Other other = Other.builder().build();
 
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(others).build()).build();
-        HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(others)).build();
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
+        HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(other)).build();
 
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
 
@@ -55,9 +56,9 @@ public class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersInCaseAndNotHearingBooking() {
-        Other others = Other.builder().build();
+        Other other = Other.builder().build();
 
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(others).build()).build();
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
@@ -82,5 +83,26 @@ public class ManageHearingsOthersGeneratorTest {
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
 
         assertThat(generatedData).isEmpty();
+    }
+
+    @Test
+    void shouldGenerateFieldsWhenOthersIsEmptyInHearingBooking() {
+        Other other = Other.builder().build();
+
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
+        HearingBooking hearingBooking = HearingBooking.builder().others(Collections.emptyList()).build();
+
+        when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
+
+        Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
+        Map<String, Object> expectedData = Map.of(
+            "hasOthers", YES.getValue(),
+            "othersSelector", Selector.builder().build().setNumberOfOptions(1),
+            "others_label", OTHER_LABEL,
+            "sendNoticeOfHearing", NO.getValue(),
+            "sendOrderToAllOthers", NO.getValue()
+        );
+
+        assertThat(generatedData).isEqualTo(expectedData);
     }
 }

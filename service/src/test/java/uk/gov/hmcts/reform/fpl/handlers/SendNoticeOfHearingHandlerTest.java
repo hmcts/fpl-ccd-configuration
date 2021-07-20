@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,11 +34,13 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -125,7 +130,7 @@ class SendNoticeOfHearingHandlerTest {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
-        given(OTHER.getRepresentedBy()).willReturn(emptyList());
+        given(OTHER.isRepresented()).willReturn(false);
         given(OTHER.hasAddressAdded()).willReturn(false);
         given(noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
             CASE_DATA, HEARING, OTHER)).willReturn(NO_OTHER_ADDRESS_NOTIFY_DATA);
@@ -133,6 +138,24 @@ class SendNoticeOfHearingHandlerTest {
         underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
+            NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("shouldNotSendOtherSource")
+    void shouldNotSendNotificationToCtscWhenOtherHasRepresentationOrAddressWhenNewHearingIsAdded(
+        boolean isRepresented, boolean hasAddressAdded) {
+
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+        given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
+        given(OTHER.isRepresented()).willReturn(isRepresented);
+        given(OTHER.hasAddressAdded()).willReturn(hasAddressAdded);
+
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+
+        verify(notificationService, never()).sendEmail(
             NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
 
     }
@@ -205,5 +228,13 @@ class SendNoticeOfHearingHandlerTest {
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);
+    }
+
+    private static Stream<Arguments> shouldNotSendOtherSource() {
+        return Stream.of(
+            Arguments.of(true, true),
+            Arguments.of(true, false),
+            Arguments.of(false, true)
+        );
     }
 }
