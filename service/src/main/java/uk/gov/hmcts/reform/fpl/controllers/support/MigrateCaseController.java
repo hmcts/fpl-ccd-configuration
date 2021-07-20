@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
@@ -80,11 +81,11 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         validateFamilyManNumber("FPLA-3239", "DE21C50042", caseData);
 
-        if (isNotEmpty(caseData.getSubmittedForm())
-            && isNotEmpty(caseData.getCorrespondenceDocuments().get(0))
-            && caseData.getCorrespondenceDocuments().get(0).getValue().getName().equals("Redacted C110a")) {
-            caseDetails.getData().put("submittedForm",
-                caseData.getCorrespondenceDocuments().get(0).getValue().getDocument());
+        Element<SupportingEvidenceBundle> correspondenceElement = caseData.getCorrespondenceDocuments().get(0);
+        if (isNotEmpty(caseData.getSubmittedForm()) && isNotEmpty(correspondenceElement)
+            && correspondenceElement.getValue().getName().equals("Redacted C110a")) {
+            caseDetails.getData().put("submittedForm", correspondenceElement.getValue().getDocument());
+            
             caseData.getCorrespondenceDocuments().remove(0);
             caseDetails.getData().put("correspondenceDocuments", caseData.getCorrespondenceDocuments());
         } else {
