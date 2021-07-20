@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.Collections;
@@ -30,6 +31,9 @@ class ManageHearingsOthersGeneratorTest {
     @Mock
     private OthersService othersService;
 
+    @Mock
+    private FeatureToggleService toggleService;
+
     @InjectMocks
     private ManageHearingsOthersGenerator underTest;
 
@@ -41,6 +45,7 @@ class ManageHearingsOthersGeneratorTest {
         HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(other)).build();
 
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
@@ -62,6 +67,29 @@ class ManageHearingsOthersGeneratorTest {
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
+
+        Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
+        Map<String, Object> expectedData = Map.of(
+            "hasOthers", YES.getValue(),
+            "othersSelector", Selector.builder().build().setNumberOfOptions(1),
+            "others_label", OTHER_LABEL,
+            "sendNoticeOfHearing", NO.getValue(),
+            "sendOrderToAllOthers", NO.getValue()
+        );
+
+        assertThat(generatedData).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldGenerateFieldsWhenOthersIsEmptyInHearingBooking() {
+        Other other = Other.builder().build();
+
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
+        HearingBooking hearingBooking = HearingBooking.builder().others(Collections.emptyList()).build();
+
+        when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
@@ -80,29 +108,22 @@ class ManageHearingsOthersGeneratorTest {
         CaseData caseData = CaseData.builder().build();
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
+
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
 
         assertThat(generatedData).isEmpty();
     }
 
     @Test
-    void shouldGenerateFieldsWhenOthersIsEmptyInHearingBooking() {
-        Other other = Other.builder().build();
+    void shouldNotGenerateFieldsWhenToggledOff() {
+        CaseData caseData = CaseData.builder().build();
+        HearingBooking hearingBooking = HearingBooking.builder().build();
 
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
-        HearingBooking hearingBooking = HearingBooking.builder().others(Collections.emptyList()).build();
-
-        when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
-        Map<String, Object> expectedData = Map.of(
-            "hasOthers", YES.getValue(),
-            "othersSelector", Selector.builder().build().setNumberOfOptions(1),
-            "others_label", OTHER_LABEL,
-            "sendNoticeOfHearing", NO.getValue(),
-            "sendOrderToAllOthers", NO.getValue()
-        );
 
-        assertThat(generatedData).isEqualTo(expectedData);
+        assertThat(generatedData).isEmpty();
     }
 }
