@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.interfaces;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 
 public interface TranslatableItem {
     String asLabel();
 
-    @JsonIgnore
-    default boolean needTranslation() {
-        return true;
-    }
-
     boolean hasBeenTranslated();
+
+    LocalDateTime translationUploadDateTime();
 }

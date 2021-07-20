@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,6 +47,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private LocalDate dateSent;
     private LocalDate dateIssued;
     private final LocalDate amendedDate;
+    private final LocalDateTime translationUploadDateTime;
     private CMOStatus status;
     private String judgeTitleAndName;
     private String requestedChanges;
@@ -81,6 +83,11 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     @JsonIgnore
     public boolean hasBeenTranslated() {
         return Objects.nonNull(translatedOrder);
+    }
+
+    @Override
+    public LocalDateTime translationUploadDateTime() {
+        return translationUploadDateTime;
     }
 
     @Override

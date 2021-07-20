@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private DocumentReference lastUploadedOrder;
     private String removalReason;
     private final List<Element<Other>> others;
+    private final LocalDateTime translationUploadDateTime;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -88,6 +90,11 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     @JsonIgnore
     public boolean hasBeenTranslated() {
         return Objects.nonNull(translatedOrderDoc);
+    }
+
+    @Override
+    public LocalDateTime translationUploadDateTime() {
+        return translationUploadDateTime;
     }
 
     @Override

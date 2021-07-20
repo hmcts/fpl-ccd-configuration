@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     LocalDate dateAdded;
     LocalDate amendedDate;
     private final List<Element<Other>> others;
+    LocalDateTime translationUploadDateTime;
 
     @Override
     public String asLabel() {
@@ -44,6 +46,11 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     @JsonIgnore
     public boolean hasBeenTranslated() {
         return Objects.nonNull(translatedOrder);
+    }
+
+    @Override
+    public LocalDateTime translationUploadDateTime() {
+        return translationUploadDateTime;
     }
 
     @Override

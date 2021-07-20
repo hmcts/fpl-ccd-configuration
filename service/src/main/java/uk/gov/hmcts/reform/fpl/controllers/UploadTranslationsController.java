@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.TranslationUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.translations.AvailableTranslationListBuilder;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
 
 @Api
@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadTranslationsController extends CallbackController {
 
-    private final AvailableTranslationListBuilder availableTranslationListBuilder;
     private final TranslatableItemService translatableItemService;
 
     @PostMapping("/about-to-start")
@@ -28,7 +27,7 @@ public class UploadTranslationsController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         caseDetails.getData().put("uploadTranslationsRelatedToDocument",
-            availableTranslationListBuilder.build(getCaseData(caseDetails))
+            translatableItemService.generateList(getCaseData(caseDetails))
         );
 
         return respond(caseDetails);
@@ -45,9 +44,6 @@ public class UploadTranslationsController extends CallbackController {
 
         return respond(caseDetails);
     }
-
-
-
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
@@ -66,6 +62,6 @@ public class UploadTranslationsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        // send notification.
+        publishEvent(new TranslationUploadedEvent(getCaseData(callbackRequest),getCaseDataBefore(callbackRequest)));
     }
 }

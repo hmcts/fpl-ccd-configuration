@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.translations.provider;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +19,12 @@ import static java.util.Collections.unmodifiableList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TranslatableGeneratedOrderListItemProvider implements TranslatableListItemProvider {
 
     private static final String CASE_FIELD = "orderCollection";
+
+    private final Time time;
 
     @Override
     public List<Element<? extends TranslatableItem>> provideListItems(CaseData caseData) {
@@ -50,6 +56,7 @@ public class TranslatableGeneratedOrderListItemProvider implements TranslatableL
             .ifPresent(order -> {
                 GeneratedOrder amended = order.getValue().toBuilder()
                     .translatedDocument(document)
+                    .translationUploadDateTime(time.now())
                     .build();
 
                 orders.set(orders.indexOf(order), element(order.getId(), amended));

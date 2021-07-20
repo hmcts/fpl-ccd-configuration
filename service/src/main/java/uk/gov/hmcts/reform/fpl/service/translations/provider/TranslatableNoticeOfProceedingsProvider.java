@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.translations.provider;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Map;
@@ -17,9 +20,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TranslatableNoticeOfProceedingsProvider implements TranslatableListItemProvider {
 
     private static final String CASE_FIELD = "noticeOfProceedingsBundle";
+
+    private final Time time;
 
     @Override
     public List<Element<? extends TranslatableItem>> provideListItems(CaseData caseData) {
@@ -52,6 +58,7 @@ public class TranslatableNoticeOfProceedingsProvider implements TranslatableList
             .ifPresent(order -> {
                 DocumentBundle translated = order.getValue().toBuilder()
                     .translatedDocument(document)
+                    .translationUploadDateTime(time.now())
                     .build();
                 orders.set(orders.indexOf(order), element(order.getId(), translated));
             });

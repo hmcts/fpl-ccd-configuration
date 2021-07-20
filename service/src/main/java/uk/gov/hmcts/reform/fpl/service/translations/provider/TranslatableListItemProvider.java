@@ -18,4 +18,7 @@ public interface TranslatableListItemProvider {
     boolean accept(CaseData caseData, UUID selectedOrderId);
 
     Map<String, Object> applyTranslatedOrder(CaseData caseData, DocumentReference document, UUID selectedOrderId);
+
+    default void notifyParties(CaseData caseData, Element<? extends TranslatableItem> translatedItem) {
+    }
 }
