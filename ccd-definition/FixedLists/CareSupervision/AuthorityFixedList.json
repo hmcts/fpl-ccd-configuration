@@ -37,6 +37,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BLA",
+    "ListElement": "Blackpool Borough Council",
+    "DisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BGW",
     "ListElement": "Blaenau Gwent County Borough Council",
     "DisplayOrder": 13
@@ -324,16 +331,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "KEN",
+    "ListElement": "Kent County Council",
+    "DisplayOrder": 149
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "KKL",
     "ListElement": "Kirklees Council",
-    "DisplayOrder": 149
+    "DisplayOrder": 151
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "KBC",
     "ListElement": "Knowsley Borough Council",
-    "DisplayOrder": 150
+    "DisplayOrder": 153
   },
   {
     "LiveFrom": "01/01/2017",
@@ -523,6 +537,13 @@
     "ListElementCode": "NSC",
     "ListElement": "North Somerset Council",
     "DisplayOrder": 255
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NTY",
+    "ListElement": "North Tyneside Council",
+    "DisplayOrder": 257
   },
   {
     "LiveFrom": "01/01/2017",

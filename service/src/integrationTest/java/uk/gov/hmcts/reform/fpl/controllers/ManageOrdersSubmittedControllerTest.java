@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -30,7 +31,6 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
@@ -42,14 +42,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_AMENDED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
@@ -123,6 +124,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .build())
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
         .build();
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;
@@ -178,12 +180,13 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSendOrdersByPost() {
+    void shouldSendOrdersByPostWhenOrderIssued() {
         CaseData caseData = caseData();
 
         postSubmittedEvent(caseData);
 
-        verify(sendLetterApi, times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture());
+        verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
+            printRequest.capture());
         verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
@@ -219,88 +222,197 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesServedDigitally() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedDigitallyWhenOrderIssued() {
         CaseData caseData = caseData();
-
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyRepresentativesServedByEmail() throws NotificationClientException {
+    void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() {
         CaseData caseData = caseData();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyLocalAuthority() throws NotificationClientException {
+    void shouldNotifyLocalAuthorityWhenOrderIssued() {
         CaseData caseData = caseData();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyAdmin() throws NotificationClientException {
+    void shouldNotifyAdminWhenOrderIssued() {
         CaseData caseData = caseData();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL),
             eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
-        );
+        ));
     }
 
     @Test
-    void shouldNotifyCtscWhenEnabled() throws NotificationClientException {
+    void shouldNotifyCtscWhenEnabledWhenOrderIssued() {
         CaseData caseData = caseData().toBuilder().sendToCtsc("Yes").build();
 
         postSubmittedEvent(caseData);
 
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_CTSC_EMAIL),
-            eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
-        );
+        checkUntil(() -> {
+            verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_CTSC_EMAIL),
+                eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
+            );
 
-        verify(notificationClient, never()).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL), any(), any()
-        );
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL), any(), any()
+            );
+        });
     }
 
     @Test
-    void shouldNotSendNotificationWhenAmendedOrder() {
+    @SuppressWarnings("unchecked")
+    void shouldSendAmendedNotificationToLocalAuthorityWhenAmendedOrder() {
         CaseData caseData = caseData();
-
-        Element<GeneratedOrder> orderElement = caseData.getOrderCollection().get(0);
-        orderElement = orderElement.toBuilder()
-            .value(orderElement.getValue().toBuilder().amendedDate(dateNow()).build())
+        CaseData caseDataBefore = caseDataBefore();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseDataBefore))
             .build();
 
-        CaseData caseDataBefore = caseData.toBuilder().orderCollection(List.of(orderElement)).build();
+        postSubmittedEvent(request);
 
-        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
+            eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
+            eq(NOTIFICATION_REFERENCE)
+        ));
+    }
 
-        verifyNoInteractions(eventPublisher);
+    @Test
+    void shouldSendOrdersByPostWhenOrderAmended() {
+        CaseData caseData = caseData();
+        CaseData caseDataBefore = caseDataBefore();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseDataBefore))
+            .build();
+
+        postSubmittedEvent(request);
+
+        checkUntil(() -> {
+            verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
+                printRequest.capture());
+            verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
+        });
+
+        LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
+            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
+        );
+
+        LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
+            CASE_ID, ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
+        );
+
+        assertThat(printRequest.getAllValues()).usingRecursiveComparison()
+            .isEqualTo(List.of(expectedPrintRequest1, expectedPrintRequest2));
+
+        List<Element<SentDocuments>> documentsSent = mapper.convertValue(
+            caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {}
+        );
+
+        SentDocument expectedRepresentativeDocument = documentSent(
+            REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID, now()
+        );
+
+        SentDocument expectedRespondentDocument = documentSent(
+            RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT, ORDER_DOCUMENT, LETTER_2_ID, now()
+        );
+
+        assertThat(documentsSent.get(0).getValue().getDocumentsSentToParty())
+            .extracting(Element::getValue)
+            .containsExactly(expectedRepresentativeDocument);
+
+        assertThat(documentsSent.get(1).getValue().getDocumentsSentToParty())
+            .extracting(Element::getValue)
+            .containsExactly(expectedRespondentDocument);
+    }
+
+    @Test
+    void shouldNotifyRepresentativesServedDigitallyWhenOrderAmended() {
+        CaseData caseData = caseData();
+        CaseData caseDataBefore = caseDataBefore();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseDataBefore))
+            .build();
+
+        postSubmittedEvent(request);
+
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE),
+            eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
+            eq(NOTIFICATION_REFERENCE)
+        ));
+    }
+
+    @Test
+    void shouldNotifyRepresentativesServedByEmailWhenOrderAmended() {
+        CaseData caseData = caseData();
+        CaseData caseDataBefore = caseDataBefore();
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseDataBefore))
+            .build();
+
+        postSubmittedEvent(request);
+
+        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            eq(ORDER_AMENDED_NOTIFICATION_TEMPLATE), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
+            eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
+        ));
     }
 
     private CaseData caseData() {
+        return CaseData.builder()
+            .id(CASE_ID)
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .orderCollection(wrapElements(GeneratedOrder.builder()
+                .orderType("C32A_CARE_ORDER")
+                .type(ORDER_TYPE)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Dredd")
+                    .build())
+                .dateTimeIssued(now().plusSeconds(2))
+                .approvalDate(dateNow())
+                .document(ORDER)
+                .build()))
+            .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
+            .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
+            .build();
+    }
+
+    private CaseData caseDataBefore() {
         return CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
