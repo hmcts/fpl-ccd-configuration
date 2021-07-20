@@ -37,7 +37,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         super("migrate-case");
     }
 
-
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Fpla3214 {
@@ -97,7 +96,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     "name", "Test",
                     "submittedForm", testDocumentReference(),
                     "correspondenceDocuments", List.of(element(
-                        SupportingEvidenceBundle.builder().document(redacted).build())),
+                        SupportingEvidenceBundle.builder()
+                            .name("Redacted C110a")
+                            .document(redacted).build())),
                     "migrationId", migrationId))
                 .build();
 
@@ -342,7 +343,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             caseDetails.getData().put("correspondenceDocumentsNC", correspondenceDocuments);
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-
 
             assertThat(extractCaseData(response).getCorrespondenceDocuments())
                 .isEqualTo(List.of(
