@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -17,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -49,6 +52,8 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
+    private final OthersService othersService;
+    private final FeatureToggleService featureToggleService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -75,6 +80,13 @@ public class UploadAdditionalApplicationsService {
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime currentDateTime = time.now();
 
+        List<Element<Other>> selectedOthers = new ArrayList<>();
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                caseData.getOthersToNotifySelector(), caseData.getNotifyApplicationsToAllOthers());
+        }
+        String othersNotified = getOthersNotified(selectedOthers);
+
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
             .pbaPayment(caseData.getTemporaryPbaPayment())
             .author(uploadedBy)
@@ -83,13 +95,15 @@ public class UploadAdditionalApplicationsService {
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             additionalApplicationsBundleBuilder.c2DocumentBundle(
-                buildC2DocumentBundle(caseData, applicantName.get(), uploadedBy, currentDateTime)
+                buildC2DocumentBundle(caseData, applicantName.get(), selectedOthers, othersNotified,
+                    uploadedBy, currentDateTime)
             );
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
             additionalApplicationsBundleBuilder.otherApplicationsBundle(
-                buildOtherApplicationsBundle(caseData, applicantName.get(), uploadedBy, currentDateTime)
+                buildOtherApplicationsBundle(caseData, applicantName.get(), selectedOthers, othersNotified,
+                    uploadedBy, currentDateTime)
             );
         }
 
@@ -113,6 +127,8 @@ public class UploadAdditionalApplicationsService {
 
     private C2DocumentBundle buildC2DocumentBundle(CaseData caseData,
                                                    String applicantName,
+                                                   List<Element<Other>> selectedOthers,
+                                                   String othersNotified,
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
@@ -126,20 +142,37 @@ public class UploadAdditionalApplicationsService {
             getSupplementsBundle(defaultIfNull(temporaryC2Document.getSupplementsBundle(), emptyList()),
                 uploadedBy, uploadedTime);
 
-        return temporaryC2Document.toBuilder()
-            .id(UUID.randomUUID())
-            .applicantName(applicantName)
-            .author(uploadedBy)
-            .document(sealedDocument)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-            .supplementsBundle(updatedSupplementsBundle)
-            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-            .type(caseData.getC2Type())
-            .build();
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            return temporaryC2Document.toBuilder()
+                .id(UUID.randomUUID())
+                .applicantName(applicantName)
+                .author(uploadedBy)
+                .others(selectedOthers)
+                .othersNotified(othersNotified)
+                .document(sealedDocument)
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+                .supplementsBundle(updatedSupplementsBundle)
+                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .type(caseData.getC2Type())
+                .build();
+        } else {
+            return temporaryC2Document.toBuilder()
+                .id(UUID.randomUUID())
+                .applicantName(applicantName)
+                .author(uploadedBy)
+                .document(sealedDocument)
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+                .supplementsBundle(updatedSupplementsBundle)
+                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .type(caseData.getC2Type())
+                .build();
+        }
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
                                                                  String applicantName,
+                                                                 List<Element<Other>> selectedOthers,
+                                                                 String othersNotified,
                                                                  String uploadedBy,
                                                                  LocalDateTime uploadedTime) {
 
@@ -154,16 +187,31 @@ public class UploadAdditionalApplicationsService {
         List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
             temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime);
 
-        return temporaryOtherApplicationsBundle.toBuilder()
-            .author(uploadedBy)
-            .id(UUID.randomUUID())
-            .applicantName(applicantName)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-            .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-            .document(sealedDocument)
-            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-            .supplementsBundle(updatedSupplementsBundle)
-            .build();
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            return temporaryOtherApplicationsBundle.toBuilder()
+                .author(uploadedBy)
+                .id(UUID.randomUUID())
+                .applicantName(applicantName)
+                .others(selectedOthers)
+                .othersNotified(othersNotified)
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+                .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
+                .document(sealedDocument)
+                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .supplementsBundle(updatedSupplementsBundle)
+                .build();
+        } else {
+            return temporaryOtherApplicationsBundle.toBuilder()
+                .author(uploadedBy)
+                .id(UUID.randomUUID())
+                .applicantName(applicantName)
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+                .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
+                .document(sealedDocument)
+                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+                .supplementsBundle(updatedSupplementsBundle)
+                .build();
+        }
     }
 
     public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(
@@ -199,6 +247,15 @@ public class UploadAdditionalApplicationsService {
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
         }).collect(Collectors.toList());
+    }
+
+    private String getOthersNotified(List<Element<Other>> selectedOthers) {
+        return Optional.ofNullable(selectedOthers).map(
+            others -> others.stream()
+                .filter(other -> other.getValue().isRepresented() || other.getValue()
+                    .hasAddressAdded())
+                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
+        ).orElse(null);
     }
 
 }

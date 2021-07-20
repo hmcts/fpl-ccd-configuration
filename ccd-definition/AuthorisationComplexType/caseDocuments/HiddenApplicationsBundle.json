@@ -59,6 +59,14 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hiddenApplicationsBundle",
+    "ListElementCode": "c2DocumentBundle.othersNotified",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hiddenApplicationsBundle",
     "ListElementCode": "c2DocumentBundle.document",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
@@ -132,6 +140,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hiddenApplicationsBundle",
     "ListElementCode": "otherApplicationsBundle.applicantName",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hiddenApplicationsBundle",
+    "ListElementCode": "otherApplicationsBundle.othersNotified",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
   },

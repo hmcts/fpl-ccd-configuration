@@ -89,4 +89,9 @@ public class FeatureToggleService {
         values.forEach(builder::custom);
         return builder.build();
     }
+
+    public boolean isServeOrdersAndDocsToOthersEnabled() {
+        return ldClient.boolVariation("serve-others-orders-docs",
+            createLDUser(), false);
+    }
 }

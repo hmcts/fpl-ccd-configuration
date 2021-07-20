@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
@@ -33,8 +35,10 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -55,6 +59,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
     private final ApplicantsListGenerator applicantsListGenerator;
+    private final OthersService othersService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -66,7 +72,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/get-fee/mid-event")
+    @PostMapping("/populate-data/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
@@ -77,6 +83,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         }
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
+
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && isNotEmpty(caseData.getAllOthers())) {
+            caseDetails.getData().put("hasOthers", "Yes");
+            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
+            caseDetails.getData().put("othersToNotifySelector", newSelector(caseData.getAllOthers().size()));
+        }
 
         return respond(caseDetails);
     }
@@ -116,7 +128,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
             AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
-            "otherApplicant");
+            "otherApplicant", "others_label", "hasOthers", "notifyApplicationsToAllOthers", "othersToNotifySelector");
 
         return respond(caseDetails);
     }

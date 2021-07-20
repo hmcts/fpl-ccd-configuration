@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,10 +16,14 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -45,13 +51,16 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @MockBean
     private FeeService feeService;
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     UploadAdditionalApplicationsMidEventControllerTest() {
         super("upload-additional-applications");
     }
 
-    @Test
-    void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField(boolean servingOthersToggledOn) {
         C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
             .supplementsBundle(wrapElements(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()))
             .build();
@@ -71,21 +80,37 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .temporaryOtherApplicationsBundle(temporaryOtherDocument)
             .temporaryC2Document(temporaryC2Document)
             .c2Type(WITH_NOTICE)
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .build())
             .build();
 
         List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.SPECIAL_GUARDIANSHIP,
             FeeType.PARENTAL_RESPONSIBILITY_FATHER, FeeType.SECURE_ACCOMMODATION_WALES);
 
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersToggledOn);
         given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-fee");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-data");
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
-            .containsKey("temporaryC2Document")
+            .containsKeys("temporaryC2Document", "othersToNotifySelector")
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
+
+        if (servingOthersToggledOn) {
+            assertThat(String.valueOf(response.getData().get("hasOthers"))).isEqualTo("Yes");
+            assertThat(String.valueOf(response.getData().get("others_label")))
+                .contains("Other 1: test1", "Other 2: test2");
+            assertThat(extractCaseData(response).getOthersToNotifySelector()).isEqualTo(Selector.newSelector(2));
+        } else {
+            assertThat(response.getData())
+                .doesNotContainKeys("hasOthers", "others_label")
+                .containsEntry("othersToNotifySelector", null);
+        }
     }
 
     @Test
@@ -105,7 +130,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-fee");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-data");
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
@@ -124,7 +149,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .temporaryC2Document(C2DocumentBundle.builder().type(WITH_NOTICE).build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "get-fee");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
 
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
     }

@@ -174,6 +174,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsServingOtherApplicationsEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isServeOrdersAndDocsToOthersEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("serve-others-orders-docs"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

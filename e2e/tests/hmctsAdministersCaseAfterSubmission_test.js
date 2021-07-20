@@ -84,6 +84,8 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   uploadAdditionalApplicationsEventPage.uploadDocument(config.testWordFile);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);
+  //  await I.goToNextPage();
+  //  uploadAdditionalApplicationsEventPage.selectOthers(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [0]);
   await I.goToNextPage();
   const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
@@ -99,6 +101,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Applicant'], 'Jonathon Walker');
+  //I.seeInTab(['Additional applications 1', 'C2 application', 'othersNotified'], 'Noah King');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Uploaded by'], 'HMCTS');

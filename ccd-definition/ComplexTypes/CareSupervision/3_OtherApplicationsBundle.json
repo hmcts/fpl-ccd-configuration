@@ -104,5 +104,23 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "applicationType=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "othersNotified",
+    "FieldType": "Text",
+    "ElementLabel": "People notified",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "applicationType=\"DO NOT SHOW\""
   }
 ]
