@@ -16,7 +16,7 @@ module.exports = {
     country: 'input[id$="Country"]',
   },
   findAddressButton: 'Find address',
-  cantEnterPostcodeLink: locate('a').withText('I can\'t enter a UK postcode'),
+  cantEnterPostcodeLink: 'I can\'t enter a UK postcode',
 
   lookupPostcode(address) {
     I.fillField(this.fields.postcodeLookup, address.postcode);
@@ -33,6 +33,7 @@ module.exports = {
   },
 
   enterAddressManually(address) {
+    I.waitForText(this.cantEnterPostcodeLink);
     I.click(this.cantEnterPostcodeLink);
     if(address.buildingAndStreet.lineOne) {
       I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
@@ -56,7 +57,7 @@ module.exports = {
 
   async enterAddressIfNotPresent(address) {
     if(await I.canSee(this.cantEnterPostcodeLink)){
-      return this.enterAddressManually(address);
+      this.enterAddressManually(address);
     }
   },
 
