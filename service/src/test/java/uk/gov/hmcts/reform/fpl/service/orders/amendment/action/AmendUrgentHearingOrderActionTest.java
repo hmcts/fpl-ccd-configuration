@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.orders.amendment.action;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -12,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,6 +27,7 @@ class AmendUrgentHearingOrderActionTest {
     private static final LocalDate AMENDED_DATE = LocalDate.of(12, 12, 12);
     private static final DocumentReference ORIGINAL_ORDER = mock(DocumentReference.class);
     private static final DocumentReference AMENDED_ORDER = mock(DocumentReference.class);
+    List<Element<Other>> selectedOthers = Collections.emptyList();
 
     private final CaseData caseData = mock(CaseData.class);
 
@@ -61,9 +66,11 @@ class AmendUrgentHearingOrderActionTest {
 
         when(caseData.getUrgentHearingOrder()).thenReturn(uho);
 
-        UrgentHearingOrder amendedUHO = uho.toBuilder().amendedDate(AMENDED_DATE).order(AMENDED_ORDER).build();
+        UrgentHearingOrder amendedUHO = uho.toBuilder().amendedDate(AMENDED_DATE).order(AMENDED_ORDER)
+            .others(Collections.emptyList())
+            .build();
 
-        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_ORDER)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_ORDER, selectedOthers)).isEqualTo(
             Map.of("urgentHearingOrder", amendedUHO)
         );
     }
