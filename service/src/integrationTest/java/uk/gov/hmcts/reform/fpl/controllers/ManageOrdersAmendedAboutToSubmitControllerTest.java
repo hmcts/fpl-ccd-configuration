@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -63,10 +64,14 @@ class ManageOrdersAmendedAboutToSubmitControllerTest extends AbstractCallbackTes
     private static final UUID SDO_ID = StandardDirectionOrder.COLLECTION_ID;
     private static final UUID UHO_ID = UrgentHearingOrder.COLLECTION_ID;
 
-    private static final HearingOrder CMO = HearingOrder.builder().order(CMO_DOCUMENT).build();
-    private static final UrgentHearingOrder UHO = UrgentHearingOrder.builder().order(UHO_DOCUMENT).build();
-    private static final StandardDirectionOrder SDO = StandardDirectionOrder.builder().orderDoc(SDO_DOCUMENT).build();
-    private static final GeneratedOrder ORDER = GeneratedOrder.builder().document(ORDER_DOCUMENT).build();
+    private static final HearingOrder CMO = HearingOrder.builder().order(CMO_DOCUMENT)
+        .others(emptyList()).build();
+    private static final UrgentHearingOrder UHO = UrgentHearingOrder.builder().order(UHO_DOCUMENT)
+        .others(emptyList()).build();
+    private static final StandardDirectionOrder SDO = StandardDirectionOrder.builder().orderDoc(SDO_DOCUMENT)
+        .others(emptyList()).build();
+    private static final GeneratedOrder ORDER = GeneratedOrder.builder().document(ORDER_DOCUMENT)
+        .others(emptyList()).build();
     private static final String MEDIA_TYPE = "application/pdf";
 
     @MockBean
