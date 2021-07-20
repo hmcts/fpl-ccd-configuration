@@ -60,6 +60,10 @@ public class MigrateCaseController extends CallbackController {
             run3214(caseDetails);
         }
 
+        if ("FPLA-3239".equals(migrationId)) {
+            run3239(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
@@ -69,6 +73,20 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().remove("hearingOption");
         } else {
             throw new IllegalStateException(format("Case %s does not have hearing option", caseDetails.getId()));
+        }
+    }
+
+    private void run3239(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        validateFamilyManNumber("FPLA-3239", caseData.getFamilyManCaseNumber(), caseData);
+
+        if (isNotEmpty(caseData.getSubmittedForm()) && isNotEmpty(caseData.getCorrespondenceDocuments().get(0))) {
+            caseDetails.getData().put("submittedForm",
+                caseData.getCorrespondenceDocuments().get(0).getValue().getDocument());
+            caseData.getCorrespondenceDocuments().remove(0);
+            caseDetails.getData().put("correspondenceDocuments", caseData.getCorrespondenceDocuments());
+        } else {
+            throw new IllegalStateException(format("Case %s does not have C110a/redacted copy", caseDetails.getId()));
         }
     }
 

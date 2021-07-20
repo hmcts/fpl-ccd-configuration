@@ -82,6 +82,47 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
+    class Fpla3239 {
+
+        final String migrationId = "FPLA-3239";
+
+        @Test
+        void shouldReplaceC110aWithCorrespondenceDoc() {
+
+            DocumentReference redacted = testDocumentReference();
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "submittedForm", testDocumentReference(),
+                    "correspondenceDocuments", List.of(element(
+                        SupportingEvidenceBundle.builder().document(redacted).build())),
+                    "migrationId", migrationId))
+                .build();
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getSubmittedForm()).isEqualTo(redacted);
+            assertThat(extractedCaseData.getCorrespondenceDocuments()).isEmpty();
+        }
+
+        @Test
+        void shouldRemoveMigrationIdWhenNoC110a() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "migrationId", migrationId))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails).getData());
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class Fpla3175 {
         String familyManNumber = "CV21C50026";
         String migrationId = "FPLA-3175";
