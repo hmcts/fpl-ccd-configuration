@@ -44,10 +44,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -88,7 +87,7 @@ class CaseSubmissionGenerationServiceTest {
     private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
 
     @MockBean
-    private IdamClient idamClient;
+    private UserService userService;
 
     @MockBean
     private CaseSubmissionDocumentAnnexGenerator annexGenerator;
@@ -108,7 +107,7 @@ class CaseSubmissionGenerationServiceTest {
     void init() {
         givenCaseData = prepareCaseData();
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Professor").build());
+        given(userService.getUserName()).willReturn("Professor");
     }
 
     @Test

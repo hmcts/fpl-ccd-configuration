@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -84,7 +85,7 @@ public class CaseSubmissionGenerationService
 
     private final Time time;
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
-    private final IdamClient idamClient;
+    private final UserService userService;
     private final RequestData requestData;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
@@ -296,19 +297,25 @@ public class CaseSubmissionGenerationService
     }
 
     public String getSigneeName(CaseData caseData) {
-        return Optional.ofNullable(getLegalTeamManager(caseData))
+        return getLegalTeamManager(caseData)
             .filter(StringUtils::isNotBlank)
-            .orElseGet(() -> idamClient.getUserInfo(requestData.authorisation()).getName());
+            .orElseGet(userService::getUserName);
     }
 
-    private String getLegalTeamManager(CaseData caseData) {
+    private Optional<String> getLegalTeamManager(CaseData caseData) {
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getLocalAuthorities().get(0).getValue().getLegalTeamManager();
+            return ofNullable(caseData.getLocalAuthorities())
+                .map(localAuthority -> localAuthority.get(0))
+                .map(Element::getValue)
+                .map(LocalAuthority::getLegalTeamManager);
         }
-        if (isNotEmpty(caseData.getAllApplicants())) {
-            return caseData.getAllApplicants().get(0).getValue().getParty().getLegalTeamManager();
-        }
-        return null;
+
+        return ofNullable(caseData.getAllApplicants())
+            .filter(ObjectUtils::isNotEmpty)
+            .map(applicants -> applicants.get(0))
+            .map(Element::getValue)
+            .map(Applicant::getParty)
+            .map(ApplicantParty::getLegalTeamManager);
     }
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {
