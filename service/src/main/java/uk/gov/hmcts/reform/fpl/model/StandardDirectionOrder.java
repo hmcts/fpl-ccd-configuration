@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +51,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
+    private final List<Element<Other>> others;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -102,6 +105,24 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
         log.warn("Could not find any date to sort amendable list by, falling back to null");
         return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public DocumentReference getDocument() {
+        return orderDoc;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getAmendedOrderType() {
+        return AmendedOrderType.STANDARD_DIRECTION_ORDER.getLabel();
+    }
+
+    @JsonIgnore
+    @Override
+    public List<Element<Other>> getSelectedOthers() {
+        return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
 }
 
