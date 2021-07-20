@@ -200,7 +200,9 @@ class TranslatableItemServiceTest {
             UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> underTest.finalise(caseData));
 
-            assertThat(exception.getMessage()).isEqualTo("Could not find action to translate item with id \"" + UUID_ID_1 + "\"");
+            assertThat(exception.getMessage()).isEqualTo(
+                "Could not find action to translate item with id \"" + UUID_ID_1 + "\""
+            );
         }
 
         private CaseData caseDataWithSelectedUUID(UUID uuid) {
@@ -354,10 +356,13 @@ class TranslatableItemServiceTest {
             when(provider1.accept(CASE_DATA, UUID_ID_1)).thenReturn(false);
             when(provider2.accept(CASE_DATA, UUID_ID_1)).thenReturn(false);
 
-            UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+            UnsupportedOperationException exception = assertThrows(
+                UnsupportedOperationException.class,
                 () -> underTest.notifyToParties(CASE_DATA, element(UUID_ID_1, translatableItem1)));
 
-            assertThat(exception.getMessage()).isEqualTo("Could not find action to translate item with id \"" + UUID_ID_1 + "\"");
+            assertThat(exception.getMessage()).isEqualTo(
+                "Could not find action to translate item with id \"" + UUID_ID_1 + "\""
+            );
         }
 
     }

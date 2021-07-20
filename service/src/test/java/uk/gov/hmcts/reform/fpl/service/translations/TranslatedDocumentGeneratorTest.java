@@ -34,8 +34,10 @@ class TranslatedDocumentGeneratorTest {
     void testProcessor() {
 
         when(documentDownloadService.downloadDocument(BINARY_URL)).thenReturn(UPLOADED_FILE_BYTES);
-        when(documentConversionService.convertToPdf(UPLOADED_FILE_BYTES,FILENAME)).thenReturn(CONVERTED_PDF_FILE_BYTES);
-        when(documentSealingService.sealDocument(CONVERTED_PDF_FILE_BYTES, SealType.BILINGUAL)).thenReturn(CONVERTED_SEALED_PDF_FILE_BYTES);
+        when(documentConversionService.convertToPdf(UPLOADED_FILE_BYTES,
+            FILENAME)).thenReturn(CONVERTED_PDF_FILE_BYTES);
+        when(documentSealingService.sealDocument(CONVERTED_PDF_FILE_BYTES, SealType.BILINGUAL)).thenReturn(
+            CONVERTED_SEALED_PDF_FILE_BYTES);
 
         byte[] actual = underTest.generate(CaseData.builder()
             .uploadTranslationsEventData(UploadTranslationsEventData.builder()
