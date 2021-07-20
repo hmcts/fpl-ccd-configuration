@@ -908,15 +908,15 @@ devtools-protocol@0.0.883894:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.883894.tgz#d403f2c75cd6d71c916aee8dde9258da988a4da9"
   integrity sha512-33idhm54QJzf3Q7QofMgCvIVSd2o9H3kQPWaKT/fhoZh+digc+WSiMhbkeG3iN79WY4Hwr9G05NpbhEVrsOYAg==
 
-devtools-protocol@^0.0.900357:
-  version "0.0.900357"
-  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.900357.tgz#ba9fb13354691e87f5ab0ff45345beae1c0ae993"
-  integrity sha512-8CK9MPmjiu80uTxv6T4Etm8a+cX2Cf0fBSZHdDCm70WWgY4ku07MdPVfNuNDrihhybDg6cMmT0QIxKy/8tUnbA==
+devtools-protocol@^0.0.901419:
+  version "0.0.901419"
+  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.901419.tgz#79b5459c48fe7e1c5563c02bd72f8fec3e0cebcd"
+  integrity sha512-4INMPwNm9XRpBukhNbF7OB6fNTTCaI8pzy/fXg0xQzAy5h3zL1P8xT3QazgKqBrb/hAYwIBizqDBZ7GtJE74QQ==
 
-devtools@7.7.7:
-  version "7.7.7"
-  resolved "https://registry.yarnpkg.com/devtools/-/devtools-7.7.7.tgz#e748cd67a8430d2349f1589d6bb3c6ac8f77d3cf"
-  integrity sha512-ej/l06ccE24PC3WDtuG7HomAnYmM1Hd9NQrjgJtl59RFKBfkyRwoNgMqHMjSTsmn25WW1RBj76cF0lURyu/8Yw==
+devtools@7.7.8:
+  version "7.7.8"
+  resolved "https://registry.yarnpkg.com/devtools/-/devtools-7.7.8.tgz#4ddf9f3516ff46b8d1e558d89a35342ce27fa7bd"
+  integrity sha512-BVo8DgdERZC+XeljU3F6pFxvkdHwIRl8Vfnh2vUEx393D1j4FA6Fgm5mPAEmB/ZmVr6DVPGBNc/00qneM/DPxA==
   dependencies:
     "@types/node" "^15.12.5"
     "@wdio/config" "7.7.7"
@@ -3251,10 +3251,10 @@ webdriver@7.7.7:
     got "^11.0.2"
     lodash.merge "^4.6.1"
 
-webdriverio@^7.7.7:
-  version "7.7.7"
-  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-7.7.7.tgz#74c273613340fcfe2e9984161f8039d220192888"
-  integrity sha512-DOCBLSnZbe/XEzCD1R8OlRL+WOERjk1Np7BrCV8SiegoMeTxZkwWv5knu4f1swCK9l8lzbF2s5HIEXD3rvZ1jg==
+webdriverio@^7.7.8:
+  version "7.7.8"
+  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-7.7.8.tgz#d10d2c1ad224a302a442e179b9918640fef21713"
+  integrity sha512-v4BcH8WVX77TsYsHg+kGPg0/QxfpAh8A3KCe+3feCkL8P5ys4RNwb0L9GChJyGIE0LO0ZBj7VtTuMs+HNowreg==
   dependencies:
     "@types/aria-query" "^4.2.1"
     "@types/node" "^15.12.5"
@@ -3269,8 +3269,8 @@ webdriverio@^7.7.7:
     atob "^2.1.2"
     css-shorthand-properties "^1.1.1"
     css-value "^0.0.1"
-    devtools "7.7.7"
-    devtools-protocol "^0.0.900357"
+    devtools "7.7.8"
+    devtools-protocol "^0.0.901419"
     fs-extra "^10.0.0"
     get-port "^5.1.1"
     grapheme-splitter "^1.0.2"
