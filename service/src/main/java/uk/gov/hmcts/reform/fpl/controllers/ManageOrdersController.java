@@ -121,7 +121,7 @@ public class ManageOrdersController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        eventBuilder.build(caseData, caseDataBefore).ifPresent(this::publishEvent);
+        publishEvent(eventBuilder.build(caseData, caseDataBefore));
     }
 
     private CaseData fixAndRetrieveCaseData(CaseDetails caseDetails) {
