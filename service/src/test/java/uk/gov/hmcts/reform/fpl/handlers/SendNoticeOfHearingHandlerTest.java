@@ -25,12 +25,15 @@ import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -68,6 +71,8 @@ class SendNoticeOfHearingHandlerTest {
     private NoticeOfHearingNoOtherAddressEmailContentProvider noticeOfHearingNoOtherAddressEmailContentProvider;
     @Mock
     private RepresentativeNotificationService representativeNotificationService;
+    @Mock
+    private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
     private SendDocumentService sendDocumentService;
     @Mock
@@ -165,15 +170,37 @@ class SendNoticeOfHearingHandlerTest {
     void shouldSendNoticeOfHearingToRepresentativesAndNotRepresentedRespondentsByPost() {
         Representative representative = mock(Representative.class);
         RespondentParty respondent = mock(RespondentParty.class);
-        List<Recipient> recipients = List.of(representative, respondent);
+        List<Recipient> recipients = new ArrayList<>(List.of(representative, respondent));
         DocumentReference noticeOfHearing = mock(DocumentReference.class);
 
         given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(recipients);
         given(HEARING.getNoticeOfHearing()).willReturn(noticeOfHearing);
+        given(HEARING.getOthers()).willReturn(emptyList());
+        given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(emptyList())).willReturn(emptySet());
 
         underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(noticeOfHearing), recipients);
+        verify(sendDocumentService).getStandardRecipients(CASE_DATA);
+
+        verifyNoMoreInteractions(sendDocumentService);
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendNoticeOfHearingToUnrepresentedOthersByPost() {
+        final RespondentParty otherRespondent = mock(RespondentParty.class);
+        DocumentReference noticeOfHearing = mock(DocumentReference.class);
+
+        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(new ArrayList<>());
+        given(HEARING.getNoticeOfHearing()).willReturn(noticeOfHearing);
+        given(HEARING.getOthers()).willReturn(emptyList());
+        given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(emptyList())).willReturn(
+            Set.of(otherRespondent));
+
+        underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING));
+
+        verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(noticeOfHearing), List.of(otherRespondent));
         verify(sendDocumentService).getStandardRecipients(CASE_DATA);
 
         verifyNoMoreInteractions(sendDocumentService);

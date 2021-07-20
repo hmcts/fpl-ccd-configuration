@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Collection;
@@ -46,6 +47,7 @@ public class SendNoticeOfHearingHandler {
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
     private final InboxLookupService inboxLookupService;
+    private final OtherRecipientsInbox otherRecipientsInbox;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final SendDocumentService sendDocumentService;
@@ -104,8 +106,10 @@ public class SendNoticeOfHearingHandler {
     public void sendNoticeOfHearingByPost(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
         final DocumentReference noticeOfHearing = event.getSelectedHearing().getNoticeOfHearing();
+        final List<Element<Other>> others = event.getSelectedHearing().getOthers();
 
         final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
+        recipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(others));
 
         sendDocumentService.sendDocuments(caseData, List.of(noticeOfHearing), recipients);
     }
@@ -121,7 +125,7 @@ public class SendNoticeOfHearingHandler {
         List<Other> others = unwrapElements(hearingBooking.getOthers());
 
         others.forEach(other -> {
-            if (other.getRepresentedBy().isEmpty() && !other.hasAddressAdded()) {
+            if (!other.isRepresented() && !other.hasAddressAdded()) {
                 NotifyData notifyData =
                     noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
                         caseData, event.getSelectedHearing(), other);
