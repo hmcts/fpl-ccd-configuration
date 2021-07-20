@@ -144,11 +144,23 @@ public class ManageHearingsController extends CallbackController {
 
             caseDetails.getData().put(PAST_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
+
+            HearingBooking hearingBooking = hearingsService
+                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                .orElse(HearingBooking.builder().build());
+
+            caseDetails.getData().putAll(othersGenerator.generate(caseData, hearingBooking));
         } else if (VACATE_HEARING == caseData.getHearingOption()) {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
             caseDetails.getData().put(FUTURE_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getFutureAndTodayHearings(), hearingBookingId));
+
+            HearingBooking hearingBooking = hearingsService
+                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                .orElse(HearingBooking.builder().build());
+
+            caseDetails.getData().putAll(othersGenerator.generate(caseData, hearingBooking));
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
             if (isEmpty(caseData.getToBeReListedHearings())) {
                 return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
@@ -172,8 +184,14 @@ public class ManageHearingsController extends CallbackController {
                 hearingsService.asDynamicList(caseData.getToBeReListedHearings(), hearingBookingId));
         }
 
-        if (EDIT_HEARING != caseData.getHearingOption()) {
-            caseDetails.getData().putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
+        if (NEW_HEARING != caseData.getHearingOption()) {
+            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+
+            HearingBooking hearingBooking = hearingsService
+                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                .orElse(HearingBooking.builder().build());
+
+            caseDetails.getData().putAll(othersGenerator.generate(caseData, hearingBooking));
         }
 
         return respond(caseDetails);
