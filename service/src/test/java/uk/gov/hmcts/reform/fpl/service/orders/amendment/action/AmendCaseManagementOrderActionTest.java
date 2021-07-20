@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +34,8 @@ class AmendCaseManagementOrderActionTest {
     private static final LocalDate AMENDED_DATE = LocalDate.of(12, 12, 12);
     private static final DocumentReference ORIGINAL_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference AMENDED_DOCUMENT = mock(DocumentReference.class);
+    List<Element<Other>> selectedOthers = Collections.emptyList();
+
 
     private final CaseData caseData = mock(CaseData.class);
     private final ManageOrdersEventData eventData = mock(ManageOrdersEventData.class);
@@ -79,13 +83,14 @@ class AmendCaseManagementOrderActionTest {
         HearingOrder amendedCMO = cmoToAmend.toBuilder()
             .order(AMENDED_DOCUMENT)
             .amendedDate(AMENDED_DATE)
+            .others(Collections.emptyList())
             .build();
 
         List<Element<HearingOrder>> amendedOrders = List.of(
             ignoredCMO1, element(selectedOrderId, amendedCMO), ignoredCMO2
         );
 
-        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(
             Map.of("sealedCMOs", amendedOrders)
         );
     }
