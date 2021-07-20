@@ -606,7 +606,8 @@
           "[SOLICITORH]",
           "[SOLICITORI]",
           "[SOLICITORJ]",
-          "[CAFCASSSOLICITOR]"
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]"
         ],
         "CRUD": "CR"
       },
