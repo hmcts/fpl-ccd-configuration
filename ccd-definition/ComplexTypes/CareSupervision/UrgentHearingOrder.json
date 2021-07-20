@@ -40,5 +40,16 @@
     "FieldType": "Date",
     "ElementLabel": "Date added",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgentHearingOrder",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dateAdded = \"DO NOT SHOW\"",
+    "Comment": "Used to store the selected others to notify"
   }
 ]

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.amendment.action;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,6 +31,7 @@ class AmendGeneratedOrderActionTest {
     private static final LocalDate AMENDED_DATE = LocalDate.of(12, 12, 12);
     private static final DocumentReference ORIGINAL_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference AMENDED_DOCUMENT = mock(DocumentReference.class);
+    List<Element<Other>> selectedOthers = Collections.emptyList();
 
     private final CaseData caseData = mock(CaseData.class);
     private final ManageOrdersEventData eventData = mock(ManageOrdersEventData.class);
@@ -76,13 +79,14 @@ class AmendGeneratedOrderActionTest {
         GeneratedOrder amendedOrder = orderToAmend.toBuilder()
             .document(AMENDED_DOCUMENT)
             .amendedDate(AMENDED_DATE)
+            .others(Collections.emptyList())
             .build();
 
         List<Element<GeneratedOrder>> amendedOrders = List.of(
             nonAmendedOrder1, element(selectedOrderId, amendedOrder), nonAmendedOrder2
         );
 
-        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT)).isEqualTo(
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(
             Map.of("orderCollection", amendedOrders)
         );
     }

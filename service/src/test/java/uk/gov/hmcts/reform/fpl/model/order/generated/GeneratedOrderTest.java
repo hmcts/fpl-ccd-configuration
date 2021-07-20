@@ -9,6 +9,8 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -28,6 +31,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor.builder;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class GeneratedOrderTest {
 
@@ -177,6 +182,36 @@ class GeneratedOrderTest {
         GeneratedOrder order = GeneratedOrder.builder().build();
 
         assertThat(order.getChildrenIDs()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnAmendedOrderType() {
+        GeneratedOrder order = GeneratedOrder.builder()
+            .type("generated order type")
+            .build();
+
+        assertThat(order.getAmendedOrderType()).isEqualTo("generated order type");
+    }
+
+    @Test
+    void shouldReturnSelectedOthers() {
+        List<Element<Other>>  selectedOthers = List.of(element(testOther("Other 1")));
+        GeneratedOrder order = GeneratedOrder.builder()
+            .type("generated order type")
+            .others(selectedOthers)
+            .build();
+
+        assertThat(order.getSelectedOthers()).isEqualTo(selectedOthers);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoSelectedOthers() {
+        GeneratedOrder order = GeneratedOrder.builder()
+            .type("generated order type")
+            .others(emptyList())
+            .build();
+
+        assertThat(order.getSelectedOthers()).isEqualTo(emptyList());
     }
 
     private static Stream<Arguments> isFinalOrderSource() {
