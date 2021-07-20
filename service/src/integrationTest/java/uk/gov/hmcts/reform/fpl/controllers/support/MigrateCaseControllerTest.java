@@ -94,6 +94,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .state("Submitted")
                 .data(Map.of(
                     "name", "Test",
+                    "familyManCaseNumber", "DE21C50042",
                     "submittedForm", testDocumentReference(),
                     "correspondenceDocuments", List.of(element(
                         SupportingEvidenceBundle.builder()
@@ -114,6 +115,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .id(10L)
                 .state("Submitted")
                 .data(Map.of(
+                    "familyManCaseNumber", "DE21C50042",
                     "name", "Test",
                     "migrationId", migrationId))
                 .build();

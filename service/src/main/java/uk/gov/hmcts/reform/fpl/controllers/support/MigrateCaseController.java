@@ -78,7 +78,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run3239(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        validateFamilyManNumber("FPLA-3239", caseData.getFamilyManCaseNumber(), caseData);
+        validateFamilyManNumber("FPLA-3239", "DE21C50042", caseData);
 
         if (isNotEmpty(caseData.getSubmittedForm())
             && isNotEmpty(caseData.getCorrespondenceDocuments().get(0))
