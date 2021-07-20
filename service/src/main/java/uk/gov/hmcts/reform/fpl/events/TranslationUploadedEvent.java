@@ -5,8 +5,5 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 @Value
 public class TranslationUploadedEvent {
-
     CaseData caseData;
-    CaseData caseDataBefore;
-
 }

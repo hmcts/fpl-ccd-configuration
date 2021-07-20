@@ -62,6 +62,6 @@ public class UploadTranslationsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        publishEvent(new TranslationUploadedEvent(getCaseData(callbackRequest),getCaseDataBefore(callbackRequest)));
+        publishEvent(new TranslationUploadedEvent(getCaseData(callbackRequest)));
     }
 }

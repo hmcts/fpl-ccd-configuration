@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Data
 @Builder(toBuilder = true)
@@ -21,7 +22,10 @@ public class DocumentBundle implements TranslatableItem {
     @Override
     @JsonIgnore
     public String asLabel() {
-        return "Notice of proceedings (" + (document.getFilename().contains("_c6a") ? "C6A" : "C6") + ")";
+        return Optional.ofNullable(document)
+            .map(documentReference ->
+                "Notice of proceedings (" + (documentReference.getFilename().contains("_c6a") ? "C6A" : "C6") + ")")
+            .orElse("");
     }
 
     @Override
