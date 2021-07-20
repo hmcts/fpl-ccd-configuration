@@ -39,7 +39,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         super("migrate-case");
     }
 
-
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Fpla3214 {
@@ -113,6 +112,25 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
+        void shouldThrowExceptionCMOIdNotFoundInCancelledHearing() {
+            UUID id = UUID.randomUUID();
+            List<Element<HearingBooking>> cancelledHearings =
+                List.of(element(HearingBooking.builder().caseManagementOrderId(UUID.randomUUID()).build()));
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "familyManCaseNumber", "NE21C50026",
+                    "draftUploadedCMOs", List.of(element(id, HearingOrder.builder().title("remove me").build())),
+                    "cancelledHearingDetails", cancelledHearings,
+                    "migrationId", migrationId))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails));
+        }
+
+        @Test
         void shouldRemoveMigrationIdWhenNoDraftCMOs() {
             CaseDetails caseDetails = CaseDetails.builder()
                 .id(10L)
@@ -123,7 +141,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     "migrationId", migrationId))
                 .build();
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails).getData());
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails));
         }
     }
 
@@ -348,7 +366,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             caseDetails.getData().put("correspondenceDocumentsNC", correspondenceDocuments);
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-
 
             assertThat(extractCaseData(response).getCorrespondenceDocuments())
                 .isEqualTo(List.of(

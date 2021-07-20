@@ -14,8 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -79,15 +81,22 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         validateFamilyManNumber("FPLA-3126", "NE21C50026", caseData);
 
-        if (isNotEmpty(caseDetails.getData().get("draftUploadedCMOs"))) {
+        List<Element<HearingOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
+        if (isNotEmpty(draftUploadedCMOs) && draftUploadedCMOs.size() == 1) {
             caseDetails.getData().remove("draftUploadedCMOs");
         } else {
-            throw new IllegalStateException(format("Case %s does not any draft CMOs", caseDetails.getId()));
+            throw new IllegalStateException(format("Case %s does not contain 1 draft CMO", caseDetails.getId()));
         }
 
-        if (isNotEmpty(caseDetails.getData().get("cancelledHearingDetails"))) {
-            caseData.getCancelledHearingDetails().get(0).getValue().setCaseManagementOrderId(null);
-            caseDetails.getData().put("cancelledHearingDetails", caseData.getCancelledHearingDetails());
+        List<Element<HearingBooking>> cancelledHearingDetails = caseData.getCancelledHearingDetails();
+        if (isNotEmpty(cancelledHearingDetails) && cancelledHearingDetails.size() == 1
+            && cancelledHearingDetails.get(0).getValue().getCaseManagementOrderId().equals(
+            draftUploadedCMOs.get(0).getId())) {
+            cancelledHearingDetails.get(0).getValue().setCaseManagementOrderId(null);
+            caseDetails.getData().put("cancelledHearingDetails", cancelledHearingDetails);
+        } else {
+            throw new IllegalStateException(
+                format("Case %s has unexpected cancelled hearing details", caseDetails.getId()));
         }
     }
 
