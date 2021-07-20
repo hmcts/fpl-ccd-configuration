@@ -98,6 +98,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .state("Submitted")
                 .data(Map.of(
                     "name", "Test",
+                    "familyManCaseNumber", "NE21C50026",
                     "draftUploadedCMOs", List.of(element(id, HearingOrder.builder().title("remove me").build())),
                     "cancelledHearingDetails", cancelledHearings,
                     "migrationId", migrationId))
@@ -117,6 +118,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .id(10L)
                 .state("Submitted")
                 .data(Map.of(
+                    "familyManCaseNumber", "NE21C50026",
                     "name", "Test",
                     "migrationId", migrationId))
                 .build();
