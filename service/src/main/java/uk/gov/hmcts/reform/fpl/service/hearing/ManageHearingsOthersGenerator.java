@@ -38,7 +38,6 @@ public class ManageHearingsOthersGenerator {
                 data.put("hasOthers", YES.getValue());
                 data.put("othersSelector", buildOtherSelector(allOthers, selectedOthers));
                 data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-                data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());
                 data.put("sendOrderToAllOthers",
                     sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
             }
@@ -59,12 +58,6 @@ public class ManageHearingsOthersGenerator {
         }
 
         return Selector.builder().selected(selected).build().setNumberOfOptions(allOthers.size());
-    }
-
-    private boolean sendNoticeOfHearing(HearingBooking hearingBooking) {
-        List<Element<Other>> hearingOthers = hearingBooking.getOthers();
-
-        return (hearingOthers != null && !hearingOthers.isEmpty());
     }
 
     private boolean sendOrderToAllOthers(List<Element<Other>> allOthers, List<Element<Other>> selectedOthers) {

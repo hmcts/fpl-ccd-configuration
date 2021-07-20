@@ -52,7 +52,6 @@ class ManageHearingsOthersGeneratorTest {
             "hasOthers", YES.getValue(),
             "othersSelector", Selector.builder().selected(List.of(0)).build().setNumberOfOptions(1),
             "others_label", OTHER_LABEL,
-            "sendNoticeOfHearing", YES.getValue(),
             "sendOrderToAllOthers", YES.getValue()
         );
 
@@ -74,7 +73,6 @@ class ManageHearingsOthersGeneratorTest {
             "hasOthers", YES.getValue(),
             "othersSelector", Selector.builder().build().setNumberOfOptions(1),
             "others_label", OTHER_LABEL,
-            "sendNoticeOfHearing", NO.getValue(),
             "sendOrderToAllOthers", NO.getValue()
         );
 
@@ -96,7 +94,6 @@ class ManageHearingsOthersGeneratorTest {
             "hasOthers", YES.getValue(),
             "othersSelector", Selector.builder().build().setNumberOfOptions(1),
             "others_label", OTHER_LABEL,
-            "sendNoticeOfHearing", NO.getValue(),
             "sendOrderToAllOthers", NO.getValue()
         );
 

@@ -274,15 +274,14 @@ public class ManageHearingsService {
     }
 
     public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
-        if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
-            DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
-            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
-                NOTICE_OF_HEARING);
-            Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
-                NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
+        DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
+            NOTICE_OF_HEARING);
+        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
+            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
 
-            hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
-        }
+        hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+
     }
 
     public void addOrUpdate(Element<HearingBooking> hearingBooking, CaseData caseData) {

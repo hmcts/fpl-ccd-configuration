@@ -29,9 +29,6 @@ module.exports = {
     newVenueCustomAddress: '#previousHearingVenue_newVenueCustomAddress_newVenueCustomAddress',
     startDate: '#hearingStartDate',
     endDate: '#hearingEndDate',
-    sendNotice: '#sendNoticeOfHearing_Yes',
-    dontSendNotice: '#sendNoticeOfHearing_No',
-    noticeNotes: '#noticeOfHearingNotes',
     allOthers: {
       group: '#sendOrderToAllOthers',
       options: {
@@ -143,15 +140,6 @@ module.exports = {
 
   selectedAllocatedJudge() {
     judgeAndLegalAdvisor.useAllocatedJudge();
-  },
-
-  sendNoticeOfHearingWithNotes(notes) {
-    I.click(this.fields.sendNotice);
-    I.fillField(this.fields.noticeNotes, notes);
-  },
-
-  dontSendNoticeOfHearing() {
-    I.click(this.fields.dontSendNotice);
   },
 
   selectOthers(option, indexes = []) {

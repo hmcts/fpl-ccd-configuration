@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -56,7 +55,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
@@ -656,9 +654,7 @@ class ManageHearingsServiceTest {
         final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
 
         final HearingBooking hearingToUpdate = randomHearing();
-        final CaseData caseData = CaseData.builder()
-            .sendNoticeOfHearing(YesNo.YES.getValue())
-            .build();
+        final CaseData caseData = CaseData.builder().build();
 
         given(noticeOfHearingGenerationService.getTemplateData(caseData, hearingToUpdate))
             .willReturn(docmosisData);
@@ -675,19 +671,6 @@ class ManageHearingsServiceTest {
         verify(uploadDocumentService).uploadPDF(
             TestDataHelper.DOCUMENT_CONTENT,
             NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
-    }
-
-    @Test
-    void shouldNotSendNoticeOfHearingIfNotRequested() {
-        HearingBooking hearingToUpdate = randomHearing();
-        CaseData caseData = CaseData.builder()
-            .sendNoticeOfHearing(YesNo.NO.getValue())
-            .build();
-
-        service.sendNoticeOfHearing(caseData, hearingToUpdate);
-
-        assertThat(hearingToUpdate.getNoticeOfHearing()).isNull();
-        verifyNoInteractions(uploadDocumentService, docmosisDocumentGeneratorService, noticeOfHearingGenerationService);
     }
 
     @Nested
