@@ -195,6 +195,12 @@ task crossbrowser(description: 'Runs crossbrowser tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
 }
 
+task fortifyScan(type: JavaExec)  {
+  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = "8.25"
@@ -296,7 +302,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.3'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -341,6 +347,9 @@ dependencies {
   testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
+
+  // Fortify client for Fortify scans
+  testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 
   functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
