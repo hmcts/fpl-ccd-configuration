@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -33,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -45,6 +42,7 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -58,7 +56,6 @@ public class ManageDocumentService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final UserService user;
-    private final CaseAccessService caseAccessService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -73,6 +70,10 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
+    private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
+        bundle -> bundle.getValue().isUploadedByHMCTS();
+    private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
+        bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> eventData = new HashMap<>();
@@ -154,7 +155,7 @@ public class ManageDocumentService {
                         = bundle.get().getValue().getSupportingEvidenceBundle();
 
                     setDefaultEvidenceType(evidenceBundle);
-                    return getUserSpecificSupportingEvidences(evidenceBundle);
+                    return getUserSpecificSupportingEvidences(evidenceBundle, caseData.getId());
                 }
             }
         } else if (isNotEmpty(unrelatedEvidence)) {
@@ -169,7 +170,7 @@ public class ManageDocumentService {
         UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         ApplicationsBundle selectedBundle = caseData.getApplicationBundleByUUID(selectedC2);
 
-        return getUserSpecificSupportingEvidences(selectedBundle.getSupportingEvidenceBundle());
+        return getUserSpecificSupportingEvidences(selectedBundle.getSupportingEvidenceBundle(), caseData.getId());
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -200,7 +201,7 @@ public class ManageDocumentService {
                     List<Element<SupportingEvidenceBundle>> existingEvidence =
                         new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
 
-                    updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
+                    updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence, caseData.getId());
                     sortByDateUploaded(existingEvidence);
 
                     element.getValue().setSupportingEvidenceBundle(existingEvidence);
@@ -278,14 +279,16 @@ public class ManageDocumentService {
 
                 List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
                     c2DocumentBundle.getSupportingEvidenceBundle(),
-                    caseData.getSupportingEvidenceDocumentsTemp());
+                    caseData.getSupportingEvidenceDocumentsTemp(),
+                    caseData.getId());
 
                 c2DocumentBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
             } else if (!isNull(otherApplicationsBundle) && selectedBundleId.equals(otherApplicationsBundle.getId())) {
 
                 List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
                     otherApplicationsBundle.getSupportingEvidenceBundle(),
-                    caseData.getSupportingEvidenceDocumentsTemp());
+                    caseData.getSupportingEvidenceDocumentsTemp(),
+                    caseData.getId());
 
                 otherApplicationsBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
             }
@@ -299,7 +302,8 @@ public class ManageDocumentService {
         for (Element<C2DocumentBundle> element : c2Bundles) {
             if (selected.equals(element.getId())) {
                 List<Element<SupportingEvidenceBundle>> updatedBundle = updateSupportingEvidenceBundle(
-                    element.getValue().getSupportingEvidenceBundle(), caseData.getSupportingEvidenceDocumentsTemp());
+                    element.getValue().getSupportingEvidenceBundle(), caseData.getSupportingEvidenceDocumentsTemp(),
+                    caseData.getId());
                 element.getValue().setSupportingEvidenceBundle(updatedBundle);
             }
         }
@@ -308,12 +312,13 @@ public class ManageDocumentService {
 
     private List<Element<SupportingEvidenceBundle>> updateSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> existingSupportingEvidenceBundle,
-        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle,
+        Long id
     ) {
         List<Element<SupportingEvidenceBundle>> modifiedEvidence = setDateTimeUploadedOnSupportingEvidence(
             updatedSupportingEvidenceBundle, existingSupportingEvidenceBundle);
 
-        updateExistingEvidenceWithChanges(existingSupportingEvidenceBundle, modifiedEvidence);
+        updateExistingEvidenceWithChanges(existingSupportingEvidenceBundle, modifiedEvidence, id);
         sortByDateUploaded(existingSupportingEvidenceBundle);
 
         return existingSupportingEvidenceBundle;
@@ -388,16 +393,23 @@ public class ManageDocumentService {
 
     // Separate collection based on idam role (only show users their own documents)
     private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidences(
-        List<Element<SupportingEvidenceBundle>> bundles) {
+        List<Element<SupportingEvidenceBundle>> bundles, Long caseId) {
 
-        Predicate<Element<SupportingEvidenceBundle>> bundleFilter = bundle -> bundle.getValue().isUploadedByHMCTS();
+        Predicate<Element<SupportingEvidenceBundle>> selectedFilter;
 
         if (!user.isHmctsUser()) {
-            bundleFilter = bundleFilter.negate();
+            if (user.hasAnyCaseRoleFrom(representativeSolicitors(), caseId.toString())) {
+                selectedFilter = SOLICITOR_FILTER;
+            } else {
+                //local authority
+                selectedFilter = HMCTS_FILTER.negate().and(SOLICITOR_FILTER.negate());
+            }
+        } else {
+            selectedFilter = HMCTS_FILTER;
         }
 
         List<Element<SupportingEvidenceBundle>> supportingEvidences = bundles.stream()
-            .filter(bundleFilter)
+            .filter(selectedFilter)
             .collect(Collectors.toList());
 
         return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
@@ -425,9 +437,10 @@ public class ManageDocumentService {
     }
 
     private void updateExistingEvidenceWithChanges(List<Element<SupportingEvidenceBundle>> existingEvidence,
-                                                   List<Element<SupportingEvidenceBundle>> updatedEvidence) {
+                                                   List<Element<SupportingEvidenceBundle>> updatedEvidence,
+                                                   Long id) {
         List<Element<SupportingEvidenceBundle>> userSpecificDocuments
-            = getUserSpecificSupportingEvidences(existingEvidence);
+            = getUserSpecificSupportingEvidences(existingEvidence, id);
 
         existingEvidence.removeAll(userSpecificDocuments);
 

@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import java.util.List;
+
 public enum CaseRole {
     CREATOR,
     LASOLICITOR,
@@ -31,7 +33,13 @@ public enum CaseRole {
     }
 
     public static CaseRole from(String name) {
-        return CaseRole.valueOf(name.replaceAll("[\\[\\]]", "").replace("SOLICITOR", "SOLICITOR"));
+        return CaseRole.valueOf(name.replaceAll("[\\[\\]]", ""));
+    }
+
+    //Add child solicitor roles here
+    public static List<CaseRole> representativeSolicitors() {
+        return List.of(SOLICITORA, SOLICITORB, SOLICITORC, SOLICITORD, SOLICITORE, SOLICITORF, SOLICITORG, SOLICITORH,
+            SOLICITORI, SOLICITORJ);
     }
 
     private static String formatName(String name) {
