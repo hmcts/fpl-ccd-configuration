@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -15,10 +17,12 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -47,6 +51,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String requestedChanges;
     private List<Element<SupportingEvidenceBundle>> supportingDocs;
     private String removalReason;
+    private final List<Element<Other>> others;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return from(order, hearing, date, AGREED_CMO, null);
@@ -101,5 +106,23 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     @Override
     public LocalDate amendableSortDate() {
         return dateIssued;
+    }
+
+    @JsonIgnore
+    @Override
+    public DocumentReference getDocument() {
+        return order;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getAmendedOrderType() {
+        return AmendedOrderType.CASE_MANAGEMENT_ORDER.getLabel();
+    }
+
+    @JsonIgnore
+    @Override
+    public List<Element<Other>> getSelectedOthers() {
+        return defaultIfNull(getOthers(), new ArrayList<>());
     }
 }

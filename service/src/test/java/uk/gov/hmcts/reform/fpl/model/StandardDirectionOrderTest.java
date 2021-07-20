@@ -2,16 +2,19 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mockStatic;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class StandardDirectionOrderTest {
     @Test
@@ -116,5 +119,30 @@ class StandardDirectionOrderTest {
     void amendableSortDateNull() {
         StandardDirectionOrder sdo = StandardDirectionOrder.builder().build();
         assertThat(sdo.amendableSortDate()).isNull();
+    }
+
+    @Test
+    void shouldReturnAmendedOrderType() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
+        assertThat(standardDirectionOrder.getAmendedOrderType()).isEqualTo("Standard direction order");
+    }
+
+    @Test
+    void shouldReturnSelectedOthers() {
+        List<Element<Other>>  selectedOthers = List.of(element(testOther("Other 1")));
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .others(selectedOthers)
+            .build();
+
+        assertThat(standardDirectionOrder.getSelectedOthers()).isEqualTo(selectedOthers);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoSelectedOthers() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .others(emptyList())
+            .build();
+
+        assertThat(standardDirectionOrder.getSelectedOthers()).isEqualTo(emptyList());
     }
 }

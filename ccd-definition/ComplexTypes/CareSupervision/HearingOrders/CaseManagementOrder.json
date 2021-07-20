@@ -118,5 +118,16 @@
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\"",
+    "Comment": "Used to store the selected others to notify"
   }
 ]

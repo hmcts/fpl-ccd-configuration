@@ -21,14 +21,17 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -146,5 +149,22 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     @JsonIgnore
     public boolean isNewVersion() {
         return Objects.nonNull(dateTimeIssued);
+    }
+
+    @Override
+    public DocumentReference getDocument() {
+        return document;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getAmendedOrderType() {
+        return type;
+    }
+
+    @JsonIgnore
+    @Override
+    public List<Element<Other>> getSelectedOthers() {
+        return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
 }
