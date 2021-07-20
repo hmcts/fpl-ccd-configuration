@@ -34,7 +34,7 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     String allocation;
     LocalDate dateAdded;
     LocalDate amendedDate;
-    private final List<Element<Other>> others;
+    List<Element<Other>> others;
     LocalDateTime translationUploadDateTime;
 
     @Override
