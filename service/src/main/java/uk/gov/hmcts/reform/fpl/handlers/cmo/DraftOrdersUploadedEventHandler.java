@@ -6,7 +6,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
-import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
@@ -36,10 +36,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftOrdersUploadedEventHandler {
 
+    private final CourtService courtService;
     private final NotificationService notificationService;
     private final DraftOrdersUploadedContentProvider draftOrdersContentProvider;
     private final AgreedCMOUploadedContentProvider agreedCMOContentProvider;
-    private final HmctsAdminNotificationHandler adminNotificationHandler;
 
     @Async
     @EventListener
@@ -70,7 +70,7 @@ public class DraftOrdersUploadedEventHandler {
     @Async
     @EventListener
     public void sendNotificationToAdmin(final DraftOrdersUploaded event) {
-        CaseData caseData = event.getCaseData();
+        final CaseData caseData = event.getCaseData();
         final List<HearingOrder> orders = getOrders(caseData);
 
         if (orders.stream().map(HearingOrder::getType).noneMatch(AGREED_CMO::equals)) {
@@ -86,7 +86,7 @@ public class DraftOrdersUploadedEventHandler {
 
         CMOReadyToSealTemplate template = agreedCMOContentProvider.buildTemplate(hearing, judge, caseData);
 
-        String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
+        String email = courtService.getCourtEmail(caseData);
 
         notificationService.sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, template, caseData.getId()

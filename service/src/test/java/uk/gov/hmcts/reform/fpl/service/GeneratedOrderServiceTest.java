@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +57,9 @@ import java.util.stream.Stream;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
@@ -101,15 +104,21 @@ class GeneratedOrderServiceTest {
     private EPOGenerationService epoGenerationService;
     @MockBean
     private DischargeCareOrderGenerationService dischargeCareOrderGenerationService;
-
     @Autowired
     private Time time;
     @Autowired
     private GeneratedOrderService service;
+    @MockBean
+    private CourtService courtService;
 
     private static final DocumentReference testDocumentReference = testDocumentReference();
     private static final List<Element<Child>> CHILDREN_WITH_FINAL = List.of(childWithFinalOrderIssuedValue("Yes"));
     private static final List<Element<Child>> CHILDREN_WITHOUT_FINAL = List.of(childWithFinalOrderIssuedValue("No"));
+
+    @BeforeEach
+    void init() {
+        when(courtService.getCourtName(any())).thenReturn(DEFAULT_LA_COURT);
+    }
 
     @Nested
     class C21Tests {

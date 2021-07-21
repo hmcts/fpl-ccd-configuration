@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,12 @@ import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APP
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
@@ -61,6 +64,10 @@ class RespondentControllerNoCTest extends AbstractCallbackTest {
     private final CaseData caseDataBefore = CaseData.builder()
         .id(10L)
         .state(SUBMITTED)
+        .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+        .syntheticCaseSummary(SyntheticCaseSummary.builder()
+            .caseSummaryCourtName(COURT_NAME)
+            .build())
         .respondents1(respondents)
         .build();
 

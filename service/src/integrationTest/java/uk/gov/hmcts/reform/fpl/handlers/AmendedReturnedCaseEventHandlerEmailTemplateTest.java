@@ -33,7 +33,6 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAsse
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
-    HmctsAdminNotificationHandler.class,
     ReturnedCaseContentProvider.class,
     CaseUrlService.class,
     AmendedReturnedCaseEventHandler.class,
@@ -99,7 +98,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
@@ -126,7 +125,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                     + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 

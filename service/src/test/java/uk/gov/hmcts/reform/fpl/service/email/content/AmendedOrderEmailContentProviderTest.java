@@ -12,20 +12,17 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderAmendedNotifyData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
-
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {AmendedOrderEmailContentProvider.class, LookupTestConfig.class})
+@ContextConfiguration(classes = {AmendedOrderEmailContentProvider.class, LookupTestConfig.class, CourtService.class})
 class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
-
-    private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
 
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(Long.valueOf(CASE_REFERENCE))

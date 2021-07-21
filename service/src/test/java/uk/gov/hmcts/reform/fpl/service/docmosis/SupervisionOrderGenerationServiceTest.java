@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
@@ -46,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuf
 @ContextConfiguration(classes = {SupervisionOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
     FixedTimeConfiguration.class, ChildrenSmartSelector.class, ChildrenService.class, CaseDetailsHelper.class,
-    ChildSelectionUtils.class})
+    ChildSelectionUtils.class, CourtService.class})
 class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     @Autowired

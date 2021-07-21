@@ -20,8 +20,12 @@ async function setupScenario(I) {
 
 Scenario('local authority sees task list', async ({I, caseViewPage}) => {
   await setupScenario(I);
+
+  I.dontSeeEvent(config.applicationActions.selectCourt);
+
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
 
+  caseViewPage.checkTaskIsNoPresent(config.applicationActions.selectCourt);
   await caseViewPage.checkTaskIsFinished(config.applicationActions.changeCaseName);
   caseViewPage.checkTaskIsNotStarted(config.applicationActions.enterOrdersAndDirectionsNeeded);
   caseViewPage.checkTaskIsNotStarted(config.applicationActions.enterHearingNeeded);
