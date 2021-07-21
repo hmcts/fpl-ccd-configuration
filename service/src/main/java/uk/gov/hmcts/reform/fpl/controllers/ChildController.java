@@ -23,7 +23,8 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
-import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentativeSolicitorValidator;
+import uk.gov.hmcts.reform.fpl.service.children.validation.representative.ChildRepresentativeValidator;
+import uk.gov.hmcts.reform.fpl.service.children.validation.representative.MainRepresentativeValidator;
 
 import java.util.List;
 import java.util.Set;
@@ -47,9 +48,10 @@ public class ChildController extends CallbackController {
 
     private final ConfidentialDetailsService confidentialDetailsService;
     private final ChildRepresentationService childRepresentationService;
-    private final ChildRepresentativeSolicitorValidator validator;
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
+    private final ChildRepresentativeValidator childRepValidator;
+    private final MainRepresentativeValidator mainRepresentativeValidator;
     private final FeatureToggleService toggleService;
 
     @PostMapping("/about-to-start")
@@ -69,7 +71,7 @@ public class ChildController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> errors = validator.validateMainChildRepresentative(caseData);
+        List<String> errors = mainRepresentativeValidator.validate(caseData);
 
         if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
@@ -84,7 +86,7 @@ public class ChildController extends CallbackController {
     public CallbackResponse handleRepresentationValidationMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
 
-        List<String> errors = validator.validateChildRepresentationDetails(getCaseData(caseDetails));
+        List<String> errors = childRepValidator.validate(getCaseData(caseDetails));
 
         return respond(caseDetails, errors);
     }

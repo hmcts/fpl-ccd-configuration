@@ -1,10 +1,12 @@
-package uk.gov.hmcts.reform.fpl.service.children;
+package uk.gov.hmcts.reform.fpl.service.children.validation.representative;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 
@@ -16,39 +18,31 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-class ChildRepresentativeSolicitorValidatorTest {
+class ChildRepresentativeValidatorTest {
     private static final String EMAIL = "some@email.com";
     private static final RespondentSolicitor REPRESENTATIVE = mock(RespondentSolicitor.class);
+    private static final ChildParty PARTY = mock(ChildParty.class);
+    private static final Child CHILD = mock(Child.class);
+    private static final Element<Child> CHILD_ELEMENT = element(CHILD);
+    private static final List<Element<Child>> CHILDREN = List.of(CHILD_ELEMENT);
 
     private final ValidateEmailService emailValidator = mock(ValidateEmailService.class);
-    private final ChildRepresentativeSolicitorValidator underTest = new ChildRepresentativeSolicitorValidator(
+    private final ChildRepresentativeValidator underTest = new ChildRepresentativeValidator(
         emailValidator
     );
 
     @Test
-    void validateChildRepresentationDetailsWithAllUsingMainRepresentative() {
-        CaseData caseData = CaseData.builder()
-            .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveSameRepresentation("Yes")
-                .build())
-            .build();
-
-        assertThat(underTest.validateChildRepresentationDetails(caseData)).isEmpty();
-    }
-
-    @Test
     void validateChildRepresentationDetailsWithUsingMainRepresentative() {
         CaseData caseData = CaseData.builder()
-            .children1(wrapElements(mock(Child.class)))
+            .children1(CHILDREN)
             .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveSameRepresentation("No")
                 .childRepresentationDetails0(ChildRepresentationDetails.builder().useMainSolicitor("Yes").build())
                 .build())
             .build();
 
-        assertThat(underTest.validateChildRepresentationDetails(caseData)).isEmpty();
+        assertThat(underTest.validate(caseData)).isEmpty();
     }
 
     @Test
@@ -57,10 +51,12 @@ class ChildRepresentativeSolicitorValidatorTest {
         when(REPRESENTATIVE.hasFullName()).thenReturn(false);
         when(REPRESENTATIVE.getEmail()).thenReturn("");
 
+        when(CHILD.getParty()).thenReturn(PARTY);
+        when(PARTY.getFullName()).thenReturn("Dave Davidson");
+
         CaseData caseData = CaseData.builder()
-            .children1(wrapElements(mock(Child.class)))
+            .children1(CHILDREN)
             .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveSameRepresentation("No")
                 .childRepresentationDetails0(ChildRepresentationDetails.builder()
                     .useMainSolicitor("No")
                     .solicitor(REPRESENTATIVE)
@@ -68,10 +64,10 @@ class ChildRepresentativeSolicitorValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validateChildRepresentationDetails(caseData)).isEqualTo(List.of(
-            "Add the full name of child 1's legal representative",
-            "Add the email address of child 1's legal representative",
-            "Add the organisation details for child 1's legal representative"
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(
+            "Add the full name of Dave Davidson's representative",
+            "Add the email address of Dave Davidson's representative",
+            "Add the organisation details for Dave Davidson's representative"
         ));
     }
 
@@ -80,12 +76,15 @@ class ChildRepresentativeSolicitorValidatorTest {
         when(REPRESENTATIVE.hasOrganisationDetails()).thenReturn(true);
         when(REPRESENTATIVE.hasFullName()).thenReturn(true);
         when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
+
+        when(CHILD.getParty()).thenReturn(PARTY);
+        when(PARTY.getFullName()).thenReturn("Dave Davidson");
+
         when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.of("bad email"));
 
         CaseData caseData = CaseData.builder()
-            .children1(wrapElements(mock(Child.class)))
+            .children1(CHILDREN)
             .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveSameRepresentation("No")
                 .childRepresentationDetails0(ChildRepresentationDetails.builder()
                     .useMainSolicitor("No")
                     .solicitor(REPRESENTATIVE)
@@ -93,7 +92,7 @@ class ChildRepresentativeSolicitorValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validateChildRepresentationDetails(caseData)).isEqualTo(List.of("bad email"));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of("bad email"));
     }
 
     @Test
@@ -101,12 +100,15 @@ class ChildRepresentativeSolicitorValidatorTest {
         when(REPRESENTATIVE.hasOrganisationDetails()).thenReturn(true);
         when(REPRESENTATIVE.hasFullName()).thenReturn(true);
         when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
+
+        when(CHILD.getParty()).thenReturn(PARTY);
+        when(PARTY.getFullName()).thenReturn("Dave Davidson");
+
         when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.empty());
 
         CaseData caseData = CaseData.builder()
-            .children1(wrapElements(mock(Child.class)))
+            .children1(CHILDREN)
             .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveSameRepresentation("No")
                 .childRepresentationDetails0(ChildRepresentationDetails.builder()
                     .useMainSolicitor("No")
                     .solicitor(REPRESENTATIVE)
@@ -114,47 +116,6 @@ class ChildRepresentativeSolicitorValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validateChildRepresentationDetails(caseData)).isEmpty();
-    }
-
-    @Test
-    void validateMainChildRepresentativeNoMainRepresentative() {
-        CaseData caseData = CaseData.builder()
-            .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveRepresentation("No")
-                .build())
-            .build();
-
-        assertThat(underTest.validateMainChildRepresentative(caseData)).isEmpty();
-    }
-
-    @Test
-    void validateMainChildRepresentativeWithMainRepresentativeInvalidEmail() {
-        when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
-        when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.of("bad email"));
-
-        CaseData caseData = CaseData.builder()
-            .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveRepresentation("Yes")
-                .childrenMainRepresentative(REPRESENTATIVE)
-                .build())
-            .build();
-
-        assertThat(underTest.validateMainChildRepresentative(caseData)).isEqualTo(List.of("bad email"));
-    }
-
-    @Test
-    void validateMainChildRepresentativeWithMainRepresentativeValidEmail() {
-        when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
-        when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.empty());
-
-        CaseData caseData = CaseData.builder()
-            .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveRepresentation("Yes")
-                .childrenMainRepresentative(REPRESENTATIVE)
-                .build())
-            .build();
-
-        assertThat(underTest.validateMainChildRepresentative(caseData)).isEmpty();
+        assertThat(underTest.validate(caseData)).isEmpty();
     }
 }
