@@ -40,7 +40,8 @@ public class AdditionalApplicationsUploadedEventHandler {
 
             if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
                 notificationService
-                    .sendEmail(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
+                    .sendEmail(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData,
+                        caseData.getId());
             } else {
                 notificationService
                     .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
