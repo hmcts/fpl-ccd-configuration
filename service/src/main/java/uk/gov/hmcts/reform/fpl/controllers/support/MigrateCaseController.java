@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -47,7 +48,7 @@ public class MigrateCaseController extends CallbackController {
                 run3239(caseDetails);
                 break;
             default:
-                log.error("Unhandled migration");
+                log.error("Unhandled migration {}", migrationId);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -81,12 +82,16 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         validateFamilyManNumber("FPLA-3239", "DE21C50042", caseData);
 
-        Element<SupportingEvidenceBundle> correspondenceElement = caseData.getCorrespondenceDocuments().get(0);
-        if (isNotEmpty(caseData.getSubmittedForm()) && isNotEmpty(correspondenceElement)
-            && correspondenceElement.getValue().getName().equals("Redacted C110a")) {
-            caseDetails.getData().put("submittedForm", correspondenceElement.getValue().getDocument());
-            
-            caseData.getCorrespondenceDocuments().remove(0);
+        Optional<Element<SupportingEvidenceBundle>> correspondenceElement = caseData.getCorrespondenceDocuments()
+            .stream()
+            .filter(element -> "b1b7ef2d-b760-4961-aa5c-0ef9f5e40e95".equals(element.getId().toString()))
+            .findAny();
+
+        if (isNotEmpty(caseData.getSubmittedForm()) && correspondenceElement.isPresent()
+            && correspondenceElement.get().getValue().getName().equals("Redacted C110a")) {
+            caseDetails.getData().put("submittedForm", correspondenceElement.get().getValue().getDocument());
+
+            caseData.getCorrespondenceDocuments().remove(correspondenceElement.get());
             caseDetails.getData().put("correspondenceDocuments", caseData.getCorrespondenceDocuments());
         } else {
             throw new IllegalStateException(format("Case %s does not have C110a/redacted copy", caseDetails.getId()));
