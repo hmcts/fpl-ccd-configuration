@@ -158,7 +158,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.pdf');
 });
 
 Scenario('HMCTS admin edits supporting evidence document on Other application', async({I, caseViewPage, manageDocumentsEventPage}) => {
@@ -175,7 +175,7 @@ Scenario('HMCTS admin edits supporting evidence document on Other application', 
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.pdf');
 });
 
 Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage}) => {

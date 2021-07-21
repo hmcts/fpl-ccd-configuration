@@ -233,11 +233,20 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     void shouldNotSendApplicationsByPostWhenServingOthersIsToggledOff() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
 
+        additionalApplicationsUploadedEventHandler.sendAdditionalApplicationsByPost(
+            new AdditionalApplicationsUploadedEvent(CASE_DATA));
+
+        verifyNoInteractions(sendDocumentService);
+    }
+
+    @Test
+    void shouldNotBuildNotificationsToPartiesWhenServingOthersIsToggledOff() {
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
+
         additionalApplicationsUploadedEventHandler.notifyParties(new AdditionalApplicationsUploadedEvent(CASE_DATA));
 
         verifyNoInteractions(notificationService);
         verifyNoInteractions(representativeNotificationService);
-        verifyNoInteractions(sendDocumentService);
     }
 
     @ParameterizedTest
