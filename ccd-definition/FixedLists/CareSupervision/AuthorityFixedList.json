@@ -107,6 +107,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CAM",
+    "ListElement": "Cambridgeshire County Council",
+    "DisplayOrder": 48
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CAR",
     "ListElement": "Carmarthenshire County Council",
     "DisplayOrder": 50
