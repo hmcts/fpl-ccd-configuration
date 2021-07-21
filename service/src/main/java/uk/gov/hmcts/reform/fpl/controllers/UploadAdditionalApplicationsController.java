@@ -72,7 +72,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/populate-data/mid-event")
+    @PostMapping({"/get-fee/mid-event", "/populate-data/mid-event"})
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);

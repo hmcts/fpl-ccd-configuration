@@ -142,30 +142,23 @@ public class UploadAdditionalApplicationsService {
             getSupplementsBundle(defaultIfNull(temporaryC2Document.getSupplementsBundle(), emptyList()),
                 uploadedBy, uploadedTime);
 
+        var c2DocumentBundleBuilder = temporaryC2Document.toBuilder()
+            .id(UUID.randomUUID())
+            .applicantName(applicantName)
+            .author(uploadedBy)
+            .document(sealedDocument)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+            .supplementsBundle(updatedSupplementsBundle)
+            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+            .type(caseData.getC2Type());
+
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            return temporaryC2Document.toBuilder()
-                .id(UUID.randomUUID())
-                .applicantName(applicantName)
-                .author(uploadedBy)
+            return c2DocumentBundleBuilder
                 .others(selectedOthers)
                 .othersNotified(othersNotified)
-                .document(sealedDocument)
-                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-                .supplementsBundle(updatedSupplementsBundle)
-                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-                .type(caseData.getC2Type())
                 .build();
         } else {
-            return temporaryC2Document.toBuilder()
-                .id(UUID.randomUUID())
-                .applicantName(applicantName)
-                .author(uploadedBy)
-                .document(sealedDocument)
-                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-                .supplementsBundle(updatedSupplementsBundle)
-                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-                .type(caseData.getC2Type())
-                .build();
+            return c2DocumentBundleBuilder.build();
         }
     }
 
@@ -187,30 +180,23 @@ public class UploadAdditionalApplicationsService {
         List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
             temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime);
 
+        var otherApplicationsBundleBuilder = temporaryOtherApplicationsBundle.toBuilder()
+            .author(uploadedBy)
+            .id(UUID.randomUUID())
+            .applicantName(applicantName)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
+            .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
+            .document(sealedDocument)
+            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+            .supplementsBundle(updatedSupplementsBundle);
+
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            return temporaryOtherApplicationsBundle.toBuilder()
-                .author(uploadedBy)
-                .id(UUID.randomUUID())
-                .applicantName(applicantName)
+            return otherApplicationsBundleBuilder
                 .others(selectedOthers)
                 .othersNotified(othersNotified)
-                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-                .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-                .document(sealedDocument)
-                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-                .supplementsBundle(updatedSupplementsBundle)
                 .build();
         } else {
-            return temporaryOtherApplicationsBundle.toBuilder()
-                .author(uploadedBy)
-                .id(UUID.randomUUID())
-                .applicantName(applicantName)
-                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
-                .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-                .document(sealedDocument)
-                .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-                .supplementsBundle(updatedSupplementsBundle)
-                .build();
+            return otherApplicationsBundleBuilder.build();
         }
     }
 

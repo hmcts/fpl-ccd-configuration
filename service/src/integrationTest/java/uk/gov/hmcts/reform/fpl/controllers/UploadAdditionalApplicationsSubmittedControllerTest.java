@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -88,46 +89,46 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
+    void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() {
         postSubmittedEvent(buildCaseDetails(NO, YES));
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+                eq("admin@family-court.com"),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
 
-        verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("admin@family-court.com"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        );
-
-        verify(notificationClient, never()).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        );
+            verify(notificationClient, never()).sendEmail(
+                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE));
+        });
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
+    void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
+        checkUntil(() -> {
+            verify(notificationClient, never()).sendEmail(
+                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+                eq("admin@family-court.com"),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
 
-        verify(notificationClient, never()).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("admin@family-court.com"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        );
-
-        verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        );
+            checkUntil(() -> verify(notificationClient).sendEmail(
+                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            ));
+        });
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminAndPartiesnWhenAdditionalApplicationsBundleIsUploaded()
-        throws Exception {
+    void submittedEventShouldNotifyCtscAdminAndPartiesnWhenAdditionalApplicationsBundleIsUploaded() {
         final Map<String, Object> caseData = ImmutableMap.of(
             "caseLocalAuthority",
             LOCAL_AUTHORITY_1_CODE,
@@ -143,12 +144,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         postSubmittedEvent(createCase(caseData));
 
-        verify(notificationClient).sendEmail(
+        checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("admin@family-court.com"),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        );
+            eq(NOTIFICATION_REFERENCE)));
     }
 
     @Test

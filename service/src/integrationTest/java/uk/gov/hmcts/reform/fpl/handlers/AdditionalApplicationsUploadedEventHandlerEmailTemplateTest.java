@@ -29,19 +29,17 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
@@ -89,9 +87,6 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     private AdditionalApplicationsUploadedEventHandler underTest;
 
     @Autowired
-    private IdamClient idamClient;
-
-    @Autowired
     private RequestData requestData;
 
     @Autowired
@@ -101,12 +96,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     @MethodSource("subjectLineSource")
     void notifyAdmin(boolean toggle, String name) {
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
-
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoleNames()).build()
-        );
+        given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA));
 
@@ -140,7 +130,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
-        underTest.notifyParties(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + name)

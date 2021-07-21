@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
@@ -56,20 +57,8 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final FeatureToggleService featureToggleService;
 
     @EventListener
-    public void notifyParties(final AdditionalApplicationsUploadedEvent event) {
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            final CaseData caseData = event.getCaseData();
-            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
-
-            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-            List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
-            sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, othersSelected, notifyData);
-            sendNotificationToEmailServedRepresentatives(caseData, notifyData, othersSelected);
-        }
-    }
-
-    @EventListener
     @SuppressWarnings("unchecked")
+    @Async
     public void sendAdditionalApplicationsByPost(final AdditionalApplicationsUploadedEvent event) {
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             final CaseData caseData = event.getCaseData();
@@ -89,6 +78,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     }
 
     @EventListener
+    @Async
     public void notifyAdmin(final AdditionalApplicationsUploadedEvent event) {
         List<String> roles = new ArrayList<>(requestData.userRoles());
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
@@ -102,55 +92,73 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
-                                                                           List<Element<Other>> othersSelected,
-                                                                           NotifyData notifyData) {
-        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-            DIGITAL_SERVICE, caseData, othersSelected, element -> element.getValue().getEmail()
-        );
-        digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+    @EventListener
+    @Async
+    public void notifyLocalAuthority(final AdditionalApplicationsUploadedEvent event) {
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            final CaseData caseData = event.getCaseData();
+            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
 
-        sendToLocalAuthority(caseData, notifyData);
+            Collection<String> emails = inboxLookupService.getRecipients(
+                LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        representativeNotificationService.sendNotificationToRepresentatives(
-            caseData.getId(),
-            notifyData,
-            digitalRepresentatives,
-            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
-        );
+            notificationService.sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
+                emails,
+                notifyData,
+                caseData.getId().toString());
+        }
     }
 
-    private void sendToLocalAuthority(final CaseData caseData,
-                                      final NotifyData notifyData) {
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
-
-        notificationService.sendEmail(
-            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
-            emails,
-            notifyData,
-            caseData.getId().toString());
-    }
-
+    @EventListener
     @SuppressWarnings("unchecked")
-    private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
-                                                              final NotifyData notifyData,
-                                                              final List<Element<Other>> othersSelected) {
-        Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-            EMAIL, caseData, othersSelected, element -> element.getValue().getEmail()
-        );
-        emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+    @Async
+    public void notifyDigitalRepresentatives(final AdditionalApplicationsUploadedEvent event) {
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            final CaseData caseData = event.getCaseData();
+            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
 
-        if (!emailRepresentatives.isEmpty()) {
+            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+            List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
+
+            Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
+            Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+                DIGITAL_SERVICE, caseData, othersSelected, element -> element.getValue().getEmail());
+            digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
                 notifyData,
-                emailRepresentatives,
+                digitalRepresentatives,
                 INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
             );
+        }
+    }
+
+    @EventListener
+    @SuppressWarnings("unchecked")
+    @Async
+    public void notifyEmailServedRepresentatives(final AdditionalApplicationsUploadedEvent event) {
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            final CaseData caseData = event.getCaseData();
+            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
+
+            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+            List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
+
+            Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
+            Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+                EMAIL, caseData, othersSelected, element -> element.getValue().getEmail());
+            emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+
+            if (!emailRepresentatives.isEmpty()) {
+                representativeNotificationService.sendNotificationToRepresentatives(
+                    caseData.getId(),
+                    notifyData,
+                    emailRepresentatives,
+                    INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
+                );
+            }
         }
     }
 

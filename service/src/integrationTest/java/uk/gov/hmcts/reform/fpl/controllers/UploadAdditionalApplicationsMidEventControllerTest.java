@@ -130,7 +130,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-data");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-fee");
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
