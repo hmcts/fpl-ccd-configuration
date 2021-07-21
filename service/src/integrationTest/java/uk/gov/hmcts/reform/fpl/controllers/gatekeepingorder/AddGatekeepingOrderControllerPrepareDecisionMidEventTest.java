@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -325,7 +327,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             .dateOfIssue("<date will be added on issue>")
             .draftbackground("[userImage:draft-watermark.png]")
             .crest("[userImage:crest.png]")
-            .complianceDeadline("18 January 2022")
+            .complianceDeadline(formatLocalDateToString(dateNow().plusWeeks(26), FormatStyle.LONG))
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Judy")
                 .legalAdvisorName("")
