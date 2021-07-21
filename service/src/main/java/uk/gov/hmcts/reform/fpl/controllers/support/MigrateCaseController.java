@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -82,16 +81,18 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         validateFamilyManNumber("FPLA-3239", "DE21C50042", caseData);
 
-        Optional<Element<SupportingEvidenceBundle>> correspondenceElement = caseData.getCorrespondenceDocuments()
+        Element<SupportingEvidenceBundle> correspondenceElement = caseData.getCorrespondenceDocuments()
             .stream()
             .filter(element -> "b1b7ef2d-b760-4961-aa5c-0ef9f5e40e95".equals(element.getId().toString()))
-            .findAny();
+            .findAny()
+            .orElseThrow(() -> new IllegalStateException(
+                format("Case %s does not contain redacted copy in correspondence collection", caseDetails.getId())));
 
-        if (isNotEmpty(caseData.getSubmittedForm()) && correspondenceElement.isPresent()
-            && correspondenceElement.get().getValue().getName().equals("Redacted C110a")) {
-            caseDetails.getData().put("submittedForm", correspondenceElement.get().getValue().getDocument());
+        if (isNotEmpty(caseData.getSubmittedForm())
+            && "Redacted C110a".equals(correspondenceElement.getValue().getName())) {
+            caseDetails.getData().put("submittedForm", correspondenceElement.getValue().getDocument());
 
-            caseData.getCorrespondenceDocuments().remove(correspondenceElement.get());
+            caseData.getCorrespondenceDocuments().remove(correspondenceElement);
             caseDetails.getData().put("correspondenceDocuments", caseData.getCorrespondenceDocuments());
         } else {
             throw new IllegalStateException(format("Case %s does not have C110a/redacted copy", caseDetails.getId()));
