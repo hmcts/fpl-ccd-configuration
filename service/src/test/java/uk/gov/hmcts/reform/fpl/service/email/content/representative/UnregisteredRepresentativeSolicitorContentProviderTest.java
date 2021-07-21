@@ -35,8 +35,9 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
 
     private final WithSolicitor representable = mock(WithSolicitor.class);
     private final Party party = mock(Party.class);
+    private final WithSolicitor representable2 = mock(WithSolicitor.class);
+    private final Party party2 = mock(Party.class);
     private final CaseData caseData = mock(CaseData.class);
-
 
     @MockBean
     private EmailNotificationHelper helper;
@@ -71,12 +72,29 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
     }
 
     @Test
-    void buildContentWithEmptyRespondentName() {
+    void buildContentForMultipleRepresentables() {
+        when(representable.toParty()).thenReturn(party);
+        when(party.getFullName()).thenReturn("David Jones");
+
+        when(representable2.toParty()).thenReturn(party2);
+        when(party2.getFullName()).thenReturn("Daisy Jones");
+
+        NotifyData expectedTemplateData = getExpectedTemplateData("David Jones, Daisy Jones");
+
+        assertThat(underTest.buildContent(caseData, List.of(representable, representable2)))
+            .isEqualTo(expectedTemplateData);
+    }
+
+    @Test
+    void buildContentWithEmptyRepresentableName() {
         when(representable.toParty()).thenReturn(null);
+        when(representable2.toParty()).thenReturn(party2);
+        when(party2.getFullName()).thenReturn("");
 
         NotifyData expectedTemplateData = getExpectedTemplateData(EMPTY);
 
-        assertThat(underTest.buildContent(caseData, representable)).isEqualTo(expectedTemplateData);
+        assertThat(underTest.buildContent(caseData, List.of(representable, representable2)))
+            .isEqualTo(expectedTemplateData);
     }
 
     private NotifyData getExpectedTemplateData(String expectedName) {

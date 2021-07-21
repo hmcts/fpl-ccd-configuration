@@ -11,7 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
-import static java.util.Objects.isNull;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
@@ -25,17 +28,30 @@ public class RegisteredRepresentativeSolicitorContentProvider {
 
     public <R extends WithSolicitor> RegisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData,
                                                                                             R representable) {
-        Party party = representable.toParty();
+        return buildContent(caseData, representable.getSolicitor(), List.of(representable));
+    }
+
+    public <R extends WithSolicitor> RegisteredRepresentativeSolicitorTemplate buildContent(
+        CaseData caseData, RespondentSolicitor solicitor, List<R> representables) {
 
         return RegisteredRepresentativeSolicitorTemplate.builder()
-            .salutation(getSalutation(representable.getSolicitor()))
-            .clientFullName(isNull(party) ? EMPTY : party.getFullName())
+            .salutation(getSalutation(solicitor))
+            .clientFullName(clientNames(representables))
             .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .ccdNumber(caseData.getId().toString())
             .caseName(caseData.getCaseName())
             .manageOrgLink(MANAGE_ORG_URL)
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();
+    }
+
+    private <R extends WithSolicitor> String clientNames(List<R> clients) {
+        return clients.stream()
+            .map(WithSolicitor::toParty)
+            .filter(Objects::nonNull)
+            .map(Party::getFullName)
+            .filter(name -> !name.isBlank())
+            .collect(Collectors.joining(", "));
     }
 
     private String getSalutation(RespondentSolicitor representative) {

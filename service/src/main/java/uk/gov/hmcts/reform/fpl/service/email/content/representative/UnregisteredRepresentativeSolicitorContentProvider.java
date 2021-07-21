@@ -10,8 +10,10 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
 @Component
@@ -22,14 +24,27 @@ public class UnregisteredRepresentativeSolicitorContentProvider {
 
     public <R extends WithSolicitor> UnregisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData,
                                                                                               R representable) {
-        Party party = representable.toParty();
+        return buildContent(caseData, List.of(representable));
+    }
+
+    public <R extends WithSolicitor> UnregisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData,
+                                                                                              List<R> representables) {
 
         return UnregisteredRepresentativeSolicitorTemplate.builder()
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
             .localAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
-            .clientFullName(isNull(party) ? EMPTY : party.getFullName())
+            .clientFullName(clientNames(representables))
             .caseName(caseData.getCaseName())
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();
+    }
+
+    private <R extends WithSolicitor> String clientNames(List<R> clients) {
+        return clients.stream()
+            .map(WithSolicitor::toParty)
+            .filter(Objects::nonNull)
+            .map(Party::getFullName)
+            .filter(name -> !name.isBlank())
+            .collect(Collectors.joining(", "));
     }
 }

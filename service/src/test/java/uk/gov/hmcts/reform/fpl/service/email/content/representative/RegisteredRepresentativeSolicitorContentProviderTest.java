@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -23,7 +22,10 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
+import static java.lang.String.join;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,8 +42,14 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
     private static final String CASE_NAME = "Test case1";
 
     private final WithSolicitor representable = mock(WithSolicitor.class);
+    private final WithSolicitor representable2 = mock(WithSolicitor.class);
+    private final WithSolicitor representable3 = mock(WithSolicitor.class);
     private final Party party = mock(Party.class);
+    private final Party party2 = mock(Party.class);
     private final CaseData caseData = mock(CaseData.class);
+    private final RespondentSolicitor solicitor = mock(RespondentSolicitor.class);
+    private final RespondentSolicitor solicitor2 = mock(RespondentSolicitor.class);
+
 
     @MockBean
     private EmailNotificationHelper helper;
@@ -67,65 +75,73 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
     @ParameterizedTest
     @MethodSource("representativeNameSource")
     void shouldReturnExpectedMapWithRepresentativeNameAndLocalAuthorityName(String firstName, String lastName,
-                                                                            String expectedFullName) {
-        RespondentSolicitor solicitor = RespondentSolicitor.builder()
-            .firstName(firstName)
-            .lastName(lastName)
-            .organisation(Organisation.builder().organisationID("123").build())
-            .build();
+                                                                            String expectedSalutation) {
 
         when(representable.toParty()).thenReturn(party);
         when(party.getFullName()).thenReturn(FIRST_NAME + " " + LAST_NAME);
         when(representable.getSolicitor()).thenReturn(solicitor);
+        when(solicitor.getFullName())
+            .thenReturn(join(" ", defaultString(firstName), defaultString(lastName)).trim());
 
-        RegisteredRepresentativeSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate(
-            expectedFullName, String.format("%s %s", FIRST_NAME, LAST_NAME)
-        );
-
-        assertThat(underTest.buildContent(caseData, representable)).isEqualTo(expectedTemplate);
+        assertThat(underTest.buildContent(caseData, representable))
+            .isEqualTo(buildRegisteredSolicitorTemplate(expectedSalutation, format("%s %s", FIRST_NAME, LAST_NAME)));
     }
 
     @Test
-    void shouldReturnExpectedMapWithEmptyRespondentName() {
-        RespondentSolicitor solicitor = RespondentSolicitor.builder()
-            .firstName("John")
-            .lastName("Smith")
-            .organisation(Organisation.builder().organisationID("123").build())
-            .build();
-
+    void shouldReturnMultipleRepresentatives() {
         when(representable.getSolicitor()).thenReturn(solicitor);
+        when(representable2.getSolicitor()).thenReturn(solicitor2);
+        when(representable3.getSolicitor()).thenReturn(solicitor);
+
+        when(solicitor.getFullName()).thenReturn("John Smith");
+
+        when(representable.toParty()).thenReturn(party);
+        when(representable3.toParty()).thenReturn(party2);
+
+        when(party.getFullName()).thenReturn("Dave Davidson");
+        when(party2.getFullName()).thenReturn("Daisy Davidson");
+
+        assertThat(underTest.buildContent(caseData, solicitor, List.of(representable, representable3)))
+            .isEqualTo(buildRegisteredSolicitorTemplate("Dear John Smith", "Dave Davidson, Daisy Davidson"));
+    }
+
+    @Test
+    void shouldReturnExpectedMapWithEmptyRepresentableName() {
         when(representable.toParty()).thenReturn(null);
+        when(representable2.toParty()).thenReturn(party2);
+        when(party2.getFullName()).thenReturn("");
 
-        RegisteredRepresentativeSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate(
-            "Dear John Smith", ""
-        );
+        when(solicitor.getFullName()).thenReturn("John Smith");
 
-        assertThat(underTest.buildContent(caseData, representable)).isEqualTo(expectedTemplate);
+        assertThat(underTest.buildContent(caseData, solicitor, List.of(representable, representable2)))
+            .isEqualTo(buildRegisteredSolicitorTemplate("Dear John Smith", EMPTY));
     }
 
     private static Stream<Arguments> representativeNameSource() {
-        final String salutation = "Dear ";
-        final String expectedLastName = salutation + REPRESENTATIVE_LAST_NAME;
-        final String expectedFirstName = salutation + REPRESENTATIVE_FIRST_NAME;
-        final String expectedFullName = salutation + REPRESENTATIVE_FIRST_NAME + " " + REPRESENTATIVE_LAST_NAME;
+        final String salutationPrefix = "Dear ";
+        final String expectedSalutationLastName = salutationPrefix + REPRESENTATIVE_LAST_NAME;
+        final String expectedSalutationFirstName = salutationPrefix + REPRESENTATIVE_FIRST_NAME;
+        final String expectedSalutationFullName = format(
+            "%s%s %s", salutationPrefix, REPRESENTATIVE_FIRST_NAME, REPRESENTATIVE_LAST_NAME
+        );
 
         return Stream.of(
-            Arguments.of(null, REPRESENTATIVE_LAST_NAME, expectedLastName),
-            Arguments.of(EMPTY, REPRESENTATIVE_LAST_NAME, expectedLastName),
-            Arguments.of(REPRESENTATIVE_FIRST_NAME, null, expectedFirstName),
-            Arguments.of(REPRESENTATIVE_FIRST_NAME, EMPTY, expectedFirstName),
+            Arguments.of(null, REPRESENTATIVE_LAST_NAME, expectedSalutationLastName),
+            Arguments.of(EMPTY, REPRESENTATIVE_LAST_NAME, expectedSalutationLastName),
+            Arguments.of(REPRESENTATIVE_FIRST_NAME, null, expectedSalutationFirstName),
+            Arguments.of(REPRESENTATIVE_FIRST_NAME, EMPTY, expectedSalutationFirstName),
             Arguments.of(null, null, EMPTY),
             Arguments.of(EMPTY, EMPTY, EMPTY),
-            Arguments.of(REPRESENTATIVE_FIRST_NAME, REPRESENTATIVE_LAST_NAME, expectedFullName)
+            Arguments.of(REPRESENTATIVE_FIRST_NAME, REPRESENTATIVE_LAST_NAME, expectedSalutationFullName)
         );
     }
 
-    private RegisteredRepresentativeSolicitorTemplate buildRegisteredSolicitorTemplate(String expectedSalutation,
-                                                                                       String expectedClientName) {
+    private RegisteredRepresentativeSolicitorTemplate buildRegisteredSolicitorTemplate(String salutation,
+                                                                                       String clientName) {
         return RegisteredRepresentativeSolicitorTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_NAME)
-            .salutation(expectedSalutation)
-            .clientFullName(expectedClientName)
+            .salutation(salutation)
+            .clientFullName(clientName)
             .manageOrgLink(MANAGE_ORG_LINK)
             .ccdNumber(CASE_REFERENCE.toString())
             .caseName(CASE_NAME)

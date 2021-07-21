@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
@@ -15,6 +16,9 @@ import uk.gov.hmcts.reform.fpl.service.email.content.representative.Unregistered
 import uk.gov.hmcts.reform.fpl.service.representative.diff.PartyRepresentativeDiffCalculator;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
@@ -37,11 +41,17 @@ public class ChildrenUpdatedEventHandler {
             caseData.getAllChildren(), caseDataBefore.getAllChildren()
         );
 
-        children.forEach(child -> {
-            NotifyData notifyData = registeredContentProvider.buildContent(caseData, child);
+        Set<RespondentSolicitor> representatives = getRepresentatives(children);
+
+        representatives.forEach(representative -> {
+            List<Child> childrenForRepresentative = getChildrenForRepresentative(children, representative);
+
+            NotifyData notifyData = registeredContentProvider.buildContent(
+                caseData, representative, childrenForRepresentative
+            );
 
             notificationService.sendEmail(
-                REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, child.getSolicitor().getEmail(), notifyData, caseData.getId()
+                REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, representative.getEmail(), notifyData, caseData.getId()
             );
         });
     }
@@ -56,14 +66,26 @@ public class ChildrenUpdatedEventHandler {
             caseData.getAllChildren(), caseDataBefore.getAllChildren()
         );
 
-        children.forEach(child -> {
-            NotifyData notifyData = unregisteredContentProvider.buildContent(caseData, child);
+        Set<RespondentSolicitor> representatives = getRepresentatives(children);
+
+        representatives.forEach(representative -> {
+            List<Child> childrenForRepresentative = getChildrenForRepresentative(children, representative);
+
+            NotifyData notifyData = unregisteredContentProvider.buildContent(caseData, childrenForRepresentative);
 
             notificationService.sendEmail(
-                UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, child.getSolicitor().getEmail(), notifyData,
-                caseData.getId()
+                UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE, representative.getEmail(), notifyData, caseData.getId()
             );
         });
     }
 
+    private Set<RespondentSolicitor> getRepresentatives(List<Child> children) {
+        return children.stream().map(Child::getSolicitor).collect(Collectors.toSet());
+    }
+
+    private List<Child> getChildrenForRepresentative(List<Child> children, RespondentSolicitor representative) {
+        return children.stream()
+            .filter(child -> Objects.equals(child.getSolicitor(), representative))
+            .collect(Collectors.toList());
+    }
 }
