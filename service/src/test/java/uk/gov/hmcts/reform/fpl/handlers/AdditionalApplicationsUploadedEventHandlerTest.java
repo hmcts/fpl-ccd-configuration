@@ -6,6 +6,9 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,6 +46,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
@@ -125,6 +129,12 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList(DIGITAL_REP_1, DIGITAL_REP_2));
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
     private static final List<Element<Other>> SELECTED_OTHERS = List.of(element(mock(Other.class)));
+    public static final DocumentReference C2_DOCUMENT = testDocumentReference();
+    public static final DocumentReference OTHER_APPLICATION_DOCUMENT = testDocumentReference();
+    public static final DocumentReference SUPPLEMENT_1 = testDocumentReference();
+    public static final DocumentReference SUPPLEMENT_2 = testDocumentReference();
+    public static final DocumentReference SUPPORTING_DOCUMENT_1 = testDocumentReference();
+    public static final DocumentReference SUPPORTING_DOCUMENT_2 = testDocumentReference();
 
     final String subjectLine = "Lastname, SACCCCCCCC5676576567";
     AdditionalApplicationsUploadedTemplate additionalApplicationsParameters =
@@ -144,7 +154,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyPartiesOnAdditionalApplicationsUpload() {
+    void shouldNotifyPartiesOnAdditionalApplicationsUploadWhenServingOthersIsToggledOn() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
         given(CASE_DATA.getAdditionalApplicationsBundle())
@@ -184,7 +194,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenServingOthersIsToggledOn() {
+    void shouldNotBuildNotificationTemplateDataForEmailRepsWhenServingOthersIsToggledOnAndEmailRepsAreEmpty() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
         given(CASE_DATA.getAdditionalApplicationsBundle())
@@ -227,40 +237,21 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         verifyNoInteractions(notificationService);
         verifyNoInteractions(representativeNotificationService);
+        verifyNoInteractions(sendDocumentService);
     }
 
-    @Test
+    @ParameterizedTest
     @SuppressWarnings("unchecked")
-    void shouldSendUploadedAdditionalApplicationsByPost() {
+    @MethodSource("applicationDataParams")
+    void shouldSendUploadedAdditionalApplicationsByPost(
+        AdditionalApplicationsBundle additionalApplicationsBundle,
+        List<DocumentReference> documents) {
         final Representative representative1 = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
         final RespondentParty otherRespondent = mock(RespondentParty.class);
 
-        final DocumentReference c2Document = testDocumentReference();
-        final DocumentReference otherApplicationDocument = testDocumentReference();
-        final DocumentReference supplement1 = testDocumentReference();
-        final DocumentReference supplement2 = testDocumentReference();
-        final DocumentReference supportingDocument1 = testDocumentReference();
-        final DocumentReference supportingDocument2 = testDocumentReference();
-
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
-
-        given(CASE_DATA.getAdditionalApplicationsBundle())
-            .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .document(c2Document)
-                    .supplementsBundle(wrapElements(Supplement.builder().document(supplement1).build()))
-                    .supportingEvidenceBundle(
-                        wrapElements(SupportingEvidenceBundle.builder().document(supportingDocument1).build()))
-                    .others(SELECTED_OTHERS).build())
-                .otherApplicationsBundle(OtherApplicationsBundle.builder()
-                    .document(otherApplicationDocument)
-                    .supplementsBundle(wrapElements(Supplement.builder().document(supplement2).build()))
-                    .supportingEvidenceBundle(
-                        wrapElements(SupportingEvidenceBundle.builder().document(supportingDocument2).build()))
-                    .others(SELECTED_OTHERS).build())
-                .build()));
-
+        given(CASE_DATA.getAdditionalApplicationsBundle()).willReturn(wrapElements(additionalApplicationsBundle));
         given(sendDocumentService.getStandardRecipients(CASE_DATA))
             .willReturn(List.of(representative1, representative2));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
@@ -271,13 +262,35 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         additionalApplicationsUploadedEventHandler.sendAdditionalApplicationsByPost(
             new AdditionalApplicationsUploadedEvent(CASE_DATA));
 
-        verify(sendDocumentService).sendDocuments(
-            CASE_DATA,
-            List.of(c2Document, supplement1, supportingDocument1,
-                otherApplicationDocument, supplement2, supportingDocument2),
-            List.of(representative2, otherRespondent));
-
+        verify(sendDocumentService).sendDocuments(CASE_DATA, documents, List.of(representative2, otherRespondent));
         verifyNoInteractions(notificationService);
+    }
+
+    private static Stream<Arguments> applicationDataParams() {
+        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+            .document(C2_DOCUMENT)
+            .supplementsBundle(wrapElements(Supplement.builder().document(SUPPLEMENT_1).build()))
+            .supportingEvidenceBundle(
+                wrapElements(SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_1).build()))
+            .others(SELECTED_OTHERS).build();
+
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .document(OTHER_APPLICATION_DOCUMENT)
+            .supplementsBundle(wrapElements(Supplement.builder().document(SUPPLEMENT_2).build()))
+            .supportingEvidenceBundle(
+                wrapElements(SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_2).build()))
+            .others(SELECTED_OTHERS).build();
+
+        return Stream.of(
+            Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(c2DocumentBundle)
+                    .otherApplicationsBundle(otherApplicationsBundle).build(),
+                List.of(C2_DOCUMENT, SUPPLEMENT_1, SUPPORTING_DOCUMENT_1,
+                    OTHER_APPLICATION_DOCUMENT, SUPPLEMENT_2, SUPPORTING_DOCUMENT_2)),
+            Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(c2DocumentBundle).build(),
+                List.of(C2_DOCUMENT, SUPPLEMENT_1, SUPPORTING_DOCUMENT_1)),
+            Arguments.of(AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(otherApplicationsBundle).build(),
+                List.of(OTHER_APPLICATION_DOCUMENT, SUPPLEMENT_2, SUPPORTING_DOCUMENT_2)));
     }
 
     @Test

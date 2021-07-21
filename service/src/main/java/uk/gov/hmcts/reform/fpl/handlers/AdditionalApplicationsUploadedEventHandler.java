@@ -185,10 +185,8 @@ public class AdditionalApplicationsUploadedEventHandler {
     private List<Element<Other>> getOthersSelected(final AdditionalApplicationsBundle lastBundle) {
         if (lastBundle.getC2DocumentBundle() != null) {
             return defaultIfNull(lastBundle.getC2DocumentBundle().getOthers(), List.of());
-        } else if (lastBundle.getOtherApplicationsBundle() != null) {
-            return defaultIfNull(lastBundle.getOtherApplicationsBundle().getOthers(), List.of());
         }
 
-        return List.of();
+        return defaultIfNull(lastBundle.getOtherApplicationsBundle().getOthers(), List.of());
     }
 }
