@@ -49,7 +49,7 @@ module.exports = {
     I.click(`${this.fields.allOthers.group}_${option}`);
 
     indexes.forEach((selectorIndex) => {
-      I.checkOption(this.fields.otherSelector.selector(selectorIndex));
+      I.checkOption(this.fields.othersToNotifySelector.selector(selectorIndex));
     });
   },
 
