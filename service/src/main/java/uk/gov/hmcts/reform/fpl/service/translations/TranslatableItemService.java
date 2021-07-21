@@ -105,15 +105,4 @@ public class TranslatableItemService {
             .orElseThrow(() -> new UnsupportedOperationException("Could not find a translated item"));
     }
 
-    public void notifyToParties(CaseData caseData, Element<? extends TranslatableItem> translatedItem) {
-
-        providers.getAll().stream()
-            .filter(provider -> provider.accept(caseData, translatedItem.getId()))
-            .findFirst()
-            .orElseThrow(() -> new UnsupportedOperationException(String.format(
-                "Could not find action to translate item with id \"%s\"",
-                translatedItem.getId())))
-            .notifyParties(caseData, translatedItem);
-    }
-
 }

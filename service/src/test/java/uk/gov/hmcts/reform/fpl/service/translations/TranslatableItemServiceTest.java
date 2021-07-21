@@ -26,11 +26,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -321,50 +317,6 @@ class TranslatableItemServiceTest {
 
             assertThat(exception.getMessage()).isEqualTo("Could not find a translated item");
         }
-    }
-
-    @Nested
-    class NotifyToParties {
-
-        @Test
-        void notifyMatched() {
-            when(providers.getAll()).thenReturn(List.of(provider1, provider2));
-            when(provider1.accept(CASE_DATA, UUID_ID_1)).thenReturn(false);
-            when(provider2.accept(CASE_DATA, UUID_ID_1)).thenReturn(true);
-
-            underTest.notifyToParties(CASE_DATA, element(UUID_ID_1, translatableItem1));
-
-            verify(provider2).notifyParties(CASE_DATA, element(UUID_ID_1, translatableItem1));
-            verify(provider1, never()).notifyParties(any(), any());
-        }
-
-        @Test
-        void notifyFirstMatchedIfMultiple() {
-            when(providers.getAll()).thenReturn(List.of(provider1, provider2));
-            when(provider1.accept(CASE_DATA, UUID_ID_1)).thenReturn(true);
-            when(provider2.accept(CASE_DATA, UUID_ID_1)).thenReturn(true);
-
-            underTest.notifyToParties(CASE_DATA, element(UUID_ID_1, translatableItem1));
-
-            verify(provider1).notifyParties(CASE_DATA, element(UUID_ID_1, translatableItem1));
-            verifyNoInteractions(provider2);
-        }
-
-        @Test
-        void exceptionIfNoMatched() {
-            when(providers.getAll()).thenReturn(List.of(provider1, provider2));
-            when(provider1.accept(CASE_DATA, UUID_ID_1)).thenReturn(false);
-            when(provider2.accept(CASE_DATA, UUID_ID_1)).thenReturn(false);
-
-            UnsupportedOperationException exception = assertThrows(
-                UnsupportedOperationException.class,
-                () -> underTest.notifyToParties(CASE_DATA, element(UUID_ID_1, translatableItem1)));
-
-            assertThat(exception.getMessage()).isEqualTo(
-                "Could not find action to translate item with id \"" + UUID_ID_1 + "\""
-            );
-        }
-
     }
 
     private DynamicList selectedId(UUID uuid) {
