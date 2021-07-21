@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.representative;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -44,7 +45,7 @@ public class UnregisteredRepresentativeSolicitorContentProvider {
             .map(WithSolicitor::toParty)
             .filter(Objects::nonNull)
             .map(Party::getFullName)
-            .filter(name -> !name.isBlank())
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.joining(", "));
     }
 }

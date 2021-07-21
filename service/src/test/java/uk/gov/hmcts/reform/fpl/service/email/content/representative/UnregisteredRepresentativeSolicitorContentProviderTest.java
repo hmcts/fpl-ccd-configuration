@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
