@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.TranslationUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
 
 @Api
@@ -62,6 +64,16 @@ public class UploadTranslationsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        publishEvent(new TranslationUploadedEvent(getCaseData(callbackRequest)));
+        Element<? extends TranslatableItem> lastTranslatedItem =
+            translatableItemService.getLastTranslatedItem(getCaseData(callbackRequest));
+
+        TranslatableItem translatableItem = lastTranslatedItem.getValue();
+
+        publishEvent(new TranslationUploadedEvent(
+            getCaseData(callbackRequest),
+            translatableItem.getTranslatedDocument(),
+            translatableItem.getModifiedItemType(),
+            translatableItem.getSelectedOthers()
+        ));
     }
 }

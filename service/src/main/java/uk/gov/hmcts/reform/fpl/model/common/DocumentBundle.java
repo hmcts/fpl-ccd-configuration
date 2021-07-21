@@ -5,9 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,7 +39,19 @@ public class DocumentBundle implements TranslatableItem {
     }
 
     @Override
+    @JsonIgnore
+    public String getModifiedItemType() {
+        return ModifiedOrderType.NOTICE_OF_PROCEEDINGS.getLabel();
+    }
+
+    @Override
     public LocalDateTime translationUploadDateTime() {
         return translationUploadDateTime;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Element<Other>> getSelectedOthers() {
+        return new ArrayList<>();
     }
 }

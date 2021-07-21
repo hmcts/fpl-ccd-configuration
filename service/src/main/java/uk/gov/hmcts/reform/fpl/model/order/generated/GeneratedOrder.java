@@ -163,7 +163,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
 
     @JsonIgnore
     @Override
-    public String getAmendedOrderType() {
+    public String getModifiedItemType() {
         return type;
     }
 

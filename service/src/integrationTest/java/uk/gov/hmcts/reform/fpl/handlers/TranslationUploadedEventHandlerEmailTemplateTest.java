@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.TranslationUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ContextConfiguration(classes = {
-    AmendedOrderEventHandler.class,
+    TranslationUploadedEventHandler.class,
     AmendedOrderEmailContentProvider.class, TranslatedItemEmailContentProvider.class,
     ModifiedDocumentCommonEventHandler.class, ModifiedItemEmailContentProviderStrategy.class,
     EmailNotificationHelper.class, CaseUrlService.class, RepresentativeNotificationService.class
@@ -52,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
     @MockBean(OtherRecipientsInbox.class),
     @MockBean(FeatureToggleService.class)
 })
-class OrderAmendedEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);
     private static final DocumentReference ORDER_DOCUMENT = mock(DocumentReference.class);
     private static final String BINARY_URL = "/documents/some-random-string/binary";
@@ -79,7 +79,7 @@ class OrderAmendedEventHandlerEmailTemplateTest extends EmailTemplateTest {
         .build();
 
     @Autowired
-    private AmendedOrderEventHandler underTest;
+    private TranslationUploadedEventHandler underTest;
 
     @BeforeEach
     void mocks() {
@@ -89,73 +89,53 @@ class OrderAmendedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     }
 
     @Test
-    void notifyParties() {
+    void notifyLocalAuthority() {
         List<Element<Other>> selectedOthers = wrapElements(testOther("Other 1"));
-        underTest.notifyLocalAuthority(new AmendedOrderEvent(CASE_DATA, ORDER_DOCUMENT, "case management order",
-            selectedOthers));
-        underTest.notifyDigitalRepresentatives(new AmendedOrderEvent(CASE_DATA, ORDER_DOCUMENT, "case management order",
-            selectedOthers));
-        underTest.notifyEmailRepresentatives(new AmendedOrderEvent(CASE_DATA, ORDER_DOCUMENT, "case management order",
+
+        underTest.notifyLocalAuthority(new TranslationUploadedEvent(CASE_DATA, ORDER_DOCUMENT, "case management order",
             selectedOthers));
 
-        SendEmailResponse laResponse = response();
-        SendEmailResponse digitalRepResponse = response();
-        SendEmailResponse emailRepResponse = response();
+        assertResponse(response());
 
+    }
+
+    @Test
+    void notifyDigitalRepresentatives() {
+        List<Element<Other>> selectedOthers = wrapElements(testOther("Other 1"));
+
+        underTest.notifyDigitalRepresentatives(new TranslationUploadedEvent(CASE_DATA,
+            ORDER_DOCUMENT,
+            "case management order",
+            selectedOthers));
+
+        assertResponse(response());
+
+    }
+
+    @Test
+    void notifyEmailRepresentatives() {
+        List<Element<Other>> selectedOthers = wrapElements(testOther("Other 1"));
+
+        underTest.notifyEmailRepresentatives(new TranslationUploadedEvent(CASE_DATA,
+            ORDER_DOCUMENT,
+            "case management order",
+            selectedOthers));
+
+        assertResponse(response());
+    }
+
+    private void assertResponse(SendEmailResponse laResponse) {
         assertThat(laResponse)
-            .hasSubject("case management order amended, " + CHILD_LAST_NAME)
+            .hasSubject("Welsh translation for case management order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
-                .line("The case management order has been amended and reissued by " + COURT_NAME + " in the case:")
+                .line("The Welsh translation for case management order has been issued by " + COURT_NAME)
                 .line()
                 .callout("Jones, FAM_NUM")
                 .line()
-                .line("You should now check the order and do any required tasks or case updates.")
+                .line("You should now check the document and do any required tasks or case updates.")
                 .line()
-                .line("You can review the order by:")
-                .line()
-                .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
-                .line()
-                .line("HM Courts & Tribunal Service")
-                .line()
-                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                    + "contactfpl@justice.gov.uk")
-            );
-
-        assertThat(digitalRepResponse)
-            .hasSubject("case management order amended, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("The case management order has been amended and reissued by " + COURT_NAME + " in the case:")
-                .line()
-                .callout("Jones, FAM_NUM")
-                .line()
-                .line("You should now check the order and do any required tasks or case updates.")
-                .line()
-                .line("You can review the order by:")
-                .line()
-                .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
-                .line()
-                .line("HM Courts & Tribunal Service")
-                .line()
-                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                    + "contactfpl@justice.gov.uk")
-            );
-
-        assertThat(emailRepResponse)
-            .hasSubject("case management order amended, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("The case management order has been amended and reissued by " + COURT_NAME + " in the case:")
-                .line()
-                .callout("Jones, FAM_NUM")
-                .line()
-                .line("You should now check the order and do any required tasks or case updates.")
-                .line()
-                .line("You can review the order by:")
-                .line()
-                .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
-                .line()
+                .line("You can review the order by signing into http://fake-url/cases/case-details/12345")
+                .lines(2)
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "

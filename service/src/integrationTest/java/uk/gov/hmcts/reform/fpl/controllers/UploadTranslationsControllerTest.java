@@ -196,8 +196,6 @@ class UploadTranslationsControllerTest extends AbstractCallbackTest {
                         .build())
                     .build()
                 ))).build());
-
-        // TODO: assert notification
     }
 
 

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -90,6 +90,12 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
         return translationUploadDateTime;
     }
 
+    @JsonIgnore
+    @Override
+    public DocumentReference getTranslatedDocument() {
+        return translatedOrder;
+    }
+
     @Override
     public String asLabel() {
         if (type == C21) {
@@ -123,8 +129,8 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
 
     @JsonIgnore
     @Override
-    public String getAmendedOrderType() {
-        return AmendedOrderType.CASE_MANAGEMENT_ORDER.getLabel();
+    public String getModifiedItemType() {
+        return ModifiedOrderType.CASE_MANAGEMENT_ORDER.getLabel();
     }
 
     @JsonIgnore

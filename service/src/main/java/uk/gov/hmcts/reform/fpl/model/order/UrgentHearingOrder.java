@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -54,6 +54,12 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     }
 
     @Override
+    @JsonIgnore
+    public DocumentReference getTranslatedDocument() {
+        return translatedOrder;
+    }
+
+    @Override
     public LocalDate amendableSortDate() {
         return dateAdded;
     }
@@ -66,8 +72,8 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
 
     @JsonIgnore
     @Override
-    public String getAmendedOrderType() {
-        return AmendedOrderType.URGENT_HEARING_ORDER.getLabel();
+    public String getModifiedItemType() {
+        return ModifiedOrderType.URGENT_HEARING_ORDER.getLabel();
     }
 
     @JsonIgnore

@@ -3,26 +3,41 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.TranslationUploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
-import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TranslationUploadedEventHandler {
 
-    private final TranslatableItemService translatableItemService;
+    private final ModifiedDocumentCommonEventHandler modifiedDocumentCommonEventHandler;
 
+    @Async
     @EventListener
-    public void notifyParties(TranslationUploadedEvent event) {
+    @SuppressWarnings("unchecked")
+    public void notifyDigitalRepresentatives(final TranslationUploadedEvent orderEvent) {
+        modifiedDocumentCommonEventHandler.notifyDigitalRepresentatives(orderEvent);
+    }
 
-        Element<? extends TranslatableItem> lastTranslatedItem =
-            translatableItemService.getLastTranslatedItem(event.getCaseData());
+    @Async
+    @EventListener
+    @SuppressWarnings("unchecked")
+    public void notifyEmailRepresentatives(final TranslationUploadedEvent orderEvent) {
+        modifiedDocumentCommonEventHandler.notifyEmailRepresentatives(orderEvent);
+    }
 
-        translatableItemService.notifyToParties(event.getCaseData(), lastTranslatedItem);
+    @Async
+    @EventListener
+    @SuppressWarnings("unchecked")
+    public void notifyLocalAuthority(final TranslationUploadedEvent orderEvent) {
+        modifiedDocumentCommonEventHandler.notifyLocalAuthority(orderEvent);
+    }
 
+    @Async
+    @EventListener
+    public void sendOrderByPost(final TranslationUploadedEvent orderEvent) {
+        modifiedDocumentCommonEventHandler.sendOrderByPost(orderEvent);
     }
 
 }
