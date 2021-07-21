@@ -421,7 +421,6 @@ pitest {
     'uk.gov.hmcts.reform.fpl.controllers.*',
     'uk.gov.hmcts.reform.fpl.testingsupport.*'
   ]
-  jvmArgs = ['-Xms1G','-Xmx3G']
   threads = 10
   enableDefaultIncrementalAnalysis = true
   outputFormats = ['XML', 'HTML']
