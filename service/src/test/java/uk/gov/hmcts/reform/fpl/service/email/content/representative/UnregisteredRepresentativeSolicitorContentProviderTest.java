@@ -62,7 +62,7 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
     }
 
     @Test
-    void buildContent() {
+    void buildContentForSingleRepresentable() {
         when(representable.toParty()).thenReturn(party);
         when(party.getFullName()).thenReturn("David Jones");
 
