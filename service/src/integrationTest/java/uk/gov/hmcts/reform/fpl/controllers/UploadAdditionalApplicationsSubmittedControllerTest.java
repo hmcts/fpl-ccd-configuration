@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -30,24 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.fpl.Constants.*;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -83,22 +70,39 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
+    @MockBean
+    private FeatureToggleService toggleService;
+
     UploadAdditionalApplicationsSubmittedControllerTest() {
         super("upload-additional-applications");
     }
 
     @Test
     void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
         postSubmittedEvent(buildCaseDetails(NO, YES));
 
         verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient, never()).sendEmail(
+            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotifyCtscAdminWithOldTemplateWhenOthersToggleIsDisabled() throws Exception  {
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
+        postSubmittedEvent(buildCaseDetails(YES, YES));
+
+        verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
@@ -108,17 +112,18 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
         verify(notificationClient, never()).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
@@ -141,10 +146,12 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                         .build())
                     .pbaPayment(PBAPayment.builder().build()).build()));
 
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
+
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
