@@ -7,9 +7,9 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "SelectOthers",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 9,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "hasOthers=\"Yes\""
+    "PageShowCondition": "hasOthers=\"Yes\" AND sendNoticeOfHearing=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -19,7 +19,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "SelectOthers",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 9,
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -30,7 +30,7 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "PageID": "SelectOthers",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 9,
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -41,7 +41,7 @@
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "PageID": "SelectOthers",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 9,
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -49,10 +49,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "sendOrderToAllOthers",
+    "CaseEventFieldLabel": "Send the notice to all people on the case?",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "PageID": "SelectOthers",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 9,
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -63,7 +64,7 @@
     "PageFieldDisplayOrder": 6,
     "DisplayContext": "COMPLEX",
     "PageID": "SelectOthers",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 9,
     "FieldShowCondition": "sendOrderToAllOthers=\"No\"",
     "ShowSummaryChangeOption": "Y"
   }

@@ -78,6 +78,7 @@ public class HearingBooking {
     //judgeAndLegalAdvisor field not shown in tab for new hearings but shown for hearings before FPLA-2030
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final List<Element<Other>> others;
+    private final String othersNotified;
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
     private final PreviousHearingVenue previousHearingVenue;

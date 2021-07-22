@@ -23,6 +23,20 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Service
 public class OthersService {
 
+    public Selector buildOtherSelector(List<Other> allOthers, List<Other> selectedOthers) {
+        List<Integer> selected = new ArrayList<>();
+
+        if (selectedOthers != null) {
+            for (int i = 0; i < allOthers.size(); i++) {
+                if (selectedOthers.contains(allOthers.get(i))) {
+                    selected.add(i);
+                }
+            }
+        }
+
+        return Selector.builder().selected(selected).build().setNumberOfOptions(allOthers.size());
+    }
+
     public String buildOthersLabel(Others others) {
         StringBuilder sb = new StringBuilder();
 

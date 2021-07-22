@@ -80,6 +80,7 @@ abstract class ManageHearingsControllerTest extends AbstractCallbackTest {
             .caseManagementOrderId(cmoId)
             .venue(venue)
             .attendance(List.of(IN_PERSON))
+            .othersNotified("")
             .build();
     }
 

@@ -235,5 +235,13 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "othersNotified",
+    "FieldType": "Text",
+    "ElementLabel": "Others notified",
+    "SecurityClassification": "Public"
   }
 ]

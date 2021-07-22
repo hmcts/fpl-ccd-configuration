@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -123,13 +124,14 @@ class ManageHearingsServiceTest {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService = mock(
         DocmosisDocumentGeneratorService.class
     );
-    private final OthersService othersService = mock(OthersService.class);
     private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
     private final IdentityService identityService = mock(IdentityService.class);
+    private final OthersService othersService = mock(OthersService.class);
+    private final OthersNotifiedGenerator othersNotifiedGenerator = mock(OthersNotifiedGenerator.class);
 
     private final ManageHearingsService service = new ManageHearingsService(
         noticeOfHearingGenerationService, docmosisDocumentGeneratorService, uploadDocumentService,
-        othersService, hearingVenueLookUpService, new ObjectMapper(), identityService, time
+        hearingVenueLookUpService, othersService, othersNotifiedGenerator, new ObjectMapper(), identityService, time
     );
 
     @Nested

@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -96,8 +97,9 @@ public class ManageHearingsService {
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final OthersService othersService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final OthersService othersService;
+    private final OthersNotifiedGenerator othersNotifiedGenerator;
     private final ObjectMapper mapper;
     private final IdentityService identityService;
     private final Time time;
@@ -274,14 +276,15 @@ public class ManageHearingsService {
     }
 
     public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
-        DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
-        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
-            NOTICE_OF_HEARING);
-        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
-            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
+        if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
+            DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
+            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
+                NOTICE_OF_HEARING);
+            Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
+                NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
 
-        hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
-
+            hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+        }
     }
 
     public void addOrUpdate(Element<HearingBooking> hearingBooking, CaseData caseData) {
@@ -443,6 +446,7 @@ public class ManageHearingsService {
             .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .others(othersService.getSelectedOthers(caseData))
+            .othersNotified(othersNotifiedGenerator.getOthersNotified(othersService.getSelectedOthers(caseData)))
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
     }
@@ -480,6 +484,7 @@ public class ManageHearingsService {
             .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .others(othersService.getSelectedOthers(caseData))
+            .othersNotified(othersNotifiedGenerator.getOthersNotified(othersService.getSelectedOthers(caseData)))
             .previousHearingVenue(caseData.getPreviousHearingVenue())
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();

@@ -224,7 +224,6 @@ class SendNoticeOfHearingHandlerTest {
         underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(noticeOfHearing), List.of(otherRespondent));
-        verify(sendDocumentService).getStandardRecipients(CASE_DATA);
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);
