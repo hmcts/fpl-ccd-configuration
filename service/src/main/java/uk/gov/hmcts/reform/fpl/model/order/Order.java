@@ -328,6 +328,7 @@ public enum Order {
             ORDER_BY_CONSENT,
             PARENTAL_RESPONSIBILITY,
             WHICH_OTHERS,
+            CLOSE_CASE,
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER
         )

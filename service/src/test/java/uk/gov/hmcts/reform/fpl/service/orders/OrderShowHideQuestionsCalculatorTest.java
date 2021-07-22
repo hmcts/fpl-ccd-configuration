@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER;
@@ -401,7 +400,7 @@ class OrderShowHideQuestionsCalculatorTest {
         parentalResponsibilityOrder.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         parentalResponsibilityOrder.put("whichOthers", "YES");
         parentalResponsibilityOrder.put("dischargeOfCareDetails", "NO");
-        parentalResponsibilityOrder.put("closeCase", "NO");
+        parentalResponsibilityOrder.put("closeCase", "YES");
         parentalResponsibilityOrder.put("whichChildren", "YES");
         parentalResponsibilityOrder.put("orderIsByConsent", "YES");
         parentalResponsibilityOrder.put("furtherDirections", "YES");

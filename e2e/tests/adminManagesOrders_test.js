@@ -506,7 +506,9 @@ Scenario('Create Parental responsibility order (C45A)', async ({ I, caseViewPage
   await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
   await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
