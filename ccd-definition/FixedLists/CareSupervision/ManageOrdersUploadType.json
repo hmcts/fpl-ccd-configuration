@@ -93,13 +93,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C45A_PARENTAL_RESPONSIBILITY_ORDER",
-    "ListElement": "Parental responsibility order (C45A)",
-    "DisplayOrder": 150
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
     "ListElementCode": "FL406_POWER_OF_ARREST",
     "ListElement": "Power of arrest (FL406)",
     "DisplayOrder": 155
