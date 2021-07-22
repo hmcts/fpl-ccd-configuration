@@ -21,7 +21,7 @@
     "ID": "UrgentHearingOrder",
     "ListElementCode": "translatedOrder",
     "FieldType": "Document",
-    "ElementLabel": "Welsh translation",
+    "ElementLabel": "Translated document",
     "SecurityClassification": "Public"
   },
   {

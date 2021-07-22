@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsContr
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.dlElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@WebMvcTest(AddNoteController.class)
+@WebMvcTest(UploadTranslationsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest {
 

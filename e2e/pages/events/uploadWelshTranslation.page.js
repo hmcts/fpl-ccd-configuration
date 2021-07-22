@@ -11,7 +11,7 @@ const selectItemToTranslate = item => {
 };
 
 const reviewItemToTranslate = fileName => {
-  I.see('English version');
+  I.see('Original document');
   I.see(fileName);
 };
 

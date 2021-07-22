@@ -1,4 +1,14 @@
 [
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadTranslationsIntro",
+    "FieldType": "Label",
+    "Label": "Use this feature to add orders, notices and other documents that have been translated from English to Welsh or Welsh to English.",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -13,7 +23,7 @@
     "ID": "uploadTranslationsOriginalDoc",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Document",
-    "Label": "English version",
+    "Label": "Original document",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },

@@ -3,7 +3,10 @@ const caseData = require('../fixtures/caseData/caseWithAllTypesOfOrders.json');
 const caseView = require('../pages/caseView.page.js');
 const closedCaseData = {
   state: 'CLOSED',
-  caseData: caseData.caseData,
+  caseData: {
+    ...caseData.caseData,
+    languageRequirement: 'Yes',
+  },
 };
 
 // most file names are overridden to the below values in api_helper
@@ -63,6 +66,23 @@ async function setupScenario(I, data = caseData) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
+Scenario('Can upload translation only if language requirement is set', async ({ I, caseViewPage, enterLanguageRequirementsEventPage }) => {
+  await setupScenario(I);
+  await caseViewPage.checkActionsAreNotAvailable([config.administrationActions.uploadWelshTranslations]);
+
+  await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
+  await enterLanguageRequirementsEventPage.disableLanguageRequirement();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
+  await caseViewPage.checkActionsAreNotAvailable([config.administrationActions.uploadWelshTranslations]);
+
+  await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
+  await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
+  await caseViewPage.checkActionsAreAvailable([config.administrationActions.uploadWelshTranslations]);
+});
+
 Scenario('Upload translation for generated order', async ({ I, caseViewPage, uploadWelshTranslationsPage }) => {
   await setupScenario(I);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.generated);
@@ -118,5 +138,5 @@ async function translateOrder(I, caseViewPage, uploadWelshTranslationsPage, item
 function assertTranslation(I, caseViewPage, order) {
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadWelshTranslations);
   caseViewPage.selectTab(order.tabName);
-  I.seeInTab([order.tabObjectName, 'Welsh translation'], `${order.translationFile}`);
+  I.seeInTab([order.tabObjectName, 'Translated document'], order.translationFile);
 }

@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsContr
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.UUID_3;
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.dlElement;
 
-@WebMvcTest(AddNoteController.class)
+@WebMvcTest(UploadTranslationsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadTranslationsControllerMidEventTest extends AbstractCallbackTest {
 

@@ -59,9 +59,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
-import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
-@WebMvcTest(ManageOrdersController.class)
+@WebMvcTest(UploadTranslationsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
@@ -178,7 +177,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
+            eq(LOCAL_AUTHORITY_1_INBOX), eq(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
         ));
     }

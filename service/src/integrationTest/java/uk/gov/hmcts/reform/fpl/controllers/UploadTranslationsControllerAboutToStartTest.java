@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.CASE_DATA_WITH_ALL_ORDERS;
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.RENDERED_DYNAMIC_LIST;
 
-@WebMvcTest(AddNoteController.class)
+@WebMvcTest(UploadTranslationsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadTranslationsControllerAboutToStartTest extends AbstractCallbackTest {
 
