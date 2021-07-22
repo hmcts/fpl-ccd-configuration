@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -50,7 +51,7 @@ public class SealedOrderHistoryService {
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
     private final SealedOrderHistoryTypeGenerator typeGenerator;
     private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker;
-    private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator;
+    private final OthersNotifiedGenerator othersNotifiedGenerator;
     private final Time time;
 
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;

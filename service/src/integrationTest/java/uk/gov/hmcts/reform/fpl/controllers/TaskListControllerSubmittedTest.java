@@ -6,11 +6,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.Map;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
@@ -26,16 +28,37 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
+    @MockBean
+    private FeatureToggleService toggleService;
+
+    private final CaseData caseData = CaseData.builder()
+        .id(10L)
+        .state(State.OPEN)
+        .build();
+
     @Test
     void shouldUpdateTaskList() {
-        final CaseData caseData = CaseData.builder()
-            .id(10L)
-            .state(State.OPEN)
-            .build();
+        when(toggleService.isLanguageRequirementsEnabled()).thenReturn(false);
 
         postSubmittedEvent(caseData);
 
         String expectedTaskList = readString("fixtures/taskList.md").trim();
+
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION,
+            CASE_TYPE,
+            caseData.getId(),
+            "internal-update-task-list",
+            Map.of("taskList", expectedTaskList));
+    }
+
+    @Test
+    void shouldIncludeLanguageSelectionIfToggledOn() {
+        when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+
+        postSubmittedEvent(caseData);
+
+        String expectedTaskList = readString("fixtures/taskListWithLanguageRequirement.md").trim();
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,

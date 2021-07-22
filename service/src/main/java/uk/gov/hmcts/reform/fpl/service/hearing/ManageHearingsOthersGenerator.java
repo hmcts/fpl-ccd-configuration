@@ -7,11 +7,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,31 +31,24 @@ public class ManageHearingsOthersGenerator {
 
         Map<String, Object> data = new HashMap<>();
 
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            if (!allOthers.isEmpty()) {
-                data.put("hasOthers", YES.getValue());
-                data.put("othersSelector", buildOtherSelector(allOthers, selectedOthers));
-                data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-                data.put("sendOrderToAllOthers",
-                    sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
-            }
+        if (toggleService.isServeOrdersAndDocsToOthersEnabled() && !allOthers.isEmpty()) {
+            data.put("hasOthers", YES.getValue());
+            data.put("othersSelector",
+                othersService.buildOtherSelector(unwrapElements(allOthers), unwrapElements(selectedOthers)));
+            data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
+            data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());
+            data.put("sendOrderToAllOthers",
+                sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
         }
+
 
         return data;
     }
 
-    private Selector buildOtherSelector(List<Element<Other>> allOthers, List<Element<Other>> selectedOthers) {
-        List<Integer> selected = new ArrayList<>();
+    private boolean sendNoticeOfHearing(HearingBooking hearingBooking) {
+        List<Element<Other>> hearingOthers = hearingBooking.getOthers();
 
-        if (selectedOthers != null) {
-            for (int i = 0; i < allOthers.size(); i++) {
-                if (unwrapElements(selectedOthers).contains(allOthers.get(i).getValue())) {
-                    selected.add(i);
-                }
-            }
-        }
-
-        return Selector.builder().selected(selected).build().setNumberOfOptions(allOthers.size());
+        return (hearingOthers != null && !hearingOthers.isEmpty());
     }
 
     private boolean sendOrderToAllOthers(List<Element<Other>> allOthers, List<Element<Other>> selectedOthers) {

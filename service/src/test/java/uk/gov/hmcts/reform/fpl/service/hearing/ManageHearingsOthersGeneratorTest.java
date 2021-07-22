@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,11 +21,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
 class ManageHearingsOthersGeneratorTest {
+    private static final Other OTHER = Other.builder().build();
     private static final String OTHER_LABEL = "Other label";
+    private static final Selector OTHER_SELECTOR = Selector.builder().build();
 
     @Mock
     private OthersService othersService;
@@ -39,19 +41,20 @@ class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersInCaseAndHearingBooking() {
-        Other other = Other.builder().build();
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
+        HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(OTHER)).build();
 
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
-        HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(other)).build();
-
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+            unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
         when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
             "hasOthers", YES.getValue(),
-            "othersSelector", Selector.builder().selected(List.of(0)).build().setNumberOfOptions(1),
+            "othersSelector", OTHER_SELECTOR,
             "others_label", OTHER_LABEL,
+            "sendNoticeOfHearing", YES.getValue(),
             "sendOrderToAllOthers", YES.getValue()
         );
 
@@ -60,19 +63,20 @@ class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersInCaseAndNotHearingBooking() {
-        Other other = Other.builder().build();
-
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+            unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
         when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
             "hasOthers", YES.getValue(),
-            "othersSelector", Selector.builder().build().setNumberOfOptions(1),
+            "othersSelector", OTHER_SELECTOR,
             "others_label", OTHER_LABEL,
+            "sendNoticeOfHearing", NO.getValue(),
             "sendOrderToAllOthers", NO.getValue()
         );
 
@@ -81,19 +85,20 @@ class ManageHearingsOthersGeneratorTest {
 
     @Test
     void shouldGenerateFieldsWhenOthersIsEmptyInHearingBooking() {
-        Other other = Other.builder().build();
-
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other).build()).build();
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(OTHER).build()).build();
         HearingBooking hearingBooking = HearingBooking.builder().others(Collections.emptyList()).build();
 
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+            unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
         when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
             "hasOthers", YES.getValue(),
-            "othersSelector", Selector.builder().build().setNumberOfOptions(1),
+            "othersSelector", OTHER_SELECTOR,
             "others_label", OTHER_LABEL,
+            "sendNoticeOfHearing", NO.getValue(),
             "sendOrderToAllOthers", NO.getValue()
         );
 
