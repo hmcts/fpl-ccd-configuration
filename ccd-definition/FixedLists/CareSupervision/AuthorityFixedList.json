@@ -625,6 +625,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "POW",
+    "ListElement": "Powys County Council",
+    "DisplayOrder": 303
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "RCC",
     "ListElement": "Reading Borough Council",
     "DisplayOrder": 305
