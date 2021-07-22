@@ -17,10 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
-import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -38,8 +35,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
@@ -50,6 +45,9 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEM
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
+/*  The only differences in all of the callbacks is passing/using 'solicitor' case fields instead of 'admin' fields
+ *  This could definitely be improved to reduce code duplication, effectively only 4-5 lines are actually different
+ */
 @Api
 @RestController
 @RequestMapping("/callback/manage-documents-solicitor")
@@ -73,7 +71,8 @@ public class ManageDocumentsSolicitorController extends CallbackController {
         caseDetails.getData().putAll(documentService.baseEventData(caseData));
 
         if (CORRESPONDENCE == type) {
-            supportingEvidence = documentService.getSupportingEvidenceBundle(caseData.getCorrespondenceDocumentsSolicitor());
+            supportingEvidence = documentService.getSupportingEvidenceBundle(
+                caseData.getCorrespondenceDocumentsSolicitor());
         } else if (ADDITIONAL_APPLICATIONS_DOCUMENTS == type) {
             if (!caseData.hasApplicationBundles()) {
                 return respond(caseDetails,
@@ -97,7 +96,8 @@ public class ManageDocumentsSolicitorController extends CallbackController {
 
         if (caseData.getManageDocumentSubtypeList() == OTHER) {
             caseDetailsMap.putAll(documentService.initialiseHearingListAndLabel(caseData));
-            supportingEvidence = documentService.getFurtherEvidences(caseData, caseData.getFurtherEvidenceDocumentsSolicitor());
+            supportingEvidence = documentService.getFurtherEvidences(caseData,
+                caseData.getFurtherEvidenceDocumentsSolicitor());
         }
 
         if (caseData.getManageDocumentSubtypeList() == RESPONDENT_STATEMENT) {
@@ -136,14 +136,16 @@ public class ManageDocumentsSolicitorController extends CallbackController {
                     caseDetailsMap.putIfNotEmpty(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle);
                 } else {
                     currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments(), true);
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments(),
+                        true);
 
                     caseDetailsMap.putIfNotEmpty("furtherEvidenceDocumentsSolicitor", currentBundle);
                 }
                 break;
             case CORRESPONDENCE:
                 currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                    caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsSolicitor(), true);
+                    caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsSolicitor(),
+                    true);
 
                 List<Element<SupportingEvidenceBundle>> sortedBundle
                     = documentService.sortCorrespondenceDocumentsByUploadedDate(currentBundle);
@@ -151,7 +153,8 @@ public class ManageDocumentsSolicitorController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty("correspondenceDocumentsSolicitor", sortedBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData, true));
+                caseDetailsMap.putIfNotEmpty(
+                    documentService.buildFinalApplicationBundleSupportingDocuments(caseData, true));
                 break;
         }
 
@@ -166,16 +169,5 @@ public class ManageDocumentsSolicitorController extends CallbackController {
         }
 
         return respond(caseDetailsMap);
-    }
-
-    @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest request) {
-        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
-
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), false,
-                userDetails));
-        }
     }
 }

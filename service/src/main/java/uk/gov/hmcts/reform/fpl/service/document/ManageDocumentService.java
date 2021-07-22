@@ -260,7 +260,8 @@ public class ManageDocumentService {
         return updatedBundles;
     }
 
-    public Map<String, Object> buildFinalApplicationBundleSupportingDocuments(CaseData caseData, boolean setSolicitorUploaded) {
+    public Map<String, Object> buildFinalApplicationBundleSupportingDocuments(CaseData caseData,
+                                                                              boolean setSolicitorUploaded) {
         HashMap<String, Object> data = new HashMap<>();
         UUID selected = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
 
@@ -305,7 +306,9 @@ public class ManageDocumentService {
         return applicationsBundles;
     }
 
-    private List<Element<C2DocumentBundle>> updatedC2DocumentBundle(CaseData caseData, UUID selected, boolean setSolicitorUploaded) {
+    private List<Element<C2DocumentBundle>> updatedC2DocumentBundle(CaseData caseData,
+                                                                    UUID selected,
+                                                                    boolean setSolicitorUploaded) {
         List<Element<C2DocumentBundle>> c2Bundles = caseData.getC2DocumentBundle();
 
         for (Element<C2DocumentBundle> element : c2Bundles) {
@@ -347,7 +350,8 @@ public class ManageDocumentService {
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
                 .orElse(List.of());
 
-        return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments, setSolicitorUploaded);
+        return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments,
+            setSolicitorUploaded);
     }
 
     public List<Element<SupportingEvidenceBundle>> sortCorrespondenceDocumentsByUploadedDate(

@@ -45,7 +45,8 @@ public class ApplicationDocumentBundleTransformer {
         List<Element<ApplicationDocument>> applicationDocuments = caseData.getApplicationDocuments();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = caseData.getFurtherEvidenceDocuments();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = caseData.getFurtherEvidenceDocumentsLA();
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor = caseData.getFurtherEvidenceDocumentsSolicitor();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor =
+            caseData.getFurtherEvidenceDocumentsSolicitor();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments
             = caseData.getHearingFurtherEvidenceDocuments();
@@ -64,7 +65,7 @@ public class ApplicationDocumentBundleTransformer {
 
         List<DocumentView> applicantStatementDocumentViewSolicitor =
             furtherEvidenceTransformer.getFurtherEvidenceDocumentsView(
-                APPLICANT_STATEMENT, furtherEvidenceDocumentsSolicitor, true);
+                APPLICANT_STATEMENT, furtherEvidenceDocumentsSolicitor, false);
 
         List<Element<SupportingEvidenceBundle>> hearingEvidenceDocs = new ArrayList<>();
 

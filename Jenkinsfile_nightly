@@ -84,6 +84,7 @@ withNightlyPipeline(type, product, component) {
   enableFullFunctionalTest(120)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
   enableCrossBrowserTest(['chrome', 'firefox'])
+  enableFortifyScan()
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -97,7 +98,7 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 1
+    env.TEST_RETRIES = 2
     env.TESTS_FOR_ACCESSIBILITY = true
     env.ENV = 'aat'
   }
@@ -110,10 +111,14 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('crossBrowserTest') {
-    env.TEST_RETRIES = 2
+    env.TEST_RETRIES = 3
   }
 
   after('crossBrowserTest') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  after('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }

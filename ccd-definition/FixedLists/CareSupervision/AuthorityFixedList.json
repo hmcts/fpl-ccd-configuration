@@ -37,6 +37,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BLA",
+    "ListElement": "Blackpool Borough Council",
+    "DisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BGW",
     "ListElement": "Blaenau Gwent County Borough Council",
     "DisplayOrder": 13
@@ -96,6 +103,13 @@
     "ListElementCode": "CPY",
     "ListElement": "Caerphilly County Borough Council",
     "DisplayOrder": 47
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CAM",
+    "ListElement": "Cambridgeshire County Council",
+    "DisplayOrder": 48
   },
   {
     "LiveFrom": "01/01/2017",
@@ -324,16 +338,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "KEN",
+    "ListElement": "Kent County Council",
+    "DisplayOrder": 149
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "KKL",
     "ListElement": "Kirklees Council",
-    "DisplayOrder": 149
+    "DisplayOrder": 151
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "KBC",
     "ListElement": "Knowsley Borough Council",
-    "DisplayOrder": 150
+    "DisplayOrder": 153
   },
   {
     "LiveFrom": "01/01/2017",
@@ -527,6 +548,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NTY",
+    "ListElement": "North Tyneside Council",
+    "DisplayOrder": 257
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NYS",
     "ListElement": "North Yorkshire County Council",
     "DisplayOrder": 260
@@ -593,6 +621,13 @@
     "ListElementCode": "PCC",
     "ListElement": "Portsmouth City Council",
     "DisplayOrder": 300
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "POW",
+    "ListElement": "Powys County Council",
+    "DisplayOrder": 303
   },
   {
     "LiveFrom": "01/01/2017",

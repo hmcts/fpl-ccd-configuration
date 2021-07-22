@@ -241,6 +241,7 @@ declare namespace CodeceptJS {
     seeCssPropertiesOnElements(locator: string, cssProperties: string) : void,
     seeAttributesOnElements(locator: ILocator, attributes: string) : void,
     seeAttributesOnElements(locator: string, attributes: string) : void,
+    scrollIntoView(locator: string, scrollIntoViewOptions?: string) : void,
     grabAttributeFrom(locator: ILocator, attr: string) : Promise<string>,
     grabAttributeFrom(locator: string, attr: string) : Promise<string>,
     saveScreenshot(fileName: string, fullPage: string) : void,

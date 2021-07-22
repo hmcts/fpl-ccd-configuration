@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
@@ -74,6 +76,9 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private UserService userService;
 
     ManageDocumentsLAControllerAboutToSubmitTest() {
         super("manage-documents-la");
@@ -279,6 +284,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .value(DynamicListElement.builder().code(selectedC2DocumentId).build()).build();
 
         CaseData caseData = CaseData.builder()
+            .id(12345L)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(c2DocumentsDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder().c2DocumentBundle(
@@ -286,6 +292,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .supportingEvidenceDocumentsTemp(supportingEvidenceBundle)
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
+
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
@@ -313,6 +321,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .value(DynamicListElement.builder().code(selectedBundleId).build()).build();
 
         CaseData caseData = CaseData.builder()
+            .id(12345L)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(c2DocumentsDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -320,6 +329,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .supportingEvidenceDocumentsTemp(supportingEvidenceBundle)
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
+
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
@@ -344,6 +355,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .value(DynamicListElement.builder().code(selectedBundleId).build()).build();
 
         CaseData caseData = CaseData.builder()
+            .id(12345L)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(c2DocumentsDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -351,6 +363,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .supportingEvidenceDocumentsTemp(supportingEvidenceBundle)
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
+
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 

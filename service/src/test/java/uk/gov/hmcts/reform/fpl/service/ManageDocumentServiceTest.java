@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
@@ -478,6 +479,27 @@ class ManageDocumentServiceTest {
             .first()
             .extracting(SupportingEvidenceBundle::getDateTimeUploaded)
             .isEqualTo(yesterday);
+    }
+
+    @Test
+    void shouldSetDateTimeUploadedAndSolicitorUploadOnNewCorrespondenceSupportingEvidenceItemsUploadedBySolicitor() {
+        LocalDateTime yesterday = time.now().minusDays(1);
+        List<Element<SupportingEvidenceBundle>> correspondingDocuments = buildSupportingEvidenceBundle();
+        correspondingDocuments.add(element(SupportingEvidenceBundle.builder()
+            .dateTimeUploaded(yesterday)
+            .build()));
+
+        List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
+            = underTest.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of(), true);
+
+        List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
+        SupportingEvidenceBundle newSupportingEvidenceBundle = supportingEvidenceBundle.get(0);
+        SupportingEvidenceBundle existingSupportingEvidenceBundle = supportingEvidenceBundle.get(1);
+
+        assertThat(newSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
+        assertThat(newSupportingEvidenceBundle.getUploadedBySolicitor()).isEqualTo("Yes");
+        assertThat(existingSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(yesterday);
+        assertThat(existingSupportingEvidenceBundle.getUploadedBySolicitor()).isNull();
     }
 
     @Test
@@ -1106,6 +1128,51 @@ class ManageDocumentServiceTest {
             C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)));
 
         assertThat(updatedBundles).isEqualTo(expectedBundles);
+    }
+
+    @Test
+    void shouldReturnUpdatedOtherApplicationUpdatedSupportingEvidenceEntryUploadedBySolicitor() {
+        UUID selectedBundleId = UUID.randomUUID();
+        UUID evidenceId = randomUUID();
+
+        SupportingEvidenceBundle bundle = SupportingEvidenceBundle.builder()
+            .name("test")
+            .build();
+
+        C2DocumentBundle c2ApplicationBundle = buildC2DocumentBundle(futureDate.plusDays(2));
+        OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationBundle(
+            selectedBundleId, C1_WITH_SUPPLEMENT, futureDate);
+
+        Element<AdditionalApplicationsBundle> applicationsBundle = element(AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(c2ApplicationBundle)
+            .otherApplicationsBundle(otherApplicationsBundle)
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .manageDocumentsSupportingC2List(buildDynamicList(selectedBundleId))
+            .additionalApplicationsBundle(List.of(applicationsBundle))
+            .supportingEvidenceDocumentsTemp(List.of(element(evidenceId, bundle)))
+            .build();
+
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("NOT HMCTS");
+        given(userService.isHmctsUser()).willReturn(false);
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(true);
+
+        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData, true);
+
+        OtherApplicationsBundle expectedOtherApplication = otherApplicationsBundle.toBuilder()
+            .supportingEvidenceBundle(List.of(element(evidenceId, bundle.toBuilder()
+                .uploadedBySolicitor("Yes")
+                .build())
+            )).build();
+
+        Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
+            List.of(element(applicationsBundle.getId(),
+                applicationsBundle.getValue().toBuilder()
+                    .otherApplicationsBundle(expectedOtherApplication).build())));
+
+        assertThat(actualData).isEqualTo(expectedData);
     }
 
     @Test

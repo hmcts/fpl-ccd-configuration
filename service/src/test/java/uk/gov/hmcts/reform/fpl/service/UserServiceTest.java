@@ -28,7 +28,8 @@ class UserServiceTest {
 
     private final RequestData requestData = mock(RequestData.class);
     private final IdamClient client = mock(IdamClient.class);
-    private final UserService underTest = new UserService(client, requestData);
+    private final CaseAccessService accessService = mock(CaseAccessService.class);
+    private final UserService underTest = new UserService(client, requestData, accessService);
 
     @Test
     void shouldReturnUserEmail() {

@@ -174,7 +174,8 @@ public class ManageDocumentsLAController extends CallbackController {
                     //Non-hearing-related evidence
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA(), false
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA(),
+                        false
                     );
 
                     splitter.updateConfidentialDocsInCaseDetails(
@@ -186,7 +187,8 @@ public class ManageDocumentsLAController extends CallbackController {
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA(), false
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA(),
+                        false
                     );
 
                 List<Element<SupportingEvidenceBundle>> sortedDocuments

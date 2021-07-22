@@ -160,7 +160,8 @@ public class ManageDocumentsController extends CallbackController {
                     caseDetailsMap.putIfNotEmpty(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle);
                 } else {
                     currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments(), false);
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments(),
+                        false);
 
                     confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
                         FURTHER_EVIDENCE_DOCUMENTS_KEY);
@@ -181,7 +182,8 @@ public class ManageDocumentsController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData, false));
+                caseDetailsMap.putIfNotEmpty(
+                    documentService.buildFinalApplicationBundleSupportingDocuments(caseData, false));
                 break;
         }
 
