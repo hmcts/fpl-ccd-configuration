@@ -326,7 +326,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
     "UserRole": "[BARRISTER]",
-    "CRUD": "RU",
+    "CRUD": "CRU",
     "Comment": "Added update perms so it can be effectively hidden internally in the auth complex type"
   },
   {
