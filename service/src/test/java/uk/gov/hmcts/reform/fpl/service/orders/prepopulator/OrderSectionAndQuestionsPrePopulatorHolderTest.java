@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlo
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.SingleChildSelectionBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
@@ -77,6 +79,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
     @Mock
     private AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
+    @Mock
+    ParentalResponsibilityPrePopulator parentalResponsibilityPrePopulator;
 
     // Section blocks
     @Mock
@@ -115,7 +119,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             closeCaseBlockPrePopulator,
             appointedGuardianBlockPrePopulator,
             whichOthersBlockPrePopulator,
-            amendOrderToDownloadPrePopulator
+            amendOrderToDownloadPrePopulator,
+            parentalResponsibilityPrePopulator
         );
         questionBlockPrepopulatorMapping = Map.ofEntries(
             Map.entry(LINKED_TO_HEARING, linkedToHearingBlockPrePopulator),
@@ -129,7 +134,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             Map.entry(EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator),
             Map.entry(CLOSE_CASE, closeCaseBlockPrePopulator),
             Map.entry(WHICH_OTHERS, whichOthersBlockPrePopulator),
-            Map.entry(ORDER_TO_AMEND, amendOrderToDownloadPrePopulator)
+            Map.entry(ORDER_TO_AMEND, amendOrderToDownloadPrePopulator),
+            Map.entry(PARENTAL_RESPONSIBILITY, parentalResponsibilityPrePopulator)
         );
 
         sectionPrepopulatorMapping = Map.of(

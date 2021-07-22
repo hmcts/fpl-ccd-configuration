@@ -71,12 +71,13 @@ module.exports = {
   },
 
   checkTaskStatus(task, status) {
-    I.waitForElement(locate(`//p/a[text()="${task}"]`), 10);
+    const taskElement = `//p/a[text()="${task}"]`;
+    I.waitForElement(locate(taskElement), 10);
+    I.scrollIntoView(taskElement);
     if(status) {
-      I.seeElement(locate(`//p/a[text()="${task}"]/../img`).withAttr({title: status}));
+      I.waitForElement(locate(`${taskElement}/../img`).withAttr({title: status}), 10);
     } else {
-      I.seeElement(locate(`//p/a[text()="${task}"]`));
-      I.dontSeeElement(locate(`//p/a[text()="${task}"]/../img`));
+      I.dontSeeElement(locate(`${taskElement}/../img`));
     }
   },
 
