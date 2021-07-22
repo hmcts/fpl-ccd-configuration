@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
@@ -80,6 +81,9 @@ public class EventsChecker {
     private CourtServiceChecker courtServiceChecker;
 
     @Autowired
+    private LanguageRequirementsChecker languageRequirementsChecker;
+
+    @Autowired
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
 
     @Autowired
@@ -104,6 +108,7 @@ public class EventsChecker {
         eventCheckers.put(INTERNATIONAL_ELEMENT, internationalElementChecker);
         eventCheckers.put(OTHERS, othersChecker);
         eventCheckers.put(COURT_SERVICES, courtServiceChecker);
+        eventCheckers.put(LANGUAGE_REQUIREMENTS, languageRequirementsChecker);
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
     }
 

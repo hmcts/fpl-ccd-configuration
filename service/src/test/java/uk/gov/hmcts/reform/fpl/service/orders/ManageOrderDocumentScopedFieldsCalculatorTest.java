@@ -70,13 +70,15 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "othersSelector",
             "others_label",
             "sendOrderToAllOthers",
+            "manageOrdersParentResponsible",
             "manageOrdersIsChildRepresented",
             "manageOrdersReasonForSecureAccommodation",
             "manageOrdersOrderJurisdiction",
             "whichChildIsTheOrderFor",
             "manageOrdersAmendmentList",
             "manageOrdersOrderToAmend",
-            "manageOrdersAmendedOrder"
+            "manageOrdersAmendedOrder",
+            "manageOrdersRelationshipWithChild"
         );
     }
 }

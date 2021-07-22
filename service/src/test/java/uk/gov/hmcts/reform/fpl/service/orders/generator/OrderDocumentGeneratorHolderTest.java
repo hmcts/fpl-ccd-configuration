@@ -21,12 +21,14 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +63,9 @@ class OrderDocumentGeneratorHolderTest {
     private C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
     @Mock
     private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
-
+    @Mock
+    private C45aParentalResponsibilityOrderDocumentParameterGenerator
+        c45aParentalResponsibilityOrderDocumentParameterGenerator;
     // Additional Document Collectors
     @Mock
     private C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
@@ -77,7 +81,7 @@ class OrderDocumentGeneratorHolderTest {
             c32bDischargeOfCareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
             c35aSupervisionOrderDocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator,
             c35bISODocumentParameterGenerator, c43ChildArrangementOrderDocumentParameterGenerator,
-            c43aSGODocumentParameterGenerator
+            c43aSGODocumentParameterGenerator, c45aParentalResponsibilityOrderDocumentParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -95,6 +99,7 @@ class OrderDocumentGeneratorHolderTest {
                 put(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
                     c43ChildArrangementOrderDocumentParameterGenerator);
                 put(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator);
+                put(C45A_PARENTAL_RESPONSIBILITY_ORDER, c45aParentalResponsibilityOrderDocumentParameterGenerator);
             }
         };
 

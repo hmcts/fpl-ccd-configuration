@@ -513,5 +513,24 @@
     "SecurityClassification": "PUBLIC",
     "RegularExpression": ".pdf",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersParentResponsible",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Who's been given parental responsibility",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersRelationshipWithChild",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Relationship with child",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RelationshipWithChild",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

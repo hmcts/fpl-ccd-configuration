@@ -398,6 +398,39 @@ class CaseDataTest {
     }
 
     @Test
+    void shouldReturnFalseWhenWelshRequestedNotSelected() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement(null)
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenWelshRequestedSetToNo() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement("No")
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenWelshRequestedSetToYes() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement("Yes")
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isTrue();
+    }
+
+    @Test
     void testGetExclusionClauseTextIfNull() {
         CaseData underTest = CaseData.builder().build();
 

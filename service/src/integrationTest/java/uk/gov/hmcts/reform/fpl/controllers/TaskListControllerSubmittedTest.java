@@ -55,10 +55,27 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldUpdateTaskListWithAdditionalContactsToggledOn() {
         when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+        when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(false);
 
         postSubmittedEvent(caseData);
 
         String expectedTaskList = readString("fixtures/taskList.md").trim();
+
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION,
+            CASE_TYPE,
+            caseData.getId(),
+            "internal-update-task-list",
+            Map.of("taskList", expectedTaskList));
+    }
+
+    @Test
+    void shouldIncludeLanguageSelectionIfToggledOn() {
+        when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+
+        postSubmittedEvent(caseData);
+
+        String expectedTaskList = readString("fixtures/taskListWithLanguageRequirement.md").trim();
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,

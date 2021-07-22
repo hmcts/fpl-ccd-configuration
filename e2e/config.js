@@ -132,6 +132,7 @@ module.exports = {
     manageDocumentsLA: 'Manage documents',
     messageJudge: 'Send and reply to messages',
     removeManagingOrganisation: 'Remove managing organisation',
+    languageRequirement: 'Welsh language requirements',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
@@ -161,6 +162,7 @@ module.exports = {
     manageDocuments: 'Manage documents',
     uploadAdditionalApplications: 'Upload additional applications',
     manageOrders: 'Manage orders',
+    languageRequirement: 'Welsh language requirements',
   },
   superUserActions: {
     removeOrdersAndApplications: 'Remove orders and applications',

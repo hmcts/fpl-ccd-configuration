@@ -87,6 +87,12 @@ To enable retry upon test failure please set `TEST_RETRIES` environment variable
 TEST_RETRIES=2 yarn test
 ```
 
+To disable chrome web security
+
+```$bash
+DISABLE_SECURITY=true yarn test
+```
+
 ## Creating sample case via E2E tests
 
 E2E tests can be used to create sample case with mandatory sections only. To do so please run the following command:

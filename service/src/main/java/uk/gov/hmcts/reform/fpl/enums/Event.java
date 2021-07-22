@@ -21,6 +21,7 @@ public enum Event {
     INTERNATIONAL_ELEMENT("enterInternationalElement", "International element"),
     OTHERS("enterOthers", "Other people in the case"),
     COURT_SERVICES("attendingHearing", "Court services needed"),
+    LANGUAGE_REQUIREMENTS("languageSelection", "Welsh language requirements"),
     SUBMIT_APPLICATION("submitApplication", "Submit application"),
     CASE_NAME("changeCaseName", "Change case name"),
     APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents");

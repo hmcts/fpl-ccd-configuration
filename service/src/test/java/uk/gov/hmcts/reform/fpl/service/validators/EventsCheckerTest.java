@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
@@ -83,6 +84,8 @@ class EventsCheckerTest {
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
     @MockBean
     private ApplicationDocumentChecker applicationDocumentChecker;
+    @MockBean
+    private LanguageRequirementsChecker languageRequirementsChecker;
     @Autowired
     private EventsChecker eventsChecker;
 
@@ -140,23 +143,24 @@ class EventsCheckerTest {
     @AfterEach
     void verifyNoMoreInteractionsWithValidators() {
         verifyNoMoreInteractions(
-                caseNameChecker,
-                childrenChecker,
-                respondentsChecker,
-                hearingUrgencyChecker,
-                ordersSoughtChecker,
-                groundsChecker,
-                organisationDetailsChecker,
-                localAuthorityDetailsChecker,
-                allocationProposalChecker,
-                applicationDocumentChecker,
-                caseSubmissionChecker,
-                riskAndHarmChecker,
-                proceedingsChecker,
-                internationalElementChecker,
-                othersChecker,
-                courtServiceChecker,
-                factorsAffectingParentingChecker);
+            caseNameChecker,
+            childrenChecker,
+            respondentsChecker,
+            hearingUrgencyChecker,
+            ordersSoughtChecker,
+            groundsChecker,
+            organisationDetailsChecker,
+            localAuthorityDetailsChecker,
+            allocationProposalChecker,
+            applicationDocumentChecker,
+            caseSubmissionChecker,
+            riskAndHarmChecker,
+            proceedingsChecker,
+            internationalElementChecker,
+            othersChecker,
+            courtServiceChecker,
+            factorsAffectingParentingChecker,
+            languageRequirementsChecker);
     }
 
     private Stream<Arguments> getEventsValidators() {
@@ -177,7 +181,9 @@ class EventsCheckerTest {
             Arguments.of(INTERNATIONAL_ELEMENT, internationalElementChecker),
             Arguments.of(OTHERS, othersChecker),
             Arguments.of(COURT_SERVICES, courtServiceChecker),
-            Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker));
+            Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker),
+            Arguments.of(LANGUAGE_REQUIREMENTS, languageRequirementsChecker)
+        );
     }
 
 }
