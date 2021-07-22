@@ -75,6 +75,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
@@ -656,7 +657,9 @@ class ManageHearingsServiceTest {
         final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
 
         final HearingBooking hearingToUpdate = randomHearing();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseData caseData = CaseData.builder()
+            .sendNoticeOfHearing(YES.getValue())
+            .build();
 
         given(noticeOfHearingGenerationService.getTemplateData(caseData, hearingToUpdate))
             .willReturn(docmosisData);
