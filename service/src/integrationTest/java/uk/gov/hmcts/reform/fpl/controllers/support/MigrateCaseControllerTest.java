@@ -102,6 +102,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldReplaceC110aWithCorrespondenceDoc() {
 
             DocumentReference redacted = testDocumentReference();
+            Element<SupportingEvidenceBundle> redactedC110a = element(
+                UUID.fromString("b1b7ef2d-b760-4961-aa5c-0ef9f5e40e95"),
+                SupportingEvidenceBundle.builder()
+                    .name("Redacted C110a")
+                    .document(redacted).build());
+
             CaseDetails caseDetails = CaseDetails.builder()
                 .id(10L)
                 .state("Submitted")
@@ -109,17 +115,18 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     "name", "Test",
                     "familyManCaseNumber", "DE21C50042",
                     "submittedForm", testDocumentReference(),
-                    "correspondenceDocuments", List.of(element(
-                        SupportingEvidenceBundle.builder()
-                            .name("Redacted C110a")
-                            .document(redacted).build())),
+                    "correspondenceDocuments", List.of(
+                        element(SupportingEvidenceBundle.builder()
+                            .name("Some correspondence")
+                            .document(testDocumentReference()).build()),
+                        redactedC110a),
                     "migrationId", migrationId))
                 .build();
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(extractedCaseData.getSubmittedForm()).isEqualTo(redacted);
-            assertThat(extractedCaseData.getCorrespondenceDocuments()).isEmpty();
+            assertThat(extractedCaseData.getCorrespondenceDocuments()).doesNotContain(redactedC110a);
         }
 
         @Test

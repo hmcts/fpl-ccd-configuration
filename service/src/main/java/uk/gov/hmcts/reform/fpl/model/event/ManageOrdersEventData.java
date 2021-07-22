@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.Jurisdiction;
 import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
+import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
@@ -74,7 +75,8 @@ public class ManageOrdersEventData {
     EnglandOffices manageOrdersCafcassOfficesEngland;
     WalesOffices manageOrdersCafcassOfficesWales;
     DynamicList manageOrdersLinkedApplication;
-
+    String manageOrdersParentResponsible;
+    RelationshipWithChild manageOrdersRelationshipWithChild;
     DynamicList manageOrdersAmendmentList;
     DocumentReference manageOrdersOrderToAmend;
     DocumentReference manageOrdersAmendedOrder;
