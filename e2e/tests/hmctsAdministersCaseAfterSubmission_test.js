@@ -45,6 +45,14 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     I.see('Case information');
   };
 
+  Scenario('HMCTS admin updates language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
+    await setupScenario(I);
+    await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
+    await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+    await I.completeEvent('Save and continue');
+    I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
+  });
+
   const summaryText = 'Summary of change';
   const descriptionText = 'Description of change';
 

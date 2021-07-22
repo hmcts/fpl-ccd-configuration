@@ -461,6 +461,17 @@ public class CaseData {
 
     private final Others others;
 
+    private final String languageRequirement;
+
+    @JsonIgnore
+    public boolean isWelshLanguageRequested() {
+        Optional<String> languageValue = Optional.ofNullable(languageRequirement);
+        if (languageValue.isEmpty()) {
+            return false;
+        }
+        return languageValue.get().equals("Yes");
+    }
+
     private final List<Element<Representative>> representatives;
 
     @JsonIgnore
