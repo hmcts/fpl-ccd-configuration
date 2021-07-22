@@ -77,6 +77,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("eldest-child-last-name", createLDUser(), false);
     }
 
+    public boolean isLanguageRequirementsEnabled() {
+        return ldClient.boolVariation("language-requirements", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
