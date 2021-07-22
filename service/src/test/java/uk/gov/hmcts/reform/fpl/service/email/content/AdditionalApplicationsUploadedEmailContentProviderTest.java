@@ -54,7 +54,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
-            .callout(RESPONDENT_LAST_NAME + ", " + ", 12345, " + HEARING_CALLOUT)
+            .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
             .respondentLastName(RESPONDENT_LAST_NAME)
             .childLastName(CHILD_LAST_NAME)
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
@@ -89,7 +89,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()
-                .callout(RESPONDENT_LAST_NAME + ", " + ", 12345, " + HEARING_CALLOUT)
+                .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
                 .respondentLastName(RESPONDENT_LAST_NAME)
                 .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
@@ -145,7 +145,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .id(12345L)
             .familyManCaseNumber(CASE_REFERENCE)
             .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().firstName("John").lastName(RESPONDENT_LAST_NAME + ", " + "").build())
+                .party(RespondentParty.builder().firstName("John").lastName(RESPONDENT_LAST_NAME).build())
                 .build()))
             .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
             .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))

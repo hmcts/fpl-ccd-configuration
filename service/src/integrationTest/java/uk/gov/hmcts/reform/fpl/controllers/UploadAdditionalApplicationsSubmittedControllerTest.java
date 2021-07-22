@@ -94,30 +94,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
         postSubmittedEvent(buildCaseDetails(NO, YES));
 
         verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient, never()).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        );
-    }
-
-    @Test
-    void submittedEventShouldNotifyCtscAdminWithOldTemplateWhenOthersToggleIsDisabled() throws Exception  {
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
-        postSubmittedEvent(buildCaseDetails(YES, YES));
-
-        verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
@@ -126,19 +112,31 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
+    void submittedEventShouldNotifyCtscAdminWithUpdatedTemplateWhenOthersToggleIsEnabled() throws Exception  {
         when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
-        verify(notificationClient, never()).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
+        postSubmittedEvent(buildCaseDetails(YES, YES));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
@@ -161,12 +159,10 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                         .build())
                     .pbaPayment(PBAPayment.builder().build()).build()));
 
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
-
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
