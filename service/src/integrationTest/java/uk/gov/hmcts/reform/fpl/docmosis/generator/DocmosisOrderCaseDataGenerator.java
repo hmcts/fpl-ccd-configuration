@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.docmosis.generator;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -123,7 +124,8 @@ public class DocmosisOrderCaseDataGenerator {
                             .build()
                     );
             case WHICH_CHILDREN:
-                return builder.childSelector(Selector.builder().selected(List.of(1)).build());
+                return builder.children1(List.of(FIRST_CHILD))
+                    .childSelector(Selector.builder().selected(List.of(1)).build());
             case TITLE:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
@@ -192,6 +194,13 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersFurtherDirections("Some further directions.")
+                        .build()
+                );
+            case PARENTAL_RESPONSIBILITY:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersParentResponsible("Remmy Responsible")
+                        .manageOrdersRelationshipWithChild(RelationshipWithChild.FATHER)
                         .build()
                 );
             case ICO_EXCLUSION:
