@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -59,7 +57,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -116,8 +113,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @MockBean
     private NotificationClient notificationClient;
-    @Autowired
-    private IdamClient idamClient;
     @MockBean
     private PaymentService paymentService;
     @MockBean
@@ -230,14 +225,14 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                 .build())).build();
 
         postSubmittedEvent(caseData);
-        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));
 
-        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
@@ -249,13 +244,13 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(NOTIFICATION_REFERENCE)));
 
-        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
             eq("digital-rep@test.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)));
 
-        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+        checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
             eq("email-rep@test.com"),
             anyMap(),
@@ -263,8 +258,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         checkUntil(() -> verify(sendLetterApi, times(2))
             .sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
-        checkUntil(() -> verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .updateCase(eq(CASE_ID), caseDetails.capture()));
+        checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
             CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY);
