@@ -15,21 +15,18 @@ public class TranslationUploadedEventHandler {
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void notifyDigitalRepresentatives(final TranslationUploadedEvent orderEvent) {
         modifiedDocumentCommonEventHandler.notifyDigitalRepresentatives(orderEvent);
     }
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void notifyEmailRepresentatives(final TranslationUploadedEvent orderEvent) {
         modifiedDocumentCommonEventHandler.notifyEmailRepresentatives(orderEvent);
     }
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void notifyLocalAuthority(final TranslationUploadedEvent orderEvent) {
         modifiedDocumentCommonEventHandler.notifyLocalAuthority(orderEvent);
     }

@@ -17,21 +17,18 @@ public class AmendedOrderEventHandler {
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void notifyDigitalRepresentatives(final AmendedOrderEvent orderEvent) {
         modifiedDocumentCommonEventHandler.notifyDigitalRepresentatives(orderEvent);
     }
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void notifyEmailRepresentatives(final AmendedOrderEvent orderEvent) {
         modifiedDocumentCommonEventHandler.notifyEmailRepresentatives(orderEvent);
     }
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void notifyLocalAuthority(final AmendedOrderEvent orderEvent) {
         modifiedDocumentCommonEventHandler.notifyLocalAuthority(orderEvent);
     }

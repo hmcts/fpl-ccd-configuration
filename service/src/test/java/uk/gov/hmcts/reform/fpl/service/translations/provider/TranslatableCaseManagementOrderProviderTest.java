@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.translations.provider;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,7 +74,7 @@ class TranslatableCaseManagementOrderProviderTest {
                     .build(),
                 SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
 
         }
 
@@ -113,7 +112,7 @@ class TranslatableCaseManagementOrderProviderTest {
                     .build(),
                 SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isTrue();
+            assertThat(actual).isTrue();
 
         }
 
@@ -124,7 +123,7 @@ class TranslatableCaseManagementOrderProviderTest {
                     .build(),
                 SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isFalse();
+            assertThat(actual).isFalse();
 
         }
 
@@ -135,7 +134,7 @@ class TranslatableCaseManagementOrderProviderTest {
                     .build(),
                 SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isFalse();
+            assertThat(actual).isFalse();
         }
     }
 

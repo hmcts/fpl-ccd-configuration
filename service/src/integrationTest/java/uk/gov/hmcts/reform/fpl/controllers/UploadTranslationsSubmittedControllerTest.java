@@ -8,10 +8,11 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,8 +53,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMapForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -79,7 +78,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinaries();
     private static final DocumentReference ORDER = testDocumentReference();
     private static final String ORDER_TYPE = "Care order (C32A)";
-    private static final Map<String, Object> NOTIFICATION_PARAMETERS = getExpectedParametersMap(ORDER_TYPE, true);
+    private static final Map<String, Object> NOTIFICATION_PARAMETERS = getExpectedParametersMap(ORDER_TYPE);
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
         .fullName("First Representative")
         .servingPreferences(POST)
@@ -142,9 +141,6 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     @MockBean
     private DocmosisCoverDocumentsService documentService;
 
-    @SpyBean
-    private EventService eventPublisher;
-
     UploadTranslationsSubmittedControllerTest() {
         super("upload-translations");
     }
@@ -172,7 +168,6 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldSendTranslatedNotificationToLocalAuthorityWhenTranslatedOrder() {
         CaseData caseData = caseData();
         CallbackRequest request = CallbackRequest.builder()
@@ -246,7 +241,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE),
-            eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
+            eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eq(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
         ));
     }
@@ -262,13 +257,19 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
-            eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
+            eq(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
         ));
     }
 
     private CaseData caseData() {
         return CaseData.builder()
             .id(CASE_ID)
+            .children1(List.of(element(Child.builder()
+                .party(ChildParty.builder()
+                    .lastName("ChildLast")
+                    .dateOfBirth(LocalDate.of(2012, 1, 2))
+                    .build())
+                .build())))
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .orderCollection(wrapElements(GeneratedOrder.builder()
@@ -280,5 +281,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
             .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
             .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
             .build();
+    }
+
+    public static Map<String, Object> getExpectedParametersMap(String orderType) {
+        return Map.of(
+            "childLastName", "ChildLast",
+            "docType", orderType,
+            "callout", "^Jones, FMN1",
+            "courtName", "Family Court",
+            "caseUrl", "http://fake-url/cases/case-details/1614860986487554");
     }
 }
