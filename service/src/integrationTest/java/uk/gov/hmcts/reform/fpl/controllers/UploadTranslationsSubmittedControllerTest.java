@@ -185,12 +185,8 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendOrdersByPostWhenOrderTranslated() {
-        CaseData caseData = caseData();
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .build();
 
-        postSubmittedEvent(request);
+        postSubmittedEvent(caseData());
 
         checkUntil(() -> {
             verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
@@ -232,12 +228,8 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyRepresentativesServedDigitallyWhenOrderTranslated() {
-        CaseData caseData = caseData();
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .build();
 
-        postSubmittedEvent(request);
+        postSubmittedEvent(caseData());
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE),
@@ -248,12 +240,8 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyRepresentativesServedByEmailWhenOrderTranslated() {
-        CaseData caseData = caseData();
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .build();
 
-        postSubmittedEvent(request);
+        postSubmittedEvent(caseData());
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
