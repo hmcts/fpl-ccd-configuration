@@ -405,7 +405,17 @@
           "[LASOLICITOR]",
           "[LABARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]"
         ],
         "CRUD": "CU"
       },
@@ -436,7 +446,17 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]"
         ],
         "CRUD": "CU"
       },
@@ -489,7 +509,17 @@
       {
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]"
         ],
         "CRUD": "CRU"
       },
@@ -836,7 +866,17 @@
           "[LASOLICITOR]",
           "[LABARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]"
         ],
         "CRUD": "CU"
       },
@@ -867,7 +907,17 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]"
         ],
         "CRUD": "CU"
       },
@@ -920,7 +970,17 @@
       {
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]"
         ],
         "CRUD": "CRU"
       },

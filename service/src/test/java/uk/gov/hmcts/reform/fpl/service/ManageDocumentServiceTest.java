@@ -401,7 +401,7 @@ class ManageDocumentServiceTest {
             .build()));
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
-            = underTest.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of());
+            = underTest.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of(), false);
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
         SupportingEvidenceBundle newSupportingEvidenceBundle = supportingEvidenceBundle.get(0);
@@ -435,7 +435,7 @@ class ManageDocumentServiceTest {
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
             = underTest.setDateTimeUploadedOnSupportingEvidence(currentCorrespondingDocuments,
-            previousCorrespondingDocuments);
+            previousCorrespondingDocuments, false);
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
@@ -470,7 +470,7 @@ class ManageDocumentServiceTest {
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
             = underTest.setDateTimeUploadedOnSupportingEvidence(currentCorrespondingDocuments,
-            previousCorrespondingDocuments);
+            previousCorrespondingDocuments, false);
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
@@ -841,7 +841,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(newSupportingEvidenceBundle)
             .build();
 
-        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
+        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData, false);
 
         C2DocumentBundle expectedC2Bundle = selectedC2DocumentBundle.toBuilder()
             .supportingEvidenceBundle(newSupportingEvidenceBundle).build();
@@ -877,7 +877,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(newSupportingEvidence)
             .build();
 
-        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
+        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData, false);
 
         C2DocumentBundle expectedC2Bundle = selectedC2Application.toBuilder()
             .supportingEvidenceBundle(newSupportingEvidence).build();
@@ -909,7 +909,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(newSupportingEvidence)
             .build();
 
-        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
+        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData, false);
 
         OtherApplicationsBundle expectedOtherApplication = otherApplicationsBundle.toBuilder()
             .supportingEvidenceBundle(newSupportingEvidence).build();
@@ -944,7 +944,7 @@ class ManageDocumentServiceTest {
             .build();
 
         Map<String, Object> actualC2Bundles = underTest
-            .buildFinalApplicationBundleSupportingDocuments(caseData);
+            .buildFinalApplicationBundleSupportingDocuments(caseData, false);
 
         List<Element<C2DocumentBundle>> updatedC2DocumentBundle
             = (List<Element<C2DocumentBundle>>) actualC2Bundles.get(C2_DOCUMENTS_COLLECTION_KEY);
@@ -982,7 +982,7 @@ class ManageDocumentServiceTest {
             .c2SupportingDocuments(buildSupportingEvidenceBundle(futureDate))
             .build();
 
-        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
+        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData, false);
 
         assertThat(updatedBundles).containsEntry(ADDITIONAL_APPLICATIONS_BUNDLE_KEY, applicationsBundles);
     }
@@ -1022,7 +1022,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
-            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore, false);
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = updatedEvidenceBundle.get(0).getValue();
         SupportingEvidenceBundle secondSupportingEvidenceBundle = updatedEvidenceBundle.get(1).getValue();
@@ -1058,7 +1058,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
-            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore, false);
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = updatedEvidenceBundle.get(0).getValue();
         SupportingEvidenceBundle secondSupportingEvidenceBundle = updatedEvidenceBundle.get(1).getValue();
@@ -1097,7 +1097,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(List.of(supportingEvidenceFuture, supportingEvidencePast))
             .build();
 
-        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
+        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData, false);
 
         C2DocumentBundle updatedBundle = selectedC2DocumentBundle.toBuilder()
             .supportingEvidenceBundle(List.of(supportingEvidencePast, supportingEvidenceFuture)).build();

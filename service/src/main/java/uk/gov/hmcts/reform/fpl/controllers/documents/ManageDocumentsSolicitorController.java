@@ -129,21 +129,21 @@ public class ManageDocumentsSolicitorController extends CallbackController {
 
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = documentService
-                        .setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+                        .setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore, true);
 
                     var updatedBundle = documentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
                     caseDetailsMap.putIfNotEmpty(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle);
                 } else {
                     currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments());
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments(), true);
 
                     caseDetailsMap.putIfNotEmpty("furtherEvidenceDocumentsSolicitor", currentBundle);
                 }
                 break;
             case CORRESPONDENCE:
                 currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                    caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsSolicitor());
+                    caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsSolicitor(), true);
 
                 List<Element<SupportingEvidenceBundle>> sortedBundle
                     = documentService.sortCorrespondenceDocumentsByUploadedDate(currentBundle);
@@ -151,7 +151,7 @@ public class ManageDocumentsSolicitorController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty("correspondenceDocumentsSolicitor", sortedBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData));
+                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData, true));
                 break;
         }
 

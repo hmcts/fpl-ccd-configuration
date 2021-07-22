@@ -162,7 +162,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     //Hearing related evidence
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
-                        caseData, caseDataBefore
+                        caseData, caseDataBefore, false
                     );
 
                     List<Element<HearingFurtherEvidenceBundle>> updatedBundle =
@@ -174,7 +174,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     //Non-hearing-related evidence
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA()
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA(), false
                     );
 
                     splitter.updateConfidentialDocsInCaseDetails(
@@ -186,7 +186,7 @@ public class ManageDocumentsLAController extends CallbackController {
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA()
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA(), false
                     );
 
                 List<Element<SupportingEvidenceBundle>> sortedDocuments
@@ -199,7 +199,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(
-                    manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData));
+                    manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData, false));
                 break;
             case COURT_BUNDLE:
                 caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, manageDocumentLAService

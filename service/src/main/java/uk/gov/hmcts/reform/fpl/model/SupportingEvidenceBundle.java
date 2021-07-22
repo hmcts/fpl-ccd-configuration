@@ -27,7 +27,7 @@ public class SupportingEvidenceBundle {
     private String uploadedBy;
     private List<String> confidential;
     private FurtherEvidenceType type;
-    private String uploadedByRepresentativeSolicitor;
+    private String uploadedBySolicitor;
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
@@ -41,7 +41,7 @@ public class SupportingEvidenceBundle {
 
     @JsonIgnore
     public boolean isUploadedByRepresentativeSolicitor() {
-        return "Yes".equals(uploadedByRepresentativeSolicitor);
+        return "Yes".equals(uploadedBySolicitor);
     }
 
     @JsonGetter("confidentialTabLabel")

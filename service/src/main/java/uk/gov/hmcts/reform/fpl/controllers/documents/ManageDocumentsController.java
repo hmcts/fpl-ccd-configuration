@@ -153,14 +153,14 @@ public class ManageDocumentsController extends CallbackController {
 
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = documentService
-                        .setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+                        .setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore, false);
 
                     var updatedBundle = documentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
                     caseDetailsMap.putIfNotEmpty(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle);
                 } else {
                     currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments());
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments(), false);
 
                     confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
                         FURTHER_EVIDENCE_DOCUMENTS_KEY);
@@ -170,7 +170,7 @@ public class ManageDocumentsController extends CallbackController {
                 break;
             case CORRESPONDENCE:
                 currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                    caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocuments());
+                    caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocuments(), false);
 
                 List<Element<SupportingEvidenceBundle>> sortedBundle
                     = documentService.sortCorrespondenceDocumentsByUploadedDate(currentBundle);
@@ -181,7 +181,7 @@ public class ManageDocumentsController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData));
+                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData, false));
                 break;
         }
 
