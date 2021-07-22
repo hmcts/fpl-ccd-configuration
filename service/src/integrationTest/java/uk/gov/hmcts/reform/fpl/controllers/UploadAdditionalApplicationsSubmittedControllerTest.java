@@ -109,7 +109,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_OTHER_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final DocumentReference ORDER = testDocumentReference();
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -173,7 +172,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         .representedBy(wrapElements(REPRESENTATIVE_WITH_POST_PREFERENCE.getId()))
         .build();
 
-    private Other other = Other.builder().address(testAddress()).name("Emily Jones").build();
+    private final Other other = Other.builder().address(testAddress()).name("Emily Jones").build();
 
     UploadAdditionalApplicationsSubmittedControllerTest() {
         super("upload-additional-applications");
