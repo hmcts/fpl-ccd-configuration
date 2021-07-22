@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderRemovedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.ApplicationRemovedEvent;
 import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -138,6 +139,8 @@ public class RemovalToolController extends CallbackController {
         Optional<HearingOrder> removedCMO = orderService.getRemovedCMO(
             caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs()
         );
+        Optional<AdditionalApplicationsBundle> removedApplication = applicationService.getRemovedApplications(caseData.getHiddenApplicationsBundle(),
+            caseDataBefore.getHiddenApplicationsBundle());
 
         if (removedSDO.isPresent()) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
@@ -146,6 +149,8 @@ public class RemovalToolController extends CallbackController {
         } else if (removedCMO.isPresent()) {
             publishEvent(
                 new CMORemovedEvent(caseData, removedCMO.map(HearingOrder::getRemovalReason).orElse("")));
+        } else if(removedApplication.isPresent()) {
+            new ApplicationRemovedEvent(caseData, removedApplication.map(AdditionalApplicationsBundle::getRemovalReason).orElse(""));
         }
     }
 }

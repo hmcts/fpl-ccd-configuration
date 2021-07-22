@@ -10,12 +10,15 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -76,6 +79,18 @@ public class RemoveApplicationService {
         bundleElement.getValue().setRemovalReason(getReasonToRemove(caseData));
         hiddenApplications.add(bundleElement);
         caseDetailsMap.put("hiddenApplicationsBundle", hiddenApplications);
+    }
+
+    public Optional<AdditionalApplicationsBundle> getRemovedApplications(
+        List<Element<AdditionalApplicationsBundle>> hiddenApplications, List<Element<AdditionalApplicationsBundle>> previousHiddenApplications
+    ) {
+        if (!Objects.equals(hiddenApplications, previousHiddenApplications)) {
+            return hiddenApplications.stream()
+                .filter(order -> !previousHiddenApplications.contains(order))
+                .findFirst()
+                .map(Element::getValue);
+        }
+        return Optional.empty();
     }
 
     private String getReasonToRemove(CaseData caseData) {
