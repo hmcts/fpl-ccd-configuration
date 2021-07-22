@@ -33,6 +33,7 @@ module.exports = {
   },
 
   enterAddressManually(address) {
+    I.waitForElement(this.cantEnterPostcodeLink);
     I.click(this.cantEnterPostcodeLink);
     if(address.buildingAndStreet.lineOne) {
       I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
@@ -56,7 +57,7 @@ module.exports = {
 
   async enterAddressIfNotPresent(address) {
     if(await I.canSee(this.cantEnterPostcodeLink)){
-      return this.enterAddressManually(address);
+      this.enterAddressManually(address);
     }
   },
 
