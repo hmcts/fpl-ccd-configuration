@@ -576,6 +576,19 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
+Scenario('local authority enters language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
+  await setupScenario(I);
+  await caseViewPage.goToNewActions(config.applicationActions.languageRequirement);
+  await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.languageRequirement);
+
+  caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.languageRequirement);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.languageRequirement);
+  await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+});
+
 Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterAllocationProposalEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
