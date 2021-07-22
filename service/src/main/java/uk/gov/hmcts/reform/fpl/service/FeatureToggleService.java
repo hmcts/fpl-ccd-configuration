@@ -80,6 +80,7 @@ public class FeatureToggleService {
     public boolean isServeOrdersAndDocsToOthersEnabled() {
         return ldClient.boolVariation("serve-others-orders-docs",
             createLDUser(), false);
+    }
 
     public boolean isLanguageRequirementsEnabled() {
         return ldClient.boolVariation("language-requirements", createLDUser(), false);
