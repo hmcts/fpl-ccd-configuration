@@ -389,4 +389,45 @@ public class ElementUtilsTest {
             assertThat(element2.getValue()).isEqualTo("Second");
         }
     }
+
+    @Nested
+    class ElementCreation {
+
+        @Test
+        void shouldCreateEmptyElementWithRandomId() {
+
+            final Element<String> actualElement1 = element();
+            final Element<String> actualElement2 = element();
+
+            assertThat(actualElement1.getValue()).isNull();
+            assertThat(actualElement2.getValue()).isNull();
+            assertThat(actualElement1.getId()).isNotNull();
+            assertThat(actualElement2.getId()).isNotNull();
+            assertThat(actualElement1.getId()).isNotEqualTo(actualElement2.getId());
+        }
+
+        @Test
+        void shouldCreateElementWithGivenValueAndRandomId() {
+
+            final Element<String> actualElement1 = element("Test");
+            final Element<String> actualElement2 = element("Test");
+
+            assertThat(actualElement1.getValue()).isEqualTo("Test");
+            assertThat(actualElement2.getValue()).isEqualTo("Test");
+            assertThat(actualElement1.getId()).isNotNull();
+            assertThat(actualElement2.getId()).isNotNull();
+            assertThat(actualElement1.getId()).isNotEqualTo(actualElement2.getId());
+        }
+
+        @Test
+        void shouldCreateElementWithGivenValueAndId() {
+
+            final UUID id = UUID.randomUUID();
+
+            final Element<String> actualElement = element(id, "Test");
+
+            assertThat(actualElement.getValue()).isEqualTo("Test");
+            assertThat(actualElement.getId()).isEqualTo(id);
+        }
+    }
 }

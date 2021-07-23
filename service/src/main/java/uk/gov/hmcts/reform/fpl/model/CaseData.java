@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
+import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -47,6 +48,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -113,6 +115,7 @@ import javax.validation.constraints.PastOrPresent;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -150,6 +153,7 @@ public class CaseData {
     private final String caseLocalAuthorityName;
     private OrganisationPolicy localAuthorityPolicy;
     private OrganisationPolicy outsourcingPolicy;
+    private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
     private Object outsourcingLAs;
     private Court court;
@@ -170,7 +174,7 @@ public class CaseData {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
-    private final List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
+    private List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -985,7 +989,7 @@ public class CaseData {
     @Builder.Default
     private final NoticeOfChangeChildAnswersData noticeOfChangeChildAnswersData =
         NoticeOfChangeChildAnswersData.builder()
-        .build();
+            .build();
 
     @JsonUnwrapped
     @Builder.Default
@@ -1011,8 +1015,30 @@ public class CaseData {
     }
 
     public List<Element<LocalAuthority>> getLocalAuthorities() {
-        return defaultIfNull(localAuthorities, new ArrayList<>());
+        if (isNull(localAuthorities)) {
+            localAuthorities = new ArrayList<>();
+        }
+        return localAuthorities;
     }
 
     private final DynamicList courtsList;
+
+    @JsonIgnore
+    public LocalAuthority getDesignatedLocalAuthority() {
+
+        if (isEmpty(getLocalAuthorities())) {
+            return null;
+        }
+
+        return getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
+            .findFirst()
+            .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+    }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
+
 }

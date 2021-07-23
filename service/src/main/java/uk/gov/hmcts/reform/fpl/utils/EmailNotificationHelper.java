@@ -37,8 +37,8 @@ public class EmailNotificationHelper {
     // can remove method once enabled
     public String getSubjectLineLastName(CaseData caseData) {
         return toggleService.isEldestChildLastNameEnabled()
-                          ? getEldestChildLastName(caseData.getAllChildren())
-                          : getFirstRespondentLastName(caseData.getRespondents1());
+            ? getEldestChildLastName(caseData)
+            : getFirstRespondentLastName(caseData.getRespondents1());
     }
 
     public String getEldestChildLastName(List<Element<Child>> children) {
@@ -48,6 +48,10 @@ public class EmailNotificationHelper {
             .min(comparing(ChildParty::getDateOfBirth, nullsLast(naturalOrder())))
             .map(ChildParty::getLastName)
             .orElse("");
+    }
+
+    public String getEldestChildLastName(CaseData caseData) {
+        return getEldestChildLastName(caseData.getAllChildren());
     }
 
     public static String buildSubjectLine(final String familyManCaseNumber,

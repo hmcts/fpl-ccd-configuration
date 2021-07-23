@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -43,6 +44,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -1946,6 +1948,59 @@ class CaseDataTest {
             .build();
 
         assertThat(caseData.isOutsourced()).isFalse();
+    }
+
+    @Nested
+    class DesignatedLocalAuthority {
+
+        @Test
+        void shouldReturnDesignatedLocalAuthority() {
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .name("LA1")
+                .designated("Yes")
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .name("LA1")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            assertThat(caseData.getDesignatedLocalAuthority()).isEqualTo(localAuthority1);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNonOfLocalAuthoritiesIsDesignated() {
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .name("LA1")
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .name("LA1")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            assertThatThrownBy(caseData::getDesignatedLocalAuthority).isInstanceOf(LocalAuthorityNotFound.class);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNullWhenNoLocalAuthorities(List<Element<LocalAuthority>> localAuthorities) {
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(localAuthorities)
+                .build();
+
+            assertThat(caseData.getDesignatedLocalAuthority()).isNull();
+        }
+
     }
 
     private HearingOrder buildHearingOrder(HearingOrderType type) {

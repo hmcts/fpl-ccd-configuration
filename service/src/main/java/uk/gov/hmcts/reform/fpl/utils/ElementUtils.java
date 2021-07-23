@@ -56,6 +56,10 @@ public class ElementUtils {
             .build();
     }
 
+    public static <T> Element<T> element() {
+        return element(null);
+    }
+
     public static <T> Element<T> element(UUID id, T element) {
         return Element.<T>builder()
             .id(id)

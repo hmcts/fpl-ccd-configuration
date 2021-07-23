@@ -92,6 +92,7 @@ module.exports = {
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
+  swanseaOrgId: process.env.SWANSEA_ORG_ID || 'ORGSA',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
   TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
@@ -165,6 +166,7 @@ module.exports = {
     manageOrders: 'Manage orders',
     uploadWelshTranslations: 'Upload translated documents',
     languageRequirement: 'Welsh language requirements',
+    manageLocalAuthorities: 'Manage local authorities',
   },
   superUserActions: {
     removeOrdersAndApplications: 'Remove orders and applications',

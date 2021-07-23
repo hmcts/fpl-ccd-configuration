@@ -25,7 +25,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseData;
@@ -38,6 +39,16 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
     @MockBean
     private OrganisationApi organisationApi;
 
+    private final Organisation organisation = Organisation.builder()
+        .organisationIdentifier("ORG1")
+        .name("ORG 1")
+        .contactInformation(List.of(ContactInformation.builder()
+            .addressLine1("Line 1")
+            .addressLine2("Line 2")
+            .postCode("AB 100")
+            .build()))
+        .build();
+
     ApplicantLocalAuthorityControllerAboutToStartTest() {
         super("enter-local-authority");
     }
@@ -45,27 +56,18 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
     @BeforeEach
     void setup() {
         givenFplService();
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
+            .willReturn(organisation);
     }
 
     @Test
     void shouldPrePopulateLocalAuthorityDetailsFromReferenceData() {
 
-        final Organisation organisation = Organisation.builder()
-            .name("ORG 1")
-            .contactInformation(List.of(ContactInformation.builder()
-                .addressLine1("Line 1")
-                .addressLine2("Line 2")
-                .postCode("AB 100")
-                .build()))
-            .build();
-
-        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
-            .willReturn(organisation);
-
         final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(emptyCaseData()));
 
         final LocalAuthorityEventData expectedData = LocalAuthorityEventData.builder()
             .localAuthority(LocalAuthority.builder()
+                .id(organisation.getOrganisationIdentifier())
                 .name(organisation.getName())
                 .address(Address.builder()
                     .addressLine1(organisation.getContactInformation().get(0).getAddressLine1())
@@ -92,6 +94,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(),
+                LASOLICITOR))
             .applicants(wrapElements(Applicant.builder()
                 .party(legacyApplicant)
                 .build()))
@@ -109,6 +113,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         final LocalAuthorityEventData expectedEventData = LocalAuthorityEventData.builder()
             .localAuthority(LocalAuthority.builder()
+                .id(organisation.getOrganisationIdentifier())
                 .name(legacyApplicant.getOrganisationName())
                 .colleagues(expectedColleagues)
                 .build())
@@ -117,7 +122,6 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
 
-        verifyNoInteractions(organisationApi);
     }
 
     @Test
@@ -129,7 +133,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .build());
 
         final LocalAuthority localAuthority = LocalAuthority.builder()
-            .name("ORG")
+            .id(organisation.getOrganisationIdentifier())
             .email("org@test.com")
             .colleagues(colleagues)
             .build();
@@ -146,8 +150,6 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
-
-        verifyNoInteractions(organisationApi);
     }
 
 }
