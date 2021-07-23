@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
@@ -110,7 +111,8 @@ class TaskListServiceTest {
             DOCUMENTS,
             CASE_NAME,
             APPLICATION_DOCUMENTS,
-            SUBMIT_APPLICATION)
+            SUBMIT_APPLICATION,
+            LANGUAGE_REQUIREMENTS)
             .map(event -> task(event, state))
             .collect(Collectors.toList());
     }
