@@ -107,6 +107,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CAM",
+    "ListElement": "Cambridgeshire County Council",
+    "DisplayOrder": 48
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CAR",
     "ListElement": "Carmarthenshire County Council",
     "DisplayOrder": 50
@@ -331,16 +338,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "KEN",
+    "ListElement": "Kent County Council",
+    "DisplayOrder": 149
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "KKL",
     "ListElement": "Kirklees Council",
-    "DisplayOrder": 149
+    "DisplayOrder": 151
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "KBC",
     "ListElement": "Knowsley Borough Council",
-    "DisplayOrder": 150
+    "DisplayOrder": 153
   },
   {
     "LiveFrom": "01/01/2017",
@@ -611,6 +625,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "POW",
+    "ListElement": "Powys County Council",
+    "DisplayOrder": 303
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "RCC",
     "ListElement": "Reading Borough Council",
     "DisplayOrder": 305
@@ -740,6 +761,13 @@
     "ListElementCode": "SUF",
     "ListElement": "Suffolk County Council",
     "DisplayOrder": 375
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SUN",
+    "ListElement": "Sunderland City Council",
+    "DisplayOrder": 377
   },
   {
     "LiveFrom": "01/01/2017",

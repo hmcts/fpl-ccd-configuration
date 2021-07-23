@@ -22,12 +22,11 @@ plugins {
   id 'org.sonarqube' version '3.3'
   id 'project-report'
   id "idea"
-  id 'info.solidsoft.pitest' version '1.6.0'
+  id "info.solidsoft.pitest" version '1.5.2'
 }
 
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'info.solidsoft.pitest'
 apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'au.com.dius.pact'
 
@@ -330,6 +329,8 @@ dependencies {
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.5.2'
+  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.2'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
@@ -404,35 +405,28 @@ integration {
 }
 
 pitest {
-  pitestVersion.set('1.6.2')
-  junit5PluginVersion.set('0.12')
-  targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
-  excludedClasses.set([
+  logger.lifecycle("Runs PIT  Tests")
+
+  junit5PluginVersion = '0.14'
+  testSourceSets = [sourceSets.test]
+  mainSourceSets = [sourceSets.main]
+  targetClasses = ['uk.gov.hmcts.reform.fpl.*']
+  excludedClasses = [
     'uk.gov.hmcts.reform.fpl.config.*',
     'uk.gov.hmcts.reform.fpl.exceptions.*',
     'uk.gov.hmcts.reform.fpl.controllers.*',
     'uk.gov.hmcts.reform.fpl.testingsupport.*'
-  ])
-  threads.set(10)
-  enableDefaultIncrementalAnalysis.set(true)
-  outputFormats.set(['XML', 'HTML'])
-  timestampedReports.set(false)
-  mutationThreshold.set(80)
-  timeoutConstInMillis.set(30000)
-  mutators.set([
-    'CONDITIONALS_BOUNDARY',
-    'INCREMENTS',
-    'INVERT_NEGS',
-    'MATH',
-    'NEGATE_CONDITIONALS',
-    'VOID_METHOD_CALLS',
-    'EMPTY_RETURNS',
-    'FALSE_RETURNS',
-    'NULL_RETURNS',
-    'PRIMITIVE_RETURNS',
-    'TRUE_RETURNS',
-    'REMOVE_CONDITIONALS'
-  ])
+  ]
+  jvmArgs = ['-Xms1G','-Xmx3G']
+  threads = 10
+  enableDefaultIncrementalAnalysis = true
+  outputFormats = ['XML', 'HTML']
+  timestampedReports = false
+  failWhenNoMutations = false
+  detectInlinedCode = true
+  maxMutationsPerClass = 15
+  mutationThreshold = 80
+  timeoutConstInMillis = 30000
 }
 
 dependencyManagement {
