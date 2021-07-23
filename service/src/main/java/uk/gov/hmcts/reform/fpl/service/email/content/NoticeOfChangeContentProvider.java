@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
@@ -21,11 +20,10 @@ public class NoticeOfChangeContentProvider extends AbstractEmailContentProvider 
     private final EmailNotificationHelper helper;
 
     public NoticeOfChangeRespondentSolicitorTemplate buildNoticeOfChangeRespondentSolicitorTemplate(
-        CaseData caseData, ConfidentialParty<?> party) {
+        CaseData caseData, WithSolicitor party) {
 
         return NoticeOfChangeRespondentSolicitorTemplate.builder()
-            .salutation(isNull(((WithSolicitor) party).getSolicitor())
-                ? EMPTY : getSalutation(((WithSolicitor) party).getSolicitor()))
+            .salutation(isNull(party.getSolicitor()) ? EMPTY : getSalutation(party.getSolicitor()))
             .caseName(caseData.getCaseName())
             .ccdNumber(caseData.getId().toString())
             .caseUrl(getCaseUrl(caseData.getId()))

@@ -68,8 +68,8 @@ public class NoticeOfChangeFieldPopulator {
     }
 
     private Optional<NoticeOfChangeAnswers> populateAnswer(NoticeOfChangeAnswersPopulationStrategy strategy,
-                                                          Applicant applicant,
-                                                          Optional<Element<WithSolicitor>> element) {
+                                                           Applicant applicant,
+                                                           Optional<Element<WithSolicitor>> element) {
         if (BLANK == strategy) {
             return Optional.of(NoticeOfChangeAnswers.builder().build());
         }

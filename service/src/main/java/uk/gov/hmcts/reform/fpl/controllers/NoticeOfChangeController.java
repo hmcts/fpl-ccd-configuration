@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
@@ -70,8 +69,8 @@ public class NoticeOfChangeController extends CallbackController {
                     int solicitorIndex = caseRole.getIndex();
                     publishEvent(new NoticeOfChangeEvent(
                         newCaseData,
-                        (ConfidentialParty<?>) target.apply(oldCaseData).get(solicitorIndex).getValue(),
-                        (ConfidentialParty<?>) target.apply(newCaseData).get(solicitorIndex).getValue())
+                        target.apply(oldCaseData).get(solicitorIndex).getValue(),
+                        target.apply(newCaseData).get(solicitorIndex).getValue())
                     );
                 }
             );

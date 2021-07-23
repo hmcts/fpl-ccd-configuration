@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -28,6 +30,7 @@ import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NOT_SPECIFIED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -40,6 +43,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class ChildController extends CallbackController {
+    private static final List<State> RESTRICTED_STATES = List.of(OPEN, RETURNED);
+
     private final ConfidentialDetailsService confidentialDetailsService;
     private final ChildRepresentationService childRepresentationService;
     private final ChildRepresentativeSolicitorValidator validator;
@@ -112,7 +117,8 @@ public class ChildController extends CallbackController {
     }
 
     private boolean shouldUpdateRepresentation(CaseData caseData, CaseData caseDataBefore) {
-        return OPEN != caseData.getState() && !cafcassSolicitorHasNeverBeenSet(caseData, caseDataBefore);
+        return !RESTRICTED_STATES.contains(caseData.getState())
+               && !cafcassSolicitorHasNeverBeenSet(caseData, caseDataBefore);
     }
 
     private boolean cafcassSolicitorHasNeverBeenSet(CaseData caseData, CaseData caseDataBefore) {
@@ -132,11 +138,13 @@ public class ChildController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        if (!OPEN.equals(caseData.getState())) {
-            noticeOfChangeService.updateRepresentativesAccess(
-                caseData, caseDataBefore, SolicitorRole.Representing.CHILD
-            );
-            // TODO: send an email
+        if (!RESTRICTED_STATES.contains(caseData.getState())) {
+            if (toggleService.isChildRepresentativeSolicitorEnabled()) {
+                noticeOfChangeService.updateRepresentativesAccess(
+                    caseData, caseDataBefore, SolicitorRole.Representing.CHILD
+                );
+                publishEvent(new ChildrenUpdated(caseData, caseDataBefore));
+            }
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
     }
