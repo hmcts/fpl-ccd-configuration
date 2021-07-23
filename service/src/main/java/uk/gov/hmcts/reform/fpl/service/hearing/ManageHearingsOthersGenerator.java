@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -36,9 +37,13 @@ public class ManageHearingsOthersGenerator {
             data.put("othersSelector",
                 othersService.buildOtherSelector(unwrapElements(allOthers), unwrapElements(selectedOthers)));
             data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-            data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());
-            data.put("sendOrderToAllOthers",
-                sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
+
+
+            if (NEW_HEARING != caseData.getHearingOption()) {
+                data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());
+                data.put("sendOrderToAllOthers",
+                    sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
+            }
         }
 
 

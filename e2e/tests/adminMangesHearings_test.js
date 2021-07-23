@@ -197,6 +197,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   I.seeInTab(['Adjourned or vacated hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
   I.seeInTab(['Adjourned or vacated hearing 1', 'Start date and time'], formatHearingTime(hearingStartDate));
   I.seeInTab(['Adjourned or vacated hearing 1', 'Status'], 'Adjourned');
+  I.seeInTab(['Adjourned or vacated hearing 1', 'Others notified'], 'Noah King');
 
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.expandDocumentSection('Expert reports', 'Document 1');

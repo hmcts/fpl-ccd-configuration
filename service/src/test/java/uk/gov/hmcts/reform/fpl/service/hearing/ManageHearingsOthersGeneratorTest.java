@@ -19,6 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -103,6 +104,24 @@ class ManageHearingsOthersGeneratorTest {
         );
 
         assertThat(generatedData).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldNotGenerateSomeFieldsWhenNewHearingType() {
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder().firstOther(OTHER).build())
+            .hearingOption(NEW_HEARING)
+            .build();
+        HearingBooking hearingBooking = HearingBooking.builder().others(wrapElements(OTHER)).build();
+
+        when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
+            unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
+        when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
+
+        Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
+
+        assertThat(generatedData).doesNotContainKeys("sendNoticeOfHearing", "sendOrderToAllOthers");
     }
 
     @Test
