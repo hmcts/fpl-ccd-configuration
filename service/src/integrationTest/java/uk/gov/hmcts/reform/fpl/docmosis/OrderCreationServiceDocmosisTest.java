@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C35bISODocumentParameter
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43aSpecialGuardianshipOrderDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C45aParentalResponsibilityOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C47AAppointmentOfAChildrensGuardianParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisCommonElementDecorator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
@@ -87,7 +88,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     ManageOrderDocumentService.class,
     OrderMessageGenerator.class,
     C43ChildArrangementOrderTitleGenerator.class,
-    C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
+    C45aParentalResponsibilityOrderDocumentParameterGenerator.class,
     OrderDetailsWithEndTypeGenerator.class,
     UploadedOrderDocumentGenerator.class,
     DocumentSealingService.class,
