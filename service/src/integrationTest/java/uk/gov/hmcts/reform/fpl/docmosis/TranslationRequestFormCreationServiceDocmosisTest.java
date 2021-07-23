@@ -204,11 +204,11 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         String line;
         int numberOfWords = 0;
 
-        try{
+        try {
             FileReader file = new FileReader(testFileLocation);
             BufferedReader bufferedReader = new BufferedReader(file);
 
-            while((line = bufferedReader.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 String[] words = line.split(" ");
                 numberOfWords = numberOfWords + words.length;
             }
