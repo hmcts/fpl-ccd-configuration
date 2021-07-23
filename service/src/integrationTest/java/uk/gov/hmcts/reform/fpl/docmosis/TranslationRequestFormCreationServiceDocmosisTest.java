@@ -37,7 +37,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
     private String generatedContentOutputFile;
 
     @Test
-    void shouldGenerateTranslationFormRequest_EnglishTo_Welsh() throws IOException {
+    void shouldGenerateTranslationFormRequestEnglishToWelsh() throws IOException {
         expectedContentFileLocation = "translation-form-request/EnglishToWelshTranslationDocument.txt";
         generatedContentOutputFile = "EnglishToWelshTranslationDocument.";
 
@@ -55,7 +55,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
     }
 
     @Test
-    void shouldGenerateTranslationFormRequest_WelshTo_English() throws IOException {
+    void shouldGenerateTranslationFormRequestWelshToEnglish() throws IOException {
         expectedContentFileLocation = "translation-form-request/WelshToEnglishTranslationDocument.txt";
         generatedContentOutputFile = "WelshToEnglishTranslationDocument.";
 
@@ -73,13 +73,80 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
     }
 
     @Test
-    void shouldGenerateTranslationFormRequest_ProjectSelectedIsDigitalProject() throws IOException {
-        expectedContentFileLocation = "translation-form-request/TranslationRequestForm_ProjectSelectedIsDigitalProject.txt";
-        generatedContentOutputFile = "TranslationFormRequest_ProjectSelectedIsDigitalProject.";
+    void shouldGenerateTranslationFormRequestProjectSelectedIsDigitalProject() throws IOException {
+        expectedContentFileLocation = "translation-form-request/TranslationRequestFormProjectSelectedIsDigitalProject"
+            + ".txt";
+        generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsDigitalProject.";
 
         request = DocmosisTranslationRequest.builder()
             .project(DocmosisWelshProject.builder()
-                .reform(true)
+                .digitalProject(true)
+                .build())
+            .build();
+
+        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
+            .format(RenderFormat.PDF)
+            .build()
+        );
+
+        generateDocuments(docmosisDocumentPDF);
+
+        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+            .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+    }
+
+    @Test
+    void shouldGenerateTranslationFormRequestProjectSelectedIsCtsc() throws IOException {
+        expectedContentFileLocation = "translation-form-request/TranslationRequestFormProjectSelectedIsCtsc.txt";
+        generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsCtsc.";
+
+        request = DocmosisTranslationRequest.builder()
+            .project(DocmosisWelshProject.builder()
+                .ctsc(true)
+                .build())
+            .build();
+
+        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
+            .format(RenderFormat.PDF)
+            .build()
+        );
+
+        generateDocuments(docmosisDocumentPDF);
+
+        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+            .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+    }
+
+    @Test
+    void shouldGenerateTranslationFormRequestLayoutIsBilingual() throws IOException {
+        expectedContentFileLocation = "translation-form-request/TranslationRequestFormLayoutIsBilingual.txt";
+        generatedContentOutputFile = "TranslationFormRequestLayoutIsBilingual.";
+
+        request = DocmosisTranslationRequest.builder()
+            .layout(DocmosisWelshLayout.builder()
+                .bilingual(true)
+                .build())
+            .build();
+
+        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
+            .format(RenderFormat.PDF)
+            .build()
+        );
+
+        generateDocuments(docmosisDocumentPDF);
+
+        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+            .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+    }
+
+    @Test
+    void shouldGenerateTranslationFormRequestLayoutIsOther() throws IOException {
+        expectedContentFileLocation = "translation-form-request/TranslationRequestFormLayoutIsOther.txt";
+        generatedContentOutputFile = "TranslationFormRequestLayoutIsOther.";
+
+        request = DocmosisTranslationRequest.builder()
+            .layout(DocmosisWelshLayout.builder()
+                .other(true)
                 .build())
             .build();
 
