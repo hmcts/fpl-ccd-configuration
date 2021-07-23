@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class DocmosisLanguages {
+public class DocmosisTranslateLanguages {
     private boolean englishToWelsh;
     private boolean welshToEnglish;
 }

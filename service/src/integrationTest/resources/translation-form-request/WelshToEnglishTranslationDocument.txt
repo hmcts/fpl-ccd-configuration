@@ -1,4 +1,4 @@
-"Welsh Translation Request Form Ref:
+Welsh Translation Request Form Ref:
 Please note:
 All work submitted to the Welsh Language Unit must be sent to the generic email address:
 welsh.language.unit.manager@justice.gov.uk
@@ -20,11 +20,14 @@ se
 Name Family Public Law System
 Department/Office Family Public Law
 Email / Telephone number contactfpl@justice.gov.uk
-CTSC  Reform Digital Project Case number/Ref:
+CTSC Reform
+Digital Project
+Case number/Ref: FamilyManCaseNumber123
 Description of work Details (please specify):
-This is a test. This is a test. This is a test. This is a
-test. This is a test. This is a test. This is a test. This is
-a test. This is a test. This is a test.
+We are the champions. We are the champions. We are the
+champions. We are the champions. We are the champions.
+We are the champions. We are the champions. We are the
+champions. We are the champions. We are the champions.
 Translation
 Welsh   English
 English  Welsh
@@ -32,7 +35,7 @@ Layout
 Bilingual
 Mirror Image
 Other
-Word count 500
+Word count 0
 Required date of return
 Date request received:
 Translation   Trados
@@ -86,4 +89,3 @@ spellings or grammatical errors.
  Public Consultations – the Welsh Language Unit must be consulted at an
 early stage to ensure that both English and Welsh versions are published
 simultaneously.
-"

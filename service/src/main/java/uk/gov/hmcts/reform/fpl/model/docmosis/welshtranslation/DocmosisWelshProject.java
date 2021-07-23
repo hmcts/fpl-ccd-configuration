@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.docmosis;
+package uk.gov.hmcts.reform.fpl.model.docmosis.welshtranslation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
