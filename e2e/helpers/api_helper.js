@@ -53,6 +53,11 @@ const updateCaseDataWithTodaysDateTime = (data) => {
   caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
 };
 
+const updateCaseDataWithPlaceholders = (data) => {
+  let caseData = data.caseData;
+  data.caseData = JSON.parse(lodash.template(JSON.stringify(caseData))({'ORG_ID': config.orgId,'DM_STORE_URL': config.dmStoreUrl}));
+};
+
 const updateCaseDataWithDocuments = (data) => {
   let caseData = data.caseData;
   caseData.submittedForm = documentData('mockSubmittedForm.pdf');
@@ -87,8 +92,6 @@ const updateCaseDataWithDocuments = (data) => {
       cmo.value.order = documentData('mockFile.pdf');
     }
   }
-
-  data.caseData = JSON.parse(lodash.template(JSON.stringify(caseData))({'DM_STORE_URL': config.dmStoreUrl}));
 };
 
 const getHeaders = authToken => ({
@@ -99,6 +102,7 @@ const getHeaders = authToken => ({
 const populateWithData = async (caseId, data) => {
   updateCaseDataWithTodaysDateTime(data);
   updateCaseDataWithDocuments(data);
+  updateCaseDataWithPlaceholders(data);
 
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;

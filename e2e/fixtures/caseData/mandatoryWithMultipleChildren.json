@@ -71,6 +71,38 @@
       "reference": "reference",
       "telephone": "00000000000"
     },
+    "localAuthorities": [
+      {
+        "id": "105409c7-9ec5-4c3a-9182-ad05d5290243",
+        "value": {
+          "id": "${ORG_ID}",
+          "name": "Swansea County Council",
+          "email": "swansea@test.com",
+          "pbaNumber": "PBA0082848",
+          "phone": "02027725772",
+          "address": {
+            "County": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 12, Pinnacle Apartments",
+            "AddressLine2": "Saffron Central Square 11"
+          },
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "alex@test.com",
+                "fullName": "Alex Brown",
+                "notificationRecipient": "Yes",
+                "mainContact": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes"
+        }
+      }
+    ],
     "applicants": [
       {
         "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",

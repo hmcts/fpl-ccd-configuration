@@ -134,6 +134,7 @@ exports.config = {
     uploadAdditionalApplicationsEventPage: './e2e/pages/events/uploadAdditionalApplicationsEvent.page.js',
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
     uploadWelshTranslationsPage: './e2e/pages/events/uploadWelshTranslation.page.js',
+    manageLocalAuthoritiesEventPage: './e2e/pages/events/manageLocalAuthorities.page.js',
   },
   plugins: {
     retryFailedStep: {

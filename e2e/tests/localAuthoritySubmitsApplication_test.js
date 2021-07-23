@@ -437,7 +437,7 @@ Scenario('local authority enters its details @create-case-with-mandatory-section
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
     'Add the allocation proposal in the Allocation proposal']);
-});
+}).retry(0);
 
 Scenario('local authority enters others to be given notice', async ({I, caseViewPage, enterOthersEventPage}) => {
   await setupScenario(I);

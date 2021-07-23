@@ -127,6 +127,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LAMANAGING]",
           "[EPSMANAGING]"
         ],
@@ -142,10 +143,33 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LAMANAGING]",
           "[EPSMANAGING]"
         ],
         "CRUD": "CR"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageLocalAuthorities",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
       }
     ]
   }

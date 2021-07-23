@@ -2721,5 +2721,61 @@
     "CaseFieldID": "amendmentUploadSectionHeader",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityActionLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityAction",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthoritiesToShare",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityEmailLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityEmail",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityToRemoveLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityToRemove",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sharedLocalAuthorityPolicy",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
   }
 ]
