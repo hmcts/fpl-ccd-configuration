@@ -36,8 +36,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {AdditionalApplicationsUploadedEmailContentProvider.class})
 class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2021, 2, 12, 0, 0, 0);
-    private static final String HEARING_CALLOUT = "hearing 12 Feb 2021";
+    private static final LocalDateTime PAST_HEARING_DATE = LocalDateTime.of(2000, 2, 12, 0, 0, 0);
+    private static final LocalDateTime FUTURE_HEARING_DATE = LocalDateTime.of(2099, 2, 12, 0, 0, 0);
+    private static final String HEARING_CALLOUT = "hearing 12 Feb 2099";
 
     @MockBean
     private EmailNotificationHelper helper;
@@ -141,7 +142,9 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
                 .build()))
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
+            .hearingDetails(wrapElements(
+                    HearingBooking.builder().startDate((PAST_HEARING_DATE)).build(),
+                    HearingBooking.builder().startDate((FUTURE_HEARING_DATE)).build()))
             .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
             .build();
     }

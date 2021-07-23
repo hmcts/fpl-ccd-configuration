@@ -22,7 +22,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -31,7 +31,7 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
 
     public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
         return AdditionalApplicationsUploadedTemplate.builder()
-            .callout(buildCallout(caseData))
+            .callout(buildCalloutWithNextHearing(caseData))
             .lastName(helper.getSubjectLineLastName(caseData))
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
