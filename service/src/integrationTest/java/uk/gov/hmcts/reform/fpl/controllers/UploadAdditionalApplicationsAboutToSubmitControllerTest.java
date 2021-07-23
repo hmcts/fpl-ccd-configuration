@@ -111,7 +111,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
                     .address(Address.builder().postcode("SW2").build()).build())).build());
         if (servingOthersToggledOn) {
-            caseDataBuilder.othersToNotifySelector(Selector.newSelector(2))
+            caseDataBuilder.othersSelector(Selector.newSelector(2))
                 .notifyApplicationsToAllOthers(YesNo.YES.getValue());
         }
 
@@ -160,7 +160,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         if (servingOthersToggledOn) {
             Selector othersSelector = Selector.newSelector(2);
             othersSelector.setSelected(List.of(1));
-            caseDataBuilder.othersToNotifySelector(othersSelector)
+            caseDataBuilder.othersSelector(othersSelector)
                 .notifyApplicationsToAllOthers("No");
         }
 
@@ -203,7 +203,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .others(Others.builder()
                 .firstOther(Other.builder().name("Stephen Miller")
                     .address(Address.builder().postcode("SE1").build()).build()).build())
-            .othersToNotifySelector(Selector.newSelector(1))
+            .othersSelector(Selector.newSelector(1))
             .notifyApplicationsToAllOthers("No").build();
 
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
@@ -352,7 +352,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getApplicantsList()).isNull();
         assertThat(caseData.getOtherApplicant()).isNull();
         assertThat(caseData.getNotifyApplicationsToAllOthers()).isNull();
-        assertThat(caseData.getOthersToNotifySelector()).isNull();
+        assertThat(caseData.getOthersSelector()).isNull();
     }
 
     private void assertDocument(DocumentReference actualDocument, DocumentReference expectedDocument) {

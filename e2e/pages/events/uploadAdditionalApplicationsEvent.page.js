@@ -36,8 +36,8 @@ module.exports = {
         select: 'No',
       },
     },
-    othersToNotifySelector: {
-      selector: index => `#othersToNotifySelector_option${index}-SELECTED`,
+    othersSelector: {
+      selector: index => `#othersSelector_option${index}-SELECTED`,
     },
   },
 
@@ -49,7 +49,7 @@ module.exports = {
     I.click(`${this.fields.allOthers.group}_${option}`);
 
     indexes.forEach((selectorIndex) => {
-      I.checkOption(this.fields.othersToNotifySelector.selector(selectorIndex));
+      I.checkOption(this.fields.othersSelector.selector(selectorIndex));
     });
   },
 

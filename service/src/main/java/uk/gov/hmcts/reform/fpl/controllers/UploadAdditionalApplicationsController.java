@@ -87,7 +87,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && isNotEmpty(caseData.getAllOthers())) {
             caseDetails.getData().put("hasOthers", "Yes");
             caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-            caseDetails.getData().put("othersToNotifySelector", newSelector(caseData.getAllOthers().size()));
+            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));
         }
 
         return respond(caseDetails);
@@ -128,7 +128,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
             AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
-            "otherApplicant", "others_label", "hasOthers", "notifyApplicationsToAllOthers", "othersToNotifySelector");
+            "otherApplicant", "others_label", "hasOthers", "notifyApplicationsToAllOthers", "othersSelector");
 
         return respond(caseDetails);
     }

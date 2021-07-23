@@ -97,7 +97,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
-            .containsKeys("temporaryC2Document", "othersToNotifySelector")
+            .containsKeys("temporaryC2Document", "othersSelector")
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
 
@@ -105,11 +105,11 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             assertThat(String.valueOf(response.getData().get("hasOthers"))).isEqualTo("Yes");
             assertThat(String.valueOf(response.getData().get("others_label")))
                 .contains("Other 1: test1", "Other 2: test2");
-            assertThat(extractCaseData(response).getOthersToNotifySelector()).isEqualTo(Selector.newSelector(2));
+            assertThat(extractCaseData(response).getOthersSelector()).isEqualTo(Selector.newSelector(2));
         } else {
             assertThat(response.getData())
                 .doesNotContainKeys("hasOthers", "others_label")
-                .containsEntry("othersToNotifySelector", null);
+                .containsEntry("othersSelector", null);
         }
     }
 

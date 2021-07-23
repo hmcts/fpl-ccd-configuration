@@ -1628,15 +1628,6 @@
     "Searchable": "N"
   },
   {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "othersToNotifySelector",
-    "Label": "Select who should be notified",
-    "FieldType": "OthersSelector",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "paymentDetailsLabel",

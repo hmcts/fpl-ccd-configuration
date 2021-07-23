@@ -83,7 +83,7 @@ public class UploadAdditionalApplicationsService {
         List<Element<Other>> selectedOthers = new ArrayList<>();
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                caseData.getOthersToNotifySelector(), caseData.getNotifyApplicationsToAllOthers());
+                caseData.getOthersSelector(), caseData.getNotifyApplicationsToAllOthers());
         }
         String othersNotified = getOthersNotified(selectedOthers);
 
