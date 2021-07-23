@@ -1,18 +1,19 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
+const moment = require('moment');
 const caseData = require('../fixtures/caseData/gatekeepingWithPastHearingDetails.json');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const caseDataWithApplication = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndApplication.json');
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
 
 const orderTitle = 'some title';
-const aYearAgo = new Date(Date.now() - (3600 * 1000 * 24));
-const today = new Date(Date.now());
-const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
+const today = moment().hours(10).minutes(0).seconds(0).milliseconds(0).toDate();
+const aYearAgo = moment(today).subtract(1, 'years').toDate();
+const futureDate = moment(today).add(1, 'days').toDate();
 const removalAddress = { buildingAndStreet: { lineOne: 'Flat 2 Caversham', town: 'Reading' }, postcode: 'RG4 7AA' };
 const applicationToLink = 'C2, 16 June 2021, 11:49am';
 
-let approvalDate = new Date(2021, 3, 9, 13, 40);
+let approvalDate = moment().year(2021).month(3).day(9).hours(10).minutes(0).seconds(0).milliseconds(0).toDate();
 let caseId;
 
 Feature('HMCTS Admin manages orders');
@@ -21,7 +22,7 @@ async function setupScenario(I, caseViewPage) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(caseData); }
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-  approvalDate = tomorrow(approvalDate);
+  approvalDate = moment(approvalDate).add(1, 'days').toDate();
 }
 
 Scenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
@@ -530,10 +531,6 @@ Scenario('Create Parental responsibility order (C45A)', async ({ I, caseViewPage
     others: 'John Doe',
   });
 });
-
-function tomorrow(date) {
-  return new Date(date.setDate(date.getDate() + 1));
-}
 
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;
