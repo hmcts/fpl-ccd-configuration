@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
@@ -40,23 +39,20 @@ public class MigrateCaseController extends CallbackController {
         log.info("Migration " + migrationId);
 
         switch (migrationId) {
-            case "FPLA-3126":
-                run3126(caseDetails);
-                break;
-            case "FPLA-3239":
-                run3239(caseDetails);
+            case "FPLA-3262":
+                run3262(caseDetails);
                 break;
             default:
-                log.error("Unhandled migration");
+                log.error("Unhandled migration {}", migrationId);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run3126(CaseDetails caseDetails) {
+    private void run3262(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        validateFamilyManNumber("FPLA-3126", "NE21C50026", caseData);
+        validateFamilyManNumber("FPLA-3262", "PE21C50004", caseData);
 
         List<Element<HearingOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
         if (isNotEmpty(draftUploadedCMOs) && draftUploadedCMOs.size() == 1) {
@@ -74,22 +70,6 @@ public class MigrateCaseController extends CallbackController {
         } else {
             throw new IllegalStateException(
                 format("Case %s has unexpected cancelled hearing details", caseDetails.getId()));
-        }
-    }
-
-    private void run3239(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        validateFamilyManNumber("FPLA-3239", "DE21C50042", caseData);
-
-        Element<SupportingEvidenceBundle> correspondenceElement = caseData.getCorrespondenceDocuments().get(0);
-        if (isNotEmpty(caseData.getSubmittedForm()) && isNotEmpty(correspondenceElement)
-            && correspondenceElement.getValue().getName().equals("Redacted C110a")) {
-            caseDetails.getData().put("submittedForm", correspondenceElement.getValue().getDocument());
-            
-            caseData.getCorrespondenceDocuments().remove(0);
-            caseDetails.getData().put("correspondenceDocuments", caseData.getCorrespondenceDocuments());
-        } else {
-            throw new IllegalStateException(format("Case %s does not have C110a/redacted copy", caseDetails.getId()));
         }
     }
 
