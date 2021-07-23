@@ -100,7 +100,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
         assertThat(response())
             .hasSubject("New application uploaded, " + name)
-             .hasBody(emailContent()
+            .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
                 .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
