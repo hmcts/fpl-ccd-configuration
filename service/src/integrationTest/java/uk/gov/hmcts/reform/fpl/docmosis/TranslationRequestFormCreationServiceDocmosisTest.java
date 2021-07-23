@@ -74,8 +74,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
     @Test
     void shouldGenerateTranslationFormRequestProjectSelectedIsDigitalProject() throws IOException {
-        expectedContentFileLocation = "translation-form-request/TranslationRequestFormProjectSelectedIsDigitalProject"
-            + ".txt";
+        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsDigitalProject.";
 
         request = DocmosisTranslationRequest.builder()
@@ -97,7 +96,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
     @Test
     void shouldGenerateTranslationFormRequestProjectSelectedIsCtsc() throws IOException {
-        expectedContentFileLocation = "translation-form-request/TranslationRequestFormProjectSelectedIsCtsc.txt";
+        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsCtsc.";
 
         request = DocmosisTranslationRequest.builder()
@@ -119,7 +118,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
     @Test
     void shouldGenerateTranslationFormRequestLayoutIsBilingual() throws IOException {
-        expectedContentFileLocation = "translation-form-request/TranslationRequestFormLayoutIsBilingual.txt";
+        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         generatedContentOutputFile = "TranslationFormRequestLayoutIsBilingual.";
 
         request = DocmosisTranslationRequest.builder()
@@ -141,7 +140,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
     @Test
     void shouldGenerateTranslationFormRequestLayoutIsOther() throws IOException {
-        expectedContentFileLocation = "translation-form-request/TranslationRequestFormLayoutIsOther.txt";
+        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         generatedContentOutputFile = "TranslationFormRequestLayoutIsOther.";
 
         request = DocmosisTranslationRequest.builder()
