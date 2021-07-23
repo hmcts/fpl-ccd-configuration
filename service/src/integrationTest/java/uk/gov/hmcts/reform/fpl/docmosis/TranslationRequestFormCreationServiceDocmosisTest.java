@@ -37,7 +37,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
     private String generatedContentOutputFile;
 
     @Test
-    void shouldGenerateTranslationRequestForm_EnglishTo_Welsh_PDF() throws IOException {
+    void shouldGenerateTranslationFormRequest_EnglishTo_Welsh() throws IOException {
         expectedContentFileLocation = "translation-form-request/EnglishToWelshTranslationDocument.txt";
         generatedContentOutputFile = "EnglishToWelshTranslationDocument.";
 
@@ -55,11 +55,33 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
     }
 
     @Test
-    void shouldGenerateTranslationRequestForm_WelshTo_English_PDF() throws IOException {
+    void shouldGenerateTranslationFormRequest_WelshTo_English() throws IOException {
         expectedContentFileLocation = "translation-form-request/WelshToEnglishTranslationDocument.txt";
         generatedContentOutputFile = "WelshToEnglishTranslationDocument.";
 
         request = buildTranslationRequest(false, "", null);
+
+        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
+            .format(RenderFormat.PDF)
+            .build()
+        );
+
+        generateDocuments(docmosisDocumentPDF);
+
+        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+            .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+    }
+
+    @Test
+    void shouldGenerateTranslationFormRequest_ProjectSelectedIsDigitalProject() throws IOException {
+        expectedContentFileLocation = "translation-form-request/TranslationRequestForm_ProjectSelectedIsDigitalProject.txt";
+        generatedContentOutputFile = "TranslationFormRequest_ProjectSelectedIsDigitalProject.";
+
+        request = DocmosisTranslationRequest.builder()
+            .project(DocmosisWelshProject.builder()
+                .reform(true)
+                .build())
+            .build();
 
         DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
             .format(RenderFormat.PDF)
