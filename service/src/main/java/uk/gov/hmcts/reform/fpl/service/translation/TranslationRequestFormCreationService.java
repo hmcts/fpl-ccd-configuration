@@ -19,7 +19,6 @@ public class TranslationRequestFormCreationService {
             templateData,
             TRANSLATION_REQUEST,
             templateData.getFormat()
-
         );
     }
 }

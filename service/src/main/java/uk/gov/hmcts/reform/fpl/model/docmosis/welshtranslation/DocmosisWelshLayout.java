@@ -10,5 +10,5 @@ import lombok.Data;
 public class DocmosisWelshLayout {
     private final boolean bilingual;
     private final boolean mirrorImage;
-    private final boolean Other;
+    private final boolean other;
 }
