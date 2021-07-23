@@ -122,7 +122,7 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
   I.seeInTab(['Hearing 2', 'Additional notes'], 'The venue has changed');
   I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
-  I.seeInTab(['Hearing 1', 'Others notified'], 'Noah King');
+  I.seeInTab(['Hearing 2', 'Others notified'], 'Noah King');
 
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
@@ -328,7 +328,7 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   I.seeInTab(['Hearing 3', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   I.seeInTab(['Hearing 3', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
-  I.seeInTab(['Hearing 1', 'Others notified'], 'Noah King');
+  I.seeInTab(['Hearing 3', 'Others notified'], 'Noah King');
 });
 
 const formatHearingTime = hearingDate => formatDate(hearingDate, 'd mmm yyyy, h:MM:ss TT');
