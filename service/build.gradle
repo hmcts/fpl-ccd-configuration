@@ -202,7 +202,7 @@ task fortifyScan(type: JavaExec)  {
 
 task highLevelDataSetup(type: JavaExec, description: 'High level data step mock implementation - DO NOTHING.') {
   onlyIf {
-    return true
+    return false
   }
 }
 
