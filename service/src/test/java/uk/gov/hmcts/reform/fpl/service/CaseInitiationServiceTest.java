@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -93,7 +93,7 @@ class CaseInitiationServiceTest {
         @Test
         void shouldReturnEPSOutsourcingTypeWhenOrganisationIsAllowedToRepresentLocalAuthorityAsExternalSolicitor() {
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, EPS))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, MLA))
                 .willReturn(emptyList());
@@ -107,7 +107,7 @@ class CaseInitiationServiceTest {
                 .willReturn(emptyList());
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, MLA))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             assertThat(underTest.getOutsourcingType(organisationId)).contains(MLA);
         }
@@ -115,10 +115,10 @@ class CaseInitiationServiceTest {
         @Test
         void shouldThrowExceptionWhenOrganisationConfiguredAsExternalSolicitorAnLocalAuthority() {
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, EPS))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, MLA))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             assertThatThrownBy(() -> underTest.getOutsourcingType(organisationId))
                 .hasMessage(format("Organisation %s is configured as both EPS and MLA", organisationId));
@@ -147,8 +147,8 @@ class CaseInitiationServiceTest {
             givenUserNotInLocalAuthority();
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(EXTERNAL_ORG_ID, EPS)).willReturn(List.of(
-                LocalAuthority.builder().name("LA 2").code("LA2").build(),
-                LocalAuthority.builder().name("LA 1").code("LA1").build()
+                LocalAuthorityName.builder().name("LA 2").code("LA2").build(),
+                LocalAuthorityName.builder().name("LA 1").code("LA1").build()
             ));
 
             DynamicList localAuthorities = underTest.getOutsourcingLocalAuthorities(EXTERNAL_ORG_ID, EPS);
@@ -173,8 +173,8 @@ class CaseInitiationServiceTest {
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(userLocalAuthority.orgId, MLA)).willReturn(
                 List.of(
-                    LocalAuthority.builder().name("LA 2").code("LA2").build(),
-                    LocalAuthority.builder().name("LA 1").code("LA1").build())
+                    LocalAuthorityName.builder().name("LA 2").code("LA2").build(),
+                    LocalAuthorityName.builder().name("LA 1").code("LA1").build())
             );
 
             DynamicList localAuthorities = underTest.getOutsourcingLocalAuthorities(userLocalAuthority.orgId, MLA);
@@ -493,7 +493,7 @@ class CaseInitiationServiceTest {
 
     private void givenUserInLocalAuthority(TestLocalAuthority localAuthority) {
         given(localAuthorityService.getLocalAuthorityCode()).willReturn(Optional.of(localAuthority.code));
-        given(localAuthorityService.getUserLocalAuthority()).willReturn(Optional.of(LocalAuthority.builder()
+        given(localAuthorityService.getUserLocalAuthority()).willReturn(Optional.of(LocalAuthorityName.builder()
             .name(localAuthority.name)
             .code(localAuthority.code)
             .build()));

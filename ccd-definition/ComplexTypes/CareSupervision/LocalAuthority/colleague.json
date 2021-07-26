@@ -1,0 +1,88 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "role",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ColleagueRole",
+    "ElementLabel": "Role",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"OTHER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "dx",
+    "FieldType": "Text",
+    "ElementLabel": "DX code",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"SOLICITOR\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "reference",
+    "FieldType": "Text",
+    "ElementLabel": "Solicitor reference",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"SOLICITOR\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "fullName",
+    "FieldType": "Text",
+    "ElementLabel": "Full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "email",
+    "FieldType": "Text",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "phone",
+    "FieldType": "Text",
+    "ElementLabel": "Phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "notificationRecipient",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Send them case update notifications?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "mainContact",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Main contact",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "role=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Colleague",
+    "ListElementCode": "mainContactTag",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='govuk-tag govuk-tag--purple'>Main contact</div>",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "mainContact=\"Yes\""
+  }
+]
