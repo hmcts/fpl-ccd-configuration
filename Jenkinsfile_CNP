@@ -132,6 +132,7 @@ withPipeline(type, product, component) {
 
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
+  enableHighLevelDataSetup()
 
   onMaster() {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
