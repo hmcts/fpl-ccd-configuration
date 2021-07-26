@@ -7,32 +7,32 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_NEW_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(MockitoExtension.class)
 class NoticeOfChangeEventHandlerTest {
 
+    private static final Long CASE_ID = 1L;
     private static final String NEW_EMAIL = "new@test.com";
     private static final String OLD_EMAIL = "old@test.com";
-    private static final Respondent NEW_RESPONDENT = buildNewRespondent();
-    private static final Respondent OLD_RESPONDENT = buildOldRespondent();
-    private static final CaseData CASE_DATA = caseData();
     private static final NoticeOfChangeRespondentSolicitorTemplate EXPECTED_TEMPLATE =
-        NoticeOfChangeRespondentSolicitorTemplate.builder().build();
-    public static final String RESPONDENT_FIRST_NAME = "John";
-    public static final String RESPONDENT_LAST_NAME = "Smith";
+        mock(NoticeOfChangeRespondentSolicitorTemplate.class);
+
+    private final CaseData caseData = mock(CaseData.class);
+    private final WithSolicitor newParty = mock(WithSolicitor.class);
+    private final WithSolicitor oldParty = mock(WithSolicitor.class);
+    private final RespondentSolicitor solicitor = mock(RespondentSolicitor.class);
 
     @Mock
     private NotificationService notificationService;
@@ -45,65 +45,56 @@ class NoticeOfChangeEventHandlerTest {
 
     @Test
     void shouldSendEmailToSolicitorAccessGranted() {
-        given(noticeOfChangeContentProvider.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, NEW_RESPONDENT))
+        given(caseData.getId()).willReturn(CASE_ID);
+        given(newParty.getSolicitor()).willReturn(solicitor);
+        given(solicitor.getEmail()).willReturn(NEW_EMAIL);
+
+        given(noticeOfChangeContentProvider.buildNoticeOfChangeRespondentSolicitorTemplate(caseData, newParty))
             .willReturn(EXPECTED_TEMPLATE);
 
-        underTest.notifySolicitorAccessGranted(new NoticeOfChangeEvent(CASE_DATA, OLD_RESPONDENT, NEW_RESPONDENT));
+        underTest.notifySolicitorAccessGranted(new NoticeOfChangeEvent(caseData, oldParty, newParty));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
             NEW_EMAIL,
             EXPECTED_TEMPLATE,
-            CASE_DATA.getId());
+            CASE_ID
+        );
     }
 
     @Test
     void shouldSendEmailToSolicitorAccessRevoked() {
-        given(noticeOfChangeContentProvider.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, OLD_RESPONDENT))
+        given(caseData.getId()).willReturn(CASE_ID);
+        given(oldParty.getSolicitor()).willReturn(solicitor);
+        given(solicitor.getEmail()).willReturn(OLD_EMAIL);
+
+        given(noticeOfChangeContentProvider.buildNoticeOfChangeRespondentSolicitorTemplate(caseData, oldParty))
             .willReturn(EXPECTED_TEMPLATE);
 
-        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(CASE_DATA, OLD_RESPONDENT, NEW_RESPONDENT));
+        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(caseData, oldParty, newParty));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
             OLD_EMAIL,
             EXPECTED_TEMPLATE,
-            CASE_DATA.getId());
+            CASE_ID
+        );
     }
 
     @Test
     void shouldNotSendEmailToSolicitorAccessRevokedWhenSolicitorIsNull() {
-        underTest.notifySolicitorAccessRevoked(
-            new NoticeOfChangeEvent(CASE_DATA, Respondent.builder().build(), NEW_RESPONDENT));
+        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(caseData, oldParty, newParty));
 
         verifyNoInteractions(noticeOfChangeContentProvider, notificationService);
     }
 
     @Test
     void shouldNotSendEmailToSolicitorAccessRevokedWhenSolicitorEmailIsBlank() {
-        Respondent respondentWithNoEmailSolicitor = Respondent.builder()
-            .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
-            .solicitor(RespondentSolicitor.builder().email("").build())
-            .build();
+        given(oldParty.getSolicitor()).willReturn(solicitor);
+        given(solicitor.getEmail()).willReturn("");
 
-        underTest.notifySolicitorAccessRevoked(
-            new NoticeOfChangeEvent(CASE_DATA, respondentWithNoEmailSolicitor, NEW_RESPONDENT));
+        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(caseData, oldParty, newParty));
 
         verifyNoInteractions(noticeOfChangeContentProvider, notificationService);
     }
-
-    private static Respondent buildNewRespondent() {
-        return Respondent.builder()
-            .solicitor(RespondentSolicitor.builder().firstName("David").lastName("Jones").email(NEW_EMAIL).build())
-            .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
-            .build();
-    }
-
-    private static Respondent buildOldRespondent() {
-        return Respondent.builder()
-            .solicitor(RespondentSolicitor.builder().firstName("Jane").lastName("Taylor").email(OLD_EMAIL).build())
-            .party(RespondentParty.builder().firstName(RESPONDENT_FIRST_NAME).lastName(RESPONDENT_LAST_NAME).build())
-            .build();
-    }
-
 }
