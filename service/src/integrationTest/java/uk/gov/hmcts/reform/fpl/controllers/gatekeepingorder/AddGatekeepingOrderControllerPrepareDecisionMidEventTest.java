@@ -16,35 +16,44 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_CASE_SUMMARY;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -54,7 +63,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractCallbackTest {
 
     private static final String CALLBACK_NAME = "prepare-decision";
-
     private static final Document DOCUMENT = testDocument();
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.buildFromDocument(DOCUMENT);
     private static final String NEXT_STEPS = "## Next steps\n\n"
@@ -70,7 +78,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
     AddGatekeepingOrderControllerPrepareDecisionMidEventTest() {
         super("add-gatekeeping-order");
     }
-
 
     @Nested
     class ServiceRoute {
@@ -119,7 +126,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
                     "gatekeepingOrderRouter", SERVICE,
                     "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
                     "dateSubmitted", dateNow(),
-                    "applicants", getApplicant(),
+                    "applicants", getApplicant("Legacy applicant name"),
                     "directionsForLocalAuthority", List.of(localAuthorityStandardDirection.getType()),
                     "directionsForCafcass", List.of(cafcassStandardDirection.getType()),
                     "direction-SEND_CASE_SUMMARY", localAuthorityStandardDirection,
@@ -144,7 +151,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
         }
 
         @Test
-        void shouldSetOnlyDraftDocumentWhenOrderCanBeSealed() {
+        void shouldGenerateDraftDocumentWithLocalAuthorityApplicantWhenOrderCanBeSealed() {
             CaseData caseData = buildBaseCaseData().toBuilder()
                 .gatekeepingOrderRouter(SERVICE)
                 .allocatedJudge(allocatedJudge())
@@ -152,6 +159,8 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
                     .gatekeepingOrderIssuingJudge(issuingJudge())
                     .build())
                 .hearingDetails(hearingBookings())
+                .localAuthorities(getLocalAuthority("Local authority name"))
+                .applicants(getApplicant("Legacy applicant name"))
                 .build();
 
             GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
@@ -160,10 +169,47 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
                 .nextSteps(null)
                 .build();
 
+            DocmosisStandardDirectionOrder expectedDocumentCustomization = expectedDocumentCustomization().toBuilder()
+                .applicantName("Local authority name")
+                .build();
+
             CaseData responseData = extractCaseData(postMidEvent(caseData, CALLBACK_NAME));
 
             assertThat(responseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision())
                 .isEqualTo(expectedSealDecision);
+
+            verify(documentGeneratorService).generateDocmosisDocument(expectedDocumentCustomization, SDO);
+        }
+
+        @Test
+        void shouldGenerateDraftDocumentWithLegacyApplicantWhenOrderCanBeSealed() {
+            CaseData caseData = buildBaseCaseData().toBuilder()
+                .gatekeepingOrderRouter(SERVICE)
+                .allocatedJudge(allocatedJudge())
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                    .gatekeepingOrderIssuingJudge(issuingJudge())
+                    .build())
+                .hearingDetails(hearingBookings())
+                .localAuthorities(null)
+                .applicants(getApplicant("Legacy applicant name"))
+                .build();
+
+            GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
+                .draftDocument(DOCUMENT_REFERENCE)
+                .dateOfIssue(dateNow())
+                .nextSteps(null)
+                .build();
+
+            DocmosisStandardDirectionOrder expectedDocumentCustomization = expectedDocumentCustomization().toBuilder()
+                .applicantName("Legacy applicant name")
+                .build();
+
+            CaseData responseData = extractCaseData(postMidEvent(caseData, CALLBACK_NAME));
+
+            assertThat(responseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision())
+                .isEqualTo(expectedSealDecision);
+
+            verify(documentGeneratorService).generateDocmosisDocument(expectedDocumentCustomization, SDO);
         }
     }
 
@@ -236,15 +282,22 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .id(1234123412341234L)
             .dateSubmitted(dateNow())
-            .applicants(getApplicant())
+            .localAuthorities(getLocalAuthority(""))
+            .applicants(getApplicant(""))
             .build();
     }
 
-    private List<Element<Applicant>> getApplicant() {
+    private List<Element<Applicant>> getApplicant(String name) {
         return wrapElements(Applicant.builder()
             .party(ApplicantParty.builder()
-                .organisationName("")
+                .organisationName(name)
                 .build())
+            .build());
+    }
+
+    private List<Element<LocalAuthority>> getLocalAuthority(String name) {
+        return wrapElements(LocalAuthority.builder()
+            .name(name)
             .build());
     }
 
@@ -265,6 +318,27 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
             .judgeEmailAddress("judy@example.com")
+            .build();
+    }
+
+    private DocmosisStandardDirectionOrder expectedDocumentCustomization() {
+        return DocmosisStandardDirectionOrder.builder()
+            .ccdCaseNumber("1234-1234-1234-1234")
+            .dateOfIssue("<date will be added on issue>")
+            .draftbackground("[userImage:draft-watermark.png]")
+            .crest("[userImage:crest.png]")
+            .complianceDeadline(formatLocalDateToString(dateNow().plusWeeks(26), FormatStyle.LONG))
+            .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
+                .judgeTitleAndName("Her Honour Judge Judy")
+                .legalAdvisorName("")
+                .build())
+            .children(emptyList())
+            .directions(emptyList())
+            .respondents(emptyList())
+            .applicantName("x")
+            .hearingBooking(DocmosisHearingBooking.builder()
+                .build())
+            .courtName("Family Court")
             .build();
     }
 }

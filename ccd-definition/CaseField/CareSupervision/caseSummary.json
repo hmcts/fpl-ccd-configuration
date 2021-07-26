@@ -186,15 +186,6 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseSummaryLASolicitorName",
-    "Label": "LA solicitor",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryLASolicitorEmail",
     "Label": "Email address",
     "FieldType": "Text",

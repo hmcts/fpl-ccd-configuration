@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.MlaLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -164,7 +164,8 @@ class LocalAuthorityServiceTest {
         void shouldReturnEmptyListOfLocalAuthoritiesRepresentedByExternalSolicitors() {
             given(epsConfig.getLocalAuthorities(ORG_ID)).willReturn(emptyList());
 
-            List<LocalAuthority> representedLocalAuthorities = underTest.getOutsourcingLocalAuthorities(ORG_ID, EPS);
+            List<LocalAuthorityName> representedLocalAuthorities = underTest
+                .getOutsourcingLocalAuthorities(ORG_ID, EPS);
 
             assertThat(representedLocalAuthorities).isEmpty();
         }
@@ -173,7 +174,8 @@ class LocalAuthorityServiceTest {
         void shouldReturnEmptyListOfLocalAuthoritiesRepresentedByOtherLocalAuthority() {
             given(mlaConfig.getLocalAuthorities(ORG_ID)).willReturn(emptyList());
 
-            List<LocalAuthority> representedLocalAuthorities = underTest.getOutsourcingLocalAuthorities(ORG_ID, EPS);
+            List<LocalAuthorityName> representedLocalAuthorities = underTest
+                .getOutsourcingLocalAuthorities(ORG_ID, EPS);
 
             assertThat(representedLocalAuthorities).isEmpty();
         }
@@ -183,14 +185,15 @@ class LocalAuthorityServiceTest {
             given(epsConfig.getLocalAuthorities(ORG_ID)).willReturn(List.of("SA", "HN"));
             given(mlaConfig.getLocalAuthorities(ORG_ID)).willReturn(List.of("SN"));
 
-            List<LocalAuthority> representedLocalAuthorities = underTest.getOutsourcingLocalAuthorities(ORG_ID, EPS);
+            List<LocalAuthorityName> representedLocalAuthorities = underTest
+                .getOutsourcingLocalAuthorities(ORG_ID, EPS);
 
             assertThat(representedLocalAuthorities).containsExactlyInAnyOrder(
-                LocalAuthority.builder()
+                LocalAuthorityName.builder()
                     .code("SA")
                     .name("Swansea City Council")
                     .build(),
-                LocalAuthority.builder()
+                LocalAuthorityName.builder()
                     .code("HN")
                     .name("London Borough Hillingdon")
                     .build());
@@ -201,10 +204,11 @@ class LocalAuthorityServiceTest {
             given(epsConfig.getLocalAuthorities(ORG_ID)).willReturn(List.of("SA", "HN"));
             given(mlaConfig.getLocalAuthorities(ORG_ID)).willReturn(List.of("SN"));
 
-            List<LocalAuthority> representedLocalAuthorities = underTest.getOutsourcingLocalAuthorities(ORG_ID, MLA);
+            List<LocalAuthorityName> representedLocalAuthorities = underTest
+                .getOutsourcingLocalAuthorities(ORG_ID, MLA);
 
             assertThat(representedLocalAuthorities).containsExactlyInAnyOrder(
-                LocalAuthority.builder()
+                LocalAuthorityName.builder()
                     .code("SN")
                     .name("Swindon Borough Council")
                     .build());

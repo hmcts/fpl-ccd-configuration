@@ -29,16 +29,33 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
     private CoreCaseDataService coreCaseDataService;
 
     @MockBean
-    private FeatureToggleService toggleService;
+    private FeatureToggleService featureToggleService;
 
-    private final CaseData caseData = CaseData.builder()
+    final CaseData caseData = CaseData.builder()
         .id(10L)
         .state(State.OPEN)
         .build();
 
     @Test
-    void shouldUpdateTaskList() {
-        when(toggleService.isLanguageRequirementsEnabled()).thenReturn(false);
+    void shouldUpdateTaskListWithAdditionalContactsToggledOff() {
+        when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(false);
+
+        postSubmittedEvent(caseData);
+
+        String expectedTaskList = readString("fixtures/taskList-legacyApplicant.md").trim();
+
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION,
+            CASE_TYPE,
+            caseData.getId(),
+            "internal-update-task-list",
+            Map.of("taskList", expectedTaskList));
+    }
+
+    @Test
+    void shouldUpdateTaskListWithAdditionalContactsToggledOn() {
+        when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+        when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(false);
 
         postSubmittedEvent(caseData);
 
@@ -54,7 +71,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldIncludeLanguageSelectionIfToggledOn() {
-        when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+        when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(true);
 
         postSubmittedEvent(caseData);
 
