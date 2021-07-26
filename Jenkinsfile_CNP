@@ -242,6 +242,12 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview')
   }
 
+  before('highleveldatasetup') {
+    // to remove this - just to try that works from here. It won't work if the env is not up.
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview')
+  }
+
   after('highLevelDataSetup') {
     // to remove this - just to try that works from here. It won't work if the env is not up.
     archiveCoreCaseDataDefinitions('preview')
@@ -249,6 +255,12 @@ withPipeline(type, product, component) {
   }
 
   before('highLevelDataSetup:preview') {
+    // to remove this - just to try that works from here. It won't work if the env is not up.
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview')
+  }
+
+  before('highleveldatasetup:preview') {
     // to remove this - just to try that works from here. It won't work if the env is not up.
     archiveCoreCaseDataDefinitions('preview')
     uploadCoreCaseDataDefinitions('preview')
