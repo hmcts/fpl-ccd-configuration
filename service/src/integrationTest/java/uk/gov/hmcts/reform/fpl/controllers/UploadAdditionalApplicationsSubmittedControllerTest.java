@@ -291,20 +291,21 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
-        checkUntil(() ->
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+
             verify(notificationClient, never()).sendEmail(
                 eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
                 eq("admin@family-court.com"),
                 anyMap(),
                 eq(NOTIFICATION_REFERENCE)
-            ));
-
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        ));
+            );
+        });
     }
 
     @Test
