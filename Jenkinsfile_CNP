@@ -227,7 +227,6 @@ withPipeline(type, product, component) {
   }
 
   after('functionalTest:aat') {
-    archiveCoreCaseDataDefinitions('prod')
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
@@ -236,6 +235,37 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
+
+  after('highLevelDataSetup:preview') {
+    // to remove this - just to try that works from here. It won't work if the env is not up.
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview')
+  }
+
+  after('highLevelDataSetup:aat') {
+    archiveCoreCaseDataDefinitions('aat')
+    uploadCoreCaseDataDefinitions('aat')
+  }
+
+  after('highLevelDataSetup:demo') {
+    archiveCoreCaseDataDefinitions('demo')
+    uploadCoreCaseDataDefinitions('demo')
+  }
+
+  after('highLevelDataSetup:perftest') {
+    archiveCoreCaseDataDefinitions('perftest')
+    uploadCoreCaseDataDefinitions('perftest')
+  }
+
+  after('highLevelDataSetup:ithc') {
+    archiveCoreCaseDataDefinitions('ithc')
+    uploadCoreCaseDataDefinitions('ithc')
+  }
+
+//  after('highLevelDataSetup:prod') {
+//    archiveCoreCaseDataDefinitions('prod')
+//    uploadCoreCaseDataDefinitions('prod')
+//  }
 
   before('buildinfra:demo') {
     withSubscription('nonprod') {
@@ -268,7 +298,5 @@ withPipeline(type, product, component) {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
     env.SMOKE_TESTS_SELECTOR = "@skip-smoke-test"
-    archiveCoreCaseDataDefinitions('aat')
-    uploadCoreCaseDataDefinitions('aat')
   }
 }
