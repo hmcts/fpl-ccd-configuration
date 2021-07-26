@@ -436,6 +436,8 @@ public class CaseData {
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
 
+    private final String notifyApplicationsToAllOthers;
+
     public String getOrderAppliesToAllChildren() {
         return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
     }
