@@ -6,7 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
@@ -131,7 +130,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("Yes");
 
         assertThat(underTest.validate(caseData,caseDataBefore))
-            .isEqualTo(List.of("You cannot change the representation of all the children"));
+            .isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 
     @DisplayName("Validate with errors when the children had the same representation and this is changed")
@@ -144,7 +143,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("No");
 
         assertThat(underTest.validate(caseData,caseDataBefore))
-            .isEqualTo(List.of("You cannot change the representation of all the children"));
+            .isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 
     @DisplayName("Validate with no errors when nothing changes and the children have the same representative")
@@ -190,11 +189,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(eventData.getAllRepresentationDetails()).thenReturn(List.of(details));
         when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(changedDetails));
 
-        ChildParty party = mock(ChildParty.class);
-        when(CHILD.getParty()).thenReturn(party);
-        when(party.getFullName()).thenReturn("Dave Davidson");
-
         assertThat(underTest.validate(caseData, caseDataBefore))
-            .isEqualTo(List.of("You cannot change Dave Davidson's legal representative"));
+            .isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 }

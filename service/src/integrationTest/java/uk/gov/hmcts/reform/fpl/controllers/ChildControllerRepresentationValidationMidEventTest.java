@@ -75,7 +75,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
             toCallBackRequest(caseData, caseDataBefore), "representation-validation", SOLICITOR_ROLE
         );
 
-        assertThat(response.getErrors()).isEqualTo(List.of("You cannot change the representation of all the children"));
+        assertThat(response.getErrors()).isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 
      @Test
@@ -188,7 +188,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "representation-validation");
 
         assertThat(response.getErrors()).isEqualTo(List.of(
-            "Enter an email address in the correct format for jack's legal representative, for example name@example.com"
+            "Enter a correct email address for jack's legal representative, for example name@example.com"
         ));
     }
 

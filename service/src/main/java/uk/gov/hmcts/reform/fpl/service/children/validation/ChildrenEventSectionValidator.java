@@ -10,8 +10,7 @@ public interface ChildrenEventSectionValidator {
     String MAIN_REP_MODIFICATION_ERROR = "You cannot change the main representative";
     String CHILD_REMOVAL_ERROR = "You cannot remove %s from the case";
     String CHILD_ADDITION_ERROR = "You cannot add a child to the case";
-    String SAME_REPRESENTATION_ALTERED_ERROR = "You cannot change the representation of all the children";
-    String CHILD_REP_ALTERED_ERROR = "You cannot change %s's legal representative";
+    String CHILD_REP_ALTERED_ERROR = "You cannot change a child's legal representative";
 
     // Exception messages
     String SAME_REP_NULL_ERROR = "The field childrenHaveSameRepresentation should not be null";

@@ -16,9 +16,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public final class MainRepresentativeValidator {
-    private static final String MAIN_REP_EMAIL_ERROR = "Enter an email address in the correct format for the "
-                                                       + "children's main legal representative, for example "
-                                                       + "name@example.com";
+    private static final String MAIN_REP_EMAIL_ERROR = "Enter a correct email address, for example name@example.com";
 
     private final ValidateEmailService emailValidator;
 

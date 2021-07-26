@@ -63,7 +63,7 @@ public final class LocalAuthorityUserIndividualRepresentativeValidator extends L
 
         // now nothing can change
         if (oldSameRepresentation != currentSameRepresentation) {
-            return List.of(SAME_REPRESENTATION_ALTERED_ERROR);
+            return List.of(CHILD_REP_ALTERED_ERROR);
         }
 
         if (YES == currentSameRepresentation) {
@@ -83,8 +83,7 @@ public final class LocalAuthorityUserIndividualRepresentativeValidator extends L
             ChildRepresentationDetails oldDetail = oldDetails.get(i);
 
             if (!Objects.equals(oldDetail, currentDetail)) {
-                String childName = children.get(i).getValue().getParty().getFullName();
-                errors.add(String.format(CHILD_REP_ALTERED_ERROR, childName));
+                errors.add(CHILD_REP_ALTERED_ERROR);
             }
         }
 

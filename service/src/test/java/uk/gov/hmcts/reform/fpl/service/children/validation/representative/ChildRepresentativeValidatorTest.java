@@ -65,6 +65,20 @@ class ChildRepresentativeValidatorTest {
     }
 
     @Test
+    void validateChildRepresentationRadioNotSet() {
+        CaseData caseData = CaseData.builder()
+            .children1(CHILDREN)
+            .childrenEventData(ChildrenEventData.builder()
+                .childRepresentationDetails0(ChildRepresentationDetails.builder().build())
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(
+           "Confirm Dave Davidson’s legal representation"
+        ));
+    }
+
+    @Test
     void validateChildRepresentationDetailsWithUsingEmptyFields() {
         when(REPRESENTATIVE.hasOrganisationDetails()).thenReturn(false);
         when(REPRESENTATIVE.hasFullName()).thenReturn(false);

@@ -132,8 +132,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "representation-details");
 
         assertThat(response.getErrors()).isEqualTo(List.of(
-            "Enter an email address in the correct format for the children's main legal representative, for example "
-            + "name@example.com"
+            "Enter a correct email address, for example name@example.com"
         ));
     }
 

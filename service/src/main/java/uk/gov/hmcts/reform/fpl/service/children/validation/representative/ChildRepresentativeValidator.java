@@ -17,6 +17,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NOT_SPECIFIED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Component
@@ -27,8 +28,8 @@ public final class ChildRepresentativeValidator {
     private static final String FULL_NAME_ERROR = "Add the full name of %s's legal representative";
     private static final String NO_EMAIL_ERROR = "Add the email address of %s's legal representative";
     private static final String ORG_DETAILS_ERROR = "Add the organisation details for %s's legal representative";
-    private static final String CHILD_REP_EMAIL_ERROR = "Enter an email address in the correct format for %s's legal "
-                                                        + "representative, for example name@example.com";
+    private static final String CHILD_REP_EMAIL_ERROR = "Enter a correct email address for %s's legal representative,"
+                                                        + " for example name@example.com";
 
     private final ValidateEmailService emailValidator;
 
@@ -50,7 +51,14 @@ public final class ChildRepresentativeValidator {
                 continue;
             }
 
-            if (YES == YesNo.fromString(details.getUseMainSolicitor())) {
+            YesNo useMainSolicitor = YesNo.fromString(details.getUseMainSolicitor());
+
+            if (NOT_SPECIFIED == useMainSolicitor) {
+                errors.add(format(NO_DETAILS_ERROR, childName));
+                continue;
+            }
+
+            if (YES == useMainSolicitor) {
                 continue;
             }
 

@@ -108,7 +108,7 @@ public class ChildController extends CallbackController {
 
         if (toggleService.isChildRepresentativeSolicitorEnabled()) {
             caseData = getCaseData(caseDetails);
-            CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+            CaseData caseDataBefore = getCaseDataBefore(request);
             if (shouldUpdateRepresentation(caseData, caseDataBefore)) {
                 caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
                     caseData, caseDataBefore, SolicitorRole.Representing.CHILD,
