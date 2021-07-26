@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -132,4 +133,11 @@ public class ElementUtils {
             .orElse(null);
     }
 
+    public static <T> List<Element<T>> addMissingIds(List<Element<T>> elements) {
+        nullSafeList(elements).stream()
+            .filter(element -> isNull(element.getId()))
+            .forEach(element -> element.setId(UUID.randomUUID()));
+
+        return elements;
+    }
 }

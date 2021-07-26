@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.payment.PaymentService.BLANK_PARAMETER_VALUE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {PaymentService.class})
@@ -347,12 +349,55 @@ class PaymentServiceTest {
         FeeDto supervisionOrderFee = FeeDto.builder().calculatedAmount(BigDecimal.TEN).build();
 
         @Test
-        void shouldMakeCorrectPaymentForCaseOrders() {
+        void shouldTakePaymentContextDetailsFromLocalAuthorityDetails() {
             when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
                 .totalAmount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build());
-            CaseData caseData = CaseData.builder()
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .pbaNumber("PBA1234567")
+                .customerReference("localAuthorityReference")
+                .clientCode("localAuthorityCode")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority("LA")
+                .localAuthorities(wrapElements(localAuthority))
+                .applicants(List.of(element(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .pbaNumber("PBA123")
+                        .clientCode("clientCode")
+                        .customerReference("customerReference")
+                        .build())
+                    .build())))
+                .orders(orders)
+                .build();
+
+            final CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("localAuthorityReference")
+                .caseReference("localAuthorityCode")
+                .accountNumber("PBA1234567")
+                .amount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build();
+
+            paymentService.makePaymentForCaseOrders(caseData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(feeService).getFeesDataForOrders(orders);
+        }
+
+        @Test
+        void shouldTakePaymentContextDetailsFromLegacyApplicantDetailsWhenNoLocalAuthority() {
+            when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
+                .totalAmount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build());
+
+            final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
                 .caseLocalAuthority("LA")
                 .applicants(List.of(element(Applicant.builder()
@@ -545,13 +590,11 @@ class PaymentServiceTest {
         return CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority("LA")
-            .applicants(List.of(element(Applicant.builder()
-                .party(ApplicantParty.builder()
-                    .pbaNumber("PBA123")
-                    .clientCode(clientCode)
-                    .customerReference(customerReference)
-                    .build())
-                .build())))
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .pbaNumber("PBA123")
+                .clientCode(clientCode)
+                .customerReference(customerReference)
+                .build()))
             .orders(orders)
             .build();
     }

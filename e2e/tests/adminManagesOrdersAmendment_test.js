@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
+const api = require('../helpers/api_helper');
 const caseData = require('../fixtures/caseData/caseWithAllTypesOfOrders.json');
 const closedCaseData = {
   state: 'CLOSED',
@@ -49,6 +50,7 @@ Scenario('Amend generated order', async ({ I, caseViewPage, manageOrdersEventPag
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
 Scenario('Amend standard directions order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
@@ -61,12 +63,14 @@ Scenario('Amend urgent hearing order', async ({ I, caseViewPage, manageOrdersEve
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.urgentHearingOrder);
   assertAmendment(I, caseViewPage, orders.urgentHearingOrder);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
 Scenario('Amend case management order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.caseManagementOrder);
   assertAmendment(I, caseViewPage, orders.caseManagementOrder);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
 Scenario('Amend generated order (closed)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
