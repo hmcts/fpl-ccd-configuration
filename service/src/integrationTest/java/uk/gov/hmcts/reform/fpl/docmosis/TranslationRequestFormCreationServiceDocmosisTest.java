@@ -214,7 +214,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             }
             bufferedReader.close();
         } catch (IOException exception) {
-           return 0;
+            return 0;
         }
 
         return numberOfWords;
