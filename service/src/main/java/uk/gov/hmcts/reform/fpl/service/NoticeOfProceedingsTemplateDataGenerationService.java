@@ -44,7 +44,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
-            .applicantName(getFirstApplicantName(caseData.getApplicants()))
+            .applicantName(getFirstApplicantName(caseData))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
             .hearingBooking(getHearingBooking(hearing))

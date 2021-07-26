@@ -223,12 +223,69 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "applicants",
-    "Label": "Applicants",
+    "ID": "localAuthorities",
+    "Label": "Local authority",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Applicants",
+    "FieldTypeParameter": "LocalAuthority",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthority",
+    "Label": "Applicant local authority",
+    "FieldType": "LocalAuthority",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleagues",
+    "Label": "Colleague",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Colleague",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleaguesLabel",
+    "FieldType": "Label",
+    "Label": "<h2 class='govuk-!-margin-bottom-0'>Add colleagues to the case</h2><span class='form-hint'>Add at least 1 case solicitor</span>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "mainContactLabel",
+    "FieldType": "Label",
+    "Label": "<h2>Main contact</h2>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleaguesList",
+    "Label": "Nominate a case contact",
+    "HintText": "HMCTS will contact this person if they have any questions",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityMainContactShown",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Control filed not displayed"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -1,17 +1,19 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
+const moment = require('moment');
 const caseData = require('../fixtures/caseData/gatekeepingWithPastHearingDetails.json');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const caseDataWithApplication = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndApplication.json');
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
 
-const approvalDate = new Date(2021, 3, 9);
 const orderTitle = 'some title';
-const aYearAgo = new Date(Date.now() - (3600 * 1000 * 24));
-const today = new Date(Date.now());
-const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
+const today = moment().hours(10).minutes(5).seconds(23).milliseconds(0).toDate();
+const aYearAgo = moment(today).subtract(1, 'years').toDate();
+const futureDate = moment(today).add(1, 'days').toDate();
 const removalAddress = { buildingAndStreet: { lineOne: 'Flat 2 Caversham', town: 'Reading' }, postcode: 'RG4 7AA' };
 const applicationToLink = 'C2, 16 June 2021, 11:49am';
+
+let approvalDate = moment().year(2021).month(3).day(9).hours(10).minutes(30).seconds(15).milliseconds(0).toDate();
 let caseId;
 
 Feature('HMCTS Admin manages orders');
@@ -20,6 +22,7 @@ async function setupScenario(I, caseViewPage) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(caseData); }
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  approvalDate = moment(approvalDate).add(1, 'days').toDate();
 }
 
 Scenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
@@ -34,7 +37,7 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
 
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
   await I.goToNextPage();
-  // Judge and approval date is already preFilled
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -49,7 +52,7 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
     orderType: 'Care order (C32A)',
-    approvalDate: new Date(2012, 10, 3),
+    approvalDate: approvalDate,
     others: 'John Doe',
   });
 });
@@ -63,7 +66,7 @@ Scenario('Create 32b discharge of care order', async ({ I, caseViewPage, manageO
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
-  await manageOrdersEventPage.enterApprovalDateTime(today);
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -81,12 +84,15 @@ Scenario('Create 32b discharge of care order', async ({ I, caseViewPage, manageO
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
     orderType: 'Discharge of care order (C32B)',
-    approvalDate: today,
+    approvalDate: approvalDate,
   });
 });
 
 Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I, caseViewPage);
+  const newCaseId = await I.submitNewCaseWithData(caseData);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
@@ -118,7 +124,10 @@ Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) 
 });
 
 Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I, caseViewPage);
+  const newCaseId = await I.submitNewCaseWithData(caseData);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
@@ -177,7 +186,7 @@ Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPa
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 4,
+    orderIndex: 1,
     orderType: 'Blank order (C21)',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
@@ -229,6 +238,7 @@ Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrders
   manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -243,9 +253,9 @@ Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrders
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 3,
+    orderIndex: 1,
     orderType: 'Supervision order (C35A)',
-    approvalDate: today,
+    approvalDate: approvalDate,
     others: 'John Doe',
   });
 });
@@ -260,6 +270,7 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
   manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -274,9 +285,9 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 3,
+    orderIndex: 1,
     orderType: manageOrdersEventPage.orders.title.c33,
-    approvalDate: today,
+    approvalDate: approvalDate,
     others: 'John Doe',
   });
 });
@@ -291,6 +302,7 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
   manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -303,9 +315,9 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 3,
+    orderIndex: 1,
     orderType: manageOrdersEventPage.orders.title.c35B,
-    approvalDate: today,
+    approvalDate: approvalDate,
     others: 'John Doe',
   });
 });
@@ -319,7 +331,7 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
-  await manageOrdersEventPage.enterApprovalDateTime(today);
+  await manageOrdersEventPage.enterApprovalDateTime(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -337,7 +349,7 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
     orderIndex: 1,
     orderType: 'Special guardianship order (C43A)',
     orderTitle: orderTitle,
-    approvalDate: today,
+    approvalDate: approvalDate,
     specialGuardian: 'Joe Bloggs',
   });
 });
@@ -352,6 +364,7 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
   manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
   await I.goToNextPage();
@@ -369,9 +382,9 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I,caseViewPage,{
-    orderIndex: 4,
+    orderIndex: 1,
     orderType: manageOrdersEventPage.orders.title.c43,
-    approvalDate: today,
+    approvalDate: approvalDate,
     others: 'John Doe',
   });
 });
@@ -433,7 +446,7 @@ Scenario('Upload Manual order (other order)', async ({ I, caseViewPage, manageOr
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 9,
+    orderIndex: 1,
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
@@ -454,8 +467,7 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
   await manageOrdersEventPage.selectHearing('Case management hearing, 3 November 2012');
   manageOrdersEventPage.linkApplication(applicationToLink);
   await I.goToNextPage();
-
-  // Judge and approval date is already preFilled
+  await manageOrdersEventPage.enterApprovalDateTime(approvalDate);
   await I.goToNextPage();
 
   await manageOrdersEventPage.selectSingleChild('Timothy Jones');
@@ -480,7 +492,7 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
     orderType: 'Authority to keep a child in secure accommodation (C26)',
-    approvalDate: new Date(2012, 10, 3),
+    approvalDate: approvalDate,
     documentName: 'c26_secure_accommodation_order.pdf',
     others: 'John Doe',
   });
@@ -496,6 +508,7 @@ Scenario('Create Parental responsibility order (C45A)', async ({ I, caseViewPage
   manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDateTime(approvalDate);
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -514,7 +527,7 @@ Scenario('Create Parental responsibility order (C45A)', async ({ I, caseViewPage
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
     orderType: 'Parental responsibility order (C45A)',
-    approvalDate: today,
+    approvalDate: approvalDate,
     others: 'John Doe',
   });
 });
