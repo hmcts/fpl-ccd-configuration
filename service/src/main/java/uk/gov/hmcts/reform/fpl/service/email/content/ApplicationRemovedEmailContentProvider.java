@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
@@ -31,10 +33,15 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 public class ApplicationRemovedEmailContentProvider extends AbstractEmailContentProvider {
     private final EmailNotificationHelper helper;
 
-    public ApplicationRemovedNotifyData getNotifyData(final CaseData caseData) {
+    public ApplicationRemovedNotifyData getNotifyData(final CaseData caseData, final AdditionalApplicationsBundle removedApplication) {
         return ApplicationRemovedNotifyData.builder()
-            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
+            .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseId(caseData.getId().toString())
+            .c2Filename(removedApplication.getC2DocumentBundle().getDocument().getFilename())
+            .removalDate(LocalDateTime.now().toString())
+            .reason(removedApplication.getRemovalReason())
+            .applicantName(removedApplication.getC2DocumentBundle().getApplicantName())
+            .applicationFee("1")
             .build();
     }
 }

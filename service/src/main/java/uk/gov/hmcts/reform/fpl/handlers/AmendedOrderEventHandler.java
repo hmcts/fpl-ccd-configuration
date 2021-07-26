@@ -7,6 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
+import uk.gov.hmcts.reform.fpl.events.ApplicationRemovedEvent;
 import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;

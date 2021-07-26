@@ -9,4 +9,10 @@ import lombok.experimental.SuperBuilder;
 @Data
 public class ApplicationRemovedNotifyData extends BaseCaseNotifyData {
     private final String caseId;
+    private final String c2Filename;
+    private final String applicantName;
+    private final String removalDate;
+    private final String reason;
+    private final String applicationFee;
+    private final String childLastName;
    }
