@@ -133,9 +133,13 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
         return ModifiedOrderType.CASE_MANAGEMENT_ORDER.getLabel();
     }
 
+    public List<Element<Other>> getOthers() {
+        return defaultIfNull(others, new ArrayList<>());
+    }
+
     @JsonIgnore
     @Override
     public List<Element<Other>> getSelectedOthers() {
-        return defaultIfNull(getOthers(), new ArrayList<>());
+        return this.getOthers();
     }
 }

@@ -5,5 +5,12 @@
     "ListElementCode": "CREATE",
     "ListElement": "Create an order",
     "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersOperationClosedState",
+    "ListElementCode": "AMEND",
+    "ListElement": "Amend order under the slip rule",
+    "DisplayOrder": 2
   }
 ]

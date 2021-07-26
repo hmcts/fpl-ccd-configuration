@@ -167,9 +167,13 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
         return type;
     }
 
+    public List<Element<Other>> getOthers() {
+        return defaultIfNull(others, new ArrayList<>());
+    }
+
     @JsonIgnore
     @Override
     public List<Element<Other>> getSelectedOthers() {
-        return defaultIfNull(this.getOthers(), new ArrayList<>());
+        return this.getOthers();
     }
 }

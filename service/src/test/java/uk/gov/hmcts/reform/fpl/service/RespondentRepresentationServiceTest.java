@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod.NOC;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @ExtendWith(SpringExtension.class)
@@ -53,6 +55,8 @@ class RespondentRepresentationServiceTest {
         ChangeOfRepresentation.class)));
     private static final List<Element<ChangeOfRepresentation>> CHANGE_OF_REPRESENTATIVES = List.of(element(mock(
         ChangeOfRepresentation.class)));
+    private static final String LA_NAME = "Local authority name";
+    private static final String APPLICANT_NAME = "Applicant name";
 
     @Autowired
     private RespondentRepresentationService underTest;
@@ -61,7 +65,90 @@ class RespondentRepresentationServiceTest {
     private ChangeOfRepresentationService changeOfRepresentationService;
 
     @Test
-    void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
+    void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseWithLocalAuthority() {
+        final RespondentParty respondentPartyOne = RespondentParty.builder()
+            .firstName("Joe")
+            .lastName("Bloggs")
+            .build();
+
+        final RespondentParty respondentPartyTwo = RespondentParty.builder()
+            .firstName("Sam")
+            .lastName("Smith")
+            .build();
+
+        final Organisation solicitorOrganisation = Organisation.builder()
+            .organisationName("Summers Inc")
+            .organisationID("12345")
+            .build();
+
+        final RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
+            .firstName("Ben")
+            .lastName("Summers")
+            .email("bensummers@gmail.com")
+            .organisation(solicitorOrganisation)
+            .build();
+
+        final Respondent respondentOne = Respondent.builder()
+            .party(respondentPartyOne)
+            .legalRepresentation("Yes")
+            .solicitor(respondentSolicitor)
+            .build();
+
+        final Respondent respondentTwo = Respondent.builder().party(respondentPartyTwo).build();
+
+        final CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(respondentOne),
+                element(respondentTwo)))
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LA_NAME)
+                .build()))
+            .applicants(List.of(element(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName(APPLICANT_NAME)
+                    .build())
+                .build())))
+            .build();
+
+
+        final Map<String, Object> data = underTest.generate(caseData);
+
+        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne,
+            LA_NAME);
+        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo,
+            LA_NAME);
+
+        final OrganisationPolicy expectedOrganisationPolicyOne = OrganisationPolicy.builder()
+            .organisation(solicitorOrganisation)
+            .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
+            .build();
+
+        final Map<String, Object> expectedNoticeOfChangeAnswers = Map.of(
+            "noticeOfChangeAnswers0", expectedNoticeOfChangeAnswersOne,
+            "noticeOfChangeAnswers1", expectedNoticeOfChangeAnswersTwo);
+
+        final Map<String, Object> expectedRespondentPolicies = Map.of(
+            "respondentPolicy0", expectedOrganisationPolicyOne,
+            "respondentPolicy1", buildOrganisationPolicy(SolicitorRole.SOLICITORB),
+            "respondentPolicy2", buildOrganisationPolicy(SolicitorRole.SOLICITORC),
+            "respondentPolicy3", buildOrganisationPolicy(SolicitorRole.SOLICITORD),
+            "respondentPolicy4", buildOrganisationPolicy(SolicitorRole.SOLICITORE),
+            "respondentPolicy5", buildOrganisationPolicy(SolicitorRole.SOLICITORF),
+            "respondentPolicy6", buildOrganisationPolicy(SolicitorRole.SOLICITORG),
+            "respondentPolicy7", buildOrganisationPolicy(SolicitorRole.SOLICITORH),
+            "respondentPolicy8", buildOrganisationPolicy(SolicitorRole.SOLICITORI),
+            "respondentPolicy9", buildOrganisationPolicy(SolicitorRole.SOLICITORJ));
+
+        final Map<String, Object> expectedData = new HashMap<>();
+
+        expectedData.putAll(expectedNoticeOfChangeAnswers);
+        expectedData.putAll(expectedRespondentPolicies);
+
+        assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseWithLegacyApplicant() {
         final RespondentParty respondentPartyOne = RespondentParty.builder()
             .firstName("Joe")
             .lastName("Bloggs")
@@ -98,16 +185,18 @@ class RespondentRepresentationServiceTest {
                 element(respondentTwo)))
             .applicants(List.of(element(Applicant.builder()
                 .party(ApplicantParty.builder()
-                    .organisationName("Test organisation")
+                    .organisationName(APPLICANT_NAME)
                     .build())
                 .build())))
             .build();
 
-
         final Map<String, Object> data = underTest.generate(caseData);
 
-        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne);
-        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo);
+        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne,
+            APPLICANT_NAME);
+
+        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo,
+            APPLICANT_NAME);
 
         final OrganisationPolicy expectedOrganisationPolicyOne = OrganisationPolicy.builder()
             .organisation(solicitorOrganisation)
@@ -348,11 +437,11 @@ class RespondentRepresentationServiceTest {
         }
     }
 
-    private static NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty) {
+    private static NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty, String applicant) {
         return NoticeOfChangeAnswers.builder()
             .respondentFirstName(respondentParty.getFirstName())
             .respondentLastName(respondentParty.getLastName())
-            .applicantName("Test organisation")
+            .applicantName(applicant)
             .build();
     }
 

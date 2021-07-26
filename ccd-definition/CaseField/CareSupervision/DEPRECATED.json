@@ -333,5 +333,24 @@
     "Label": "In person or remote via video",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "organisationDetailsLink",
+    "FieldType": "Label",
+    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterApplicant)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicants",
+    "Label": "Applicants",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Applicants",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

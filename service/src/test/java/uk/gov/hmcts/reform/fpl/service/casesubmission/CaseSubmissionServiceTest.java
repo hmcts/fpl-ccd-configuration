@@ -75,4 +75,15 @@ class CaseSubmissionServiceTest {
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }
+
+    @Test
+    void shouldGetSigneeName() {
+        final CaseData caseData = CaseData.builder().build();
+
+        given(templateDataGenerationService.getSigneeName(caseData)).willReturn("John Smith");
+
+        final String actualSigneeName = caseSubmissionService.getSigneeName(caseData);
+
+        assertThat(actualSigneeName).isEqualTo("John Smith");
+    }
 }

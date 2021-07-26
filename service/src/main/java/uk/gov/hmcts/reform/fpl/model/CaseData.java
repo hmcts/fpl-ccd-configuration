@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -163,7 +164,10 @@ public class CaseData {
     private final GroundsForEPO groundsForEPO;
     @NotEmpty(message = "Add applicant's details")
     @Valid
+    @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
+
+    private final List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -180,6 +184,7 @@ public class CaseData {
 
     private final Proceeding proceeding;
 
+    @Deprecated
     @NotNull(message = "Add the applicant's solicitor's details")
     @Valid
     private final Solicitor solicitor;
@@ -268,6 +273,7 @@ public class CaseData {
     private final List<Element<SentDocuments>> documentsSentToParties;
 
     @JsonIgnore
+    @Deprecated
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
@@ -550,14 +556,6 @@ public class CaseData {
 
     public Optional<Element<Respondent>> findRespondent(UUID id) {
         return findElement(id, getAllRespondents());
-    }
-
-    public Optional<Applicant> findApplicant(int seqNo) {
-        if (isEmpty(applicants) || applicants.size() <= seqNo) {
-            return empty();
-        } else {
-            return Optional.of(applicants.get(seqNo).getValue());
-        }
     }
 
     @JsonIgnore
@@ -967,6 +965,10 @@ public class CaseData {
     private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder()
         .build();
 
+    @JsonUnwrapped
+    @Builder.Default
+    private final LocalAuthorityEventData localAuthorityEventData = LocalAuthorityEventData.builder().build();
+
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;
     }
@@ -993,5 +995,9 @@ public class CaseData {
             .map(Organisation::getOrganisationID)
             .filter(StringUtils::isNotEmpty)
             .isPresent();
+    }
+
+    public List<Element<LocalAuthority>> getLocalAuthorities() {
+        return defaultIfNull(localAuthorities, new ArrayList<>());
     }
 }

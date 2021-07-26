@@ -12,10 +12,12 @@ import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -51,10 +53,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 class CaseDataExtractionServiceTest {
+
     private final CaseDataExtractionService service = new CaseDataExtractionService(
         new LookupTestConfig().courtLookupConfiguration(),
-        new HearingVenueLookUpService(new ObjectMapper())
-    );
+        new HearingVenueLookUpService(new ObjectMapper()));
+
     private HearingBooking hearingBooking;
 
     @Test
@@ -135,21 +138,65 @@ class CaseDataExtractionServiceTest {
         assertThat(service.getChildrenDetails(listChildren)).containsOnly(expectedChild);
     }
 
-    @Test
-    void shouldReturnApplicantNameWhenListOfApplicants() {
+    @Nested
+    class ApplicantName {
 
-        List<Element<Applicant>> listApplicants = wrapElements(Applicant.builder()
-            .party(ApplicantParty.builder().organisationName(LOCAL_AUTHORITY_1_NAME).build())
-            .build());
+        @Test
+        void shouldGetApplicantNameFromLocalAuthorityIfPresent() {
 
-        assertThat(service.getApplicantName(listApplicants)).isEqualTo(LOCAL_AUTHORITY_1_NAME);
-    }
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name("Local authority organisation")
+                .build();
 
-    @Test
-    void shouldReturnEmptyStringForApplicantNameWhenNoApplicantName() {
-        List<Element<Applicant>> listApplicants = wrapElements(Applicant.builder().build());
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority))
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder().organisationName("Applicant organisation").build())
+                    .build()))
+                .build();
 
-        assertThat(service.getApplicantName(listApplicants)).isEqualTo(StringUtils.EMPTY);
+            assertThat(service.getApplicantName(caseData)).isEqualTo("Local authority organisation");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyApplicantNameWhenLocalAuthorityNameIsMissing(String localAuthorityName) {
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name(localAuthorityName)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority))
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder().organisationName("Applicant organisation").build())
+                    .build()))
+                .build();
+
+            assertThat(service.getApplicantName(caseData)).isEmpty();
+        }
+
+        @Test
+        void shouldGetApplicantNameFromLegacyApplicantWhenNoLocalAuthority() {
+
+            final CaseData caseData = CaseData.builder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder().organisationName(LOCAL_AUTHORITY_1_NAME).build())
+                    .build()))
+                .build();
+
+            assertThat(service.getApplicantName(caseData)).isEqualTo(LOCAL_AUTHORITY_1_NAME);
+        }
+
+        @Test
+        void shouldReturnEmptyStringForApplicantNameWhenNoApplicantName() {
+
+            final CaseData caseData = CaseData.builder()
+                .applicants(wrapElements(Applicant.builder().build()))
+                .build();
+
+            assertThat(service.getApplicantName(caseData)).isEqualTo(StringUtils.EMPTY);
+        }
     }
 
     @Test
