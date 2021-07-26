@@ -237,9 +237,12 @@ withPipeline(type, product, component) {
   }
 
   after('highleveldatasetup') {
-    // to remove this - just to try that works from here. It won't work if the env is not up.
-    archiveCoreCaseDataDefinitions('preview')
-    uploadCoreCaseDataDefinitions('preview')
+    withSubscription('nonprod') {
+      withTeamSecrets(pipelineConf, 'preview') {
+        archiveCoreCaseDataDefinitions('preview')
+        uploadCoreCaseDataDefinitions('preview')
+      }
+    }
   }
 
   before('buildinfra:demo') {
