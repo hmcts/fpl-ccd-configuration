@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -24,6 +26,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final NotificationService notificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final AdditionalApplicationsUploadedEmailContentProvider additionalApplicationsUploadedEmailContentProvider;
+    private final FeatureToggleService toggleService;
 
     @EventListener
     public void notifyAdmin(final AdditionalApplicationsUploadedEvent event) {
@@ -34,8 +37,15 @@ public class AdditionalApplicationsUploadedEventHandler {
             NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider
                 .getNotifyData(caseData);
             String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
-            notificationService
-                .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
+
+            if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
+                notificationService
+                    .sendEmail(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData,
+                        caseData.getId());
+            } else {
+                notificationService
+                    .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
+            }
         }
     }
 }

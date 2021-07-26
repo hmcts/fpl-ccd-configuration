@@ -32,7 +32,8 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
     public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(buildCallout(caseData))
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .respondentLastName(helper.getSubjectLineLastName(caseData))
+            .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
             .build();

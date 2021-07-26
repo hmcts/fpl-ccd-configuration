@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -66,6 +67,9 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+
+    @MockBean
+    private FeatureToggleService toggleService;
 
     @Autowired
     private AdditionalApplicationsUploadedEventHandler additionalApplicationsUploadedEventHandler;
@@ -154,7 +158,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(subjectLine)
-            .lastName("Smith")
+            .respondentLastName("Smith")
+            .childLastName("Jones")
             .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab")
             .documentLink(jsonFileObject.toMap())
             .applicationTypes(Arrays.asList("C2", "C13A - Special guardianship order"))

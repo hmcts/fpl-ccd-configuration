@@ -18,6 +18,8 @@ public final class NotifyTemplates {
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
         = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
+    public static final String UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
+        = "d5f41125-76d0-43f9-971b-fe1ff6a26acf";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =

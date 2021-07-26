@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,8 +14,8 @@ import java.util.List;
 @SuperBuilder
 public final class AdditionalApplicationsUploadedTemplate extends SharedNotifyTemplate {
     private final String callout;
-    @JsonProperty("respondentLastName")
-    private final String lastName;
+    private final String respondentLastName;
+    private final String childLastName;
     private final String documentUrl;
     private final List<String> applicationTypes;
 }
