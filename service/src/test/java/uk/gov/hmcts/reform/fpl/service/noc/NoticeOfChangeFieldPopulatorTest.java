@@ -5,8 +5,10 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -49,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORI;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORJ;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class NoticeOfChangeFieldPopulatorTest {
     private static final UUID ELEMENT_1_ID = UUID.randomUUID();
@@ -89,6 +92,9 @@ class NoticeOfChangeFieldPopulatorTest {
     private static final NoticeOfChangeAnswers BLANK_ANSWERS = NoticeOfChangeAnswers.builder().build();
 
     private static final Applicant APPLICANT = mock(Applicant.class);
+    private static final String APPLICANT_NAME = "applicant";
+    public static final ApplicantParty APPLICANT_PARTY = mock(ApplicantParty.class);
+    public static final LocalAuthority LOCAL_AUTHORITY = mock(LocalAuthority.class);
 
     private final CaseData caseData = mock(CaseData.class);
 
@@ -102,7 +108,11 @@ class NoticeOfChangeFieldPopulatorTest {
     @Test
     void generateRespondents() {
         when(caseData.getAllRespondents()).thenReturn(List.of(RESPONDENT_1_ELEMENT, RESPONDENT_2_ELEMENT));
-        when(caseData.getAllApplicants()).thenReturn(List.of(element(APPLICANT)));
+
+        when(caseData.getLocalAuthorities()).thenReturn(null);
+        when(caseData.getAllApplicants()).thenReturn(wrapElements(APPLICANT));
+        when(APPLICANT.getParty()).thenReturn(APPLICANT_PARTY);
+        when(APPLICANT_PARTY.getOrganisationName()).thenReturn(APPLICANT_NAME);
 
         when(policyConverter.generate(SOLICITORA, Optional.of(RESPONDENT_1_ELEMENT_INT)))
             .thenReturn(ORG_POLICY_A);
@@ -118,8 +128,8 @@ class NoticeOfChangeFieldPopulatorTest {
         when(policyConverter.generate(SOLICITORI, Optional.empty())).thenReturn(ORG_POLICY_I);
         when(policyConverter.generate(SOLICITORJ, Optional.empty())).thenReturn(ORG_POLICY_J);
 
-        when(answersConverter.generateForSubmission(RESPONDENT_1_ELEMENT_INT, APPLICANT)).thenReturn(ANSWERS_1);
-        when(answersConverter.generateForSubmission(RESPONDENT_2_ELEMENT_INT, APPLICANT)).thenReturn(ANSWERS_2);
+        when(answersConverter.generateForSubmission(RESPONDENT_1_ELEMENT_INT, APPLICANT_NAME)).thenReturn(ANSWERS_1);
+        when(answersConverter.generateForSubmission(RESPONDENT_2_ELEMENT_INT, APPLICANT_NAME)).thenReturn(ANSWERS_2);
 
         final Map<String, Object> data = underTest.generate(caseData, Representing.RESPONDENT);
 
@@ -143,7 +153,9 @@ class NoticeOfChangeFieldPopulatorTest {
     @Test
     void generateChildren() {
         when(caseData.getAllChildren()).thenReturn(List.of(CHILD_1_ELEMENT, CHILD_2_ELEMENT));
-        when(caseData.getAllApplicants()).thenReturn(List.of(element(APPLICANT)));
+
+        when(caseData.getLocalAuthorities()).thenReturn(wrapElements(LOCAL_AUTHORITY));
+        when(LOCAL_AUTHORITY.getName()).thenReturn(APPLICANT_NAME);
 
         when(policyConverter.generate(CHILDSOLICITORA, Optional.of(CHILD_1_ELEMENT_INT))).thenReturn(ORG_POLICY_A);
         when(policyConverter.generate(CHILDSOLICITORB, Optional.of(CHILD_2_ELEMENT_INT))).thenReturn(ORG_POLICY_B);

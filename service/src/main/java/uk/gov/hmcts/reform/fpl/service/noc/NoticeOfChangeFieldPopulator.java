@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.POPULATE;
 
@@ -36,7 +36,7 @@ public class NoticeOfChangeFieldPopulator {
                                         NoticeOfChangeAnswersPopulationStrategy strategy) {
         Map<String, Object> data = new HashMap<>();
 
-        Applicant applicant = caseData.getAllApplicants().get(0).getValue();
+        String applicant = getApplicantName(caseData);
 
         List<Element<WithSolicitor>> elements = representing.getTarget().apply(caseData);
         int numElements = elements.size();
@@ -68,13 +68,21 @@ public class NoticeOfChangeFieldPopulator {
     }
 
     private Optional<NoticeOfChangeAnswers> populateAnswer(NoticeOfChangeAnswersPopulationStrategy strategy,
-                                                           Applicant applicant,
+                                                           String applicantName,
                                                            Optional<Element<WithSolicitor>> element) {
         if (BLANK == strategy) {
             return Optional.of(NoticeOfChangeAnswers.builder().build());
         }
 
-        return element.map(e -> answersConverter.generateForSubmission(e, applicant));
+        return element.map(e -> answersConverter.generateForSubmission(e, applicantName));
+    }
+
+    private String getApplicantName(CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return caseData.getLocalAuthorities().get(0).getValue().getName();
+        }
+
+        return caseData.getAllApplicants().get(0).getValue().getParty().getOrganisationName();
     }
 
     public enum NoticeOfChangeAnswersPopulationStrategy {
