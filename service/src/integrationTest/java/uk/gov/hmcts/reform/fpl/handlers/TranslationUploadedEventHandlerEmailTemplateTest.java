@@ -126,9 +126,9 @@ class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
     private void assertResponse(SendEmailResponse laResponse) {
         assertThat(laResponse)
-            .hasSubject("Welsh translation for case management order issued, " + CHILD_LAST_NAME)
+            .hasSubject("Translation for case management order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
-                .line("The Welsh translation for case management order has been issued by " + COURT_NAME)
+                .line("The translation for case management order has been issued by " + COURT_NAME)
                 .line()
                 .callout("Jones, FAM_NUM")
                 .line()
