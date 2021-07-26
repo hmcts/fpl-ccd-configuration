@@ -78,6 +78,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "othersSelector",
+    "CaseEventFieldLabel": "Select who should be notified",
     "PageFieldDisplayOrder": 7,
     "DisplayContext": "COMPLEX",
     "PageID": 4,
