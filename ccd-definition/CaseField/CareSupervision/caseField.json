@@ -1652,7 +1652,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherRecipientsSubHeader",
     "FieldType": "Label",
-    "Label": "You must check to see if there are restrictions on who should be sent the order.",
+    "Label": "You must check to see if there are restrictions on who should be notified about the application.",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
