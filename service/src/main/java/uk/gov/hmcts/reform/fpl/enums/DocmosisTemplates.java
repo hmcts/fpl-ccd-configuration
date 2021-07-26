@@ -15,7 +15,7 @@ public enum DocmosisTemplates {
     EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order"),
     EPO_V2("FL-PLW-GOR-ENG-00744.doc", "emergency_protection_order"),
     COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents"),
-    TRANSLATION_REQUEST("WELSH.doc", "translation_request");
+    TRANSLATION_REQUEST("FL-PLW-LET-ENG-00748.doc", "translation_request");
 
     private final String template;
 
