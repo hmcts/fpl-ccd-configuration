@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -13,6 +14,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 public class PeopleInCaseHelper {
 
@@ -20,8 +23,16 @@ public class PeopleInCaseHelper {
         // NO-OP
     }
 
-    public static String getFirstApplicantName(List<Element<Applicant>> applicants) {
-        return ElementUtils.unwrapElements(applicants).stream()
+    public static String getFirstApplicantName(CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return caseData.getLocalAuthorities().stream()
+                .findFirst()
+                .map(Element::getValue)
+                .map(LocalAuthority::getName)
+                .orElse("");
+        }
+
+        return unwrapElements(caseData.getApplicants()).stream()
             .filter(Objects::nonNull)
             .findFirst()
             .map(Applicant::getParty)
@@ -54,7 +65,7 @@ public class PeopleInCaseHelper {
     }
 
     private static Optional<RespondentParty> getFirstRespondentParty(List<Element<Respondent>> respondents) {
-        return ElementUtils.unwrapElements(respondents).stream()
+        return unwrapElements(respondents).stream()
             .filter(Objects::nonNull)
             .findFirst()
             .map(Respondent::getParty);

@@ -173,29 +173,6 @@ class CaseDataTest {
     }
 
     @Test
-    void shouldFindExistingApplicant() {
-        Applicant applicant = Applicant.builder().build();
-        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
-
-        assertThat(caseData.findApplicant(0)).contains(applicant);
-    }
-
-    @Test
-    void shouldNotFindNonExistingApplicant() {
-        Applicant applicant = Applicant.builder().build();
-        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
-
-        assertThat(caseData.findApplicant(1)).isEmpty();
-    }
-
-    @Test
-    void shouldNotFindApplicantWhenNull() {
-        CaseData caseData = CaseData.builder().build();
-
-        assertThat(caseData.findApplicant(0)).isEmpty();
-    }
-
-    @Test
     void shouldGetOrderAppliesToAllChildrenWithValueAsYesWhenOnlyOneChildOnCase() {
         CaseData caseData = CaseData.builder().children1(List.of(testChild())).build();
         assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("Yes");
