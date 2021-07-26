@@ -236,6 +236,18 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
+  before('highLevelDataSetup') {
+    // to remove this - just to try that works from here. It won't work if the env is not up.
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview')
+  }
+
+  after('highLevelDataSetup') {
+    // to remove this - just to try that works from here. It won't work if the env is not up.
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview')
+  }
+
   before('highLevelDataSetup:preview') {
     // to remove this - just to try that works from here. It won't work if the env is not up.
     archiveCoreCaseDataDefinitions('preview')
