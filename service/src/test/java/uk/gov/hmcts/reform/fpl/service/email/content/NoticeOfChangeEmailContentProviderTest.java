@@ -106,6 +106,20 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
             .isEqualTo(expectedTemplate);
     }
 
+    @Test
+    void shouldReturnEmptyNameNameIfSolicitorMissing() {
+        Respondent respondent = Respondent.builder()
+            .solicitor(null)
+            .party(null)
+            .build();
+
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate
+            = buildExpectedTemplate("", EMPTY);
+
+        assertThat(underTest.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, respondent))
+            .isEqualTo(expectedTemplate);
+    }
+
     private static Stream<Arguments> solicitorNameSource() {
         final String salutation = "Dear ";
         final String expectedLastName = salutation + RESPONDENT_LAST_NAME;
