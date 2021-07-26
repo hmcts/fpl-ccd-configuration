@@ -39,30 +39,40 @@
       }
     }
   ],
-  "solicitor": {
-    "name": "Sol 1",
-    "email": "test@test.com"
-  },
-  "applicants": [
+  "localAuthorities": [
     {
-      "id": "00cdfa66-3029-4b0b-97c1-1f08584e8cdf",
+      "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
       "value": {
-        "party": {
-          "email": {
-            "email": "test@test.com"
+        "name": "Test",
+        "email": "test@test.com",
+        "phone": "077766655544",
+        "address": {
+          "PostCode": "CR0 2GE",
+          "AddressLine1": "Line 1"
+        },
+        "pbaNumber": "PBA0082848",
+        "colleagues": [
+          {
+            "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+            "value": {
+              "role": "SOLICITOR",
+              "email": "test@test.com",
+              "fullName": "Sol 1",
+              "notificationRecipient": "Yes"
+            }
           },
-          "address": {
-            "PostCode": "CR0 2GE",
-            "AddressLine1": "Line 1"
-          },
-          "jobTitle": "Solicitor",
-          "pbaNumber": "PBA0082848",
-          "telephoneNumber": {
-            "telephoneNumber": "077766655544",
-            "contactDirection": "test"
-          },
-          "organisationName": "Test"
-        }
+          {
+            "id": "1a34928d-6dcd-4943-86c6-5dca0f6ba376",
+            "value": {
+              "role": "OTHER",
+              "title": "Solicitor",
+              "fullName": "test",
+              "email": "test2@test.com",
+              "notificationRecipient": "Yes",
+              "mainContact": "Yes"
+            }
+          }
+        ]
       }
     }
   ],

@@ -16,12 +16,11 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -323,7 +322,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
                 .build()))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateSubmitted(dateNow())
-            .applicants(getApplicant())
+            .localAuthorities(getLocalAuthority())
             .familyManCaseNumber("1234")
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .sdoRouter(GatekeepingOrderRoute.SERVICE)
@@ -439,8 +438,10 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         return wrapElements(direction.toBuilder().directionType("Direction").build());
     }
 
-    private List<Element<Applicant>> getApplicant() {
-        return wrapElements(Applicant.builder().party(ApplicantParty.builder().organisationName("").build()).build());
+    private List<Element<LocalAuthority>> getLocalAuthority() {
+        return wrapElements(LocalAuthority.builder()
+            .name("Local authority name")
+            .build());
     }
 
     private NoticeOfProceedings buildNoticeOfProceedings() {
