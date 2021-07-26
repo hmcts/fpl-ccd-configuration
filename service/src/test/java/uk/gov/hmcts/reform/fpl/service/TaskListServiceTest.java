@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
@@ -126,10 +125,10 @@ class TaskListServiceTest {
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
-        void shouldReturnTasksInProgress(boolean hasMultipleCourt) {
+        void shouldReturnTasksInProgress(boolean multiCourts) {
 
             final CaseData caseData = CaseData.builder()
-                .multiCourts(YesNo.from(hasMultipleCourt))
+                .multiCourts(YesNo.from(multiCourts))
                 .build();
 
             when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
@@ -137,18 +136,18 @@ class TaskListServiceTest {
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
 
-            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(IN_PROGRESS, true, hasMultipleCourt));
+            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(IN_PROGRESS, true, multiCourts));
 
             verify(eventsChecker, never()).isAvailable(any(), any());
         }
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
-        void shouldReturnCompletedTasks(boolean hasMultipleCourt) {
+        void shouldReturnCompletedTasks(boolean multiCourts) {
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
 
             final CaseData caseData = CaseData.builder()
-                .multiCourts(YesNo.from(hasMultipleCourt))
+                .multiCourts(YesNo.from(multiCourts))
                 .build();
 
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
@@ -156,7 +155,7 @@ class TaskListServiceTest {
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
 
-            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(COMPLETED_TASK_STATE, true, hasMultipleCourt));
+            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(COMPLETED_TASK_STATE, true, multiCourts));
 
             verify(eventsChecker, never()).isAvailable(any(), any());
             verify(eventsChecker, never()).isInProgress(any(), any());
@@ -164,11 +163,11 @@ class TaskListServiceTest {
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
-        void shouldReturnNotAvailableTasks(boolean hasMultipleCourt) {
+        void shouldReturnNotAvailableTasks(boolean multiCourts) {
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
 
             final CaseData caseData = CaseData.builder()
-                .multiCourts(YesNo.from(hasMultipleCourt))
+                .multiCourts(YesNo.from(multiCourts))
                 .build();
 
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
@@ -177,7 +176,7 @@ class TaskListServiceTest {
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
 
             verify(eventsChecker, never()).completedState(any(Event.class));
-            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(NOT_AVAILABLE, true, hasMultipleCourt));
+            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(NOT_AVAILABLE, true, multiCourts));
         }
     }
 
@@ -190,7 +189,6 @@ class TaskListServiceTest {
             RISK_AND_HARM,
             FACTORS_AFFECTING_PARENTING,
             additionalContactsEnabled ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
-            ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
             ALLOCATION_PROPOSAL,
@@ -198,7 +196,6 @@ class TaskListServiceTest {
             INTERNATIONAL_ELEMENT,
             OTHERS,
             COURT_SERVICES,
-            DOCUMENTS,
             CASE_NAME,
             APPLICATION_DOCUMENTS,
             SUBMIT_APPLICATION,
