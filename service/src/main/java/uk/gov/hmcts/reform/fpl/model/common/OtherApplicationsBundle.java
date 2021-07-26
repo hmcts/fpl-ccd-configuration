@@ -9,6 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
@@ -37,6 +38,8 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final String applicantName;
+    private final String othersNotified;
+    private final List<Element<Other>> others;
 
     public String toLabel() {
         return format("%s, %s",

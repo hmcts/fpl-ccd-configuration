@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -45,8 +45,8 @@ public class CaseInitiationService {
 
     public Optional<OutsourcingType> getOutsourcingType(String organisationId) {
 
-        List<LocalAuthority> eps = localAuthorities.getOutsourcingLocalAuthorities(organisationId, EPS);
-        List<LocalAuthority> mla = localAuthorities.getOutsourcingLocalAuthorities(organisationId, MLA);
+        List<LocalAuthorityName> eps = localAuthorities.getOutsourcingLocalAuthorities(organisationId, EPS);
+        List<LocalAuthorityName> mla = localAuthorities.getOutsourcingLocalAuthorities(organisationId, MLA);
 
         if (isNotEmpty(eps) && isNotEmpty(mla)) {
             throw new IllegalStateException(
@@ -64,25 +64,26 @@ public class CaseInitiationService {
     }
 
     public DynamicList getOutsourcingLocalAuthorities(String orgId, OutsourcingType outsourcingType) {
-        List<LocalAuthority> outsourcingLAs = localAuthorities.getOutsourcingLocalAuthorities(orgId, outsourcingType)
+        List<LocalAuthorityName> outsourcingLAs = localAuthorities
+            .getOutsourcingLocalAuthorities(orgId, outsourcingType)
             .stream()
-            .sorted(comparing(LocalAuthority::getName))
+            .sorted(comparing(LocalAuthorityName::getName))
             .collect(Collectors.toList());
 
-        Optional<LocalAuthority> userLocalAuthority = localAuthorities.getUserLocalAuthority();
+        Optional<LocalAuthorityName> userLocalAuthority = localAuthorities.getUserLocalAuthority();
 
         if (userLocalAuthority.isPresent()) {
             outsourcingLAs.add(0, userLocalAuthority.get());
             return dynamicLists.asDynamicList(
                 outsourcingLAs,
                 userLocalAuthority.get().getCode(),
-                LocalAuthority::getCode,
-                LocalAuthority::getName);
+                LocalAuthorityName::getCode,
+                LocalAuthorityName::getName);
         } else {
             return dynamicLists.asDynamicList(
                 outsourcingLAs,
-                LocalAuthority::getCode,
-                LocalAuthority::getName);
+                LocalAuthorityName::getCode,
+                LocalAuthorityName::getName);
         }
     }
 

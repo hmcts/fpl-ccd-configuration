@@ -12,7 +12,9 @@ import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -61,14 +63,14 @@ public class RoboticsDataService {
             .feePaid(fromCCDMoneyGBP(caseData.getAmountToPay()).orElse(BigDecimal.valueOf(2055.00)))
             .children(populateChildren(caseData.getAllChildren()))
             .respondents(populateRespondents(caseData.getRespondents1()))
-            .solicitor(populateSolicitor(caseData.getSolicitor()))
+            .solicitor(populateSolicitor(caseData))
             .harmAlleged(hasRisks(caseData.getRisks()))
             .internationalElement(hasInternationalElement(caseData.getInternationalElement()))
             .allocation(isNotEmpty(caseData.getAllocationProposal())
                 && isNotBlank(caseData.getAllocationProposal().getProposal())
                 ? caseData.getAllocationProposal().getProposal() : null)
             .issueDate(formatDate(caseData.getDateSubmitted(), "dd-MM-yyyy"))
-            .applicant(populateApplicant(caseData.getAllApplicants()))
+            .applicant(populateApplicant(caseData))
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
             .caseId(caseData.getId())
             .build();
@@ -82,17 +84,38 @@ public class RoboticsDataService {
         }
     }
 
-    private Applicant populateApplicant(final List<Element<uk.gov.hmcts.reform.fpl.model.Applicant>> allApplicants) {
-        if (isNotEmpty(allApplicants)) {
-            ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
+    private Applicant populateApplicant(final CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            final LocalAuthority localAuthority = caseData.getLocalAuthorities().get(0).getValue();
+            final Optional<Colleague> mainContact = localAuthority.getMainContact();
+
             return Applicant.builder()
-                .name(applicantParty.getOrganisationName())
-                .contactName(getApplicantContactName(applicantParty.getTelephoneNumber()))
-                .jobTitle(applicantParty.getJobTitle())
-                .address(convertAddress(applicantParty.getAddress()).orElse(null))
-                .mobileNumber(getApplicantPartyNumber(applicantParty.getMobileNumber()))
-                .telephoneNumber(getApplicantPartyNumber(applicantParty.getTelephoneNumber()))
-                .email(isNotEmpty(applicantParty.getEmail()) ? applicantParty.getEmail().getEmail() : null)
+                .name(localAuthority.getName())
+                .contactName(mainContact.map(Colleague::getFullName).orElse(null))
+                .jobTitle(mainContact.map(Colleague::getJobTitle).orElse(null))
+                .address(convertAddress(localAuthority.getAddress()).orElse(null))
+                .mobileNumber(mainContact
+                    .map(Colleague::getPhone)
+                    .map(this::formatContactNumber)
+                    .orElse(null))
+                .telephoneNumber(ofNullable(localAuthority.getPhone())
+                    .map(this::formatContactNumber)
+                    .orElse(null))
+                .email(localAuthority.getEmail())
+                .build();
+        }
+
+        if (isNotEmpty(caseData.getAllApplicants())) {
+            final ApplicantParty legacyApplicantParty = caseData.getAllApplicants().get(0).getValue().getParty();
+
+            return Applicant.builder()
+                .name(legacyApplicantParty.getOrganisationName())
+                .contactName(getApplicantContactName(legacyApplicantParty.getTelephoneNumber()))
+                .jobTitle(legacyApplicantParty.getJobTitle())
+                .address(convertAddress(legacyApplicantParty.getAddress()).orElse(null))
+                .mobileNumber(getApplicantPartyNumber(legacyApplicantParty.getMobileNumber()))
+                .telephoneNumber(getApplicantPartyNumber(legacyApplicantParty.getTelephoneNumber()))
+                .email(isNotEmpty(legacyApplicantParty.getEmail()) ? legacyApplicantParty.getEmail().getEmail() : null)
                 .build();
         }
 
@@ -131,18 +154,28 @@ public class RoboticsDataService {
         return mobileNumber.getContactDirection();
     }
 
-    private Solicitor populateSolicitor(final uk.gov.hmcts.reform.fpl.model.Solicitor solicitor) {
-        if (isNotEmpty(solicitor) && isNotBlank(solicitor.getName())) {
-            final String[] fullNameSplit = solicitor.getName().trim().split("\\s+");
-            if (fullNameSplit.length > 1) {
-                return Solicitor.builder()
-                    .firstName(fullNameSplit[0])
-                    .lastName(fullNameSplit[1])
-                    .build();
-            }
-        }
+    private Solicitor populateSolicitor(final CaseData caseData) {
+        return getSolicitorName(caseData)
+            .filter(StringUtils::isNotBlank)
+            .map(String::trim)
+            .map(solicitor -> solicitor.split("\\s+"))
+            .filter(nameParts -> nameParts.length > 1)
+            .map(nameParts -> Solicitor.builder()
+                .firstName(nameParts[0])
+                .lastName(nameParts[1])
+                .build())
+            .orElse(null);
+    }
 
-        return null;
+    private Optional<String> getSolicitorName(CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return caseData.getLocalAuthorities().get(0)
+                .getValue()
+                .getFirstSolicitor()
+                .map(Colleague::getFullName);
+        }
+        return ofNullable(caseData.getSolicitor())
+            .map(uk.gov.hmcts.reform.fpl.model.Solicitor::getName);
     }
 
     private Set<Respondent> populateRespondents(final List<Element<uk.gov.hmcts.reform.fpl.model.Respondent>>
@@ -272,4 +305,5 @@ public class RoboticsDataService {
 
         return deleteWhitespace(number).replaceAll(regEx, "");
     }
+
 }
