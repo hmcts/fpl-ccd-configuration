@@ -18,17 +18,17 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseUrlService.class})
 @TestPropertySource(properties = "manage-case.ui.base.url:http://fake-url")
 public abstract class AbstractEmailContentProviderTest {
-    static final String LOCAL_AUTHORITY_NAME = LOCAL_AUTHORITY_1_NAME;
-    static final String LOCAL_AUTHORITY_CODE = LOCAL_AUTHORITY_1_CODE;
-    static final String CAFCASS_NAME = "cafcass";
-    static final String CASE_REFERENCE = "12345";
-    static final String UI_URL = "http://fake-url";
-    static final String COURT_NAME = "Family Court";
-    static final DocumentReference testDocument = DocumentReference.builder()
+    protected static final String LOCAL_AUTHORITY_NAME = LOCAL_AUTHORITY_1_NAME;
+    protected static final String LOCAL_AUTHORITY_CODE = LOCAL_AUTHORITY_1_CODE;
+    protected static final String CAFCASS_NAME = "cafcass";
+    protected static final String CASE_REFERENCE = "12345";
+    protected static final String UI_URL = "http://fake-url";
+    protected static final String COURT_NAME = "Family Court";
+    protected static final DocumentReference testDocument = DocumentReference.builder()
         .url("url")
         .binaryUrl("/testUrl")
         .build();
-    static final String DOC_URL = "http://fake-url/testUrl";
+    protected static final String DOC_URL = "http://fake-url/testUrl";
 
     protected String caseUrl(String caseId) {
         return String.format("%s/cases/case-details/%s", UI_URL, caseId);
