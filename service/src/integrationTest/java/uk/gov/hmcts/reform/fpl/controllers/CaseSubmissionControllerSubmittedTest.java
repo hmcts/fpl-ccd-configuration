@@ -26,8 +26,8 @@ import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -295,7 +295,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
         Map<String, Object> expectedParameters = mapper.convertValue(
-            UnregisteredRespondentSolicitorTemplate.builder()
+            UnregisteredRepresentativeSolicitorTemplate.builder()
                 .ccdNumber("1234-5678-9012-3456")
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
                 .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
@@ -336,7 +336,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         String expectedName = String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME);
 
         Map<String, Object> expectedUnregisteredSolicitorParameters = toMap(
-            RegisteredRespondentSolicitorTemplate.builder()
+            RegisteredRepresentativeSolicitorTemplate.builder()
                 .salutation(expectedSalutation)
                 .clientFullName(expectedName)
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
@@ -584,7 +584,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private Map<String, Object> getExpectedRegisteredSolicitorParameters() {
-        RegisteredRespondentSolicitorTemplate template = RegisteredRespondentSolicitorTemplate.builder()
+        RegisteredRepresentativeSolicitorTemplate template = RegisteredRepresentativeSolicitorTemplate.builder()
             .salutation("Dear First Representative")
             .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
             .localAuthority(LOCAL_AUTHORITY_1_NAME)

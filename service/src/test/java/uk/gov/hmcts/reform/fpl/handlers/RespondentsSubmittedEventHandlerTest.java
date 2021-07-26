@@ -10,12 +10,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,9 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.asser
 class RespondentsSubmittedEventHandlerTest {
 
     @Mock
-    private RegisteredRespondentSolicitorTemplate registeredTemplate;
+    private RegisteredRepresentativeSolicitorTemplate registeredTemplate;
     @Mock
-    private UnregisteredRespondentSolicitorTemplate unregisteredTemplate;
+    private UnregisteredRepresentativeSolicitorTemplate unregisteredTemplate;
 
     @Mock
     private NotificationService notificationService;
@@ -45,10 +45,10 @@ class RespondentsSubmittedEventHandlerTest {
     private RespondentService respondentService;
 
     @Mock
-    private RegisteredRespondentSolicitorContentProvider registeredContentProvider;
+    private RegisteredRepresentativeSolicitorContentProvider registeredContentProvider;
 
     @Mock
-    private UnregisteredRespondentSolicitorContentProvider unregisteredContentProvider;
+    private UnregisteredRepresentativeSolicitorContentProvider unregisteredContentProvider;
 
     @InjectMocks
     private RespondentsSubmittedEventHandler underTest;
@@ -77,10 +77,10 @@ class RespondentsSubmittedEventHandlerTest {
         when(respondentService.getRespondentsWithRegisteredSolicitors(caseData.getRespondents1()))
             .thenReturn(new ArrayList<>(List.of(respondent1, respondent2)));
 
-        when(registeredContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, respondent1))
+        when(registeredContentProvider.buildContent(caseData, respondent1))
             .thenReturn(registeredTemplate);
 
-        when(registeredContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, respondent2))
+        when(registeredContentProvider.buildContent(caseData, respondent2))
             .thenReturn(registeredTemplate);
 
         underTest.notifyRegisteredRespondentSolicitors(respondentsUpdated);
