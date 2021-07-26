@@ -237,6 +237,10 @@ withPipeline(type, product, component) {
   }
 
   after('highleveldatasetup') {
+    sh 'env > env.txt'
+    readFile('env.txt').split("\r?\n").each {
+      println it
+    }
     withSubscription('nonprod') {
       withTeamSecrets(pipelineConf, 'preview') {
         echo "current environemnt is ${env.ENVIRONMENT}"
