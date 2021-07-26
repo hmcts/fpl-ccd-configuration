@@ -39,11 +39,6 @@ public final class LocalAuthorityUserChildCollectionValidator extends LocalAutho
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
         List<String> errors = new ArrayList<>();
 
-        // allow for updating of details if we haven't added a main representative
-        if (null == caseDataBefore.getChildrenEventData().getChildrenMainRepresentative()) {
-            return errors;
-        }
-
         List<Element<Child>> currentChildren = caseData.getAllChildren();
         List<Element<Child>> oldChildren = caseDataBefore.getAllChildren();
 
@@ -56,6 +51,17 @@ public final class LocalAuthorityUserChildCollectionValidator extends LocalAutho
         Set<UUID> oldIds = oldChildren.stream().map(Element::getId).collect(Collectors.toSet());
 
         // find all ids that have been added to the case
+        errors.addAll(checkForAddition(currentIds, oldIds));
+
+        // find all ids that have been removed from the case
+        errors.addAll(checkForRemoval(currentIds, oldIds, oldChildren));
+
+        return errors;
+    }
+
+    private List<String> checkForAddition(Set<UUID> currentIds, Set<UUID> oldIds) {
+        List<String> errors = new ArrayList<>();
+
         Set<UUID> alteredIds = new HashSet<>(currentIds);
         alteredIds.removeAll(oldIds);
 
@@ -63,11 +69,16 @@ public final class LocalAuthorityUserChildCollectionValidator extends LocalAutho
             errors.add(CHILD_ADDITION_ERROR);
         }
 
-        // find all ids that have been removed from the case
-        alteredIds = new HashSet<>(oldIds);
+        return errors;
+    }
+
+    private List<String> checkForRemoval(Set<UUID> currentIds, Set<UUID> oldIds, List<Element<Child>> children) {
+        List<String> errors = new ArrayList<>();
+
+        Set<UUID> alteredIds = new HashSet<>(oldIds);
         alteredIds.removeAll(currentIds);
 
-        alteredIds.forEach(id -> oldChildren.stream()
+        alteredIds.forEach(id -> children.stream()
             .filter(element -> Objects.equals(id, element.getId()))
             .findFirst()
             .ifPresent(child -> errors.add(format(CHILD_REMOVAL_ERROR, child.getValue().getParty().getFullName())))

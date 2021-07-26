@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.children.validation.representative;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -33,6 +34,12 @@ class ChildRepresentativeValidatorTest {
         emailValidator
     );
 
+    @BeforeEach
+    void setUp() {
+        when(CHILD.getParty()).thenReturn(PARTY);
+        when(PARTY.getFullName()).thenReturn("Dave Davidson");
+    }
+
     @Test
     void validateChildRepresentationDetailsWithUsingMainRepresentative() {
         CaseData caseData = CaseData.builder()
@@ -46,13 +53,22 @@ class ChildRepresentativeValidatorTest {
     }
 
     @Test
+    void validateNoRepresentation() {
+        CaseData caseData = CaseData.builder()
+            .children1(CHILDREN)
+            .childrenEventData(ChildrenEventData.builder().build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(
+           "Confirm Dave Davidson’s legal representation"
+        ));
+    }
+
+    @Test
     void validateChildRepresentationDetailsWithUsingEmptyFields() {
         when(REPRESENTATIVE.hasOrganisationDetails()).thenReturn(false);
         when(REPRESENTATIVE.hasFullName()).thenReturn(false);
         when(REPRESENTATIVE.getEmail()).thenReturn("");
-
-        when(CHILD.getParty()).thenReturn(PARTY);
-        when(PARTY.getFullName()).thenReturn("Dave Davidson");
 
         CaseData caseData = CaseData.builder()
             .children1(CHILDREN)
@@ -65,9 +81,9 @@ class ChildRepresentativeValidatorTest {
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of(
-            "Add the full name of Dave Davidson's representative",
-            "Add the email address of Dave Davidson's representative",
-            "Add the organisation details for Dave Davidson's representative"
+            "Add the full name of Dave Davidson's legal representative",
+            "Add the email address of Dave Davidson's legal representative",
+            "Add the organisation details for Dave Davidson's legal representative"
         ));
     }
 
@@ -76,9 +92,6 @@ class ChildRepresentativeValidatorTest {
         when(REPRESENTATIVE.hasOrganisationDetails()).thenReturn(true);
         when(REPRESENTATIVE.hasFullName()).thenReturn(true);
         when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
-
-        when(CHILD.getParty()).thenReturn(PARTY);
-        when(PARTY.getFullName()).thenReturn("Dave Davidson");
 
         when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.of("bad email"));
 
@@ -100,9 +113,6 @@ class ChildRepresentativeValidatorTest {
         when(REPRESENTATIVE.hasOrganisationDetails()).thenReturn(true);
         when(REPRESENTATIVE.hasFullName()).thenReturn(true);
         when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
-
-        when(CHILD.getParty()).thenReturn(PARTY);
-        when(PARTY.getFullName()).thenReturn("Dave Davidson");
 
         when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.empty());
 

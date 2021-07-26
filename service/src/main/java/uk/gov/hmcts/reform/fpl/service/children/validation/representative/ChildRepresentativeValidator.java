@@ -23,10 +23,11 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public final class ChildRepresentativeValidator {
 
-    private static final String FULL_NAME_ERROR = "Add the full name of %s's representative";
-    private static final String NO_EMAIL_ERROR = "Add the email address of %s's representative";
-    private static final String ORG_DETAILS_ERROR = "Add the organisation details for %s's representative";
-    private static final String CHILD_REP_EMAIL_ERROR = "Enter an email address in the correct format for %s's "
+    private static final String NO_DETAILS_ERROR = "Confirm %s’s legal representation";
+    private static final String FULL_NAME_ERROR = "Add the full name of %s's legal representative";
+    private static final String NO_EMAIL_ERROR = "Add the email address of %s's legal representative";
+    private static final String ORG_DETAILS_ERROR = "Add the organisation details for %s's legal representative";
+    private static final String CHILD_REP_EMAIL_ERROR = "Enter an email address in the correct format for %s's legal "
                                                         + "representative, for example name@example.com";
 
     private final ValidateEmailService emailValidator;
@@ -42,14 +43,18 @@ public final class ChildRepresentativeValidator {
 
         for (int i = 0, idx = 1; i < numOfChildren; i++, idx++) {
             ChildRepresentationDetails details = childrenDetails.get(i);
+            String childName = children.get(i).getValue().getParty().getFullName();
+
+            if (null == details) {
+                errors.add(format(NO_DETAILS_ERROR, childName));
+                continue;
+            }
 
             if (YES == YesNo.fromString(details.getUseMainSolicitor())) {
                 continue;
             }
 
             RespondentSolicitor representative = details.getSolicitor();
-
-            String childName = children.get(i).getValue().getParty().getFullName();
 
             if (!representative.hasFullName()) {
                 errors.add(format(FULL_NAME_ERROR, childName));

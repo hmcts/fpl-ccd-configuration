@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -23,8 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
-import uk.gov.hmcts.reform.fpl.service.children.validation.representative.ChildRepresentativeValidator;
-import uk.gov.hmcts.reform.fpl.service.children.validation.representative.MainRepresentativeValidator;
+import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventValidator;
 
 import java.util.List;
 import java.util.Set;
@@ -50,13 +48,12 @@ public class ChildController extends CallbackController {
     private final ChildRepresentationService childRepresentationService;
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
-    private final ChildRepresentativeValidator childRepValidator;
-    private final MainRepresentativeValidator mainRepresentativeValidator;
+    private final ChildrenEventValidator validator;
     private final FeatureToggleService toggleService;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("children1", confidentialDetailsService.prepareCollection(
@@ -66,12 +63,21 @@ public class ChildController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/validate-collection/mid-event")
+    public CallbackResponse handleValidateCollectionMidEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+
+        List<String> errors = validator.validateCollectionUpdates(getCaseData(request), getCaseDataBefore(request));
+
+        return respond(caseDetails, errors);
+    }
+
     @PostMapping("/representation-details/mid-event")
     public CallbackResponse handleRepresentationDetailsMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> errors = mainRepresentativeValidator.validate(caseData);
+        List<String> errors = validator.validateMainRepresentativeUpdates(caseData, getCaseDataBefore(request));
 
         if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
@@ -86,14 +92,16 @@ public class ChildController extends CallbackController {
     public CallbackResponse handleRepresentationValidationMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
 
-        List<String> errors = childRepValidator.validate(getCaseData(caseDetails));
+        List<String> errors = validator.validateChildRepresentativeUpdates(
+            getCaseData(caseDetails), getCaseDataBefore(request)
+        );
 
         return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));

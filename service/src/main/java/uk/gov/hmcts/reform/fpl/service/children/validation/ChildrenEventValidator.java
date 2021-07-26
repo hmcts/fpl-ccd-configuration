@@ -19,7 +19,6 @@ public final class ChildrenEventValidator {
 
     private final List<ChildrenEventSectionValidator> validators;
 
-    // TODO: 22/07/2021 plug me into the controller
     @Autowired
     public ChildrenEventValidator(List<ChildrenEventSectionValidator> validators) {
         this.validators = validators;

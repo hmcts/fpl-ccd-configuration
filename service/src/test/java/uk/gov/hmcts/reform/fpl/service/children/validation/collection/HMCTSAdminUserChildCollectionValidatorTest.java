@@ -95,4 +95,13 @@ class HMCTSAdminUserChildCollectionValidatorTest {
             "You cannot remove child 1 name from the case", "You cannot remove child 2 name from the case"
         ));
     }
+
+    @DisplayName("Validate with no errors when a child is updated")
+    @Test
+    void validateUpdated() {
+        when(caseData.getAllChildren()).thenReturn(List.of(child1Element, element(child2Id, child1)));
+        when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element, child2Element));
+
+        assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
+    }
 }

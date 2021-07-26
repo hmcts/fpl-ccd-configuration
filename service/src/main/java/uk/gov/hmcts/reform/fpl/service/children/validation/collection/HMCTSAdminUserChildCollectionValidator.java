@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSectionV
 import uk.gov.hmcts.reform.fpl.service.children.validation.user.HMCTSAdminUserValidator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -36,23 +37,27 @@ public final class HMCTSAdminUserChildCollectionValidator extends HMCTSAdminUser
 
     @Override
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
-        List<String> errors = new ArrayList<>();
-
         List<Element<Child>> currentChildren = caseData.getAllChildren();
         List<Element<Child>> oldChildren = caseDataBefore.getAllChildren();
 
         // no changes, just return
         if (Objects.equals(currentChildren, oldChildren)) {
-            return errors;
+            return List.of();
         }
 
         Set<UUID> currentIds = currentChildren.stream().map(Element::getId).collect(Collectors.toSet());
-
-        // find all ids that have been removed from the case
         Set<UUID> oldIds = oldChildren.stream().map(Element::getId).collect(Collectors.toSet());
-        oldIds.removeAll(currentIds);
 
-        oldIds.forEach(id -> oldChildren.stream()
+        return checkForRemoval(currentIds, oldIds, oldChildren);
+    }
+
+    private List<String> checkForRemoval(Set<UUID> currentIds, Set<UUID> oldIds, List<Element<Child>> children) {
+        List<String> errors = new ArrayList<>();
+
+        Set<UUID> alteredIds = new HashSet<>(oldIds);
+        alteredIds.removeAll(currentIds);
+
+        alteredIds.forEach(id -> children.stream()
             .filter(element -> Objects.equals(id, element.getId()))
             .findFirst()
             .ifPresent(child -> errors.add(format(CHILD_REMOVAL_ERROR, child.getValue().getParty().getFullName())))

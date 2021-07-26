@@ -4,12 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection;
 
@@ -22,12 +22,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection.COLLECTION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class LocalAuthorityUserChildCollectionValidatorTest {
     private final CaseData caseData = mock(CaseData.class);
     private final CaseData caseDataBefore = mock(CaseData.class);
-
-    private final ChildrenEventData eventData = mock(ChildrenEventData.class);
-    private final RespondentSolicitor solicitor = mock(RespondentSolicitor.class);
 
     private final UUID child1Id = UUID.randomUUID();
     private final Child child1 = mock(Child.class);
@@ -68,33 +66,18 @@ class LocalAuthorityUserChildCollectionValidatorTest {
         assertThat(underTest.accepts(section)).isFalse();
     }
 
-    @DisplayName("Validate with no errors when the cafcass solicitor is not set")
-    @Test
-    void validateMainRepresentativeNotSet() {
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
-        when(eventData.getChildrenMainRepresentative()).thenReturn(null);
-
-        assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
-    }
-
-    @DisplayName("Validate with no errors when the cafcass solicitor is set and nothing changes")
+    @DisplayName("Validate with no errors when nothing changes")
     @Test
     void validateNoChange() {
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
-        when(eventData.getChildrenMainRepresentative()).thenReturn(solicitor);
-
         when(caseData.getAllChildren()).thenReturn(List.of(child1Element));
         when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element));
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
 
-    @DisplayName("Validate with errors when the cafcass solicitor is set and a child is added")
+    @DisplayName("Validate with errors a child is added")
     @Test
     void validateAdded() {
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
-        when(eventData.getChildrenMainRepresentative()).thenReturn(solicitor);
-
         when(caseData.getAllChildren()).thenReturn(List.of(child1Element, child2Element));
         when(caseDataBefore.getAllChildren()).thenReturn(List.of());
 
@@ -103,12 +86,9 @@ class LocalAuthorityUserChildCollectionValidatorTest {
         ));
     }
 
-    @DisplayName("Validate with errors when the cafcass solicitor is set and a child is removed")
+    @DisplayName("Validate with errors when a child is removed")
     @Test
     void validateRemoved() {
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
-        when(eventData.getChildrenMainRepresentative()).thenReturn(solicitor);
-
         when(caseData.getAllChildren()).thenReturn(List.of());
         when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element, child2Element));
 
@@ -120,5 +100,14 @@ class LocalAuthorityUserChildCollectionValidatorTest {
         assertThat(underTest.validate(caseData, caseDataBefore)).isEqualTo(List.of(
             "You cannot remove child 1 name from the case", "You cannot remove child 2 name from the case"
         ));
+    }
+
+    @DisplayName("Validate with no errors when a child is updated")
+    @Test
+    void validateUpdated() {
+        when(caseData.getAllChildren()).thenReturn(List.of(child1Element, element(child2Id, child1)));
+        when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element, child2Element));
+
+        assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
 }
