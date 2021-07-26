@@ -57,8 +57,8 @@ module.exports = {
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');
     }
-    await within(this.fields(elementIndex).respondent.address, () => {
-      postcodeLookup.enterAddressManually(respondent.address);
+    await within(this.fields(elementIndex).respondent.address, async () => {
+      await postcodeLookup.enterAddressManually(respondent.address);
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, respondent.relationshipToChild);
@@ -119,8 +119,8 @@ module.exports = {
       I.click('//*[@id="organisation-table"]/caption/h3[text()="Swansea City Council"]/../../tbody//a');
     });
 
-    await within(this.fields(elementIndex).solicitor.regionalOfficeAddress, () => {
-      postcodeLookup.enterAddressManually(respondent.solicitor.regionalOfficeAddress);
+    await within(this.fields(elementIndex).solicitor.regionalOfficeAddress, async () => {
+      await postcodeLookup.enterAddressManually(respondent.solicitor.regionalOfficeAddress);
     });
   },
 
@@ -138,8 +138,8 @@ module.exports = {
     const elementIndex = await I.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).solicitor.unregisteredOrganisation.name, respondent.solicitor.unregisteredOrganisation.name);
-    await within(this.fields(elementIndex).solicitor.unregisteredOrganisation.address, () => {
-      postcodeLookup.enterAddressManually(respondent.solicitor.unregisteredOrganisation.address);
+    await within(this.fields(elementIndex).solicitor.unregisteredOrganisation.address, async () => {
+      await postcodeLookup.enterAddressManually(respondent.solicitor.unregisteredOrganisation.address);
     });
   },
 };

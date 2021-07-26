@@ -16,7 +16,7 @@ module.exports = {
     country: 'input[id$="Country"]',
   },
   findAddressButton: 'Find address',
-  cantEnterPostcodeLink: locate('a').withText('I can\'t enter a UK postcode'),
+  cantEnterPostcodeLink: '//a[contains(text(), "I can\'t enter a UK postcode")]',
 
   lookupPostcode(address) {
     I.fillField(this.fields.postcodeLookup, address.postcode);
@@ -32,32 +32,34 @@ module.exports = {
     I.waitForValue(this.fields.country, address.country);
   },
 
-  enterAddressManually(address) {
-    I.waitForElement(this.cantEnterPostcodeLink);
-    I.click(this.cantEnterPostcodeLink);
-    if(address.buildingAndStreet.lineOne) {
+  async enterAddressManually(address) {
+    I.waitForElement(this.fields.postcodeLookup);
+    if (await I.hasSelector(this.cantEnterPostcodeLink)) {
+      I.click(this.cantEnterPostcodeLink);
+    }
+    if (address.buildingAndStreet.lineOne) {
       I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
     }
-    if(address.buildingAndStreet.lineTwo) {
+    if (address.buildingAndStreet.lineTwo) {
       I.fillField(this.fields.buildingAndStreet.lineTwo, address.buildingAndStreet.lineTwo);
     }
-    if(address.buildingAndStreet.lineThree) {
+    if (address.buildingAndStreet.lineThree) {
       I.fillField(this.fields.buildingAndStreet.lineThree, address.buildingAndStreet.lineThree);
     }
-    if(address.town) {
+    if (address.town) {
       I.fillField(this.fields.town, address.town);
     }
-    if(address.postcode) {
+    if (address.postcode) {
       I.fillField(this.fields.postcode, address.postcode);
     }
-    if(address.country) {
+    if (address.country) {
       I.fillField(this.fields.country, address.country);
     }
   },
 
   async enterAddressIfNotPresent(address) {
     if(await I.canSee(this.cantEnterPostcodeLink)){
-      this.enterAddressManually(address);
+      await this.enterAddressManually(address);
     }
   },
 
