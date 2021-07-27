@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Builder
 public class ChangeOfRepresentation {
     String respondent;
+    String child;
     LocalDate date;
     String by;
     String via;

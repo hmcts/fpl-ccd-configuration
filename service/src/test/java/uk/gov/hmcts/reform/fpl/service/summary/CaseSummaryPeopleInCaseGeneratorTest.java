@@ -1,9 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.summary;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -20,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHE
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class CaseSummaryPeopleInCaseGeneratorTest {
 
@@ -62,18 +68,117 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .build());
     }
 
-    @Test
-    void testLaSolicitor() {
-        SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
-            .solicitor(Solicitor.builder()
-                .name(SOLICITOR_NAME)
-                .email(SOLICITOR_EMAIL)
-                .build()).build());
+    @Nested
+    class MainContact {
 
-        assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
-            .caseSummaryLASolicitorName(SOLICITOR_NAME)
-            .caseSummaryLASolicitorEmail(SOLICITOR_EMAIL)
-            .build());
+        final Solicitor legacySolicitor = Solicitor.builder()
+            .name(SOLICITOR_NAME)
+            .email(SOLICITOR_EMAIL)
+            .build();
+
+        @Test
+        void shouldPopulateMainContactFromLocalAuthority() {
+            final Colleague colleague1 = Colleague.builder()
+                .fullName("John Smith")
+                .email("john.smith@test.com")
+                .mainContact("Yes")
+                .build();
+
+            final Colleague colleague2 = Colleague.builder()
+                .fullName("Alex Williams")
+                .mainContact("No")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name("LA")
+                .colleagues(wrapElements(colleague1, colleague2))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor)
+                .build();
+
+            final SyntheticCaseSummary actual = underTest.generate(caseData);
+
+            assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+                .caseSummaryLASolicitorName("John Smith")
+                .caseSummaryLASolicitorEmail("john.smith@test.com")
+                .build());
+        }
+
+        @Test
+        void shouldNotPopulateMainContactWhenLocalAuthorityDoesNotHaveColleagues() {
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name("LA")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor)
+                .build();
+
+            final SyntheticCaseSummary actual = underTest.generate(caseData);
+
+            assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+                .build());
+        }
+
+        @Test
+        void shouldNotPopulateMainContactWhenLocalAuthorityDoesNotHaveOne() {
+            final Colleague colleague1 = Colleague.builder()
+                .fullName("John Smith")
+                .email("john.smith@test.com")
+                .mainContact("No")
+                .build();
+
+            final Colleague colleague2 = Colleague.builder()
+                .fullName("Alex Williams")
+                .mainContact("No")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name("LA")
+                .colleagues(wrapElements(colleague1, colleague2))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(legacySolicitor)
+                .build();
+
+            final SyntheticCaseSummary actual = underTest.generate(caseData);
+
+            assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+                .build());
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldPopulateMainContactFromLegacySolicitorWhenNoLocalAuthorities(List<LocalAuthority> localAuthorities) {
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthorities))
+                .solicitor(legacySolicitor)
+                .build();
+
+            final SyntheticCaseSummary actual = underTest.generate(caseData);
+
+            assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+                .caseSummaryLASolicitorName(SOLICITOR_NAME)
+                .caseSummaryLASolicitorEmail(SOLICITOR_EMAIL)
+                .build());
+        }
+
+        @Test
+        void shouldNotPopulateMainContactWhenNoLocalAuthoritiesNorLegacySolicitor() {
+            final CaseData caseData = CaseData.builder()
+                .build();
+
+            final SyntheticCaseSummary actual = underTest.generate(caseData);
+
+            assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+                .build());
+        }
     }
 
     @Test
@@ -155,7 +260,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
     }
 
     @Test
-    void testReppresentativesWithoutRole() {
+    void testRepresentativesWithoutRole() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(
                 element(Representative.builder()

@@ -3,15 +3,17 @@ package uk.gov.hmcts.reform.fpl.service.summary;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -23,8 +25,8 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
     public SyntheticCaseSummary generate(CaseData caseData) {
         return SyntheticCaseSummary.builder()
             .caseSummaryNumberOfChildren(generateSummaryNumberOfChildren(caseData))
-            .caseSummaryLASolicitorName(generateSummaryLASolicitorName(caseData))
-            .caseSummaryLASolicitorEmail(generateSummaryLASolicitorEmail(caseData))
+            .caseSummaryLASolicitorName(generateSummaryMainContactName(caseData))
+            .caseSummaryLASolicitorEmail(generateSummaryMainContactEmail(caseData))
             .caseSummaryFirstRespondentLastName(generateSummaryFirstRespondentLastName(caseData))
             .caseSummaryFirstRespondentLegalRep(getFirstRespondentRepresentativeFullName(caseData))
             .caseSummaryCafcassGuardian(generateSummaryCafcassGuardian(caseData))
@@ -48,16 +50,29 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
         return cafcasGuardians.stream().map(Representative::getFullName).collect(Collectors.joining(", "));
     }
 
-    private String generateSummaryLASolicitorEmail(CaseData caseData) {
-        return Optional.ofNullable(caseData.getSolicitor()).map(Solicitor::getEmail).orElse(null);
+    private String generateSummaryMainContactEmail(CaseData caseData) {
+
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return caseData.getLocalAuthorities().get(0).getValue().getMainContact()
+                .map(Colleague::getEmail)
+                .orElse(null);
+        }
+
+        return ofNullable(caseData.getSolicitor()).map(Solicitor::getEmail).orElse(null);
     }
 
-    private String generateSummaryLASolicitorName(CaseData caseData) {
-        return Optional.ofNullable(caseData.getSolicitor()).map(Solicitor::getName).orElse(null);
+    private String generateSummaryMainContactName(CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return caseData.getLocalAuthorities().get(0).getValue().getMainContact()
+                .map(Colleague::getFullName)
+                .orElse(null);
+        }
+
+        return ofNullable(caseData.getSolicitor()).map(Solicitor::getName).orElse(null);
     }
 
     private Integer generateSummaryNumberOfChildren(CaseData caseData) {
-        return Optional.ofNullable(caseData.getChildren1())
+        return ofNullable(caseData.getChildren1())
             .map(children -> children.isEmpty() ? null : children.size())
             .orElse(null);
     }

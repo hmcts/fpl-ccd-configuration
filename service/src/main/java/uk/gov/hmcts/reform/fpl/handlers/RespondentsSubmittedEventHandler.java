@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SO
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentsSubmittedEventHandler {
 
-    private final RegisteredRespondentSolicitorContentProvider registeredContentProvider;
-    private final UnregisteredRespondentSolicitorContentProvider unregisteredContentProvider;
+    private final RegisteredRepresentativeSolicitorContentProvider registeredContentProvider;
+    private final UnregisteredRepresentativeSolicitorContentProvider unregisteredContentProvider;
     private final NotificationService notificationService;
     private final RespondentService respondentService;
 
@@ -39,7 +39,7 @@ public class RespondentsSubmittedEventHandler {
             = respondentService.getRespondentsWithRegisteredSolicitors(caseData.getRespondents1());
 
         respondentsWithRegisteredSolicitors.forEach(respondent -> {
-            NotifyData notifyData = registeredContentProvider.buildRespondentSolicitorSubmissionNotification(
+            NotifyData notifyData = registeredContentProvider.buildContent(
                 caseData, respondent);
 
             notificationService.sendEmail(

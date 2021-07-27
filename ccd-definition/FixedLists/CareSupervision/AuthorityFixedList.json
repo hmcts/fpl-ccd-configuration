@@ -765,6 +765,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SUN",
+    "ListElement": "Sunderland City Council",
+    "DisplayOrder": 377
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "GSCC",
     "ListElement": "Surrey County Council",
     "DisplayOrder": 380
