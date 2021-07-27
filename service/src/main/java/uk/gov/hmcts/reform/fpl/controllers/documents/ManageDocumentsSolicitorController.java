@@ -12,17 +12,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
-import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +42,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 /*  The only differences in all of the callbacks is passing/using 'solicitor' case fields instead of 'admin' fields
- *  This could definitely be improved to reduce code duplication, effectively only 4-5 lines are actually different
+ *  This could be improved to reduce code duplication, effectively only 4-5 lines are actually different
  */
 @Api
 @RestController
@@ -54,8 +50,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageDocumentsSolicitorController extends CallbackController {
 
-    private final IdamClient idamClient;
-    private final RequestData requestData;
     private final FeatureToggleService featureToggleService;
     private final ManageDocumentService documentService;
     private final DocumentListService documentListService;
