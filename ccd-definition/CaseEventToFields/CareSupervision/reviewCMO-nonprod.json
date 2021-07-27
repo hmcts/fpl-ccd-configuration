@@ -1,0 +1,88 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "hasOthers",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "cmoToReviewList=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMOOthersHeader",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "PageShowCondition": "hasOthers=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMOOthersSubHeader",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersToNotifyTitle",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "CaseEventID": "reviewCMO",
+  "CaseFieldID": "others_label",
+  "PageFieldDisplayOrder": 5,
+  "DisplayContext": "READONLY",
+  "PageID": "SelectOthers",
+  "PageDisplayOrder": 4,
+  "PageColumnNumber": 1,
+  "ShowSummaryChangeOption": "N"
+},
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMONotifyAllOthers",
+    "PageFieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "PageFieldDisplayOrder": 7,
+    "DisplayContext": "COMPLEX",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "reviewCMONotifyAllOthers=\"No\"",
+    "ShowSummaryChangeOption": "Y"
+  }
+]

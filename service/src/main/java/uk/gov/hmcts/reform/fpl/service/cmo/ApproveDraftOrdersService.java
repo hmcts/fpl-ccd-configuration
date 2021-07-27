@@ -9,12 +9,15 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
@@ -43,6 +47,8 @@ public class ApproveDraftOrdersService {
     private final DraftOrdersBundleHearingSelector draftOrdersBundleHearingSelector;
     private final BlankOrderGenerator blankOrderGenerator;
     private final HearingOrderGenerator hearingOrderGenerator;
+    private final OthersService othersService;
+    private final FeatureToggleService featureToggleService;
 
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
@@ -144,7 +150,14 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(cmoReviewDecision, cmo);
+                    List<Element<Other>> selectedOthers = new ArrayList<>();
+                    if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+                        selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                            caseData.getOthersSelector(), caseData.getReviewCMONotifyAllOthers());
+                    }
+
+                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
+                        cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers));
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                     sealedCMOs.add(reviewedOrder);
@@ -207,7 +220,14 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, orderElement);
+                    List<Element<Other>> selectedOthers = new ArrayList<>();
+                    if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+                        selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                            caseData.getOthersSelector(), caseData.getReviewCMONotifyAllOthers());
+                    }
+
+                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
+                        reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers));
                     orderCollection.add(blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle,
                         reviewedOrder));
@@ -261,5 +281,14 @@ public class ApproveDraftOrdersService {
             return State.FINAL_HEARING;
         }
         return currentState;
+    }
+
+    private String getOthersNotified(List<Element<Other>> selectedOthers) {
+        return Optional.ofNullable(selectedOthers).map(
+            others -> others.stream()
+                .filter(other -> other.getValue().isRepresented() || other.getValue()
+                    .hasAddressAdded())
+                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
+        ).orElse(null);
     }
 }

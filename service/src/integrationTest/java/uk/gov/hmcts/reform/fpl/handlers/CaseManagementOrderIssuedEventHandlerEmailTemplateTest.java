@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -35,11 +36,11 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTit
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,7 +67,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(OrderCreationService.class), @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
     @MockBean(SealedOrderHistoryExtraTitleGenerator.class), @MockBean(SealedOrderHistoryTypeGenerator.class),
     @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(AppointedGuardianFormatter.class),
-    @MockBean(OthersService.class), @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class)
+    @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class),
+    @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
@@ -80,89 +82,98 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
     @Autowired
     private CaseManagementOrderIssuedEventHandler underTest;
 
+    public static final UUID HEARING_ID = UUID.randomUUID();
+    public static final CaseData CASE_DATA = CaseData.builder()
+        .id(CASE_ID)
+        .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+        .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+        .respondents1(wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
+            .build()))
+        .children1(wrapElements(Child.builder()
+            .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
+            .build()))
+        .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder()
+            .startDate(LocalDateTime.of(2021, 6, 8, 0, 0, 0))
+            .build())))
+        .lastHearingOrderDraftsHearingId(HEARING_ID)
+        .build();
+    public static final HearingOrder CMO = HearingOrder.builder()
+        .order(DocumentReference.builder().binaryUrl("/some-url/binary").build())
+        .hearing("some hearing")
+        .build();
+
+    @ParameterizedTest
+    @MethodSource("subjectLineSource")
+    void notifyLocalAuthority(boolean toggle, String name) {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
+
+        underTest.notifyLocalAuthority(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
+
+        assertThat(response())
+            .hasSubject("CMO issued, " + name)
+            .hasBody(emailContent()
+                .line("The case management order has been issued for:")
+                .line()
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", some hearing")
+                .line()
+                .h1("Next steps")
+                .line()
+                .line("You should now check the order to see your directions and compliance dates.")
+                .line()
+                .line("You can review the order by:")
+                .list("signing into " + caseDetailsUrl(CASE_ID, TabUrlAnchor.ORDERS))
+                .line()
+                .list("using this link http://fake-url/some-url/binary")
+                .line()
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                    + "contactfpl@justice.gov.uk")
+            );
+    }
+
     @ParameterizedTest
     @MethodSource("subjectLineSource")
     void notifyParties(boolean toggle, String name) {
         when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-        UUID hearingId = UUID.randomUUID();
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
-                .build()))
-            .children1(wrapElements(Child.builder()
-                .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
-                .build()))
-            .hearingDetails(List.of(element(hearingId, HearingBooking.builder()
-                .startDate(LocalDateTime.of(2021, 6, 8, 0, 0, 0))
-                .build())))
-            .lastHearingOrderDraftsHearingId(hearingId)
-            .build();
-        HearingOrder cmo = HearingOrder.builder()
-            .order(DocumentReference.builder().binaryUrl("/some-url/binary").build())
-            .hearing("some hearing")
-            .build();
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
 
-        underTest.notifyParties(new CaseManagementOrderIssuedEvent(caseData, cmo));
+        underTest.notifyCafcass(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
-        List<SendEmailResponse> responses = allResponses();
+        assertThat(response())
+            .hasSubject("CMO issued, " + name)
+            .hasBody(emailContent()
+                .line("The case management order has been issued for:")
+                .line()
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", some hearing")
+                .line()
+                .h1("Next steps")
+                .line()
+                .line("You should now check the order to see your directions and compliance dates.")
+                .line()
+                .line("You can review the order by:")
+                .line()
+                .line()
+                .list("using this link " + GOV_NOTIFY_DOC_URL)
+                .line()
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                    + "contactfpl@justice.gov.uk")
+            );
+    }
 
-        SendEmailResponse laResponse = responses.get(0);
-        SendEmailResponse digitalRepResponse = responses.get(2);
-        List.of(laResponse, digitalRepResponse).forEach(response ->
-            assertThat(response)
-                .hasSubject("CMO issued, " + name)
-                .hasBody(emailContent()
-                    .line("The case management order has been issued for:")
-                    .line()
-                    .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", some hearing")
-                    .line()
-                    .h1("Next steps")
-                    .line()
-                    .line("You should now check the order to see your directions and compliance dates.")
-                    .line()
-                    .line("You can review the order by:")
-                    .list("signing into " + caseDetailsUrl(CASE_ID, TabUrlAnchor.ORDERS))
-                    .line()
-                    .list("using this link http://fake-url/some-url/binary")
-                    .line()
-                    .line("HM Courts & Tribunals Service")
-                    .line()
-                    .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                        + "contactfpl@justice.gov.uk")
-                )
-        );
+    @ParameterizedTest
+    @MethodSource("subjectLineSource")
+    void notifyCtsc(boolean toggle, String name) {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
 
-        SendEmailResponse cafcassResponse = responses.get(1);
-        SendEmailResponse emailRepResponse = responses.get(3);
-        List.of(cafcassResponse, emailRepResponse).forEach(response ->
-            assertThat(response)
-                .hasSubject("CMO issued, " + name)
-                .hasBody(emailContent()
-                    .line("The case management order has been issued for:")
-                    .line()
-                    .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", some hearing")
-                    .line()
-                    .h1("Next steps")
-                    .line()
-                    .line("You should now check the order to see your directions and compliance dates.")
-                    .line()
-                    .line("You can review the order by:")
-                    .line()
-                    .line()
-                    .list("using this link " + GOV_NOTIFY_DOC_URL)
-                    .line()
-                    .line("HM Courts & Tribunals Service")
-                    .line()
-                    .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                        + "contactfpl@justice.gov.uk")
-                )
-        );
+        underTest.notifyAdmin(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
-        SendEmailResponse hmctsResponse = responses.get(4);
-        assertThat(hmctsResponse)
+        assertThat(response())
             .hasSubject("New case management order issued, " + name)
             .hasBody(emailContent()
                 .line("A new case management order has been issued by Family Court")

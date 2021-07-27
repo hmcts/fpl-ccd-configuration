@@ -49,6 +49,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder {
     private List<Element<SupportingEvidenceBundle>> supportingDocs;
     private String removalReason;
     private final List<Element<Other>> others;
+    private String othersNotified;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return from(order, hearing, date, AGREED_CMO, null);

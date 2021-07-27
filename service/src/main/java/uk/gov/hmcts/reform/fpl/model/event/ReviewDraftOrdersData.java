@@ -56,7 +56,7 @@ public class ReviewDraftOrdersData {
             "cmoDraftOrderDocument", "draftOrder1Document", "draftOrder2Document", "draftOrder3Document",
             "draftOrder4Document", "draftOrder5Document", "draftOrder6Document", "draftOrder7Document",
             "draftOrder8Document", "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles",
-            "draftOrdersTitlesInBundle"
+            "draftOrdersTitlesInBundle", "others_label", "hasOthers", "reviewCMONotifyAllOthers", "othersSelector"
         };
     }
 

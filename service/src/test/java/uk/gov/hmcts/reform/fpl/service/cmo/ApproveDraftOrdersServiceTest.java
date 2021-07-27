@@ -16,8 +16,10 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -27,6 +29,8 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -48,6 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -68,6 +73,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.EMPTY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
@@ -107,6 +113,12 @@ class ApproveDraftOrdersServiceTest {
     @Mock
     private HearingOrderGenerator hearingOrderGenerator;
 
+    @Mock
+    private OthersService othersService;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private ApproveDraftOrdersService underTest;
 
@@ -119,7 +131,9 @@ class ApproveDraftOrdersServiceTest {
             reviewDecisionValidator,
             draftOrdersBundleHearingSelector,
             blankOrderGenerator,
-            hearingOrderGenerator
+            hearingOrderGenerator,
+            othersService,
+            featureToggleService
         );
     }
 
@@ -139,8 +153,8 @@ class ApproveDraftOrdersServiceTest {
             .numDraftCMOs("MULTI")
             .build();
 
-        when(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
-            .thenReturn(hearingOrdersBundle1);
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(hearingOrdersBundle1);
 
         DynamicList expectedDynamicList = ElementUtils.asDynamicList(
             hearingOrderBundlesDrafts, hearingOrdersBundle1.getId(), HearingOrdersBundle::getHearingName);
@@ -211,9 +225,8 @@ class ApproveDraftOrdersServiceTest {
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .build();
 
-        when(draftOrdersReviewDataBuilder.buildDraftOrdersReviewData(
-            hearingOrdersBundle.getValue()))
-            .thenReturn(BUNDLE_DATA);
+        given(draftOrdersReviewDataBuilder.buildDraftOrdersReviewData(hearingOrdersBundle.getValue()))
+            .willReturn(BUNDLE_DATA);
 
         Map<String, Object> actualData = underTest.getPageDisplayControls(caseData);
 
@@ -242,8 +255,8 @@ class ApproveDraftOrdersServiceTest {
             .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
             .build();
 
-        when(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
-            .thenReturn(draftOrdersBundle);
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(draftOrdersBundle);
 
         underTest.populateDraftOrdersData(caseData);
 
@@ -262,8 +275,8 @@ class ApproveDraftOrdersServiceTest {
             .reviewCMODecision(reviewDecision)
             .build();
 
-        when(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
-            .thenReturn(draftOrdersBundle);
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(draftOrdersBundle);
 
         underTest.validateDraftOrdersReviewDecision(caseData, emptyMap());
 
@@ -287,11 +300,9 @@ class ApproveDraftOrdersServiceTest {
             .reviewCMODecision(reviewDecision)
             .build();
 
-        when(mapper.convertValue(anyMap(), eq(ReviewDecision.class)))
-            .thenReturn(reviewDecision);
-
-        when(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
-            .thenReturn(draftOrdersBundle);
+        given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(draftOrdersBundle);
 
         underTest.validateDraftOrdersReviewDecision(caseData, reviewDecisionMap);
 
@@ -309,8 +320,8 @@ class ApproveDraftOrdersServiceTest {
             .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(null).build())
             .build();
 
-        when(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
-            .thenReturn(draftOrdersBundle);
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(draftOrdersBundle);
 
         assertThat(underTest.validateDraftOrdersReviewDecision(caseData, emptyMap()))
             .containsOnly("Approve, amend or reject draft orders");
@@ -318,7 +329,7 @@ class ApproveDraftOrdersServiceTest {
 
     @ParameterizedTest
     @MethodSource("cmoReviewDecisionData")
-    void shouldReturnCMOToSealAndSetCaseStateWhenJudgeApprovesCMO(
+    void shouldReturnCMOToSealAndSetCaseStateWhenJudgeApprovesCMOAndServingOthersIsEnabled(
         String name,
         List<Element<HearingBooking>> hearingBookings, State expectedState) {
         Element<HearingOrder> agreedCMO = element(cmoID, HearingOrder.builder()
@@ -340,7 +351,12 @@ class ApproveDraftOrdersServiceTest {
             .hearingDetails(hearingBookings)
             .build();
 
-        HearingOrder expectedCmo = expectedSealedCMO();
+        String othersNotified = "Other1, Other2";
+        List<Element<Other>> others = wrapElements(
+            Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
+            Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build());
+
+        HearingOrder expectedCmo = expectedSealedCMO(others, othersNotified);
         Map<String, Object> expectedData = Map.of(
             "sealedCMOs", List.of(element(agreedCMO.getId(), expectedCmo)),
             "ordersToBeSent", List.of(element(agreedCMO.getId(), expectedCmo)),
@@ -349,11 +365,11 @@ class ApproveDraftOrdersServiceTest {
             "hearingOrdersBundlesDrafts", emptyList()
         );
 
-        when(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class)))
-            .thenReturn(emptyList());
-
-        when(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO))
-            .thenReturn(element(agreedCMO.getId(), expectedCmo));
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+        given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
+        given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(emptyList());
+        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified))
+            .willReturn(element(agreedCMO.getId(), expectedCmo));
 
         Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
 
@@ -439,8 +455,8 @@ class ApproveDraftOrdersServiceTest {
             .orderCollection(newArrayList())
             .build();
 
-        when(mapper.convertValue(anyMap(), eq(ReviewDecision.class)))
-            .thenReturn(reviewDecision);
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+        given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
 
         Element<HearingOrder> expectedSealedOrder = element(
             draftOrder1.getId(), draftOrder1.getValue().toBuilder().status(APPROVED).build());
@@ -448,11 +464,10 @@ class ApproveDraftOrdersServiceTest {
         Element<GeneratedOrder> expectedBlankOrder = element(UUID.randomUUID(),
             GeneratedOrder.builder().type(String.valueOf(C21)).build());
 
-        when(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1))
-            .thenReturn(expectedSealedOrder);
-
-        when(blankOrderGenerator.buildBlankOrder(caseData, ordersBundleElement, expectedSealedOrder))
-            .thenReturn(expectedBlankOrder);
+        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), ""))
+            .willReturn(expectedSealedOrder);
+        given(blankOrderGenerator.buildBlankOrder(caseData, ordersBundleElement, expectedSealedOrder))
+            .willReturn(expectedBlankOrder);
 
         Map<String, Object> expectedData = Map.of(
             "orderCollection", List.of(expectedBlankOrder),
@@ -485,14 +500,13 @@ class ApproveDraftOrdersServiceTest {
             .orderCollection(newArrayList())
             .build();
 
-        when(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).thenReturn(reviewDecision);
+        given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
 
         Element<HearingOrder> rejectedOrderToReturn = element(draftOrder1.getId(),
             draftOrder1.getValue().toBuilder().status(RETURNED).requestedChanges("some change").build());
 
-        when(hearingOrderGenerator.buildRejectedHearingOrder(
-            draftOrder1, reviewDecision.getChangesRequestedByJudge()))
-            .thenReturn(rejectedOrderToReturn);
+        given(hearingOrderGenerator.buildRejectedHearingOrder(
+            draftOrder1, reviewDecision.getChangesRequestedByJudge())).willReturn(rejectedOrderToReturn);
 
         Map<String, Object> expectedData = Map.of(
             "orderCollection", emptyList(),
@@ -538,8 +552,7 @@ class ApproveDraftOrdersServiceTest {
     @Test
     void shouldThrowAnExceptionWhenNoUpcomingHearingsAreAvailable() {
         Element<HearingOrder> agreedCMO = agreedCMO(hearing2);
-        Element<HearingOrdersBundle> ordersBundleElement =
-            buildDraftOrdersBundle(hearing2, newArrayList(agreedCMO));
+        Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(hearing2, newArrayList(agreedCMO));
 
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
@@ -549,8 +562,9 @@ class ApproveDraftOrdersServiceTest {
             .hearingDetails(emptyList())
             .build();
 
-        when(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO)))
-            .thenReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
+        given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq("")))
+            .willReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> underTest.reviewCMO(caseData, ordersBundleElement));
@@ -691,7 +705,7 @@ class ApproveDraftOrdersServiceTest {
         return Stream.of(null, ReviewDecision.builder().build());
     }
 
-    private HearingOrder expectedSealedCMO() {
+    private HearingOrder expectedSealedCMO(List<Element<Other>> selectedOthers, String othersNotified) {
         return HearingOrder.builder()
             .title(hearing1)
             .order(sealedOrder)
@@ -701,6 +715,8 @@ class ApproveDraftOrdersServiceTest {
             .judgeTitleAndName("Her Honour Judge Judy")
             .status(APPROVED)
             .type(AGREED_CMO)
+            .others(selectedOthers)
+            .othersNotified(othersNotified)
             .build();
     }
 }
