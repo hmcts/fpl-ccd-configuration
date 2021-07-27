@@ -257,33 +257,6 @@ withPipeline(type, product, component) {
     }
   }
 
-  before('buildinfra:demo') {
-    withSubscription('nonprod') {
-      withTeamSecrets(pipelineConf, 'demo') {
-        archiveCoreCaseDataDefinitions('demo')
-        uploadCoreCaseDataDefinitions('demo')
-      }
-    }
-  }
-
-  before('buildinfra:ithc') {
-    withSubscription('nonprod') {
-      withTeamSecrets(pipelineConf, 'ithc') {
-        archiveCoreCaseDataDefinitions('ithc')
-        uploadCoreCaseDataDefinitions('ithc')
-      }
-    }
-  }
-
-  before('buildinfra:perftest') {
-    withSubscription('nonprod') {
-      withTeamSecrets(pipelineConf, 'perftest') {
-        archiveCoreCaseDataDefinitions('perftest')
-        uploadCoreCaseDataDefinitions('perftest')
-      }
-    }
-  }
-
   before('smoketest:aat') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
