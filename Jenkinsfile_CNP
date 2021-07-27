@@ -135,10 +135,21 @@ withPipeline(type, product, component) {
   enableHighLevelDataSetup()
 
   onMaster() {
+    env.ENV = 'aat'
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
   }
   onPR() {
+    env.ENV = 'preview'
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+  onDemo {
+    env.ENV = 'demo'
+  }
+  onPerftest{
+    env.ENV = 'perftest'
+  }
+  onIthc{
+    env.ENV = 'ithc'
   }
 
   after('checkout') {
@@ -212,12 +223,7 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
-  before('functionalTest:preview') {
-    env.ENV = 'preview'
-  }
-
   before('functionalTest:aat') {
-    env.ENV = 'aat'
     env.SKIP_BROWSER_TESTS = 'true'
   }
 
@@ -228,6 +234,7 @@ withPipeline(type, product, component) {
 
   after('functionalTest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    env.ENV = 'prod' // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
 
   after('functionalTest:preview') {
@@ -236,20 +243,17 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
-  after('pact-consumer-tests') {
-    echo "Enabling the upload of CCD definitions to production"
-    env.UPLOAD_PROD_CCD_DEFINITIONS = 'true'
-  }
-
   after('highleveldatasetup') {
-    echo "CCD definition upload to prod is: ${env.UPLOAD_PROD_CCD_DEFINITIONS}"
-    if (env.UPLOAD_PROD_CCD_DEFINITIONS) {
-      withSubscription('nonprod') {
-        withTeamSecrets(pipelineConf, 'preview') {
-          archiveCoreCaseDataDefinitions('preview')
-          uploadCoreCaseDataDefinitions('preview')
+    if (env.ENV != 'preview') {
+      echo "CCD definition upload for environment: ${env.ENV}"
+      withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
+        withTeamSecrets(pipelineConf, env.ENV) {
+          archiveCoreCaseDataDefinitions(env.ENV)
+          uploadCoreCaseDataDefinitions(env.ENV)
         }
       }
+    } else {
+      echo "CCD definition upload SKIPPED for environment: ${env.ENV}"
     }
   }
 
