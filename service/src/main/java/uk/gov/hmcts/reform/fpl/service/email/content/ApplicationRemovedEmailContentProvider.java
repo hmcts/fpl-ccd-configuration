@@ -17,6 +17,9 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.UUID;
@@ -28,6 +31,8 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
@@ -43,7 +48,7 @@ public class ApplicationRemovedEmailContentProvider extends AbstractEmailContent
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseId(caseData.getId().toString())
             .c2Filename(getFilename(removedApplication))
-            .removalDate(LocalDateTime.now().toString())
+            .removalDate(formatLocalDateToString(LocalDateTime.now().toLocalDate(), DATE_TIME_AT))
             .reason(removedApplication.getRemovalReason().toLowerCase())
             .applicantName(getApplicantName(removedApplication))
             .applicationFee("1")
