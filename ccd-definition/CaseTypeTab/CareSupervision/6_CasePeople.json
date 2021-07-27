@@ -49,7 +49,7 @@
     "TabDisplayOrder": 6,
     "CaseFieldID": "applicants",
     "TabFieldDisplayOrder": 4,
-    "FieldShowCondition": "localAuthorities = \"\""
+    "FieldShowCondition": "localAuthorities != \"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -80,7 +80,7 @@
     "TabDisplayOrder": 6,
     "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 6,
-    "FieldShowCondition": "localAuthorities = \"\""
+    "FieldShowCondition": "localAuthorities != \"*\""
   },
   {
     "LiveFrom": "01/01/2017",
