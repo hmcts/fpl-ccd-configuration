@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSectionValidator;
-import uk.gov.hmcts.reform.fpl.service.children.validation.user.HMCTSAdminUserValidator;
+import uk.gov.hmcts.reform.fpl.service.children.validation.user.AdminUserValidator;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NOT_SPECIFIED;
 import static uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection.MAIN_REPRESENTATIVE;
 
 @Component
-public final class HMCTSAdminUserMainRepresentativeValidator extends HMCTSAdminUserValidator
+public final class AdminUserMainRepresentativeValidator extends AdminUserValidator
     implements ChildrenEventSectionValidator {
 
     private static final List<YesNo> UNSET_VALUES = List.of(NO, NOT_SPECIFIED);
@@ -25,8 +25,8 @@ public final class HMCTSAdminUserMainRepresentativeValidator extends HMCTSAdminU
     private final MainRepresentativeValidator mainRepValidator;
 
     @Autowired
-    public HMCTSAdminUserMainRepresentativeValidator(UserService user,
-                                                     MainRepresentativeValidator mainRepValidator) {
+    public AdminUserMainRepresentativeValidator(UserService user,
+                                                MainRepresentativeValidator mainRepValidator) {
         super(user);
         this.mainRepValidator = mainRepValidator;
     }

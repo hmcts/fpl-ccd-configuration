@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection.CHILD_REPRESENTATIVES;
 
-class HMCTSAdminUserIndividualRepresentativeValidatorTest {
+class AdminUserIndividualRepresentativeValidatorTest {
     private final CaseData caseData = mock(CaseData.class);
     private final CaseData caseDataBefore = mock(CaseData.class);
 
@@ -27,8 +27,9 @@ class HMCTSAdminUserIndividualRepresentativeValidatorTest {
     private final UserService user = mock(UserService.class);
     private final ChildRepresentativeValidator childRepValidator = mock(ChildRepresentativeValidator.class);
 
-    private final HMCTSAdminUserIndividualRepresentativeValidator underTest =
-        new HMCTSAdminUserIndividualRepresentativeValidator(user, childRepValidator);
+    private final AdminUserIndividualRepresentativeValidator underTest = new AdminUserIndividualRepresentativeValidator(
+        user, childRepValidator
+    );
 
     @DisplayName("Accept users that are admins when section is CHILD_REPRESENTATIVES")
     @Test

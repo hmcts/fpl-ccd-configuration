@@ -117,7 +117,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(eventData.getChildrenHaveSameRepresentation()).thenReturn("Yes");
         when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn(null);
 
-        assertThat(underTest.validate(caseData,caseDataBefore)).isEmpty();
+        assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
 
     @DisplayName("Validate with errors when the children had different representation and this is changed")
@@ -129,7 +129,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(eventData.getChildrenHaveSameRepresentation()).thenReturn("No");
         when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("Yes");
 
-        assertThat(underTest.validate(caseData,caseDataBefore))
+        assertThat(underTest.validate(caseData, caseDataBefore))
             .isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 
@@ -142,7 +142,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(eventData.getChildrenHaveSameRepresentation()).thenReturn("Yes");
         when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("No");
 
-        assertThat(underTest.validate(caseData,caseDataBefore))
+        assertThat(underTest.validate(caseData, caseDataBefore))
             .isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 

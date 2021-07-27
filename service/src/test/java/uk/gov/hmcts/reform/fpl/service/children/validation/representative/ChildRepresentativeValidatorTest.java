@@ -60,7 +60,7 @@ class ChildRepresentativeValidatorTest {
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of(
-           "Confirm Dave Davidson’s legal representation"
+            "Confirm Dave Davidson’s legal representation"
         ));
     }
 
@@ -74,7 +74,7 @@ class ChildRepresentativeValidatorTest {
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of(
-           "Confirm Dave Davidson’s legal representation"
+            "Confirm Dave Davidson’s legal representation"
         ));
     }
 

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection.COLLECTION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-class HMCTSAdminUserChildCollectionValidatorTest {
+class AdminUserChildCollectionValidatorTest {
 
     private final CaseData caseData = mock(CaseData.class);
     private final CaseData caseDataBefore = mock(CaseData.class);
@@ -35,7 +35,7 @@ class HMCTSAdminUserChildCollectionValidatorTest {
 
     private final UserService user = mock(UserService.class);
 
-    private final HMCTSAdminUserChildCollectionValidator underTest = new HMCTSAdminUserChildCollectionValidator(user);
+    private final AdminUserChildCollectionValidator underTest = new AdminUserChildCollectionValidator(user);
 
     @DisplayName("Accept users that are admins when section is COLLECTION")
     @Test

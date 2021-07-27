@@ -7,11 +7,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class HMCTSAdminUserValidatorTest {
+class AdminUserValidatorTest {
 
     private final UserService user = mock(UserService.class);
 
-    private final HMCTSAdminUserValidator underTest = new HMCTSAdminUserValidator(user) {};
+    private final AdminUserValidator underTest = new AdminUserValidator(user) {};
 
     @Test
     void acceptsUserAdmin() {

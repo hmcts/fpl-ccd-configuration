@@ -78,7 +78,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         assertThat(response.getErrors()).isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 
-     @Test
+    @Test
     void shouldReturnNoErrorsWhenSolicitorSetsRepresentativeForTheFirstTime() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)

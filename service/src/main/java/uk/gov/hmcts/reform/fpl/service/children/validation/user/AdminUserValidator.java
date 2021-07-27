@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.children.validation.user;
 
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
-public abstract class HMCTSAdminUserValidator extends UserSpecificValidator {
-    public HMCTSAdminUserValidator(UserService user) {
+public abstract class AdminUserValidator extends UserSpecificValidator {
+    public AdminUserValidator(UserService user) {
         super(user);
     }
 

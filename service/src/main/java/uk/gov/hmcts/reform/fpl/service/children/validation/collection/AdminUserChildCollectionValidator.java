@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSectionValidator;
-import uk.gov.hmcts.reform.fpl.service.children.validation.user.HMCTSAdminUserValidator;
+import uk.gov.hmcts.reform.fpl.service.children.validation.user.AdminUserValidator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,11 +22,11 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection.COLLECTION;
 
 @Component
-public final class HMCTSAdminUserChildCollectionValidator extends HMCTSAdminUserValidator
+public final class AdminUserChildCollectionValidator extends AdminUserValidator
     implements ChildrenEventSectionValidator {
 
     @Autowired
-    public HMCTSAdminUserChildCollectionValidator(UserService user) {
+    public AdminUserChildCollectionValidator(UserService user) {
         super(user);
     }
 

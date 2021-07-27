@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection.MAIN_REPRESENTATIVE;
 
-class HMCTSAdminUserMainRepresentativeValidatorTest {
+class AdminUserMainRepresentativeValidatorTest {
     private static final List<String> NO_SOLICITOR_ERRORS = List.of();
     private static final List<String> SOLICITOR_ERRORS = List.of("error");
 
@@ -29,7 +29,7 @@ class HMCTSAdminUserMainRepresentativeValidatorTest {
     private final UserService user = mock(UserService.class);
     private final MainRepresentativeValidator mainRepValidator = mock(MainRepresentativeValidator.class);
 
-    private final HMCTSAdminUserMainRepresentativeValidator underTest = new HMCTSAdminUserMainRepresentativeValidator(
+    private final AdminUserMainRepresentativeValidator underTest = new AdminUserMainRepresentativeValidator(
         user, mainRepValidator
     );
 
