@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 })
 
 public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractDocmosisTest {
+
     @Autowired
     private TranslationRequestFormCreationService underTest;
 
@@ -53,15 +54,9 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
         request = buildTranslationRequest(true, orderDocumentToTranslate);
 
-        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
-            .format(RenderFormat.PDF)
-            .build()
-        );
+        generateWordDocument();
 
-        generateDocuments(docmosisDocumentPDF);
-
-        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
-            .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+        assertActualOutputMatchesTestFile();
     }
 
     @Test
@@ -71,15 +66,9 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
         request = buildTranslationRequest(false, orderDocumentToTranslate);
 
-        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
-            .format(RenderFormat.PDF)
-            .build()
-        );
+        generateWordDocument();
 
-        generateDocuments(docmosisDocumentPDF);
-
-        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
-            .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+        assertActualOutputMatchesTestFile();
     }
 
     @Test
@@ -98,7 +87,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateDocuments(docmosisDocumentPDF);
+        generateWordDocument();
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
@@ -120,7 +109,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateDocuments(docmosisDocumentPDF);
+        generateWordDocument();
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
@@ -142,7 +131,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateDocuments(docmosisDocumentPDF);
+        generateWordDocument();
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
@@ -164,28 +153,23 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateDocuments(docmosisDocumentPDF);
+        generateWordDocument();
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
-    @Test
-    void shouldReadDocumentContent() throws IOException {
-        expectedContentFileLocation = "translation-form-request/WordCountTranslationRequestForm.txt";
-        generatedContentOutputFile = "WordCountTranslationRequestForm.";
-
-        request = buildTranslationRequest(true, orderDocumentToTranslate);
-
-        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
-            .format(RenderFormat.PDF)
-            .build()
-        );
-
-        generateDocuments(docmosisDocumentPDF);
-
-        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+    private void assertActualOutputMatchesTestFile() {
+        assertThat(remove(extractPdfContent(getDocmosisDocumentPDFBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+    }
+
+    private byte[] getDocmosisDocumentPDFBytes(){
+        return underTest.buildTranslationRequestDocuments(
+            request.toBuilder()
+                .format(RenderFormat.PDF)
+                .build()
+        ).getBytes();
     }
 
     private DocmosisTranslationRequest buildTranslationRequest(boolean isEnglishToWelsh,
@@ -215,12 +199,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         return formatLocalDateToString(date, DATE);
     }
 
-    private void generateDocuments(DocmosisDocument docmosisDocumentPDF) throws IOException {
-        storeToOuputFolder(
-            generatedContentOutputFile.concat(RenderFormat.PDF.getExtension()),
-            docmosisDocumentPDF.getBytes()
-        );
-
+    private void generateWordDocument() throws IOException {
         storeToOuputFolder(
             generatedContentOutputFile.concat(RenderFormat.WORD.getExtension()),
             underTest.buildTranslationRequestDocuments(request.toBuilder()
@@ -230,7 +209,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         );
     }
 
-    private int countWords(String text) {
+    private static int countWords(String text) {
         if (text == null || text.isEmpty()) {
             return 0;
         }
@@ -241,12 +220,11 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         return ("" + Arrays.toString(byteValue));
     }
 
-    private String getExpectedText(String fileName) {
+    private static String getExpectedText(String fileName) {
         try {
             return readString(fileName);
         } catch (Exception e) {
-            throw new RuntimeException("Missing assertion text for order. Please create a "
-                + "filename named " + fileName);
+            throw new RuntimeException("Missing assertion text for order. Please create a filename named " + fileName);
         }
     }
 }
