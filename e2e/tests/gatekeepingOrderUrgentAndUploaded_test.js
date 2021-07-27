@@ -13,6 +13,7 @@ async function setupScenario(I) {
 Scenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await setupScenario(I);
   const allocationDecisionFields = draftStandardDirectionsEventPage.fields.allocationDecision;
+  const translationRadioOptions = draftStandardDirectionsEventPage.fields.translationRequirement;
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.click('Upload an urgent hearing order');
   await I.goToNextPage();
@@ -20,12 +21,14 @@ Scenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPa
   await draftStandardDirectionsEventPage.makeAllocationDecision(allocationDecisionFields.judgeLevelConfirmation.no, allocationDecisionFields.allocationLevel.magistrate, 'some reason');
   await I.goToNextPage();
   await draftStandardDirectionsEventPage.uploadUrgentHearingOrder(config.testWordFile);
+  await draftStandardDirectionsEventPage.selectTranslationRequirement(translationRadioOptions.welshToEnglish);
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab(['Gatekeeping order - urgent hearing order', 'Allocation decision'], 'Magistrate');
   I.seeInTab(['Gatekeeping order - urgent hearing order', 'Order'], 'mockFile.pdf');
   I.seeInTab(['Gatekeeping order - urgent hearing order', 'Date added'], dateFormat('d mmm yyyy'));
+  I.see('Sent for translation');
 
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');

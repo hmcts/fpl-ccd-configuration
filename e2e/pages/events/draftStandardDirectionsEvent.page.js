@@ -27,6 +27,11 @@ module.exports = {
       reason: '#urgentHearingAllocation_proposalReason',
     },
     urgentHearingOrder: '#urgentHearingOrderDocument',
+    translationRequirement: {
+      no: '#sdoTranslationRequirement-NO',
+      englishToWelsh: '#sdoTranslationRequirement-ENGLISH_TO_WELSH',
+      welshToEnglish: '#sdoTranslationRequirement-WELSH_TO_ENGLISH',
+    },
   },
 
   async uploadPreparedSDO(file) {
@@ -57,6 +62,10 @@ module.exports = {
       I.fillField(this.fields.allocationDecision.reason, reason);
     }
     await I.runAccessibilityTest();
+  },
+
+  async selectTranslationRequirement(radioOption) {
+    I.click(radioOption);
   },
 
   async uploadUrgentHearingOrder(order) {

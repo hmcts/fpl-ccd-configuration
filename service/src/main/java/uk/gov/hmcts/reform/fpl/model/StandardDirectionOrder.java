@@ -57,6 +57,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private String removalReason;
     private final List<Element<Other>> others;
     private final LocalDateTime translationUploadDateTime;
+//    private LanguageTranslationRequirement sdoTranslationRequirement;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -128,6 +129,12 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     public DocumentReference getTranslatedDocument() {
         return translatedOrderDoc;
     }
+
+//    //TODO SDO Translation
+//    @JsonIgnore
+//    public LanguageTranslationRequirement getLanguageTranslationRequirement() {
+//        return defaultIfNull(sdoTranslationRequirement, LanguageTranslationRequirement.NO);
+//    }
 
     @Override
     @JsonIgnore

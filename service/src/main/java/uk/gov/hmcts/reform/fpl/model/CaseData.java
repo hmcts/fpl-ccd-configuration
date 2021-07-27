@@ -481,6 +481,9 @@ public class CaseData {
         return languageValue.get().equals("Yes");
     }
 
+    //TODO
+//    private final String sdoTranslationRequirement;
+
     private final List<Element<Representative>> representatives;
 
     @JsonIgnore

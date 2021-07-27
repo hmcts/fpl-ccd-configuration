@@ -85,6 +85,12 @@ public class GatekeepingOrderService {
         DocumentReference draftDocument = decision.getDraftDocument();
         DocumentReference document = decision.isSealed() ? sealingService.sealDocument(draftDocument) : draftDocument;
 
+//        if( caseData.getGatekeepingOrderEventData().getLanguageTranslationRequirement() != LanguageTranslationRequirement.NO) {
+//            //TODO generate FL-PLW-LET-ENG-00748, populate, and send document for translation once FPLA-3253 is implemented
+//            //TranslationRequestFormCreationService:buildTranslationRequestDocuments(templateData)
+//            //Does this need moving to higher level?
+//        }
+
         return buildBaseGatekeepingOrder(caseData).toBuilder()
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
@@ -98,6 +104,12 @@ public class GatekeepingOrderService {
             .getGatekeepingOrderSealDecision();
 
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
+
+//        if( caseData.getGatekeepingOrderEventData().getLanguageTranslationRequirement() != LanguageTranslationRequirement.NO) {
+//            //TODO generate FL-PLW-LET-ENG-00748, populate, and send document for translation once FPLA-3253 is implemented
+//            //TranslationRequestFormCreationService:buildTranslationRequestDocuments(templateData)
+//            //Does this need moving to higher level?
+//        }
 
         if (decision.isSealed()) {
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));

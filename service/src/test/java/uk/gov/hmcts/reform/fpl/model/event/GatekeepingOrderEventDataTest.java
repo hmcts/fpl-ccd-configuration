@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_DOCUMENTS_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_MISSING_ANNEX;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_RESPONSE_TO_THRESHOLD_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class GatekeepingOrderEventDataTest {
@@ -76,5 +77,24 @@ class GatekeepingOrderEventDataTest {
 
         assertThat(underTest.resetStandardDirections()).isEmpty();
         assertThat(underTest.getStandardDirections()).isEmpty();
+    }
+
+    //TODO Could not resolve com.github.hmcts:fortify-client:1.2.0.
+    // Still using bintray?
+    // ------------------------------------------------
+    //     Required by:
+    //         project :service
+    //      > Could not resolve com.github.hmcts:fortify-client:1.2.0.
+    //         > Could not get resource 'https://dl.bintray.com/hmcts/hmcts-maven/com/github/hmcts/fortify-client/1.2.0/fortify-client-1.2.0.pom'.
+    //            > Could not GET 'https://dl.bintray.com/hmcts/hmcts-maven/com/github/hmcts/fortify-client/1.2.0/fortify-client-1.2.0.pom'. Received status code 403 from server: Forbidden
+    //
+
+    @Test
+    void   shouldReturnLanguageRequirements() {
+        final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
+            .sdoTranslationRequirement(ENGLISH_TO_WELSH)
+            .build();
+
+        assertThat(underTest.getLanguageTranslationRequirement()).isEqualTo(ENGLISH_TO_WELSH);
     }
 }

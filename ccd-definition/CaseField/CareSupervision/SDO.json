@@ -245,6 +245,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sdoTranslationRequirement",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "urgentHearingOrderInfo",
     "Label": "### Next steps\n\nBefore the next hearing you must add the judge or magistrate allocated to this case in 'Allocated judge'.\n\nYou can also add a gatekeeping order later, if needed.",
     "FieldType": "Label",

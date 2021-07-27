@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -63,10 +64,14 @@ public class UrgentGatekeepingOrderService {
             .order(sealingService.sealDocument(orderDocument))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
+            .sdoTranslationRequirement(eventData.getLanguageTranslationRequirement().getValue())
             .allocation(allocation)
             .build();
 
         returnedData.put("urgentHearingOrder", order);
+
+        //TODO send for translation
+
 
         return returnedData;
     }
@@ -86,4 +91,14 @@ public class UrgentGatekeepingOrderService {
     private boolean noPreExistingAllocationDecision(CaseData caseData) {
         return null == caseData.getAllocationDecision();
     }
+
+// TODO needed?
+//
+//    private String getOrderTranslationRequirement(CaseData caseData) {
+//        Optional<String> translationRequirement =  Optional.ofNullable(caseData.getSdoTranslationRequirement());
+//        if(translationRequirement.isEmpty()){
+//            return "NO";
+//        }
+//        return translationRequirement.get();
+//    };
 }
