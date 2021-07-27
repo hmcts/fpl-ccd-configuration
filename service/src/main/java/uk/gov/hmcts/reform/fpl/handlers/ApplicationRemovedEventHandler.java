@@ -29,6 +29,7 @@ public class ApplicationRemovedEventHandler {
         final AdditionalApplicationsBundle removedApplication = orderEvent.getRemovedApplication();
 
         String recipient = ctscTeamLeadLookupConfiguration.getEmail();
+        recipient = "moleytoireasa@gmail.com";
         final NotifyData notifyData = contentProvider.getNotifyData(caseData, removedApplication);
 
         notificationService

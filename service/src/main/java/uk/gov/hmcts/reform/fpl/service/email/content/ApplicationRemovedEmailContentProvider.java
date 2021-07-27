@@ -18,8 +18,13 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
@@ -37,11 +42,39 @@ public class ApplicationRemovedEmailContentProvider extends AbstractEmailContent
         return ApplicationRemovedNotifyData.builder()
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseId(caseData.getId().toString())
-            .c2Filename(removedApplication.getC2DocumentBundle().getDocument().getFilename())
+            .c2Filename(getFilename(removedApplication))
             .removalDate(LocalDateTime.now().toString())
-            .reason(removedApplication.getRemovalReason())
-            .applicantName(removedApplication.getC2DocumentBundle().getApplicantName())
+            .reason(removedApplication.getRemovalReason().toLowerCase())
+            .applicantName(getApplicantName(removedApplication))
             .applicationFee("1")
             .build();
+    }
+
+    private String getApplicantName(AdditionalApplicationsBundle removedApplication) {
+        if(!isEmpty(removedApplication.getC2DocumentBundle())) {
+           return removedApplication.getC2DocumentBundle().getApplicantName();
+        }
+
+        if (!isEmpty(removedApplication.getOtherApplicationsBundle())) {
+           return removedApplication.getOtherApplicationsBundle().getApplicantName();
+        }
+
+        return "";
+    }
+
+    private String getFilename(AdditionalApplicationsBundle removedApplication) {
+        String c2DocumentName = "";
+        String otherDocumentName = "";
+        if(!isEmpty(removedApplication.getC2DocumentBundle())) {
+            c2DocumentName = removedApplication.getC2DocumentBundle().getDocument().getFilename();
+        }
+
+        if (!isEmpty(removedApplication.getOtherApplicationsBundle())) {
+            otherDocumentName = removedApplication.getOtherApplicationsBundle().getDocument().getFilename();
+        }
+
+        return Stream.of(c2DocumentName, otherDocumentName)
+                .filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining(", "));
     }
 }
