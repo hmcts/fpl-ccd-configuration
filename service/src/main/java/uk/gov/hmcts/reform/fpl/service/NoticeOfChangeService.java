@@ -6,12 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.noc.UpdateRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -21,7 +26,7 @@ public class NoticeOfChangeService {
 
     private final UserService userService;
     private final AuditEventService auditEventService;
-    private final RespondentRepresentationService respondentRepresentationService;
+    private final UpdateRepresentationService updateRepresentationService;
     private final RespondentService respondentService;
     private final CoreCaseDataService coreCaseDataService;
 
@@ -32,13 +37,16 @@ public class NoticeOfChangeService {
 
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
 
-        return respondentRepresentationService.updateRepresentation(caseData, solicitor);
+        return updateRepresentationService.updateRepresentation(caseData, solicitor);
     }
 
-    public void updateRepresentativesAccess(CaseData caseData, CaseData caseDataBefore) {
+    public void updateRepresentativesAccess(CaseData caseData, CaseData caseDataBefore,
+                                            SolicitorRole.Representing representing) {
+
+        Function<CaseData, List<Element<WithSolicitor>>> target = representing.getTarget();
 
         List<ChangeOrganisationRequest> changeRequests = respondentService
-            .getRepresentationChanges(caseData.getRespondents1(), caseDataBefore.getRespondents1());
+            .getRepresentationChanges(target.apply(caseData), target.apply(caseDataBefore), representing);
 
         log.info("{} representation changes detected", changeRequests.size());
 

@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.extractPdfContent;
 import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.remove;

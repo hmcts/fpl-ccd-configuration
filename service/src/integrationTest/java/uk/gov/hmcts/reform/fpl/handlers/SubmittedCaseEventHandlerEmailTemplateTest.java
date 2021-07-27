@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
     SubmittedCaseEventHandler.class, OutsourcedCaseContentProvider.class,
-    RegisteredRespondentSolicitorContentProvider.class, CaseUrlService.class, CafcassEmailContentProvider.class,
+    RegisteredRepresentativeSolicitorContentProvider.class, CaseUrlService.class, CafcassEmailContentProvider.class,
     HmctsEmailContentProvider.class, EmailNotificationHelper.class
 })
 @MockBeans({@MockBean(PaymentService.class), @MockBean(EventService.class), @MockBean(FeatureToggleService.class)})

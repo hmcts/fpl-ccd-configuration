@@ -10,6 +10,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -280,12 +281,15 @@ class RespondentServiceTest {
     }
 
     @Nested
+    @SuppressWarnings("unchecked")
     class RepresentationChanges {
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnEmptyListOfChangesWhenRespondentsNotPresent(List<Element<Respondent>> respondents) {
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(respondents, respondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) respondents,
+                (List) respondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             assertThat(changes).isEmpty();
         }
@@ -320,7 +324,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2, respondent3);
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2, respondent3);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             assertThat(changes).isEmpty();
         }
@@ -356,7 +362,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2);
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2Updated);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             assertThat(changes).isEmpty();
         }
@@ -386,7 +394,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(existingRespondent);
             List<Element<Respondent>> newRespondents = List.of(existingRespondent, newRespondent);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             ChangeOrganisationRequest expected = ChangeOrganisationRequest.builder()
                 .organisationToAdd(organisation)
@@ -431,7 +441,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2);
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2Updated);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             ChangeOrganisationRequest expected = ChangeOrganisationRequest.builder()
                 .organisationToAdd(newOrganisation)
@@ -496,7 +508,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2, respondent3);
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2Updated, respondent3Updated);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             ChangeOrganisationRequest expected1 = ChangeOrganisationRequest.builder()
                 .organisationToAdd(organisation3)

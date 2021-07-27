@@ -11,11 +11,14 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
@@ -240,7 +243,54 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldGenerateRespondentPoliciesWhenToggleOnAndStateIsNotOpen() {
+    void shouldGenerateRespondentPoliciesAndAnswersWhenToggleOnAndStateIsNotOpen() {
+        final Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .party(RespondentParty.builder()
+                .firstName("Alex")
+                .lastName("Brown")
+                .build())
+            .solicitor(RespondentSolicitor.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(SOLICITOR_ORG_ID)
+                    .build())
+                .build())
+            .build();
+
+        final LocalAuthority localAuthority = LocalAuthority.builder()
+            .name("Local authority name")
+            .build();
+
+        final ApplicantParty legacyApplicant = ApplicantParty.builder()
+            .organisationName("Applicant org name")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .state(SUBMITTED)
+            .localAuthorities(wrapElements(localAuthority))
+            .applicants(wrapElements(Applicant.builder()
+                .party(legacyApplicant).build()))
+            .respondents1(wrapElements(respondentWithRepresentative))
+            .build();
+
+        final CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
+            .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
+                .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
+                .respondentLastName(respondentWithRepresentative.getParty().getLastName())
+                .applicantName(localAuthority.getName())
+                .build())
+            .build();
+
+        assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
+            .isEqualTo(SOLICITOR_ORG_ID);
+
+        assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
+    }
+
+    @Test
+    void shouldGenerateRespondentWithLegacyApplicantPoliciesWhenToggleOnAndStateIsNotOpen() {
         Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
@@ -250,19 +300,32 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        CaseData caseData = CaseData.builder()
+        final ApplicantParty legacyApplicant = ApplicantParty.builder()
+            .organisationName("Applicant org name")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
             .applicants(wrapElements(Applicant.builder()
-                .party(ApplicantParty.builder()
-                    .organisationName("Applicant org name").build())
+                .party(legacyApplicant)
                 .build()))
             .respondents1(wrapElements(respondentWithRepresentative))
             .build();
 
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+        final CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
+            .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
+                .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
+                .respondentLastName(respondentWithRepresentative.getParty().getLastName())
+                .applicantName(legacyApplicant.getOrganisationName())
+                .build())
+            .build();
 
         assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
             .isEqualTo(SOLICITOR_ORG_ID);
+
+        assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
     }
 
     @Test

@@ -30,15 +30,18 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
-Scenario('local authority update solicitor', async ({I, caseViewPage, enterApplicantEventPage}) => {
+Scenario('local authority update its details', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
   await setupScenario(I);
   const solicitorEmail = 'solicitor@test.com';
-  await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-  await enterApplicantEventPage.enterSolicitorDetails({email: solicitorEmail});
+
+  await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
+  await I.goToNextPage();
+  await enterLocalAuthorityEventPage.enterColleague({email: solicitorEmail}, 0);
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeInTab(['Solicitor', 'Solicitor\'s email'], solicitorEmail);
+  I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], solicitorEmail);
 });
 
 Scenario('local authority provides a statements of service', async ({I, caseViewPage, addStatementOfServiceEventPage}) => {
