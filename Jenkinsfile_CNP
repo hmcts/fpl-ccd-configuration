@@ -244,7 +244,7 @@ withPipeline(type, product, component) {
   }
 
   after('highleveldatasetup') {
-    if (env.ENV == 'preview') { // TODO: revert it to !=
+    if (env.ENV != 'preview') { // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
       echo "CCD definition upload for environment: ${env.ENV}"
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
         withTeamSecrets(pipelineConf, env.ENV) {
