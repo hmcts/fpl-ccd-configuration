@@ -38,8 +38,8 @@ def otherSecrets = [
     secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
   ],
   'fpl-${env}': [
-    secret('ccd-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-    secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
+    secret('definition-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
+    secret('definition-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
   ]
 ]
 
