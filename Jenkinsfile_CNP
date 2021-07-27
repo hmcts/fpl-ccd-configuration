@@ -243,7 +243,7 @@ withPipeline(type, product, component) {
 
   after('highleveldatasetup') {
     echo "CCD definition upload to prod is: ${env.UPLOAD_PROD_CCD_DEFINITIONS}"
-    if (${env.UPLOAD_PROD_CCD_DEFINITIONS} == 'true') {
+    if (env.UPLOAD_PROD_CCD_DEFINITIONS) {
       withSubscription('nonprod') {
         withTeamSecrets(pipelineConf, 'preview') {
           archiveCoreCaseDataDefinitions('preview')
