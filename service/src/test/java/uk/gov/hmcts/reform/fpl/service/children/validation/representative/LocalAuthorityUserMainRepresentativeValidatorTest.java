@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeSolicitorSanitizer;
 
 import java.util.List;
 
@@ -25,16 +26,18 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     private final CaseData caseData = mock(CaseData.class);
     private final CaseData caseDataBefore = mock(CaseData.class);
 
-    private final ChildrenEventData eventData = mock(ChildrenEventData.class);
+    private final ChildrenEventData currentEventData = mock(ChildrenEventData.class);
+    private final ChildrenEventData previousEventData = mock(ChildrenEventData.class);
 
     private final RespondentSolicitor currentSolicitor = mock(RespondentSolicitor.class);
     private final RespondentSolicitor previousSolicitor = mock(RespondentSolicitor.class);
 
     private final UserService user = mock(UserService.class);
     private final MainRepresentativeValidator mainRepValidator = mock(MainRepresentativeValidator.class);
+    private final RepresentativeSolicitorSanitizer sanitizer = mock(RepresentativeSolicitorSanitizer.class);
 
     private final LocalAuthorityUserMainRepresentativeValidator underTest =
-        new LocalAuthorityUserMainRepresentativeValidator(user, mainRepValidator);
+        new LocalAuthorityUserMainRepresentativeValidator(user, mainRepValidator, sanitizer);
 
     @DisplayName("Accept users that do not have HMCTS roles when section is MAIN_REPRESENTATIVE")
     @Test
@@ -64,10 +67,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with exception when the children representation wasn't set and still isn't")
     @Test
     void validateNoChangeNotSet() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn(null);
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn(null);
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn(null);
         when(mainRepValidator.validate(caseData)).thenReturn(NO_SOLICITOR_ERRORS);
 
         assertThatThrownBy(() -> underTest.validate(caseData, caseDataBefore))
@@ -78,10 +82,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with no errors when the children representation was set to No and hasn't changed")
     @Test
     void validateNoChangeSetWhenNo() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn("No");
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("No");
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn("No");
         when(mainRepValidator.validate(caseData)).thenReturn(NO_SOLICITOR_ERRORS);
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
@@ -90,10 +95,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with no errors when the children representation was set to Yes and hasn't changed")
     @Test
     void validateNoChangeSetWhenYes() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
@@ -101,10 +107,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with no errors when the children representation was not set and now is set to No")
     @Test
     void validateNotSetToSetToNo() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn(null, "No");
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("No");
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn(null);
         when(mainRepValidator.validate(caseData)).thenReturn(NO_SOLICITOR_ERRORS);
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
@@ -113,10 +120,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with no errors when the children representation was not set and now is set to Yes")
     @Test
     void validateNotSetToSetToYes() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn(null, "Yes");
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn(null);
         when(mainRepValidator.validate(caseData)).thenReturn(NO_SOLICITOR_ERRORS);
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
@@ -125,10 +133,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with no errors when the children representation was to set No and now is set to Yes")
     @Test
     void validateSetToNoToSetToYes() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn("No", "Yes");
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn("No");
         when(mainRepValidator.validate(caseData)).thenReturn(NO_SOLICITOR_ERRORS);
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
@@ -137,10 +146,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with errors when the children representation was set to Yes and is now No")
     @Test
     void validateSetToNotSet() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn("Yes", "No");
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("No");
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
 
         assertThat(underTest.validate(caseData, caseDataBefore))
             .isEqualTo(List.of("You cannot remove the main representative from the case"));
@@ -149,11 +159,13 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with no errors when the main solicitor was not changed")
     @Test
     void validateSolicitorNotChanged() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn("Yes");
-        when(eventData.getChildrenMainRepresentative()).thenReturn(previousSolicitor);
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(currentEventData.getChildrenMainRepresentative()).thenReturn(previousSolicitor);
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(previousEventData.getChildrenMainRepresentative()).thenReturn(previousSolicitor);
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
@@ -161,11 +173,16 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with errors when the main solicitor was changed")
     @Test
     void validateSolicitorChanged() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn("Yes");
-        when(eventData.getChildrenMainRepresentative()).thenReturn(previousSolicitor, currentSolicitor);
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(currentEventData.getChildrenMainRepresentative()).thenReturn(currentSolicitor);
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(previousEventData.getChildrenMainRepresentative()).thenReturn(previousSolicitor);
+
+        when(sanitizer.sanitize(currentSolicitor)).thenReturn(currentSolicitor);
+        when(sanitizer.sanitize(previousSolicitor)).thenReturn(previousSolicitor);
 
         assertThat(underTest.validate(caseData, caseDataBefore))
             .isEqualTo(List.of("You cannot change the main representative"));
@@ -174,10 +191,11 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     @DisplayName("Validate with errors when the main solicitor is newly set and has invalid details")
     @Test
     void validateSolicitorDetails() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
+        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
 
-        when(eventData.getChildrenHaveRepresentation()).thenReturn(null, "Yes");
+        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
+        when(previousEventData.getChildrenHaveRepresentation()).thenReturn(null);
         when(mainRepValidator.validate(caseData)).thenReturn(SOLICITOR_ERRORS);
 
         assertThat(underTest.validate(caseData, caseDataBefore)).isEqualTo(SOLICITOR_ERRORS);

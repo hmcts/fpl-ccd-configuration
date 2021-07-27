@@ -7,10 +7,12 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 
@@ -34,6 +36,8 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         .organisation(Organisation.builder()
             .organisationID("7ligZljXfUtcKPCotWul5g")
             .build())
+        .unregisteredOrganisation(UnregisteredOrganisation.builder().address(Address.builder().build()).build())
+        .regionalOfficeAddress(Address.builder().build())
         .build();
 
     private static final RespondentSolicitor OTHER_REPRESENTATIVE = RespondentSolicitor.builder()
@@ -43,6 +47,8 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         .organisation(Organisation.builder()
             .organisationID("7ligZljXfUtcKPCotWul5g")
             .build())
+        .unregisteredOrganisation(UnregisteredOrganisation.builder().address(Address.builder().build()).build())
+        .regionalOfficeAddress(Address.builder().build())
         .build();
 
     ChildControllerRepresentationDetailsMidEventTest() {

@@ -6,11 +6,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeSolicitorSanitizer;
 
 import java.util.List;
 
@@ -22,22 +24,23 @@ import static uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class LocalAuthorityUserIndividualRepresentativeValidatorTest {
-    public static final Child CHILD = mock(Child.class);
-    private static final List<Element<Child>> CHILDREN = List.of(element(CHILD));
+    private static final List<Element<Child>> CHILDREN = List.of(element(mock(Child.class)));
 
     private final CaseData caseData = mock(CaseData.class);
     private final CaseData caseDataBefore = mock(CaseData.class);
-
     private final ChildrenEventData eventData = mock(ChildrenEventData.class);
     private final ChildrenEventData eventDataBefore = mock(ChildrenEventData.class);
     private final ChildRepresentationDetails details = mock(ChildRepresentationDetails.class);
     private final ChildRepresentationDetails changedDetails = mock(ChildRepresentationDetails.class);
+    private final RespondentSolicitor solicitor = mock(RespondentSolicitor.class);
+    private final RespondentSolicitor differentSolicitor = mock(RespondentSolicitor.class);
 
     private final UserService user = mock(UserService.class);
     private final ChildRepresentativeValidator childRepValidator = mock(ChildRepresentativeValidator.class);
+    private final RepresentativeSolicitorSanitizer sanitizer = mock(RepresentativeSolicitorSanitizer.class);
 
     private final LocalAuthorityUserIndividualRepresentativeValidator underTest =
-        new LocalAuthorityUserIndividualRepresentativeValidator(user, childRepValidator);
+        new LocalAuthorityUserIndividualRepresentativeValidator(user, childRepValidator, sanitizer);
 
     @DisplayName("Accept users that do not have HMCTS roles when section is CHILD_REPRESENTATIVES")
     @Test
@@ -158,9 +161,10 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
 
-    @DisplayName("Validate with no errors when nothing changes and the children have different representatives")
+    @DisplayName("Validate with no errors when nothing changes and the children have different representatives which "
+                 + "are not using the main solicitor")
     @Test
-    void validateNoChangeSetNo() {
+    void validateNoChangeSetNoNotMainSolicitor() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
 
@@ -172,12 +176,18 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(eventData.getAllRepresentationDetails()).thenReturn(List.of(details));
         when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(details));
 
+        when(details.getUseMainSolicitor()).thenReturn("No");
+        when(details.getSolicitor()).thenReturn(solicitor);
+
+        when(sanitizer.sanitize(solicitor)).thenReturn(solicitor);
+
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
 
-    @DisplayName("Validate with with errors when the children have different representatives and changes as made")
+    @DisplayName("Validate with no errors when nothing changes and the children have different representatives which "
+                 + "are using the main solicitor")
     @Test
-    void validateSetNoWithChangedRepresentative() {
+    void validateNoChangeSetNoWithMainSolicitor() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
 
@@ -187,9 +197,104 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         when(caseData.getAllChildren()).thenReturn(CHILDREN);
 
         when(eventData.getAllRepresentationDetails()).thenReturn(List.of(details));
-        when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(changedDetails));
+        when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(details));
+
+        when(details.getUseMainSolicitor()).thenReturn("Yes");
+
+        assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
+    }
+
+    @DisplayName("Validate with with errors when the children have different representatives and details changed with"
+                 + " main representative being used changed from yes to no")
+    @Test
+    void validateSetNoWithChangedRepresentativeUseMainFromYesToNo() {
+        when(caseData.getChildrenEventData()).thenReturn(eventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
+
+        when(eventData.getChildrenHaveSameRepresentation()).thenReturn("No");
+        when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("No");
+
+        when(caseData.getAllChildren()).thenReturn(CHILDREN);
+
+        when(eventData.getAllRepresentationDetails()).thenReturn(List.of(changedDetails));
+        when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(details));
+
+        when(details.getUseMainSolicitor()).thenReturn("Yes");
+        when(changedDetails.getUseMainSolicitor()).thenReturn("No");
 
         assertThat(underTest.validate(caseData, caseDataBefore))
             .isEqualTo(List.of("You cannot change a child's legal representative"));
+    }
+
+    @DisplayName("Validate with with errors when the children have different representatives and details changed with"
+                 + " main representative being used changed from no to yes")
+    @Test
+    void validateSetNoWithChangedRepresentativeUseMainFromNoToYes() {
+        when(caseData.getChildrenEventData()).thenReturn(eventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
+
+        when(eventData.getChildrenHaveSameRepresentation()).thenReturn("No");
+        when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("No");
+
+        when(caseData.getAllChildren()).thenReturn(CHILDREN);
+
+        when(eventData.getAllRepresentationDetails()).thenReturn(List.of(changedDetails));
+        when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(details));
+
+        when(details.getUseMainSolicitor()).thenReturn("No");
+        when(changedDetails.getUseMainSolicitor()).thenReturn("Yes");
+
+        assertThat(underTest.validate(caseData, caseDataBefore))
+            .isEqualTo(List.of("You cannot change a child's legal representative"));
+    }
+
+    @DisplayName("Validate with with errors when the children have different representatives and details solicitor "
+                 + "changed")
+    @Test
+    void validateSetNoWithChangedRepresentativeDetailsSolicitorChanged() {
+        when(caseData.getChildrenEventData()).thenReturn(eventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
+
+        when(eventData.getChildrenHaveSameRepresentation()).thenReturn("No");
+        when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("No");
+
+        when(caseData.getAllChildren()).thenReturn(CHILDREN);
+
+        when(eventData.getAllRepresentationDetails()).thenReturn(List.of(changedDetails));
+        when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(details));
+
+        when(details.getUseMainSolicitor()).thenReturn("No");
+        when(changedDetails.getUseMainSolicitor()).thenReturn("No");
+
+        when(details.getSolicitor()).thenReturn(solicitor);
+        when(changedDetails.getSolicitor()).thenReturn(differentSolicitor);
+
+        when(sanitizer.sanitize(solicitor)).thenReturn(solicitor);
+        when(sanitizer.sanitize(differentSolicitor)).thenReturn(differentSolicitor);
+
+        assertThat(underTest.validate(caseData, caseDataBefore))
+            .isEqualTo(List.of("You cannot change a child's legal representative"));
+    }
+
+    @DisplayName("Validate with with exception when the children have different representatives and details have main"
+                 + " representative set to null")
+    @Test
+    void validateSetNoWithChangedRepresentativeUseMainIsNull() {
+        when(caseData.getChildrenEventData()).thenReturn(eventData);
+        when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
+
+        when(eventData.getChildrenHaveSameRepresentation()).thenReturn("No");
+        when(eventDataBefore.getChildrenHaveSameRepresentation()).thenReturn("No");
+
+        when(caseData.getAllChildren()).thenReturn(CHILDREN);
+
+        when(eventData.getAllRepresentationDetails()).thenReturn(List.of(changedDetails));
+        when(eventDataBefore.getAllRepresentationDetails()).thenReturn(List.of(details));
+
+        when(details.getUseMainSolicitor()).thenReturn(null);
+
+        assertThatThrownBy(() -> underTest.validate(caseData, caseDataBefore))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage("The field useMainSolicitor in childRepresentationDetails0 should not be null");
     }
 }

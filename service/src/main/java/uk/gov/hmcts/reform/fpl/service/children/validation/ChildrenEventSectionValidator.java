@@ -14,6 +14,7 @@ public interface ChildrenEventSectionValidator {
 
     // Exception messages
     String SAME_REP_NULL_ERROR = "The field childrenHaveSameRepresentation should not be null";
+    String USE_MAIN_REP_NULL_ERROR = "The field useMainSolicitor in childRepresentationDetails%d should not be null";
     String HAVE_REP_NULL_ERROR = "The field childrenHaveRepresentation should not be null";
 
     boolean accepts(ChildrenEventSection section);
