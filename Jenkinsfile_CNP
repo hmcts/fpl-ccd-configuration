@@ -44,16 +44,16 @@ def otherSecrets = [
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
-  [$class     : 'AzureKeyVaultSecret',
-   secretType : 'Secret',
-   name       : secretName,
-   envVariable: envVariable
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
   ]
 }
 
 def archiveCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin") {
-    if ("preview" == env) {
+    if("preview" == env){
       sh "./build-preview-ccd-definitions.sh ${CHANGE_ID}"
     } else {
       sh "./build-release-ccd-definition.sh ${env}"
@@ -61,7 +61,7 @@ def archiveCoreCaseDataDefinitions(env) {
   }
 
   dir("${WORKSPACE}/build") {
-    if ("preview" == env) {
+    if("preview" == env){
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-off.xlsx"
     } else {
@@ -78,15 +78,15 @@ def archiveCoreCaseDataDefinitions(env) {
  * @param env target environment
  */
 def uploadCoreCaseDataDefinitions(env) {
-  dir("${WORKSPACE}/bin") {
-    if ("preview" == env) {
-      ccdDefinitionFilePath = "${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
+  dir("${WORKSPACE}/bin"){
+    if("preview" == env){
+      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       sh """
         eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
         ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     } else {
-      ccdDefinitionFilePath = "${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
+      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
       sh """
         eval \$(./variables/load-${env}-environment-variables.sh)
         ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
@@ -198,13 +198,13 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('preview')
     uploadCoreCaseDataDefinitions('preview')
 
-    env.DM_STORE_URL = "http://dm-store-aat.service.core-compute-aat.internal"
-    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL = "http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.URL = "http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.MOCKED_PAYMENTS = false
-    env.PARALLEL_CHUNKS = 4
-    env.TEST_RETRIES = 2
+    env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
+    env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.MOCKED_PAYMENTS=false
+    env.PARALLEL_CHUNKS=4
+    env.TEST_RETRIES=2
   }
 
   after('smoketest:saat') {
