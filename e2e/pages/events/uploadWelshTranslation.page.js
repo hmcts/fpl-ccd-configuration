@@ -11,8 +11,8 @@ const selectItemToTranslate = item => {
 };
 
 const reviewItemToTranslate = fileName => {
-  I.see('Original document');
-  I.see(fileName);
+  I.waitForText('Original document');
+  I.waitForText(fileName);
 };
 
 const uploadTranslatedItem = translatedItem => {
