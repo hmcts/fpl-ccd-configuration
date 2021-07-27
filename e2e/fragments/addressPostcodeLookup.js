@@ -34,7 +34,7 @@ module.exports = {
 
   async enterAddressManually(address) {
     I.waitForElement(this.fields.postcodeLookup);
-    if (await I.hasSelector(this.cantEnterPostcodeLink)) {
+    if (await I.grabNumberOfVisibleElements(this.cantEnterPostcodeLink)) {
       I.click(this.cantEnterPostcodeLink);
     }
     if (address.buildingAndStreet.lineOne) {
