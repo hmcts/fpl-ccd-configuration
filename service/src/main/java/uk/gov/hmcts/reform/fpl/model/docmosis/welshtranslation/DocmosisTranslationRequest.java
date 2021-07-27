@@ -6,8 +6,6 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
-import java.time.LocalDate;
-
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,6 +19,6 @@ public class DocmosisTranslationRequest implements DocmosisData {
     private DocmosisTranslateLanguages translate;
     private DocmosisWelshLayout layout;
     private int wordCount;
-    private LocalDate dateOfReturn;
+    private String dateOfReturn;
     private RenderFormat format;
 }

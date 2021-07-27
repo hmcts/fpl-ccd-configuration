@@ -12,14 +12,16 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.welshtranslation.DocmosisWelshProj
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.extractPdfContent;
 import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.remove;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 @ContextConfiguration(classes = {
@@ -28,20 +30,29 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 })
 
 public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractDocmosisTest {
-
     @Autowired
     private TranslationRequestFormCreationService underTest;
+
+    private static final LocalDate FIXED_DATE = LocalDate.of(2021, 7, 28);
 
     private DocmosisTranslationRequest request;
     private String expectedContentFileLocation;
     private String generatedContentOutputFile;
+
+    private final byte[] pdf = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    private final DocmosisDocument orderDocumentToTranslate = new DocmosisDocument("example.pdf", pdf);
+
+    public static final String NAME = "Courts and Tribunals Service Centre";
+    public static final String DEPARTMENT = "Family Public Law";
+    public static final String CONTACT_INFORMATION = "contactfpl@justice.gov.uk";
+    public static final String FAMILY_MAN_CASE_NUMBER = "FamilyManCaseNumber123";
 
     @Test
     void shouldGenerateTranslationFormRequestEnglishToWelsh() throws IOException {
         expectedContentFileLocation = "translation-form-request/EnglishToWelshTranslationDocument.txt";
         generatedContentOutputFile = "EnglishToWelshTranslationDocument.";
 
-        request = buildTranslationRequest(true, "", null);
+        request = buildTranslationRequest(true, orderDocumentToTranslate);
 
         DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
             .format(RenderFormat.PDF)
@@ -59,7 +70,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         expectedContentFileLocation = "translation-form-request/WelshToEnglishTranslationDocument.txt";
         generatedContentOutputFile = "WelshToEnglishTranslationDocument.";
 
-        request = buildTranslationRequest(false, "", null);
+        request = buildTranslationRequest(false, orderDocumentToTranslate);
 
         DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
             .format(RenderFormat.PDF)
@@ -160,17 +171,35 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
+    @Test
+    void shouldReadDocumentContent() throws IOException {
+        expectedContentFileLocation = "translation-form-request/WordCountTranslationRequestForm.txt";
+        generatedContentOutputFile = "WordCountTranslationRequestForm.";
+
+        request = buildTranslationRequest(true, orderDocumentToTranslate);
+
+        DocmosisDocument docmosisDocumentPDF = underTest.buildTranslationRequestDocuments(request.toBuilder()
+            .format(RenderFormat.PDF)
+            .build()
+        );
+
+        generateDocuments(docmosisDocumentPDF);
+
+        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+            .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
+    }
+
     private DocmosisTranslationRequest buildTranslationRequest(boolean isEnglishToWelsh,
-                                                               String filepathToCountWords, LocalDate dateOfReturn) {
+                                                               DocmosisDocument orderDocumentToTranslate) {
         return DocmosisTranslationRequest.builder()
-            .familyManCaseNumber("FamilyManCaseNumber123")
-            .name("Family Public Law System")
-            .description("Test description.".repeat(2))
-            .contactInformation("contactfpl@justice.gov.uk")
-            .department("Family Public Law")
+            .name(NAME)
+            .department(DEPARTMENT)
+            .contactInformation(CONTACT_INFORMATION)
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .project(DocmosisWelshProject.builder()
                 .reform(true)
                 .build())
+            .description("Translation of " + orderDocumentToTranslate.getDocumentTitle())
             .layout(DocmosisWelshLayout.builder()
                 .mirrorImage(true)
                 .build())
@@ -178,14 +207,16 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
                 .englishToWelsh(isEnglishToWelsh)
                 .welshToEnglish(!isEnglishToWelsh)
                 .build())
-            .wordCount(countWordsInFile(filepathToCountWords))
-            .dateOfReturn(dateOfReturn)
+            .wordCount(countWords(convertByteToString(orderDocumentToTranslate.getBytes())))
+            .dateOfReturn(formatDate(FIXED_DATE))
             .build();
     }
 
-    private void generateDocuments(
-        DocmosisDocument docmosisDocumentPDF) throws IOException {
+    private String formatDate(LocalDate date) {
+        return formatLocalDateToString(date, DATE);
+    }
 
+    private void generateDocuments(DocmosisDocument docmosisDocumentPDF) throws IOException {
         storeToOuputFolder(
             generatedContentOutputFile.concat(RenderFormat.PDF.getExtension()),
             docmosisDocumentPDF.getBytes()
@@ -200,24 +231,15 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         );
     }
 
-    private int countWordsInFile(String testFileLocation) {
-        String line;
-        int numberOfWords = 0;
-
-        try {
-            FileReader file = new FileReader(testFileLocation);
-            BufferedReader bufferedReader = new BufferedReader(file);
-
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] words = line.split(" ");
-                numberOfWords = numberOfWords + words.length;
-            }
-            bufferedReader.close();
-        } catch (IOException exception) {
+    private int countWords(String text) {
+        if (text == null || text.isEmpty()) {
             return 0;
         }
+        return text.split("\\s", -1).length;
+    }
 
-        return numberOfWords;
+    private static String convertByteToString(byte[] byteValue) {
+        return ("" + Arrays.toString(byteValue));
     }
 
     private String getExpectedText(String fileName) {
