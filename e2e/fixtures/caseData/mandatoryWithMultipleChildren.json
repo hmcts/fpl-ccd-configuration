@@ -159,6 +159,32 @@
         }
       }
     ],
+    "others": {
+      "firstOther": {
+        "DOB": "1980-03-31",
+        "name": "Noah King",
+        "gender": "Male",
+        "address": {
+          "County": "",
+          "Country": "United Kingdom",
+          "PostCode": "SE16 6BA",
+          "PostTown": "London",
+          "AddressLine1": "Flat 20",
+          "AddressLine2": "Heron House 8",
+          "AddressLine3": ""
+        },
+        "telephone": "07000 654321",
+        "birthPlace": "London",
+        "detailsHidden": "No",
+        "representedBy": [],
+        "childInformation": null,
+        "litigationIssues": "NO",
+        "detailsHiddenReason": null,
+        "genderIdentification": null,
+        "litigationIssuesDetails": ""
+      },
+      "additionalOthers": []
+    },
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
     "submittedForm": "TO BE FILLED WITH VALID DATA",
     "submissionConsent": [

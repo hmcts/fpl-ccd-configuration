@@ -437,6 +437,8 @@ public class CaseData {
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
 
+    private final String notifyApplicationsToAllOthers;
+
     public String getOrderAppliesToAllChildren() {
         return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
     }
@@ -976,10 +978,18 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final NoticeOfChangeAnswersData noticeOfChangeAnswersData = NoticeOfChangeAnswersData.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final NoticeOfChangeChildAnswersData noticeOfChangeChildAnswersData =
+        NoticeOfChangeChildAnswersData.builder()
+        .build();
 
     @JsonUnwrapped
     @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final ChildPolicyData childPolicyData = ChildPolicyData.builder().build();
 
     @JsonUnwrapped
     @Builder.Default

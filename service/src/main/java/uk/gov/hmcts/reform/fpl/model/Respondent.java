@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +16,8 @@ import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -27,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Respondent implements Representable, ConfidentialParty<Respondent> {
+public class Respondent implements Representable, WithSolicitor, ConfidentialParty<Respondent> {
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
@@ -51,24 +49,6 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
         String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
 
         return hiddenValue.equals("Yes");
-    }
-
-    @JsonIgnore
-    public boolean hasRegisteredOrganisation() {
-        return ofNullable(getSolicitor()).flatMap(
-            respondentSolicitor -> ofNullable(respondentSolicitor.getOrganisation()).map(
-                organisation -> isNotBlank(organisation.getOrganisationID())
-            )
-        ).orElse(false);
-    }
-
-    @JsonIgnore
-    public boolean hasUnregisteredOrganisation() {
-        return ofNullable(getSolicitor()).flatMap(
-            respondentSolicitor -> ofNullable(respondentSolicitor.getUnregisteredOrganisation()).map(
-                organisation -> isNotBlank(organisation.getName())
-            )
-        ).orElse(false);
     }
 
     @Override
