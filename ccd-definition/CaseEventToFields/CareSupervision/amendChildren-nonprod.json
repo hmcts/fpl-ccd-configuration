@@ -47,7 +47,7 @@
     "PageDisplayOrder": 3,
     "PageFieldDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "childrenHaveRepresentation = \"Yes\"",
+    "PageShowCondition": "childrenHaveRepresentation = \"Yes\" AND optionCount!=\"0\"",
     "FieldShowCondition": "childrenHaveRepresentation = \"DO_NOT_SHOW\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/representation-validation/mid-event"
   },
