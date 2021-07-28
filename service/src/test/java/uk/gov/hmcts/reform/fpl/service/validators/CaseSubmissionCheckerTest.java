@@ -30,6 +30,8 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ExtendWith(SpringExtension.class)
 class CaseSubmissionCheckerTest {
@@ -54,6 +56,7 @@ class CaseSubmissionCheckerTest {
     private final List<String> childrenErrors = List.of("Children error");
     private final List<String> respondentsErrors = List.of("Respondent error 1", "Respondent error 2");
     private final List<String> allocationProposalErrors = List.of("Allocation proposal error");
+    private final List<String> courtSelectionErrors = List.of("Court selection error");
 
     @Nested
     class Validation {
@@ -97,6 +100,53 @@ class CaseSubmissionCheckerTest {
                 "• Respondent error 2",
                 "In the allocation proposal section:",
                 "• Allocation proposal error"
+            );
+
+            assertThat(isAvailable).isFalse();
+        }
+
+        @Test
+        void shouldReportEventsErrorIncludingCourtSelectionErrorWhenCourtNotSelected() {
+            final CaseData caseData = CaseData.builder()
+                .multiCourts(YES)
+                .build();
+
+            when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
+            when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
+            when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
+            when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
+            when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
+            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
+            when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
+            when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
+            when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
+            when(eventsChecker.validate(SELECT_COURT, caseData)).thenReturn(courtSelectionErrors);
+
+            final List<String> errors = caseSubmissionValidator.validate(caseData);
+            final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
+
+            assertThat(errors).containsExactly(
+                "In the change case name section:",
+                "• Case name error",
+                "In the orders and directions sought section:",
+                "• Orders needed error 1",
+                "• Orders needed error 2",
+                "In the hearing urgency section:",
+                "• Hearing needed error",
+                "In the grounds for the application section:",
+                "• Grounds for application error",
+                "In the applicant's details section:",
+                "• Applicant error 1",
+                "• Applicant error 2",
+                "In the child's details section:",
+                "• Children error",
+                "In the respondents' details section:",
+                "• Respondent error 1",
+                "• Respondent error 2",
+                "In the allocation proposal section:",
+                "• Allocation proposal error",
+                "In the select court to issue section:",
+                "• Court selection error"
             );
 
             assertThat(isAvailable).isFalse();

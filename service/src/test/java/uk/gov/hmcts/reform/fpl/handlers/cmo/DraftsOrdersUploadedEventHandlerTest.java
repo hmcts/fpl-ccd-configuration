@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
-import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
@@ -59,13 +59,17 @@ class DraftsOrdersUploadedEventHandlerTest {
     );
 
     @Mock
+    private CourtService courtService;
+
+    @Mock
     private NotificationService notificationService;
+
     @Mock
     private DraftOrdersUploadedContentProvider draftOrdersContentProvider;
+
     @Mock
     private AgreedCMOUploadedContentProvider agreedCMOContentProvider;
-    @Mock
-    private HmctsAdminNotificationHandler adminNotificationHandler;
+
     @InjectMocks
     private DraftOrdersUploadedEventHandler underTest;
 
@@ -213,7 +217,7 @@ class DraftsOrdersUploadedEventHandlerTest {
             .familyManCaseNumber("12345")
             .build();
 
-        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
+        when(courtService.getCourtEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
         when(agreedCMOContentProvider.buildTemplate(
             hearing.getValue(), hearing.getValue().getJudgeAndLegalAdvisor(), caseData
         )).thenReturn(CMO_READY_TO_SEAL_TEMPLATE_DATA);
@@ -244,7 +248,7 @@ class DraftsOrdersUploadedEventHandlerTest {
             .familyManCaseNumber("12345")
             .build();
 
-        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
+        when(courtService.getCourtEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
         when(agreedCMOContentProvider.buildTemplate(hearing.getValue(), judge, caseData))
             .thenReturn(CMO_READY_TO_SEAL_TEMPLATE_DATA);
 

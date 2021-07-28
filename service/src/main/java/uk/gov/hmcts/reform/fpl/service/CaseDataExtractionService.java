@@ -5,7 +5,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -54,11 +53,11 @@ public class CaseDataExtractionService {
     private static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Details and instructions will be "
         + "sent by the local court.";
 
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final CourtService courtService;
 
-    public String getCourtName(String localAuthority) {
-        return hmctsCourtLookupConfiguration.getCourt(localAuthority).getName();
+    public String getCourtName(CaseData caseData) {
+        return courtService.getCourtName(caseData);
     }
 
     public String getHearingTime(HearingBooking hearingBooking) {

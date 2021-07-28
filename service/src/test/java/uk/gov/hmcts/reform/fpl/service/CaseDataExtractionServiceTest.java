@@ -4,9 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -30,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,8 +42,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
@@ -52,11 +56,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
+@ExtendWith(MockitoExtension.class)
 class CaseDataExtractionServiceTest {
 
-    private final CaseDataExtractionService service = new CaseDataExtractionService(
-        new LookupTestConfig().courtLookupConfiguration(),
-        new HearingVenueLookUpService(new ObjectMapper()));
+    @Mock
+    private CourtService courtService;
+
+    @Spy
+    private HearingVenueLookUpService hearingVenueLookUpService = new HearingVenueLookUpService(new ObjectMapper());
+
+    @InjectMocks
+    private CaseDataExtractionService service;
 
     private HearingBooking hearingBooking;
 
@@ -98,7 +108,11 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldReturnCourtNameWhenValidLocalAuthority() {
-        assertThat(service.getCourtName(LOCAL_AUTHORITY_1_CODE)).isEqualTo(DEFAULT_LA_COURT);
+        final CaseData caseData = CaseData.builder().build();
+
+        when(courtService.getCourtName(caseData)).thenReturn(DEFAULT_LA_COURT);
+
+        assertThat(service.getCourtName(caseData)).isEqualTo(DEFAULT_LA_COURT);
     }
 
     @Test

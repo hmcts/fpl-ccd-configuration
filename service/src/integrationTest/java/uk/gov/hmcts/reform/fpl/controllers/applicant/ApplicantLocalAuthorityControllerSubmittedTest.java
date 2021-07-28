@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
@@ -44,6 +45,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
     void shouldUpdateTaskListWhenCaseInOpenState() {
         final CaseData caseDataBefore = CaseData.builder()
             .id(nextLong())
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .state(OPEN)
             .build();
 
@@ -67,6 +69,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
     void shouldUpdateCaseSummaryWhenCaseNotInOpenState() {
         final CaseData caseDataBefore = CaseData.builder()
             .id(nextLong())
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .state(SUBMITTED)
             .build();
 

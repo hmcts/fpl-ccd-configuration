@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(AddCaseNumberController.class)
@@ -35,6 +36,7 @@ class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
     void shouldUpdateCaseSummaryWhenRelevantFieldChanged() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .localAuthorities(wrapElements(LocalAuthority.builder()
                 .colleagues(wrapElements(Colleague.builder()
                     .role(ColleagueRole.SOLICITOR)
