@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
@@ -41,6 +42,8 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     private static final String HEARING_CALLOUT = "hearing 12 Feb 2099";
 
     @MockBean
+    private Time time;
+    @MockBean
     private EmailNotificationHelper helper;
     @Autowired
     private AdditionalApplicationsUploadedEmailContentProvider underTest;
@@ -50,6 +53,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         CaseData caseData = buildCaseData();
 
         when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
+        when(time.now()).thenReturn(LocalDateTime.now());
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
             .callout("Smith, 12345, " + HEARING_CALLOUT)
@@ -82,6 +86,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .build();
 
         when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
+        when(time.now()).thenReturn(LocalDateTime.now());
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()

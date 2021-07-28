@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.time.LocalDateTime.now;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
@@ -82,14 +81,12 @@ public class EmailNotificationHelper {
             caseData.getFirstHearing().orElse(null));
     }
 
-    public static String buildCalloutWithNextHearing(final CaseData caseData) {
-        return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
-            caseData.getRespondents1(),
-            caseData.getNextHearingAfter(now()).orElse(null));
+    public static String buildCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
+        return "^" + buildUnformattedCalloutWithNextHearing(caseData, time);
     }
 
-    public static String buildCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
-        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+    public static String buildUnformattedCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
+        return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
             caseData.getRespondents1(),
             caseData.getNextHearingAfter(time).orElse(null));
     }

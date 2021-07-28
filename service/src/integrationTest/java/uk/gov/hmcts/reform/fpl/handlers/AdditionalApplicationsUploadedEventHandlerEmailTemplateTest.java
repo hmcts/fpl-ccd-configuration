@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -50,9 +51,13 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final String CHILD_LAST_NAME = "Jones";
     private static final String RESPONDENT_LAST_NAME = "Smith";
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2099, 2, 20, 20, 20, 0);
 
     @Autowired
     private AdditionalApplicationsUploadedEventHandler underTest;
+
+    @MockBean
+    private Time time;
 
     @MockBean
     private IdamClient idamClient;
@@ -67,14 +72,14 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     @MethodSource("subjectLineSource")
     void notifyAdmin(boolean toggle, String name) {
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
-
+        given(time.now()).willReturn(LocalDateTime.now());
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .hearingDetails(wrapElements(HearingBooking.builder()
-                .startDate(LocalDateTime.of(2099, 2, 20, 20, 20, 0))
+                .startDate(HEARING_DATE)
                 .type(HearingType.CASE_MANAGEMENT)
                 .build()))
             .respondents1(wrapElements(Respondent.builder()
