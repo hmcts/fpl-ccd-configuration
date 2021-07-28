@@ -2,18 +2,12 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -21,8 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 import java.util.Map;
@@ -31,14 +23,12 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ApproveDraftOrdersController.class)
@@ -57,17 +47,12 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractCallbackTest {
     private final Element<HearingOrder> draftOrder1 = element(buildDraftOrder(hearing1, orderForBlankOrder, C21));
     private final Element<HearingOrder> draftOrder2 = element(buildDraftOrder(hearing2, orderForBlankOrder, C21));
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     ApproveDraftOrdersControllerMidEventTest() {
         super("approve-draft-orders");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldPopulateDraftOrdersReadyForApprovalOnReviewDecisionPageForTheSelectedHearingOrdersBundle(
-        boolean servingOthersToggledOn) {
+    @Test
+    void shouldPopulateDraftOrdersReadyForApprovalOnReviewDecisionPageForTheSelectedHearingOrdersBundle() {
         UUID hearingOrdersBundle1 = UUID.randomUUID();
         UUID hearingOrdersBundle2 = UUID.randomUUID();
 
@@ -75,19 +60,13 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractCallbackTest {
             buildHearingOrdersBundle(hearingOrdersBundle1, hearing1, newArrayList(agreedCMO, draftOrder1)),
             buildHearingOrdersBundle(hearingOrdersBundle2, hearing2, newArrayList(draftCMO, draftOrder2)));
 
-        CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(newArrayList(agreedCMO, draftCMO))
-            .hearingOrdersBundlesDrafts(hearingOrdersBundles)
-            .cmoToReviewList(hearingOrdersBundle1.toString())
-            .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
-                .build())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().data(
+            Map.of("draftUploadedCMOs", newArrayList(agreedCMO, draftCMO),
+                "hearingOrdersBundlesDrafts", hearingOrdersBundles,
+                "cmoToReviewList", hearingOrdersBundle1.toString()
+            )).build();
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersToggledOn);
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
-        CaseData responseData = extractCaseData(response);
+        CaseData responseData = extractCaseData(postMidEvent(caseDetails));
 
         ReviewDraftOrdersData expectedPageData = ReviewDraftOrdersData.builder()
             .cmoDraftOrderTitle(agreedCMO.getValue().getTitle())
@@ -99,17 +78,6 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractCallbackTest {
             .build();
 
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedPageData);
-
-        if (servingOthersToggledOn) {
-            assertThat(String.valueOf(response.getData().get("hasOthers"))).isEqualTo("Yes");
-            assertThat(String.valueOf(response.getData().get("others_label")))
-                .contains("Other 1: test1", "Other 2: test2");
-            assertThat(responseData.getOthersSelector()).isEqualTo(Selector.newSelector(2));
-        } else {
-            assertThat(response.getData())
-                .doesNotContainKeys("hasOthers", "others_label")
-                .containsEntry("othersSelector", null);
-        }
     }
 
     @Test

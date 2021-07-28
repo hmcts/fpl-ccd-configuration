@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -281,6 +283,59 @@ class ApproveDraftOrdersServiceTest {
         underTest.validateDraftOrdersReviewDecision(caseData, emptyMap());
 
         verify(reviewDecisionValidator).validateReviewDecision(reviewDecision, "CMO");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CMOReviewOutcome.class, mode = EnumSource.Mode.MATCH_ALL)
+    void shouldReturnTrueWhenJudgeApprovesCMO(CMOReviewOutcome reviewOutcome) {
+        Element<HearingOrdersBundle> draftOrdersBundle = buildDraftOrdersBundle(hearing1,
+            newArrayList(agreedCMO(hearing1), buildBlankOrder("Draft C21 order", hearing1)));
+
+        ReviewDecision cmoReviewDecision = ReviewDecision.builder().decision(reviewOutcome).build();
+        ReviewDecision c21ReviewDecision = ReviewDecision.builder().decision(JUDGE_REQUESTED_CHANGES).build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
+            .reviewCMODecision(cmoReviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(c21ReviewDecision).build())
+            .build();
+
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(draftOrdersBundle);
+
+        if (reviewOutcome == JUDGE_REQUESTED_CHANGES) {
+            assertThat(underTest.hasApprovedReviewDecision(caseData, emptyMap())).isFalse();
+        } else {
+            assertThat(underTest.hasApprovedReviewDecision(caseData, emptyMap())).isTrue();
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CMOReviewOutcome.class, mode = EnumSource.Mode.MATCH_ALL)
+    void shouldReturnTrueWhenJudgeApprovesC21(CMOReviewOutcome reviewOutcome) {
+        Element<HearingOrdersBundle> draftOrdersBundle = buildDraftOrdersBundle(hearing1,
+            newArrayList(agreedCMO(hearing1), buildBlankOrder("Draft C21 order", hearing1)));
+
+        ReviewDecision cmoReviewDecision = ReviewDecision.builder().decision(JUDGE_REQUESTED_CHANGES).build();
+        ReviewDecision c21ReviewDecision = ReviewDecision.builder().decision(reviewOutcome).build();
+        Map<String, Object> reviewDecisionMap = new HashMap<>();
+        reviewDecisionMap.put("reviewDecision1", Map.of("decision", c21ReviewDecision));
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
+            .reviewCMODecision(cmoReviewDecision)
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(c21ReviewDecision).build())
+            .build();
+
+        given(draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData))
+            .willReturn(draftOrdersBundle);
+        given(mapper.convertValue(any(), eq(ReviewDecision.class))).willReturn(c21ReviewDecision);
+
+        if (reviewOutcome == JUDGE_REQUESTED_CHANGES) {
+            assertThat(underTest.hasApprovedReviewDecision(caseData, reviewDecisionMap)).isFalse();
+        } else {
+            assertThat(underTest.hasApprovedReviewDecision(caseData, reviewDecisionMap)).isTrue();
+        }
     }
 
     @Test

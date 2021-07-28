@@ -136,6 +136,34 @@ public class ApproveDraftOrdersService {
         return errors;
     }
 
+    @SuppressWarnings("unchecked")
+    public boolean hasApprovedReviewDecision(CaseData caseData, Map<String, Object> data) {
+        Element<HearingOrdersBundle> selectedOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
+        List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
+
+        int counter = 1;
+        for (HearingOrder order : hearingOrders) {
+            if (order.getType().isCmo()) {
+                if (isOrderApproved(caseData.getReviewCMODecision())) {
+                    return true;
+                }
+            } else {
+                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+                ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
+                if (isOrderApproved(reviewDecision)) {
+                    return true;
+                }
+                counter++;
+            }
+        }
+        return false;
+    }
+
+    private boolean isOrderApproved(ReviewDecision reviewCMODecision) {
+        return reviewCMODecision != null && reviewCMODecision.getDecision() != null
+            && reviewCMODecision.getDecision() != JUDGE_REQUESTED_CHANGES;
+    }
+
     public Map<String, Object> reviewCMO(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
         Map<String, Object> data = new HashMap<>();
 

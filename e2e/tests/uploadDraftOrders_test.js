@@ -138,8 +138,6 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequested(changeRequestReason);
   reviewAgreedCaseManagementOrderEventPage.selectReturnC21ForChanges(1);
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
-  await I.goToNextPage();
-  reviewAgreedCaseManagementOrderEventPage.selectNotifyAllOthersNo();
 
   await I.completeEvent('Save and continue');
 
@@ -182,12 +180,12 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   await I.goToNextPage();
-  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
+  reviewAgreedCaseManagementOrderEventPage.selectNotifyAllOthersNo();
 
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  assertSealedC21(I, 1, draftOrder3);
+  assertSealedC21(I, 1, draftOrder3, false);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.dontSee(noHearing);
@@ -212,10 +210,10 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
 
-  assertSealedCMO(I, 1, hearing2);
-  assertSealedCMO(I, 2, hearing1);
-  assertSealedC21(I, 2, draftOrder2);
-  assertSealedC21(I, 3, draftOrder1Updated);
+  assertSealedCMO(I, 1, hearing2, true);
+  assertSealedCMO(I, 2, hearing1, true);
+  assertSealedC21(I, 2, draftOrder2, true);
+  assertSealedC21(I, 3, draftOrder1Updated, true);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -265,16 +263,23 @@ const assertSealedCMO = (I, collectionId, hearingName, othersSelected) => {
   I.seeInTab([sealedCMO, 'Date issued'], date);
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
   if (othersSelected) {
-    I.seeInTab([sealedCMO, 'People notified'], 'Noah King');
+    I.seeInTab([sealedCMO, 'Others notified'], 'Noah King');
+  } else {
+    I.dontSeeInTab([sealedCMO, 'Others notified']);
   }
 };
 
-const assertSealedC21 = (I, collectionId, draftOrder) => {
+const assertSealedC21 = (I, collectionId, draftOrder, othersSelected) => {
   const order = `Order ${collectionId}`;
 
   I.seeInTab([order, 'Type of order'], 'Blank order (C21)');
   I.seeInTab([order, 'Order title'], draftOrder.title);
   I.seeInTab([order, 'Order document'], 'mockFile.pdf');
+  if (othersSelected) {
+    I.seeInTab([order, 'Others notified'], 'Noah King');
+  } else {
+    I.dontSeeInTab([order, 'Others notified']);
+  }
 };
 
 const assertDocumentSentToParties = I => {

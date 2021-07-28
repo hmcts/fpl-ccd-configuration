@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
@@ -67,12 +68,6 @@ public class ApproveDraftOrdersController extends CallbackController {
             caseDetails.getData().put("cmoToReviewList", approveDraftOrdersService.buildDynamicList(caseData));
         }
 
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && isNotEmpty(caseData.getAllOthers())) {
-            caseDetails.getData().put("hasOthers", "Yes");
-            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));
-        }
-
         return respond(caseDetails);
     }
 
@@ -83,6 +78,17 @@ public class ApproveDraftOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+
+        if (isEmpty(errors) && featureToggleService.isServeOrdersAndDocsToOthersEnabled()
+            && isNotEmpty(caseData.getAllOthers())) {
+            caseDetails.getData().put("hasOthers", "Yes");
+            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
+            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));
+
+            if (approveDraftOrdersService.hasApprovedReviewDecision(caseData, data)) {
+                caseDetails.getData().put("reviewCMOShowOthers", "Yes");
+            }
+        }
 
         return respond(caseDetails, errors);
     }

@@ -91,7 +91,7 @@
     "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "othersNotified",
     "FieldType": "Text",
-    "ElementLabel": "People notified",
+    "ElementLabel": "Others notified",
     "SecurityClassification": "Public"
   },
   {

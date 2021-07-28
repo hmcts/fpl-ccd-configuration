@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
@@ -39,6 +40,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -147,7 +149,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .build();
 
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        CaseData responseData = extractCaseData(response);
 
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
 
@@ -181,6 +184,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             assertThat(orderToBeSent.getValue().getOthersNotified()).isEmpty();
             assertThat(orderToBeSent.getValue().getOthers()).isEmpty();
         }
+        assertTemporaryFieldsAreRemovedFromCaseData(response.getData());
     }
 
     @ParameterizedTest
@@ -346,6 +350,17 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         assertThat(responseData.getSealedCMOs()).isEmpty();
         assertThat(responseData.getOrderCollection()).isEmpty();
         assertThat(responseData.getOrdersToBeSent()).isNull();
+    }
+
+    private void assertTemporaryFieldsAreRemovedFromCaseData(Map<String, Object> responseData) {
+        assertThat(responseData).doesNotContainKeys("numDraftCMOs", "cmoToReviewList", "draftCMOExists",
+            "draftBlankOrdersCount", "cmoDraftOrderTitle", "draftOrder1Title", "draftOrder2Title",
+            "draftOrder3Title", "draftOrder4Title", "draftOrder5Title", "draftOrder6Title", "draftOrder7Title",
+            "draftOrder8Title", "draftOrder9Title", "draftOrder10Title", "cmoDraftOrderDocument",
+            "draftOrder1Document", "draftOrder2Document", "draftOrder3Document", "draftOrder4Document",
+            "draftOrder5Document", "draftOrder6Document", "draftOrder7Document", "draftOrder8Document",
+            "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles", "draftOrdersTitlesInBundle",
+            "others_label", "hasOthers", "reviewCMONotifyAllOthers", "othersSelector", "reviewCMOShowOthers");
     }
 
     private static Stream<Arguments> populateCaseDataWithState() {
