@@ -164,8 +164,6 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
 
-        List<HearingOrder> orders = List.of(hearingOrder());
-
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
         given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE))
             .willReturn(newHashSet("digital-rep1@test.com", "digital-rep2@test.com"));
@@ -175,6 +173,7 @@ class DraftOrdersApprovedEventHandlerTest {
                 .willReturn((Set) Set.of("digital-rep1@test.com"));
         }
 
+        List<HearingOrder> orders = List.of(hearingOrder());
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, HEARING.getValue(), orders, DIGITAL_SERVICE)).willReturn(EXPECTED_TEMPLATE);
 
@@ -210,7 +209,6 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
 
-        List<HearingOrder> orders = List.of(hearingOrder());
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(othersToggle);
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL))
             .willReturn(newHashSet("rep1@test.com", "rep2@test.com"));
@@ -220,6 +218,7 @@ class DraftOrdersApprovedEventHandlerTest {
                 .willReturn((Set) Set.of("rep2@test.com"));
         }
 
+        List<HearingOrder> orders = List.of(hearingOrder());
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, HEARING.getValue(), orders, EMAIL)).willReturn(EXPECTED_TEMPLATE);
 

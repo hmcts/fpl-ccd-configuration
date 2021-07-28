@@ -159,7 +159,8 @@ public class CaseManagementOrderIssuedEventHandler {
             allRecipients.removeAll(nonSelectedRecipients);
 
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
-            sendDocumentService.sendDocuments(caseData, List.of(event.getCmo().getOrder()), new ArrayList<>(allRecipients));
+            sendDocumentService.sendDocuments(caseData, List.of(event.getCmo().getOrder()),
+                new ArrayList<>(allRecipients));
         } else {
             coreCaseDataService.triggerEvent(
                 JURISDICTION,

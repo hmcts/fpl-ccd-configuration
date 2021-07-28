@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,11 +14,15 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -26,7 +31,9 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,6 +62,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ApproveDraftOrdersController.class)
@@ -63,6 +72,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
     @MockBean
     private DocumentSealingService documentSealingService;
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private final HearingOrder cmo = buildDraftOrder(AGREED_CMO);
     private final HearingOrder draftOrder = buildDraftOrder(C21);
@@ -94,7 +105,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
             .reviewCMODecision(reviewDecision)
-            .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -108,8 +118,9 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         );
     }
 
-    @Test
-    void shouldSealPDFAndAddToSealedCMOsListAndSaveUnsealedCMOWhenJudgeApprovesOrders() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldSealPDFAndAddToSealedCMOsListAndSaveUnsealedCMOWhenJudgeApprovesOrders(boolean servingOthersEnabled) {
         DocumentReference order = cmo.getOrder();
         UUID cmoId = UUID.randomUUID();
 
@@ -121,6 +132,13 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
+            .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
+            .others(Others.builder().firstOther(
+                Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
+                .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
+                    .address(Address.builder().postcode("SW2").build()).build())).build())
+            .othersSelector(Selector.newSelector(2)).notifyApplicationsToAllOthers(YesNo.YES.getValue())
+            .reviewCMONotifyAllOthers(YesNo.YES.getValue())
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
@@ -128,18 +146,41 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .ordersToBeSent(List.of(element(HearingOrder.builder().build()))) // should be reset
             .build();
 
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        HearingOrder expectedSealedCmo = cmo.toBuilder()
-            .order(sealedDocument)
-            .lastUploadedOrder(order)
-            .dateIssued(LocalDate.now())
-            .status(APPROVED)
-            .build();
-
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
-        assertThat(responseData.getSealedCMOs()).containsOnly(element(cmoElement.getId(), expectedSealedCmo));
-        assertThat(responseData.getOrdersToBeSent()).containsOnly(element(cmoElement.getId(), expectedSealedCmo));
+
+        assertThat(responseData.getSealedCMOs().size()).isEqualTo(1);
+        Element<HearingOrder> sealedCMO = responseData.getSealedCMOs().get(0);
+        assertThat(sealedCMO.getId()).isEqualTo(cmoElement.getId());
+        assertThat(sealedCMO.getValue())
+            .extracting("order", "lastUploadedOrder", "dateIssued", "status")
+            .contains(sealedDocument, order, LocalDate.now(), APPROVED);
+
+        assertThat(responseData.getOrdersToBeSent().size()).isEqualTo(1);
+        Element<HearingOrder> orderToBeSent = responseData.getOrdersToBeSent().get(0);
+        assertThat(orderToBeSent.getId()).isEqualTo(cmoElement.getId());
+        assertThat(orderToBeSent.getValue())
+            .extracting("order", "lastUploadedOrder", "dateIssued", "status")
+            .contains(sealedDocument, order, LocalDate.now(), APPROVED);
+
+        if (servingOthersEnabled) {
+            assertThat(sealedCMO.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
+            assertThat(unwrapElements(sealedCMO.getValue().getOthers()))
+                .contains(caseData.getOthers().getFirstOther(),
+                    caseData.getOthers().getAdditionalOthers().get(0).getValue());
+
+            assertThat(orderToBeSent.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
+            assertThat(unwrapElements(orderToBeSent.getValue().getOthers()))
+                .contains(caseData.getOthers().getFirstOther(),
+                    caseData.getOthers().getAdditionalOthers().get(0).getValue());
+        } else {
+            assertThat(sealedCMO.getValue().getOthersNotified()).isEmpty();
+            assertThat(sealedCMO.getValue().getOthers()).isEmpty();
+            assertThat(orderToBeSent.getValue().getOthersNotified()).isEmpty();
+            assertThat(orderToBeSent.getValue().getOthers()).isEmpty();
+        }
     }
 
     @ParameterizedTest
@@ -227,6 +268,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
         Element<HearingOrder> expectedOrderToReturn = element(draftOrderId,
             draftOrder.toBuilder().status(APPROVED).order(sealedDocument)
+                .others(null).othersNotified("")
                 .lastUploadedOrder(SEND_TO_ALL_PARTIES.equals(reviewOutcome) ? order : convertedDocument).build());
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -245,6 +287,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     void shouldRemoveRejectedBlankOrderAndSealApprovedOrderWhenJudgeRejectsOneOrderAndApprovesTheOther() {
         DocumentReference order = cmo.getOrder();
         given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
 
         UUID cmoId = UUID.randomUUID();
         UUID draftOrderId = UUID.randomUUID();
@@ -269,6 +312,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .lastUploadedOrder(order)
             .dateIssued(LocalDate.now())
             .status(APPROVED)
+            .others(null)
+            .othersNotified("")
             .build();
 
         HearingOrder expectedRejectedOrder = draftOrder.toBuilder()

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -22,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -83,6 +88,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private SendLetterService sendLetters;
@@ -163,8 +171,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         });
     }
 
-    @Test
-    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders(boolean servingOthersEnabled) {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
         given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
@@ -174,7 +183,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
 
         final List<Recipient> recipients = List.of(createRespondentParty());
+        final List<Recipient> recipientsWithOthers = List.of(createRespondentParty(), createOther().toParty());
 
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         postSubmittedEvent(callbackRequest);
@@ -224,14 +235,14 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
             verify(sendLetters).send(
                 cmo.getOrder(),
-                recipients,
+                servingOthersEnabled ? recipientsWithOthers : recipients,
                 CASE_ID,
                 FAMILY_MAN_CASE_NUMBER
             );
 
             verify(sendLetters).send(
                 c21.getOrder(),
-                recipients,
+                servingOthersEnabled ? recipientsWithOthers : recipients,
                 CASE_ID,
                 FAMILY_MAN_CASE_NUMBER
             );
@@ -286,6 +297,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
+            .others(Others.builder()
+                .firstOther(createOther()).build())
             .respondents1(createNonRepresentedRespondents())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .ordersToBeSent(wrapElements(caseManagementOrders))
@@ -300,11 +313,20 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         return caseDetails;
     }
 
+    private Other createOther() {
+        return Other.builder().name("David")
+            .address(Address.builder()
+                .addressLine1("1 Victoria Street")
+                .postcode("SE1 9AB").build())
+            .build();
+    }
+
     private HearingOrder buildOrder(HearingOrderType type, CMOStatus status, DocumentReference orderDocument) {
         return HearingOrder.builder()
             .type(type)
             .status(status)
             .order(orderDocument)
+            .others(wrapElements(createOther()))
             .build();
     }
 
