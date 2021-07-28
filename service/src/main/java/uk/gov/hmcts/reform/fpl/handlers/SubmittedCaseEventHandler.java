@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -44,9 +45,10 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SubmittedCaseEventHandler {
+
+    private final CourtService courtService;
     private final NotificationService notificationService;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
-    private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final InboxLookupService inboxLookupService;
@@ -61,7 +63,7 @@ public class SubmittedCaseEventHandler {
         CaseData caseData = event.getCaseData();
 
         NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
-        String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
+        String recipient = courtService.getCourtEmail(caseData);
 
         String template = getTemplate(HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME, HMCTS_COURT_SUBMISSION_TEMPLATE);
 

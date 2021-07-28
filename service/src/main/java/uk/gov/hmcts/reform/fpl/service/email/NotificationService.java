@@ -45,7 +45,11 @@ public class NotificationService {
     }
 
     public void sendEmail(String templateId, Collection<String> emails, NotifyData data, String reference) {
-        emails.forEach(email -> sendEmail(templateId, email, data, reference));
+        emails.stream().distinct().forEach(email -> sendEmail(templateId, email, data, reference));
+    }
+
+    public void sendEmail(String templateId, Collection<String> emails, NotifyData data, Long reference) {
+        sendEmail(templateId, emails, data, String.valueOf(reference));
     }
 
     public void sendEmail(String templateId, String recipient, NotifyData data, Long reference) {

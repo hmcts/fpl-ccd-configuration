@@ -46,8 +46,8 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -81,7 +81,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "Jones";
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(CASE_ID)
-        .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+        .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
         .children1(wrapElements(Child.builder()
             .party(ChildParty.builder()

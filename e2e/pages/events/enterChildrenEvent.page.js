@@ -208,22 +208,22 @@ module.exports = {
   },
 
   enterChildrenMainRepresentation(solicitor) {
-    I.fillField(this.fields().mainSolicitor.firstName, solicitor.forename);
-    I.fillField(this.fields().mainSolicitor.lastName, solicitor.surname);
-    I.fillField(this.fields().mainSolicitor.email, solicitor.email);
+    I.fillField(this.fields().mainSolicitor.firstName, solicitor.details.forename);
+    I.fillField(this.fields().mainSolicitor.lastName, solicitor.details.surname);
+    I.fillField(this.fields().mainSolicitor.email, solicitor.details.email);
   },
 
   async enterRegisteredOrganisation(solicitor) {
     await clearOldSolicitorOrg();
     I.waitForEnabled('#search-org-text');
-    I.fillField('#search-org-text', solicitor.organisation);
-    I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(solicitor.organisation))));
+    I.fillField('#search-org-text', solicitor.details.organisation);
+    I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(solicitor.details.organisation))));
   },
 
   enterChildrenSpecificRepresentation(index, solicitor) {
-    I.fillField(this.fields(index).childSolicitor.specificSolicitor.firstName, solicitor.forename);
-    I.fillField(this.fields(index).childSolicitor.specificSolicitor.lastName, solicitor.surname);
-    I.fillField(this.fields(index).childSolicitor.specificSolicitor.email, solicitor.email);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.firstName, solicitor.details.forename);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.lastName, solicitor.details.surname);
+    I.fillField(this.fields(index).childSolicitor.specificSolicitor.email, solicitor.details.email);
   },
 
   async enterSpecificRegisteredOrganisation(index, solicitor) {

@@ -10,12 +10,14 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
@@ -45,6 +47,9 @@ public abstract class AbstractTest {
 
     @MockBean
     protected IdamClient idamClient;
+
+    @Autowired
+    protected DynamicListHelper dynamicLists;
 
     protected LocalDateTime now() {
         return time.now();
@@ -85,4 +90,7 @@ public abstract class AbstractTest {
         return mapper.convertValue(captor.getValue(), CaseData.class);
     }
 
+    protected Map<String, Object> toMap(Object o) {
+        return caseConverter.toMap(o);
+    }
 }

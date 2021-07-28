@@ -15,7 +15,7 @@ class UrgentHearingOrderTest {
     @Test
     void shouldReturnAmendedOrderType() {
         UrgentHearingOrder urgentHearingOrder = UrgentHearingOrder.builder().build();
-        assertThat(urgentHearingOrder.getAmendedOrderType()).isEqualTo("Urgent hearing order");
+        assertThat(urgentHearingOrder.getModifiedItemType()).isEqualTo("Urgent hearing order");
     }
 
     @Test

@@ -109,6 +109,7 @@ module.exports = {
     enterChildren: 'Child\'s details',
     enterRespondents: 'Respondents\' details',
     enterApplicant: 'Applicant\'s details',
+    enterLocalAuthority: 'Local authority\'s details',
     enterOthers: 'Other people in the case',
     enterGrounds: 'Grounds for the application',
     enterRiskAndHarmToChildren: 'Risk and harm to children',
@@ -132,6 +133,7 @@ module.exports = {
     messageJudge: 'Send and reply to messages',
     removeManagingOrganisation: 'Remove managing organisation',
     languageRequirement: 'Welsh language requirements',
+    selectCourt: 'Select court to issue',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
@@ -161,6 +163,7 @@ module.exports = {
     manageDocuments: 'Manage documents',
     uploadAdditionalApplications: 'Upload additional applications',
     manageOrders: 'Manage orders',
+    uploadWelshTranslations: 'Upload translated documents',
     languageRequirement: 'Welsh language requirements',
   },
   superUserActions: {

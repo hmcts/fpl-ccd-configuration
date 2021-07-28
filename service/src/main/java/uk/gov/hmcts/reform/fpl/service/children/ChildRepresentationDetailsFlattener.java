@@ -43,7 +43,7 @@ public class ChildRepresentationDetailsFlattener {
     }
 
     private ChildRepresentationDetails transform(Child child, int idx, RespondentSolicitor mainRepresentative) {
-        RespondentSolicitor childSolicitor = child.getRepresentative();
+        RespondentSolicitor childSolicitor = child.getSolicitor();
         boolean useMainSolicitor = Objects.equals(childSolicitor, mainRepresentative);
 
         // ccd can send a blank representative instead of null even though it was set to null previously

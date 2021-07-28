@@ -176,6 +176,19 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsChildRepresentativeSolicitor(boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isChildRepresentativeSolicitorEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("child-representative-solicitor"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false)
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsFurtherEvidenceDocumentTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -188,12 +201,24 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForServeOrdersAndDocsToOthersEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsServingOtherApplicationsEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
         assertThat(service.isServeOrdersAndDocsToOthersEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("serve-others-orders-docs"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsApplicantAdditionalContactsEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isApplicantAdditionalContactsEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("applicant-additional-contacts"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

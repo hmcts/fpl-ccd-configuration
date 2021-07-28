@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/callback/enter-applicant")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated
 public class ApplicantController extends CallbackController {
     private static final String APPLICANTS_PROPERTY = "applicants";
     private final ApplicantService applicantService;
