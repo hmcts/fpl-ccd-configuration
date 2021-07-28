@@ -54,5 +54,15 @@
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "amountToPay",
+    "FieldType": "Text",
+    "ElementLabel": "Amount to pay",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "c2DocumentBundle=\"DO NOT SHOW\"",
+    "Searchable": "N"
   }
 ]

@@ -4,38 +4,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.fromCCDMoneyGBP;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Slf4j
 @Service
@@ -48,11 +33,26 @@ public class ApplicationRemovedEmailContentProvider extends AbstractEmailContent
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseId(caseData.getId().toString())
             .c2Filename(getFilename(removedApplication))
-            .removalDate(formatLocalDateToString(LocalDateTime.now().toLocalDate(), DATE_TIME_AT))
+            .removalDate(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), DATE_TIME_AT))
             .reason(removedApplication.getRemovalReason().toLowerCase())
             .applicantName(getApplicantName(removedApplication))
-            .applicationFee("1")
+            .applicationFeeText(getApplicationFee(removedApplication))
             .build();
+    }
+
+    private String getApplicationFee(AdditionalApplicationsBundle removedApplication) {
+        String fee = removedApplication.getAmountToPay();
+        Optional<BigDecimal> decimalAmount = fromCCDMoneyGBP(fee);
+        String refundFeeText;
+
+        if(decimalAmount.isPresent()) {
+            BigDecimal amountToDisplay = decimalAmount.get();
+            refundFeeText = "An application fee of £" + amountToDisplay + "needs to be refunded.";
+        } else {
+            refundFeeText = "An application fee needs to be refunded.";
+        }
+
+        return refundFeeText;
     }
 
     private String getApplicantName(AdditionalApplicationsBundle removedApplication) {
