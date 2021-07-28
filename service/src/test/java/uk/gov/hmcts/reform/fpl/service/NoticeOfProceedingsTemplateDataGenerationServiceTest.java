@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -21,10 +19,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class NoticeOfProceedingsTemplateDataGenerationServiceTest {
@@ -48,13 +49,13 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 13, 13, 13, 13));
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
-    private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
+    private final CourtService courtService = mock(CourtService.class);
 
     private NoticeOfProceedingsTemplateDataGenerationService underTest;
 
     @BeforeEach
     void setup() {
-        underTest = new NoticeOfProceedingsTemplateDataGenerationService(courtLookup, extractionService, time);
+        underTest = new NoticeOfProceedingsTemplateDataGenerationService(courtService, extractionService, time);
 
         when(extractionService.getHearingBookingData(HEARING_1)).thenReturn(
             DocmosisHearingBooking.builder()
@@ -68,6 +69,8 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                 .hearingLegalAdvisorName("should also be removed")
                 .build()
         );
+
+        when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
     }
 
     @Test
@@ -119,6 +122,8 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
             .build();
 
         assertThat(templateData).isEqualTo(expectedData);
+
+        verify(courtService).getCourtName(caseData);
     }
 
     private CaseData getCaseData(Child... children) {

@@ -74,9 +74,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "organisationDetailsLink",
+    "ID": "localAuthorityDetailsLink",
     "FieldType": "Label",
-    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterApplicant)",
+    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterLocalAuthority)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

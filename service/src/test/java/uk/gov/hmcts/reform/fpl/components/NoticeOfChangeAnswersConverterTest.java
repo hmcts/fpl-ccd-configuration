@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -21,8 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { NoticeOfChangeAnswersConverter.class })
+@ContextConfiguration(classes = {NoticeOfChangeAnswersConverter.class})
 class NoticeOfChangeAnswersConverterTest {
+
     @Autowired
     private NoticeOfChangeAnswersConverter noticeOfChangeAnswersConverter;
 
@@ -30,11 +29,7 @@ class NoticeOfChangeAnswersConverterTest {
     void shouldConvertRespondentAndApplicantToNoticeOfChangeAnswers() {
         UUID elementId = UUID.randomUUID();
 
-        Applicant applicant = Applicant.builder()
-            .party(ApplicantParty.builder()
-                .organisationName("Test organisation")
-                .build())
-            .build();
+        String applicantName = "Test organisation";
 
         Organisation solicitorOrganisation = Organisation.builder()
             .organisationName("Summers Inc")
@@ -66,13 +61,13 @@ class NoticeOfChangeAnswersConverterTest {
         Element<Respondent> respondentElement = element(elementId, respondent);
 
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()
-                .respondentFirstName("Joe")
-                .respondentLastName("Bloggs")
-                .applicantName("Test organisation")
-                .build();
+            .respondentFirstName("Joe")
+            .respondentLastName("Bloggs")
+            .applicantName("Test organisation")
+            .build();
 
         NoticeOfChangeAnswers actualNoticeOfChangeAnswer
-            = noticeOfChangeAnswersConverter.generateForSubmission(respondentElement, applicant);
+            = noticeOfChangeAnswersConverter.generateForSubmission(respondentElement, applicantName);
 
         assertThat(actualNoticeOfChangeAnswer).isEqualTo(expectedNoticeOfChangeAnswers);
     }

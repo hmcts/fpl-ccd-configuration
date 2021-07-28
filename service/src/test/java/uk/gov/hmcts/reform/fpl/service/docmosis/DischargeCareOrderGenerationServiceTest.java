@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -52,7 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ContextConfiguration(classes = {DischargeCareOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
     FixedTimeConfiguration.class, ChildrenService.class, ChildrenSmartSelector.class, DischargeCareOrderService.class,
-    CaseDetailsHelper.class, ChildSelectionUtils.class})
+    CaseDetailsHelper.class, ChildSelectionUtils.class, CourtService.class})
 class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     @Autowired

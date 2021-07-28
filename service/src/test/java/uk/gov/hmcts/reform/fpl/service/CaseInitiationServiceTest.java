@@ -14,15 +14,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +44,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testCourt;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -68,6 +73,9 @@ class CaseInitiationServiceTest {
     @Mock
     private LocalAuthorityService localAuthorityService;
 
+    @Mock
+    private HmctsCourtLookupConfiguration courtLookup;
+
     @Spy
     private DynamicListService dynamicListService = new DynamicListService(new ObjectMapper());
 
@@ -93,7 +101,7 @@ class CaseInitiationServiceTest {
         @Test
         void shouldReturnEPSOutsourcingTypeWhenOrganisationIsAllowedToRepresentLocalAuthorityAsExternalSolicitor() {
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, EPS))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, MLA))
                 .willReturn(emptyList());
@@ -107,7 +115,7 @@ class CaseInitiationServiceTest {
                 .willReturn(emptyList());
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, MLA))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             assertThat(underTest.getOutsourcingType(organisationId)).contains(MLA);
         }
@@ -115,10 +123,10 @@ class CaseInitiationServiceTest {
         @Test
         void shouldThrowExceptionWhenOrganisationConfiguredAsExternalSolicitorAnLocalAuthority() {
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, EPS))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(organisationId, MLA))
-                .willReturn(List.of(LocalAuthority.builder().build()));
+                .willReturn(List.of(LocalAuthorityName.builder().build()));
 
             assertThatThrownBy(() -> underTest.getOutsourcingType(organisationId))
                 .hasMessage(format("Organisation %s is configured as both EPS and MLA", organisationId));
@@ -147,8 +155,8 @@ class CaseInitiationServiceTest {
             givenUserNotInLocalAuthority();
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(EXTERNAL_ORG_ID, EPS)).willReturn(List.of(
-                LocalAuthority.builder().name("LA 2").code("LA2").build(),
-                LocalAuthority.builder().name("LA 1").code("LA1").build()
+                LocalAuthorityName.builder().name("LA 2").code("LA2").build(),
+                LocalAuthorityName.builder().name("LA 1").code("LA1").build()
             ));
 
             DynamicList localAuthorities = underTest.getOutsourcingLocalAuthorities(EXTERNAL_ORG_ID, EPS);
@@ -173,8 +181,8 @@ class CaseInitiationServiceTest {
 
             given(localAuthorityService.getOutsourcingLocalAuthorities(userLocalAuthority.orgId, MLA)).willReturn(
                 List.of(
-                    LocalAuthority.builder().name("LA 2").code("LA2").build(),
-                    LocalAuthority.builder().name("LA 1").code("LA1").build())
+                    LocalAuthorityName.builder().name("LA 2").code("LA2").build(),
+                    LocalAuthorityName.builder().name("LA 1").code("LA1").build())
             );
 
             DynamicList localAuthorities = underTest.getOutsourcingLocalAuthorities(userLocalAuthority.orgId, MLA);
@@ -308,6 +316,76 @@ class CaseInitiationServiceTest {
             assertThat(updatedCaseData.getOutsourcingPolicy())
                 .isEqualTo(
                     organisationPolicy(userLocalAuthority.orgId, null, LAMANAGING));
+        }
+
+        @Test
+        void shouldAddDesignatedCourt() {
+            final TestLocalAuthority userLocalAuthority = LA1;
+            final Court court = testCourt();
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(court);
+
+            final CaseData caseData = givenCaseNotOutsourced();
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isEqualTo(court);
+            assertThat(updatedCaseData.getMultiCourts()).isNull();
+        }
+
+        @Test
+        void shouldNotAddDesignatedCourtWhenMultipleCourtsAvailable() {
+            final TestLocalAuthority userLocalAuthority = LA1;
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(testCourt(), testCourt());
+
+            final CaseData caseData = givenCaseNotOutsourced();
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isNull();
+            assertThat(updatedCaseData.getMultiCourts()).isEqualTo(YES);
+        }
+
+        @Test
+        void shouldAddDesignatedCourtWhenCaseIsOutsourced() {
+            final TestLocalAuthority outsourcingLocalAuthority = LA1;
+            final TestLocalAuthority userLocalAuthority = LA2;
+            final Court court = testCourt();
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenLocalAuthorityExists(outsourcingLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(court);
+
+            final CaseData caseData = givenCaseOutsourced(outsourcingLocalAuthority, MLA);
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isEqualTo(court);
+            assertThat(updatedCaseData.getMultiCourts()).isNull();
+        }
+
+        @Test
+        void shouldNotAddDesignatedCourtWhenCaseIsOutsourcedAndMultipleCourtsAvailable() {
+            final TestLocalAuthority outsourcingLocalAuthority = LA1;
+            final TestLocalAuthority userLocalAuthority = LA2;
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenLocalAuthorityExists(outsourcingLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(testCourt(), testCourt());
+
+            final CaseData caseData = givenCaseOutsourced(outsourcingLocalAuthority, MLA);
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isNull();
+            assertThat(updatedCaseData.getMultiCourts()).isEqualTo(YES);
         }
     }
 
@@ -481,6 +559,10 @@ class CaseInitiationServiceTest {
         }
     }
 
+    private void givenLocalAuthorityCourts(Court... courts) {
+        given(courtLookup.getCourt(any())).willReturn(Arrays.asList(courts));
+    }
+
     private void givenUserInOrganisation(String organisationId) {
         Optional<Organisation> organisation = Optional.ofNullable(organisationId)
             .map(orgId -> Organisation.builder().organisationIdentifier(orgId).build());
@@ -493,7 +575,7 @@ class CaseInitiationServiceTest {
 
     private void givenUserInLocalAuthority(TestLocalAuthority localAuthority) {
         given(localAuthorityService.getLocalAuthorityCode()).willReturn(Optional.of(localAuthority.code));
-        given(localAuthorityService.getUserLocalAuthority()).willReturn(Optional.of(LocalAuthority.builder()
+        given(localAuthorityService.getUserLocalAuthority()).willReturn(Optional.of(LocalAuthorityName.builder()
             .name(localAuthority.name)
             .code(localAuthority.code)
             .build()));

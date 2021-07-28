@@ -17,6 +17,18 @@ function tabFieldSelector(pathToField) {
   return `${selector}//*[contains(@class,"complex-panel-simple-field") and .//th/span[text()="${fieldName}"]]`;
 }
 
+function tabTagSelector(pathToField) {
+  let path = [].concat(pathToField);
+  let fieldName = path.splice(-1, 1)[0];
+  let selector = TAB_CLASS_SELECTOR;
+
+  path.forEach(step => {
+    selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+  });
+
+  return `${selector}//*[contains(@class,"govuk-tag") and text()="${fieldName}"]`;
+}
+
 function organisationTabFieldSelector(pathToField) {
   let path = [].concat(pathToField);
   let fieldName = path.splice(-1, 1)[0];
@@ -45,6 +57,17 @@ module.exports = {
       this.seeElement(locate(fieldSelector).withText(fieldValue));
     }
   },
+
+  seeTagInTab: function (pathToTag) {
+    const fieldSelector = tabTagSelector(pathToTag);
+    this.seeElement(locate(fieldSelector));
+  },
+
+  dontSeeTagInTab: function (pathToTag) {
+    const fieldSelector = tabTagSelector(pathToTag);
+    this.dontSeeElement(locate(fieldSelector));
+  },
+
   seeOrganisationInTab(pathToField, fieldValue) {
     const fieldSelector = organisationTabFieldSelector(pathToField);
 

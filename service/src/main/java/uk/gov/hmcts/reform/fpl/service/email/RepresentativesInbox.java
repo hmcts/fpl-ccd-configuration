@@ -8,13 +8,13 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -32,16 +32,36 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
         emails.addAll(
-            nullSafeList(caseData.getRespondents1()).stream()
-                .filter(respondent ->
-                    (preference == RepresentativeServingPreferences.DIGITAL_SERVICE)
-                        == respondent.getValue().hasRegisteredOrganisation())
-                .map(respondent -> Optional.ofNullable(respondent.getValue().getSolicitor())
-                    .map(RespondentSolicitor::getEmail).orElse(null))
+            caseData.getAllRespondents().stream()
+                .filter(respondent -> shouldSend(preference, respondent))
+                .map(this::extractEmail)
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toCollection(LinkedHashSet::new))
         );
 
+        emails.addAll(
+            caseData.getAllChildren().stream()
+                .filter(child -> shouldSend(preference, child))
+                .map(this::extractEmail)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
+
+
         return emails;
+    }
+
+    private boolean shouldSend(RepresentativeServingPreferences preference, Element<? extends WithSolicitor> element) {
+        if (RepresentativeServingPreferences.DIGITAL_SERVICE == preference) {
+            return element.getValue().hasRegisteredOrganisation();
+        }
+
+        return !element.getValue().hasRegisteredOrganisation();
+    }
+
+    private String extractEmail(Element<? extends WithSolicitor> element) {
+        return Optional.ofNullable(element.getValue().getSolicitor())
+            .map(RespondentSolicitor::getEmail)
+            .orElse(null);
     }
 }

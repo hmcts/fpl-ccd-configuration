@@ -17,6 +17,7 @@ public class LookupConfigParser {
 
     private static final String MAPPING_SEPARATOR = ";";
     private static final String ENTRY_SEPARATOR = "=>";
+    private static final String LIST_ELEMENT_SEPARATOR = "\\|";
 
     private LookupConfigParser() {
         //NO-OP
@@ -44,7 +45,7 @@ public class LookupConfigParser {
      */
     public static Map<String, List<String>> parseStringListValue(String config) {
         return parse(config, value -> ImmutableList.<String>builder()
-            .add(value.split(","))
+            .add(value.split(LIST_ELEMENT_SEPARATOR))
             .build()
         );
     }

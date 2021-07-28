@@ -9,12 +9,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.noc.UpdateRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
@@ -52,7 +54,7 @@ class NoticeOfChangeServiceTest {
     private CoreCaseDataService coreCaseDataService;
 
     @Mock
-    private RespondentRepresentationService respondentRepresentationService;
+    private UpdateRepresentationService updateRepresentationService;
 
     @InjectMocks
     private NoticeOfChangeService underTest;
@@ -99,7 +101,7 @@ class NoticeOfChangeServiceTest {
             when(userService.getUserDetailsById(USER_ID))
                 .thenReturn(solicitorUser);
 
-            when(respondentRepresentationService.updateRepresentation(caseData, solicitorUser))
+            when(updateRepresentationService.updateRepresentation(caseData, solicitorUser))
                 .thenReturn(UPDATED_REPRESENTATION);
 
             final Map<String, Object> actual = underTest.updateRepresentation(caseData);
@@ -108,7 +110,7 @@ class NoticeOfChangeServiceTest {
 
             verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
             verify(userService).getUserDetailsById(USER_ID);
-            verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
+            verifyNoMoreInteractions(auditEventService, userService, updateRepresentationService);
         }
 
         @Test
@@ -126,11 +128,12 @@ class NoticeOfChangeServiceTest {
                 .hasMessage("Could not find nocRequest event in audit");
 
             verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
-            verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
+            verifyNoMoreInteractions(auditEventService, userService, updateRepresentationService);
         }
     }
 
     @Nested
+    @SuppressWarnings({"unchecked", "rawtypes"})
     class UpdateRepresentationAccess {
 
         @Test
@@ -150,10 +153,11 @@ class NoticeOfChangeServiceTest {
                 .respondents1(newRespondents)
                 .build();
 
-            when(respondentService.getRepresentationChanges(newRespondents, previousRespondents))
+            when(respondentService.getRepresentationChanges((List)newRespondents,(List) previousRespondents,
+                SolicitorRole.Representing.RESPONDENT))
                 .thenReturn(emptyList());
 
-            underTest.updateRepresentativesAccess(caseData, caseDataBefore);
+            underTest.updateRepresentativesAccess(caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT);
 
             verifyNoInteractions(coreCaseDataService);
         }
@@ -193,9 +197,10 @@ class NoticeOfChangeServiceTest {
 
             List<ChangeOrganisationRequest> changes = List.of(changeOrganisationRequest1, changeOrganisationRequest2);
 
-            when(respondentService.getRepresentationChanges(newRespondents, previousRespondents)).thenReturn(changes);
+            when(respondentService.getRepresentationChanges((List)newRespondents, (List) previousRespondents,
+                SolicitorRole.Representing.RESPONDENT)).thenReturn(changes);
 
-            underTest.updateRepresentativesAccess(caseData, caseDataBefore);
+            underTest.updateRepresentativesAccess(caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT);
 
             verify(coreCaseDataService).triggerEvent(CASE_ID, "updateRepresentation",
                 Map.of("changeOrganisationRequestField", changeOrganisationRequest1));

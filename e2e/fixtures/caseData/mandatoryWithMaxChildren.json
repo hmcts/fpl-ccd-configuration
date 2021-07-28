@@ -1,5 +1,5 @@
 {
-  "state": "SUBMITTED",
+  "state": "Open",
   "caseData": {
     "caseName": "e2e test case max children",
     "orders": {
@@ -193,40 +193,79 @@
       "reference": "reference",
       "telephone": "00000000000"
     },
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    ],
     "applicants": [
       {
-        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
         "value": {
           "party": {
             "email": {
-              "email": "applicant@email.com"
+              "email": "test@test.com"
             },
             "address": {
-              "County": "United Kingdom",
+              "County": "Swansea",
+              "Country": "United Kingdom",
               "PostCode": "CR0 2GE",
-              "PostTown": "London",
-              "AddressLine1": "Flat 12, Pinnacle Apartments",
-              "AddressLine2": "Saffron Central Square 11"
+              "PostTown": "Swansea",
+              "AddressLine1": "Flat 1, Swansea Apartments",
+              "AddressLine2": "Swansea Central Square 11",
+              "AddressLine3": "40 Fleet street"
             },
-            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
-            "jobTitle": "Legal adviser",
-            "partyType": "ORGANISATION",
-            "pbaNumber": "PBA0082848",
-            "clientCode": "8888",
+            "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
+            "jobTitle": "Solicitor",
+            "pbaNumber": "PBA1234567",
             "mobileNumber": {
-              "telephoneNumber": "07000000000"
+              "telephoneNumber": "02027725772"
             },
             "telephoneNumber": {
-              "telephoneNumber": "00000000000",
-              "contactDirection": "Jonathon Walker"
+              "telephoneNumber": "02027725772",
+              "contactDirection": "John"
             },
-            "organisationName": "John Smith",
-            "customerReference": "Example reference"
+            "organisationName": "Swansea City Council"
           },
           "leadApplicantIndicator": "Yes"
         }
       }
     ],
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
     "sendToCtsc": "Yes",
     "respondents1": [
       {
@@ -287,7 +326,8 @@
       "agree"
     ],
     "allocationProposal": {
-      "proposal": "District judge"
+      "proposal": "District judge",
+      "proposalReason": "test"
     },
     "displayAmountToPay": "Yes",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
