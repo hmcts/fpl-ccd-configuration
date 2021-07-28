@@ -141,7 +141,7 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.preventRemoval);
-  manageOrdersEventPage.enterRemovalAddress(removalAddress);
+  await manageOrdersEventPage.enterRemovalAddress(removalAddress);
   manageOrdersEventPage.selectExclusionRequirementEPO(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
   manageOrdersEventPage.enterWhoIsExcluded('John Doe');
   await manageOrdersEventPage.enterExclusionStartDate(approvalDate);
