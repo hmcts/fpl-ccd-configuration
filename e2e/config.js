@@ -162,6 +162,7 @@ module.exports = {
     manageDocuments: 'Manage documents',
     uploadAdditionalApplications: 'Upload additional applications',
     manageOrders: 'Manage orders',
+    uploadWelshTranslations: 'Upload translated documents',
     languageRequirement: 'Welsh language requirements',
   },
   superUserActions: {

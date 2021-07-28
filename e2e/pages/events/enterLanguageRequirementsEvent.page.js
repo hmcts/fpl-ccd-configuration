@@ -12,4 +12,9 @@ module.exports = {
     I.click(this.fields.languageRequirement.yes);
     await I.runAccessibilityTest();
   },
+
+  async disableLanguageRequirement() {
+    I.click(this.fields.languageRequirement.no);
+    await I.runAccessibilityTest();
+  },
 };

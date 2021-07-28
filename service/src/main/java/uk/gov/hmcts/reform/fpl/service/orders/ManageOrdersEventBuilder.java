@@ -37,7 +37,7 @@ public class ManageOrdersEventBuilder {
             .map(Optional::get)
             .findFirst()
             .map(order -> new AmendedOrderEvent(
-                    caseData, order.getDocument(), order.getAmendedOrderType(), order.getSelectedOthers()
+                    caseData, order.getDocument(), order.getModifiedItemType(), order.getSelectedOthers()
             )).orElseThrow();
 
         return event;
