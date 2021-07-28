@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @Data
-public class OrderAmendedNotifyData extends BaseCaseNotifyData {
+public class OrderAmendedNotifyData extends BaseCaseNotifyData implements ModifiedItemNotifyData {
     private final String orderType;
     private final String callout;
     private final String courtName;

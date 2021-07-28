@@ -133,6 +133,7 @@ exports.config = {
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
     uploadAdditionalApplicationsEventPage: './e2e/pages/events/uploadAdditionalApplicationsEvent.page.js',
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
+    uploadWelshTranslationsPage: './e2e/pages/events/uploadWelshTranslation.page.js',
   },
   plugins: {
     retryFailedStep: {

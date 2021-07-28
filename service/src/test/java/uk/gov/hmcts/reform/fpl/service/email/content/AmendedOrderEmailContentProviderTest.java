@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -54,7 +54,7 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
     void shouldBuildAmendedOrderParameters() {
         OrderAmendedNotifyData expectedParameters = getExpectedParameters();
         OrderAmendedNotifyData actualParameters = underTest.getNotifyData(
-            CASE_DATA, testDocument, AmendedOrderType.CASE_MANAGEMENT_ORDER.getLabel());
+            CASE_DATA, testDocument, ModifiedOrderType.CASE_MANAGEMENT_ORDER.getLabel());
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }

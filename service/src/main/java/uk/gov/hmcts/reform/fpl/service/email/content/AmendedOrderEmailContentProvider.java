@@ -17,7 +17,8 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvider {
+public class AmendedOrderEmailContentProvider extends AbstractEmailContentProvider
+    implements ModifiedItemEmailContentProvider {
     private final CourtService courtService;
     private final EmailNotificationHelper helper;
 

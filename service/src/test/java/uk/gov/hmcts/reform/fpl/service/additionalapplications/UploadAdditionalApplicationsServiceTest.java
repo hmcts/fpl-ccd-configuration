@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,7 +16,9 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -28,6 +31,8 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -40,6 +45,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -86,6 +92,12 @@ class UploadAdditionalApplicationsServiceTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;
+
+    @MockBean
+    private OthersService othersService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private UploadAdditionalApplicationsService underTest;
@@ -149,11 +161,16 @@ class UploadAdditionalApplicationsServiceTest {
             .otherApplicant("some other name")
             .build();
 
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+        given(othersService.getSelectedOthers(any(), any(), any())).willReturn(List.of());
+
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
+        assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEmpty();
+        assertThat(actual.getOtherApplicationsBundle().getOthers()).isEmpty();
 
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
     }
@@ -176,8 +193,10 @@ class UploadAdditionalApplicationsServiceTest {
             .hasMessage("Applicant should not be empty");
     }
 
-    @Test
-    void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles(
+        boolean othersServedToggledOn) {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
 
@@ -198,12 +217,34 @@ class UploadAdditionalApplicationsServiceTest {
             .applicantsList(applicantsList)
             .build();
 
+        String othersNotified = "Other1, Other2";
+        List<Element<Other>> selectedOthers = wrapElements(
+            Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
+            Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build());
+
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(othersServedToggledOn);
+        if (othersServedToggledOn) {
+            given(othersService.getSelectedOthers(any(), any(), any())).willReturn(selectedOthers);
+        }
+
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
+
+        if (othersServedToggledOn) {
+            assertThat(actual.getC2DocumentBundle().getOthers()).isEqualTo(selectedOthers);
+            assertThat(actual.getC2DocumentBundle().getOthersNotified()).isEqualTo(othersNotified);
+            assertThat(actual.getOtherApplicationsBundle().getOthers()).isEqualTo(selectedOthers);
+            assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEqualTo(othersNotified);
+        } else {
+            assertThat(actual.getC2DocumentBundle().getOthers()).isNull();
+            assertThat(actual.getC2DocumentBundle().getOthersNotified()).isNull();
+            assertThat(actual.getOtherApplicationsBundle().getOthers()).isNull();
+            assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isNull();
+        }
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);

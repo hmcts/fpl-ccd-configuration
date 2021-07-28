@@ -60,7 +60,7 @@ class ManageOrdersEventBuilderTest {
         when(caseData.getOrderCollection()).thenReturn(orders);
         when(caseDataBefore.getOrderCollection()).thenReturn(orders);
         when(amendableOrder.getDocument()).thenReturn(expectedDocument);
-        when(amendableOrder.getAmendedOrderType()).thenReturn("Care order");
+        when(amendableOrder.getModifiedItemType()).thenReturn("Care order");
         when(amendableOrder.getSelectedOthers()).thenReturn(selectedOthers);
 
         when(finder.findOrderIfPresent(caseData, caseDataBefore)).thenReturn(Optional.of(amendableOrder));
