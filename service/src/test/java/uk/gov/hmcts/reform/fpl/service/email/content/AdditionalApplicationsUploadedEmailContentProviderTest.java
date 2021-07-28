@@ -53,7 +53,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         CaseData caseData = buildCaseData();
 
         when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
-        when(time.now()).thenReturn(LocalDateTime.now());
+        when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
             .callout("Smith, 12345, " + HEARING_CALLOUT)
@@ -86,7 +86,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .build();
 
         when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
-        when(time.now()).thenReturn(LocalDateTime.now());
+        when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()

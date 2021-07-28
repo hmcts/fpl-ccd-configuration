@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,7 +54,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans({
     @MockBean(FeatureToggleService.class), @MockBean(IdamClient.class), @MockBean(RequestData.class),
-    @MockBean(SendDocumentService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class)
+    @MockBean(SendDocumentService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
+    @MockBean(Time.class)
 })
 class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
@@ -93,6 +95,14 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Autowired
     private FeatureToggleService toggleService;
+
+    @Autowired
+    private Time time;
+
+    @BeforeEach
+    void setup() {
+        given(time.now()).willReturn(HEARING_DATE.minusDays(1));
+    }
 
     @ParameterizedTest
     @MethodSource("subjectLineSource")
@@ -139,7 +149,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
-                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2020")
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
                 .line()
                 .h1("Applications")
                 .line()
