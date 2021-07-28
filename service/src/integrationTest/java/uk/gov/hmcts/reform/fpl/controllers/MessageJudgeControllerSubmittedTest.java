@@ -21,10 +21,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(MessageJudgeController.class)
@@ -61,6 +63,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_REFERENCE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .respondents1(List.of(
                 element(Respondent.builder()
                     .party(RespondentParty.builder()
@@ -115,6 +118,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_REFERENCE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .respondents1(List.of(
                 element(Respondent.builder()
                     .party(RespondentParty.builder()
@@ -166,6 +170,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_REFERENCE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .respondents1(List.of(
                 element(Respondent.builder()
                     .party(RespondentParty.builder()
@@ -198,6 +203,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             SyntheticCaseSummary.builder()
                 .caseSummaryHasUnresolvedMessages(withUnresolvedMessages)
                 .caseSummaryFirstRespondentLastName(LAST_NAME)
+                .caseSummaryCourtName(COURT_NAME)
                 .build());
     }
 }

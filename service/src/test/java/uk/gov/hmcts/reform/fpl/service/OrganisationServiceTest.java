@@ -56,7 +56,7 @@ class OrganisationServiceTest {
 
     @Spy
     private final LocalAuthorityUserLookupConfiguration lookupSpy = new LocalAuthorityUserLookupConfiguration(
-        "SA=>1,2,3"
+        "SA=>1|2|3"
     );
 
     @InjectMocks

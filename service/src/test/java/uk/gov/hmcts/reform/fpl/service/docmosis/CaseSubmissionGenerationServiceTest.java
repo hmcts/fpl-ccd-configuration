@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -54,6 +55,7 @@ import java.util.List;
 import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -95,6 +98,9 @@ class CaseSubmissionGenerationServiceTest {
     @MockBean
     private RequestData requestData;
 
+    @MockBean
+    private CourtService courtService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -108,6 +114,7 @@ class CaseSubmissionGenerationServiceTest {
         givenCaseData = prepareCaseData();
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(userService.getUserName()).willReturn("Professor");
+        given(courtService.getCourtName(any())).willReturn(COURT_NAME);
     }
 
     @Test

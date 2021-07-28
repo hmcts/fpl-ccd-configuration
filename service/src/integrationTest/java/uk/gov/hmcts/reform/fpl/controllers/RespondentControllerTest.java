@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -392,14 +394,20 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        CaseData caseData = CaseData.builder()
+        final CaseData caseDataBefore = CaseData.builder()
             .id(Long.valueOf(CASE_ID))
             .state(SUBMITTED)
-            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .syntheticCaseSummary(SyntheticCaseSummary.builder()
+                .caseSummaryCourtName(COURT_NAME)
+                .build())
             .build();
 
-        postSubmittedEvent(caseData);
+        final CaseData caseData = caseDataBefore.toBuilder()
+            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
+            .build();
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE),
