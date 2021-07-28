@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.docmosis.generator.DocmosisOrderCaseDataGenerator;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
@@ -96,7 +96,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     ChildSelectionUtils.class
 })
 @MockBeans({@MockBean(DocumentDownloadService.class)})
-public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
+class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_COURT = "La Court";
@@ -111,7 +111,7 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     @MockBean
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private CourtService courtService;
 
     @Autowired
     private OrderCreationService underTest;
@@ -142,9 +142,8 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
             .map(Arguments::of);
     }
 
-    public String getPdfContent(CaseData caseData, String... ignores) throws IOException {
-        when(hmctsCourtLookupConfiguration.getCourt(LA_CODE)).thenReturn(
-            new HmctsCourtLookupConfiguration.Court(LA_COURT, null, null));
+    private String getPdfContent(CaseData caseData, String... ignores) throws IOException {
+        when(courtService.getCourtName(caseData)).thenReturn(LA_COURT);
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(uploadDocumentService.uploadDocument(any(byte[].class),
             anyString(),

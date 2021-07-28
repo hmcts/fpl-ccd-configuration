@@ -74,11 +74,11 @@ retry:
 fpl:
   env: 'localhost'
   local_authority_email_to_code:
-    mapping: 'test1.org.uk=>test1'
+    mapping: 'test1.org.uk=>test1;test3.org.uk=>test3'
   local_authority_code_to_name:
-    mapping: 'test1=>Test 1 Local Authority;test2=>Test 2 Local Authority'
+    mapping: 'test1=>Test 1 Local Authority;test2=>Test 2 Local Authority;test3=>Test 3 Local Authority'
   local_authority_code_to_hmcts_court:
-    mapping: 'test1=>Family Court:admin@family-court.com:11;test2=>Family Court:admin@family-court.com:22'
+    mapping: 'test1=>Family Court:admin@family-court.com:11;test2=>Family Court:admin@family-court.com:22;test3=>Family Court 3 A:court3a@family-court.com:31|Family Court 3 B:court3b@family-court.com:32'
   local_authority_code_to_cafcass:
     mapping: 'test1=>cafcass:cafcass@cafcass.com;test2=>cafcass:cafcass@cafcass.com'
   local_authority_code_to_shared_inbox:

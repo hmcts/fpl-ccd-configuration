@@ -84,6 +84,7 @@ exports.config = {
     deleteApplicationEventPage: './e2e/pages/events/deleteApplicationEvent.page.js',
     submitApplicationEventPage: './e2e/pages/events/submitApplicationEvent.page.js',
     changeCaseNameEventPage: './e2e/pages/events/changeCaseNameEvent.page.js',
+    selectCourtEventPage: './e2e/pages/events/selectCourtEvent.page.js',
     enterOrdersAndDirectionsNeededEventPage: './e2e/pages/events/enterOrdersAndDirectionsNeededEvent.page.js',
     enterHearingNeededEventPage: './e2e/pages/events/enterHearingNeededEvent.page.js',
     enterChildrenEventPage: './e2e/pages/events/enterChildrenEvent.page.js',

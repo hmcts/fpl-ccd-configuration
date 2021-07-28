@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -151,6 +152,8 @@ public class CaseData {
     private OrganisationPolicy outsourcingPolicy;
     private OutsourcingType outsourcingType;
     private Object outsourcingLAs;
+    private Court court;
+    private YesNo multiCourts;
 
     private final Risks risks;
     @NotNull(message = "Add the orders and directions sought")
@@ -1010,4 +1013,6 @@ public class CaseData {
     public List<Element<LocalAuthority>> getLocalAuthorities() {
         return defaultIfNull(localAuthorities, new ArrayList<>());
     }
+
+    private final DynamicList courtsList;
 }

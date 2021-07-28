@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -14,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -22,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class NoticeOfHearingGenerationServiceTest {
@@ -54,12 +55,12 @@ class NoticeOfHearingGenerationServiceTest {
     private static final long CASE_NUMBER = 1234123412341234L;
     private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
 
-    private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
+    private final CourtService courtService = mock(CourtService.class);
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 3, 3, 3, 3));
     private final CaseDataExtractionService dataExtractionService = mock(CaseDataExtractionService.class);
 
     private final NoticeOfHearingGenerationService underTest = new NoticeOfHearingGenerationService(
-        dataExtractionService, courtLookup, time);
+        dataExtractionService, courtService, time);
 
     @BeforeEach
     void mocks() {
@@ -80,8 +81,9 @@ class NoticeOfHearingGenerationServiceTest {
                 .preHearingAttendance("20 minutes before hearing")
                 .hearingJudgeTitleAndName("should be removed")
                 .hearingLegalAdvisorName("should also be removed")
-                .build()
-        );
+                .build());
+
+        when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
     }
 
     @Test

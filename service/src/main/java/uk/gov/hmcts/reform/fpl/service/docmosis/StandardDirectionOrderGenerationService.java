@@ -42,7 +42,7 @@ public class StandardDirectionOrderGenerationService extends
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor()))
-                .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
+                .courtName(dataService.getCourtName(caseData))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
                 .dateOfIssue(standardDirectionOrder.getDateOfIssue())
