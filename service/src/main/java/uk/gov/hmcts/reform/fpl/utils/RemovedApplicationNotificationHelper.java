@@ -86,6 +86,6 @@ public class RemovedApplicationNotificationHelper {
         } else if(removalReason.equals("WRONG_CASE")) {
             return "Wrong case";
         }
-        return "";
+        return removalReason;
     }
 }
