@@ -12,6 +12,8 @@ public enum Event {
     GROUNDS("enterGrounds", "Grounds for the application"),
     RISK_AND_HARM("enterRiskHarm", "Risk and harm to children"),
     FACTORS_AFFECTING_PARENTING("enterParentingFactors", "Factors affecting parenting"),
+    ////TO DO remove when toggling on FPLA-768
+    DOCUMENTS("uploadDocuments", "Upload documents"),
     ORGANISATION_DETAILS("enterApplicant", "Applicant's details"),
     LOCAL_AUTHORITY_DETAILS("enterLocalAuthority", "Local authority's details"),
     CHILDREN("enterChildren", "Child's details"),
@@ -24,7 +26,8 @@ public enum Event {
     LANGUAGE_REQUIREMENTS("languageSelection", "Welsh language requirements"),
     SUBMIT_APPLICATION("submitApplication", "Submit application"),
     CASE_NAME("changeCaseName", "Change case name"),
-    APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents");
+    APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents"),
+    SELECT_COURT("selectCourt", "Select court to issue");
 
     private final String id;
     private final String name;

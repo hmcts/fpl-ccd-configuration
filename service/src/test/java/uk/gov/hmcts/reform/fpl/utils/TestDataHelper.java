@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -54,6 +55,7 @@ import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -67,6 +69,16 @@ public class TestDataHelper {
     public static final byte[] DOCUMENT_CONTENT = {1, 2, 3, 4, 5};
 
     private TestDataHelper() {
+    }
+
+    public static Court testCourt() {
+        final String name = randomAlphanumeric(5);
+
+        return Court.builder()
+            .code(randomNumeric(3))
+            .name(name)
+            .email(String.format("%s@test.com", name))
+            .build();
     }
 
     public static Organisation testOrganisation() {

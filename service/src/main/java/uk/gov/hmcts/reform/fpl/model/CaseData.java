@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -51,6 +52,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -150,6 +152,8 @@ public class CaseData {
     private OrganisationPolicy outsourcingPolicy;
     private OutsourcingType outsourcingType;
     private Object outsourcingLAs;
+    private Court court;
+    private YesNo multiCourts;
 
     private final Risks risks;
     @NotNull(message = "Add the orders and directions sought")
@@ -964,6 +968,11 @@ public class CaseData {
 
     @JsonUnwrapped
     @Builder.Default
+    private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder()
+        .build();
+
+    @JsonUnwrapped
+    @Builder.Default
     private final LocalAuthorityEventData localAuthorityEventData = LocalAuthorityEventData.builder().build();
 
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
@@ -1005,4 +1014,6 @@ public class CaseData {
     public List<Element<LocalAuthority>> getLocalAuthorities() {
         return defaultIfNull(localAuthorities, new ArrayList<>());
     }
+
+    private final DynamicList courtsList;
 }

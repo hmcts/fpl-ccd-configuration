@@ -5,7 +5,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
@@ -47,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -84,9 +84,9 @@ public class CaseSubmissionGenerationService
     private static final String CONFIDENTIAL = "Confidential";
 
     private final Time time;
-    private final HmctsCourtLookupConfiguration courtLookupConfiguration;
     private final UserService userService;
     private final RequestData requestData;
+    private final CourtService courtService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
@@ -95,7 +95,7 @@ public class CaseSubmissionGenerationService
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .courtName(courtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .courtName(courtService.getCourtName(caseData))
             .submittedDate(formatDateDisplay(time.now().toLocalDate()))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))

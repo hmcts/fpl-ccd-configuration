@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -73,6 +75,8 @@ class DraftOrdersApprovedEventHandlerTest {
     @Mock
     private HmctsAdminNotificationHandler adminNotificationHandler;
     @Mock
+    private CourtService courtService;
+    @Mock
     private RepresentativeNotificationService representativeNotificationService;
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -100,7 +104,9 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
         List<HearingOrder> orders = List.of();
+        ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder().build();
 
+        given(courtService.getCourtEmail(caseData)).willReturn(CTSC_INBOX);
         given(adminNotificationHandler.getHmctsAdminEmail(caseData)).willReturn(CTSC_INBOX);
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -60,7 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryExtraOthersNotifiedGenerator.class,
     OthersService.class, OrderIssuedEmailContentProviderTypeOfOrderCalculator.class,
     SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class,
-    ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class, ChildSelectionUtils.class})
+    ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class, ChildSelectionUtils.class, CourtService.class})
 @MockBeans({
     @MockBean(OrderCreationService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
     @MockBean(SealedOrderHistoryFinalMarker.class)

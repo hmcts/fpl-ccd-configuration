@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -19,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 
 @Service
 public class CaseSubmissionChecker extends CompoundEventChecker {
@@ -28,11 +31,11 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
-        return super.validate(caseData, getRequiredEvents());
+        return super.validate(caseData, getRequiredEvents(caseData));
     }
 
     public List<EventValidationErrors> validateAsGroups(CaseData caseData) {
-        return super.validateEvents(caseData, getRequiredEvents());
+        return super.validateEvents(caseData, getRequiredEvents(caseData));
     }
 
     @Override
@@ -50,8 +53,11 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
         return validate(caseData).isEmpty();
     }
 
-    private List<Event> getRequiredEvents() {
-        return List.of(
+    private List<Event> getRequiredEvents(CaseData caseData) {
+
+        boolean hasMultipleCourt = YesNo.YES.equals(caseData.getMultiCourts());
+
+        List<Event> events = new ArrayList<>(List.of(
             CASE_NAME,
             ORDERS_SOUGHT,
             HEARING_URGENCY,
@@ -59,6 +65,13 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
             featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
-            ALLOCATION_PROPOSAL);
+            ALLOCATION_PROPOSAL));
+
+        if (hasMultipleCourt) {
+            events.add(SELECT_COURT);
+        }
+
+        return events;
     }
+
 }

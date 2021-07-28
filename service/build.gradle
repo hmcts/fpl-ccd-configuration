@@ -200,6 +200,12 @@ task fortifyScan(type: JavaExec)  {
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
+task highLevelDataSetup(type: JavaExec, description: 'High level data step mock implementation - DO NOTHING.') {
+  onlyIf {
+    return false
+  }
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = "8.25"

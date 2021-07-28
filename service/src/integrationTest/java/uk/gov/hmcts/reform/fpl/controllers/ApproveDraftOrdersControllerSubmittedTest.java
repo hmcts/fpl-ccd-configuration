@@ -101,8 +101,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotSendNotificationsIfNoCMOsReadyForApproval() {
-        CaseDetails caseDetails = CaseDetails.builder().data(
-            Map.of("ordersToBeSent", List.of())).build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("ordersToBeSent", List.of(), "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE))
+            .build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)

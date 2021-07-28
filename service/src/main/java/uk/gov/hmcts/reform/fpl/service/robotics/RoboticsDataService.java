@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Child;
 import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,7 +54,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsDataService {
     private final ObjectMapper objectMapper;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final CourtService courtService;
 
     public RoboticsData prepareRoboticsData(final CaseData caseData) {
         return RoboticsData.builder()
@@ -71,7 +71,7 @@ public class RoboticsDataService {
                 ? caseData.getAllocationProposal().getProposal() : null)
             .issueDate(formatDate(caseData.getDateSubmitted(), "dd-MM-yyyy"))
             .applicant(populateApplicant(caseData))
-            .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
+            .owningCourt(toInt(courtService.getCourtCode(caseData)))
             .caseId(caseData.getId())
             .build();
     }

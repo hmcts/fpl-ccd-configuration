@@ -148,9 +148,17 @@
     "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"Yes\"",
     "TabFieldDisplayOrder": 80
   },
-
-
-
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Summary",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryCourtName",
+    "FieldShowCondition": "caseSummaryCourtName = \"*\"",
+    "TabFieldDisplayOrder": 85
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",

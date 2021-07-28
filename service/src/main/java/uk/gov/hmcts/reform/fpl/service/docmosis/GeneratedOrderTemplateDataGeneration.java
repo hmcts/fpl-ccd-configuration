@@ -80,7 +80,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
             .orderType(orderType)
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
-            .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
+            .courtName(caseDataExtractionService.getCourtName(caseData))
             .dateOfIssue(dateOfIssue)
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
             .children(getChildrenDetails(caseData))

@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
-import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -18,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -42,12 +43,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftOrdersApprovedEventHandler {
 
+    private final CourtService courtService;
     private final NotificationService notificationService;
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
     private final InboxLookupService inboxLookupService;
     private final RepresentativesInbox representativesInbox;
     private final RepresentativeNotificationService representativeNotificationService;
-    private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final SendDocumentService sendDocumentService;
     private final OtherRecipientsInbox otherRecipientsInbox;
@@ -67,7 +68,7 @@ public class DraftOrdersApprovedEventHandler {
         final ApprovedOrdersTemplate content = contentProvider.buildOrdersApprovedContent(caseData, hearing,
             approvedOrders, DIGITAL_SERVICE);
 
-        String adminEmail = adminNotificationHandler.getHmctsAdminEmail(caseData);
+        String adminEmail = courtService.getCourtEmail(caseData);
 
         Collection<String> localAuthorityEmails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());

@@ -38,7 +38,6 @@ public class DocmosisCommonElementDecorator {
     public DocmosisParameters decorate(DocmosisParameters currentParameters, CaseData caseData,
                                        OrderStatus status, Order orderType) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
-        String localAuthorityCode = caseData.getCaseLocalAuthority();
 
         List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
         List<DocmosisChild> children = extractionService.getChildrenDetails(selectedChildren);
@@ -61,7 +60,7 @@ public class DocmosisCommonElementDecorator {
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
-            .courtName(extractionService.getCourtName(localAuthorityCode))
+            .courtName(extractionService.getCourtName(caseData))
             .dateOfIssue(isBlank(dateOfIssue)
                 ? formatLocalDateToString(eventData.getManageOrdersApprovalDate(), DATE) : dateOfIssue)
             .children(children)
