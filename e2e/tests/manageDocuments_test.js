@@ -9,6 +9,8 @@ const respondent = 'Joe Bloggs';
 const respondent1StatementsSection = 'Joe Bloggs statements';
 const expertReportsSection = 'Expert reports';
 const otherReportsSection = 'Other reports';
+const solicitor = config.wiltshireLocalAuthorityUserOne;
+const children = mandatoryWithMultipleChildren.caseData.children1;
 
 let caseId;
 let submittedAt;
@@ -21,6 +23,16 @@ async function setupScenario(I) {
     await api.grantCaseAccess(caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
   }
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+}
+
+async function setupSolicitorScenario(I) {
+  if (!caseId) {
+    caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
+  }
+  if (!solicitor.details) {
+    solicitor.details = await api.getUser(solicitor);
+    solicitor.details.organisation = 'Wiltshire County Council';
+  }
 }
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -295,6 +307,29 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertConfidentialC2SupportingDocuments(I, 'Other applications', 3, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
+
+Scenario('Solicitor with access uploads documents', async ({I, caseListPage, noticeOfChangePage, manageDocumentsEventPage, caseViewPage}) => {
+  await setupSolicitorScenario(I);
+  await I.signIn(solicitor);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
+
+  await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', children[0].value.party.firstName, children[0].value.party.lastName);
+
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
+
+  manageDocumentsEventPage.selectFurtherEvidence();
+  await I.goToNextPage();
+  manageDocumentsEventPage.selectAnyOtherDocument();
+  await I.goToNextPage();
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0], true);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+  I.expandDocumentSection(otherReportsSection, supportingEvidenceDocuments[0].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[0].name, 'sam@hillingdon.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
+});
+
 
 const assertConfidentialCorrespondence = (I, suffix, index, docName, notes) => {
   assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, true);

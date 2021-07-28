@@ -372,7 +372,8 @@ public class ManageDocumentService {
             .orElse(defaultSupportingEvidences());
     }
 
-    public List<Element<RespondentStatement>> getUpdatedRespondentStatements(CaseData caseData) {
+    public List<Element<RespondentStatement>> getUpdatedRespondentStatements(CaseData caseData,
+                                                                             boolean setSolicitorUploaded) {
         List<Element<RespondentStatement>> respondentStatementDocuments = caseData.getRespondentStatements();
         UUID selectedRespondentId = getSelectedRespondentId(caseData);
         String respondentFullName = getRespondentFullName(caseData, selectedRespondentId);
@@ -396,7 +397,7 @@ public class ManageDocumentService {
             List<Element<SupportingEvidenceBundle>> existingBundle
                 = respondentStatement.getValue().getSupportingEvidenceBundle();
             List<Element<SupportingEvidenceBundle>> updatedBundle
-                = setDateTimeUploadedOnSupportingEvidence(newBundle, existingBundle, false);
+                = setDateTimeUploadedOnSupportingEvidence(newBundle, existingBundle, setSolicitorUploaded);
             respondentStatement.getValue().setSupportingEvidenceBundle(updatedBundle);
         }
 

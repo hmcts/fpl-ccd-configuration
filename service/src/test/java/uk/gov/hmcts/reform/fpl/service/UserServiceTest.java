@@ -143,4 +143,15 @@ class UserServiceTest {
             assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORB), "123")).isFalse();
         }
     }
+
+    @Nested
+    class GetUserDetails {
+        @Test
+        void shouldReturnUserDetails() {
+            UserDetails userDetailsMock = mock(UserDetails.class);
+            when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
+            when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(userDetailsMock);
+            assertThat(underTest.getUserDetails()).isEqualTo(userDetailsMock);
+        }
+    }
 }

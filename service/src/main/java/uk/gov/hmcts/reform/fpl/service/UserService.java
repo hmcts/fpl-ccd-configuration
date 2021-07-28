@@ -52,12 +52,12 @@ public class UserService {
         return idam.getUserByUserId(requestData.authorisation(), userId);
     }
 
-    private Set<String> getIdamRoles() {
-        return requestData.userRoles();
+    public UserDetails getUserDetails() {
+        return idam.getUserDetails(requestData.authorisation());
     }
 
-    private UserDetails getUserDetails() {
-        return idam.getUserDetails(requestData.authorisation());
+    private Set<String> getIdamRoles() {
+        return requestData.userRoles();
     }
 
 }

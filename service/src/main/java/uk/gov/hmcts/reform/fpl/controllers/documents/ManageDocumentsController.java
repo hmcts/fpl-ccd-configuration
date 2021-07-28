@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -59,8 +57,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageDocumentsController extends CallbackController {
 
-    private final IdamClient idamClient;
-    private final RequestData requestData;
     private final UserService userService;
     private final FeatureToggleService featureToggleService;
     private final ManageDocumentService documentService;
@@ -85,7 +81,12 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentType type = caseData.getManageDocument().getType();
-        boolean isSolicitor = userService.hasAnyCaseRoleFrom(representativeSolicitors(), caseData.getId().toString());
+        boolean isSolicitor = isSolicitor(caseData.getId());
+
+        if (isSolicitor && userService.isHmctsUser()) {
+            throw new IllegalStateException(
+                String.format("User %s is HMCTS but has solicitor case roles", userService.getUserEmail()));
+        }
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
@@ -112,7 +113,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        boolean isSolicitor = userService.hasAnyCaseRoleFrom(representativeSolicitors(), caseData.getId().toString());
+        boolean isSolicitor = isSolicitor(caseData.getId());
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
@@ -151,7 +152,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        boolean isSolicitor = userService.hasAnyCaseRoleFrom(representativeSolicitors(), caseData.getId().toString());
+        boolean isSolicitor = isSolicitor(caseData.getId());
 
         ManageDocumentType manageDocumentType = caseData.getManageDocument().getType();
         List<Element<SupportingEvidenceBundle>> currentBundle;
@@ -160,7 +161,7 @@ public class ManageDocumentsController extends CallbackController {
                 if (caseData.getManageDocumentSubtypeList() == RESPONDENT_STATEMENT) {
 
                     caseDetailsMap.putIfNotEmpty("respondentStatements",
-                        documentService.getUpdatedRespondentStatements(caseData));
+                        documentService.getUpdatedRespondentStatements(caseData, isSolicitor));
 
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = documentService
@@ -219,11 +220,15 @@ public class ManageDocumentsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
+            UserDetails userDetails = userService.getUserDetails();
 
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
                 getCaseDataBefore(request), false,
                 userDetails));
         }
+    }
+
+    private boolean isSolicitor(Long id) {
+        return userService.hasAnyCaseRoleFrom(representativeSolicitors(), id.toString());
     }
 }
