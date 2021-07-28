@@ -229,8 +229,7 @@ public class ApproveDraftOrdersService {
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers));
                     orderCollection.add(blankOrderGenerator.buildBlankOrder(caseData,
-                        selectedOrdersBundle,
-                        reviewedOrder));
+                        selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers)));
 
                     ordersToBeSent.add(reviewedOrder);
                 } else {

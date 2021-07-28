@@ -466,7 +466,8 @@ class ApproveDraftOrdersServiceTest {
 
         given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), ""))
             .willReturn(expectedSealedOrder);
-        given(blankOrderGenerator.buildBlankOrder(caseData, ordersBundleElement, expectedSealedOrder))
+        given(blankOrderGenerator.buildBlankOrder(
+            caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))
             .willReturn(expectedBlankOrder);
 
         Map<String, Object> expectedData = Map.of(

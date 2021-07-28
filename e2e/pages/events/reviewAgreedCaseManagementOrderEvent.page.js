@@ -17,6 +17,14 @@ module.exports = {
     I.click(`#reviewDecision${index}_decision-SEND_TO_ALL_PARTIES`);
   },
 
+  selectAllOthers() {
+    I.click('#reviewCMONotifyAllOthers_Yes');
+  },
+
+  selectNotifyAllOthersNo() {
+    I.click('#reviewCMONotifyAllOthers_No');
+  },
+
   async selectMakeChangesToCmo() {
     await I.runAccessibilityTest();
     I.click('No, I need to make changes');

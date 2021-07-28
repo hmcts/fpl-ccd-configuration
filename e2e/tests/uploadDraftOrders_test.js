@@ -112,11 +112,13 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   I.see('mockFile.docx');
   await reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
   reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  assertSealedCMO(I, 1, hearing2);
+  assertSealedCMO(I, 1, hearing2, true);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.dontSeeInTab(hearing2);
@@ -136,6 +138,8 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequested(changeRequestReason);
   reviewAgreedCaseManagementOrderEventPage.selectReturnC21ForChanges(1);
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectNotifyAllOthersNo();
 
   await I.completeEvent('Save and continue');
 
@@ -177,6 +181,8 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
   await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('No hearing');
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
 
   await I.completeEvent('Save and continue');
 
@@ -200,6 +206,8 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(2);
 
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
@@ -249,13 +257,16 @@ const assertDraftOrders = function (I, collectionId, hearingName, orders, title,
   });
 };
 
-const assertSealedCMO = (I, collectionId, hearingName) => {
+const assertSealedCMO = (I, collectionId, hearingName, othersSelected) => {
   const sealedCMO = `Sealed Case Management Order ${collectionId}`;
 
   I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
   I.seeInTab([sealedCMO, 'Hearing'], hearingName);
   I.seeInTab([sealedCMO, 'Date issued'], date);
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
+  if (othersSelected) {
+    I.seeInTab([sealedCMO, 'People notified'], 'Noah King');
+  }
 };
 
 const assertSealedC21 = (I, collectionId, draftOrder) => {
