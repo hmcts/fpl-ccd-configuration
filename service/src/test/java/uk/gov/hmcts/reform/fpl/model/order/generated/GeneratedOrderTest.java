@@ -190,7 +190,7 @@ class GeneratedOrderTest {
             .type("generated order type")
             .build();
 
-        assertThat(order.getAmendedOrderType()).isEqualTo("generated order type");
+        assertThat(order.getModifiedItemType()).isEqualTo("generated order type");
     }
 
     @Test

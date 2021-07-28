@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AmendedOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.ModifiedItemEmailContentProviderStrategy;
+import uk.gov.hmcts.reform.fpl.service.email.content.TranslatedItemEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -39,7 +41,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ContextConfiguration(classes = {
-    AmendedOrderEventHandler.class, AmendedOrderEmailContentProvider.class,
+    AmendedOrderEventHandler.class,
+    AmendedOrderEmailContentProvider.class, TranslatedItemEmailContentProvider.class,
+    ModifiedDocumentCommonEventHandler.class, ModifiedItemEmailContentProviderStrategy.class,
     EmailNotificationHelper.class, CaseUrlService.class, RepresentativeNotificationService.class
 })
 @MockBeans({

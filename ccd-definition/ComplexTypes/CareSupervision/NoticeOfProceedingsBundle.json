@@ -6,5 +6,22 @@
     "FieldType": "Document",
     "ElementLabel": "File name",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedingsBundle",
+    "ListElementCode": "translatedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Translated document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedingsBundle",
+    "ListElementCode": "translationUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Welsh translation upload time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translatedDocument=\"DO_NOT_SHOW\""
   }
 ]
