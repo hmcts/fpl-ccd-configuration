@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+import uk.gov.hmcts.reform.fpl.utils.RemovedApplicationNotificationHelper;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -27,59 +28,18 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ApplicationRemovedEmailContentProvider extends AbstractEmailContentProvider {
     private final EmailNotificationHelper helper;
+    private final RemovedApplicationNotificationHelper removedApplicationHelper;
 
     public ApplicationRemovedNotifyData getNotifyData(final CaseData caseData, final AdditionalApplicationsBundle removedApplication) {
         return ApplicationRemovedNotifyData.builder()
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseId(caseData.getId().toString())
-            .c2Filename(getFilename(removedApplication))
+            .c2Filename(removedApplicationHelper.getFilename(removedApplication))
             .removalDate(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), DATE_TIME_AT))
             .reason(removedApplication.getRemovalReason().toLowerCase())
-            .applicantName(getApplicantName(removedApplication))
-            .applicationFeeText(getApplicationFee(removedApplication))
+            .applicantName(removedApplicationHelper.getApplicantName(removedApplication))
+            .applicationFeeText(removedApplicationHelper.getApplicationFee(removedApplication))
+            .caseUrl(getCaseUrl(caseData.getId()))
             .build();
-    }
-
-    private String getApplicationFee(AdditionalApplicationsBundle removedApplication) {
-        String fee = removedApplication.getAmountToPay();
-        Optional<BigDecimal> decimalAmount = fromCCDMoneyGBP(fee);
-        String refundFeeText;
-
-        if(decimalAmount.isPresent()) {
-            BigDecimal amountToDisplay = decimalAmount.get();
-            refundFeeText = "An application fee of £" + amountToDisplay + "needs to be refunded.";
-        } else {
-            refundFeeText = "An application fee needs to be refunded.";
-        }
-
-        return refundFeeText;
-    }
-
-    private String getApplicantName(AdditionalApplicationsBundle removedApplication) {
-        if(!isEmpty(removedApplication.getC2DocumentBundle())) {
-           return removedApplication.getC2DocumentBundle().getApplicantName();
-        }
-
-        if (!isEmpty(removedApplication.getOtherApplicationsBundle())) {
-           return removedApplication.getOtherApplicationsBundle().getApplicantName();
-        }
-
-        return "";
-    }
-
-    private String getFilename(AdditionalApplicationsBundle removedApplication) {
-        String c2DocumentName = "";
-        String otherDocumentName = "";
-        if(!isEmpty(removedApplication.getC2DocumentBundle())) {
-            c2DocumentName = removedApplication.getC2DocumentBundle().getDocument().getFilename();
-        }
-
-        if (!isEmpty(removedApplication.getOtherApplicationsBundle())) {
-            otherDocumentName = removedApplication.getOtherApplicationsBundle().getDocument().getFilename();
-        }
-
-        return Stream.of(c2DocumentName, otherDocumentName)
-                .filter(s -> s != null && !s.isEmpty())
-                .collect(Collectors.joining(", "));
     }
 }
