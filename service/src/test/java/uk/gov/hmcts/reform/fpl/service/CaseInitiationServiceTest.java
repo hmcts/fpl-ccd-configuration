@@ -14,15 +14,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +44,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testCourt;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -67,6 +72,9 @@ class CaseInitiationServiceTest {
 
     @Mock
     private LocalAuthorityService localAuthorityService;
+
+    @Mock
+    private HmctsCourtLookupConfiguration courtLookup;
 
     @Spy
     private DynamicListService dynamicListService = new DynamicListService(new ObjectMapper());
@@ -309,6 +317,76 @@ class CaseInitiationServiceTest {
                 .isEqualTo(
                     organisationPolicy(userLocalAuthority.orgId, null, LAMANAGING));
         }
+
+        @Test
+        void shouldAddDesignatedCourt() {
+            final TestLocalAuthority userLocalAuthority = LA1;
+            final Court court = testCourt();
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(court);
+
+            final CaseData caseData = givenCaseNotOutsourced();
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isEqualTo(court);
+            assertThat(updatedCaseData.getMultiCourts()).isNull();
+        }
+
+        @Test
+        void shouldNotAddDesignatedCourtWhenMultipleCourtsAvailable() {
+            final TestLocalAuthority userLocalAuthority = LA1;
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(testCourt(), testCourt());
+
+            final CaseData caseData = givenCaseNotOutsourced();
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isNull();
+            assertThat(updatedCaseData.getMultiCourts()).isEqualTo(YES);
+        }
+
+        @Test
+        void shouldAddDesignatedCourtWhenCaseIsOutsourced() {
+            final TestLocalAuthority outsourcingLocalAuthority = LA1;
+            final TestLocalAuthority userLocalAuthority = LA2;
+            final Court court = testCourt();
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenLocalAuthorityExists(outsourcingLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(court);
+
+            final CaseData caseData = givenCaseOutsourced(outsourcingLocalAuthority, MLA);
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isEqualTo(court);
+            assertThat(updatedCaseData.getMultiCourts()).isNull();
+        }
+
+        @Test
+        void shouldNotAddDesignatedCourtWhenCaseIsOutsourcedAndMultipleCourtsAvailable() {
+            final TestLocalAuthority outsourcingLocalAuthority = LA1;
+            final TestLocalAuthority userLocalAuthority = LA2;
+
+            givenLocalAuthorityExists(userLocalAuthority);
+            givenLocalAuthorityExists(outsourcingLocalAuthority);
+            givenUserInLocalAuthority(userLocalAuthority);
+            givenLocalAuthorityCourts(testCourt(), testCourt());
+
+            final CaseData caseData = givenCaseOutsourced(outsourcingLocalAuthority, MLA);
+
+            final CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getCourt()).isNull();
+            assertThat(updatedCaseData.getMultiCourts()).isEqualTo(YES);
+        }
     }
 
     @Nested
@@ -479,6 +557,10 @@ class CaseInitiationServiceTest {
 
             assertThat(errors).isEmpty();
         }
+    }
+
+    private void givenLocalAuthorityCourts(Court... courts) {
+        given(courtLookup.getCourt(any())).willReturn(Arrays.asList(courts));
     }
 
     private void givenUserInOrganisation(String organisationId) {

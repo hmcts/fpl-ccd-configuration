@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 @WebMvcTest(AddCaseNumberController.class)
@@ -38,6 +39,12 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldUpdateTaskListWithAdditionalContactsToggledOff() {
+        final CaseData caseData = CaseData.builder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .id(10L)
+            .state(State.OPEN)
+            .build();
+
         when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(false);
 
         postSubmittedEvent(caseData);

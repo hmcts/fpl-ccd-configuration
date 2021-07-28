@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -386,7 +387,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", NEW_HEARING,
-                "hearingDetails", List.of(hearingWithNotice)
+                "hearingDetails", List.of(hearingWithNotice),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -429,7 +431,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", hearingOption,
                 "hearingReListOption", RE_LIST_NOW,
-                "hearingDetails", List.of(hearingWithNotice)
+                "hearingDetails", List.of(hearingWithNotice),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -471,7 +474,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Watson")
-                    .build()
+                    .build(),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -508,7 +512,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", hearingOption,
-                "hearingDetails", List.of(hearingWithNotice)
+                "hearingDetails", List.of(hearingWithNotice),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -569,6 +574,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .caseSummaryHasNextHearing(hasNextHearing)
             .caseSummaryNextHearingType(hearingType)
             .caseSummaryNextHearingDate(hearingDate)
+            .caseSummaryCourtName(COURT_NAME)
             .build());
     }
 

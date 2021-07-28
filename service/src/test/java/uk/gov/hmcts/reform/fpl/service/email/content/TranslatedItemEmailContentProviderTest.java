@@ -10,19 +10,20 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.TranslatedItemNotifyData;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 
-@ContextConfiguration(classes = {TranslatedItemEmailContentProvider.class, LookupTestConfig.class})
+@ContextConfiguration(classes = {TranslatedItemEmailContentProvider.class})
 class TranslatedItemEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final String CHILD_LAST_NAME = "ChildLastName";
@@ -32,11 +33,15 @@ class TranslatedItemEmailContentProviderTest extends AbstractEmailContentProvide
     private TranslatedItemEmailContentProvider underTest;
 
     @MockBean
+    private CourtService courtService;
+
+    @MockBean
     private EmailNotificationHelper helper;
 
     @BeforeEach
     void setUp() {
         when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
+        when(courtService.getCourtName(any())).thenReturn("Family Court");
     }
 
     @Test

@@ -133,6 +133,7 @@ module.exports = {
     messageJudge: 'Send and reply to messages',
     removeManagingOrganisation: 'Remove managing organisation',
     languageRequirement: 'Welsh language requirements',
+    selectCourt: 'Select court to issue',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
