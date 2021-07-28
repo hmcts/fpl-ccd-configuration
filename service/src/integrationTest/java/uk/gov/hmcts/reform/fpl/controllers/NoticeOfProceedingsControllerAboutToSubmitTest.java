@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
@@ -26,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -37,9 +36,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final byte[] PDF = testDocumentBinaries();
-    private static final String LA_NAME = "SW";
-    private static final String COURT_NAME = "Family Court";
-    private static final String COURT_CODE = "11";
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     @MockBean
@@ -47,9 +43,6 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTes
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     NoticeOfProceedingsControllerAboutToSubmitTest() {
         super("notice-of-proceedings");
@@ -63,19 +56,13 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTes
             .documentTitle(C6.getDocumentTitle())
             .build();
 
-        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
-            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
-                COURT_CODE));
-
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
             .willReturn(docmosisDocument);
 
         given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
             .willReturn(document);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(buildCaseData());
-
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(buildCaseData()));
 
         assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
 
@@ -89,7 +76,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTes
 
     private CaseData buildCaseData() {
         return CaseData.builder()
-            .caseLocalAuthority(LA_NAME)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("SW123123")
             .id(1234123412341234L)
             .noticeOfProceedings(NoticeOfProceedings.builder()

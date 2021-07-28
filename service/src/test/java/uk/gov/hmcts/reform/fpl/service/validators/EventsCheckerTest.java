@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 
 @ExtendWith(SpringExtension.class)
@@ -86,6 +87,8 @@ class EventsCheckerTest {
     private ApplicationDocumentChecker applicationDocumentChecker;
     @MockBean
     private LanguageRequirementsChecker languageRequirementsChecker;
+    @MockBean
+    private CourtSelectionChecker courtSelectionChecker;
     @Autowired
     private EventsChecker eventsChecker;
 
@@ -160,7 +163,8 @@ class EventsCheckerTest {
             othersChecker,
             courtServiceChecker,
             factorsAffectingParentingChecker,
-            languageRequirementsChecker);
+            languageRequirementsChecker,
+            courtSelectionChecker);
     }
 
     private Stream<Arguments> getEventsValidators() {
@@ -182,8 +186,8 @@ class EventsCheckerTest {
             Arguments.of(OTHERS, othersChecker),
             Arguments.of(COURT_SERVICES, courtServiceChecker),
             Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker),
-            Arguments.of(LANGUAGE_REQUIREMENTS, languageRequirementsChecker)
-        );
+            Arguments.of(LANGUAGE_REQUIREMENTS, languageRequirementsChecker),
+            Arguments.of(SELECT_COURT, courtSelectionChecker));
     }
 
 }

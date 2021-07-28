@@ -5,9 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -38,6 +41,7 @@ public class CaseInitiationService {
     private final OrganisationService organisationService;
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityService localAuthorities;
+    private final HmctsCourtLookupConfiguration courtLookup;
 
     public Optional<String> getUserOrganisationId() {
         return organisationService.findOrganisation().map(Organisation::getOrganisationIdentifier);
@@ -155,25 +159,43 @@ public class CaseInitiationService {
 
             CaseRole outsourcedOrganisationCaseRole = caseData.getOutsourcingType().getCaseRole();
 
-            return caseData.toBuilder()
+            CaseData updatedCaseData = caseData.toBuilder()
                 .outsourcingPolicy(organisationPolicy(currentUserOrganisationId, currentUserOrganisationName,
                     outsourcedOrganisationCaseRole))
                 .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, outsourcingOrgName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get()))
                 .build();
+
+            return addCourtDetails(updatedCaseData);
         }
 
         if (userLocalAuthority.isPresent()) {
-            return caseData.toBuilder()
+            CaseData updatedCaseData = caseData.toBuilder()
                 .localAuthorityPolicy(
                     organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(userLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(userLocalAuthority.get()))
                 .build();
+
+            return addCourtDetails(updatedCaseData);
         }
 
         throw new IllegalStateException("Cannot determine local authority for a case");
+    }
+
+    private CaseData addCourtDetails(CaseData caseData) {
+        final List<Court> courts = courtLookup.getCourt(caseData.getCaseLocalAuthority());
+
+        if (isNotEmpty(courts)) {
+            if (courts.size() == 1) {
+                return caseData.toBuilder().court(courts.get(0)).build();
+            } else {
+                return caseData.toBuilder().multiCourts(YesNo.YES).build();
+            }
+        }
+
+        return caseData;
     }
 
     public void grantCaseAccess(CaseData caseData) {

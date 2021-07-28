@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APP
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
@@ -118,6 +119,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .state(NON_RESTRICTED_STATE)
             .children1(wrapElements(Child.builder()
                 .solicitor(REGISTERED_REPRESENTATIVE)
@@ -157,6 +159,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         caseSummary.put("caseSummaryCafcassGuardian", null);
         caseSummary.put("caseSummaryNextHearingCMO", null);
         caseSummary.put("caseSummaryNextHearingDate", null);
+        caseSummary.put("caseSummaryCourtName", LOCAL_AUTHORITY_1_COURT_NAME);
 
         verify(eventService).publishEvent(any(AfterSubmissionCaseDataUpdated.class));
         verify(ccdService).triggerEvent(
