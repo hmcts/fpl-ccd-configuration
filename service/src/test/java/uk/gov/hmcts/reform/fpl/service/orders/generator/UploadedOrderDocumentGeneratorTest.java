@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -93,7 +94,8 @@ class UploadedOrderDocumentGeneratorTest {
     void testTargetPdfAndSealingNeeded() {
 
         when(documentConversionService.convertToPdf(BYTES, DOC_X_FILENAME)).thenReturn(CONVERTED_BYTES);
-        when(documentSealingService.sealDocument(CONVERTED_BYTES)).thenReturn(CONVERTED_AND_SEALED_BYTES);
+        when(documentSealingService.sealDocument(CONVERTED_BYTES, SealType.ENGLISH)).thenReturn(
+            CONVERTED_AND_SEALED_BYTES);
 
         OrderDocumentGeneratorResult actual = underTest.generate(
             CaseData.builder()

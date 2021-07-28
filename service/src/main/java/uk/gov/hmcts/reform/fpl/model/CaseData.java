@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -960,6 +961,11 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder()
+        .build();
 
     @JsonUnwrapped
     @Builder.Default
