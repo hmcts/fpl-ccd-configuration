@@ -15,7 +15,7 @@ class HearingOrderTest {
     @Test
     void shouldReturnAmendedOrderType() {
         HearingOrder hearingOrder = HearingOrder.builder().build();
-        assertThat(hearingOrder.getAmendedOrderType()).isEqualTo("Case management order");
+        assertThat(hearingOrder.getModifiedItemType()).isEqualTo("Case management order");
     }
 
     @Test

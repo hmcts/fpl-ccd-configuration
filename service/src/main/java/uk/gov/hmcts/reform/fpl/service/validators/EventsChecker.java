@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
@@ -67,6 +68,9 @@ public class EventsChecker {
 
     @Autowired
     private RiskAndHarmChecker riskAndHarmChecker;
+
+    @Autowired
+    private CourtSelectionChecker courtChecker;
 
     @Autowired
     private ProceedingsChecker proceedingsChecker;
@@ -110,6 +114,7 @@ public class EventsChecker {
         eventCheckers.put(COURT_SERVICES, courtServiceChecker);
         eventCheckers.put(LANGUAGE_REQUIREMENTS, languageRequirementsChecker);
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
+        eventCheckers.put(SELECT_COURT, courtChecker);
     }
 
     private void addCheckersBasedOnToggle() {

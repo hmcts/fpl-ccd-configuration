@@ -18,6 +18,8 @@ public class SyntheticCaseSummary {
 
     String caseSummaryHasUnresolvedMessages;
 
+    String caseSummaryCourtName;
+
     String caseSummaryHasNextHearing;
     String caseSummaryNextHearingType;
     LocalDate caseSummaryNextHearingDate;

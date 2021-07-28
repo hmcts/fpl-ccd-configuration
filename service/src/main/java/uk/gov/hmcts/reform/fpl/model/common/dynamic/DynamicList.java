@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 @Data
 @Jacksonized
-@Builder
+@Builder(toBuilder = true)
 public class DynamicList {
 
     /**

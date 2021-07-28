@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.fpl.config;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
+import uk.gov.hmcts.reform.fpl.model.Court;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,9 +57,9 @@ class HmctsCourtLookupConfigurationTest {
 
     @Test
     void shouldReturnCourtInformationWhenLocalAuthorityCodeExists() {
-        Court court = configuration.getCourt(LOCAL_AUTHORITY_CODE);
+        List<Court> court = configuration.getCourt(LOCAL_AUTHORITY_CODE);
 
-        assertThat(court).isEqualToComparingFieldByField(new Court(COURT_NAME, COURT_EMAIL, COURT_CODE));
+        assertThat(court).containsExactly(new Court(COURT_NAME, COURT_EMAIL, COURT_CODE));
     }
 
 }

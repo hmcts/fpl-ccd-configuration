@@ -86,4 +86,5 @@ public final class NotifyTemplates {
     public static final String NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE = "0411d52e-69eb-440c-bb1f-3059ac6b9130";
     public static final String MANAGING_ORGANISATION_REMOVED_TEMPLATE = "e3fb2174-128a-41a4-acbb-ea3ffe758689";
     public static final String ORDER_AMENDED_NOTIFICATION_TEMPLATE = "fc3db3ca-b62c-4a29-ad9a-864d2fe10b72";
+    public static final String ITEM_TRANSLATED_NOTIFICATION_TEMPLATE = "d0ba99bc-cc1f-4891-86f2-a77b4724b544";
 }

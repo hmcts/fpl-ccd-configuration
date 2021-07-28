@@ -84,6 +84,7 @@ exports.config = {
     deleteApplicationEventPage: './e2e/pages/events/deleteApplicationEvent.page.js',
     submitApplicationEventPage: './e2e/pages/events/submitApplicationEvent.page.js',
     changeCaseNameEventPage: './e2e/pages/events/changeCaseNameEvent.page.js',
+    selectCourtEventPage: './e2e/pages/events/selectCourtEvent.page.js',
     enterOrdersAndDirectionsNeededEventPage: './e2e/pages/events/enterOrdersAndDirectionsNeededEvent.page.js',
     enterHearingNeededEventPage: './e2e/pages/events/enterHearingNeededEvent.page.js',
     enterChildrenEventPage: './e2e/pages/events/enterChildrenEvent.page.js',
@@ -132,6 +133,7 @@ exports.config = {
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
     uploadAdditionalApplicationsEventPage: './e2e/pages/events/uploadAdditionalApplicationsEvent.page.js',
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
+    uploadWelshTranslationsPage: './e2e/pages/events/uploadWelshTranslation.page.js',
   },
   plugins: {
     retryFailedStep: {

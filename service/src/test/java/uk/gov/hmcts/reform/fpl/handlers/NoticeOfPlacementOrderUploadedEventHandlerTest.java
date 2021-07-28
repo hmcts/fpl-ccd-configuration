@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -35,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 @SpringBootTest(classes = {NoticeOfPlacementOrderUploadedEventHandler.class, InboxLookupService.class,
     LookupTestConfig.class,
     IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
-    HmctsAdminNotificationHandler.class})
+    CourtService.class})
 class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
     @MockBean
