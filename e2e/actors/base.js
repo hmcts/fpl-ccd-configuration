@@ -116,7 +116,7 @@ module.exports = {
   },
 
   seeEventSubmissionConfirmation(event) {
-    this.waitForText(`updated with event: ${event}`, 10);
+    this.waitForText(`updated with event: ${event}`);
   },
 
   clickHyperlink(link, urlNavigatedTo) {
