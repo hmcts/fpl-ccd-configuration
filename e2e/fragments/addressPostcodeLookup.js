@@ -16,7 +16,7 @@ module.exports = {
     country: 'input[id$="Country"]',
   },
   findAddressButton: 'Find address',
-  cantEnterPostcodeLink: '//a[contains(text(), "I can\'t enter a UK postcode")]',
+  cantEnterPostcodeLink: locate('a').withText('I can\'t enter a UK postcode'),
 
   lookupPostcode(address) {
     I.fillField(this.fields.postcodeLookup, address.postcode);
