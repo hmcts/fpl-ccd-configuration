@@ -20,7 +20,7 @@ class EpsLookupConfigurationTest {
 
     @Test
     void shouldReturnLocalAuthorities() {
-        final EpsLookupConfiguration underTest = new EpsLookupConfiguration("A=>SA, CFG,RED;B => PLO, CDA");
+        final EpsLookupConfiguration underTest = new EpsLookupConfiguration("A=>SA| CFG|RED;B => PLO| CDA");
         assertThat(underTest.getLocalAuthorities("A")).containsExactlyInAnyOrder("SA", "CFG", "RED");
         assertThat(underTest.getLocalAuthorities("B")).containsExactlyInAnyOrder("PLO", "CDA");
     }
