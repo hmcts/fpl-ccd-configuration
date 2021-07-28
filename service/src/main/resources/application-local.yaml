@@ -102,9 +102,9 @@ fpl:
   local_authority_code_to_org_id:
     mapping: 'SA=>ORGSA;HN=>ORGHN;SW=>ORGSW;SNW=>ORGSNW'
   eps_to_local_authorities:
-    mapping: 'ORGEXT=>SA,HN'
+    mapping: 'ORGEXT=>SA|HN'
   mla_to_local_authorities:
-    mapping: 'ORGSNW=>SA,SN'
+    mapping: 'ORGSNW=>SA|SN'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
