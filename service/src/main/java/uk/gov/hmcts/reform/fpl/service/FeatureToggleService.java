@@ -82,9 +82,8 @@ public class FeatureToggleService {
     }
 
     public boolean isServeOrdersAndDocsToOthersEnabled() {
-        /*return ldClient.boolVariation("serve-others-orders-docs",
-            createLDUser(), false);*/
-        return true;
+        return ldClient.boolVariation("serve-others-orders-docs",
+            createLDUser(), false);
     }
 
     public boolean isApplicantAdditionalContactsEnabled() {
