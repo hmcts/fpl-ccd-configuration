@@ -44,7 +44,7 @@ public class RemovedApplicationNotificationHelper {
 
         if(decimalAmount.isPresent()) {
             BigDecimal amountToDisplay = decimalAmount.get();
-            refundFeeText = "An application fee of £" + amountToDisplay + "needs to be refunded.";
+            refundFeeText = "An application fee of £" + amountToDisplay + " needs to be refunded.";
         } else {
             refundFeeText = "An application fee needs to be refunded.";
         }
@@ -78,5 +78,14 @@ public class RemovedApplicationNotificationHelper {
         return Stream.of(c2DocumentName, otherDocumentName)
             .filter(s -> s != null && !s.isEmpty())
             .collect(Collectors.joining(", "));
+    }
+
+    public String getRemovalReason(String removalReason) {
+        if(removalReason.equals("DUPLICATE")) {
+            return "Duplicate";
+        } else if(removalReason.equals("WRONG_CASE")) {
+            return "Wrong case";
+        }
+        return "";
     }
 }

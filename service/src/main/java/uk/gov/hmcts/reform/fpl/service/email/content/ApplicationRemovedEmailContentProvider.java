@@ -36,7 +36,7 @@ public class ApplicationRemovedEmailContentProvider extends AbstractEmailContent
             .caseId(caseData.getId().toString())
             .c2Filename(removedApplicationHelper.getFilename(removedApplication))
             .removalDate(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), DATE_TIME_AT))
-            .reason(removedApplication.getRemovalReason().toLowerCase())
+            .reason(removedApplicationHelper.getRemovalReason(removedApplication.getRemovalReason()))
             .applicantName(removedApplicationHelper.getApplicantName(removedApplication))
             .applicationFeeText(removedApplicationHelper.getApplicationFee(removedApplication))
             .caseUrl(getCaseUrl(caseData.getId()))
