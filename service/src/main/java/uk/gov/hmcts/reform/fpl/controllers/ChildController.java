@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,14 +24,12 @@ import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventValidator;
 
 import java.util.List;
-import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NOT_SPECIFIED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.fromString;
 import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
@@ -108,8 +105,8 @@ public class ChildController extends CallbackController {
 
         if (toggleService.isChildRepresentativeSolicitorEnabled()) {
             caseData = getCaseData(caseDetails);
-            CaseData caseDataBefore = getCaseDataBefore(request);
-            if (shouldUpdateRepresentation(caseData, caseDataBefore)) {
+            if (shouldUpdateRepresentation(caseData)) {
+                CaseData caseDataBefore = getCaseDataBefore(request);
                 caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
                     caseData, caseDataBefore, SolicitorRole.Representing.CHILD,
                     isNotFirstTimeRecordingSolicitor(caseData, caseDataBefore)
@@ -126,20 +123,16 @@ public class ChildController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private boolean shouldUpdateRepresentation(CaseData caseData, CaseData caseDataBefore) {
-        return !RESTRICTED_STATES.contains(caseData.getState())
-               && !cafcassSolicitorHasNeverBeenSet(caseData, caseDataBefore);
+    private boolean shouldUpdateRepresentation(CaseData caseData) {
+        return !RESTRICTED_STATES.contains(caseData.getState()) && cafcassSolicitorHasBeenSet(caseData);
     }
 
-    private boolean cafcassSolicitorHasNeverBeenSet(CaseData caseData, CaseData caseDataBefore) {
-        return Set.of(NOT_SPECIFIED, NO)
-            .contains(YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation()))
-            && YesNo.NO == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
+    private boolean cafcassSolicitorHasBeenSet(CaseData caseData) {
+        return YES == fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
     }
 
     private boolean isNotFirstTimeRecordingSolicitor(CaseData caseData, CaseData caseDataBefore) {
-        return YES == YesNo.fromString(caseDataBefore.getChildrenEventData().getChildrenHaveRepresentation())
-            && YES == YesNo.fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
+        return cafcassSolicitorHasBeenSet(caseDataBefore) && cafcassSolicitorHasBeenSet(caseData);
     }
 
     @PostMapping("/submitted")
