@@ -196,7 +196,8 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         return formatLocalDateToString(date, DATE);
     }
 
-    private void generateWordDocument(DocmosisTranslationRequest request, String generatedContentOutputFile) throws IOException {
+    private void generateWordDocument(DocmosisTranslationRequest request,
+                                      String generatedContentOutputFile) throws IOException {
         storeToOuputFolder(
             generatedContentOutputFile.concat(RenderFormat.WORD.getExtension()),
             underTest.buildTranslationRequestDocuments(request.toBuilder()
