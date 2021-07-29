@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
-import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -24,7 +24,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 
@@ -57,7 +57,7 @@ public class EmailTemplateTest {
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @MockBean
-    private HmctsAdminNotificationHandler hmctsAdminNotificationHandler;
+    private CourtService courtService;
 
     @MockBean
     private InboxLookupService inboxLookupService;
@@ -82,12 +82,12 @@ public class EmailTemplateTest {
 
     @BeforeEach
     void lookupServiceSetUp() {
-        when(inbox.getEmailsByPreference(any(), any())).thenReturn(new LinkedHashSet<>(Arrays
-            .asList("representative@example.com")));
+        when(inbox.getEmailsByPreference(any(), any()))
+            .thenReturn(new LinkedHashSet<>(Set.of("representative@example.com")));
         when(inboxLookupService.getRecipients(any())).thenReturn(Set.of("test@example.com"));
-        when(hmctsCourtLookupConfiguration.getCourt(any()))
-            .thenReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "court@test.com", COURT_CODE));
-        when(hmctsAdminNotificationHandler.getHmctsAdminEmail(any())).thenReturn("hmcts-admin@test.com");
+        when(courtService.getCourtEmail(any())).thenReturn(COURT_EMAIL_ADDRESS);
+        when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
+        when(courtService.getCourtCode(any())).thenReturn(COURT_CODE);
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(cafcassLookupConfiguration.getCafcass(anyString()))
             .thenReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL));
@@ -111,4 +111,5 @@ public class EmailTemplateTest {
     protected List<SendEmailResponse> allResponses() {
         return resultsCaptor.getAllResults();
     }
+
 }

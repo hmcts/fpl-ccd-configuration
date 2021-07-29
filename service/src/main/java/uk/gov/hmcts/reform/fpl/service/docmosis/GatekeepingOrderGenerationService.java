@@ -60,14 +60,14 @@ public class GatekeepingOrderGenerationService extends
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor((judgeAndLegalAdvisor)))
-                .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
+                .courtName(dataService.getCourtName(caseData))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
                 .complianceDeadline(caseData.getComplianceDeadline())
                 .children(dataService.getChildrenDetails(caseData.getAllChildren()))
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-                .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
+                .applicantName(dataService.getApplicantName(caseData))
                 .directions(buildDirections(caseData))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -31,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {C2PbaPaymentNotTakenEventHandler.class, LookupTestConfig.class,
-    HmctsAdminNotificationHandler.class})
+    CourtService.class})
 class C2PbaPaymentNotTakenEventHandlerTest {
     private final BaseCaseNotifyData c2PaymentNotTakenParameters = BaseCaseNotifyData.builder()
         .caseUrl("http://fpl/case/12345")

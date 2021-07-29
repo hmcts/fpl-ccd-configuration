@@ -25,22 +25,20 @@ public class ManageOrdersEventBuilder {
     public ManageOrdersEvent build(CaseData caseData, CaseData caseDataBefore) {
         List<Element<GeneratedOrder>> currentOrders = caseData.getOrderCollection();
         List<Element<GeneratedOrder>> oldOrders = caseDataBefore.getOrderCollection();
-        GeneratedOrder lastGeneratedOrder = historyService.lastGeneratedOrder(caseData);
 
         if (!isAmendedOrder(currentOrders, oldOrders)) {
+            GeneratedOrder lastGeneratedOrder = historyService.lastGeneratedOrder(caseData);
             return new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument());
         }
 
-        AmendedOrderEvent event = finders.stream()
+        return finders.stream()
             .map(finder -> finder.findOrderIfPresent(caseData, caseDataBefore))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .findFirst()
             .map(order -> new AmendedOrderEvent(
-                    caseData, order.getDocument(), order.getAmendedOrderType(), order.getSelectedOthers()
+                    caseData, order.getDocument(), order.getModifiedItemType(), order.getSelectedOthers()
             )).orElseThrow();
-
-        return event;
     }
 
     private boolean isAmendedOrder(List<Element<GeneratedOrder>> orders, List<Element<GeneratedOrder>> ordersBefore) {

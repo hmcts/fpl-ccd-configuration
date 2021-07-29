@@ -3,13 +3,13 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
@@ -24,7 +24,8 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfHearingGenerationService {
     private final CaseDataExtractionService dataService;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final CourtService courtService;
+
     private final Time time;
 
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
@@ -34,7 +35,7 @@ public class NoticeOfHearingGenerationService {
         return DocmosisNoticeOfHearing.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
-            .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .courtName(courtService.getCourtName(caseData))
             .children(dataService.getChildrenDetails(caseData.getChildren1()))
             .hearingBooking(getHearingBooking(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor))

@@ -128,8 +128,8 @@ module.exports = {
   },
 
   async enterAddress(address) {
-    await within(this.fields.removalAddress, () => {
-      postcodeLookup.enterAddressManually(address);
+    await within(this.fields.removalAddress, async () => {
+      await postcodeLookup.enterAddressManually(address);
     });
   },
 

@@ -17,6 +17,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.List.of;
+import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -31,12 +32,14 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.LANGUAGE_REQUIREMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.LOCAL_AUTHORITY_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
 
@@ -89,14 +92,16 @@ public class TaskListRenderer {
 
         final TaskSection parties = newSection("Add information about the parties",
             List.of(
-                tasks.get(ORGANISATION_DETAILS),
+                tasks.containsKey(ORGANISATION_DETAILS)
+                    ? tasks.get(ORGANISATION_DETAILS) : tasks.get(LOCAL_AUTHORITY_DETAILS),
                 tasks.get(CHILDREN),
                 tasks.get(RESPONDENTS)
             ));
 
-        final TaskSection courtRequirements = newSection("Add court requirements", of(
-            tasks.get(ALLOCATION_PROPOSAL)
-        ));
+        final List<Task> courtRequirementsTasks = new ArrayList<>(List.of(tasks.get(ALLOCATION_PROPOSAL)));
+        ofNullable(tasks.get(SELECT_COURT)).ifPresent(courtRequirementsTasks::add);
+
+        final TaskSection courtRequirements = newSection("Add court requirements", courtRequirementsTasks);
 
         ArrayList<Task> additionalInformationTasks = new ArrayList<>(of(
             tasks.get(OTHER_PROCEEDINGS),

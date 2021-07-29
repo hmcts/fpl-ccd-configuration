@@ -294,9 +294,11 @@ declare namespace CodeceptJS {
     seeDocument(title: string, name: string, status?: string, reason?: string, dateAndTimeUploaded?: string, uploadedBy?: string) : void,
     seeFamilyManNumber(familyManNumber: string) : void,
     seeInTab(path: string | string[], answer: string | string[]): void,
+    seeTagInTab(path: string | string[]): void,
     seeTextInTab(path: string | string[]): void,
     seeAvailableEvents(events: string[]): void
     dontSeeInTab(path: string | string[]): void,
+    dontSeeTagInTab(path: string | string[]): void,
     seeCaseInSearchResult(caseId: string | number): void
     dontSeeCaseInSearchResult(caseId: string | number): void
     signIn(user: {email: string, password: string}) : void,
@@ -305,6 +307,7 @@ declare namespace CodeceptJS {
     retryStep(opts: string) : void,
     submitNewCaseWithData(data?: object): Promise<string>
     submitNewCase(user:{email: string, password: string}, name: string): Promise<string>
+    addElementToCollection(index: number): void,
     addAnotherElementToCollection(): void,
     addAnotherElementToCollection(collectionName: string): void,
     removeElementFromCollection(): void,
@@ -315,6 +318,7 @@ declare namespace CodeceptJS {
     fillDateAndTime(date: {day: number, month: number, year: number, hour: number, minute: number, second: number}, dateId: string): void,
     seeEndStateForEvent(eventName: string, state: string): void,
     goToNextPage(): void,
+    goToPreviousPage(): void,
     getActiveElementIndex(): number,
   }
 

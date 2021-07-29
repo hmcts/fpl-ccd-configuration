@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.io.ByteArrayOutputStream;
@@ -41,15 +42,15 @@ public class DocumentSealingService {
     public DocumentReference sealDocument(DocumentReference document) {
         byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
         documentContents = documentConversionService.convertToPdf(documentContents, document.getFilename());
-        documentContents = sealDocument(documentContents);
+        documentContents = sealDocument(documentContents, SealType.ENGLISH);
 
         String newFilename = updateExtension(document.getFilename(), PDF);
 
         return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFilename));
     }
 
-    public byte[] sealDocument(byte[] binaries) {
-        byte[] seal = readBytes(SEAL);
+    public byte[] sealDocument(byte[] binaries, SealType sealType) {
+        byte[] seal = readBytes(sealType.getImage());
 
         try (final PDDocument document = PDDocument.load(binaries)) {
             final PDPage firstPage = document.getPage(0);

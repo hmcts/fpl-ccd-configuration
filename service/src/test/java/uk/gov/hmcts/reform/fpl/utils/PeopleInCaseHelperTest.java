@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -24,32 +28,95 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 class PeopleInCaseHelperTest {
 
-    @Test
-    void shouldReturnFirstApplicantNameWhenFirstApplicantWithNamePresent() {
-        String applicantName = getFirstApplicantName(createPopulatedApplicants());
-        assertThat(applicantName).isEqualTo("Bran Stark");
-    }
+    @Nested
+    class FirstApplicant {
 
-    @Test
-    void shouldReturnEmptyStringWhenNoApplicants() {
-        String applicantName = getFirstApplicantName(null);
-        assertThat(applicantName).isEmpty();
-    }
+        @Test
+        void shouldReturnNameOfFirstLocalAuthority() {
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .name("Applicant local authority 1")
+                .build();
 
-    @Test
-    void shouldReturnEmptyStringWhenApplicantWithNoPartyPresent() {
-        String applicantName = getFirstApplicantName(wrapElements(Applicant.builder().build()));
-        assertThat(applicantName).isEmpty();
-    }
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .name("Applicant local authority 2")
+                .build();
 
-    @Test
-    void shouldReturnEmptyStringWhenApplicantWithNoNamePresent() {
-        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
-            .party(ApplicantParty.builder().build())
-            .build());
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .applicants(createPopulatedApplicants())
+                .build();
 
-        String applicantName = getFirstApplicantName(applicants);
-        assertThat(applicantName).isEmpty();
+            final String applicantName = getFirstApplicantName(caseData);
+
+            assertThat(applicantName).isEqualTo("Applicant local authority 1");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyStringIfFirstLocalAuthorityNameNotPresent(String name) {
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .name(name)
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .name("Applicant local authority 2")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .applicants(createPopulatedApplicants())
+                .build();
+
+            final String applicantName = getFirstApplicantName(caseData);
+
+            assertThat(applicantName).isEmpty();
+        }
+
+        @Test
+        void shouldReturnFirstApplicantNameFromLegacyApplicantWhenLocalAuthoritiesNotPresent() {
+            final CaseData caseData = CaseData.builder()
+                .applicants(createPopulatedApplicants())
+                .build();
+
+            final String applicantName = getFirstApplicantName(caseData);
+
+            assertThat(applicantName).isEqualTo("Bran Stark");
+        }
+
+        @Test
+        void shouldReturnEmptyStringWhenNoLegacyApplicantsNorLocalAuthorities() {
+            final CaseData caseData = CaseData.builder()
+                .build();
+
+            final String applicantName = getFirstApplicantName(caseData);
+
+            assertThat(applicantName).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyStringWhenNoPartyPresentInLegacyApplicantAndNoLocalAuthorities() {
+            final CaseData caseData = CaseData.builder()
+                .applicants(wrapElements(Applicant.builder().build()))
+                .build();
+
+            final String applicantName = getFirstApplicantName(caseData);
+
+            assertThat(applicantName).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyStringWhenLegacyApplicantWithNoNamePresent() {
+            final CaseData caseData = CaseData.builder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder().build())
+                    .build()))
+                .build();
+
+            final String applicantName = getFirstApplicantName(caseData);
+
+            assertThat(applicantName).isEmpty();
+        }
+
     }
 
     @Test

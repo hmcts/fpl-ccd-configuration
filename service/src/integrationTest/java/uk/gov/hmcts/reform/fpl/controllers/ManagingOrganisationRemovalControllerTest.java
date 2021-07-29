@@ -13,7 +13,10 @@ import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -27,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -34,6 +38,8 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.MANAGING_ORGANISATION_REMOVED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.EPSMANAGING;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.ASYNC_MAX_TIMEOUT;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @WebMvcTest(CaseInitiationController.class)
@@ -125,7 +131,90 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSendEmailToRemovedManagingOrganisation() throws Exception {
+    void shouldSendEmailToAllRelevantContactsFromRemovedManagingOrganisation() {
+
+        final Organisation organisation = Organisation.builder()
+            .organisationIdentifier(ORGANISATION_ID)
+            .name("London Solicitors")
+            .build();
+
+        final OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
+            .organisation(organisation(ORGANISATION_ID))
+            .orgPolicyCaseAssignedRole(EPSMANAGING.formattedName())
+            .build();
+
+        final Colleague colleague1 = Colleague.builder()
+            .role(ColleagueRole.SOLICITOR)
+            .email("colleague1@test.com")
+            .notificationRecipient("Yes")
+            .build();
+
+        final Colleague colleague2 = Colleague.builder()
+            .role(ColleagueRole.OTHER)
+            .email("colleague2@test.com")
+            .notificationRecipient("No")
+            .build();
+
+        final Colleague colleague3 = Colleague.builder()
+            .role(ColleagueRole.SOCIAL_WORKER)
+            .email("colleague3@test.com")
+            .notificationRecipient("Yes")
+            .build();
+
+        final CaseData caseDataBefore = CaseData.builder()
+            .id(10L)
+            .caseName("Smith case")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .outsourcingPolicy(organisationPolicy)
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LOCAL_AUTHORITY_1_NAME)
+                .colleagues(wrapElements(colleague1, colleague2, colleague3))
+                .build()))
+            .build();
+
+        final CaseData caseData = caseDataBefore.toBuilder()
+            .outsourcingPolicy(organisationPolicy.toBuilder()
+                .organisation(organisation(null))
+                .build())
+            .build();
+
+        given(organisationApi.findOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
+            .willReturn(organisation);
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                MANAGING_ORGANISATION_REMOVED_TEMPLATE,
+                "colleague1@test.com",
+                Map.of(
+                    "caseNumber", caseData.getId(),
+                    "caseName", caseData.getCaseName(),
+                    "localAuthorityName", caseData.getCaseLocalAuthorityName(),
+                    "managingOrganisationName", organisation.getName()
+                ),
+                "localhost/" + caseData.getId()
+            );
+
+            verify(notificationClient).sendEmail(
+                MANAGING_ORGANISATION_REMOVED_TEMPLATE,
+                "colleague3@test.com",
+                Map.of(
+                    "caseNumber", caseData.getId(),
+                    "caseName", caseData.getCaseName(),
+                    "localAuthorityName", caseData.getCaseLocalAuthorityName(),
+                    "managingOrganisationName", organisation.getName()
+                ),
+                "localhost/" + caseData.getId()
+            );
+        });
+
+        verifyNoMoreInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailToRemovedManagingOrganisationLegacySolicitor() throws Exception {
         String managingOrganisationSolicitorEmail = "john@london.solicitors.com";
 
         final Organisation organisation = Organisation.builder()
