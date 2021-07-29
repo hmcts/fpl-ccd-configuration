@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -59,7 +60,7 @@ class SubmittedCaseEventHandlerTest {
     private HmctsEmailContentProvider hmctsEmailContentProvider;
 
     @Mock
-    private HmctsAdminNotificationHandler adminNotificationHandler;
+    private CourtService courtService;
 
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -90,7 +91,7 @@ class SubmittedCaseEventHandlerTest {
 
         when(caseData.getId()).thenReturn(CASE_ID);
         when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(email);
+        when(courtService.getCourtEmail(caseData)).thenReturn(email);
         when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData)).thenReturn(parameters);
 
         submittedCaseEventHandler.notifyAdmin(new SubmittedCaseEvent(caseData, caseDataBefore));

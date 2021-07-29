@@ -35,6 +35,18 @@ module.exports = {
   caseTitle: '.case-title .markdown',
   tasksErrorsTitle: 'Why can\'t I submit my application?',
 
+  async getTaskListErrors() {
+    if (await I.hasSelector(`//p[text() = "${this.tasksErrorsTitle}"]`)) {
+      I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
+
+      return (await I.grabTextFrom('details div'))
+        .replace('\n\n', '\n')
+        .split('\n')
+        .filter(item => item);
+    }
+    return [];
+  },
+
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
@@ -97,6 +109,10 @@ module.exports = {
     this.checkTaskStatus(task, undefined);
   },
 
+  async checkTaskIsNoPresent(task) {
+    I.dontSeeElement(`//p/a[text()="${task}"]`);
+  },
+
   async checkTaskIsAvailable(task) {
     await I.retryUntilExists(() => {
       I.click(task);
@@ -113,15 +129,21 @@ module.exports = {
   },
 
   async checkTasksHaveErrors(tasksErrors) {
-    I.see(this.tasksErrorsTitle);
-    I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
-
-    const errors = (await I.grabTextFrom('details div'))
-      .replace('\n\n','\n')
-      .split('\n')
-      .filter(item => item);
+    const errors = await this.getTaskListErrors();
 
     assert.deepStrictEqual(errors, tasksErrors);
+  },
+
+  async checkTasksDoesNotContainError(error) {
+    const errors = await this.getTaskListErrors();
+
+    assert.strictEqual(errors.includes(error), false);
+  },
+
+  async checkTasksContainsError(error) {
+    const errors = await this.getTaskListErrors();
+
+    assert.strictEqual(errors.includes(error), true);
   },
 
   async checkTasksHaveNoErrors() {

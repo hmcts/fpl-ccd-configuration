@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -47,7 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class AdditionalApplicationsUploadedEventHandler {
     private final RequestData requestData;
     private final NotificationService notificationService;
-    private final HmctsAdminNotificationHandler adminNotificationHandler;
+    private final CourtService courtService;
     private final AdditionalApplicationsUploadedEmailContentProvider additionalApplicationsUploadedEmailContentProvider;
     private final InboxLookupService inboxLookupService;
     private final RepresentativesInbox representativesInbox;
@@ -86,7 +87,7 @@ public class AdditionalApplicationsUploadedEventHandler {
 
             NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider
                 .getNotifyData(caseData);
-            String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
+            String recipient = courtService.getCourtEmail(caseData);
             notificationService
                 .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
         }

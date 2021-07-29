@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {HmctsEmailContentProvider.class, LookupTestConfig.class})
+@ContextConfiguration(classes = {HmctsEmailContentProvider.class, LookupTestConfig.class, CourtService.class})
 class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;

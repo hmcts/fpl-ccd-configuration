@@ -17,6 +17,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.List.of;
+import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
 
@@ -96,9 +98,10 @@ public class TaskListRenderer {
                 tasks.get(RESPONDENTS)
             ));
 
-        final TaskSection courtRequirements = newSection("Add court requirements", of(
-            tasks.get(ALLOCATION_PROPOSAL)
-        ));
+        final List<Task> courtRequirementsTasks = new ArrayList<>(List.of(tasks.get(ALLOCATION_PROPOSAL)));
+        ofNullable(tasks.get(SELECT_COURT)).ifPresent(courtRequirementsTasks::add);
+
+        final TaskSection courtRequirements = newSection("Add court requirements", courtRequirementsTasks);
 
         ArrayList<Task> additionalInformationTasks = new ArrayList<>(of(
             tasks.get(OTHER_PROCEEDINGS),

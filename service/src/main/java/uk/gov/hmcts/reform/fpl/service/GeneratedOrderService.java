@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
@@ -60,7 +59,7 @@ public class GeneratedOrderService {
     private final DischargeCareOrderGenerationService dischargeCareOrderGenerationService;
     private final DischargeCareOrderService dischargeCareOrder;
     private final ChildrenService childrenService;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final CourtService courtService;
     private final DocumentUploadHelper uploadHelper;
     private final Time time;
 
@@ -122,7 +121,7 @@ public class GeneratedOrderService {
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
-            .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .courtName(courtService.getCourtName(caseData))
             .children(getChildren(orderType, caseData));
 
         return orderBuilder.build();
@@ -204,8 +203,8 @@ public class GeneratedOrderService {
      * <li>all children will be marked to have a final order issued against them</li>
      * </ul>
      *
-     * @param orderType        type of order
-     * @param children         list of children in the case
+     * @param orderType type of order
+     * @param children  list of children in the case
      */
     public boolean showCloseCase(OrderTypeAndDocument orderType,
                                  List<Element<Child>> children) {

@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -78,7 +79,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Mock
     private NotificationService notificationService;
     @Mock
-    private HmctsAdminNotificationHandler adminNotificationHandler;
+    private CourtService courtService;
     @Mock
     private AdditionalApplicationsUploadedEmailContentProvider additionalApplicationsUploadedEmailContentProvider;
     @Mock
@@ -284,7 +285,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         CaseData caseData = caseData();
 
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
-        given(adminNotificationHandler.getHmctsAdminEmail(caseData))
+        given(courtService.getCourtEmail(caseData))
             .willReturn("hmcts-non-admin@test.com");
         given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
             .willReturn(additionalApplicationsParameters);
@@ -306,7 +307,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .build();
 
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
-        given(adminNotificationHandler.getHmctsAdminEmail(caseData)).willReturn("Ctsc+test@gmail.com");
+        given(courtService.getCourtEmail(caseData)).willReturn("Ctsc+test@gmail.com");
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
