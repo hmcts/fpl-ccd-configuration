@@ -15,6 +15,7 @@ public class DocmosisTranslationRequest implements DocmosisData {
     private String contactInformation;
     private DocmosisWelshProject project;
     private String familyManCaseNumber;
+    private String ccdId;
     private String description;
     private DocmosisTranslateLanguages translate;
     private DocmosisWelshLayout layout;

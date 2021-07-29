@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreatio
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.extractPdfContent;
@@ -30,53 +29,49 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
-    @Autowired
-    private TranslationRequestFormCreationService underTest;
-
+    private static final String CCD_ID = "1234-5678-9012-3456";
+    private static final String NAME = "Courts and Tribunals Service Centre";
+    private static final String DEPARTMENT = "Family Public Law";
+    private static final String CONTACT_INFORMATION = "contactfpl@justice.gov.uk";
+    private static final String FAMILY_MAN_CASE_NUMBER = "FamilyManCaseNumber123";
     private static final LocalDate FIXED_DATE = LocalDate.of(2021, 7, 28);
-
-    private DocmosisTranslationRequest request;
-    private String expectedContentFileLocation;
-    private String generatedContentOutputFile;
-
+    private static final int WORD_COUNT = 2034;
     private final byte[] pdf = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     private final DocmosisDocument orderDocumentToTranslate = new DocmosisDocument("example.pdf", pdf);
 
-    public static final String NAME = "Courts and Tribunals Service Centre";
-    public static final String DEPARTMENT = "Family Public Law";
-    public static final String CONTACT_INFORMATION = "contactfpl@justice.gov.uk";
-    public static final String FAMILY_MAN_CASE_NUMBER = "FamilyManCaseNumber123";
+    @Autowired
+    private TranslationRequestFormCreationService underTest;
 
     @Test
     void shouldGenerateTranslationFormRequestEnglishToWelsh() throws IOException {
-        expectedContentFileLocation = "translation-form-request/EnglishToWelshTranslationDocument.txt";
-        generatedContentOutputFile = "EnglishToWelshTranslationDocument.";
+        String expectedContentFileLocation = "translation-form-request/EnglishToWelshTranslationDocument.txt";
+        String generatedContentOutputFile = "EnglishToWelshTranslationDocument.";
 
-        request = buildTranslationRequest(true, orderDocumentToTranslate);
+        DocmosisTranslationRequest request = buildTranslationRequest(true, orderDocumentToTranslate);
 
-        generateWordDocument();
+        generateWordDocument(request, generatedContentOutputFile);
 
-        assertActualOutputMatchesTestFile();
+        assertActualOutputMatchesTestFile(request, expectedContentFileLocation);
     }
 
     @Test
     void shouldGenerateTranslationFormRequestWelshToEnglish() throws IOException {
-        expectedContentFileLocation = "translation-form-request/WelshToEnglishTranslationDocument.txt";
-        generatedContentOutputFile = "WelshToEnglishTranslationDocument.";
+        String expectedContentFileLocation = "translation-form-request/WelshToEnglishTranslationDocument.txt";
+        String generatedContentOutputFile = "WelshToEnglishTranslationDocument.";
 
-        request = buildTranslationRequest(false, orderDocumentToTranslate);
+        DocmosisTranslationRequest request = buildTranslationRequest(false, orderDocumentToTranslate);
 
-        generateWordDocument();
+        generateWordDocument(request, generatedContentOutputFile);
 
-        assertActualOutputMatchesTestFile();
+        assertActualOutputMatchesTestFile(request, expectedContentFileLocation);
     }
 
     @Test
     void shouldGenerateTranslationFormRequestProjectSelectedIsDigitalProject() throws IOException {
-        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
-        generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsDigitalProject.";
+        String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
+        String generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsDigitalProject.";
 
-        request = DocmosisTranslationRequest.builder()
+        DocmosisTranslationRequest request = DocmosisTranslationRequest.builder()
             .project(DocmosisWelshProject.builder()
                 .digitalProject(true)
                 .build())
@@ -87,7 +82,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateWordDocument();
+        generateWordDocument(request, generatedContentOutputFile);
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
@@ -95,10 +90,10 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
     @Test
     void shouldGenerateTranslationFormRequestProjectSelectedIsCtsc() throws IOException {
-        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
-        generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsCtsc.";
+        String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
+        String generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsCtsc.";
 
-        request = DocmosisTranslationRequest.builder()
+        DocmosisTranslationRequest request = DocmosisTranslationRequest.builder()
             .project(DocmosisWelshProject.builder()
                 .ctsc(true)
                 .build())
@@ -109,7 +104,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateWordDocument();
+        generateWordDocument(request, generatedContentOutputFile);
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
@@ -117,10 +112,10 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
     @Test
     void shouldGenerateTranslationFormRequestLayoutIsBilingual() throws IOException {
-        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
-        generatedContentOutputFile = "TranslationFormRequestLayoutIsBilingual.";
+        String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
+        String generatedContentOutputFile = "TranslationFormRequestLayoutIsBilingual.";
 
-        request = DocmosisTranslationRequest.builder()
+        DocmosisTranslationRequest request = DocmosisTranslationRequest.builder()
             .layout(DocmosisWelshLayout.builder()
                 .bilingual(true)
                 .build())
@@ -131,7 +126,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateWordDocument();
+        generateWordDocument(request, generatedContentOutputFile);
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
@@ -139,10 +134,10 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
     @Test
     void shouldGenerateTranslationFormRequestLayoutIsOther() throws IOException {
-        expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
-        generatedContentOutputFile = "TranslationFormRequestLayoutIsOther.";
+        String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
+        String generatedContentOutputFile = "TranslationFormRequestLayoutIsOther.";
 
-        request = DocmosisTranslationRequest.builder()
+        DocmosisTranslationRequest request = DocmosisTranslationRequest.builder()
             .layout(DocmosisWelshLayout.builder()
                 .other(true)
                 .build())
@@ -153,18 +148,19 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .build()
         );
 
-        generateWordDocument();
+        generateWordDocument(request, generatedContentOutputFile);
 
         assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
-    private void assertActualOutputMatchesTestFile() {
-        assertThat(remove(extractPdfContent(getDocmosisDocumentPDFBytes())))
+    private void assertActualOutputMatchesTestFile(DocmosisTranslationRequest request,
+                                                   String expectedContentFileLocation) {
+        assertThat(remove(extractPdfContent(getDocmosisDocumentPDFBytes(request))))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
-    private byte[] getDocmosisDocumentPDFBytes() {
+    private byte[] getDocmosisDocumentPDFBytes(DocmosisTranslationRequest request) {
         return underTest.buildTranslationRequestDocuments(
             request.toBuilder()
                 .format(RenderFormat.PDF)
@@ -179,6 +175,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .department(DEPARTMENT)
             .contactInformation(CONTACT_INFORMATION)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .ccdId(CCD_ID)
             .project(DocmosisWelshProject.builder()
                 .reform(true)
                 .build())
@@ -190,7 +187,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
                 .englishToWelsh(isEnglishToWelsh)
                 .welshToEnglish(!isEnglishToWelsh)
                 .build())
-            .wordCount(countWords(convertByteToString(orderDocumentToTranslate.getBytes())))
+            .wordCount(WORD_COUNT)
             .dateOfReturn(formatDate(FIXED_DATE))
             .build();
     }
@@ -199,7 +196,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         return formatLocalDateToString(date, DATE);
     }
 
-    private void generateWordDocument() throws IOException {
+    private void generateWordDocument(DocmosisTranslationRequest request, String generatedContentOutputFile) throws IOException {
         storeToOuputFolder(
             generatedContentOutputFile.concat(RenderFormat.WORD.getExtension()),
             underTest.buildTranslationRequestDocuments(request.toBuilder()
@@ -207,17 +204,6 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
                 .build()
             ).getBytes()
         );
-    }
-
-    private static int countWords(String text) {
-        if (text == null || text.isEmpty()) {
-            return 0;
-        }
-        return text.split("\\s", -1).length;
-    }
-
-    private static String convertByteToString(byte[] byteValue) {
-        return ("" + Arrays.toString(byteValue));
     }
 
     private static String getExpectedText(String fileName) {

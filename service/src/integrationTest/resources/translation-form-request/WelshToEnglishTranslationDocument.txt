@@ -22,7 +22,7 @@ Department/Office Family Public Law
 Email / Telephone number contactfpl@justice.gov.uk
 CTSC Reform
 Digital Project
-Case number/Ref: FamilyManCaseNumber123
+Case number/Ref: FamilyManCaseNumber123 / 1234-5678- 9012-3456
 Description of work Details (please specify):
 Translation of example.pdfTranslation
 Welsh   English
@@ -31,7 +31,7 @@ Layout
 Bilingual
 Mirror Image
 Other
-Word count 10
+Word count 2034
 Required date of return 28 July 2021
 Date request received:
 Translation   Trados
