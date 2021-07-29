@@ -341,7 +341,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(subjectLine)
-            .respondentLastName("Smith")
+            .lastName("Smith")
             .childLastName("Jones")
             .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab")
             .documentLink(jsonFileObject.toMap())

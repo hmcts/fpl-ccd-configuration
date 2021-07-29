@@ -81,11 +81,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("eldest-child-last-name", createLDUser(), false);
     }
 
-    public boolean isServeOrdersAndDocsToOthersEnabled() {
-        return ldClient.boolVariation("serve-others-orders-docs",
-            createLDUser(), false);
-    }
-
     public boolean isApplicantAdditionalContactsEnabled() {
         return ldClient.boolVariation("applicant-additional-contacts", createLDUser(), false);
     }

@@ -55,7 +55,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
             .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
-            .respondentLastName(RESPONDENT_LAST_NAME)
+            .lastName(RESPONDENT_LAST_NAME)
             .childLastName(CHILD_LAST_NAME)
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
             .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
@@ -90,7 +90,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()
                 .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
-                .respondentLastName(RESPONDENT_LAST_NAME)
+                .lastName(RESPONDENT_LAST_NAME)
                 .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
                 .applicationTypes(List.of("C2 (With notice) - Parental responsibility by the father"))

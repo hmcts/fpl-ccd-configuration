@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -36,11 +35,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -90,19 +88,16 @@ public class AdditionalApplicationsUploadedEventHandler {
 
             NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider
                 .getNotifyData(caseData);
-            String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
+            String recipient = courtService.getCourtEmail(caseData);
 
             if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
                 notificationService
-                    .sendEmail(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData,
+                    .sendEmail(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData,
                         caseData.getId());
             } else {
                 notificationService
                     .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
             }
-            String recipient = courtService.getCourtEmail(caseData);
-            notificationService
-                .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
         }
     }
 

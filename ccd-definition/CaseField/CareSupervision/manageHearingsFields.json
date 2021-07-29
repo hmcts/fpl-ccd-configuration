@@ -327,16 +327,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hasOthers",
-    "FieldType": "YesOrNo",
-    "Label": " ",
-    "SecurityClassification": "Public",
-    "Comment": "Used for show/hide other selection as to when there are no others to notify",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "noHearingsToEditLabel",
     "Label": "There are no future hearings to edit",
     "FieldType": "Label",

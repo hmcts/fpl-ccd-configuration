@@ -20,7 +20,9 @@ public final class NotifyTemplates {
         = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
         = "62791aee-6caf-4a22-a599-fcfc4381ba20";
-    public static final String UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
+    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
+        = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
+    public static final String UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
         = "d5f41125-76d0-43f9-971b-fe1ff6a26acf";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";

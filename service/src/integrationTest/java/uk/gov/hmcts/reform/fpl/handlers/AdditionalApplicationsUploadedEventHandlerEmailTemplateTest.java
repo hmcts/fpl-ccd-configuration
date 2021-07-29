@@ -32,7 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -93,6 +92,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     @Test
     void notifyAdmin() {
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
+        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA));
