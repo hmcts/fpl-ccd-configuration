@@ -54,7 +54,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         CaseData caseData = buildCaseData();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
+        when(helper.getSubjectLineLastName(caseData)).thenReturn(RESPONDENT_LAST_NAME);
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
