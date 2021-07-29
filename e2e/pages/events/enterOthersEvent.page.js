@@ -35,8 +35,8 @@ module.exports = {
     I.fillDate(other.DOB, this.fields(elementIndex).DOB);
     I.selectOption(this.fields(elementSelector).gender, other.gender);
     I.fillField(this.fields(elementSelector).birthPlace, other.birthPlace);
-    await within(this.fields(elementSelector).address, () => {
-      postcodeLookup.enterAddressManually(other.address);
+    await within(this.fields(elementSelector).address, async () => {
+      await postcodeLookup.enterAddressManually(other.address);
     });
     I.fillField(this.fields(elementSelector).telephoneNumber, other.telephoneNumber);
   },
