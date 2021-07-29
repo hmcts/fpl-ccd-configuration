@@ -352,8 +352,8 @@ const selectManualOrderNeedSealing = (needSealing) => {
   I.click(`${section4.manualOrderNeedSealing.group}_${needSealing}`);
 };
 
-const enterRemovalAddress = (address) => {
-  postcodeLookup.enterAddressManually(address);
+const enterRemovalAddress = async (address) => {
+  await postcodeLookup.enterAddressManually(address);
 };
 
 const selectSupervisionType = (option) => {

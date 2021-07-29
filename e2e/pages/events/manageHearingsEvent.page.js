@@ -108,8 +108,8 @@ module.exports = {
     I.selectOption(this.fields.newVenue, hearingDetails.venue);
 
     if (hearingDetails.venue === 'Other') {
-      await within(this.fields.newVenueCustomAddress, () => {
-        postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
+      await within(this.fields.newVenueCustomAddress, async () => {
+        await postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
       });
     }
   },
