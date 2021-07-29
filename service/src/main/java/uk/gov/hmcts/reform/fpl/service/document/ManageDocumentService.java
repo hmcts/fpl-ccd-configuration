@@ -58,7 +58,7 @@ public class ManageDocumentService {
     private final UserService user;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
-    public static final String CORRESPONDING_DOCUMENTS_SOLICITOR_COLLECTION_KEY = "correspondenceDocumentsSolicitor";
+    public static final String CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY = "correspondenceDocumentsSolicitor";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
     public static final String TEMP_EVIDENCE_DOCUMENTS_KEY = "supportingEvidenceDocumentsTemp";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_KEY = "furtherEvidenceDocuments";

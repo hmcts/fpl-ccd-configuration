@@ -119,7 +119,7 @@
     "ID": "correspondenceDocumentsSolicitor",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence uploaded by respondent solicitors",
+    "Label": "Correspondence uploaded by solicitor",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

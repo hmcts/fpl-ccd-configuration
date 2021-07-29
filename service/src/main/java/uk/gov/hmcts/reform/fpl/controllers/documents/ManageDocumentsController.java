@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_SOLICITOR_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_SOLICITOR_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY;
@@ -176,11 +176,13 @@ public class ManageDocumentsController extends CallbackController {
                         isSolicitor ? caseDataBefore.getFurtherEvidenceDocumentsSolicitor() :
                             caseDataBefore.getFurtherEvidenceDocuments(), isSolicitor);
 
-                    confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
-                        FURTHER_EVIDENCE_DOCUMENTS_KEY);
-
-                    caseDetailsMap.putIfNotEmpty(isSolicitor ? FURTHER_EVIDENCE_DOCUMENTS_SOLICITOR_KEY :
-                        FURTHER_EVIDENCE_DOCUMENTS_KEY, currentBundle);
+                    if (!isSolicitor) {
+                        confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
+                            FURTHER_EVIDENCE_DOCUMENTS_KEY);
+                        caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_KEY, currentBundle);
+                    } else {
+                        caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_SOLICITOR_KEY, currentBundle);
+                    }
                 }
                 break;
             case CORRESPONDENCE:
@@ -192,11 +194,13 @@ public class ManageDocumentsController extends CallbackController {
                 List<Element<SupportingEvidenceBundle>> sortedBundle
                     = documentService.sortCorrespondenceDocumentsByUploadedDate(currentBundle);
 
-                confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, sortedBundle,
-                    isSolicitor ? CORRESPONDING_DOCUMENTS_SOLICITOR_COLLECTION_KEY :
+                if (!isSolicitor) {
+                    confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, sortedBundle,
                         CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
-
-                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
+                    caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
+                } else {
+                    caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY, sortedBundle);
+                }
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(
