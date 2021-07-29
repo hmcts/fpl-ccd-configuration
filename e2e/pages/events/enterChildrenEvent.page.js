@@ -116,9 +116,9 @@ module.exports = {
   async enterAddress(address) {
     const elementIndex = await this.getActiveElementIndex();
 
-    await within(this.fields(elementIndex).child.situation.addressOfChild, () => {
+    await within(this.fields(elementIndex).child.situation.addressOfChild, async () => {
       //XXX removed postcode lookup due to instability
-      postcodeLookup.enterAddressManually(address);
+      await postcodeLookup.enterAddressManually(address);
     });
   },
 
@@ -236,7 +236,7 @@ module.exports = {
     await within(indexedFields.childSolicitor.id, async () => {
       await clearOldSolicitorOrg();
       I.fillField(indexedFields.childSolicitor.unregisteredOrganisation.name, solicitor.unregisteredOrganisation.name);
-      postcodeLookup.enterAddressManually(solicitor.unregisteredOrganisation.address);
+      await postcodeLookup.enterAddressManually(solicitor.unregisteredOrganisation.address);
     });
   },
 
