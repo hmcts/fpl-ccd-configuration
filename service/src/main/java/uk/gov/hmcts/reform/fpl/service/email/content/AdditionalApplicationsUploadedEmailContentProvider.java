@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.ArrayList;
@@ -22,16 +23,17 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildUnformattedCalloutWithNextHearing;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AdditionalApplicationsUploadedEmailContentProvider extends AbstractEmailContentProvider {
+    private final Time time;
     private final EmailNotificationHelper helper;
 
     public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
         return AdditionalApplicationsUploadedTemplate.builder()
-            .callout(buildCallout(caseData))
+            .callout(buildUnformattedCalloutWithNextHearing(caseData, time.now()))
             .lastName(helper.getSubjectLineLastName(caseData))
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))

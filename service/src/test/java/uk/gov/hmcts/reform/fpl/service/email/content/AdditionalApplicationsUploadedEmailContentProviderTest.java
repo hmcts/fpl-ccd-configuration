@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
@@ -36,11 +37,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {AdditionalApplicationsUploadedEmailContentProvider.class})
 class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2021, 2, 12, 0, 0, 0);
-    private static final String HEARING_CALLOUT = "hearing 12 Feb 2021";
+    private static final LocalDateTime PAST_HEARING_DATE = LocalDateTime.of(2000, 2, 12, 0, 0, 0);
+    private static final LocalDateTime FUTURE_HEARING_DATE = LocalDateTime.of(2099, 2, 12, 0, 0, 0);
+    private static final String HEARING_CALLOUT = "hearing 12 Feb 2099";
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
 
+    @MockBean
+    private Time time;
     @MockBean
     private EmailNotificationHelper helper;
     @Autowired
@@ -50,8 +54,9 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         CaseData caseData = buildCaseData();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn(RESPONDENT_LAST_NAME);
+        when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
             .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
@@ -86,6 +91,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
 
         when(helper.getSubjectLineLastName(caseData)).thenReturn(RESPONDENT_LAST_NAME);
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()
@@ -147,7 +153,9 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().firstName("John").lastName(RESPONDENT_LAST_NAME).build())
                 .build()))
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
+            .hearingDetails(wrapElements(
+                    HearingBooking.builder().startDate((PAST_HEARING_DATE)).build(),
+                    HearingBooking.builder().startDate((FUTURE_HEARING_DATE)).build()))
             .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
             .build();
     }

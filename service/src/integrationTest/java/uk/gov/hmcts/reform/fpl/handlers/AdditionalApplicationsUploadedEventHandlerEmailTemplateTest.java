@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -49,20 +50,22 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans({
     @MockBean(FeatureToggleService.class), @MockBean(IdamClient.class), @MockBean(RequestData.class),
-    @MockBean(SendDocumentService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class)
+    @MockBean(SendDocumentService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
+    @MockBean(Time.class)
 })
 class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final String CHILD_LAST_NAME = "Jones";
     private static final String RESPONDENT_LAST_NAME = "Smith";
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2099, 2, 20, 20, 20, 0);
 
     public static final CaseData CASE_DATA = CaseData.builder()
         .id(CASE_ID)
         .caseLocalAuthority(LOCAL_AUTHORITY_NAME)
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
         .hearingDetails(wrapElements(HearingBooking.builder()
-            .startDate(LocalDateTime.of(2020, 2, 20, 20, 20, 0))
+            .startDate(HEARING_DATE)
             .type(HearingType.CASE_MANAGEMENT)
             .build()))
         .respondents1(wrapElements(Respondent.builder()
@@ -89,6 +92,14 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     @Autowired
     private FeatureToggleService toggleService;
 
+    @Autowired
+    private Time time;
+
+    @BeforeEach
+    void setup() {
+        given(time.now()).willReturn(HEARING_DATE.minusDays(1));
+    }
+
     @Test
     void notifyAdmin() {
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
@@ -102,7 +113,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
-                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2020")
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
                 .line()
                 .h1("Applications")
                 .line()
@@ -132,7 +143,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
-                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2020")
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
                 .line()
                 .h1("Applications")
                 .line()
