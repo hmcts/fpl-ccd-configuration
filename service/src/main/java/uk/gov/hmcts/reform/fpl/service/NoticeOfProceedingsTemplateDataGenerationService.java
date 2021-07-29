@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstApplicant
 public class NoticeOfProceedingsTemplateDataGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisNoticeOfProceeding> {
 
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final CourtService courtService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final Time time;
 
@@ -40,11 +39,11 @@ public class NoticeOfProceedingsTemplateDataGenerationService
         HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
 
         return DocmosisNoticeOfProceeding.builder()
-            .courtName(getCourtName(caseData.getCaseLocalAuthority()))
+            .courtName(courtService.getCourtName(caseData))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
-            .applicantName(getFirstApplicantName(caseData.getApplicants()))
+            .applicantName(getFirstApplicantName(caseData))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
             .hearingBooking(getHearingBooking(hearing))
@@ -58,10 +57,6 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .hearingLegalAdvisorName(null) // wipe unwanted data
             .hearingJudgeTitleAndName(null)
             .build();
-    }
-
-    private String getCourtName(String courtName) {
-        return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
 
     private String getOrderTypes(Orders orders) {

@@ -28,10 +28,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -45,6 +47,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
     private static final SyntheticCaseSummary CASE_SUMMARY = SyntheticCaseSummary.builder()
         .caseSummaryFirstRespondentLegalRep(REPRESENTATIVE_FULLNAME)
         .caseSummaryFirstRespondentLastName(RESPONDENT_SURNAME)
+        .caseSummaryCourtName(COURT_NAME)
         .caseSummaryNumberOfChildren(1)
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -142,6 +145,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
             .party(ChildParty.builder().dateOfBirth(dateNow()).lastName(CHILD_LAST_NAME).build())
             .build()
         ));
+        data.put("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
         data.putAll(caseSummary);
         return CaseDetails.builder()
             .id(CASE_ID)

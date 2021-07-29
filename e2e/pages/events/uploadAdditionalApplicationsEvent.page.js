@@ -29,10 +29,28 @@ module.exports = {
     otherSecureAccommodationTypePrefix: '#temporaryOtherApplicationsBundle_supplementsBundle_0_secureAccommodationType-',
     otherParentalResponsibilityTypePrefix: '#temporaryOtherApplicationsBundle_parentalResponsibilityType-',
     c2ParentalResponsibilityTypePrefix: '#temporaryC2Document_parentalResponsibilityType-',
+    allOthers: {
+      group: '#notifyApplicationsToAllOthers',
+      options: {
+        all: 'Yes',
+        select: 'No',
+      },
+    },
+    othersSelector: {
+      selector: index => `#othersSelector_option${index}-SELECTED`,
+    },
   },
 
   selectAdditionalApplicationType(type) {
     I.click(this.fields.applicationType.additionalApplicationTypePrefix + type);
+  },
+
+  selectOthers(option, indexes = []) {
+    I.click(`${this.fields.allOthers.group}_${option}`);
+
+    indexes.forEach((selectorIndex) => {
+      I.checkOption(this.fields.othersSelector.selector(selectorIndex));
+    });
   },
 
   selectApplicantList(applicantName) {

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ReturnedCaseContentProvider;
 
@@ -33,7 +34,7 @@ class AmendedReturnedCaseEventHandlerTest {
     private ReturnedCaseContentProvider returnedCaseContentProvider;
 
     @Mock
-    private HmctsAdminNotificationHandler adminNotificationHandler;
+    private CourtService courtService;
 
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -56,7 +57,7 @@ class AmendedReturnedCaseEventHandlerTest {
         final ReturnedCaseTemplate expectedTemplate = ReturnedCaseTemplate.builder().build();
         final AmendedReturnedCaseEvent amendedReturnedCaseEvent = new AmendedReturnedCaseEvent(caseData);
 
-        when(adminNotificationHandler.getHmctsAdminEmail(caseData))
+        when(courtService.getCourtEmail(caseData))
             .thenReturn(expectedEmail);
         when(returnedCaseContentProvider.parametersWithCaseUrl(caseData))
             .thenReturn(expectedTemplate);
@@ -70,7 +71,7 @@ class AmendedReturnedCaseEventHandlerTest {
             caseData.getId());
 
         verify(returnedCaseContentProvider).parametersWithCaseUrl(caseData);
-        verify(adminNotificationHandler).getHmctsAdminEmail(caseData);
+        verify(courtService).getCourtEmail(caseData);
     }
 
     @Test

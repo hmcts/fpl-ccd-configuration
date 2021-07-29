@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -23,7 +24,7 @@ public class C2UploadedEventHandler {
     private final IdamClient idamClient;
     private final RequestData requestData;
     private final NotificationService notificationService;
-    private final HmctsAdminNotificationHandler adminNotificationHandler;
+    private final CourtService courtService;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @EventListener
@@ -34,7 +35,9 @@ public class C2UploadedEventHandler {
 
             NotifyData notifyData = c2UploadedEmailContentProvider
                 .getNotifyData(caseData, event.getUploadedBundle().getDocument());
-            String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
+
+            String recipient = courtService.getCourtEmail(caseData);
+
             notificationService
                 .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
         }

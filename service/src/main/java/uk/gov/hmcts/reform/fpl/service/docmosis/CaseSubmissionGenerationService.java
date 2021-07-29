@@ -5,7 +5,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
@@ -17,12 +16,14 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
@@ -45,12 +46,14 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
@@ -61,7 +64,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
@@ -70,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
@@ -81,18 +84,18 @@ public class CaseSubmissionGenerationService
     private static final String CONFIDENTIAL = "Confidential";
 
     private final Time time;
-    private final HmctsCourtLookupConfiguration courtLookupConfiguration;
-    private final IdamClient idamClient;
+    private final UserService userService;
     private final RequestData requestData;
+    private final CourtService courtService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
 
         applicationFormBuilder
-            .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
+            .applicantOrganisations(getApplicantsOrganisations(caseData))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .courtName(courtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .courtName(courtService.getCourtName(caseData))
             .submittedDate(formatDateDisplay(time.now().toLocalDate()))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
@@ -103,7 +106,7 @@ public class CaseSubmissionGenerationService
             .risks(buildDocmosisRisks(caseData.getRisks()))
             .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting()))
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents()))
-            .applicants(buildDocmosisApplicants(caseData.getAllApplicants(), caseData.getSolicitor()))
+            .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren()))
             .others(buildDocmosisOthers(caseData.getAllOthers()))
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings()))
@@ -115,7 +118,7 @@ public class CaseSubmissionGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData))
-            .userFullName(getSigneeName(caseData.getAllApplicants()));
+            .userFullName(getSigneeName(caseData));
 
         return applicationFormBuilder.build();
     }
@@ -132,8 +135,15 @@ public class CaseSubmissionGenerationService
         }
     }
 
-    private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
-        return applicants.stream()
+    private String getApplicantsOrganisations(CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return unwrapElements(caseData.getLocalAuthorities()).stream()
+                .map(LocalAuthority::getName)
+                .filter(StringUtils::isNotBlank)
+                .collect(joining(NEW_LINE));
+        }
+
+        return caseData.getAllApplicants().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(Applicant::getParty)
@@ -286,15 +296,26 @@ public class CaseSubmissionGenerationService
         return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
     }
 
-    public String getSigneeName(final List<Element<Applicant>> applicants) {
-        String legalTeamManager = ObjectUtils.isEmpty(applicants) ? EMPTY
-            : applicants.get(0).getValue().getParty().getLegalTeamManager();
+    public String getSigneeName(CaseData caseData) {
+        return getLegalTeamManager(caseData)
+            .filter(StringUtils::isNotBlank)
+            .orElseGet(userService::getUserName);
+    }
 
-        if (isNotBlank(legalTeamManager)) {
-            return legalTeamManager;
-        } else {
-            return idamClient.getUserInfo(requestData.authorisation()).getName();
+    private Optional<String> getLegalTeamManager(CaseData caseData) {
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return ofNullable(caseData.getLocalAuthorities())
+                .map(localAuthority -> localAuthority.get(0))
+                .map(Element::getValue)
+                .map(LocalAuthority::getLegalTeamManager);
         }
+
+        return ofNullable(caseData.getAllApplicants())
+            .filter(ObjectUtils::isNotEmpty)
+            .map(applicants -> applicants.get(0))
+            .map(Element::getValue)
+            .map(Applicant::getParty)
+            .map(ApplicantParty::getLegalTeamManager);
     }
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {
@@ -307,14 +328,19 @@ public class CaseSubmissionGenerationService
             .collect(toList());
     }
 
-    private List<DocmosisApplicant> buildDocmosisApplicants(final List<Element<Applicant>> applicants,
-                                                            final Solicitor solicitor) {
-        return applicants.stream()
-            .map(Element::getValue)
+    private List<DocmosisApplicant> buildDocmosisApplicants(CaseData caseData) {
+
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            return List.of(buildApplicant(caseData.getLocalAuthorities().get(0).getValue()));
+        }
+
+        final Solicitor legacySolicitor = caseData.getSolicitor();
+
+        return unwrapElements(caseData.getApplicants()).stream()
             .filter(Objects::nonNull)
             .map(Applicant::getParty)
             .filter(Objects::nonNull)
-            .map(applicant -> buildApplicant(applicant, solicitor))
+            .map(applicant -> buildApplicant(applicant, legacySolicitor))
             .collect(toList());
     }
 
@@ -443,6 +469,7 @@ public class CaseSubmissionGenerationService
             .build();
     }
 
+    @Deprecated
     private DocmosisApplicant buildApplicant(final ApplicantParty applicant, final Solicitor solicitor) {
         final boolean solicitorPresent = (solicitor != null);
         return DocmosisApplicant.builder()
@@ -466,6 +493,28 @@ public class CaseSubmissionGenerationService
                 solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getDx()) : DEFAULT_STRING)
             .solicitorReference(
                 solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getReference()) : DEFAULT_STRING)
+            .build();
+    }
+
+    private DocmosisApplicant buildApplicant(final LocalAuthority localAuthority) {
+        final Optional<Colleague> solicitor = localAuthority.getFirstSolicitor();
+        final Optional<Colleague> mainContact = localAuthority.getMainContact();
+
+        return DocmosisApplicant.builder()
+            .organisationName(getDefaultIfNullOrEmpty(localAuthority.getName()))
+            .contactName(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getFullName)))
+            .jobTitle(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getJobTitle)))
+            .address(formatAddress(localAuthority.getAddress()))
+            .email(getDefaultIfNullOrEmpty(localAuthority.getEmail()))
+            .mobileNumber(getDefaultIfNullOrEmpty(mainContact.map(Colleague::getPhone)))
+            .telephoneNumber(getDefaultIfNullOrEmpty(localAuthority.getPhone()))
+            .pbaNumber(getDefaultIfNullOrEmpty(localAuthority.getPbaNumber()))
+            .solicitorName(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getFullName)))
+            .solicitorMobile(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getPhone)))
+            .solicitorTelephone(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getPhone)))
+            .solicitorEmail(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getEmail)))
+            .solicitorDx(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getDx)))
+            .solicitorReference(getDefaultIfNullOrEmpty(solicitor.map(Colleague::getReference)))
             .build();
     }
 
@@ -498,6 +547,9 @@ public class CaseSubmissionGenerationService
         return StringUtils.isEmpty(value) ? DEFAULT_STRING : value;
     }
 
+    private String getDefaultIfNullOrEmpty(final Optional<String> value) {
+        return value.filter(StringUtils::isNotEmpty).orElse(DEFAULT_STRING);
+    }
 
     private String getChildLivingSituation(final ChildParty child, final boolean isConfidential) {
         StringBuilder stringBuilder = new StringBuilder();

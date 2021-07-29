@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEm
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEmptyTelephone;
 
 @Component
+@Deprecated
 public class OrganisationDetailsChecker extends PropertiesChecker {
 
     @Override

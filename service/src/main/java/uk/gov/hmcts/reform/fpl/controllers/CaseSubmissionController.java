@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
+import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
@@ -38,10 +38,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -59,7 +62,7 @@ public class CaseSubmissionController extends CallbackController {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
-    private final RespondentRepresentationService respondentRepresentationService;
+    private final NoticeOfChangeFieldPopulator nocFieldPopulator;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -84,7 +87,7 @@ public class CaseSubmissionController extends CallbackController {
             }
         }
 
-        String signeeName = caseSubmissionService.getSigneeName(caseData.getAllApplicants());
+        String signeeName = caseSubmissionService.getSigneeName(caseData);
 
         String label = String.format(CONSENT_TEMPLATE, signeeName);
         data.put("submissionConsentLabel", label);
@@ -118,7 +121,8 @@ public class CaseSubmissionController extends CallbackController {
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
             data.put("submittedForm", buildFromDocument(document));
 
-            data.putAll(respondentRepresentationService.generate(caseData));
+            data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
+            data.putAll(nocFieldPopulator.generate(caseData, CHILD, BLANK));
         }
 
         removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");

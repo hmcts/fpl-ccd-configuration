@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static java.net.IDN.toASCII;
 import static java.net.IDN.toUnicode;
+import static java.util.Collections.emptyList;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -29,7 +30,7 @@ public class ValidateEmailService {
 
     private static final String ERROR_MESSAGE = "Enter an email address in the correct format,"
         + " for example name@example.com";
-    private static final List<String> OPTIONAL_KEYS = List.of("Applicant", "Representative");
+    private static final List<String> OPTIONAL_KEYS = List.of("Applicant", "Representative", "Colleague");
 
     private static final String LOCAL_CHARS = "a-zA-Z0-9.!#$%&'*+/=?^_`{|}~\\-";
 
@@ -71,6 +72,13 @@ public class ValidateEmailService {
 
     public Optional<String> validate(String email) {
         return isValid(email) ? Optional.empty() : Optional.ofNullable(ERROR_MESSAGE);
+    }
+
+    public List<String> validateIfPresent(String email) {
+        if (isEmpty(email)) {
+            return emptyList();
+        }
+        return isValid(email) ? emptyList() : List.of(ERROR_MESSAGE);
     }
 
     private boolean emailIsOptional(String key) {

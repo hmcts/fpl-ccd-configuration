@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -60,8 +62,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, GatekeepingOrderGenerationService.class,
-    CaseDataExtractionService.class, FixedTimeConfiguration.class
+    LookupTestConfig.class, GatekeepingOrderGenerationService.class, CaseDataExtractionService.class,
+    FixedTimeConfiguration.class, CourtService.class
 })
 class GatekeepingOrderGenerationServiceTest {
 
@@ -83,6 +85,14 @@ class GatekeepingOrderGenerationServiceTest {
     }
 
     @Test
+    void shouldGenerateSealedOrderWithLegacyApplicant() {
+        DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForSealedWithLegacyApplicant());
+        DocmosisStandardDirectionOrder expectedData = fullSealedOrderFromLegacyApplicant();
+
+        assertThat(templateData).isEqualTo(expectedData);
+    }
+
+    @Test
     void shouldGenerateDraftOrder() {
         DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForDraft());
         DocmosisStandardDirectionOrder expectedData = fullDraftOrder();
@@ -90,7 +100,21 @@ class GatekeepingOrderGenerationServiceTest {
         assertThat(templateData).isEqualTo(expectedData);
     }
 
+    @Test
+    void shouldGenerateDraftOrderWithLegacyApplicant() {
+        DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForDraftWithLegacyApplicant());
+        DocmosisStandardDirectionOrder expectedData = fullDraftOrderFromLegacyApplicant();
+
+        assertThat(templateData).isEqualTo(expectedData);
+    }
+
     private DocmosisStandardDirectionOrder fullSealedOrder() {
+        return fullSealedOrderFromLegacyApplicant().toBuilder()
+            .applicantName("Local authority name")
+            .build();
+    }
+
+    private DocmosisStandardDirectionOrder fullSealedOrderFromLegacyApplicant() {
         return baseDocmosisOrder().toBuilder()
             .courtseal("[userImage:familycourtseal.png]")
             .dateOfIssue("29 November 2019")
@@ -98,6 +122,12 @@ class GatekeepingOrderGenerationServiceTest {
     }
 
     private DocmosisStandardDirectionOrder fullDraftOrder() {
+        return fullDraftOrderFromLegacyApplicant().toBuilder()
+            .applicantName("Local authority name")
+            .build();
+    }
+
+    private DocmosisStandardDirectionOrder fullDraftOrderFromLegacyApplicant() {
         return baseDocmosisOrder().toBuilder()
             .draftbackground("[userImage:draft-watermark.png]")
             .dateOfIssue("<date will be added on issue>")
@@ -105,6 +135,14 @@ class GatekeepingOrderGenerationServiceTest {
     }
 
     private CaseData caseDataForSealed() {
+        return caseDataForSealedWithLegacyApplicant().toBuilder()
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name("Local authority name")
+                .build()))
+            .build();
+    }
+
+    private CaseData caseDataForSealedWithLegacyApplicant() {
         return baseCaseData().toBuilder()
             .gatekeepingOrderEventData(baseCaseData().getGatekeepingOrderEventData().toBuilder()
                 .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
@@ -116,6 +154,14 @@ class GatekeepingOrderGenerationServiceTest {
     }
 
     private CaseData caseDataForDraft() {
+        return caseDataForDraftWithLegacyApplicant().toBuilder()
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name("Local authority name")
+                .build()))
+            .build();
+    }
+
+    private CaseData caseDataForDraftWithLegacyApplicant() {
         return baseCaseData().toBuilder()
             .gatekeepingOrderEventData(baseCaseData().getGatekeepingOrderEventData().toBuilder()
                 .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()

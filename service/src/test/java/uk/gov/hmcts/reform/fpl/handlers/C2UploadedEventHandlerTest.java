@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.RandomUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,21 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-
-import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.mockito.BDDMockito.given;
@@ -38,15 +33,11 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEM
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_CODE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {C2UploadedEventHandler.class, LookupTestConfig.class, HmctsAdminNotificationHandler.class})
+@SpringBootTest(classes = {C2UploadedEventHandler.class})
 class C2UploadedEventHandlerTest {
     @MockBean
     private IdamClient idamClient;
@@ -64,15 +55,14 @@ class C2UploadedEventHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @MockBean
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private CourtService courtService;
 
     @Autowired
     private C2UploadedEventHandler c2UploadedEventHandler;
 
-    private C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
+    private final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
 
-    final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-    C2UploadedTemplate c2Parameters = getC2UploadedTemplateParameters();
+    private final C2UploadedTemplate c2Parameters = getC2UploadedTemplateParameters();
 
     @BeforeEach
     void before() {
@@ -87,15 +77,14 @@ class C2UploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyNonHmctsAdminOnC2Upload() {
-        CaseData caseData = caseData();
+    void shouldNotifyHmctsAdminWhenC2UploadedByNonHmctsAdmin() {
+        CaseData caseData = caseData().toBuilder().build();
 
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoleNames()).build());
+            UserInfo.builder().roles(LOCAL_AUTHORITY.getRoleNames()).build());
 
-        given(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()))
-            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
-                COURT_CODE));
+        given(courtService.getCourtEmail(caseData))
+            .willReturn("hmcts-admin@test.com");
 
         given(c2UploadedEmailContentProvider.getNotifyData(caseData,
             c2DocumentBundle.getDocument()))
@@ -105,44 +94,17 @@ class C2UploadedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
-            "hmcts-non-admin@test.com",
+            "hmcts-admin@test.com",
             c2Parameters,
             caseData.getId());
     }
 
     @Test
-    void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() {
-        CaseData caseData = CaseData.builder()
-            .id(RandomUtils.nextLong())
-            .sendToCtsc("Yes")
-            .build();
-
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoleNames()).build());
-
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
-            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
-
-        given(c2UploadedEmailContentProvider
-            .getNotifyData(caseData, c2DocumentBundle.getDocument()))
-            .willReturn(c2Parameters);
-
-        c2UploadedEventHandler.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
-
-        verify(notificationService).sendEmail(
-            C2_UPLOAD_NOTIFICATION_TEMPLATE,
-            CTSC_INBOX,
-            c2Parameters,
-            caseData.getId());
-    }
-
-    @Test
-    void shouldNotNotifyHmctsAdminOnC2Upload() {
+    void shouldNotNotifyHmctsAdminWhenC2UploadedByHmctsAdmin() {
         CaseData caseData = caseData();
 
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoleNames()).build());
+            UserInfo.builder().roles(HMCTS_ADMIN.getRoleNames()).build());
 
         c2UploadedEventHandler.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
 
@@ -154,7 +116,7 @@ class C2UploadedEventHandlerTest {
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
         return C2UploadedTemplate.builder()
-            .callout(subjectLine)
+            .callout("Lastname, SACCCCCCCC5676576567")
             .respondentLastName("Smith")
             .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab")
             .documentLink(jsonFileObject.toMap())

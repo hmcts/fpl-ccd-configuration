@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -22,6 +21,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -30,6 +30,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ExtendWith(MockitoExtension.class)
 class ManageOrdersEventBuilderTest {
+    private static final List<Element<GeneratedOrder>> NO_ORDERS = List.of();
+
     private final DocumentReference document = mock(DocumentReference.class);
     private final GeneratedOrder order = mock(GeneratedOrder.class);
     private final CaseData caseData = mock(CaseData.class);
@@ -57,35 +59,32 @@ class ManageOrdersEventBuilderTest {
         List<Element<Other>> selectedOthers = List.of(element(testOther("Other 1")));
         DocumentReference expectedDocument = testDocumentReference();
 
-        when(caseData.getOrderCollection()).thenReturn(orders);
-        when(caseDataBefore.getOrderCollection()).thenReturn(orders);
+        when(caseData.getOrderCollection()).thenReturn(NO_ORDERS);
+        when(caseDataBefore.getOrderCollection()).thenReturn(NO_ORDERS);
         when(amendableOrder.getDocument()).thenReturn(expectedDocument);
-        when(amendableOrder.getAmendedOrderType()).thenReturn("Care order");
+        when(amendableOrder.getModifiedItemType()).thenReturn("Care order");
         when(amendableOrder.getSelectedOthers()).thenReturn(selectedOthers);
 
         when(finder.findOrderIfPresent(caseData, caseDataBefore)).thenReturn(Optional.of(amendableOrder));
 
-        ManageOrdersEvent event = underTest.build(caseData, caseDataBefore);
+        assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(
+            new AmendedOrderEvent(caseData, expectedDocument, "Care order", selectedOthers)
+        );
 
-        ManageOrdersEvent expectedEvent = new AmendedOrderEvent(caseData, expectedDocument,
-            "Care order", selectedOthers);
-        assertThat(event).isEqualTo(expectedEvent);
+        verifyNoInteractions(historyService);
     }
 
 
     @Test
     void buildNonAmended() {
-        List<Element<GeneratedOrder>> ordersBefore = List.of();
         when(caseData.getOrderCollection()).thenReturn(orders);
-        when(caseDataBefore.getOrderCollection()).thenReturn(ordersBefore);
+        when(caseDataBefore.getOrderCollection()).thenReturn(NO_ORDERS);
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(order);
         when(order.getDocument()).thenReturn(document);
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(GeneratedOrder.builder()
             .document(document)
             .build());
 
-        ManageOrdersEvent event = underTest.build(caseData, caseDataBefore);
-        ManageOrdersEvent expectedEvent = new GeneratedOrderEvent(caseData, document);
-        assertThat(event).isEqualTo(expectedEvent);
+        assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(new GeneratedOrderEvent(caseData, document));
     }
 }

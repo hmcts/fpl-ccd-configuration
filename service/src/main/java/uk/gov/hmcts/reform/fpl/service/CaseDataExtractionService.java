@@ -5,15 +5,15 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -53,11 +53,11 @@ public class CaseDataExtractionService {
     private static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Details and instructions will be "
         + "sent by the local court.";
 
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final CourtService courtService;
 
-    public String getCourtName(String localAuthority) {
-        return hmctsCourtLookupConfiguration.getCourt(localAuthority).getName();
+    public String getCourtName(CaseData caseData) {
+        return courtService.getCourtName(caseData);
     }
 
     public String getHearingTime(HearingBooking hearingBooking) {
@@ -96,9 +96,14 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    public String getApplicantName(List<Element<Applicant>> applicants) {
-        Applicant applicant = applicants.get(0).getValue();
-        return ofNullable(applicant.getParty())
+    public String getApplicantName(CaseData caseData) {
+        if (ObjectUtils.isNotEmpty(caseData.getLocalAuthorities())) {
+            return ofNullable(caseData.getLocalAuthorities().get(0).getValue())
+                .map(LocalAuthority::getName)
+                .orElse("");
+        }
+
+        return ofNullable(caseData.getAllApplicants().get(0).getValue().getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");
     }
