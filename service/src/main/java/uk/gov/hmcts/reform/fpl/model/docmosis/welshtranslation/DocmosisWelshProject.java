@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis.welshtranslation;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-@AllArgsConstructor
 public class DocmosisWelshProject {
     private final boolean ctsc;
     private final boolean reform;

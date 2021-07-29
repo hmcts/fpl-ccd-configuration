@@ -164,7 +164,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
-    private byte[] getDocmosisDocumentPDFBytes(){
+    private byte[] getDocmosisDocumentPDFBytes() {
         return underTest.buildTranslationRequestDocuments(
             request.toBuilder()
                 .format(RenderFormat.PDF)
