@@ -82,7 +82,11 @@ public class EmailNotificationHelper {
     }
 
     public static String buildCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
-        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+        return "^" + buildUnformattedCalloutWithNextHearing(caseData, time);
+    }
+
+    public static String buildUnformattedCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
+        return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
             caseData.getRespondents1(),
             caseData.getNextHearingAfter(time).orElse(null));
     }
