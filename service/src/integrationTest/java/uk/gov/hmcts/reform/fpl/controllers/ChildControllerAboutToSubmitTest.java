@@ -174,49 +174,38 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseDataBefore = CaseData.builder()
             .applicants(APPLICANTS)
             .children1(wrapElements(
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_1)
-                    .lastName(CHILD_SURNAME_1)
-                    .build()).build(),
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_2)
-                    .lastName(CHILD_SURNAME_2)
-                    .build()).build()
-            )).build();
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                    .build()
+            ))
+            .build();
 
         CaseData caseData = caseDataBefore.toBuilder()
             .state(NON_RESTRICTED_STATE)
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("Yes")
                 .childrenMainRepresentative(MAIN_REPRESENTATIVE)
-                .childrenHaveSameRepresentation("Yes")
                 .build())
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_1)
-                .lastName(CHILD_SURNAME_1)
-                .build()).solicitor(MAIN_REPRESENTATIVE).build(),
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_2)
-                .lastName(CHILD_SURNAME_2)
-                .build()).solicitor(MAIN_REPRESENTATIVE).build()
+            Child.builder()
+                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                .solicitor(MAIN_REPRESENTATIVE)
+                .build()
         );
 
         assertThat(responseData.getChildPolicyData()).isEqualTo(
             basePolicyData()
                 .childPolicy0(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORA, ORGANISATION_ID))
-                .childPolicy1(buildOrganisationPolicy(SolicitorRole.CHILDSOLICITORB, ORGANISATION_ID))
                 .build()
         );
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
                 .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, CHILD_NAME_1, CHILD_SURNAME_1))
-                .noticeOfChangeChildAnswers1(nocAnswers(ORGANISATION_NAME, CHILD_NAME_2, CHILD_SURNAME_2))
                 .build()
         );
 
