@@ -11,12 +11,11 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeChildAnswersData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
@@ -69,12 +68,9 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build())
         .build();
     private static final String ORGANISATION_NAME = "Test organisation";
-    private static final List<Element<Applicant>> APPLICANTS = List.of(
-        element(Applicant.builder()
-            .party(ApplicantParty.builder()
-                .organisationName(ORGANISATION_NAME)
-                .build())
-            .build()));
+    private static final List<Element<LocalAuthority>> LOCAL_AUTHORITIES = List.of(
+        element(LocalAuthority.builder().name(ORGANISATION_NAME).build())
+    );
     private static final String CHILD_NAME_1 = "John";
     private static final String CHILD_NAME_2 = "James";
     private static final String CHILD_SURNAME_1 = "Smith";
@@ -101,16 +97,18 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldRemoveExistingRepresentativeInfoWhenMainRepresentativeIsRemoved() {
+    void shouldRetainEmptyPolicyDataWhenChildrenDoNotHaveMainRepresentative() {
+        Child child = Child.builder()
+            .solicitor(null)
+            .party(ChildParty.builder().build())
+            .build();
+
         CaseData caseDataBefore = CaseData.builder()
-            .applicants(APPLICANTS)
-            .children1(wrapElements(Child.builder()
-                .solicitor(MAIN_REPRESENTATIVE)
-                .party(ChildParty.builder().build())
-                .build()))
-            .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveRepresentation("Yes")
-                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
+            .localAuthorities(LOCAL_AUTHORITIES)
+            .children1(wrapElements(child))
+            .childPolicyData(basePolicyData().build())
+            .noticeOfChangeChildAnswersData(NoticeOfChangeChildAnswersData.builder()
+                .noticeOfChangeChildAnswers0(nocAnswers(null, null, null))
                 .build())
             .build();
 
@@ -118,23 +116,18 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .state(NON_RESTRICTED_STATE)
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("No")
-                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
                 .build())
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
 
-        assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder().build()).build()
-        );
-
-        assertThat(responseData.getChildrenEventData().getChildrenMainRepresentative()).isNull();
+        assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(child);
 
         assertThat(responseData.getChildPolicyData()).isEqualTo(basePolicyData().build());
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
-                .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, null, null))
+                .noticeOfChangeChildAnswers0(nocAnswers(null, null, null))
                 .build()
         );
     }
@@ -143,7 +136,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldDoNothingIfOpenState() {
         CaseData caseData = CaseData.builder()
             .state(State.OPEN)
-            .applicants(APPLICANTS)
+            .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(Child.builder()
                 .party(ChildParty.builder().build())
                 .build()))
@@ -172,16 +165,14 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     @Test
     void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIsSelectedForTheFirstTime() {
         CaseData caseDataBefore = CaseData.builder()
-            .applicants(APPLICANTS)
+            .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_1)
-                    .lastName(CHILD_SURNAME_1)
-                    .build()).build(),
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_2)
-                    .lastName(CHILD_SURNAME_2)
-                    .build()).build()
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                    .build(),
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                    .build()
             )).build();
 
         CaseData caseData = caseDataBefore.toBuilder()
@@ -196,14 +187,14 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_1)
-                .lastName(CHILD_SURNAME_1)
-                .build()).solicitor(MAIN_REPRESENTATIVE).build(),
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_2)
-                .lastName(CHILD_SURNAME_2)
-                .build()).solicitor(MAIN_REPRESENTATIVE).build()
+            Child.builder()
+                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                .solicitor(MAIN_REPRESENTATIVE)
+                .build(),
+            Child.builder()
+                .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                .solicitor(MAIN_REPRESENTATIVE)
+                .build()
         );
 
         assertThat(responseData.getChildPolicyData()).isEqualTo(
@@ -226,18 +217,15 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIfBeforeNotSelected() {
-
         CaseData caseDataBefore = CaseData.builder()
-            .applicants(APPLICANTS)
+            .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_1)
-                    .lastName(CHILD_SURNAME_1)
-                    .build()).build(),
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_2)
-                    .lastName(CHILD_SURNAME_2)
-                    .build()).build()
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                    .build(),
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                    .build()
             )).childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("No")
                 .build())
@@ -255,14 +243,14 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_1)
-                .lastName(CHILD_SURNAME_1)
-                .build()).solicitor(MAIN_REPRESENTATIVE).build(),
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_2)
-                .lastName(CHILD_SURNAME_2)
-                .build()).solicitor(MAIN_REPRESENTATIVE).build()
+            Child.builder()
+                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                .solicitor(MAIN_REPRESENTATIVE)
+                .build(),
+            Child.builder()
+                .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                .solicitor(MAIN_REPRESENTATIVE)
+                .build()
         );
 
         assertThat(responseData.getChildPolicyData()).isEqualTo(
@@ -287,16 +275,16 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         when(identityService.generateId()).thenReturn(UUID_1, UUID_2);
 
         CaseData caseDataBefore = CaseData.builder()
-            .applicants(APPLICANTS)
+            .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_1)
-                    .lastName(CHILD_SURNAME_1)
-                    .build()).solicitor(MAIN_REPRESENTATIVE).build(),
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_2)
-                    .lastName(CHILD_SURNAME_2)
-                    .build()).solicitor(MAIN_REPRESENTATIVE).build()
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                    .solicitor(MAIN_REPRESENTATIVE)
+                    .build(),
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                    .solicitor(MAIN_REPRESENTATIVE)
+                    .build()
             )).childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("Yes")
                 .childrenMainRepresentative(MAIN_REPRESENTATIVE)
@@ -316,14 +304,14 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
 
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_1)
-                .lastName(CHILD_SURNAME_1)
-                .build()).solicitor(ANOTHER_REPRESENTATIVE).build(),
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_2)
-                .lastName(CHILD_SURNAME_2)
-                .build()).solicitor(ANOTHER_REPRESENTATIVE).build()
+            Child.builder()
+                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                .solicitor(ANOTHER_REPRESENTATIVE)
+                .build(),
+            Child.builder()
+                .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                .solicitor(ANOTHER_REPRESENTATIVE)
+                .build()
         );
 
         assertThat(responseData.getChildPolicyData()).isEqualTo(
@@ -394,75 +382,19 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_1)
-                    .lastName(CHILD_SURNAME_1)
-                    .build()).solicitor(MAIN_REPRESENTATIVE).build(),
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_2)
-                    .lastName(CHILD_SURNAME_2)
-                    .build()).solicitor(MAIN_REPRESENTATIVE).build()
-                )
-            ).build();
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
+                    .solicitor(MAIN_REPRESENTATIVE)
+                    .build(),
+                Child.builder()
+                    .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
+                    .solicitor(MAIN_REPRESENTATIVE)
+                    .build()
+            )).build();
 
         postAboutToSubmitEvent(caseData);
 
         verifyNoInteractions(representationService);
-    }
-
-    @Test
-    void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresentAndThenRemoved() {
-        when(identityService.generateId()).thenReturn(UUID_1, UUID_2);
-
-        CaseData caseDataBefore = CaseData.builder()
-            .applicants(APPLICANTS)
-            .children1(wrapElements(
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_1)
-                    .lastName(CHILD_SURNAME_1)
-                    .build()).solicitor(MAIN_REPRESENTATIVE).build(),
-                Child.builder().party(ChildParty.builder()
-                    .firstName(CHILD_NAME_2)
-                    .lastName(CHILD_SURNAME_2)
-                    .build()).solicitor(MAIN_REPRESENTATIVE).build()
-            )).childrenEventData(ChildrenEventData.builder()
-                .childrenHaveRepresentation("Yes")
-                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
-                .childrenHaveSameRepresentation("Yes")
-                .build())
-            .build();
-
-        CaseData caseData = caseDataBefore.toBuilder()
-            .state(NON_RESTRICTED_STATE)
-            .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveRepresentation("No")
-                .build())
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
-
-        assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_1)
-                .lastName(CHILD_SURNAME_1)
-                .build()).build(),
-            Child.builder().party(ChildParty.builder()
-                .firstName(CHILD_NAME_2)
-                .lastName(CHILD_SURNAME_2)
-                .build()).build()
-        );
-
-        assertThat(responseData.getChildPolicyData()).isEqualTo(basePolicyData()
-            .build());
-
-        assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
-            NoticeOfChangeChildAnswersData.builder()
-                .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, CHILD_NAME_1, CHILD_SURNAME_1))
-                .noticeOfChangeChildAnswers1(nocAnswers(ORGANISATION_NAME, CHILD_NAME_2, CHILD_SURNAME_2))
-                .build()
-        );
-
-        assertThat(responseData.getChangeOfRepresentatives()).isNull();
     }
 
     @Test
@@ -482,7 +414,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .state(NON_RESTRICTED_STATE)
-            .applicants(APPLICANTS)
+            .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(
                 Child.builder().party(ChildParty.builder().build()).build(),
                 Child.builder().party(ChildParty.builder().build()).build()
@@ -518,7 +450,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         UUID confidentialChildID = UUID.randomUUID();
         CaseData initialCaseData = CaseData.builder()
             .state(NON_RESTRICTED_STATE)
-            .applicants(APPLICANTS)
+            .localAuthorities(LOCAL_AUTHORITIES)
             .children1(List.of(
                 element(confidentialChildID, Child.builder().party(confidentialParty).build()),
                 element(Child.builder().party(nonConfidentialParty).build())
@@ -572,8 +504,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
     }
 
-    private NoticeOfChangeAnswers nocAnswers(String organisationName,
-                                             String respondentFirstName,
+    private NoticeOfChangeAnswers nocAnswers(String organisationName, String respondentFirstName,
                                              String respondentLastName) {
         return NoticeOfChangeAnswers.builder()
             .applicantName(organisationName)
