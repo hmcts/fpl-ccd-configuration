@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
-import uk.gov.hmcts.reform.fpl.utils.RemovedApplicationNotificationHelper;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {ApplicationRemovedEmailContentProvider.class, LookupTestConfig.class,
-    RemovedApplicationNotificationHelper.class})
+    RemoveApplicationService.class})
 class ApplicationRemovedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final String REMOVAL_REASON = "The order was removed because incorrect data was entered";

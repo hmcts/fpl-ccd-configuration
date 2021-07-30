@@ -13,15 +13,22 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.DUPLICATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.WRONG_CASE;
+import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.fromCCDMoneyGBP;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -91,6 +98,58 @@ public class RemoveApplicationService {
                 .map(Element::getValue);
         }
         return Optional.empty();
+    }
+
+    public String getApplicationFee(AdditionalApplicationsBundle removedApplication) {
+        String fee = removedApplication.getAmountToPay();
+        Optional<BigDecimal> decimalAmount = fromCCDMoneyGBP(fee);
+        String refundFeeText;
+
+        if (decimalAmount.isPresent()) {
+            BigDecimal amountToDisplay = decimalAmount.get();
+            refundFeeText = "An application fee of £" + amountToDisplay + " needs to be refunded.";
+        } else {
+            refundFeeText = "An application fee needs to be refunded.";
+        }
+
+        return refundFeeText;
+    }
+
+    public String getApplicantName(AdditionalApplicationsBundle removedApplication) {
+        if (!isEmpty(removedApplication.getC2DocumentBundle())) {
+            return removedApplication.getC2DocumentBundle().getApplicantName();
+        }
+
+        if (!isEmpty(removedApplication.getOtherApplicationsBundle())) {
+            return removedApplication.getOtherApplicationsBundle().getApplicantName();
+        }
+
+        return "";
+    }
+
+    public String getFilename(AdditionalApplicationsBundle removedApplication) {
+        String c2DocumentName = "";
+        String otherDocumentName = "";
+        if (!isEmpty(removedApplication.getC2DocumentBundle())) {
+            c2DocumentName = removedApplication.getC2DocumentBundle().getDocument().getFilename();
+        }
+
+        if (!isEmpty(removedApplication.getOtherApplicationsBundle())) {
+            otherDocumentName = removedApplication.getOtherApplicationsBundle().getDocument().getFilename();
+        }
+
+        return Stream.of(c2DocumentName, otherDocumentName)
+            .filter(s -> s != null && !s.isEmpty())
+            .collect(Collectors.joining(", "));
+    }
+
+    public String getRemovalReason(String removalReason) {
+        if (removalReason.equals(DUPLICATE.name())) {
+            return DUPLICATE.getLabel();
+        } else if (removalReason.equals(WRONG_CASE.name())) {
+            return WRONG_CASE.getLabel();
+        }
+        return removalReason;
     }
 
     private String getReasonToRemove(CaseData caseData) {
