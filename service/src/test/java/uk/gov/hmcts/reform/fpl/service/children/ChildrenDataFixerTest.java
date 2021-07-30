@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 
 import java.util.HashMap;
@@ -28,6 +29,7 @@ class ChildrenDataFixerTest {
     private static final String RETURNED_STATE = "RETURNED";
 
     private final CaseData caseData = mock(CaseData.class);
+    private final ChildrenEventData eventData = mock(ChildrenEventData.class);
     private final Child child = mock(Child.class);
 
     private final Map<String, Object> data = new HashMap<>();
@@ -41,7 +43,8 @@ class ChildrenDataFixerTest {
         data.clear();
     }
 
-    @DisplayName("Will add to data map when there is only 1 child and the case is in a post submitted state")
+    @DisplayName("Will add to data map when there is only 1 child, there is a main representative, and the case is in"
+                 + " a post submitted state")
     @Test
     void fixRepresentationDetails() {
         List<Element<Child>> children = wrapElements(child);
@@ -53,13 +56,37 @@ class ChildrenDataFixerTest {
 
         when(converter.convert(caseDetails)).thenReturn(caseData);
         when(caseData.getAllChildren()).thenReturn(children);
+        when(caseData.getChildrenEventData()).thenReturn(eventData);
+        when(eventData.getChildrenHaveRepresentation()).thenReturn("Yes");
 
         underTest.fixRepresentationDetails(caseDetails);
 
         assertThat(data).containsExactly(Map.entry("childrenHaveSameRepresentation", "Yes"));
     }
 
-    @DisplayName("Will not add to data map when there is more than 1 child and the case is in a post submitted state")
+    @DisplayName("Will not add to data map when there is only 1 child, there is no main representative, and the case "
+                 + "is in a post submitted state")
+    @Test
+    void fixRepresentationDetailsIgnoreDueToNoMainRepresentative() {
+        List<Element<Child>> children = wrapElements(child);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .state(SUBMITTED_STATE)
+            .data(data)
+            .build();
+
+        when(converter.convert(caseDetails)).thenReturn(caseData);
+        when(caseData.getAllChildren()).thenReturn(children);
+        when(caseData.getChildrenEventData()).thenReturn(eventData);
+        when(eventData.getChildrenHaveRepresentation()).thenReturn("No");
+
+        underTest.fixRepresentationDetails(caseDetails);
+
+        assertThat(data).isEmpty();
+    }
+
+    @DisplayName("Will not add to data map when there is more than 1 child, there is a main representative, and the "
+                 + "case is in a post submitted state")
     @Test
     void fixRepresentationDetailsIgnoreDueToChildSize() {
         List<Element<Child>> children = wrapElements(child, child);
@@ -71,6 +98,8 @@ class ChildrenDataFixerTest {
 
         when(converter.convert(caseDetails)).thenReturn(caseData);
         when(caseData.getAllChildren()).thenReturn(children);
+        when(caseData.getChildrenEventData()).thenReturn(eventData);
+        when(eventData.getChildrenHaveRepresentation()).thenReturn("Yes");
 
         underTest.fixRepresentationDetails(caseDetails);
 

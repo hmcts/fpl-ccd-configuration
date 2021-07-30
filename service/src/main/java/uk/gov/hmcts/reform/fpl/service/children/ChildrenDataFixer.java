@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 
@@ -27,9 +31,12 @@ public class ChildrenDataFixer {
             return caseDetails;
         }
 
-        final List<Element<Child>> children = converter.convert(caseDetails).getAllChildren();
+        final CaseData caseData = converter.convert(caseDetails);
+        final List<Element<Child>> children = caseData.getAllChildren();
+        final ChildrenEventData eventData = caseData.getChildrenEventData();
+        final YesNo haveRepresentation = YesNo.fromString(eventData.getChildrenHaveRepresentation());
 
-        if (1 == children.size()) {
+        if (YES == haveRepresentation && 1 == children.size()) {
             // directly adding to the map to ensure that it is persisted in the case data when returning to ccd
             caseDetails.getData().put(HAVE_SAME_REPRESENTATION_KEY, ALL_HAVE_SAME_REPRESENTATION);
         }
