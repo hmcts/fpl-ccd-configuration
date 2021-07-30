@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.RemovalReason;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -28,6 +29,7 @@ import static java.util.Comparator.nullsLast;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.RemovalReason.*;
 import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.fromCCDMoneyGBP;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -81,10 +83,10 @@ public class RemovedApplicationNotificationHelper {
     }
 
     public String getRemovalReason(String removalReason) {
-        if(removalReason.equals("DUPLICATE")) {
-            return "Duplicate";
-        } else if(removalReason.equals("WRONG_CASE")) {
-            return "Wrong case";
+        if(removalReason.equals(DUPLICATE)) {
+            return DUPLICATE.getLabel();
+        } else if(removalReason.equals(WRONG_CASE)) {
+            return WRONG_CASE.getLabel();
         }
         return removalReason;
     }

@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -17,17 +18,22 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +42,7 @@ import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -46,17 +53,20 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_REMOVED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @WebMvcTest(RemovalToolController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
+class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String CASE_ID = "12345";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
@@ -71,6 +81,7 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
     private static final Child CHILD = Child.builder()
         .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
         .build();
+    public static final String CTSCT_TEAM_LEAD_EMAIL = "teamlead@test.com";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -79,9 +90,12 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
     private CoreCaseDataService coreCaseDataService;
 
     @MockBean
+    private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
+
+    @MockBean
     private FeatureToggleService toggleService;
 
-    RemovalToolControllerSubmittedEvent() {
+    RemovalToolControllerSubmittedEventTest() {
         super("remove-order");
     }
 
@@ -94,8 +108,8 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
     void shouldPublishPopulateSDOAndSDORemovedEventsIfNewSDOHasBeenRemoved() throws NotificationClientException {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().removalReason(REMOVAL_REASON).build();
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), wrapElements(previousSDO), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), wrapElements(previousSDO), emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -129,8 +143,8 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
         List<Element<StandardDirectionOrder>> previousHiddenSDOs = singletonList(previousSDO);
         List<Element<StandardDirectionOrder>> hiddenSDOs = List.of(previousSDO, newSDO);
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), previousHiddenSDOs, emptyList());
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), previousHiddenSDOs, emptyList(), emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -161,8 +175,8 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
         List<Element<StandardDirectionOrder>> hiddenSDOs = singletonList(element(previousSDO));
         List<Element<HearingOrder>> hiddenCMOs = singletonList(element(HearingOrder.builder().build()));
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList());
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList(), emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -189,9 +203,10 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
         List<Element<GeneratedOrder>> previousHiddenOrders = singletonList(order);
         List<Element<StandardDirectionOrder>> hiddenSDOs = wrapElements(StandardDirectionOrder.builder().build());
         List<Element<HearingOrder>> hiddenCMOs = wrapElements(HearingOrder.builder().build());
+        List<Element<AdditionalApplicationsBundle>> hiddenApplications = wrapElements(AdditionalApplicationsBundle.builder().build());
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, hiddenOrders);
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, previousHiddenOrders);
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, hiddenOrders, hiddenApplications);
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, previousHiddenOrders, hiddenApplications);
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -209,8 +224,8 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
 
         List<Element<HearingOrder>> hiddenCMOs = singletonList(previousCMO);
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -236,8 +251,8 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
         List<Element<HearingOrder>> hiddenCMOs = List.of(previousCMO, removedCMO);
         List<Element<HearingOrder>> previouHiddenCMOs = singletonList(previousCMO);
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(previouHiddenCMOs, emptyList(), emptyList());
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(previouHiddenCMOs, emptyList(), emptyList(), emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -256,6 +271,38 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
         verifyNoMoreInteractions(coreCaseDataService);
     }
 
+    @Test
+    void shouldNotifyCTSCTeamLeadIfAnAdditionalApplicationIsRemoved() throws NotificationClientException {
+        given(ctscTeamLeadLookupConfiguration.getEmail())
+            .willReturn(CTSCT_TEAM_LEAD_EMAIL);
+
+        Element<AdditionalApplicationsBundle> previousApplication =
+            element(AdditionalApplicationsBundle.builder().removalReason(REMOVAL_REASON)
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .applicantName("Jim Byrne")
+                    .document(testDocumentReference("Filename"))
+                    .build())
+                .build());
+
+        List<Element<AdditionalApplicationsBundle>> hiddenApplications = singletonList(previousApplication);
+
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), hiddenApplications);
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), emptyList());
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore).build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_REMOVED_NOTIFICATION_TEMPLATE,
+            CTSCT_TEAM_LEAD_EMAIL,
+            expectedApplicationRemovalTemplateParameters(),
+            NOTIFICATION_REFERENCE
+        );
+    }
+
     private Map<String, Object> expectedOrderRemovalTemplateParameters() {
         OrderRemovalTemplate orderRemovalTemplate = OrderRemovalTemplate.builder()
             .caseReference(CASE_ID)
@@ -264,6 +311,20 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
             .removalReason(REMOVAL_REASON)
             .build();
         return mapper.convertValue(orderRemovalTemplate, new TypeReference<>() {});
+    }
+
+    private Map<String, Object> expectedApplicationRemovalTemplateParameters() {
+        ApplicationRemovedNotifyData data = ApplicationRemovedNotifyData.builder()
+            .caseId("12345")
+            .applicantName("Jim Byrne")
+            .c2Filename("Filename")
+            .caseUrl("http://fake-url/cases/case-details/12345")
+            .removalDate(DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), DATE_TIME_AT))
+            .reason("The order was removed because incorrect data was entered")
+            .applicationFeeText("An application fee needs to be refunded.")
+            .childLastName("Jones").build();
+
+        return mapper.convertValue(data, new TypeReference<>() {});
     }
 
     private GeneratedOrder buildOrder(GeneratedOrderType type) {
@@ -283,12 +344,14 @@ class RemovalToolControllerSubmittedEvent extends AbstractCallbackTest {
 
     private CaseDetails caseDetailsWithRemovableOrders(List<Element<HearingOrder>> hiddenCMOs,
                                                        List<Element<StandardDirectionOrder>> hiddenSDOs,
-                                                       List<Element<GeneratedOrder>> hiddenOrders) {
+                                                       List<Element<GeneratedOrder>> hiddenOrders,
+                                                       List<Element<AdditionalApplicationsBundle>> hiddenApplications) {
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_ID))
             .hiddenOrders(hiddenOrders)
             .hiddenStandardDirectionOrders(hiddenSDOs)
             .hiddenCaseManagementOrders(hiddenCMOs)
+            .hiddenApplicationsBundle(hiddenApplications)
             .respondents1(wrapElements(RESPONDENT))
             .children1(wrapElements(CHILD))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
