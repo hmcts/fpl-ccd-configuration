@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -53,6 +55,7 @@ public class UploadAdditionalApplicationsService {
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
     private final OthersService othersService;
+    private final PeopleInCaseService peopleInCaseService;
     private final FeatureToggleService featureToggleService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
@@ -81,11 +84,20 @@ public class UploadAdditionalApplicationsService {
         final LocalDateTime currentDateTime = time.now();
 
         List<Element<Other>> selectedOthers = new ArrayList<>();
+        List<Element<Respondent>> selectedRespondents = new ArrayList<>();
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                caseData.getOthersSelector(), caseData.getNotifyApplicationsToAllOthers());
+            selectedOthers = peopleInCaseService.getSelectedOthers(
+                caseData.getRespondents1(),
+                caseData.getAllOthers(),
+                caseData.getOthersSelector(),
+                caseData.getNotifyApplicationsToAllOthers());
+
+            selectedRespondents = peopleInCaseService.getSelectedRespondents(
+                caseData.getRespondents1(),
+                caseData.getOthersSelector(),
+                caseData.getNotifyApplicationsToAllOthers());
         }
-        String othersNotified = getOthersNotified(selectedOthers);
+        String othersNotified = peopleInCaseService.getPeopleNotified(selectedRespondents, selectedOthers);
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
             .pbaPayment(caseData.getTemporaryPbaPayment())
@@ -95,15 +107,15 @@ public class UploadAdditionalApplicationsService {
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             additionalApplicationsBundleBuilder.c2DocumentBundle(
-                buildC2DocumentBundle(caseData, applicantName.get(), selectedOthers, othersNotified,
-                    uploadedBy, currentDateTime)
+                buildC2DocumentBundle(caseData, applicantName.get(), selectedOthers, selectedRespondents,
+                    othersNotified, uploadedBy, currentDateTime)
             );
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
             additionalApplicationsBundleBuilder.otherApplicationsBundle(
-                buildOtherApplicationsBundle(caseData, applicantName.get(), selectedOthers, othersNotified,
-                    uploadedBy, currentDateTime)
+                buildOtherApplicationsBundle(caseData, applicantName.get(), selectedOthers, selectedRespondents,
+                    othersNotified, uploadedBy, currentDateTime)
             );
         }
 
@@ -128,6 +140,7 @@ public class UploadAdditionalApplicationsService {
     private C2DocumentBundle buildC2DocumentBundle(CaseData caseData,
                                                    String applicantName,
                                                    List<Element<Other>> selectedOthers,
+                                                   List<Element<Respondent>> selectedRespondents,
                                                    String othersNotified,
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
@@ -154,6 +167,7 @@ public class UploadAdditionalApplicationsService {
 
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             return c2DocumentBundleBuilder
+                .respondents(selectedRespondents)
                 .others(selectedOthers)
                 .othersNotified(othersNotified)
                 .build();
@@ -165,6 +179,7 @@ public class UploadAdditionalApplicationsService {
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
                                                                  String applicantName,
                                                                  List<Element<Other>> selectedOthers,
+                                                                 List<Element<Respondent>> selectedRespondents,
                                                                  String othersNotified,
                                                                  String uploadedBy,
                                                                  LocalDateTime uploadedTime) {

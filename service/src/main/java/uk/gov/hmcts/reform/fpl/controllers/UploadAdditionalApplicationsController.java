@@ -23,8 +23,8 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -59,7 +59,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
     private final ApplicantsListGenerator applicantsListGenerator;
-    private final OthersService othersService;
+    private final PeopleInCaseService peopleInCaseService;
     private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
@@ -84,10 +84,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && isNotEmpty(caseData.getAllOthers())) {
-            caseDetails.getData().put("hasOthers", "Yes");
-            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            if (isNotEmpty(caseData.getAllOthers()) || isNotEmpty(caseData.getRespondents1())) {
+                caseDetails.getData().put("hasOthers", "Yes");
+                caseDetails.getData().put("others_label", peopleInCaseService.buildPeopleInCaseLabel(
+                    caseData.getAllRespondents(), caseData.getOthers()));
+                caseDetails.getData().put("othersSelector", newSelector(
+                    caseData.getAllRespondents().size() + caseData.getAllOthers().size()));
+            }
         }
 
         return respond(caseDetails);

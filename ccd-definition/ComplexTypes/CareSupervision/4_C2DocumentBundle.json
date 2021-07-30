@@ -177,5 +177,16 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"DO NOT SHOW\"",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "respondents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\"",
+    "Searchable": "N"
   }
 ]
