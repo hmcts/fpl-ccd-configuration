@@ -311,7 +311,7 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderDocumentToRecipientsWhenServingOthersIsEnabled() {
+    void shouldPostOrderDocumentToRecipientsWhenServingOthersIsEnabled() {
         final Other firstOther = Other.builder().name("other1")
             .address(Address.builder().postcode("SE1").build()).build();
 

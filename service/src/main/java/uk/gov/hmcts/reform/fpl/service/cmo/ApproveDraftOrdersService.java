@@ -181,7 +181,7 @@ public class ApproveDraftOrdersService {
                     List<Element<Other>> selectedOthers = new ArrayList<>();
                     if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
                         selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                            caseData.getOthersSelector(), caseData.getReviewCMONotifyAllOthers());
+                            caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
                     }
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
@@ -251,7 +251,7 @@ public class ApproveDraftOrdersService {
                     List<Element<Other>> selectedOthers = new ArrayList<>();
                     if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
                         selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                            caseData.getOthersSelector(), caseData.getReviewCMONotifyAllOthers());
+                            caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
                     }
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(

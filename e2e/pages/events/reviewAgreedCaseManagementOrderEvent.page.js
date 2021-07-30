@@ -18,11 +18,11 @@ module.exports = {
   },
 
   selectAllOthers() {
-    I.click('#reviewCMONotifyAllOthers_Yes');
+    I.click('#sendOrderToAllOthers_Yes');
   },
 
   selectNotifyAllOthersNo() {
-    I.click('#reviewCMONotifyAllOthers_No');
+    I.click('#sendOrderToAllOthers_No');
   },
 
   async selectMakeChangesToCmo() {

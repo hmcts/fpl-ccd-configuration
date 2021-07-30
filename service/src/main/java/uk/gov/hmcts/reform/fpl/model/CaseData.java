@@ -441,7 +441,6 @@ public class CaseData {
     private final String sendOrderToAllOthers;
 
     private final String notifyApplicationsToAllOthers;
-    private final String reviewCMONotifyAllOthers;
 
     public String getOrderAppliesToAllChildren() {
         return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;

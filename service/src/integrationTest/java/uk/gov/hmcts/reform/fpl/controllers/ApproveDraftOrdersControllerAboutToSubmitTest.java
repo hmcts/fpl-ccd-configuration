@@ -140,7 +140,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
                     .address(Address.builder().postcode("SW2").build()).build())).build())
             .othersSelector(Selector.newSelector(2)).notifyApplicationsToAllOthers(YesNo.YES.getValue())
-            .reviewCMONotifyAllOthers(YesNo.YES.getValue())
+            .sendOrderToAllOthers(YesNo.YES.getValue())
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
@@ -360,7 +360,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             "draftOrder1Document", "draftOrder2Document", "draftOrder3Document", "draftOrder4Document",
             "draftOrder5Document", "draftOrder6Document", "draftOrder7Document", "draftOrder8Document",
             "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles", "draftOrdersTitlesInBundle",
-            "others_label", "hasOthers", "reviewCMONotifyAllOthers", "othersSelector", "reviewCMOShowOthers");
+            "others_label", "hasOthers", "sendOrderToAllOthers", "othersSelector", "reviewCMOShowOthers");
     }
 
     private static Stream<Arguments> populateCaseDataWithState() {

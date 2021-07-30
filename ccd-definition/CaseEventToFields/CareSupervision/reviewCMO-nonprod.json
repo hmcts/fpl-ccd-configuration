@@ -30,7 +30,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMOOthersHeader",
+    "CaseFieldID": "otherDetailsSectionHeader",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "PageID": "SelectOthers",
@@ -42,7 +42,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMOOthersSubHeader",
+    "CaseFieldID": "otherDetailsSectionSubHeader",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "PageID": "SelectOthers",
@@ -78,7 +78,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMONotifyAllOthers",
+    "CaseFieldID": "sendOrderToAllOthers",
     "PageFieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
     "PageID": "SelectOthers",
@@ -96,7 +96,7 @@
     "PageID": "SelectOthers",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "reviewCMONotifyAllOthers=\"No\"",
+    "FieldShowCondition": "sendOrderToAllOthers=\"No\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
