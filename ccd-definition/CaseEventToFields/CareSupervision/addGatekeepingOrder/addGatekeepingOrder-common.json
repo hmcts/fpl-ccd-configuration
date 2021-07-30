@@ -121,7 +121,7 @@
     "CaseFieldID": "languageRequirement",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "PageID": "SealDecision",
+    "PageID": "Router",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "gatekeepingOrderRouter=\"DO_NOT_SHOW\"",

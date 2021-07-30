@@ -63,7 +63,7 @@ public class UrgentGatekeepingOrderService {
             .order(sealingService.sealDocument(orderDocument))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
-            .translationRequirements(eventData.getGatekeepingTranslationRequirements())
+            .translationRequirements(eventData.getUrgentGatekeepingTranslationRequirements())
             .allocation(allocation)
             .build();
 

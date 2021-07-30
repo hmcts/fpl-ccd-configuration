@@ -33,7 +33,6 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     DocumentReference translatedOrder;
     DocumentReference unsealedOrder;
     String allocation;
-    String sdoTranslationRequirement;
     LocalDate dateAdded;
     LocalDate amendedDate;
     List<Element<Other>> others;
