@@ -192,8 +192,8 @@ module.exports = {
     I.click(type);
   },
 
-  enterRemovalAddress(address) {
-    postcodeLookup.enterAddressManually(address);
+  async enterRemovalAddress(address) {
+    await postcodeLookup.enterAddressManually(address);
   },
 
   includePhrase(option) {

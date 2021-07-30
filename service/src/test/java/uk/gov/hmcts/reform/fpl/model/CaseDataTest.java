@@ -173,29 +173,6 @@ class CaseDataTest {
     }
 
     @Test
-    void shouldFindExistingApplicant() {
-        Applicant applicant = Applicant.builder().build();
-        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
-
-        assertThat(caseData.findApplicant(0)).contains(applicant);
-    }
-
-    @Test
-    void shouldNotFindNonExistingApplicant() {
-        Applicant applicant = Applicant.builder().build();
-        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
-
-        assertThat(caseData.findApplicant(1)).isEmpty();
-    }
-
-    @Test
-    void shouldNotFindApplicantWhenNull() {
-        CaseData caseData = CaseData.builder().build();
-
-        assertThat(caseData.findApplicant(0)).isEmpty();
-    }
-
-    @Test
     void shouldGetOrderAppliesToAllChildrenWithValueAsYesWhenOnlyOneChildOnCase() {
         CaseData caseData = CaseData.builder().children1(List.of(testChild())).build();
         assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("Yes");
@@ -418,6 +395,39 @@ class CaseDataTest {
         boolean hearingInPast = caseData.isHearingDateInPast();
 
         assertThat(hearingInPast).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenWelshRequestedNotSelected() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement(null)
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenWelshRequestedSetToNo() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement("No")
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenWelshRequestedSetToYes() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement("Yes")
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isTrue();
     }
 
     @Test

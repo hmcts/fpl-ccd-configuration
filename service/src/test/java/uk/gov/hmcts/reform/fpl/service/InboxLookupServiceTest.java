@@ -32,7 +32,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class InboxLookupServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+solicitor@gmail.com";
+    private static final String ADDITIONAL_EMAIL_1 = "solicitor@gmail.com";
+    private static final String ADDITIONAL_EMAIL_2 = "caseworker@gmail.com";
     static final String FALLBACK_INBOX = "FamilyPublicLaw@gmail.com";
     private static final String LEGAL_REPRESENTATIVE_1_EMAIL = "legal.representative.1@solicitors.com";
     private static final String LEGAL_REPRESENTATIVE_2_EMAIL = "legal.representative.2@solicitors.com";
@@ -45,6 +46,9 @@ class InboxLookupServiceTest {
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private ApplicantLocalAuthorityService localAuthorityService;
 
     @Autowired
     private InboxLookupService underTest;
@@ -142,10 +146,13 @@ class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.empty());
 
+        given(localAuthorityService.getContactsEmails(caseData))
+            .willReturn(List.of(ADDITIONAL_EMAIL_1, ADDITIONAL_EMAIL_2));
+
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        assertThat(emails).containsExactly(SOLICITOR_EMAIL_ADDRESS);
+        assertThat(emails).containsExactlyInAnyOrder(ADDITIONAL_EMAIL_1, ADDITIONAL_EMAIL_2);
     }
 
     @Test
@@ -155,25 +162,33 @@ class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority("")));
 
+        given(localAuthorityService.getContactsEmails(caseData))
+            .willReturn(List.of(ADDITIONAL_EMAIL_1, ADDITIONAL_EMAIL_2));
+
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        assertThat(emails).containsExactly(SOLICITOR_EMAIL_ADDRESS);
+        assertThat(emails).containsExactlyInAnyOrder(ADDITIONAL_EMAIL_1, ADDITIONAL_EMAIL_2);
     }
 
     @Test
-    void shouldReturnLocalAuthorityEmailAndSolicitorEmailWhenFeatureToggleEnabled() {
+    void shouldReturnLocalAuthorityEmailAndAdditionalContactsWhenFeatureToggleEnabled() {
         CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
 
         given(featureToggleService.isSendLAEmailsToSolicitorEnabled(LOCAL_AUTHORITY_CODE)).willReturn(true);
+        given(localAuthorityService.getContactsEmails(caseData))
+            .willReturn(List.of(ADDITIONAL_EMAIL_1, ADDITIONAL_EMAIL_2));
 
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        assertThat(emails).containsExactlyInAnyOrder(LOCAL_AUTHORITY_EMAIL_ADDRESS, SOLICITOR_EMAIL_ADDRESS);
+        assertThat(emails).containsExactlyInAnyOrder(
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            ADDITIONAL_EMAIL_1,
+            ADDITIONAL_EMAIL_2);
     }
 
     @Test
@@ -208,7 +223,6 @@ class InboxLookupServiceTest {
         return CaseData.builder()
             .id(RandomUtils.nextLong())
             .caseLocalAuthority(localAuthority)
-            .solicitor(Solicitor.builder().email(SOLICITOR_EMAIL_ADDRESS).build())
             .build();
     }
 }

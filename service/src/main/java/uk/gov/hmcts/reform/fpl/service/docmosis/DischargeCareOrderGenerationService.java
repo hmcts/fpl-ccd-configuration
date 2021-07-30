@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDischargeOfCareOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 
 import java.util.List;
@@ -25,8 +25,8 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DischargeCareOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
 
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final DischargeCareOrderService dischargeCareOrder;
+    private final CourtService courtService;
 
     @Override
     DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData) {
@@ -46,7 +46,7 @@ public class DischargeCareOrderGenerationService extends GeneratedOrderTemplateD
 
     private List<DocmosisOrder> extractCareOrders(CaseData caseData) {
         final List<GeneratedOrder> careOrders = dischargeCareOrder.getSelectedCareOrders(caseData);
-        final String defaultCourtName = getDefaultCourt(caseData);
+        final String defaultCourtName = courtService.getCourtName(caseData);
 
         return careOrders.stream()
             .map(order -> DocmosisOrder.builder()
@@ -56,7 +56,4 @@ public class DischargeCareOrderGenerationService extends GeneratedOrderTemplateD
             .collect(Collectors.toList());
     }
 
-    private String getDefaultCourt(CaseData caseData) {
-        return hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName();
-    }
 }

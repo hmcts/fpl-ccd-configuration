@@ -469,6 +469,28 @@
         "judgeLastName": "Moley",
         "judgeEmailAddress": "moley@example.com"
       }
-    }
+    },
+    "noticeOfProceedingsBundle": [
+      {
+        "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
+        "value": {
+          "document": {
+            "document_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8",
+            "document_filename": "blah_c6.pdf",
+            "document_binary_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8/binary"
+          }
+        }
+      },
+      {
+        "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb92",
+        "value": {
+          "document": {
+            "document_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8",
+            "document_filename": "blah_c6a.pdf",
+            "document_binary_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8/binary"
+          }
+        }
+      }
+    ]
   }
 }

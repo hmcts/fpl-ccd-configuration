@@ -38,8 +38,8 @@ def otherSecrets = [
     secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
   ],
   'fpl-${env}': [
-    secret('ccd-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-    secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
+    secret('definition-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
+    secret('definition-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
   ]
 ]
 
@@ -132,12 +132,24 @@ withPipeline(type, product, component) {
 
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
+  enableHighLevelDataSetup()
 
   onMaster() {
+    env.ENV = 'aat'
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
   }
   onPR() {
+    env.ENV = 'preview'
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+  onDemo {
+    env.ENV = 'demo'
+  }
+  onPerftest{
+    env.ENV = 'perftest'
+  }
+  onIthc{
+    env.ENV = 'ithc'
   }
 
   after('checkout') {
@@ -211,12 +223,7 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
-  before('functionalTest:preview') {
-    env.ENV = 'preview'
-  }
-
   before('functionalTest:aat') {
-    env.ENV = 'aat'
     env.SKIP_BROWSER_TESTS = 'true'
   }
 
@@ -226,8 +233,8 @@ withPipeline(type, product, component) {
   }
 
   after('functionalTest:aat') {
-    archiveCoreCaseDataDefinitions('prod')
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    env.ENV = 'prod' // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
 
   after('functionalTest:preview') {
@@ -236,30 +243,17 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
-  before('buildinfra:demo') {
-    withSubscription('nonprod') {
-      withTeamSecrets(pipelineConf, 'demo') {
-        archiveCoreCaseDataDefinitions('demo')
-        uploadCoreCaseDataDefinitions('demo')
+  after('highleveldatasetup') {
+    if (env.ENV != 'preview') { // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
+      echo "CCD definition upload for environment: ${env.ENV}"
+      withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
+        withTeamSecrets(pipelineConf, env.ENV) {
+          archiveCoreCaseDataDefinitions(env.ENV)
+          uploadCoreCaseDataDefinitions(env.ENV)
+        }
       }
-    }
-  }
-
-  before('buildinfra:ithc') {
-    withSubscription('nonprod') {
-      withTeamSecrets(pipelineConf, 'ithc') {
-        archiveCoreCaseDataDefinitions('ithc')
-        uploadCoreCaseDataDefinitions('ithc')
-      }
-    }
-  }
-
-  before('buildinfra:perftest') {
-    withSubscription('nonprod') {
-      withTeamSecrets(pipelineConf, 'perftest') {
-        archiveCoreCaseDataDefinitions('perftest')
-        uploadCoreCaseDataDefinitions('perftest')
-      }
+    } else {
+      echo "CCD definition upload SKIPPED for environment: ${env.ENV}"
     }
   }
 
@@ -267,7 +261,5 @@ withPipeline(type, product, component) {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
     env.SMOKE_TESTS_SELECTOR = "@skip-smoke-test"
-    archiveCoreCaseDataDefinitions('aat')
-    uploadCoreCaseDataDefinitions('aat')
   }
 }

@@ -82,10 +82,10 @@ public class OthersService {
             caseData.getSendOrderToAllOthers());
     }
 
-    private List<Element<Other>> getSelectedOthers(List<Element<Other>> others, Selector selector,
-                                                   String sendOrderToAllOthers) {
+    public List<Element<Other>> getSelectedOthers(List<Element<Other>> others, Selector selector,
+                                                  String allOthersSelected) {
 
-        if (useAllOthers(sendOrderToAllOthers)) {
+        if (useAllOthers(allOthersSelected)) {
             return others;
         } else {
             if (isNull(selector) || isEmpty(selector.getSelected())) {

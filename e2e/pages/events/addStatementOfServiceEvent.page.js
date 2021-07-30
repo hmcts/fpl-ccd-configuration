@@ -49,9 +49,9 @@ module.exports = {
   },
 
   enterRecipientsAddress: async function (elementIndex, recipients) {
-    await within(this.fields(elementIndex).recipients.address, () => {
+    await within(this.fields(elementIndex).recipients.address, async () => {
       //XXX removed postcode lookup due to instability
-      postcodeLookup.enterAddressManually(recipients.address);
+      await postcodeLookup.enterAddressManually(recipients.address);
     });
   },
 };

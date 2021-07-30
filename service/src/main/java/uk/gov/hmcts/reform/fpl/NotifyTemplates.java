@@ -16,8 +16,10 @@ public final class NotifyTemplates {
     public static final String OUTSOURCED_CASE_TEMPLATE_CHILD_NAME = "c4d612a3-8384-468b-9b83-532e7e857c63";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "3c422258-7a6e-4aa0-8d4b-56f50f42d0eb";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
-    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
+    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
         = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
+    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
+        = "62791aee-6caf-4a22-a599-fcfc4381ba20";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
@@ -84,5 +86,6 @@ public final class NotifyTemplates {
     public static final String NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE = "0411d52e-69eb-440c-bb1f-3059ac6b9130";
     public static final String MANAGING_ORGANISATION_REMOVED_TEMPLATE = "e3fb2174-128a-41a4-acbb-ea3ffe758689";
     public static final String ORDER_AMENDED_NOTIFICATION_TEMPLATE = "fc3db3ca-b62c-4a29-ad9a-864d2fe10b72";
+    public static final String ITEM_TRANSLATED_NOTIFICATION_TEMPLATE = "d0ba99bc-cc1f-4891-86f2-a77b4724b544";
     public static final String APPLICATION_REMOVED_NOTIFICATION_TEMPLATE = "b4be9fb8-3052-4d1b-86c0-e74646314ddb";
 }

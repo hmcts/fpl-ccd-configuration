@@ -45,6 +45,14 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     I.see('Case information');
   };
 
+  Scenario('HMCTS admin updates language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
+    await setupScenario(I);
+    await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
+    await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+    await I.completeEvent('Save and continue');
+    I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
+  });
+
   const summaryText = 'Summary of change';
   const descriptionText = 'Description of change';
 
@@ -85,6 +93,8 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);
   await I.goToNextPage();
+  uploadAdditionalApplicationsEventPage.selectOthers(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [0]);
+  await I.goToNextPage();
   const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
   uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
@@ -99,6 +109,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Applicant'], 'Jonathon Walker');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'People notified'], 'Noah King');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Uploaded by'], 'HMCTS');
@@ -112,12 +123,13 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Additional orders requested'], 'Parental responsibility');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
 
   I.seeInTab(['Additional applications 1', 'Other applications', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Applicant'], 'Jonathon Walker');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'People notified'], 'Noah King');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Application type'], 'C1 - Parental responsibility');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Date and time of upload']);
@@ -132,7 +144,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.pdf');
 
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Paid with PBA'], 'Yes');
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
@@ -154,7 +166,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.pdf');
 });
 
 Scenario('HMCTS admin edits supporting evidence document on Other application', async({I, caseViewPage, manageDocumentsEventPage}) => {
@@ -171,7 +183,7 @@ Scenario('HMCTS admin edits supporting evidence document on Other application', 
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.pdf');
 });
 
 Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage}) => {

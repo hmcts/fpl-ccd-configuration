@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 
@@ -27,7 +28,7 @@ class PlacementApplicationEventHandlerTest {
     @Mock
     private NotificationService notificationService;
     @Mock
-    private HmctsAdminNotificationHandler notificationHandler;
+    private CourtService courtService;
     @Mock
     private PlacementApplicationContentProvider contentProvider;
     @InjectMocks
@@ -36,7 +37,7 @@ class PlacementApplicationEventHandlerTest {
     @Test
     void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDisabled() {
         given(contentProvider.buildPlacementApplicationNotificationParameters(CASE_DATA)).willReturn(NOTIFY_DATA);
-        given(notificationHandler.getHmctsAdminEmail(CASE_DATA)).willReturn(COURT_EMAIL_ADDRESS);
+        given(courtService.getCourtEmail(CASE_DATA)).willReturn(COURT_EMAIL_ADDRESS);
         given(CASE_DATA.getId()).willReturn(CASE_ID);
 
         underTest.notifyAdmin(new PlacementApplicationEvent(CASE_DATA));
@@ -49,7 +50,7 @@ class PlacementApplicationEventHandlerTest {
     @Test
     void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() {
         given(contentProvider.buildPlacementApplicationNotificationParameters(CASE_DATA)).willReturn(NOTIFY_DATA);
-        given(notificationHandler.getHmctsAdminEmail(CASE_DATA)).willReturn(CTSC_INBOX);
+        given(courtService.getCourtEmail(CASE_DATA)).willReturn(CTSC_INBOX);
         given(CASE_DATA.getId()).willReturn(CASE_ID);
 
         underTest.notifyAdmin(new PlacementApplicationEvent(CASE_DATA));

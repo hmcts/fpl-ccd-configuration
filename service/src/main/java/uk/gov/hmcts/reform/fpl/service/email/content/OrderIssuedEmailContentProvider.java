@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
-    private final HmctsCourtLookupConfiguration config;
+    private final CourtService courtService;
     private final Time time;
     private final OrderIssuedEmailContentProviderTypeOfOrderCalculator typeCalculator;
     private final EmailNotificationHelper helper;
@@ -75,7 +75,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return OrderIssuedNotifyData.builder()
             .lastName(helper.getSubjectLineLastName(caseData))
             .orderType(typeCalculator.getTypeOfOrder(caseData, type))
-            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .courtName(courtService.getCourtName(caseData))
             .callout(NOTICE_OF_PLACEMENT_ORDER != type ? buildCalloutWithNextHearing(caseData, time.now()) : "")
             .build();
     }

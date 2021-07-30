@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 
 import java.util.List;
 
@@ -23,8 +23,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SO
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentsUpdatedEventHandler {
 
-    private final RegisteredRespondentSolicitorContentProvider registeredContentProvider;
-    private final UnregisteredRespondentSolicitorContentProvider unregisteredContentProvider;
+    private final RegisteredRepresentativeSolicitorContentProvider registeredContentProvider;
+    private final UnregisteredRepresentativeSolicitorContentProvider unregisteredContentProvider;
     private final NotificationService notificationService;
     private final RespondentService respondentService;
 
@@ -43,9 +43,7 @@ public class RespondentsUpdatedEventHandler {
         respondentsWithRegisteredSolicitors.removeAll(respondentsWithRegisteredSolicitorsBefore);
 
         respondentsWithRegisteredSolicitors.forEach(recipient -> {
-            NotifyData notifyData = registeredContentProvider.buildRespondentSolicitorSubmissionNotification(
-                caseData, recipient
-            );
+            NotifyData notifyData = registeredContentProvider.buildContent(caseData, recipient);
 
             notificationService.sendEmail(REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 recipient.getSolicitor().getEmail(), notifyData, caseData.getId()
@@ -69,6 +67,7 @@ public class RespondentsUpdatedEventHandler {
 
         respondentsWithUnregisteredSolicitors.forEach(recipient -> {
             NotifyData notifyData = unregisteredContentProvider.buildContent(caseData, recipient);
+
             notificationService.sendEmail(UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 recipient.getSolicitor().getEmail(), notifyData, caseData.getId());
         });

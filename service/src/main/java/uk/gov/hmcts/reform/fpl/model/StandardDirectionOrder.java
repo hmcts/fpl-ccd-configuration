@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.AmendedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -14,11 +14,14 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder {
+public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder, TranslatableItem {
     public static final UUID COLLECTION_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
     private final String hearingDate;
@@ -49,9 +52,11 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private final List<Element<StandardDirection>> standardDirections;
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
+    private DocumentReference translatedOrderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
     private final List<Element<Other>> others;
+    private final LocalDateTime translationUploadDateTime;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -82,6 +87,17 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     }
 
     @Override
+    @JsonIgnore
+    public boolean hasBeenTranslated() {
+        return Objects.nonNull(translatedOrderDoc);
+    }
+
+    @Override
+    public LocalDateTime translationUploadDateTime() {
+        return translationUploadDateTime;
+    }
+
+    @Override
     public String asLabel() {
         String formattedDate = Optional.ofNullable(dateOfIssue)
             .orElse(formatLocalDateToString(defaultIfNull(dateOfUpload, LocalDate.now()), DATE));
@@ -109,14 +125,20 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
 
     @Override
     @JsonIgnore
+    public DocumentReference getTranslatedDocument() {
+        return translatedOrderDoc;
+    }
+
+    @Override
+    @JsonIgnore
     public DocumentReference getDocument() {
         return orderDoc;
     }
 
     @JsonIgnore
     @Override
-    public String getAmendedOrderType() {
-        return AmendedOrderType.STANDARD_DIRECTION_ORDER.getLabel();
+    public String getModifiedItemType() {
+        return ModifiedOrderType.STANDARD_DIRECTION_ORDER.getLabel();
     }
 
     @JsonIgnore

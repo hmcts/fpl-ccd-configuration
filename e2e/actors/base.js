@@ -116,7 +116,7 @@ module.exports = {
   },
 
   seeEventSubmissionConfirmation(event) {
-    this.see(`updated with event: ${event}`);
+    this.waitForText(`updated with event: ${event}`);
   },
 
   clickHyperlink(link, urlNavigatedTo) {
@@ -257,6 +257,16 @@ module.exports = {
     }
   },
 
+  async addElementToCollection(index = 0) {
+    const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
+
+    for(let i = numberOfElements; i <= index; i++){
+      this.click('Add new');
+      this.waitNumberOfVisibleElements('.collection-title', i + 1);
+      this.wait(0.5);
+    }
+  },
+
   async addAnotherElementToCollection(collectionName) {
     const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
     if (collectionName) {
@@ -325,6 +335,10 @@ module.exports = {
 
       output.print(`Page change failed (${originalUrl})`);
     }
+  },
+
+  async goToPreviousPage() {
+    this.click('Previous');
   },
 
   async getActiveElementIndex() {

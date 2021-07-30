@@ -66,7 +66,7 @@ class DocmosisCommonElementDecoratorTest {
 
     @BeforeEach
     void setUp() {
-        when(extractionService.getCourtName(LA_CODE)).thenReturn(COURT_NAME);
+        when(extractionService.getCourtName(CASE_DATA)).thenReturn(COURT_NAME);
         when(extractionService.getJudgeAndLegalAdvisor(JUDGE)).thenReturn(DOCMOSIS_JUDGE);
         when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(CHILDREN);
         when(extractionService.getChildrenDetails(CHILDREN)).thenReturn(DOCMOSIS_CHILDREN);

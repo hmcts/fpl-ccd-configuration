@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,8 +26,8 @@ import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -63,6 +60,8 @@ import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
@@ -105,9 +104,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String CASE_NAME = "test case name1";
 
-    @Autowired
-    protected ObjectMapper mapper;
-
     @MockBean
     private PaymentService paymentService;
 
@@ -131,13 +127,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
-        final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(true), new TypeReference<>() {}
-        );
+        final Map<String, Object> expectedHmctsParameters = toMap(getExpectedHmctsParameters(true));
 
-        final Map<String, Object> completeCafcassParameters = mapper.convertValue(
-            getExpectedCafcassParameters(true), new TypeReference<>() {}
-        );
+        final Map<String, Object> completeCafcassParameters = toMap(getExpectedCafcassParameters(true));
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
@@ -185,9 +177,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .submittedForm(DocumentReference.builder().binaryUrl("testUrl").build())
             .build();
 
-        final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {}
-        );
+        final Map<String, Object> registeredSolicitorParameters = toMap(getExpectedRegisteredSolicitorParameters());
 
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
 
@@ -217,9 +207,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {}
-        );
+        Map<String, Object> expectedIncompleteHmctsParameters = toMap(getExpectedHmctsParameters(false));
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -246,9 +234,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {}
-        );
+        Map<String, Object> expectedIncompleteHmctsParameters = toMap(getExpectedHmctsParameters(false));
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -276,7 +262,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                     .organisationName("Third party")
                     .build())
                 .build())
-            .caseLocalAuthority("example")
+            .caseLocalAuthority(LOCAL_AUTHORITY_2_CODE)
             .id(CASE_ID)
             .build();
 
@@ -285,7 +271,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(OUTSOURCED_CASE_TEMPLATE), eq(LA_EMAIL),
+            eq(OUTSOURCED_CASE_TEMPLATE), eq(LOCAL_AUTHORITY_2_INBOX),
             anyMap(), eq(NOTIFICATION_REFERENCE)));
     }
 
@@ -309,7 +295,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
         Map<String, Object> expectedParameters = mapper.convertValue(
-            UnregisteredRespondentSolicitorTemplate.builder()
+            UnregisteredRepresentativeSolicitorTemplate.builder()
                 .ccdNumber("1234-5678-9012-3456")
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
                 .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
@@ -349,14 +335,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         String expectedSalutation = String.format("Dear %s %s", SOLICITOR_FIRST_NAME, SOLICITOR_LAST_NAME);
         String expectedName = String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME);
 
-        Map<String, Object> expectedUnregisteredSolicitorParameters = mapper.convertValue(
-            RegisteredRespondentSolicitorTemplate.builder()
+        Map<String, Object> expectedUnregisteredSolicitorParameters = toMap(
+            RegisteredRepresentativeSolicitorTemplate.builder()
                 .salutation(expectedSalutation)
                 .clientFullName(expectedName)
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
-                .build(),
-            new TypeReference<>() {
-            });
+                .build());
 
         checkUntil(() ->
             verify(notificationClient, never()).sendEmail(
@@ -596,12 +580,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         submitCaseCafcassTemplate.setCafcass(DEFAULT_CAFCASS_COURT);
         submitCaseCafcassTemplate.setDocumentLink(jsonFileObject.toMap());
-        return mapper.convertValue(submitCaseCafcassTemplate, new TypeReference<>() {
-        });
+        return toMap(submitCaseCafcassTemplate);
     }
 
     private Map<String, Object> getExpectedRegisteredSolicitorParameters() {
-        RegisteredRespondentSolicitorTemplate template = RegisteredRespondentSolicitorTemplate.builder()
+        RegisteredRepresentativeSolicitorTemplate template = RegisteredRepresentativeSolicitorTemplate.builder()
             .salutation("Dear First Representative")
             .clientFullName(String.format("%s %s", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME))
             .localAuthority(LOCAL_AUTHORITY_1_NAME)
@@ -611,7 +594,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .childLastName(EMPTY)
             .build();
 
-        return mapper.convertValue(template, new TypeReference<>() {});
+        return toMap(template);
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {

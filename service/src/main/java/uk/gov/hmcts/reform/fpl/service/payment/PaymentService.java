@@ -9,12 +9,14 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
@@ -50,23 +52,35 @@ public class PaymentService {
         FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
 
         if (!feesData.getTotalAmount().equals(BigDecimal.ZERO)) {
-            String localAuthorityName =
-                localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
-            ApplicantParty applicantParty = getFirstApplicantParty(caseData);
-
-            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseData.getId(),
-                applicantParty.getPbaNumber(),
-                defaultIfBlank(applicantParty.getClientCode(), BLANK_PARAMETER_VALUE),
-                defaultIfBlank(applicantParty.getCustomerReference(), BLANK_PARAMETER_VALUE),
-                localAuthorityName,
-                feesData);
+            final CreditAccountPaymentRequest paymentRequest = getPaymentRequest(caseData, feesData);
 
             paymentClient.callPaymentsApi(paymentRequest);
         }
     }
 
-    private ApplicantParty getFirstApplicantParty(CaseData caseData) {
-        return caseData.getApplicants().get(0).getValue().getParty();
+    private CreditAccountPaymentRequest getPaymentRequest(CaseData caseData, FeesData feesData) {
+        final String localAuthorityName =
+            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            final LocalAuthority localAuthority = caseData.getLocalAuthorities().get(0).getValue();
+
+            return getCreditAccountPaymentRequest(caseData.getId(),
+                localAuthority.getPbaNumber(),
+                defaultIfBlank(localAuthority.getClientCode(), BLANK_PARAMETER_VALUE),
+                defaultIfBlank(localAuthority.getCustomerReference(), BLANK_PARAMETER_VALUE),
+                localAuthorityName,
+                feesData);
+        }
+
+        final ApplicantParty legacyApplicant = caseData.getApplicants().get(0).getValue().getParty();
+
+        return getCreditAccountPaymentRequest(caseData.getId(),
+            legacyApplicant.getPbaNumber(),
+            defaultIfBlank(legacyApplicant.getClientCode(), BLANK_PARAMETER_VALUE),
+            defaultIfBlank(legacyApplicant.getCustomerReference(), BLANK_PARAMETER_VALUE),
+            localAuthorityName,
+            feesData);
     }
 
     public void makePaymentForC2(Long caseId, CaseData caseData) {

@@ -97,44 +97,34 @@
         }
       }
     ],
-    "solicitor": {
-      "dx": null,
-      "name": "Solicitor 1",
-      "email": "test@test.com",
-      "mobile": "02027725772",
-      "reference": null,
-      "telephone": "02027725772"
-    },
-    "applicants": [
+    "localAuthorities": [
       {
-        "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
         "value": {
-          "party": {
-            "email": {
-              "email": "test@test.com"
-            },
-            "address": {
-              "County": "Swansea",
-              "Country": "United Kingdom",
-              "PostCode": "CR0 2GE",
-              "PostTown": "Swansea",
-              "AddressLine1": "Flat 1, Swansea Apartments",
-              "AddressLine2": "Swansea Central Square 11",
-              "AddressLine3": "40 Fleet street"
-            },
-            "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
-            "jobTitle": "Solicitor",
-            "pbaNumber": "PBA1234567",
-            "mobileNumber": {
-              "telephoneNumber": "02027725772"
-            },
-            "telephoneNumber": {
-              "telephoneNumber": "02027725772",
-              "contactDirection": "John"
-            },
-            "organisationName": "Swansea City Council"
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
           },
-          "leadApplicantIndicator": "Yes"
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ]
         }
       }
     ],

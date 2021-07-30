@@ -94,7 +94,7 @@ fpl:
   local_authority_code_to_name:
     mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council;SN=>Swindon County Council;SNW=>Wiltshire County Council'
   local_authority_code_to_hmcts_court:
-    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com:344;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com:332;SN=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345;SNW=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345'
+    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com:344;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com:332|Family Court sitting at East London:FamilyPublicLaw+hnx@gmail.com:333;SN=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345;SNW=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345'
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SNW=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
   local_authority_code_to_shared_inbox:
@@ -102,9 +102,9 @@ fpl:
   local_authority_code_to_org_id:
     mapping: 'SA=>ORGSA;HN=>ORGHN;SW=>ORGSW;SNW=>ORGSNW'
   eps_to_local_authorities:
-    mapping: 'ORGEXT=>SA,HN'
+    mapping: 'ORGEXT=>SA|HN'
   mla_to_local_authorities:
-    mapping: 'ORGSNW=>SA,SN'
+    mapping: 'ORGSNW=>SA|SN'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'

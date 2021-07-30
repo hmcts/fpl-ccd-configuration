@@ -56,7 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {JacksonAutoConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
     HearingVenueLookUpService.class, FixedTimeConfiguration.class, NoticeOfHearingGenerationService.class,
-    LookupTestConfig.class, DocmosisConfiguration.class, NoticeOfProceedingsService.class, CaseDetailsHelper.class})
+    LookupTestConfig.class, DocmosisConfiguration.class, NoticeOfProceedingsService.class, CaseDetailsHelper.class,
+    CourtService.class})
 class NoticeOfProceedingsServiceTest {
     private static final String JUDGE_SURNAME = "Davidson";
     private static final byte[] PDF = {1, 2, 3, 4, 5};

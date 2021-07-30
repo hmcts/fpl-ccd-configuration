@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -81,6 +82,7 @@ class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrders
             .build();
 
         CaseData caseData = CaseData.builder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .allocatedJudge(judy)
             .hearingDetails(List.of(hearing))
             .hearingOrdersBundlesDrafts(List.of(bundle))

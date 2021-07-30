@@ -45,8 +45,16 @@
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
-
-
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryCourtName",
+    "Label": "Court to issue",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N",
+    "Comment": "Name of case designated court. This name will be used in applications and orders"
+  },
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -56,9 +64,6 @@
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
-
-
-
 
   {
     "LiveFrom": "01/01/2018",
@@ -180,15 +185,6 @@
     "ID": "caseSummaryNumberOfChildren",
     "Label": "Number of children",
     "FieldType": "Number",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseSummaryLASolicitorName",
-    "Label": "LA solicitor",
-    "FieldType": "Text",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },

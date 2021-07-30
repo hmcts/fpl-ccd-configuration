@@ -20,7 +20,7 @@ class MlaLookupConfigurationTest {
 
     @Test
     void shouldReturnLocalAuthorities() {
-        final MlaLookupConfiguration underTest = new MlaLookupConfiguration("A=>SA, CFG,RED;B => PLO, CDA");
+        final MlaLookupConfiguration underTest = new MlaLookupConfiguration("A=>SA| CFG|RED;B => PLO| CDA");
         assertThat(underTest.getLocalAuthorities("A")).containsExactlyInAnyOrder("SA", "CFG", "RED");
         assertThat(underTest.getLocalAuthorities("B")).containsExactlyInAnyOrder("PLO", "CDA");
     }
