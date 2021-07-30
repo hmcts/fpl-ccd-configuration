@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_CHILD_NAME;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -74,7 +74,7 @@ class SendNoticeOfHearingHandlerTest {
         underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
-            NOTICE_OF_NEW_HEARING_CHILD_NAME, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA,
+            NOTICE_OF_NEW_HEARING, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA,
             CASE_ID.toString()
         );
     }
@@ -90,7 +90,7 @@ class SendNoticeOfHearingHandlerTest {
         underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
-            NOTICE_OF_NEW_HEARING_CHILD_NAME, CAFCASS_EMAIL_ADDRESS, EMAIL_REP_NOTIFY_DATA, CASE_ID
+            NOTICE_OF_NEW_HEARING, CAFCASS_EMAIL_ADDRESS, EMAIL_REP_NOTIFY_DATA, CASE_ID
         );
     }
 
@@ -105,14 +105,14 @@ class SendNoticeOfHearingHandlerTest {
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(
             RepresentativeServingPreferences.EMAIL,
-            NOTICE_OF_NEW_HEARING_CHILD_NAME,
+            NOTICE_OF_NEW_HEARING,
             EMAIL_REP_NOTIFY_DATA,
             CASE_DATA
         );
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(
             RepresentativeServingPreferences.DIGITAL_SERVICE,
-            NOTICE_OF_NEW_HEARING_CHILD_NAME,
+            NOTICE_OF_NEW_HEARING,
             DIGITAL_REP_NOTIFY_DATA,
             CASE_DATA
         );

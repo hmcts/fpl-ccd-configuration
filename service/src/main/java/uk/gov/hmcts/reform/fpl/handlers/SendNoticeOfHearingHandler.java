@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.Collection;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_CHILD_NAME;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
@@ -51,7 +51,7 @@ public class SendNoticeOfHearingHandler {
         );
 
         notificationService.sendEmail(
-            NOTICE_OF_NEW_HEARING_CHILD_NAME, emails, notifyData, caseData.getId().toString()
+            NOTICE_OF_NEW_HEARING, emails, notifyData, caseData.getId().toString()
         );
     }
 
@@ -66,7 +66,7 @@ public class SendNoticeOfHearingHandler {
             caseData, event.getSelectedHearing(), EMAIL
         );
 
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING_CHILD_NAME, recipient, notifyData, caseData.getId());
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipient, notifyData, caseData.getId());
     }
 
     @Async
@@ -80,7 +80,7 @@ public class SendNoticeOfHearingHandler {
             );
 
             representativeNotificationService.sendToRepresentativesByServedPreference(
-                servingPreference, NOTICE_OF_NEW_HEARING_CHILD_NAME, notifyData, caseData
+                servingPreference, NOTICE_OF_NEW_HEARING, notifyData, caseData
             );
         });
     }

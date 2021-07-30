@@ -36,13 +36,11 @@ public class LegalRepresentativesUpdatedHandler {
 
         Set<LegalRepresentative> added = legalRepresentativesChange.getAdded();
 
-        if (!added.isEmpty()) {
-            added.forEach(legalRepresentative -> notificationService.sendEmail(
-                LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME,
-                legalRepresentative.getEmail(),
-                legalRepresentativeAddedContentProvider.getNotifyData(legalRepresentative, caseData),
-                caseData.getId()
-            ));
-        }
+        added.forEach(legalRepresentative -> notificationService.sendEmail(
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME,
+            legalRepresentative.getEmail(),
+            legalRepresentativeAddedContentProvider.getNotifyData(legalRepresentative, caseData),
+            caseData.getId()
+        ));
     }
 }

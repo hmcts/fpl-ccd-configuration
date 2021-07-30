@@ -196,12 +196,13 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
     @Nested
     class NoticeOfPlacementOrderNotification {
-        private final Element<Child> childElement = testChild();
-        private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
         private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
         private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
         private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
         private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
+        private final Element<Child> childElement = testChild();
+        private final String childLastName = childElement.getValue().getParty().getLastName();
+        private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
 
         @Test
         void shouldSendEmailNotificationsWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
@@ -315,8 +316,9 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
         private Map<String, Object> expectedParameters() {
             return Map.of(
-                "respondentLastName", childElement.getValue().getParty().getLastName(),
-                "caseUrl", "http://fake-url/cases/case-details/12345#Placement");
+                "respondentLastName", childLastName,
+                "caseUrl", "http://fake-url/cases/case-details/12345#Placement"
+            );
         }
 
         private Respondent respondent() {
