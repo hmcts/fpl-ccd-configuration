@@ -5,14 +5,16 @@ import lombok.Getter;
 
 @Getter
 public enum LanguageTranslationRequirement {
-    NO("NO"),
-    ENGLISH_TO_WELSH("ENGLISH_TO_WELSH"),
-    WELSH_TO_ENGLISH("WELSH_TO_ENGLISH");
+    NO("NO", false),
+    ENGLISH_TO_WELSH("ENGLISH_TO_WELSH", true),
+    WELSH_TO_ENGLISH("WELSH_TO_ENGLISH", true);
 
     private final String value;
+    private final boolean needAction;
 
-    LanguageTranslationRequirement(String value) {
+    LanguageTranslationRequirement(String value, boolean needAction) {
         this.value = value;
+        this.needAction = needAction;
     }
 
     public static LanguageTranslationRequirement fromString(String value) {

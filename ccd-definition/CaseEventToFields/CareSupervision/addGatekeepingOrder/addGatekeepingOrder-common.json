@@ -113,5 +113,18 @@
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "gatekeepingOrderSealDecision.nextSteps=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "languageRequirement",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "SealDecision",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderRouter=\"DO_NOT_SHOW\"",
+    "ShowSummaryChangeOption": "N"
   }
 ]

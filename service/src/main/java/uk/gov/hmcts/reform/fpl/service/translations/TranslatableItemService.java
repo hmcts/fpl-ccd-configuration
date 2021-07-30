@@ -43,6 +43,7 @@ public class TranslatableItemService {
         List<Element<? extends TranslatableItem>> translatableOrders = providers.getAll().stream()
             .map(provider -> provider.provideListItems(caseData))
             .flatMap(Collection::stream)
+            .filter(item -> item.getValue().translationRequirements().isNeedAction())
             .filter(item -> !item.getValue().hasBeenTranslated())
             .collect(Collectors.toList());
 

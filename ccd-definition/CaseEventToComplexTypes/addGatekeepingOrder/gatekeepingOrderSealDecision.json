@@ -32,7 +32,8 @@
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "gatekeepingOrderSealDecision",
-    "ListElementCode": "translationRequirement",
+    "ListElementCode": "translationRequirements",
+    "FieldShowCondition": "languageRequirement=\"Yes\"",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -57,7 +58,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private String removalReason;
     private final List<Element<Other>> others;
     private final LocalDateTime translationUploadDateTime;
-//    private LanguageTranslationRequirement sdoTranslationRequirement;
+    private final LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore
     public boolean isSealed() {

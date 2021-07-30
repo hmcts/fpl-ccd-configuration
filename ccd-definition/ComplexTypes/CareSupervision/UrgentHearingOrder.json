@@ -61,21 +61,20 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UrgentHearingOrder",
-    "ListElementCode": "sentForTranslationLabel",
-    "FieldType": "Label",
-    "ElementLabel": "Sent for translation",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "sdoTranslationRequirement =\"*\" AND sdoTranslationRequirement !=\"NO\" AND translationUploadDateTime!=\"*\""
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "UrgentHearingOrder",
-    "ListElementCode": "sdoTranslationRequirement",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "LanguageTranslationRequirement",
-    "ElementLabel": " ",
+    "ListElementCode": "sentForTranslationLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Sent for translation",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "order = \"DO NOT SHOW\""
+    "FieldShowCondition": "translationRequirements=\"ENGLISH_TO_WELSH\" OR translationRequirements=\"WELSH_TO_ENGLISH\""
   },
   {
     "LiveFrom": "01/01/2017",

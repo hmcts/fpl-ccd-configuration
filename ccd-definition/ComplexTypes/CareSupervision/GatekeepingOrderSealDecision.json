@@ -19,7 +19,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GatekeepingOrderSealDecision",
-    "ListElementCode": "translationRequirement",
+    "ListElementCode": "translationRequirements",
     "FieldType": "FixedRadioList",
     "ElementLabel": "Is translation needed?",
     "FieldTypeParameter": "LanguageTranslationRequirement",
