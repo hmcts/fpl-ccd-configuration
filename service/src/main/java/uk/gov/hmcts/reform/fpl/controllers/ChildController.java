@@ -93,7 +93,7 @@ public class ChildController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = fixer.fix(callbackRequest.getCaseDetails());
+        CaseDetails caseDetails = fixer.fixRepresentationDetails(callbackRequest.getCaseDetails());
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
