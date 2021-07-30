@@ -451,7 +451,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
-    "CaseFieldID": "documentTranslationRequirement",
+    "CaseFieldID": "gatekeepingTranslationRequirements",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "urgentHearingOrder",

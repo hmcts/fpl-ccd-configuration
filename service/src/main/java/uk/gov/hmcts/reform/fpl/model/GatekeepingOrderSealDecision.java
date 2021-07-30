@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -20,7 +19,6 @@ public class GatekeepingOrderSealDecision {
     private final LocalDate dateOfIssue;
     private final OrderStatus orderStatus;
     private final String nextSteps;
-    private final LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore
     public boolean isSealed() {

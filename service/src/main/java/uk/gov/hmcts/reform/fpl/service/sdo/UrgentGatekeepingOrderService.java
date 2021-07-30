@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -64,7 +63,7 @@ public class UrgentGatekeepingOrderService {
             .order(sealingService.sealDocument(orderDocument))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
-            .sdoTranslationRequirement(eventData.getLanguageTranslationRequirement().getValue())
+            .translationRequirements(eventData.getGatekeepingTranslationRequirements())
             .allocation(allocation)
             .build();
 

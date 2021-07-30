@@ -78,24 +78,19 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildOrderFromUploadedFile(CaseData caseData) {
-        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
-            .getGatekeepingOrderSealDecision();
+        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
 
-        caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision();
+        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData.getGatekeepingOrderSealDecision();
+
         DocumentReference draftDocument = decision.getDraftDocument();
         DocumentReference document = decision.isSealed() ? sealingService.sealDocument(draftDocument) : draftDocument;
-
-//        if( caseData.getGatekeepingOrderEventData().getLanguageTranslationRequirement() != LanguageTranslationRequirement.NO) {
-//            //TODO generate FL-PLW-LET-ENG-00748, populate, and send document for translation once FPLA-3253 is implemented
-//            //TranslationRequestFormCreationService:buildTranslationRequestDocuments(templateData)
-//            //Does this need moving to higher level?
-//        }
 
         return buildBaseGatekeepingOrder(caseData).toBuilder()
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
             .orderDoc(document)
             .lastUploadedOrder(decision.isSealed() ? draftDocument : null)
+            .translationRequirements(gatekeepingOrderEventData.getGatekeepingTranslationRequirements())
             .build();
     }
 
@@ -105,8 +100,10 @@ public class GatekeepingOrderService {
 
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
 
-//        if( caseData.getGatekeepingOrderEventData().getLanguageTranslationRequirement() != LanguageTranslationRequirement.NO) {
-//            //TODO generate FL-PLW-LET-ENG-00748, populate, and send document for translation once FPLA-3253 is implemented
+//        if( caseData.getGatekeepingOrderEventData().getLanguageTranslationRequirement() !=
+//        LanguageTranslationRequirement.NO) {
+//            //TODO generate FL-PLW-LET-ENG-00748, populate, and send document for translation once FPLA-3253 is
+//             implemented
 //            //TranslationRequestFormCreationService:buildTranslationRequestDocuments(templateData)
 //            //Does this need moving to higher level?
 //        }

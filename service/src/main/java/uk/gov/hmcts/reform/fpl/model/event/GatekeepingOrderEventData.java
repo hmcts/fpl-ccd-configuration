@@ -54,7 +54,7 @@ public class GatekeepingOrderEventData {
     List<Element<CustomDirection>> customDirections;
     List<Element<StandardDirection>> standardDirections;
 
-    LanguageTranslationRequirement sdoTranslationRequirement;
+    LanguageTranslationRequirement gatekeepingTranslationRequirements;
 
     DocumentReference currentSDO;
     YesNo useUploadRoute;
@@ -66,11 +66,6 @@ public class GatekeepingOrderEventData {
 
     public GatekeepingOrderSealDecision getGatekeepingOrderSealDecision() {
         return defaultIfNull(gatekeepingOrderSealDecision, GatekeepingOrderSealDecision.builder().build());
-    }
-
-    @JsonIgnore
-    public LanguageTranslationRequirement getLanguageTranslationRequirement() {
-        return defaultIfNull(sdoTranslationRequirement, NO);
     }
 
     @JsonIgnore

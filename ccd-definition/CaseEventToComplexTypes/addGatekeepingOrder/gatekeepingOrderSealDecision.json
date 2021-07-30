@@ -32,16 +32,6 @@
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "gatekeepingOrderSealDecision",
-    "ListElementCode": "translationRequirements",
-    "FieldShowCondition": "languageRequirement=\"Yes\"",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
-    "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "gatekeepingOrderSealDecision",
     "ListElementCode": "nextSteps",
     "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
