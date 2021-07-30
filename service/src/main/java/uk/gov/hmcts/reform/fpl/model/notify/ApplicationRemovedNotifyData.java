@@ -15,4 +15,4 @@ public class ApplicationRemovedNotifyData extends BaseCaseNotifyData {
     private final String reason;
     private final String applicationFeeText;
     private final String childLastName;
-   }
+}

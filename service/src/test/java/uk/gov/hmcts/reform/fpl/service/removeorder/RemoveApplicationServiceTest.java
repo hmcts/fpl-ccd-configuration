@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -219,6 +220,23 @@ class RemoveApplicationServiceTest {
         assertThatThrownBy(() -> underTest.getRemovedApplicationById(caseData, id))
             .isInstanceOf(RemovableOrderOrApplicationNotFoundException.class)
             .hasMessage(String.format("Removable order or application with id %s not found", id));
+    }
+
+    @Test
+    void shouldReturnRemovedApplication() {
+        List<Element<AdditionalApplicationsBundle>> previousHiddenApplications = new ArrayList<>();
+        previousHiddenApplications.add(element(buildC2Application("3 June 2020")));
+
+        List<Element<AdditionalApplicationsBundle>> hiddenApplications = new ArrayList<>();
+        hiddenApplications.add(element(buildC2Application("25 December 2020")));
+        hiddenApplications.add(element(buildC2Application("3 June 2020")));
+
+        Optional<AdditionalApplicationsBundle> removedApplication = underTest.getRemovedApplications(
+            hiddenApplications, previousHiddenApplications);
+
+        System.out.println("it is" + removedApplication.get());
+
+        assertThat(removedApplication.get()).isEqualTo(hiddenApplications.get(0).getValue());
     }
 
     private AdditionalApplicationsBundle buildC2Application(String date) {

@@ -108,8 +108,10 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     void shouldPublishPopulateSDOAndSDORemovedEventsIfNewSDOHasBeenRemoved() throws NotificationClientException {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().removalReason(REMOVAL_REASON).build();
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), wrapElements(previousSDO), emptyList(), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), wrapElements(previousSDO), emptyList(),
+            emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(),
+            emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -144,7 +146,8 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         List<Element<StandardDirectionOrder>> hiddenSDOs = List.of(previousSDO, newSDO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList(), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), previousHiddenSDOs, emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), previousHiddenSDOs, emptyList(),
+            emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -176,7 +179,8 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         List<Element<HearingOrder>> hiddenCMOs = singletonList(element(HearingOrder.builder().build()));
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, emptyList(), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList(),
+            emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -203,10 +207,13 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         List<Element<GeneratedOrder>> previousHiddenOrders = singletonList(order);
         List<Element<StandardDirectionOrder>> hiddenSDOs = wrapElements(StandardDirectionOrder.builder().build());
         List<Element<HearingOrder>> hiddenCMOs = wrapElements(HearingOrder.builder().build());
-        List<Element<AdditionalApplicationsBundle>> hiddenApplications = wrapElements(AdditionalApplicationsBundle.builder().build());
+        List<Element<AdditionalApplicationsBundle>> hiddenApplications = wrapElements(AdditionalApplicationsBundle
+            .builder().build());
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, hiddenOrders, hiddenApplications);
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, previousHiddenOrders, hiddenApplications);
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, hiddenOrders,
+            hiddenApplications);
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, previousHiddenOrders,
+            hiddenApplications);
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -225,7 +232,8 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         List<Element<HearingOrder>> hiddenCMOs = singletonList(previousCMO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList(), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(),
+            emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -252,7 +260,8 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         List<Element<HearingOrder>> previouHiddenCMOs = singletonList(previousCMO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList(), emptyList());
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(previouHiddenCMOs, emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(previouHiddenCMOs, emptyList(), emptyList(),
+            emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -286,8 +295,10 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         List<Element<AdditionalApplicationsBundle>> hiddenApplications = singletonList(previousApplication);
 
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), hiddenApplications);
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(), emptyList());
+        CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(),
+            hiddenApplications);
+        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(),
+            emptyList());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)

@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -82,7 +81,8 @@ public class RemoveApplicationService {
     }
 
     public Optional<AdditionalApplicationsBundle> getRemovedApplications(
-        List<Element<AdditionalApplicationsBundle>> hiddenApplications, List<Element<AdditionalApplicationsBundle>> previousHiddenApplications
+        List<Element<AdditionalApplicationsBundle>> hiddenApplications,
+        List<Element<AdditionalApplicationsBundle>> previousHiddenApplications
     ) {
         if (!Objects.equals(hiddenApplications, previousHiddenApplications)) {
             return hiddenApplications.stream()

@@ -33,5 +33,5 @@ public class ApplicationRemovedEventHandler {
 
         notificationService
             .sendEmail(APPLICATION_REMOVED_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
-        }
+    }
 }
