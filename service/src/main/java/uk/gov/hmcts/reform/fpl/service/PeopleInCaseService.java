@@ -5,21 +5,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -98,10 +107,11 @@ public class PeopleInCaseService {
         }
     }
 
-    public String getPeopleNotified(List<Element<Respondent>> selectedRespondents,
+    public String getPeopleNotified(List<Element<Representative>> representatives,
+                                    List<Element<Respondent>> selectedRespondents,
                                     List<Element<Other>> selectedOthers) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getSelectedRespondents(selectedRespondents));
+        sb.append(getSelectedRespondents(representatives, selectedRespondents));
         String othersNotified = getSelectedOthers(selectedOthers);
         if (isNotEmpty(othersNotified) && sb.length() > 0) {
             sb.append(", ");
@@ -110,19 +120,39 @@ public class PeopleInCaseService {
         return sb.toString();
     }
 
-    private String getSelectedRespondents(List<Element<Respondent>> selectedRespondents) {
-        //List<UUID> repUuids = representatives.stream().map(Element::getId).collect(Collectors.toList());
-        return Optional.ofNullable(selectedRespondents).map(
-            respondent -> respondent.stream()
-                .filter(respondentElement -> !isNull(respondentElement.getValue().getRepresentedBy()))
+    private String getSelectedRespondents(List<Element<Representative>> representatives,
+                                          List<Element<Respondent>> selectedRespondents) {
+        return Optional.ofNullable(selectedRespondents)
+            .map(respondent -> respondent.stream()
+                .filter(respondentElement -> hasRepresentativeDetails(representatives,
+                    unwrapElements(respondentElement.getValue().getRepresentedBy())))
                 .map(respondentElement -> getRespondentFullName(respondentElement.getValue().getParty()))
-                .collect(Collectors.joining(", "))
-        ).orElse("");
+                .collect(Collectors.joining(", ")))
+            .orElse(EMPTY);
+    }
+
+    private boolean hasRepresentativeDetails(List<Element<Representative>> representatives,
+                                             List<UUID> representedBy) {
+        return representatives.stream()
+            .filter(element -> representedBy.contains(element.getId()))
+            .anyMatch(element -> validAddreddForNotificationByPost(element.getValue())
+                || validEmailForDigitalOrEmailNotification(element.getValue()));
+    }
+
+    private boolean validEmailForDigitalOrEmailNotification(@NotNull @Valid Representative element) {
+        return (element.getServingPreferences() == DIGITAL_SERVICE || element.getServingPreferences() == EMAIL)
+            && isNotEmpty(element.getEmail());
+    }
+
+    private boolean validAddreddForNotificationByPost(Representative representative) {
+        return representative.getServingPreferences() == POST
+            && isNotEmpty(representative.getAddress())
+            && isNotEmpty(representative.getAddress().getPostcode());
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {
-        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
-        String lastName = defaultIfNull(respondentParty.getLastName(), "");
+        String firstName = defaultIfNull(respondentParty.getFirstName(), EMPTY);
+        String lastName = defaultIfNull(respondentParty.getLastName(), EMPTY);
 
         return String.format("%s %s", firstName, lastName);
     }
@@ -133,7 +163,7 @@ public class PeopleInCaseService {
                 .filter(other -> other.getValue().isRepresented() || other.getValue()
                     .hasAddressAdded())
                 .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
-        ).orElse("");
+        ).orElse(EMPTY);
     }
 
     private boolean useAllPeopleInTheCase(String sendOrdersToAllPeopleInCase) {

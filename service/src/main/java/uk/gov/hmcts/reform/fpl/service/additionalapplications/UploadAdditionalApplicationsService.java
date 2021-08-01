@@ -97,7 +97,8 @@ public class UploadAdditionalApplicationsService {
                 caseData.getOthersSelector(),
                 caseData.getNotifyApplicationsToAllOthers());
         }
-        String othersNotified = peopleInCaseService.getPeopleNotified(selectedRespondents, selectedOthers);
+        String othersNotified = peopleInCaseService.getPeopleNotified(
+            caseData.getRepresentatives(), selectedRespondents, selectedOthers);
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
             .pbaPayment(caseData.getTemporaryPbaPayment())

@@ -5,11 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -30,12 +34,18 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -58,7 +68,6 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final FeatureToggleService featureToggleService;
 
     @EventListener
-    @SuppressWarnings("unchecked")
     @Async
     public void sendAdditionalApplicationsByPost(final AdditionalApplicationsUploadedEvent event) {
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
@@ -66,16 +75,26 @@ public class AdditionalApplicationsUploadedEventHandler {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
             final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
-            Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
-
-            List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
-            Set<Recipient> nonSelectedRecipients = (Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, Element::getValue);
-            allRecipients.removeAll(nonSelectedRecipients);
-
-            allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
-            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
+            Set<Recipient> recipientsToNotify = getRecipientsToNotify(caseData, uploadedBundle);
+            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<Recipient> getRecipientsToNotify(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
+        Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+
+        List<Element<Other>> selectedOthers = getOthersSelected(uploadedBundle);
+        List<Element<Respondent>> selectedRespondents = getRespondentsSelected(uploadedBundle);
+
+        allRecipients.removeAll((Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
+            POST, caseData, selectedOthers, Element::getValue));
+        allRecipients.removeAll((Set<Recipient>) representativesInbox.getNonSelectedRespondentsRecipients(
+            POST, caseData, selectedRespondents, Element::getValue));
+
+        allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
+        allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents));
+        return allRecipients;
     }
 
     @EventListener
@@ -91,6 +110,38 @@ public class AdditionalApplicationsUploadedEventHandler {
             notificationService
                 .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
         }
+    }
+
+    @EventListener
+    @Async
+    public void notifyApplicant(final AdditionalApplicationsUploadedEvent event) {
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+            final CaseData caseData = event.getCaseData();
+            final OrderApplicant applicant = event.getApplicant();
+
+            if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
+                notifyLocalAuthority(event);
+            } else {
+                Map<String, String> emails = getRespondentsEmails(caseData);
+                if (isNotEmpty(emails.get(applicant.getName()))) {
+                    NotifyData notifyData
+                        = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
+                    notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
+                        emails.get(applicant.getName()), notifyData, event.getCaseData().getId().toString());
+                }
+            }
+        }
+    }
+
+    //TODO: move to case data
+    private Map<String, String> getRespondentsEmails(CaseData caseData) {
+        Map<String, String> respondentEmails = new HashMap<>();
+
+        caseData.getAllRespondents().forEach(respondent -> respondentEmails.put(
+            respondent.getValue().getParty().getFullName(),
+            isNull(respondent.getValue().getSolicitor()) ? EMPTY : respondent.getValue().getSolicitor().getEmail()));
+
+        return respondentEmails;
     }
 
     @EventListener
@@ -112,45 +163,50 @@ public class AdditionalApplicationsUploadedEventHandler {
     }
 
     @EventListener
-    @SuppressWarnings("unchecked")
     @Async
     public void notifyDigitalRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             final CaseData caseData = event.getCaseData();
             NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
 
-            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-            List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
-
-            Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-            Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-                DIGITAL_SERVICE, caseData, othersSelected, element -> element.getValue().getEmail());
-            digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+            Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
 
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
                 notifyData,
-                digitalRepresentatives,
+                digitalRepresentativesEmails,
                 INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
             );
         }
     }
 
-    @EventListener
     @SuppressWarnings("unchecked")
+    private Set<String> getRepresentativesEmails(CaseData caseData,
+                                                 RepresentativeServingPreferences servingPreference) {
+        AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+        List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
+        List<Element<Respondent>> respondentsSelected = getRespondentsSelected(uploadedBundle);
+
+        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
+        digitalRepresentatives.removeAll((Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+            servingPreference, caseData, othersSelected, element -> element.getValue().getEmail()));
+
+        digitalRepresentatives.removeAll((Set<String>) representativesInbox.getNonSelectedRespondentsRecipients(
+            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail()));
+
+        return digitalRepresentatives;
+    }
+
+
+    @EventListener
     @Async
     public void notifyEmailServedRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             final CaseData caseData = event.getCaseData();
             NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
 
-            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-            List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
-
-            Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-            Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-                EMAIL, caseData, othersSelected, element -> element.getValue().getEmail());
-            emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
+            Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
 
             if (!emailRepresentatives.isEmpty()) {
                 representativeNotificationService.sendNotificationToRepresentatives(
@@ -197,5 +253,13 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
 
         return defaultIfNull(lastBundle.getOtherApplicationsBundle().getOthers(), List.of());
+    }
+
+    private List<Element<Respondent>> getRespondentsSelected(final AdditionalApplicationsBundle lastBundle) {
+        if (lastBundle.getC2DocumentBundle() != null) {
+            return defaultIfNull(lastBundle.getC2DocumentBundle().getRespondents(), List.of());
+        }
+
+        return defaultIfNull(lastBundle.getOtherApplicationsBundle().getRespondents(), List.of());
     }
 }
