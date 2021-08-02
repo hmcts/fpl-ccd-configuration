@@ -21,8 +21,8 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
-import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventValidator;
 import uk.gov.hmcts.reform.fpl.service.children.ChildrenEventDataFixer;
+import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventValidator;
 
 import java.util.List;
 
