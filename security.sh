@@ -30,5 +30,6 @@ callZapCli "alerts -l Informational --exit-code False"
 echo "Print zap.out logs"
 cat zap.out
 echo "Copy artifacts for archiving"
+cp zap.out functional-output/
 cp report.json functional-output/
 cp api-report.html functional-output/
