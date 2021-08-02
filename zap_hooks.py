@@ -6,6 +6,6 @@ def zap_started(zap, target):
     zap.pscan.set_scanner_alert_threshold(id=rule, alertthreshold='OFF')
 
 def zap_pre_shutdown(zap):
-  print("zap_pre_shutdown: Leave ZAP server up for report calls...".format(context_id))
+  print("zap_pre_shutdown: Leave ZAP server up for report calls...")
   time.sleep(20)
-  print("zap_pre_shutdown: Continue shut down.".format(context_id))
+  print("zap_pre_shutdown: Continue shut down.")
