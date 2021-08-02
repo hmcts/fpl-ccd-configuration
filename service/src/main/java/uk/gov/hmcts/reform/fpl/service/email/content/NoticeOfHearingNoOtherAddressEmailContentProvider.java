@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 
 import java.time.format.FormatStyle;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.HEARINGS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
@@ -25,7 +26,7 @@ public class NoticeOfHearingNoOtherAddressEmailContentProvider extends AbstractE
                                                                                        Other other) {
 
         return NoticeOfHearingNoOtherAddressTemplate.builder()
-            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
             .hearingType(getHearingType(hearingBooking))
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
