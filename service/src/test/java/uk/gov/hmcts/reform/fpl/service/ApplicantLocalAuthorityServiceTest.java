@@ -84,13 +84,8 @@ class ApplicantLocalAuthorityServiceTest {
                 .name(userOrganisation.getName())
                 .build();
 
-            final LocalAuthority localAuthority3 = LocalAuthority.builder()
-                .id("ORG2")
-                .name("Organisation 2")
-                .build();
-
             final CaseData caseData = CaseData.builder()
-                .localAuthorities(wrapElements(localAuthority1, localAuthority2, localAuthority3))
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
                 .applicants(wrapElements(Applicant.builder()
                     .party(ApplicantParty.builder()
                         .organisationName("Legacy org")

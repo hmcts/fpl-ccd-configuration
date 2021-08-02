@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-public class ElementUtilsTest {
+class ElementUtilsTest {
 
     @Nested
     @ExtendWith(SpringExtension.class)
@@ -392,19 +392,6 @@ public class ElementUtilsTest {
 
     @Nested
     class ElementCreation {
-
-        @Test
-        void shouldCreateEmptyElementWithRandomId() {
-
-            final Element<String> actualElement1 = element();
-            final Element<String> actualElement2 = element();
-
-            assertThat(actualElement1.getValue()).isNull();
-            assertThat(actualElement2.getValue()).isNull();
-            assertThat(actualElement1.getId()).isNotNull();
-            assertThat(actualElement2.getId()).isNotNull();
-            assertThat(actualElement1.getId()).isNotEqualTo(actualElement2.getId());
-        }
 
         @Test
         void shouldCreateElementWithGivenValueAndRandomId() {
