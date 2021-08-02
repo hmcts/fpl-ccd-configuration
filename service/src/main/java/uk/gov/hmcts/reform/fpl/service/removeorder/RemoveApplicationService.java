@@ -25,9 +25,7 @@ import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.DUPLICATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.WRONG_CASE;
 import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.fromCCDMoneyGBP;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
