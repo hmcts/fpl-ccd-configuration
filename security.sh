@@ -5,12 +5,10 @@ export LANG=C.UTF-8
 export PYTHONDONTWRITEBYTECODE=1
 echo "Run ZAP scan"
 zap-api-scan.py -t ${URL_FOR_SECURITY_SCAN}/v2/api-docs -f openapi -S -d -u ${SECURITY_RULES} -P 1001 -l FAIL --hook=zap_hooks.py
-#echo "Allowing scan processes to complete..."
-#sleep 5
-echo "Print zap.out logs"
-cat zap.out
 echo "Generate report.json"
 curl --fail http://0.0.0.0:1001/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
+echo "Print zap.out logs"
+cat zap.out
 
 echo "LC_ALL: ${LC_ALL}"
 echo "LANG: ${LANG}"
