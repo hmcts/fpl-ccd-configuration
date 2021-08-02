@@ -7,7 +7,8 @@ const caseDataWithApplication = require('../fixtures/caseData/gatekeepingWithPas
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
 
 const orderTitle = 'some title';
-const today = moment().hours(10).minutes(5).seconds(23).milliseconds(0).toDate();
+const now = moment().toDate();
+const today = moment(now).subtract(1, 'hours').minutes(5).seconds(23).milliseconds(0).toDate();
 const aYearAgo = moment(today).subtract(1, 'years').toDate();
 const futureDate = moment(today).add(1, 'days').toDate();
 const removalAddress = { buildingAndStreet: { lineOne: 'Flat 2 Caversham', town: 'Reading' }, postcode: 'RG4 7AA' };
