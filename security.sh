@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+
+function callZapCli {
+  counter=0
+  until [ $counter -gt 3 ] || zap-cli --zap-url http://0.0.0.0 -p 1001 $1
+  do
+    ((counter++))
+    echo "Retrying... (retry ${counter})"
+  done
+}
+
 #setting encoding for Python 2 / 3 compatibilities
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
@@ -14,9 +24,11 @@ echo "LC_ALL: ${LC_ALL}"
 echo "LANG: ${LANG}"
 echo "PYTHONDONTWRITEBYTECODE: ${PYTHONDONTWRITEBYTECODE}"
 echo "Generate api-report.html"
-zap-cli --zap-url http://0.0.0.0 -p 1001 report -o api-report.html -f html
+callZapCli "report -o api-report.html -f html"
 echo "Retrieve alerts"
-zap-cli --zap-url http://0.0.0.0 -p 1001 alerts -l Informational --exit-code False
+callZapCli "alerts -l Informational --exit-code False"
+echo "Print zap.out logs"
+cat zap.out
 echo "Copy artifacts for archiving"
 cp report.json functional-output/
 cp api-report.html functional-output/
