@@ -4,11 +4,12 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendChildren",
     "CaseFieldID": "children1",
-    "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "childrenDetails",
     "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 1,
     "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/validate-collection/mid-event",
     "ShowSummaryChangeOption": "Y"
   },
   {

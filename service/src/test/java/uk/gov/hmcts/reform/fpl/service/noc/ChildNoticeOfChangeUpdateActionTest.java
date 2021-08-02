@@ -8,7 +8,9 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
+import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationDetailsFlattener;
 
 import java.util.List;
 import java.util.Map;
@@ -30,13 +32,21 @@ class ChildNoticeOfChangeUpdateActionTest {
     private static final ChildrenEventData EVENT_DATA = mock(ChildrenEventData.class);
     private static final CaseData CASE_DATA = mock(CaseData.class);
 
-    private final ChildNoticeOfChangeUpdateAction underTest = new ChildNoticeOfChangeUpdateAction();
+    private final ChildRepresentationDetailsFlattener flattener = mock(ChildRepresentationDetailsFlattener.class);
+
+    private final ChildNoticeOfChangeUpdateAction underTest = new ChildNoticeOfChangeUpdateAction(flattener);
 
     private Child childToUpdate;
+    private List<Element<Child>> children;
 
     @BeforeEach
     void setUp() {
         childToUpdate = Child.builder().build();
+        children = List.of(
+            element(CHILD_ID, childToUpdate), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)
+        );
+
+        when(CASE_DATA.getAllChildren()).thenReturn(children);
         when(CASE_DATA.getChildrenEventData()).thenReturn(EVENT_DATA);
         when(EVENT_DATA.getChildrenMainRepresentative()).thenReturn(CAFCASS);
     }
@@ -54,10 +64,9 @@ class ChildNoticeOfChangeUpdateActionTest {
 
     @Test
     void applyUpdatesAllDoNotHaveSameSolicitor() {
-        when(CASE_DATA.getAllChildren()).thenReturn(List.of(
-            element(CHILD_ID, childToUpdate), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)
-        ));
         when(ANOTHER_CHILD.getSolicitor()).thenReturn(CAFCASS);
+
+        when(flattener.serialise(children, CAFCASS)).thenReturn(Map.of("flattener", "data"));
 
         Map<String, Object> data = underTest.applyUpdates(childToUpdate, CASE_DATA, SOLICITOR);
 
@@ -65,16 +74,16 @@ class ChildNoticeOfChangeUpdateActionTest {
 
         assertThat(data).isEqualTo(Map.of(
             "children1", List.of(element(CHILD_ID, updatedChild), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
-            "childrenHaveSameRepresentation", "No"
+            "childrenHaveSameRepresentation", "No",
+            "flattener", "data"
         ));
     }
 
     @Test
     void applyUpdatesAllUseCafcassSolicitor() {
-        when(CASE_DATA.getAllChildren()).thenReturn(List.of(
-            element(CHILD_ID, childToUpdate), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)
-        ));
         when(ANOTHER_CHILD.getSolicitor()).thenReturn(CAFCASS);
+
+        when(flattener.serialise(children, CAFCASS)).thenReturn(Map.of("flattener", "data"));
 
         Map<String, Object> data = underTest.applyUpdates(childToUpdate, CASE_DATA, CAFCASS);
 
@@ -82,16 +91,16 @@ class ChildNoticeOfChangeUpdateActionTest {
 
         assertThat(data).isEqualTo(Map.of(
             "children1", List.of(element(CHILD_ID, updatedChild), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
-            "childrenHaveSameRepresentation", "Yes"
+            "childrenHaveSameRepresentation", "Yes",
+            "flattener", "data"
         ));
     }
 
     @Test
     void applyUpdatesAllUseSameSolicitor() {
-        when(CASE_DATA.getAllChildren()).thenReturn(List.of(
-            element(CHILD_ID, childToUpdate), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)
-        ));
         when(ANOTHER_CHILD.getSolicitor()).thenReturn(SOLICITOR);
+
+        when(flattener.serialise(children, SOLICITOR)).thenReturn(Map.of("flattener", "data"));
 
         Map<String, Object> data = underTest.applyUpdates(childToUpdate, CASE_DATA, SOLICITOR);
 
@@ -100,7 +109,8 @@ class ChildNoticeOfChangeUpdateActionTest {
         assertThat(data).isEqualTo(Map.of(
             "children1", List.of(element(CHILD_ID, updatedChild), element(ANOTHER_CHILD_ID, ANOTHER_CHILD)),
             "childrenHaveSameRepresentation", "Yes",
-            "childrenMainRepresentative", SOLICITOR
+            "childrenMainRepresentative", SOLICITOR,
+            "flattener", "data"
         ));
     }
 }
