@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class ChildrenDataFixer {
+public class ChildrenEventDataFixer {
 
     private static final String HAVE_SAME_REPRESENTATION_KEY = "childrenHaveSameRepresentation";
     private static final String ALL_HAVE_SAME_REPRESENTATION = "Yes";

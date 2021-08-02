@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-class ChildrenDataFixerTest {
+class ChildrenEventDataFixerTest {
 
     private static final String SUBMITTED_STATE = "Submitted";
     private static final String OPEN_STATE = "Open";
@@ -36,7 +36,7 @@ class ChildrenDataFixerTest {
 
     private final CaseConverter converter = mock(CaseConverter.class);
 
-    private final ChildrenDataFixer underTest = new ChildrenDataFixer(converter);
+    private final ChildrenEventDataFixer underTest = new ChildrenEventDataFixer(converter);
 
     @BeforeEach
     void setUp() {
