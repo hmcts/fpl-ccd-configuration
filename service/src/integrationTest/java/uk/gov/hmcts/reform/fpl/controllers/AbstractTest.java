@@ -19,6 +19,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static java.lang.String.format;
+import static java.net.URLEncoder.encode;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 
@@ -92,5 +95,17 @@ public abstract class AbstractTest {
 
     protected Map<String, Object> toMap(Object o) {
         return caseConverter.toMap(o);
+    }
+
+    protected String caseUrl(Long caseId) {
+        return "http://fake-url/cases/case-details/" + caseId;
+    }
+
+    protected String caseUrl(Long caseId, String tab) {
+        return format("http://fake-url/cases/case-details/%d#%s", caseId, encode(tab, UTF_8).replaceAll("\\+", "%20"));
+    }
+
+    protected String notificationReference(Long caseId) {
+        return "localhost/" + caseId;
     }
 }

@@ -86,4 +86,6 @@ public final class NotifyTemplates {
     public static final String LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE = "0ee6157a-a11a-4a0c-be75-508d66857d67";
     public static final String LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE = "db77b13c-3f17-48ee-a7c0-90ba5adf73b6";
     public static final String LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE = "c02ac29c-2d84-4d1a-80f6-888b3fc31e19";
+    public static final String CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE = "47f8e012-363e-4e0a-b0ab-2746a5392ab5";
+    public static final String CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE = "c454c247-e9c7-429c-af8e-7939f1816581";
 }
