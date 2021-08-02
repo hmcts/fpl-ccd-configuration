@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
@@ -57,6 +58,9 @@ public class EmailTemplateTest {
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @MockBean
+    private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
+
+    @MockBean
     private CourtService courtService;
 
     @MockBean
@@ -91,6 +95,11 @@ public class EmailTemplateTest {
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(cafcassLookupConfiguration.getCafcass(anyString()))
             .thenReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL));
+        when(ctscTeamLeadLookupConfiguration.getEmail()).thenReturn("ctsc-team-lead@example.com");
+    }
+
+    protected String caseDetailsUrl(Long id) {
+        return String.format("http://fake-url/cases/case-details/%s", id.toString());
     }
 
     protected String caseDetailsUrl(Long id, TabUrlAnchor tab) {

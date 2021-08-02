@@ -143,15 +143,6 @@ public class RemoveApplicationService {
             .collect(Collectors.joining(", "));
     }
 
-    public String getRemovalReason(String removalReason) {
-        if (removalReason.equals(DUPLICATE.name())) {
-            return DUPLICATE.getLabel();
-        } else if (removalReason.equals(WRONG_CASE.name())) {
-            return WRONG_CASE.getLabel();
-        }
-        return removalReason;
-    }
-
     private String getReasonToRemove(CaseData caseData) {
         if (caseData.getReasonToRemoveApplication() == OTHER) {
             return caseData.getApplicationRemovalDetails();

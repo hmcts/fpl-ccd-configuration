@@ -324,21 +324,6 @@ class RemoveApplicationServiceTest {
         assertThat(underTest.getFilename(removedApplication)).isEqualTo("c2Document");
     }
 
-    @Test
-    void shouldGetRemovalReasonWhenDuplicate() {
-        assertThat(underTest.getRemovalReason("DUPLICATE")).isEqualTo("Duplicate");
-    }
-
-    @Test
-    void shouldGetRemovalReasonWhenWrongCase() {
-        assertThat(underTest.getRemovalReason("WRONG_CASE")).isEqualTo("Wrong case");
-    }
-
-    @Test
-    void shouldGetRemovalReasonWhenOtherDetailsAdded() {
-        assertThat(underTest.getRemovalReason("A different removal reason")).isEqualTo("A different removal reason");
-    }
-
     private AdditionalApplicationsBundle buildC2Application(String date) {
         return AdditionalApplicationsBundle.builder()
             .uploadedDateTime(date)
