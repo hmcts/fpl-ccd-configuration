@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DA
 
 class ApprovalDateTimeValidatorTest {
 
-    private static final String MESSAGE = "Approval date cannot not be in the future";
+    private static final String MESSAGE = "Approval date cannot be in the future";
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
