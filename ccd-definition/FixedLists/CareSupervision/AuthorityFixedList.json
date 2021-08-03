@@ -443,16 +443,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "RMD",
+    "ListElement": "London Borough of Richmond",
+    "DisplayOrder": 189
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SWK",
     "ListElement": "London Borough of Southwark",
-    "DisplayOrder": 189
+    "DisplayOrder": 190
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LBTH",
     "ListElement": "London Borough of Tower Hamlets",
-    "DisplayOrder": 190
+    "DisplayOrder": 191
   },
   {
     "LiveFrom": "01/01/2017",
