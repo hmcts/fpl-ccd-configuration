@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.noc;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -8,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
+import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationDetailsFlattener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +18,12 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ChildNoticeOfChangeUpdateAction implements NoticeOfChangeUpdateAction {
 
     private static final SolicitorRole.Representing REPRESENTING = SolicitorRole.Representing.CHILD;
+
+    private final ChildRepresentationDetailsFlattener childRepSerializer;
 
     @Override
     public boolean accepts(SolicitorRole.Representing representing) {
@@ -41,7 +47,10 @@ public class ChildNoticeOfChangeUpdateAction implements NoticeOfChangeUpdateActi
         RespondentSolicitor cafcassSolicitor = caseData.getChildrenEventData().getChildrenMainRepresentative();
         if (YesNo.YES == allSameSolicitor && !Objects.equals(cafcassSolicitor, solicitor)) {
             data.put("childrenMainRepresentative", solicitor);
+            cafcassSolicitor = solicitor;
         }
+
+        data.putAll(childRepSerializer.serialise(caseData.getAllChildren(), cafcassSolicitor));
 
         return data;
     }
