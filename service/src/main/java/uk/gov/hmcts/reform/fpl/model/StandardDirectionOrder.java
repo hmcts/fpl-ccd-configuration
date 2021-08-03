@@ -131,12 +131,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
         return translatedOrderDoc;
     }
 
-//    //TODO SDO Translation
-//    @JsonIgnore
-//    public LanguageTranslationRequirement getLanguageTranslationRequirement() {
-//        return defaultIfNull(sdoTranslationRequirement, LanguageTranslationRequirement.NO);
-//    }
-
     @Override
     @JsonIgnore
     public DocumentReference getDocument() {

@@ -124,6 +124,10 @@ Custom configuration parameters:
 |fpl.system_update.username|SECRET|System user username, used for automated state transitions and data modifications|
 |fpl.system_update.password|SECRET|System user password, used for automated state transitions and data modifications|
 |fpl.ctsc_inbox|SECRET|CTSC mail inbox|
+|fpl.translation_team_inbox|SECRET|Translation team mail inbox|
+|fpl.translation_team_inbox|SECRET|Translation team mail inbox|
+|translation.unit.notification.sender|SECRET|Translation sender mail inbox|
+|translation.unit.notification.recipient|SECRET|Translation recipient team mail inbox|
 |robotics.notification.sender|SECRET|FROM field when sending emails to robotics|
 |robotics.notification.recipient|SECRET|Robotics mailbox address|
 |feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'
@@ -193,7 +197,7 @@ EX=>ORGEX2;EX2=>ORGEX2
 ```
 
 ### External private solicitors to local authorities (fpl.eps_to_local_authorities.mapping)
-Maps external solicitors organisation PRD id to list of local authorities codes. 
+Maps external solicitors organisation PRD id to list of local authorities codes.
 If external organisation has this mapping then users can create cases on behalf of specified local authorities.
 
 Example:
@@ -202,7 +206,7 @@ ORGEXT1=>LA1,LA2;ORGEXT2=>LA1,LA3
 ```
 
 ### Managing local authority to local authorities (fpl.mla_to_local_authorities.mapping)
-Maps local authority PRD id to list of local authorities codes. 
+Maps local authority PRD id to list of local authorities codes.
 If local authority has this mapping then users can create cases on behalf of specified local authorities.
 
 Example:
@@ -257,8 +261,8 @@ Elastic search must be enable in ccd-docker for Upcoming hearings job to work
 
 ### Emails
 
-Emails to Robotics are sent using SMTP protocol via MTA (Mail Transfer Agent) or SendGrid depending on feature toggle *send-grid*. 
-On local environment test mailhog server is available. Sent emails can be checked at http://localhost:8025/ 
+Emails to Robotics are sent using SMTP protocol via MTA (Mail Transfer Agent) or SendGrid depending on feature toggle *send-grid*.
+On local environment test mailhog server is available. Sent emails can be checked at http://localhost:8025/
 
 
 Emails to users are sent via gov.notify

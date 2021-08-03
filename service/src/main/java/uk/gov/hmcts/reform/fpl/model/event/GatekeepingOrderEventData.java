@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -29,7 +27,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
-import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.*;
 
 @Data
 @Builder(toBuilder = true)

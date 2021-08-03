@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     CtscEmailLookupConfiguration.class,
     EmailNotificationHelper.class
 })
+@MockBean(TranslationRequestService.class)
 class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
@@ -98,7 +100,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                      + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
@@ -124,7 +126,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                      + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
@@ -150,7 +152,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                      + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
@@ -209,7 +211,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                      + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
@@ -237,7 +239,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                      + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
@@ -265,7 +267,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                      + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 
@@ -291,7 +293,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                      + "contactfpl@justice.gov.uk")
+                    + "contactfpl@justice.gov.uk")
             );
     }
 

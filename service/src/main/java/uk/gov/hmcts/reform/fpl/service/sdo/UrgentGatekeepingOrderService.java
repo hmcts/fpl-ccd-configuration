@@ -69,9 +69,6 @@ public class UrgentGatekeepingOrderService {
 
         returnedData.put("urgentHearingOrder", order);
 
-        //TODO send for translation
-
-
         return returnedData;
     }
 
@@ -91,13 +88,4 @@ public class UrgentGatekeepingOrderService {
         return null == caseData.getAllocationDecision();
     }
 
-// TODO needed?
-//
-//    private String getOrderTranslationRequirement(CaseData caseData) {
-//        Optional<String> translationRequirement =  Optional.ofNullable(caseData.getSdoTranslationRequirement());
-//        if(translationRequirement.isEmpty()){
-//            return "NO";
-//        }
-//        return translationRequirement.get();
-//    };
 }

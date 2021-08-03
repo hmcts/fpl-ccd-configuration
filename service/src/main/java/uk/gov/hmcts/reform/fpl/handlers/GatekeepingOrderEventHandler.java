@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
 
@@ -27,6 +28,7 @@ public class GatekeepingOrderEventHandler {
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final SDOIssuedCafcassContentProvider cafcassContentProvider;
     private final SDOIssuedContentProvider standardContentProvider;
+    private final TranslationRequestService translationRequestService;
 
     @Async
     @EventListener
@@ -68,5 +70,13 @@ public class GatekeepingOrderEventHandler {
         notificationService.sendEmail(
             event.getNotificationGroup().getCtscTemplate(), recipient, notifyData, caseData.getId()
         );
+    }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(GatekeepingOrderEvent event) {
+        translationRequestService.sendRequest(event.getCaseData(),
+            event.getLanguageTranslationRequirement(),
+            event.getOrder());
     }
 }

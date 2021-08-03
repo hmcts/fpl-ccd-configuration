@@ -95,18 +95,11 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildOrderFromGeneratedFile(CaseData caseData) {
-        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
+        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
+        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData
             .getGatekeepingOrderSealDecision();
 
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
-
-//        if( caseData.getGatekeepingOrderEventData().getLanguageTranslationRequirement() !=
-//        LanguageTranslationRequirement.NO) {
-//            //TODO generate FL-PLW-LET-ENG-00748, populate, and send document for translation once FPLA-3253 is
-//             implemented
-//            //TranslationRequestFormCreationService:buildTranslationRequestDocuments(templateData)
-//            //Does this need moving to higher level?
-//        }
 
         if (decision.isSealed()) {
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));
@@ -115,6 +108,7 @@ public class GatekeepingOrderService {
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
                 .unsealedDocumentCopy(decision.getDraftDocument())
                 .orderDoc(sealedDocument)
+                .translationRequirements(gatekeepingOrderEventData.getGatekeepingTranslationRequirements())
                 .build();
         } else {
             return currentOrder.toBuilder()
