@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.orders.history;
+package uk.gov.hmcts.reform.fpl.service.others;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class SealedOrderHistoryExtraOthersNotifiedGenerator {
+public class OthersNotifiedGenerator {
 
     public String getOthersNotified(List<Element<Other>> selectedOthers) {
         return Optional.ofNullable(selectedOthers).map(

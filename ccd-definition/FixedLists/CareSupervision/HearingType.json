@@ -30,8 +30,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
+    "ListElementCode": "INTERIM_CARE_ORDER",
+    "ListElement": "Interim care order",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
     "ListElementCode": "OTHER",
     "ListElement": "Other",
-    "DisplayOrder": 5
+    "DisplayOrder": 6
   }
 ]

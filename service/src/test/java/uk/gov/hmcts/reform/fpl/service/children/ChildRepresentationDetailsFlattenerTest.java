@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeSolicitorSanitizer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,13 +13,17 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 
 class ChildRepresentationDetailsFlattenerTest {
     private final RespondentSolicitor mainRepresentative = mock(RespondentSolicitor.class);
 
-    private final ChildRepresentationDetailsFlattener underTest = new ChildRepresentationDetailsFlattener();
+    private final RepresentativeSolicitorSanitizer sanitizer = mock(RepresentativeSolicitorSanitizer.class);
+
+    private final ChildRepresentationDetailsFlattener underTest = new ChildRepresentationDetailsFlattener(sanitizer);
+    private final RespondentSolicitor childSolicitor = mock(RespondentSolicitor.class);
 
     @Test
     void testNullChildren() {
@@ -36,7 +41,8 @@ class ChildRepresentationDetailsFlattenerTest {
 
     @Test
     void testSingleChild() {
-        RespondentSolicitor childSolicitor = mock(RespondentSolicitor.class);
+        when(sanitizer.sanitize(childSolicitor)).thenReturn(childSolicitor);
+        when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
 
         Map<String, Object> actual = underTest.serialise(
             wrapElements(
@@ -62,7 +68,8 @@ class ChildRepresentationDetailsFlattenerTest {
 
     @Test
     void testMultiChild() {
-        RespondentSolicitor childSolicitor = mock(RespondentSolicitor.class);
+        when(sanitizer.sanitize(childSolicitor)).thenReturn(childSolicitor);
+        when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
 
         Map<String, Object> actual = underTest.serialise(
             wrapElements(
@@ -99,6 +106,8 @@ class ChildRepresentationDetailsFlattenerTest {
 
     @Test
     void testMainRepresentative() {
+        when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
+
         Map<String, Object> actual = underTest.serialise(
             wrapElements(
                 Child.builder()
@@ -108,6 +117,7 @@ class ChildRepresentationDetailsFlattenerTest {
             ),
             mainRepresentative
         );
+
 
         ChildRepresentationDetails expectedChildRepresentationDetails = ChildRepresentationDetails.builder()
             .childDescription("Child 1 - Michael Jackson")
@@ -123,6 +133,8 @@ class ChildRepresentationDetailsFlattenerTest {
 
     @Test
     void testMainRepresentativeWithNoChildRepresentative() {
+        when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
+
         Map<String, Object> actual = underTest.serialise(
             wrapElements(
                 Child.builder()
@@ -147,11 +159,15 @@ class ChildRepresentationDetailsFlattenerTest {
 
     @Test
     void testEmptyChildRepresentative() {
+        RespondentSolicitor solicitor = RespondentSolicitor.builder().build();
+
+        when(sanitizer.sanitize(solicitor)).thenCallRealMethod();
+
         Map<String, Object> actual = underTest.serialise(
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .solicitor(RespondentSolicitor.builder().build())
+                    .solicitor(solicitor)
                     .build()
             ),
             mainRepresentative
