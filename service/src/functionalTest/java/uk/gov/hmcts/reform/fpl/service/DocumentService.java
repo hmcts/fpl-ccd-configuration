@@ -15,7 +15,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 public class DocumentService {
 
     private final AuthenticationService authenticationService;
-    private final DocmosisHelper docmosisHelper;
+    private final DocmosisHelper docmosisHelper = new DocmosisHelper();
 
     //TODO Local env does not have required font, which cause different page layout, thus footer and header removal
     public String getPdfContent(DocumentReference documentReference, User user, String... ignores) {
