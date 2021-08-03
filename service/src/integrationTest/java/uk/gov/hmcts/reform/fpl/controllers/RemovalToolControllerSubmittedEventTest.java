@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -57,7 +57,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_REMOVED_NOTIFI
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
@@ -81,7 +80,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     private static final Child CHILD = Child.builder()
         .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
         .build();
-    public static final String CTSCT_TEAM_LEAD_EMAIL = "teamlead@test.com";
+    private static final String CTSC_TEAM_LEAD_EMAIL = "teamlead@test.com";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -95,6 +94,9 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     @MockBean
     private FeatureToggleService toggleService;
 
+    @MockBean
+    private Time time;
+
     RemovalToolControllerSubmittedEventTest() {
         super("remove-order");
     }
@@ -102,6 +104,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     @BeforeEach
     void setUp() {
         when(toggleService.isEldestChildLastNameEnabled()).thenReturn(true);
+        when(time.now()).thenReturn(LocalDateTime.of(2010, 3, 20, 20, 20, 0));
     }
 
     @Test
@@ -283,7 +286,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyCTSCTeamLeadIfAnAdditionalApplicationIsRemoved() throws NotificationClientException {
         given(ctscTeamLeadLookupConfiguration.getEmail())
-            .willReturn(CTSCT_TEAM_LEAD_EMAIL);
+            .willReturn(CTSC_TEAM_LEAD_EMAIL);
 
         Element<AdditionalApplicationsBundle> previousApplication =
             element(AdditionalApplicationsBundle.builder().removalReason(REMOVAL_REASON)
@@ -308,7 +311,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             APPLICATION_REMOVED_NOTIFICATION_TEMPLATE,
-            CTSCT_TEAM_LEAD_EMAIL,
+            CTSC_TEAM_LEAD_EMAIL,
             expectedApplicationRemovalTemplateParameters(),
             NOTIFICATION_REFERENCE
         );
@@ -330,7 +333,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             .applicantName("Jim Byrne")
             .c2Filename("Filename")
             .caseUrl("http://fake-url/cases/case-details/12345")
-            .removalDate(DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), DATE_TIME_AT))
+            .removalDate("20 March 2010 at 8:20pm")
             .reason("The order was removed because incorrect data was entered")
             .applicationFeeText("An application fee needs to be refunded.")
             .childLastName("Jones").build();
