@@ -54,11 +54,11 @@ class FurtherEvidenceDocumentsBundlesTransformerTest {
 
     public static final Element<SupportingEvidenceBundle> LA_HEARING_CONFIDENTIAL_DOCUMENT =
         buildFurtherEvidenceBundle(
-            "LA uploaded evidence1", "Kurt solicitor", true, GUARDIAN_REPORTS, now().minusMinutes(2));
+            "LA uploaded evidence1", "Kurt LA", true, GUARDIAN_REPORTS, now().minusMinutes(2));
 
     public static final Element<SupportingEvidenceBundle> LA_HEARING_NON_CONFIDENTIAL_DOCUMENT =
         buildFurtherEvidenceBundle(
-            "LA uploaded evidence2", "Kurt solicitor", false, GUARDIAN_REPORTS, now().minusMinutes(3));
+            "LA uploaded evidence2", "Kurt LA", false, GUARDIAN_REPORTS, now().minusMinutes(3));
 
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments
         = buildFurtherEvidenceDocuments();

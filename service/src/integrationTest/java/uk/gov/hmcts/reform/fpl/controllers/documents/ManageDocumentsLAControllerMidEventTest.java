@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,8 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
@@ -49,6 +53,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
     private static final String USER_ROLES = "caseworker-publiclaw-solicitor";
+
+    @MockBean
+    private UserService userService;
 
     ManageDocumentsLAControllerMidEventTest() {
         super("manage-documents-la");
@@ -166,10 +173,13 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             element(buildC2DocumentBundle(today.plusDays(2))));
 
         CaseData caseData = CaseData.builder()
+            .id(12345L)
             .c2DocumentBundle(c2DocumentBundle)
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .manageDocumentsSupportingC2List(selectedC2DocumentId)
             .build();
+
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
@@ -200,12 +210,15 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .id(12345L)
             .c2DocumentBundle(c2DocumentBundle)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(selectedC2Application).build()))
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .manageDocumentsSupportingC2List(selectedApplicationId)
             .build();
+
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
@@ -230,11 +243,14 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(today.plusDays(1), DATE_TIME)).build();
 
         CaseData caseData = CaseData.builder()
+            .id(12345L)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(c2Application).otherApplicationsBundle(selectedApplication).build()))
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .manageDocumentsSupportingC2List(selectedApplicationId)
             .build();
+
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
@@ -257,6 +273,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             element(selectedHearingId, selectedHearingBooking));
 
         CaseData caseData = CaseData.builder()
+            .id(12345L)
             .hearingDetails(hearingBookings)
             .manageDocumentsHearingList(selectedHearingId)
             .hearingFurtherEvidenceDocuments(List.of(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
@@ -266,6 +283,8 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .manageDocumentSubtypeListLA(OTHER)
             .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
+
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "further-evidence-documents", USER_ROLES);
