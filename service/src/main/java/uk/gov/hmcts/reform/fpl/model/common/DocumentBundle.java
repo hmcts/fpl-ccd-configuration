@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
 @Data
 @Builder(toBuilder = true)
@@ -47,6 +50,12 @@ public class DocumentBundle implements TranslatableItem {
     @Override
     public LocalDateTime translationUploadDateTime() {
         return translationUploadDateTime;
+    }
+
+    @Override
+    @JsonIgnore
+    public LanguageTranslationRequirement getTranslationRequirements() {
+        return ENGLISH_TO_WELSH;
     }
 
     @Override

@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -59,6 +60,11 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     @JsonIgnore
     public DocumentReference getTranslatedDocument() {
         return translatedOrder;
+    }
+
+    @Override
+    public LanguageTranslationRequirement getTranslationRequirements() {
+        return defaultIfNull(translationRequirements, NO);
     }
 
     @Override

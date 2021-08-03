@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -129,6 +130,11 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     @JsonIgnore
     public DocumentReference getTranslatedDocument() {
         return translatedOrderDoc;
+    }
+
+    @Override
+    public LanguageTranslationRequirement getTranslationRequirements() {
+        return defaultIfNull(translationRequirements, NO);
     }
 
     @Override
