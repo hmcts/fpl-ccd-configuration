@@ -471,6 +471,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WAD",
+    "ListElement": "London Borough of Wandsworth",
+    "DisplayOrder": 193
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LBC",
     "ListElement": "Luton Borough Council",
     "DisplayOrder": 195
