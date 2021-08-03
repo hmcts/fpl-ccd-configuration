@@ -14,26 +14,27 @@ module.exports = {
     };
   },
 
-  async addLegalCounsellor(legalRepresentative) {
+  async addLegalCounsellor(legalCounsellor) {
 
     const elementIndex = await this.getActiveElementIndex();
 
-    if(legalRepresentative.firstName) {
-      I.fillField(this.fields(elementIndex).legalCounsellor.firstName, legalRepresentative.firstName);
+    if(legalCounsellor.firstName) {
+      I.fillField(this.fields(elementIndex).legalCounsellor.firstName, legalCounsellor.firstName);
     }
-    if(legalRepresentative.lastName) {
-      I.fillField(this.fields(elementIndex).legalCounsellor.lastName, legalRepresentative.lastName);
+    if(legalCounsellor.lastName) {
+      I.fillField(this.fields(elementIndex).legalCounsellor.lastName, legalCounsellor.lastName);
     }
-    if(legalRepresentative.email) {
-      I.fillField(this.fields(elementIndex).legalCounsellor.email, legalRepresentative.email);
+    if(legalCounsellor.email) {
+      I.fillField(this.fields(elementIndex).legalCounsellor.email, legalCounsellor.email);
     }
-    if(legalRepresentative.telephone) {
-      I.fillField(this.fields(elementIndex).legalCounsellor.telephone, legalRepresentative.telephone);
+    if(legalCounsellor.telephone) {
+      I.fillField(this.fields(elementIndex).legalCounsellor.telephone, legalCounsellor.telephone);
     }
-    if(legalRepresentative.organisation) {
+    if(legalCounsellor.organisation) {
       await within(this.fields(elementIndex).legalCounsellor.organisationGroup, async () => {
-        I.fillField('#search-org-text', legalRepresentative.organisation);
-        I.click('Select');
+        I.waitForEnabled('#search-org-text');
+        I.fillField('#search-org-text', legalCounsellor.organisation);
+        I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(legalCounsellor.organisation))));
       });
     }
     await I.runAccessibilityTest();

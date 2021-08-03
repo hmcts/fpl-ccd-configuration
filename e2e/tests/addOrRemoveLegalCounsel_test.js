@@ -4,7 +4,7 @@ const apiHelper = require('../helpers/api_helper.js');
 const mandatoryWithMultipleRespondents = require('../fixtures/caseData/mandatoryWithMultipleRespondents.json');
 const legalCounsellors = require('../fixtures/legalCounsellors.js');
 
-const solicitor1 = config.privateSolicitorOne;
+const solicitor1 = config.wiltshireLocalAuthorityUserOne;
 
 let caseId;
 
@@ -13,7 +13,7 @@ Feature('Legal counsel');
 async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage) {
   if (!solicitor1.details) {
     solicitor1.details = await apiHelper.getUser(solicitor1);
-    solicitor1.details.organisation = 'Private solicitors';
+    solicitor1.details.organisation = 'Wiltshire County Council';
   }
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
@@ -28,7 +28,7 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     await I.signIn(solicitor1);
     await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
     caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-    assertRepresentative(I, solicitor1.details, 'Private solicitors');
+    assertRepresentative(I, solicitor1.details, solicitor1.details.organisation);
     caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
     assertChangeOfRepresentative(I, 1, 'Notice of change', 'Joe Bloggs', solicitor1.details.email, { addedUser: solicitor1.details });
   } else {
