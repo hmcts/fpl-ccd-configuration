@@ -429,6 +429,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "KGN",
+    "ListElement": "London Borough of Kingston",
+    "DisplayOrder": 187
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LBM",
     "ListElement": "London Borough of Merton",
     "DisplayOrder": 188
