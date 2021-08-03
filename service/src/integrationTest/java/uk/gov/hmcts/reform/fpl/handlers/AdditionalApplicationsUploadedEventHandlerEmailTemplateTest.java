@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -36,7 +34,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -104,16 +101,16 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
         given(time.now()).willReturn(HEARING_DATE.minusDays(1));
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyAdmin(boolean toggle, String name) {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
+    @Test
+    void notifyAdmin() {
+        given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
+        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA));
 
         assertThat(response())
-            .hasSubject("New application uploaded, " + name)
+            .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
@@ -129,23 +126,21 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                 .line("You need to:")
                 .list("check the applications",
                     "check payment has been taken",
-                    "send a message to the judge or legal adviser",
-                    "send a copy to relevant parties")
+                    "send a message to the judge or legal adviser")
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyParties(boolean toggle, String name) {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
+    @Test
+    void notifyParties() {
+        given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
         underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA));
 
         assertThat(response())
-            .hasSubject("New application uploaded, " + name)
+            .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
@@ -159,12 +154,5 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }
