@@ -64,16 +64,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "furtherEvidenceDocumentsSolicitor",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Solicitor further evidence documents",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
@@ -112,16 +102,6 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Non confidential version of correspondenceDocumentsLA (non hmcts/cafcass/la field)"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceDocumentsSolicitor",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence uploaded by solicitor",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",

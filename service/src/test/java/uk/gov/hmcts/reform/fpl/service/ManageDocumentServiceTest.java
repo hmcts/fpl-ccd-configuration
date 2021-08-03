@@ -49,7 +49,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
@@ -74,8 +73,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 @SuppressWarnings("unchecked")
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
-    public static final boolean NOT_SOLICITOR = false;
-    public static final boolean IS_SOLICITOR = true;
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
@@ -404,7 +401,7 @@ class ManageDocumentServiceTest {
             .build()));
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
-            = underTest.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of(), NOT_SOLICITOR);
+            = underTest.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of());
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
         SupportingEvidenceBundle newSupportingEvidenceBundle = supportingEvidenceBundle.get(0);
@@ -438,7 +435,7 @@ class ManageDocumentServiceTest {
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
             = underTest.setDateTimeUploadedOnSupportingEvidence(currentCorrespondingDocuments,
-            previousCorrespondingDocuments, NOT_SOLICITOR);
+            previousCorrespondingDocuments);
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
@@ -473,7 +470,7 @@ class ManageDocumentServiceTest {
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
             = underTest.setDateTimeUploadedOnSupportingEvidence(currentCorrespondingDocuments,
-            previousCorrespondingDocuments, NOT_SOLICITOR);
+            previousCorrespondingDocuments);
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
@@ -481,27 +478,6 @@ class ManageDocumentServiceTest {
             .first()
             .extracting(SupportingEvidenceBundle::getDateTimeUploaded)
             .isEqualTo(yesterday);
-    }
-
-    @Test
-    void shouldSetDateTimeUploadedAndSolicitorUploadOnNewCorrespondenceSupportingEvidenceItemsUploadedBySolicitor() {
-        LocalDateTime yesterday = time.now().minusDays(1);
-        List<Element<SupportingEvidenceBundle>> correspondingDocuments = buildSupportingEvidenceBundle();
-        correspondingDocuments.add(element(SupportingEvidenceBundle.builder()
-            .dateTimeUploaded(yesterday)
-            .build()));
-
-        List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
-            = underTest.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of(), IS_SOLICITOR);
-
-        List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
-        SupportingEvidenceBundle newSupportingEvidenceBundle = supportingEvidenceBundle.get(0);
-        SupportingEvidenceBundle existingSupportingEvidenceBundle = supportingEvidenceBundle.get(1);
-
-        assertThat(newSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
-        assertThat(newSupportingEvidenceBundle.getUploadedBySolicitor()).isEqualTo("Yes");
-        assertThat(existingSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(yesterday);
-        assertThat(existingSupportingEvidenceBundle.getUploadedBySolicitor()).isNull();
     }
 
     @Test
@@ -865,8 +841,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(newSupportingEvidenceBundle)
             .build();
 
-        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData,
-            NOT_SOLICITOR);
+        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
 
         C2DocumentBundle expectedC2Bundle = selectedC2DocumentBundle.toBuilder()
             .supportingEvidenceBundle(newSupportingEvidenceBundle).build();
@@ -902,8 +877,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(newSupportingEvidence)
             .build();
 
-        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData,
-            NOT_SOLICITOR);
+        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
 
         C2DocumentBundle expectedC2Bundle = selectedC2Application.toBuilder()
             .supportingEvidenceBundle(newSupportingEvidence).build();
@@ -935,8 +909,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(newSupportingEvidence)
             .build();
 
-        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData,
-            NOT_SOLICITOR);
+        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
 
         OtherApplicationsBundle expectedOtherApplication = otherApplicationsBundle.toBuilder()
             .supportingEvidenceBundle(newSupportingEvidence).build();
@@ -971,7 +944,7 @@ class ManageDocumentServiceTest {
             .build();
 
         Map<String, Object> actualC2Bundles = underTest
-            .buildFinalApplicationBundleSupportingDocuments(caseData, NOT_SOLICITOR);
+            .buildFinalApplicationBundleSupportingDocuments(caseData);
 
         List<Element<C2DocumentBundle>> updatedC2DocumentBundle
             = (List<Element<C2DocumentBundle>>) actualC2Bundles.get(C2_DOCUMENTS_COLLECTION_KEY);
@@ -1009,8 +982,7 @@ class ManageDocumentServiceTest {
             .c2SupportingDocuments(buildSupportingEvidenceBundle(futureDate))
             .build();
 
-        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData,
-            NOT_SOLICITOR);
+        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
 
         assertThat(updatedBundles).containsEntry(ADDITIONAL_APPLICATIONS_BUNDLE_KEY, applicationsBundles);
     }
@@ -1050,7 +1022,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
-            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore, NOT_SOLICITOR);
+            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = updatedEvidenceBundle.get(0).getValue();
         SupportingEvidenceBundle secondSupportingEvidenceBundle = updatedEvidenceBundle.get(1).getValue();
@@ -1086,7 +1058,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
-            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore, NOT_SOLICITOR);
+            underTest.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = updatedEvidenceBundle.get(0).getValue();
         SupportingEvidenceBundle secondSupportingEvidenceBundle = updatedEvidenceBundle.get(1).getValue();
@@ -1125,8 +1097,7 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(List.of(supportingEvidenceFuture, supportingEvidencePast))
             .build();
 
-        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData,
-            NOT_SOLICITOR);
+        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
 
         C2DocumentBundle updatedBundle = selectedC2DocumentBundle.toBuilder()
             .supportingEvidenceBundle(List.of(supportingEvidencePast, supportingEvidenceFuture)).build();
@@ -1135,52 +1106,6 @@ class ManageDocumentServiceTest {
             C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)));
 
         assertThat(updatedBundles).isEqualTo(expectedBundles);
-    }
-
-    @Test
-    void shouldReturnUpdatedOtherApplicationUpdatedSupportingEvidenceEntryUploadedBySolicitor() {
-        UUID selectedBundleId = UUID.randomUUID();
-        UUID evidenceId = randomUUID();
-
-        SupportingEvidenceBundle bundle = SupportingEvidenceBundle.builder()
-            .name("test")
-            .build();
-
-        C2DocumentBundle c2ApplicationBundle = buildC2DocumentBundle(futureDate.plusDays(2));
-        OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationBundle(
-            selectedBundleId, C1_WITH_SUPPLEMENT, futureDate);
-
-        Element<AdditionalApplicationsBundle> applicationsBundle = element(AdditionalApplicationsBundle.builder()
-            .c2DocumentBundle(c2ApplicationBundle)
-            .otherApplicationsBundle(otherApplicationsBundle)
-            .build());
-
-        CaseData caseData = CaseData.builder()
-            .id(12345L)
-            .manageDocumentsSupportingC2List(buildDynamicList(selectedBundleId))
-            .additionalApplicationsBundle(List.of(applicationsBundle))
-            .supportingEvidenceDocumentsTemp(List.of(element(evidenceId, bundle)))
-            .build();
-
-        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("NOT HMCTS");
-        given(userService.isHmctsUser()).willReturn(false);
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(IS_SOLICITOR);
-
-        Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData,
-            IS_SOLICITOR);
-
-        OtherApplicationsBundle expectedOtherApplication = otherApplicationsBundle.toBuilder()
-            .supportingEvidenceBundle(List.of(element(evidenceId, bundle.toBuilder()
-                .uploadedBySolicitor("Yes")
-                .build())
-            )).build();
-
-        Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
-            List.of(element(applicationsBundle.getId(),
-                applicationsBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(expectedOtherApplication).build())));
-
-        assertThat(actualData).isEqualTo(expectedData);
     }
 
     @Test
@@ -1344,7 +1269,7 @@ class ManageDocumentServiceTest {
                 .build();
 
             List<Element<RespondentStatement>> updatedRespondentStatements =
-                underTest.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR);
+                underTest.getUpdatedRespondentStatements(caseData);
 
             assertThat(updatedRespondentStatements).containsExactly(
                 element(respondentStatementId, RespondentStatement.builder()
@@ -1384,7 +1309,7 @@ class ManageDocumentServiceTest {
                 .build();
 
             List<Element<RespondentStatement>> updatedRespondentStatements =
-                underTest.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR);
+                underTest.getUpdatedRespondentStatements(caseData);
 
             assertThat(updatedRespondentStatements.size()).isEqualTo(2);
 
@@ -1430,7 +1355,7 @@ class ManageDocumentServiceTest {
                 .build();
 
             List<Element<RespondentStatement>> updatedRespondentStatements =
-                underTest.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR);
+                underTest.getUpdatedRespondentStatements(caseData);
 
             assertThat(updatedRespondentStatements).isEmpty();
         }
@@ -1452,7 +1377,7 @@ class ManageDocumentServiceTest {
                 .respondentStatementList(respondentStatementList)
                 .build();
 
-            assertThatThrownBy(() -> underTest.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR))
+            assertThatThrownBy(() -> underTest.getUpdatedRespondentStatements(caseData))
                 .isInstanceOf(RespondentNotFoundException.class)
                 .hasMessage(String.format("Respondent with id %s not found", respondentOneId));
         }

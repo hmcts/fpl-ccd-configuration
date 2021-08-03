@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,6 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
@@ -61,13 +59,9 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         .name("confidential test")
         .confidential(List.of("CONFIDENTIAL"))
         .build();
-    private static final long CASE_ID = 12345L;
 
     @MockBean
     private FeatureToggleService featureToggleService;
-
-    @MockBean
-    private UserService userService;
 
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
@@ -76,7 +70,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     @BeforeEach
     void init() {
         givenCurrentUser(createUserDetailsWithHmctsRole());
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), Long.toString(CASE_ID))).willReturn(false);
     }
 
     @Test
@@ -86,7 +79,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         HearingBooking hearingBooking = buildFinalHearingBooking();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .manageDocumentsHearingList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(hearingId)
@@ -120,7 +112,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocumentsRelatedToHearing(NO.getValue())
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
@@ -155,7 +146,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build());
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
@@ -198,7 +188,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .value(DynamicListElement.builder().code(selectedC2DocumentId).build()).build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(expectedDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -235,7 +224,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .value(DynamicListElement.builder().code(selectedC2DocumentId).build()).build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(expectedDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -271,7 +259,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .value(DynamicListElement.builder().code(selectedBundleId).build()).build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .manageDocumentsSupportingC2List(expectedDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(c2Application).otherApplicationsBundle(selectedOtherApplication).build()))
@@ -296,7 +283,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
@@ -319,7 +305,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();

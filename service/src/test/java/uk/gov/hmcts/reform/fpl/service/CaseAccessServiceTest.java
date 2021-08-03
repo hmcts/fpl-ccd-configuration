@@ -13,13 +13,10 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
@@ -64,9 +61,6 @@ class CaseAccessServiceTest {
 
     @Mock
     private CaseAccessDataStoreApi caseAccessDataStoreApi;
-
-    @Mock
-    private RequestData requestData;
 
     @InjectMocks
     private CaseAccessService caseRoleService;
@@ -207,6 +201,7 @@ class CaseAccessServiceTest {
         }
     }
 
+
     @Nested
     class UsersAccess {
 
@@ -222,32 +217,10 @@ class CaseAccessServiceTest {
             final AddCaseAssignedUserRolesRequest assignmentRequest =
                 buildAssignmentRequest(CASE_ID, userIds, null, caseRole);
 
+
             caseRoleService.grantCaseRoleToUsers(CASE_ID, userIds, caseRole);
 
             verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
-        }
-    }
-
-    @Nested
-    class UserCaseRoles {
-
-        @Test
-        void shouldGetUserCaseRoles() {
-            when(requestData.userId()).thenReturn(USER_1_ID);
-            when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
-            when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-                .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
-                    CaseAssignedUserRole.builder()
-                        .caseRole("[SOLICITORA]")
-                        .userId(USER_1_ID)
-                        .caseDataId("123")
-                        .build()))
-                    .build());
-
-            caseRoleService.getUserCaseRoles("123");
-
-            verify(caseAccessDataStoreApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
-                List.of("123"), List.of(USER_1_ID));
         }
     }
 

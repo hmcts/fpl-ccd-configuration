@@ -58,7 +58,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequestMapping("/callback/manage-documents-la")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageDocumentsLAController extends CallbackController {
-    private static final boolean NOT_SOLICITOR = false;
     private final ManageDocumentLAService manageDocumentLAService;
     private final ManageDocumentService manageDocumentService;
     private final ApplicationDocumentsService applicationDocumentsService;
@@ -153,7 +152,7 @@ public class ManageDocumentsLAController extends CallbackController {
 
                 if (RESPONDENT_STATEMENT.equals(caseData.getManageDocumentSubtypeListLA())) {
                     caseDetailsMap.putIfNotEmpty("respondentStatements",
-                        manageDocumentService.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR));
+                        manageDocumentService.getUpdatedRespondentStatements(caseData));
                 } else if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
                     //Application documents
 
@@ -163,7 +162,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     //Hearing related evidence
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
-                        caseData, caseDataBefore, NOT_SOLICITOR
+                        caseData, caseDataBefore
                     );
 
                     List<Element<HearingFurtherEvidenceBundle>> updatedBundle =
@@ -175,8 +174,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     //Non-hearing-related evidence
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA(),
-                        NOT_SOLICITOR
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA()
                     );
 
                     splitter.updateConfidentialDocsInCaseDetails(
@@ -188,8 +186,7 @@ public class ManageDocumentsLAController extends CallbackController {
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA(),
-                        NOT_SOLICITOR
+                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA()
                     );
 
                 List<Element<SupportingEvidenceBundle>> sortedDocuments
@@ -202,7 +199,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(
-                    manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData, NOT_SOLICITOR));
+                    manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData));
                 break;
             case COURT_BUNDLE:
                 caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, manageDocumentLAService

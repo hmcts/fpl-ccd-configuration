@@ -51,7 +51,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsHearingLabel",
     "FieldType": "Text",
-    "Label": "Upload other documents relating to:",
+    "Label": "Upload further evidence documents for:",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -69,7 +69,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsFurtherEvidenceHeading",
     "FieldType": "Label",
-    "Label": "## Other documents",
+    "Label": "## Further evidence",
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Update label in 2770 when new page added for admin"
@@ -97,7 +97,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsRespondentStatementsHeading",
     "FieldType": "Label",
-      "Label": "## Respondent statement",
+    "Label": "## Further evidence - respondent statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -106,7 +106,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsRelatedToHearing",
     "FieldType": "YesOrNo",
-    "Label": "Does the document relate to a hearing?",
+    "Label": "Does the evidence document relate to a hearing?",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -116,7 +116,7 @@
     "ID": "manageDocumentSubtypeList",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ManageDocumentSubtypeList",
-    "Label": "Choose a document type",
+    "Label": "Choose a further evidence document type",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

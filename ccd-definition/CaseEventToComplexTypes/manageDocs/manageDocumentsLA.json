@@ -5,10 +5,10 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentLA",
     "ListElementCode": "type",
-    "EventElementLabel": "Choose a document category",
+    "EventElementLabel": "File name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "EventHintText": "Your document will be stored in the corresponding tab"
+    "EventHintText": "Add a descriptive name. For example, ‘Parenting assessment’, ‘Email with evidence attached’ or ‘Form C110a’."
   },
   {
     "LiveFrom": "01/01/2017",

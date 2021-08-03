@@ -8,7 +8,7 @@
     "TabDisplayOrder": 12,
     "CaseFieldID": "correspondenceTabHeading",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "correspondenceDocuments!=\"\" OR correspondenceDocumentsNC!=\"\" OR correspondenceDocumentsLA!=\"\" OR correspondenceDocumentsLANC!=\"\" OR correspondenceDocumentsSolicitor!=\"\""
+    "TabShowCondition": "correspondenceDocuments!=\"\" OR correspondenceDocumentsNC!=\"\" OR correspondenceDocumentsLA!=\"\" OR correspondenceDocumentsLANC!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,15 +49,5 @@
     "TabDisplayOrder": 12,
     "CaseFieldID": "correspondenceDocumentsLANC",
     "TabFieldDisplayOrder": 5
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "Correspondence",
-    "TabLabel": "Correspondence",
-    "TabDisplayOrder": 12,
-    "CaseFieldID": "correspondenceDocumentsSolicitor",
-    "TabFieldDisplayOrder": 6
   }
 ]

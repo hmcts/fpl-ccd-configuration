@@ -28,14 +28,10 @@ public class DocumentViewTestHelper {
         "Admin uploaded evidence2", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1));
 
     public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
-        "LA uploaded evidence1", "Kurt LA", true, GUARDIAN_REPORTS, now().minusMinutes(2));
+        "LA uploaded evidence1", "Kurt solicitor", true, GUARDIAN_REPORTS, now().minusMinutes(2));
 
     public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
-        "LA uploaded evidence2", "Kurt LA", false, GUARDIAN_REPORTS, now().minusMinutes(3));
-
-    public static final Element<SupportingEvidenceBundle> SOLICITOR_NON_CONFIDENTIAL_DOCUMENT =
-        buildFurtherEvidenceBundle(
-        "Solicitor uploaded evidence1", "External solicitor", false, GUARDIAN_REPORTS, now().minusMinutes(3));
+        "LA uploaded evidence2", "Kurt solicitor", false, GUARDIAN_REPORTS, now().minusMinutes(3));
 
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT =
         buildFurtherEvidenceBundle(
@@ -43,7 +39,7 @@ public class DocumentViewTestHelper {
 
     public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT =
         buildFurtherEvidenceBundle(
-            "Application statement document2", "Kurt LA", false, APPLICANT_STATEMENT, now().minusHours(1));
+            "Application statement document2", "Kurt solicitor", false, APPLICANT_STATEMENT, now().minusHours(1));
 
     public static final Element<Respondent> RESPONDENT1 = buildRespondent("Dave", "Miller");
     public static final Element<Respondent> RESPONDENT2 = buildRespondent("Will", "Smith");

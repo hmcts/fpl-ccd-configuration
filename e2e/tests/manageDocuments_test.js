@@ -9,7 +9,6 @@ const respondent = 'Joe Bloggs';
 const respondent1StatementsSection = 'Joe Bloggs statements';
 const expertReportsSection = 'Expert reports';
 const otherReportsSection = 'Other reports';
-const solicitor = config.privateSolicitorOne;
 
 let caseId;
 let submittedAt;
@@ -20,7 +19,6 @@ async function setupScenario(I) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
     await api.grantCaseAccess(caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
-    await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
   }
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
@@ -297,38 +295,6 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertConfidentialC2SupportingDocuments(I, 'Other applications', 3, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
-
-Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEventPage, caseViewPage}) => {
-  await setupScenario(I);
-  await I.navigateToCaseDetailsAs(solicitor, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-
-  manageDocumentsEventPage.selectFurtherEvidence();
-  await I.goToNextPage();
-  manageDocumentsEventPage.selectAnyOtherDocument();
-  await I.goToNextPage();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0], true);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
-
-  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
-  I.expandDocumentSection(expertReportsSection, supportingEvidenceDocuments[0].name);
-  I.seeInExpandedDocument(supportingEvidenceDocuments[0].name, 'solicitor1@solicitors.uk', dateFormat(submittedAt, 'd mmm yyyy'));
-
-  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-
-  manageDocumentsEventPage.selectCorrespondence();
-  await I.goToNextPage();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
-
-  caseViewPage.selectTab(caseViewPage.tabs.correspondence);
-
-  assertCorrespondence(I, 'solicitor', 1, 'Email with evidence attached', 'Case evidence included');
-
-});
-
 
 const assertConfidentialCorrespondence = (I, suffix, index, docName, notes) => {
   assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, true);
