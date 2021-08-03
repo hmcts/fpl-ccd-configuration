@@ -21,8 +21,8 @@ class TranslationRequestEmailContentProviderTest {
                 + "\n"
                 + " HM Courts & Tribunals Service\n"
                 + "\n"
-                + "Do not reply to this email. If you need to contact us, call 0330 808 4424 or email " +
-                "contactfpl@justice"
+                + "Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                + "contactfpl@justice"
                 + ".gov.uk");
     }
 
