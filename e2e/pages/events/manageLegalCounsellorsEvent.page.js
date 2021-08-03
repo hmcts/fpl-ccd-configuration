@@ -9,7 +9,7 @@ module.exports = {
         lastName: `#legalCounsellors_${index}_lastName`,
         organisationGroup: `#legalCounsellors_${index}_${index}`,
         email: `#legalCounsellors_${index}_email`,
-        telephone: `[id="legalCounsellors_${index}_telephoneNumber"]`,
+        telephone: `#legalCounsellors_${index}_telephoneNumber`,
       },
     };
   },

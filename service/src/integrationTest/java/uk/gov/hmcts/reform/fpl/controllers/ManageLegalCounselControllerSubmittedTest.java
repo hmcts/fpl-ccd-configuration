@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -33,7 +31,6 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.HamcrestCondition.matching;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -44,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_FORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorAndMockUserId;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
@@ -63,9 +61,6 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CaseRoleLookupService caseRoleLookupService;
-
-    @Autowired
-    private CaseConverter caseConverter;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> emailVariablesCaptor;
@@ -126,14 +121,14 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
             .build();
         return CaseDetails.builder()
             .id(TEST_CASE_ID_AS_LONG)
-            .data(caseConverter.toMap(previousCaseData))
+            .data(toMap(previousCaseData))
             .build();
     }
 
     private void assertAsyncActionsHappenToAddedLegalCounsellor(Pair<String, LegalCounsellor> addedLegalCounsellor,
                                                                 String childLastName) {
         LegalCounsellor legalCounsellor = addedLegalCounsellor.getValue();
-        await().untilAsserted(() -> {
+        checkUntil(() -> {
             verify(caseAccessService).grantCaseRoleToUser(TEST_CASE_ID_AS_LONG, "testUserId1", BARRISTER);
             verify(notificationClient).sendEmail(any(),
                 eq(legalCounsellor.getEmail()),
@@ -149,7 +144,7 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
     private void assertAsyncActionsHappenToRemovedLegalCounsellor(Pair<String, LegalCounsellor> removedLegalCounsellor,
                                                                   String childLastName) {
         LegalCounsellor legalCounsellor = removedLegalCounsellor.getValue();
-        await().untilAsserted(() -> {
+        checkUntil(() -> {
             verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID_AS_LONG, "testUserId3", BARRISTER);
             verify(notificationClient).sendEmail(any(),
                 eq(legalCounsellor.getEmail()),

@@ -91,10 +91,11 @@ const assertChangeOfRepresentative = (I, index, method, respondentName, actingUs
   }
 };
 function assertLegalCounsellorWasAdded(caseViewPage, I) {
-  const LEGAL_COUNSELLOR_ORGANISATION_NAME_XPATH = `//mat-tab-body//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Respondents 1"]]]
-    //*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Legal Counsellor 1"]]]
-    //*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Organisation"]]]
-    //*[contains(@class,"complex-panel-compound-field") and .//td/span[text()="Name:"]]`;
+  const LEGAL_COUNSELLOR_ORGANISATION_NAME_XPATH = '//mat-tab-body' +
+    '//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Respondents 1"]]] ' +
+    '//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Legal Counsellor 1"]]] ' +
+    '//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Organisation"]]] ' +
+    '//*[contains(@class,"complex-panel-compound-field") and .//td/span[text()="Name:"]]';
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   const legalCounsellor = legalCounsellors.legalCounsellor;

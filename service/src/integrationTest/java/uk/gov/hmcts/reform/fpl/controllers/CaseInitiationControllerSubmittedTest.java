@@ -163,7 +163,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void givenUsersInSameOrganisation(String... userIds) {
-        given(organisationApi.findUsersInLoggedUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
+        given(organisationApi.findUsersInCurrentUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
             .willReturn(organisation(userIds));
     }
 

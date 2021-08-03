@@ -27,6 +27,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 class LegalCounselUpdatedEventHandlerTest {
 
+    private static final String LEGAL_COUNSELLOR_ADDED_EMAIL_TEMPLATE = "2f5826a5-f5c4-41aa-8d75-2bfee7dade87";
+    private static final String LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE = "85494117-1030-4c57-a1d7-f6ce32a81454";
     private static final Pair<String, LegalCounsellor> TEST_LEGAL_COUNCILLOR = Pair.of(
         "testUserId",
         LegalCounsellor.builder().email("ted.baker@example.com").firstName("Ted").lastName("Baker").build()
@@ -54,7 +56,7 @@ class LegalCounselUpdatedEventHandlerTest {
             TEST_LEGAL_COUNCILLOR));
 
         verify(caseAccessService).grantCaseRoleToUser(TEST_CASE_ID_AS_LONG, "testUserId", BARRISTER);
-        verify(notificationService).sendEmail("2f5826a5-f5c4-41aa-8d75-2bfee7dade87",
+        verify(notificationService).sendEmail(LEGAL_COUNSELLOR_ADDED_EMAIL_TEMPLATE,
             "ted.baker@example.com",
             LegalCounsellorAddedNotifyTemplate.builder()
                 .childLastName("Langley")
@@ -77,7 +79,7 @@ class LegalCounselUpdatedEventHandlerTest {
             TEST_LEGAL_COUNCILLOR));
 
         verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID_AS_LONG, "testUserId", BARRISTER);
-        verify(notificationService).sendEmail("85494117-1030-4c57-a1d7-f6ce32a81454",
+        verify(notificationService).sendEmail(LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE,
             "ted.baker@example.com",
             LegalCounsellorRemovedNotifyTemplate.builder()
                 .caseName("testCaseName")

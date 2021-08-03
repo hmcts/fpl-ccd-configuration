@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_ADDED_EMAIL_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
@@ -36,7 +38,7 @@ public class LegalCounselUpdatedEventHandler {
         LegalCounsellor legalCounsellor = event.getLegalCounsellor().getValue();
 
         caseAccessService.grantCaseRoleToUser(caseId, userId, BARRISTER);
-        notificationService.sendEmail("2f5826a5-f5c4-41aa-8d75-2bfee7dade87",
+        notificationService.sendEmail(LEGAL_COUNSELLOR_ADDED_EMAIL_TEMPLATE,
             legalCounsellor.getEmail(),
             buildLegalCounsellorAddedNotificationTemplate(caseData),
             caseId);
@@ -50,7 +52,7 @@ public class LegalCounselUpdatedEventHandler {
         LegalCounsellor legalCounsellor = event.getLegalCounsellor().getValue();
 
         caseAccessService.revokeCaseRoleFromUser(caseId, userId, BARRISTER);
-        notificationService.sendEmail("85494117-1030-4c57-a1d7-f6ce32a81454",
+        notificationService.sendEmail(LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE,
             legalCounsellor.getEmail(),
             buildLegalCounsellorRemovedNotificationTemplate(
                 caseData, legalCounsellor, event.getSolicitorOrganisationName()
@@ -58,7 +60,7 @@ public class LegalCounselUpdatedEventHandler {
             caseId);
     }
 
-    public LegalCounsellorAddedNotifyTemplate buildLegalCounsellorAddedNotificationTemplate(CaseData caseData) {
+    private LegalCounsellorAddedNotifyTemplate buildLegalCounsellorAddedNotificationTemplate(CaseData caseData) {
         Long caseId = caseData.getId();
 
         return LegalCounsellorAddedNotifyTemplate.builder()
