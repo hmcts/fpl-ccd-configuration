@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
+import uk.gov.hmcts.reform.fpl.service.children.ChildrenEventDataFixer;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventValidator;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class ChildController extends CallbackController {
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
     private final ChildrenEventValidator validator;
+    private final ChildrenEventDataFixer fixer;
     private final FeatureToggleService toggleService;
 
     @PostMapping("/about-to-start")
@@ -98,7 +100,7 @@ public class ChildController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
+        CaseDetails caseDetails = fixer.fixRepresentationDetails(request.getCaseDetails());
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
