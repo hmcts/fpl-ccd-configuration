@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
@@ -20,10 +19,11 @@ import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeChildAnswersData;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
-import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
+
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -33,14 +33,29 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         super("migrate-case");
     }
 
+    private static final String INVALID_MIGRATION_ID = "invalid id";
+
+    @Test
+    void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, INVALID_MIGRATION_ID)))
+            .getRootCause()
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
+    }
+
+    private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
+        CaseDetails caseDetails = asCaseDetails(caseData);
+        caseDetails.getData().put("migrationId", migrationId);
+        return caseDetails;
+    }
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Fpla3262 {
 
         private final String migrationId = "FPLA-3132";
-
-        @SpyBean
-        private NoticeOfChangeFieldPopulator populator;
 
         @Test
         void shouldPerformMigration() {
@@ -102,32 +117,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
-        void shouldNotPerformMigrationWhenWrongMigrationId() {
-            CaseData caseData = CaseData.builder()
-                .id(12345L)
-                .state(State.SUBMITTED)
-                .children1(wrapElements(
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build()
-                ))
-                .localAuthorities(wrapElements(LocalAuthority.builder().name("Some LA").build()))
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, "invalid id")));
-
-            assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
-                NoticeOfChangeChildAnswersData.builder().build()
-            );
-
-            assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder().build());
-
-            verifyNoInteractions(populator);
-        }
-
-        @Test
         void shouldNotPerformMigrationWhenTooManyChildren() {
             CaseData caseData = CaseData.builder()
                 .id(12345L)
@@ -143,19 +132,17 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .localAuthorities(wrapElements(LocalAuthority.builder().name("Some LA").build()))
                 .build();
 
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
-                NoticeOfChangeChildAnswersData.builder().build()
-            );
-
-            assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder().build());
-
-            verifyNoInteractions(populator);
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(
+                    "Migration {id = FPLA-3132, case reference = 12345} not migrating when number of children = 18 "
+                    + "(max = 15)"
+                );
         }
 
         @ParameterizedTest
-        @EnumSource(value = State.class, names = {"OPEN", "RETURNED"})
+        @EnumSource(value = State.class, names = {"OPEN", "RETURNED", "CLOSED"})
         void shouldNotPerformMigrationWhenInWrongState(State state) {
             CaseData caseData = CaseData.builder()
                 .id(12345L)
@@ -169,15 +156,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .localAuthorities(wrapElements(LocalAuthority.builder().name("Some LA").build()))
                 .build();
 
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
-                NoticeOfChangeChildAnswersData.builder().build()
-            );
-
-            assertThat(responseData.getChildPolicyData()).isEqualTo(ChildPolicyData.builder().build());
-
-            verifyNoInteractions(populator);
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = FPLA-3132, case reference = 12345} not migrating when state = " + state);
         }
 
         private OrganisationPolicy blankPolicyFor(SolicitorRole role) {
@@ -186,11 +168,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .organisation(Organisation.builder().build())
                 .build();
         }
-    }
-
-    private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
-        CaseDetails caseDetails = asCaseDetails(caseData);
-        caseDetails.getData().put("migrationId", migrationId);
-        return caseDetails;
     }
 }

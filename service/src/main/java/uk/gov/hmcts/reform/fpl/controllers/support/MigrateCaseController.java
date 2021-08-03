@@ -17,7 +17,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
 
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 
@@ -28,10 +32,13 @@ import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.N
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private static final List<State> RESTRICTED_STATES = List.of(State.OPEN, State.RETURNED);
+    private static final List<State> IGNORED_STATES = List.of(State.OPEN, State.RETURNED, State.CLOSED);
     private static final int MAX_CHILDREN = 15;
 
     private final NoticeOfChangeFieldPopulator populator;
+    private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "FPLA-3132", this::run3132
+    );
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -41,13 +48,11 @@ public class MigrateCaseController extends CallbackController {
 
         log.info("Migration {id = {}, case reference = {}} started", migrationId, id);
 
-        switch (migrationId) {
-            case "FPLA-3132":
-                run3132(caseDetails);
-                break;
-            default:
-                log.error("Unhandled migration {}", migrationId);
+        if (!migrations.containsKey(migrationId)) {
+            throw new NoSuchElementException("No migration mapped to " + migrationId);
         }
+
+        migrations.get(migrationId).accept(caseDetails);
 
         log.info("Migration {id = {}, case reference = {}} finished", migrationId, id);
 
@@ -59,17 +64,17 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Long id = caseData.getId();
         State state = caseData.getState();
-        if (RESTRICTED_STATES.contains(state)) {
-            log.warn("Migration {id = FPLA-3132, case reference = {}} not migrating when state = {}", id, state);
-            return;
+        if (IGNORED_STATES.contains(state)) {
+            throw new AssertionError(format(
+                "Migration {id = FPLA-3132, case reference = %s} not migrating when state = %s", id, state
+            ));
         }
         int numChildren = caseData.getAllChildren().size();
         if (MAX_CHILDREN < numChildren) {
-            log.warn(
-                "Migration {id = FPLA-3132, case reference = {}} not migrating when number of children = {} (max = {})",
+            throw new AssertionError(format(
+                "Migration {id = FPLA-3132, case reference = %s} not migrating when number of children = %d (max = %d)",
                 id, numChildren, MAX_CHILDREN
-            );
-            return;
+            ));
         }
 
         caseDetails.getData().putAll(populator.generate(caseData, CHILD, BLANK));
