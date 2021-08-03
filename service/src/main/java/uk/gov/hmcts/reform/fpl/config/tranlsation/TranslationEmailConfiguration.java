@@ -1,19 +1,13 @@
 package uk.gov.hmcts.reform.fpl.config.tranlsation;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@Getter
-@Setter
+@Value
 @Configuration
-@NoArgsConstructor
-@AllArgsConstructor
 @ConfigurationProperties(prefix = "translation.unit.notification")
 public class TranslationEmailConfiguration {
-    private String sender;
-    private String recipient;
+    String sender;
+    String recipient;
 }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.translations;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
@@ -21,7 +22,7 @@ public class DocumentWordCounter {
 
         String rawContent = docmosisHelper.extractPdfContent(pdfFile);
 
-        return Stream.of(rawContent.split("[ ,.;!?\r\n]")).filter(s -> s.length() > 0).count();
+        return Stream.of(rawContent.split("[ ,.;!?\r\n]")).filter(StringUtils::isNotBlank).count();
 
     }
 }

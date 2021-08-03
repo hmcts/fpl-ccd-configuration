@@ -72,10 +72,6 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
         return order;
     }
 
-    @JsonIgnore LanguageTranslationRequirement getSdoTranslationRequirement(String value) {
-        return LanguageTranslationRequirement.fromString(value);
-    }
-
     @JsonIgnore
     @Override
     public String getModifiedItemType() {
