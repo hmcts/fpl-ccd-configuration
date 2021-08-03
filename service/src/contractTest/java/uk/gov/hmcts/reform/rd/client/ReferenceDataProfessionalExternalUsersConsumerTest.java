@@ -62,7 +62,7 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
     @PactTestFor(pactMethod = "generatePactFragmentForGetOrganisationUsers")
     public void verifyGetOrganisationalUsers() {
         OrganisationUsers usersInOrganisation =
-            organisationApi.findUsersInOrganisation(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
+            organisationApi.findUsersInLoggedUserOrganisation(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
                 Status.ACTIVE, Boolean.FALSE);
         assertThat(usersInOrganisation.getUsers(), is(not(empty())));
         assertThat(usersInOrganisation.getUsers().get(0).getUserIdentifier(), is("userId"));

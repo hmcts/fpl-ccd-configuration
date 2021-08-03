@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
-import uk.gov.hmcts.reform.rd.model.Status;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +37,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
+import static uk.gov.hmcts.reform.rd.model.Status.ACTIVE;
 
 @ExtendWith(MockitoExtension.class)
 class OrganisationServiceTest {
@@ -78,7 +78,7 @@ class OrganisationServiceTest {
 
         @Test
         void shouldReturnUsersFromLocalAuthorityMappingWhenTheyDoNotExistInRefData() {
-            when(organisationApi.findUsersInOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
+            when(organisationApi.findUsersInLoggedUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
                 .thenThrow(feignException(SC_NOT_FOUND));
 
             Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
@@ -88,7 +88,7 @@ class OrganisationServiceTest {
 
         @Test
         void shouldReturnUsersFromLocalAuthorityMappingWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
-            when(organisationApi.findUsersInOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
+            when(organisationApi.findUsersInLoggedUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
                 .thenThrow(feignException(SC_INTERNAL_SERVER_ERROR));
 
             Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
@@ -99,7 +99,7 @@ class OrganisationServiceTest {
         @Test
         void shouldReturnUsersFromOrganisationIfExistsInRefData() {
             OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
-            when(organisationApi.findUsersInOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
+            when(organisationApi.findUsersInLoggedUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
                 .thenReturn(usersInAnOrganisation);
 
             Set<String> userIds = organisationService.findUserIdsInSameOrganisation("AN");
@@ -110,7 +110,7 @@ class OrganisationServiceTest {
 
         @Test
         void shouldReturnEmptyListWhenTheLAIsNotKnownAndTheApiReturnsNotFound() {
-            when(organisationApi.findUsersInOrganisation(any(), any(), any(), any()))
+            when(organisationApi.findUsersInLoggedUserOrganisation(any(), any(), any(), any()))
                 .thenThrow(feignException(SC_FORBIDDEN));
 
             assertThatThrownBy(() -> organisationService.findUserIdsInSameOrganisation("AN"))

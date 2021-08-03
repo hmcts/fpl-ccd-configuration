@@ -55,23 +55,23 @@ sourceSets {
     resources.srcDir file('src/integrationTest/resources')
   }
 
-    smokeTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/smokeTest/java')
-        }
-        resources.srcDir file('src/smokeTest/resources')
-    }
+  smokeTest {
+      java {
+          compileClasspath += main.output
+          runtimeClasspath += main.output
+          srcDir file('src/smokeTest/java')
+      }
+      resources.srcDir file('src/smokeTest/resources')
+  }
 
-    contractTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/contractTest/java')
-        }
-        resources.srcDir file('src/contractTest/resources')
-    }
+  contractTest {
+      java {
+          compileClasspath += main.output
+          runtimeClasspath += main.output
+          srcDir file('src/contractTest/java')
+      }
+      resources.srcDir file('src/contractTest/resources')
+  }
 }
 
 tasks.withType(JavaCompile) {
