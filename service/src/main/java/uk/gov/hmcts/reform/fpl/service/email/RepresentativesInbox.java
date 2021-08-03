@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -57,16 +56,16 @@ public class RepresentativesInbox {
                 .collect(Collectors.toCollection(LinkedHashSet::new))
         );
 
-
         return emails;
     }
 
     public Set<?> getNonSelectedRespondentsRecipients(
         RepresentativeServingPreferences servingPreferences,
-        CaseData caseData, List<Element<Respondent>> respondentsSelected,
+        CaseData caseData,
+        List<Element<Respondent>> respondentsSelected,
         Function<Element<Representative>, ?> mapperFunction) {
 
-        Set<UUID> allOthersRepresentativeIds = caseData.getAllRespondents().stream()
+        Set<UUID> representativeIds = caseData.getAllRespondents().stream()
             .flatMap(respondentElement -> respondentElement.getValue().getRepresentedBy()
                 .stream().map(Element::getValue))
             .collect(Collectors.toSet());
@@ -77,7 +76,7 @@ public class RepresentativesInbox {
 
         return caseData.getRepresentativesElementsByServedPreference(servingPreferences)
             .stream()
-            .filter(representativeElement -> allOthersRepresentativeIds.contains(representativeElement.getId()))
+            .filter(representativeElement -> representativeIds.contains(representativeElement.getId()))
             .filter(representativeElement -> !selectedRepresentativeIds.contains(representativeElement.getId()))
             .map(mapperFunction)
             .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -93,7 +92,8 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private boolean shouldSend(RepresentativeServingPreferences preference, Element<? extends WithSolicitor> element) {
+    private boolean shouldSend(RepresentativeServingPreferences preference,
+                               Element<? extends WithSolicitor> element) {
         if (RepresentativeServingPreferences.DIGITAL_SERVICE == preference) {
             return element.getValue().hasRegisteredOrganisation();
         }

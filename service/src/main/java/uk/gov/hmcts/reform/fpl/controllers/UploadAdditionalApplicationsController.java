@@ -147,7 +147,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-        publishEvent(new AdditionalApplicationsUploadedEvent(caseData));
+        publishEvent(new AdditionalApplicationsUploadedEvent(caseData,
+            applicantsListGenerator.getApplicant(caseData, lastBundle)));
 
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());

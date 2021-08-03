@@ -141,7 +141,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             eq(DIGITAL_SERVICE), eq(CASE_DATA), eq(NO_RECIPIENTS), any()))
             .willReturn(Collections.emptySet());
 
-        underTest.notifyDigitalRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyDigitalRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             CASE_ID,
@@ -161,7 +161,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(NO_RECIPIENTS), any()))
             .willReturn(Collections.emptySet());
 
-        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             CASE_ID,
@@ -181,7 +181,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
@@ -203,7 +203,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
             .willReturn(Collections.emptySet());
 
-        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
 
         verifyNoMoreInteractions(representativeNotificationService);
     }
@@ -228,7 +228,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(Set.of(otherRespondent));
 
         underTest.sendAdditionalApplicationsByPost(
-            new AdditionalApplicationsUploadedEvent(CASE_DATA));
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
 
         verify(sendDocumentService).sendDocuments(CASE_DATA, documents, List.of(representative2, otherRespondent));
         verifyNoInteractions(notificationService);
@@ -237,7 +237,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Test
     void shouldNotSendApplicationsByPostWhenServingOthersIsToggledOff() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
-        underTest.sendAdditionalApplicationsByPost(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.sendAdditionalApplicationsByPost(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
         verifyNoInteractions(sendDocumentService);
     }
 
@@ -245,9 +245,9 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     void shouldNotBuildNotificationsToLocalAuthorityAndRepresentativesWhenServingOthersIsToggledOff() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
 
-        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA));
-        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA));
-        underTest.notifyDigitalRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO fix this test
+        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null));
+        underTest.notifyDigitalRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null));
 
         verifyNoInteractions(notificationService);
         verifyNoInteractions(representativeNotificationService);
@@ -290,7 +290,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
             .willReturn(additionalApplicationsParameters);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, null));//todo
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
@@ -316,7 +316,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
             .willReturn(additionalApplicationsParameters);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, null)); //TODO
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
@@ -330,7 +330,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(requestData.userRoles()).willReturn(new HashSet<>(Arrays.asList("caseworker", "caseworker-publiclaw",
             "caseworker-publiclaw-courtadmin")));
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
 
         verifyNoInteractions(notificationService);
     }
