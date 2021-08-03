@@ -5,13 +5,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @ToString(callSuper = true)
 @Data
 @SuperBuilder
-public class LegalCounsellorAddedNotifyTemplate extends SharedNotifyTemplate {
+public class LegalCounsellorAddedNotifyTemplate implements NotifyData {
     @JsonProperty("caseID")
     private final String caseId;
+    private final String childLastName;
+    private final String caseUrl;
 }
