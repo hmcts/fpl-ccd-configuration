@@ -28,6 +28,55 @@ class OthersServiceTest {
     private final OthersService service = new OthersService();
 
     @Test
+    void shouldBuildExpectedOtherSelectorWhenNoOthers() {
+        List<Other> allOthers = emptyList();
+        List<Other> selectedOthers = emptyList();
+
+        Selector expectedSelector = Selector.builder().build();
+        Selector result = service.buildOtherSelector(allOthers, selectedOthers);
+
+        assertThat(result).isEqualTo(expectedSelector);
+    }
+
+    @Test
+    void shouldBuildExpectedOtherSelectorWhenNoSelectedOthers() {
+        List<Other> allOthers = List.of(Other.builder().build());
+        List<Other> selectedOthers = emptyList();
+
+        Selector expectedSelector = Selector.builder().build().setNumberOfOptions(1);
+        Selector result = service.buildOtherSelector(allOthers, selectedOthers);
+
+        assertThat(result).isEqualTo(expectedSelector);
+    }
+
+    @Test
+    void shouldBuildExpectedOtherSelectorWhenSingleSelectedOthers() {
+        Other other = Other.builder().build();
+        List<Other> allOthers = List.of(other);
+        List<Other> selectedOthers = List.of(other);
+
+        Selector expectedSelector = Selector.builder().selected(List.of(0)).build().setNumberOfOptions(1);
+        Selector result = service.buildOtherSelector(allOthers, selectedOthers);
+
+        assertThat(result).isEqualTo(expectedSelector);
+    }
+
+    @Test
+    void shouldBuildExpectedOtherSelectorWhenMultipleSelectedOthers() {
+        Other firstOther = Other.builder().name("Huey").build();
+        Other secondOther = Other.builder().name("Dewey").build();
+        Other thirdOther = Other.builder().name("Louie").build();
+
+        List<Other> allOthers = List.of(firstOther, secondOther, thirdOther);
+        List<Other> selectedOthers = List.of(firstOther, thirdOther);
+
+        Selector expectedSelector = Selector.builder().selected(List.of(0,2)).build().setNumberOfOptions(3);
+        Selector result = service.buildOtherSelector(allOthers, selectedOthers);
+
+        assertThat(result).isEqualTo(expectedSelector);
+    }
+
+    @Test
     void shouldBuildExpectedLabelWhenSingleElementInList() {
         Others others = Others.builder()
             .firstOther(Other.builder()

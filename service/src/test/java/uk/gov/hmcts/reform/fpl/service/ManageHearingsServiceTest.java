@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -55,7 +56,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
@@ -75,6 +75,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
@@ -108,6 +109,8 @@ class ManageHearingsServiceTest {
         .addressLine2("address")
         .build();
 
+    private static final List<Element<Other>> SELECTED_OTHERS = wrapElements(Other.builder().build());
+
     private static final Document DOCUMENT = testDocument();
 
     private static final UUID RE_LISTED_HEARING_ID = randomUUID();
@@ -124,10 +127,12 @@ class ManageHearingsServiceTest {
     );
     private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
     private final IdentityService identityService = mock(IdentityService.class);
+    private final OthersService othersService = mock(OthersService.class);
+    private final OthersNotifiedGenerator othersNotifiedGenerator = mock(OthersNotifiedGenerator.class);
 
     private final ManageHearingsService service = new ManageHearingsService(
         noticeOfHearingGenerationService, docmosisDocumentGeneratorService, uploadDocumentService,
-        hearingVenueLookUpService, new ObjectMapper(), identityService, time
+        hearingVenueLookUpService, othersService, othersNotifiedGenerator, new ObjectMapper(), identityService, time
     );
 
     @Nested
@@ -487,6 +492,8 @@ class ManageHearingsServiceTest {
             .noticeOfHearingNotes("notes")
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
@@ -498,6 +505,7 @@ class ManageHearingsServiceTest {
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .build();
 
@@ -523,6 +531,8 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(previousHearingVenue)
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
@@ -534,6 +544,7 @@ class ManageHearingsServiceTest {
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
             .build();
@@ -560,6 +571,8 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(previousHearingVenue)
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
@@ -571,6 +584,7 @@ class ManageHearingsServiceTest {
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
             .build();
@@ -644,7 +658,7 @@ class ManageHearingsServiceTest {
 
         final HearingBooking hearingToUpdate = randomHearing();
         final CaseData caseData = CaseData.builder()
-            .sendNoticeOfHearing(YesNo.YES.getValue())
+            .sendNoticeOfHearing(YES.getValue())
             .build();
 
         given(noticeOfHearingGenerationService.getTemplateData(caseData, hearingToUpdate))
@@ -662,19 +676,6 @@ class ManageHearingsServiceTest {
         verify(uploadDocumentService).uploadPDF(
             TestDataHelper.DOCUMENT_CONTENT,
             NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
-    }
-
-    @Test
-    void shouldNotSendNoticeOfHearingIfNotRequested() {
-        HearingBooking hearingToUpdate = randomHearing();
-        CaseData caseData = CaseData.builder()
-            .sendNoticeOfHearing(YesNo.NO.getValue())
-            .build();
-
-        service.sendNoticeOfHearing(caseData, hearingToUpdate);
-
-        assertThat(hearingToUpdate.getNoticeOfHearing()).isNull();
-        verifyNoInteractions(uploadDocumentService, docmosisDocumentGeneratorService, noticeOfHearingGenerationService);
     }
 
     @Nested
@@ -1577,7 +1578,11 @@ class ManageHearingsServiceTest {
             "hearingAttendance",
             "preHearingAttendanceDetails",
             "hearingAttendanceDetails",
-            "hearingOption");
+            "hearingOption",
+            "hasOthers",
+            "sendOrderToAllOthers",
+            "others_label",
+            "othersSelector");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {
