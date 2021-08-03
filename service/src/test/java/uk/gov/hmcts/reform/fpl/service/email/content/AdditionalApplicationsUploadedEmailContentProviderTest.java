@@ -40,6 +40,8 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     private static final LocalDateTime PAST_HEARING_DATE = LocalDateTime.of(2000, 2, 12, 0, 0, 0);
     private static final LocalDateTime FUTURE_HEARING_DATE = LocalDateTime.of(2099, 2, 12, 0, 0, 0);
     private static final String HEARING_CALLOUT = "hearing 12 Feb 2099";
+    private static final String RESPONDENT_LAST_NAME = "Smith";
+    private static final String CHILD_LAST_NAME = "Jones";
 
     @MockBean
     private Time time;
@@ -52,12 +54,13 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         CaseData caseData = buildCaseData();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Davies");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
-            .callout("Smith, 12345, " + HEARING_CALLOUT)
-            .lastName("Davies")
+            .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
+            .lastName(CHILD_LAST_NAME)
+            .childLastName(CHILD_LAST_NAME)
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
             .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
                 "C13A - Special guardianship order",
@@ -85,13 +88,14 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .build()))
             .build();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Davies");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()
-                .callout("Smith, 12345, " + HEARING_CALLOUT)
-                .lastName("Davies")
+                .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
+                .lastName(CHILD_LAST_NAME)
+                .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
                 .applicationTypes(List.of("C2 (With notice) - Parental responsibility by the father"))
                 .build();
@@ -145,7 +149,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .id(12345L)
             .familyManCaseNumber(CASE_REFERENCE)
             .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                .party(RespondentParty.builder().firstName("John").lastName(RESPONDENT_LAST_NAME).build())
                 .build()))
             .hearingDetails(wrapElements(
                     HearingBooking.builder().startDate((PAST_HEARING_DATE)).build(),

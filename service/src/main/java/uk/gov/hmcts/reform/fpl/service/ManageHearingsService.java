@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -97,6 +98,8 @@ public class ManageHearingsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final OthersService othersService;
+    private final OthersNotifiedGenerator othersNotifiedGenerator;
     private final ObjectMapper mapper;
     private final IdentityService identityService;
     private final Time time;
@@ -354,7 +357,11 @@ public class ManageHearingsService {
             "hearingAttendance",
             "hearingAttendanceDetails",
             "preHearingAttendanceDetails",
-            "hearingOption"
+            "hearingOption",
+            "hasOthers",
+            "sendOrderToAllOthers",
+            "othersSelector",
+            "others_label"
         );
     }
 
@@ -438,6 +445,8 @@ public class ManageHearingsService {
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
+            .others(othersService.getSelectedOthers(caseData))
+            .othersNotified(othersNotifiedGenerator.getOthersNotified(othersService.getSelectedOthers(caseData)))
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
     }
@@ -474,6 +483,8 @@ public class ManageHearingsService {
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
+            .others(othersService.getSelectedOthers(caseData))
+            .othersNotified(othersNotifiedGenerator.getOthersNotified(othersService.getSelectedOthers(caseData)))
             .previousHearingVenue(caseData.getPreviousHearingVenue())
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();

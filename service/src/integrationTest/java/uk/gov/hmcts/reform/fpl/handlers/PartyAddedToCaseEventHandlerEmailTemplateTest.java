@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.RepresentativeCaseRoleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -35,7 +36,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
     PartyAddedToCaseEventHandler.class, PartyAddedToCaseContentProvider.class, EmailNotificationHelper.class,
-    CaseUrlService.class, RepresentativeNotificationService.class, RepresentativeService.class
+    CaseUrlService.class, RepresentativeNotificationService.class, RepresentativeService.class,
+    OtherRecipientsInbox.class
 })
 @MockBeans({
     @MockBean(CaseService.class), @MockBean(OrganisationService.class), @MockBean(RepresentativeCaseRoleService.class),

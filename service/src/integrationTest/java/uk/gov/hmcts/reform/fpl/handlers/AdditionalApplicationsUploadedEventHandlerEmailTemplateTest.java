@@ -103,6 +103,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyAdmin() {
+        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA));
@@ -124,8 +125,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                 .line("You need to:")
                 .list("check the applications",
                     "check payment has been taken",
-                    "send a message to the judge or legal adviser",
-                    "send a copy to relevant parties")
+                    "send a message to the judge or legal adviser")
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
             );

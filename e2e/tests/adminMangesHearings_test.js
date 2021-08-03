@@ -40,6 +40,8 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
   manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  await I.goToNextPage();
+  await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
@@ -58,6 +60,7 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   I.seeInTab(['Hearing 1', 'Hearing attendance details'], hearingDetails[0].attendanceDetails);
   I.seeInTab(['Hearing 1', 'Pre-hearing attendance'], hearingDetails[0].preAttendanceDetails);
   I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+  I.seeInTab(['Hearing 1', 'Others notified'], 'Noah King');
 
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
@@ -98,6 +101,8 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
   manageHearingsEventPage.selectedAllocatedJudge();
   await I.goToNextPage();
   manageHearingsEventPage.sendNoticeOfHearingWithNotes('The venue has changed');
+  await I.goToNextPage();
+  await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -117,6 +122,7 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
   I.seeInTab(['Hearing 2', 'Additional notes'], 'The venue has changed');
   I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+  I.seeInTab(['Hearing 2', 'Others notified'], 'Noah King');
 
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
@@ -191,6 +197,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   I.seeInTab(['Adjourned or vacated hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
   I.seeInTab(['Adjourned or vacated hearing 1', 'Start date and time'], formatHearingTime(hearingStartDate));
   I.seeInTab(['Adjourned or vacated hearing 1', 'Status'], 'Adjourned');
+  I.seeInTab(['Adjourned or vacated hearing 1', 'Others notified'], 'Noah King');
 
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.expandDocumentSection('Expert reports', 'Document 1');
@@ -304,6 +311,8 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
   manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  await I.goToNextPage();
+  await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
@@ -319,6 +328,7 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   I.seeInTab(['Hearing 3', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   I.seeInTab(['Hearing 3', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+  I.seeInTab(['Hearing 3', 'Others notified'], 'Noah King');
 });
 
 const formatHearingTime = hearingDate => formatDate(hearingDate, 'd mmm yyyy, h:MM:ss TT');
