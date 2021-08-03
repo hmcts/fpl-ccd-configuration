@@ -457,9 +457,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SUT",
+    "ListElement": "London Borough of Sutton",
+    "DisplayOrder": 191
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LBTH",
     "ListElement": "London Borough of Tower Hamlets",
-    "DisplayOrder": 191
+    "DisplayOrder": 192
   },
   {
     "LiveFrom": "01/01/2017",
