@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -11,8 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,8 +32,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PeopleInCaseService {
-    public static final String NO_RESPONDENTS_ON_THE_CASE = "No respondents on the case";
-    public static final String NO_OTHERS_ON_THE_CASE = "No others on the case";
+    private static final String NO_RESPONDENTS_ON_THE_CASE = "No respondents on the case";
+    private static final String NO_OTHERS_ON_THE_CASE = "No others on the case";
+    private static final String COMMA_DELIMITER = ", ";
+
     private final OthersService othersService;
     private final RespondentService respondentService;
 
@@ -42,7 +43,7 @@ public class PeopleInCaseService {
                                          Others others) {
         StringBuilder sb = new StringBuilder();
 
-        if (isEmpty(respondents) && isEmpty(others)) {
+        if (isEmpty(respondents) && isNull(others.getFirstOther())) {
             return "No respondents and others on the case";
         } else {
             String respondentLabel = respondentService.buildRespondentLabel(respondents);
@@ -76,7 +77,7 @@ public class PeopleInCaseService {
             List<Integer> selected = selector.getSelected();
 
             int othersIndex = 0;
-            int index = respondents.size() == 0 ? 0 : respondents.size();
+            int index = isEmpty(respondents) ? 0 : respondents.size();
             for (int i = index; i < (index + others.size() - 1); i++) {
                 if (selected.contains(i)) {
                     selectedOthers.add(others.get(othersIndex));
@@ -107,11 +108,11 @@ public class PeopleInCaseService {
         }
     }
 
-    public String getPeopleNotified(List<Element<Representative>> representatives,
+    public String getPeopleNotified(List<Element<Representative>> allRepresentatives,
                                     List<Element<Respondent>> selectedRespondents,
                                     List<Element<Other>> selectedOthers) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getSelectedRespondents(representatives, selectedRespondents));
+        sb.append(getSelectedRespondentsNames(allRepresentatives, selectedRespondents));
         String othersNotified = getSelectedOthers(selectedOthers);
         if (isNotEmpty(othersNotified) && sb.length() > 0) {
             sb.append(", ");
@@ -120,31 +121,36 @@ public class PeopleInCaseService {
         return sb.toString();
     }
 
-    private String getSelectedRespondents(List<Element<Representative>> representatives,
-                                          List<Element<Respondent>> selectedRespondents) {
+    private String getSelectedRespondentsNames(List<Element<Representative>> representatives,
+                                               List<Element<Respondent>> selectedRespondents) {
         return Optional.ofNullable(selectedRespondents)
             .map(respondent -> respondent.stream()
                 .filter(respondentElement -> hasRepresentativeDetails(representatives,
-                    unwrapElements(respondentElement.getValue().getRepresentedBy())))
+                    unwrapElements(respondentElement.getValue().getRepresentedBy())) || hasAddress(respondentElement))
                 .map(respondentElement -> getRespondentFullName(respondentElement.getValue().getParty()))
-                .collect(Collectors.joining(", ")))
+                .collect(Collectors.joining(COMMA_DELIMITER)))
             .orElse(EMPTY);
+    }
+
+    private boolean hasAddress(Element<Respondent> respondentElement) {
+        Address address = respondentElement.getValue().getParty().getAddress();
+        return isNotEmpty(address) && isNotEmpty(address.getPostcode());
     }
 
     private boolean hasRepresentativeDetails(List<Element<Representative>> representatives,
                                              List<UUID> representedBy) {
         return representatives.stream()
             .filter(element -> representedBy.contains(element.getId()))
-            .anyMatch(element -> validAddreddForNotificationByPost(element.getValue())
+            .anyMatch(element -> validAddressForNotificationByPost(element.getValue())
                 || validEmailForDigitalOrEmailNotification(element.getValue()));
     }
 
-    private boolean validEmailForDigitalOrEmailNotification(@NotNull @Valid Representative element) {
+    private boolean validEmailForDigitalOrEmailNotification(final Representative element) {
         return (element.getServingPreferences() == DIGITAL_SERVICE || element.getServingPreferences() == EMAIL)
             && isNotEmpty(element.getEmail());
     }
 
-    private boolean validAddreddForNotificationByPost(Representative representative) {
+    private boolean validAddressForNotificationByPost(Representative representative) {
         return representative.getServingPreferences() == POST
             && isNotEmpty(representative.getAddress())
             && isNotEmpty(representative.getAddress().getPostcode());
@@ -162,8 +168,13 @@ public class PeopleInCaseService {
             others -> others.stream()
                 .filter(other -> other.getValue().isRepresented() || other.getValue()
                     .hasAddressAdded())
-                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
+                .map(this::getOtherPersonName)
+                .collect(Collectors.joining(COMMA_DELIMITER))
         ).orElse(EMPTY);
+    }
+
+    private String getOtherPersonName(Element<Other> other) {
+        return defaultIfNull(other.getValue().getName(), "");
     }
 
     private boolean useAllPeopleInTheCase(String sendOrdersToAllPeopleInCase) {

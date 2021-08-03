@@ -409,11 +409,10 @@ class RepresentativesInboxTest {
         return Stream.of(
             Arguments.of(
                 List.of(respondents.get(0), respondents.get(2)),
-                Set.of(respondentWithValidAddress)
-            ),
+                Set.of(respondentWithValidAddress.getParty())),
             Arguments.of(
                 List.of(respondents.get(2), respondents.get(3), respondents.get(4)),
-                Set.of(respondentWithValidAddress)),
+                Set.of(respondentWithValidAddress.getParty())),
             Arguments.of(List.of(respondents.get(0), respondents.get(1)), Set.of()),
             Arguments.of(List.of(respondents.get(3), respondents.get(4)), Set.of())
         );
