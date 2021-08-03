@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
@@ -41,9 +43,11 @@ public class UploadTranslationsControllerTestHelper {
         .standardDirectionOrder(StandardDirectionOrder.builder()
             .dateOfUpload(LocalDate.of(2020, 12, 11))
             .orderStatus(OrderStatus.SEALED)
+            .translationRequirements(ENGLISH_TO_WELSH)
             .build())
         .urgentHearingOrder(UrgentHearingOrder.builder()
             .dateAdded(LocalDate.of(2020, 12, 8))
+            .translationRequirements(WELSH_TO_ENGLISH)
             .build())
         .sealedCMOs(List.of(element(UUID_2, HearingOrder.builder()
             .status(APPROVED)
