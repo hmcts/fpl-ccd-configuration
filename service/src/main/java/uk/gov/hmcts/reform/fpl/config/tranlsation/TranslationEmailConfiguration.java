@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @NoArgsConstructor
 @AllArgsConstructor
-@ConfigurationProperties(prefix = "translation.unit.notification")
+@ConfigurationProperties(prefix = "translation.notification")
 public class TranslationEmailConfiguration {
     private String sender;
     private String recipient;

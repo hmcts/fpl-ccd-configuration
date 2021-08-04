@@ -103,10 +103,9 @@ robotics:
     recipient: FamilyPublicLaw+robotics-test@gmail.com
 
 translation:
-  unit:
-    notification:
-      sender: 'sender@example.com'
-      recipient: 'FamilyPublicLaw+translation@gmail.com'
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+translation@gmail.com
 
 security:
   anonymousPaths:

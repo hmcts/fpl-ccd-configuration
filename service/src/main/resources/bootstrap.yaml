@@ -25,7 +25,7 @@ spring:
         robotics-notification-recipient: robotics.notification.recipient
         ld-sdk-key: ld.sdk_key
         ctsc-inbox: fpl.ctsc_inbox
-        translation-unit-notification-sender: translation.unit.notification.sender
-        translation-unit-notification-recipient: translation.unit.notification.recipient
+        translation-notification-sender: translation.notification.sender
+        translation-notification-recipient: translation.notification.recipient
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         scheduler-db-password: SCHEDULER_DB_PASSWORD

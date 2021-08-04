@@ -126,8 +126,8 @@ Custom configuration parameters:
 |fpl.ctsc_inbox|SECRET|CTSC mail inbox|
 |fpl.translation_team_inbox|SECRET|Translation team mail inbox|
 |fpl.translation_team_inbox|SECRET|Translation team mail inbox|
-|translation.unit.notification.sender|SECRET|Translation sender mail inbox|
-|translation.unit.notification.recipient|SECRET|Translation recipient team mail inbox|
+|translation.notification.sender|SECRET|Translation sender mail inbox|
+|translation.notification.recipient|SECRET|Translation recipient team mail inbox|
 |robotics.notification.sender|SECRET|FROM field when sending emails to robotics|
 |robotics.notification.recipient|SECRET|Robotics mailbox address|
 |feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'
