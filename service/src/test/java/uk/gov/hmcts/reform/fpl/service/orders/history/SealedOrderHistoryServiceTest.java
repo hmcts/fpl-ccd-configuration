@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
@@ -107,8 +108,8 @@ class SealedOrderHistoryServiceTest {
     private final SealedOrderHistoryTypeGenerator typeGenerator = mock(SealedOrderHistoryTypeGenerator.class);
     private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker =
         mock(SealedOrderHistoryFinalMarker.class);
-    private final SealedOrderHistoryExtraOthersNotifiedGenerator othersNotifiedGenerator = mock(
-        SealedOrderHistoryExtraOthersNotifiedGenerator.class);
+    private final OthersNotifiedGenerator othersNotifiedGenerator = mock(
+        OthersNotifiedGenerator.class);
 
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(

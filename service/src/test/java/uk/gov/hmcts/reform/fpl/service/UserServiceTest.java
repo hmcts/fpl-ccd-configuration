@@ -9,11 +9,14 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.GATEKEEPER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
@@ -28,7 +31,8 @@ class UserServiceTest {
 
     private final RequestData requestData = mock(RequestData.class);
     private final IdamClient client = mock(IdamClient.class);
-    private final UserService underTest = new UserService(client, requestData);
+    private final CaseAccessService accessService = mock(CaseAccessService.class);
+    private final UserService underTest = new UserService(client, requestData, accessService);
 
     @Test
     void shouldReturnUserEmail() {
@@ -84,7 +88,6 @@ class UserServiceTest {
         assertThat(actualUserDetails).isEqualTo(expectedUserDetails);
     }
 
-
     @Nested
     class IsHmctsAdminUser {
 
@@ -123,6 +126,32 @@ class UserServiceTest {
             when(requestData.userRoles()).thenReturn(roles);
 
             assertThat(underTest.isHmctsAdminUser()).isFalse();
+        }
+    }
+
+    @Nested
+    class HasAnyCaseRoleFromTests {
+        @Test
+        void shouldReturnTrueWhenCaseRolePresent() {
+            when(accessService.getUserCaseRoles("123")).thenReturn(Set.of(SOLICITORA));
+            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORA), "123")).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseWhenCaseRoleNotPresent() {
+            when(accessService.getUserCaseRoles("123")).thenReturn(Set.of(SOLICITORA));
+            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORB), "123")).isFalse();
+        }
+    }
+
+    @Nested
+    class GetUserDetails {
+        @Test
+        void shouldReturnUserDetails() {
+            UserDetails userDetailsMock = mock(UserDetails.class);
+            when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
+            when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(userDetailsMock);
+            assertThat(underTest.getUserDetails()).isEqualTo(userDetailsMock);
         }
     }
 }

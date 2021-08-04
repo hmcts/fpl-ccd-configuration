@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
     DraftOrdersApprovedEventHandler.class, ReviewDraftOrdersEmailContentProvider.class, CaseUrlService.class,
-    RepresentativeNotificationService.class, EmailNotificationHelper.class
+    RepresentativeNotificationService.class, EmailNotificationHelper.class, OtherRecipientsInbox.class
 })
 @MockBeans({
     @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class)})
