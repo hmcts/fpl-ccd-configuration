@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
@@ -44,12 +46,29 @@ class GatekeepingOrderEventNotificationDeciderTest {
     @Test
     void buildEventToPublishForUrgentHearingOrder() {
         CaseData caseData = CaseData.builder()
+            .urgentHearingOrder(UrgentHearingOrder.builder().order(ORDER)
+                .translationRequirements(WELSH_TO_ENGLISH).build())
+            .build();
+
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
+            .notificationGroup(URGENT_AND_NOP)
+            .order(ORDER)
+            .languageTranslationRequirement(WELSH_TO_ENGLISH)
+            .caseData(caseData)
+            .build()
+        );
+    }
+
+    @Test
+    void buildEventToPublishForUrgentHearingOrderIfLanguageRequirementNotPresent() {
+        CaseData caseData = CaseData.builder()
             .urgentHearingOrder(UrgentHearingOrder.builder().order(ORDER).build())
             .build();
 
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(URGENT_AND_NOP)
             .order(ORDER)
+            .languageTranslationRequirement(NO)
             .caseData(caseData)
             .build()
         );
@@ -61,12 +80,14 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(OrderStatus.SEALED)
                 .orderDoc(ORDER)
+                .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();
 
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(SDO_AND_NOP)
             .order(ORDER)
+            .languageTranslationRequirement(WELSH_TO_ENGLISH)
             .caseData(caseData)
             .build()
         );
@@ -78,12 +99,14 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(OrderStatus.SEALED)
                 .orderDoc(ORDER)
+                .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();
 
         assertThat(underTest.buildEventToPublish(caseData, CASE_MANAGEMENT)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(SDO)
             .order(ORDER)
+            .languageTranslationRequirement(WELSH_TO_ENGLISH)
             .caseData(caseData)
             .build()
         );
