@@ -139,7 +139,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
 
         if (servingOthersToggledOn) {
-            assertThat(uploadedC2DocumentBundle.getOthersNotified()).contains("Margaret Jones, Tim Jones, Stephen Jones");
+            assertThat(uploadedC2DocumentBundle.getOthersNotified())
+                .contains("Margaret Jones, Tim Jones, Stephen Jones");
             assertThat(unwrapElements(uploadedC2DocumentBundle.getOthers()))
                 .contains(caseData.getOthers().getFirstOther(),
                     caseData.getOthers().getAdditionalOthers().get(0).getValue());
