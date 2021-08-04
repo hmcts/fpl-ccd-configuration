@@ -90,19 +90,14 @@ const assertChangeOfRepresentative = (I, index, method, respondentName, actingUs
     I.seeOrganisationInTab([representative, 'Removed representative', 'Name'], removedUser.organisation);
   }
 };
-function assertLegalCounsellorWasAdded(caseViewPage, I) {
-  const LEGAL_COUNSELLOR_ORGANISATION_NAME_XPATH = '//mat-tab-body' +
-    '//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Respondents 1"]]] ' +
-    '//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Legal Counsellor 1"]]] ' +
-    '//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Organisation"]]] ' +
-    '//*[contains(@class,"complex-panel-compound-field") and .//td/span[text()="Name:"]]';
 
+function assertLegalCounsellorWasAdded(caseViewPage, I) {
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   const legalCounsellor = legalCounsellors.legalCounsellor;
   I.seeInTab(['Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
   I.seeInTab(['Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
   I.seeInTab(['Legal Counsellor 1', 'Email address'], legalCounsellor.email);
   I.seeInTab(['Legal Counsellor 1', 'Phone number'], legalCounsellor.telephone);
-  I.see(legalCounsellor.organisation, LEGAL_COUNSELLOR_ORGANISATION_NAME_XPATH);
+  I.seeOrganisationInTab(['Respondents 1', 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
 }
 
