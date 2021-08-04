@@ -15,32 +15,34 @@ public class LegalCounsellorTestHelper {
         //NO-OP
     }
 
-    public static Pair<String, LegalCounsellor> buildLegalCounsellorAndMockUserId(//TODO - check usages - it might be worth redirecting some to the other method
+    public static Pair<String, LegalCounsellor> buildLegalCounsellorWithOrganisationAndMockUserId(
         OrganisationService mockOrganisationService,
         String uniqueIdentifier) {
 
-        LegalCounsellor legalCounsellor = LegalCounsellor.builder()
-            .firstName("TestFirstName" + uniqueIdentifier)
-            .lastName("TestLastName" + uniqueIdentifier)
-            .email("legalcounsellor" + uniqueIdentifier + "@example.com")
-            .build();
-
-        String userId = "testUserId" + uniqueIdentifier;
-        when(mockOrganisationService.findUserByEmail(legalCounsellor.getEmail())).thenReturn(Optional.of(userId));
-
-        return Pair.of(userId, legalCounsellor);
+        return buildLegalCounsellor(mockOrganisationService, uniqueIdentifier, true);
     }
 
-    public static Pair<String, LegalCounsellor> buildLegalCounsellorWithOrganisationAndMockUserId(//TODO - reuse code
-                                                                                                  OrganisationService mockOrganisationService,
-                                                                                                  String uniqueIdentifier) {
+    public static Pair<String, LegalCounsellor> buildLegalCounsellorAndMockUserId(
+        OrganisationService mockOrganisationService,
+        String uniqueIdentifier) {
 
+        return buildLegalCounsellor(mockOrganisationService, uniqueIdentifier, false);
+    }
+
+    private static Pair<String, LegalCounsellor> buildLegalCounsellor(OrganisationService mockOrganisationService,
+                                                                      String uniqueIdentifier,
+                                                                      boolean addOrganisation) {
         LegalCounsellor legalCounsellor = LegalCounsellor.builder()
             .firstName("TestFirstName" + uniqueIdentifier)
             .lastName("TestLastName" + uniqueIdentifier)
             .email("legalcounsellor" + uniqueIdentifier + "@example.com")
-            .organisation(Organisation.organisation("123"))
             .build();
+
+        if (addOrganisation) {
+            legalCounsellor = legalCounsellor.toBuilder()
+                .organisation(Organisation.organisation("123"))
+                .build();
+        }
 
         String userId = "testUserId" + uniqueIdentifier;
         when(mockOrganisationService.findUserByEmail(legalCounsellor.getEmail())).thenReturn(Optional.of(userId));

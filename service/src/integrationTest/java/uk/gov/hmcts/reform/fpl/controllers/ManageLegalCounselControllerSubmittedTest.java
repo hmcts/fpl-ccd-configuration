@@ -43,7 +43,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.TEST_FORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorAndMockUserId;
+import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorWithOrganisationAndMockUserId;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @WebMvcTest(ManageOrdersController.class)
@@ -80,11 +80,11 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldUpdateCaseRoleAndNotifyModifiedLegalCounsellorsWhenSubmittedEndpointIsCalled() {
         Pair<String, LegalCounsellor> addedLegalCounsellor =
-            buildLegalCounsellorAndMockUserId(organisationService, "1");
+            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "1");
         Pair<String, LegalCounsellor> maintainedLegalCounsellor =
-            buildLegalCounsellorAndMockUserId(organisationService, "2");
+            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "2");
         Pair<String, LegalCounsellor> removedLegalCounsellor =
-            buildLegalCounsellorAndMockUserId(organisationService, "3");
+            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "3");
 
         List<Element<Child>> childrenInPreviousCaseData = testChildren();
         childrenInPreviousCaseData.get(0).getValue().setLegalCounsellors(asList(

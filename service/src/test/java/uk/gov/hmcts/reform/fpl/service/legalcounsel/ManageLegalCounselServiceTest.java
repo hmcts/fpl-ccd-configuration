@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORC;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.getCaseConverterInstance;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorAndMockUserId;
+import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorWithOrganisationAndMockUserId;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
@@ -213,9 +213,12 @@ class ManageLegalCounselServiceTest {
         when(organisationService.findOrganisation()).thenReturn(
             Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder().name("Solicitors Law Ltd").build())
         );
-        Pair<String, LegalCounsellor> legalCounsellor1 = buildLegalCounsellorAndMockUserId(organisationService, "1");
-        Pair<String, LegalCounsellor> legalCounsellor2 = buildLegalCounsellorAndMockUserId(organisationService, "2");
-        Pair<String, LegalCounsellor> legalCounsellor3 = buildLegalCounsellorAndMockUserId(organisationService, "3");
+        Pair<String, LegalCounsellor> legalCounsellor1 =
+            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "1");
+        Pair<String, LegalCounsellor> legalCounsellor2 =
+            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "2");
+        Pair<String, LegalCounsellor> legalCounsellor3 =
+            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "3");
         CaseDetails previousCaseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID_AS_LONG)
             .data(caseConverter.toMap(

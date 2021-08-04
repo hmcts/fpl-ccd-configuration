@@ -6,7 +6,7 @@ import lombok.Value;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class LegalCounsellor {
 
     String firstName;
