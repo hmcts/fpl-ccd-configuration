@@ -161,14 +161,11 @@ withPipeline(type, product, component) {
 
             git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
 
-            git fetch origin demo:demo
-            git push --force origin HEAD:demo
-
             git fetch origin perftest:perftest
             git push --force origin HEAD:perftest
           '''
         } catch (err) {
-          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo or perftest branch'
+          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update perftest branch'
         }
       }
     }
@@ -249,9 +246,7 @@ withPipeline(type, product, component) {
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
         withTeamSecrets(pipelineConf, env.ENV) {
           archiveCoreCaseDataDefinitions(env.ENV)
-          if (env.ENV != 'prod') { // TODO: uncomment  && env.ENV != 'prod' once tested in all envs
-            uploadCoreCaseDataDefinitions(env.ENV)
-          }
+          uploadCoreCaseDataDefinitions(env.ENV)
         }
       }
     } else {

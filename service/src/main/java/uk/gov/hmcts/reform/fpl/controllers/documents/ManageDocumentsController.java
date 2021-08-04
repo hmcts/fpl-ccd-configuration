@@ -16,20 +16,20 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
@@ -38,7 +38,9 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_SOLICITOR_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
@@ -55,8 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageDocumentsController extends CallbackController {
 
-    private final IdamClient idamClient;
-    private final RequestData requestData;
+    private final UserService userService;
     private final FeatureToggleService featureToggleService;
     private final ManageDocumentService documentService;
     private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
@@ -80,13 +81,20 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentType type = caseData.getManageDocument().getType();
+        boolean isSolicitor = isSolicitor(caseData.getId());
+
+        if (isSolicitor && userService.isHmctsUser()) {
+            throw new IllegalStateException(
+                String.format("User %s is HMCTS but has solicitor case roles", userService.getUserEmail()));
+        }
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
         caseDetails.getData().putAll(documentService.baseEventData(caseData));
 
         if (CORRESPONDENCE == type) {
-            supportingEvidence = documentService.getSupportingEvidenceBundle(caseData.getCorrespondenceDocuments());
+            supportingEvidence = documentService.getSupportingEvidenceBundle(
+                isSolicitor ? caseData.getCorrespondenceDocumentsSolicitor() : caseData.getCorrespondenceDocuments());
         } else if (ADDITIONAL_APPLICATIONS_DOCUMENTS == type) {
             if (!caseData.hasApplicationBundles()) {
                 return respond(caseDetails,
@@ -105,14 +113,17 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        boolean isSolicitor = isSolicitor(caseData.getId());
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
         if (caseData.getManageDocumentSubtypeList() == OTHER) {
             caseDetailsMap.putAll(documentService.initialiseHearingListAndLabel(caseData));
-            supportingEvidence = documentService.getFurtherEvidences(caseData, caseData.getFurtherEvidenceDocuments());
+            supportingEvidence = documentService.getFurtherEvidences(caseData,
+                isSolicitor ? caseData.getFurtherEvidenceDocumentsSolicitor() : caseData.getFurtherEvidenceDocuments());
         }
 
+        //Respondent statements are unfiltered (everyone has same access) - is it correct?
         if (caseData.getManageDocumentSubtypeList() == RESPONDENT_STATEMENT) {
             UUID respondentId = documentService.getSelectedRespondentId(caseData);
             supportingEvidence = documentService.getRespondentStatements(caseData, respondentId);
@@ -141,6 +152,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        boolean isSolicitor = isSolicitor(caseData.getId());
 
         ManageDocumentType manageDocumentType = caseData.getManageDocument().getType();
         List<Element<SupportingEvidenceBundle>> currentBundle;
@@ -149,39 +161,50 @@ public class ManageDocumentsController extends CallbackController {
                 if (caseData.getManageDocumentSubtypeList() == RESPONDENT_STATEMENT) {
 
                     caseDetailsMap.putIfNotEmpty("respondentStatements",
-                        documentService.getUpdatedRespondentStatements(caseData));
+                        documentService.getUpdatedRespondentStatements(caseData, isSolicitor));
 
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = documentService
-                        .setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+                        .setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore, isSolicitor);
 
                     var updatedBundle = documentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
                     caseDetailsMap.putIfNotEmpty(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle);
                 } else {
                     currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments());
+                        caseData.getSupportingEvidenceDocumentsTemp(),
+                        isSolicitor ? caseDataBefore.getFurtherEvidenceDocumentsSolicitor() :
+                            caseDataBefore.getFurtherEvidenceDocuments(), isSolicitor);
 
-                    confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
-                        FURTHER_EVIDENCE_DOCUMENTS_KEY);
-
-                    caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_KEY, currentBundle);
+                    if (!isSolicitor) {
+                        confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
+                            FURTHER_EVIDENCE_DOCUMENTS_KEY);
+                        caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_KEY, currentBundle);
+                    } else {
+                        caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_SOLICITOR_KEY, currentBundle);
+                    }
                 }
                 break;
             case CORRESPONDENCE:
                 currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
-                    caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocuments());
+                    caseData.getSupportingEvidenceDocumentsTemp(),
+                    isSolicitor ? caseDataBefore.getCorrespondenceDocumentsSolicitor() :
+                        caseDataBefore.getCorrespondenceDocuments(), isSolicitor);
 
                 List<Element<SupportingEvidenceBundle>> sortedBundle
                     = documentService.sortCorrespondenceDocumentsByUploadedDate(currentBundle);
 
-                confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, sortedBundle,
-                    CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
-
-                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
+                if (!isSolicitor) {
+                    confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, sortedBundle,
+                        CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
+                    caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
+                } else {
+                    caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY, sortedBundle);
+                }
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData));
+                caseDetailsMap.putIfNotEmpty(
+                    documentService.buildFinalApplicationBundleSupportingDocuments(caseData, isSolicitor));
                 break;
         }
 
@@ -201,11 +224,15 @@ public class ManageDocumentsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
+            UserDetails userDetails = userService.getUserDetails();
 
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
                 getCaseDataBefore(request), false,
                 userDetails));
         }
+    }
+
+    private boolean isSolicitor(Long id) {
+        return userService.hasAnyCaseRoleFrom(representativeSolicitors(), id.toString());
     }
 }

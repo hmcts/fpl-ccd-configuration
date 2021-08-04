@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -35,7 +35,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
@@ -54,20 +53,22 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans({
     @MockBean(FeatureToggleService.class), @MockBean(IdamClient.class), @MockBean(RequestData.class),
-    @MockBean(SendDocumentService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class)
+    @MockBean(SendDocumentService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
+    @MockBean(Time.class)
 })
 class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final String CHILD_LAST_NAME = "Jones";
     private static final String RESPONDENT_LAST_NAME = "Smith";
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2099, 2, 20, 20, 20, 0);
 
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(CASE_ID)
         .caseLocalAuthority(LOCAL_AUTHORITY_NAME)
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
         .hearingDetails(wrapElements(HearingBooking.builder()
-            .startDate(LocalDateTime.of(2020, 2, 20, 20, 20, 0))
+            .startDate(HEARING_DATE)
             .type(HearingType.CASE_MANAGEMENT)
             .build()))
         .respondents1(wrapElements(Respondent.builder()
@@ -97,20 +98,28 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     @Autowired
     private FeatureToggleService toggleService;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyAdmin(boolean toggle, String name) {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
+    @Autowired
+    private Time time;
+
+    @BeforeEach
+    void setup() {
+        given(time.now()).willReturn(HEARING_DATE.minusDays(1));
+    }
+
+    @Test
+    void notifyAdmin() {
+        given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
+        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
 
         assertThat(response())
-            .hasSubject("New application uploaded, " + name)
+            .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
-                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2020")
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
                 .line()
                 .h1("Applications")
                 .line()
@@ -122,27 +131,25 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                 .line("You need to:")
                 .list("check the applications",
                     "check payment has been taken",
-                    "send a message to the judge or legal adviser",
-                    "send a copy to relevant parties")
+                    "send a message to the judge or legal adviser")
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyParties(boolean toggle, String name) {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
+    @Test
+    void notifyParties() {
+        given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
 
         assertThat(response())
-            .hasSubject("New application uploaded, " + name)
+            .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
-                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2020")
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
                 .line()
                 .h1("Applications")
                 .line()
@@ -152,12 +159,5 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

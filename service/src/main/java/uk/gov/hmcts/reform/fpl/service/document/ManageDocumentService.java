@@ -42,6 +42,7 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -57,9 +58,11 @@ public class ManageDocumentService {
     private final UserService user;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
+    public static final String CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY = "correspondenceDocumentsSolicitor";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
     public static final String TEMP_EVIDENCE_DOCUMENTS_KEY = "supportingEvidenceDocumentsTemp";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_KEY = "furtherEvidenceDocuments";
+    public static final String FURTHER_EVIDENCE_DOCUMENTS_SOLICITOR_KEY = "furtherEvidenceDocumentsSolicitor";
     public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY = "hearingFurtherEvidenceDocuments";
     public static final String C2_SUPPORTING_DOCUMENTS_COLLECTION = "c2SupportingDocuments";
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
@@ -69,6 +72,10 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
+    private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
+        bundle -> bundle.getValue().isUploadedByHMCTS();
+    private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
+        bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> eventData = new HashMap<>();
@@ -150,7 +157,7 @@ public class ManageDocumentService {
                         = bundle.get().getValue().getSupportingEvidenceBundle();
 
                     setDefaultEvidenceType(evidenceBundle);
-                    return getUserSpecificSupportingEvidences(evidenceBundle);
+                    return getUserSpecificSupportingEvidences(evidenceBundle, caseData.getId());
                 }
             }
         } else if (isNotEmpty(unrelatedEvidence)) {
@@ -165,7 +172,7 @@ public class ManageDocumentService {
         UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         ApplicationsBundle selectedBundle = caseData.getApplicationBundleByUUID(selectedC2);
 
-        return getUserSpecificSupportingEvidences(selectedBundle.getSupportingEvidenceBundle());
+        return getUserSpecificSupportingEvidences(selectedBundle.getSupportingEvidenceBundle(), caseData.getId());
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -196,7 +203,7 @@ public class ManageDocumentService {
                     List<Element<SupportingEvidenceBundle>> existingEvidence =
                         new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
 
-                    updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
+                    updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence, caseData.getId());
                     sortByDateUploaded(existingEvidence);
 
                     element.getValue().setSupportingEvidenceBundle(existingEvidence);
@@ -215,7 +222,8 @@ public class ManageDocumentService {
 
     public List<Element<SupportingEvidenceBundle>> setDateTimeUploadedOnSupportingEvidence(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore,
+        boolean setSolicitorUploaded) {
 
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
@@ -232,6 +240,9 @@ public class ManageDocumentService {
                     if (!previousVersion.getValue().getDocument().equals(bundle.getValue().getDocument())) {
                         bundle.getValue().setDateTimeUploaded(time.now());
                         bundle.getValue().setUploadedBy(uploadedBy);
+                        if (setSolicitorUploaded) {
+                            bundle.getValue().setUploadedBySolicitor("Yes");
+                        }
                     }
                 }
             ));
@@ -242,27 +253,31 @@ public class ManageDocumentService {
             if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
                 supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
                 supportingEvidenceBundleElement.getValue().setUploadedBy(uploadedBy);
+                if (setSolicitorUploaded) {
+                    supportingEvidenceBundleElement.getValue().setUploadedBySolicitor("Yes");
+                }
             }
             updatedBundles.add(supportingEvidenceBundleElement);
         }
         return updatedBundles;
     }
 
-    public Map<String, Object> buildFinalApplicationBundleSupportingDocuments(CaseData caseData) {
+    public Map<String, Object> buildFinalApplicationBundleSupportingDocuments(CaseData caseData,
+                                                                              boolean setSolicitorUploaded) {
         HashMap<String, Object> data = new HashMap<>();
         UUID selected = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
 
         if (caseData.getC2DocumentBundleByUUID(selected) != null) {
-            data.put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2DocumentBundle(caseData, selected));
+            data.put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2DocumentBundle(caseData, selected, setSolicitorUploaded));
         } else {
             data.put(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
-                updateAdditionalDocumentsBundle(caseData, selected));
+                updateAdditionalDocumentsBundle(caseData, selected, setSolicitorUploaded));
         }
         return data;
     }
 
     private List<Element<AdditionalApplicationsBundle>> updateAdditionalDocumentsBundle(
-        CaseData caseData, UUID selectedBundleId) {
+        CaseData caseData, UUID selectedBundleId, boolean setSolicitorUploaded) {
 
         List<Element<AdditionalApplicationsBundle>> applicationsBundles = caseData.getAdditionalApplicationsBundle();
 
@@ -274,14 +289,18 @@ public class ManageDocumentService {
 
                 List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
                     c2DocumentBundle.getSupportingEvidenceBundle(),
-                    caseData.getSupportingEvidenceDocumentsTemp());
+                    caseData.getSupportingEvidenceDocumentsTemp(),
+                    caseData.getId(),
+                    setSolicitorUploaded);
 
                 c2DocumentBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
             } else if (!isNull(otherApplicationsBundle) && selectedBundleId.equals(otherApplicationsBundle.getId())) {
 
                 List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
                     otherApplicationsBundle.getSupportingEvidenceBundle(),
-                    caseData.getSupportingEvidenceDocumentsTemp());
+                    caseData.getSupportingEvidenceDocumentsTemp(),
+                    caseData.getId(),
+                    setSolicitorUploaded);
 
                 otherApplicationsBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
             }
@@ -289,13 +308,16 @@ public class ManageDocumentService {
         return applicationsBundles;
     }
 
-    private List<Element<C2DocumentBundle>> updatedC2DocumentBundle(CaseData caseData, UUID selected) {
+    private List<Element<C2DocumentBundle>> updatedC2DocumentBundle(CaseData caseData,
+                                                                    UUID selected,
+                                                                    boolean setSolicitorUploaded) {
         List<Element<C2DocumentBundle>> c2Bundles = caseData.getC2DocumentBundle();
 
         for (Element<C2DocumentBundle> element : c2Bundles) {
             if (selected.equals(element.getId())) {
                 List<Element<SupportingEvidenceBundle>> updatedBundle = updateSupportingEvidenceBundle(
-                    element.getValue().getSupportingEvidenceBundle(), caseData.getSupportingEvidenceDocumentsTemp());
+                    element.getValue().getSupportingEvidenceBundle(), caseData.getSupportingEvidenceDocumentsTemp(),
+                    caseData.getId(), setSolicitorUploaded);
                 element.getValue().setSupportingEvidenceBundle(updatedBundle);
             }
         }
@@ -304,19 +326,21 @@ public class ManageDocumentService {
 
     private List<Element<SupportingEvidenceBundle>> updateSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> existingSupportingEvidenceBundle,
-        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle,
+        Long id,
+        boolean setSolicitorUploaded
     ) {
         List<Element<SupportingEvidenceBundle>> modifiedEvidence = setDateTimeUploadedOnSupportingEvidence(
-            updatedSupportingEvidenceBundle, existingSupportingEvidenceBundle);
+            updatedSupportingEvidenceBundle, existingSupportingEvidenceBundle, setSolicitorUploaded);
 
-        updateExistingEvidenceWithChanges(existingSupportingEvidenceBundle, modifiedEvidence);
+        updateExistingEvidenceWithChanges(existingSupportingEvidenceBundle, modifiedEvidence, id);
         sortByDateUploaded(existingSupportingEvidenceBundle);
 
         return existingSupportingEvidenceBundle;
     }
 
     public List<Element<SupportingEvidenceBundle>> setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
-        CaseData caseData, CaseData caseDataBefore) {
+        CaseData caseData, CaseData caseDataBefore, boolean setSolicitorUploaded) {
         List<Element<SupportingEvidenceBundle>> currentSupportingDocuments
             = caseData.getSupportingEvidenceDocumentsTemp();
 
@@ -328,7 +352,8 @@ public class ManageDocumentService {
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
                 .orElse(List.of());
 
-        return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
+        return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments,
+            setSolicitorUploaded);
     }
 
     public List<Element<SupportingEvidenceBundle>> sortCorrespondenceDocumentsByUploadedDate(
@@ -338,6 +363,7 @@ public class ManageDocumentService {
             .collect(Collectors.toList());
     }
 
+    //This is unfiltered, LA can see/edit HMCTS confidential statements for a respondent
     public List<Element<SupportingEvidenceBundle>> getRespondentStatements(CaseData caseData,
                                                                            UUID id) {
         return caseData.getRespondentStatementByRespondentId(id)
@@ -346,7 +372,8 @@ public class ManageDocumentService {
             .orElse(defaultSupportingEvidences());
     }
 
-    public List<Element<RespondentStatement>> getUpdatedRespondentStatements(CaseData caseData) {
+    public List<Element<RespondentStatement>> getUpdatedRespondentStatements(CaseData caseData,
+                                                                             boolean setSolicitorUploaded) {
         List<Element<RespondentStatement>> respondentStatementDocuments = caseData.getRespondentStatements();
         UUID selectedRespondentId = getSelectedRespondentId(caseData);
         String respondentFullName = getRespondentFullName(caseData, selectedRespondentId);
@@ -370,7 +397,7 @@ public class ManageDocumentService {
             List<Element<SupportingEvidenceBundle>> existingBundle
                 = respondentStatement.getValue().getSupportingEvidenceBundle();
             List<Element<SupportingEvidenceBundle>> updatedBundle
-                = setDateTimeUploadedOnSupportingEvidence(newBundle, existingBundle);
+                = setDateTimeUploadedOnSupportingEvidence(newBundle, existingBundle, setSolicitorUploaded);
             respondentStatement.getValue().setSupportingEvidenceBundle(updatedBundle);
         }
 
@@ -383,16 +410,23 @@ public class ManageDocumentService {
 
     // Separate collection based on idam role (only show users their own documents)
     private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidences(
-        List<Element<SupportingEvidenceBundle>> bundles) {
+        List<Element<SupportingEvidenceBundle>> bundles, Long caseId) {
 
-        Predicate<Element<SupportingEvidenceBundle>> bundleFilter = bundle -> bundle.getValue().isUploadedByHMCTS();
+        Predicate<Element<SupportingEvidenceBundle>> selectedFilter;
 
         if (!user.isHmctsUser()) {
-            bundleFilter = bundleFilter.negate();
+            if (user.hasAnyCaseRoleFrom(representativeSolicitors(), caseId.toString())) {
+                selectedFilter = SOLICITOR_FILTER;
+            } else {
+                //local authority
+                selectedFilter = HMCTS_FILTER.negate().and(SOLICITOR_FILTER.negate());
+            }
+        } else {
+            selectedFilter = HMCTS_FILTER;
         }
 
         List<Element<SupportingEvidenceBundle>> supportingEvidences = bundles.stream()
-            .filter(bundleFilter)
+            .filter(selectedFilter)
             .collect(Collectors.toList());
 
         return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
@@ -420,9 +454,10 @@ public class ManageDocumentService {
     }
 
     private void updateExistingEvidenceWithChanges(List<Element<SupportingEvidenceBundle>> existingEvidence,
-                                                   List<Element<SupportingEvidenceBundle>> updatedEvidence) {
+                                                   List<Element<SupportingEvidenceBundle>> updatedEvidence,
+                                                   Long id) {
         List<Element<SupportingEvidenceBundle>> userSpecificDocuments
-            = getUserSpecificSupportingEvidences(existingEvidence);
+            = getUserSpecificSupportingEvidences(existingEvidence, id);
 
         existingEvidence.removeAll(userSpecificDocuments);
 

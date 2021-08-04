@@ -402,6 +402,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(subjectLine)
             .lastName("Smith")
+            .childLastName("Jones")
             .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab")
             .documentLink(jsonFileObject.toMap())
             .applicationTypes(Arrays.asList("C2", "C13A - Special guardianship order"))
