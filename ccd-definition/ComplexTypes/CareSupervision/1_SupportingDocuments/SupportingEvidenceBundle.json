@@ -91,5 +91,16 @@
     "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
     "Searchable": "N",
     "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "uploadedBySolicitor",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
   }
 ]
