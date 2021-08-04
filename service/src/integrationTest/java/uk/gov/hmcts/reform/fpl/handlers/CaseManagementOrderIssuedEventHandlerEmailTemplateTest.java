@@ -68,7 +68,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(SealedOrderHistoryExtraTitleGenerator.class), @MockBean(SealedOrderHistoryTypeGenerator.class),
     @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(AppointedGuardianFormatter.class),
     @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class),
-    @MockBean(SealedOrderHistoryExtraOthersNotifiedGenerator.class), @MockBean(OthersNotifiedGenerator.class)
+    @MockBean(OthersNotifiedGenerator.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
