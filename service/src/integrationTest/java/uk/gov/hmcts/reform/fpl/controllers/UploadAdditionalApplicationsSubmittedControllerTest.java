@@ -393,10 +393,17 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void submittedEventShouldNotNotifyAdminWhenPbaPaymentIsNull() throws Exception {
-        final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters())
-            .put("additionalApplicationType", List.of(C2_ORDER))
-            .put("additionalApplicationsBundle", wrapElements(
+        CaseData caseData = CaseData.builder().caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .familyManCaseNumber(String.valueOf(CASE_ID))
+            .respondents1(List.of(element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName(RESPONDENT_FIRSTNAME)
+                    .lastName(RESPONDENT_SURNAME)
+                    .build())
+                .build())))
+            .additionalApplicationType(List.of(C2_ORDER))
+            .additionalApplicationsBundle(wrapElements(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(null)
                     .c2DocumentBundle(C2DocumentBundle.builder()
@@ -404,10 +411,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                         .supplementsBundle(new ArrayList<>())
                         .usePbaPayment(NO.getValue())
                         .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
-                        .build())))
+                        .build())
+                    .build()))
             .build();
 
-        postSubmittedEvent(createCase(caseData));
+        postSubmittedEvent(caseData);
 
         verify(notificationClient, never()).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
