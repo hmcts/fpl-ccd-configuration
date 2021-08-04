@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
-import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
@@ -47,7 +46,6 @@ public class ManageLegalCounselService {
     private final CaseConverter caseConverter;
     private final CaseRoleLookupService caseRoleLookupService;
     private final OrganisationService organisationService;
-    private final EventService eventPublisher;
 
     public List<Element<LegalCounsellor>> retrieveLegalCounselForLoggedInSolicitor(CaseData caseData) {
         String caseId = caseData.getId().toString();
@@ -122,7 +120,9 @@ public class ManageLegalCounselService {
         return errorMessages;
     }
 
-    public void runFinalEventActions(CaseData previousCaseData, CaseData currentCaseData) {
+    public List<? super Object> runFinalEventActions(CaseData previousCaseData, CaseData currentCaseData) {
+        List<? super Object> eventsToPublish = new ArrayList<>();
+
         Organisation loggedInSolicitorOrganisation = organisationService.findOrganisation().orElseThrow();
 
         List<LegalCounsellor> currentLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(currentCaseData)
@@ -143,7 +143,7 @@ public class ManageLegalCounselService {
                 .map(userId -> Pair.of(userId, legalCounsellor)))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .forEach(legalCounsellorPair -> eventPublisher.publishEvent(
+            .forEach(legalCounsellorPair -> eventsToPublish.add(
                 new LegalCounsellorAdded(currentCaseData, legalCounsellorPair)
             ));
 
@@ -156,11 +156,13 @@ public class ManageLegalCounselService {
                 .map(userId -> Pair.of(userId, legalCounsellor)))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .forEach(legalCounsellorPair -> eventPublisher.publishEvent(
+            .forEach(legalCounsellorPair -> eventsToPublish.add(
                 new LegalCounsellorRemoved(currentCaseData,
                     loggedInSolicitorOrganisation.getName(),
                     legalCounsellorPair)
             ));
+
+        return eventsToPublish;
     }
 
 }

@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
-import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 
 import java.util.List;
@@ -26,8 +25,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
@@ -58,9 +55,8 @@ class ManageLegalCounselServiceTest {
     private final CaseConverter caseConverter = getCaseConverterInstance();
     private final CaseRoleLookupService caseRoleLookupService = mock(CaseRoleLookupService.class);
     private final OrganisationService organisationService = mock(OrganisationService.class);
-    private final EventService eventPublisher = mock(EventService.class);
     private final ManageLegalCounselService manageLegalCounselService =
-        new ManageLegalCounselService(caseConverter, caseRoleLookupService, organisationService, eventPublisher);
+        new ManageLegalCounselService(caseConverter, caseRoleLookupService, organisationService);
 
     private CaseData caseData;
 
@@ -236,15 +232,15 @@ class ManageLegalCounselServiceTest {
 
         CaseData previousCaseData = caseConverter.convert(previousCaseDetails);
         CaseData currentCaseData = caseConverter.convert(currentCaseDetails);
-        manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData);
+        List<? super Object> eventsToPublish =
+            manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData);
 
-        verify(eventPublisher).publishEvent(
-            new LegalCounsellorAdded(currentCaseData, legalCounsellor2)
-        );
-        verify(eventPublisher).publishEvent(
-            new LegalCounsellorRemoved(currentCaseData, "Solicitors Law Ltd", legalCounsellor3)
-        );
-        verifyNoMoreInteractions(eventPublisher);
+        assertThat(eventsToPublish)
+            .hasSize(2)
+            .containsExactlyInAnyOrder(
+                new LegalCounsellorAdded(currentCaseData, legalCounsellor2),
+                new LegalCounsellorRemoved(currentCaseData, "Solicitors Law Ltd", legalCounsellor3)
+            );
     }
 
 }

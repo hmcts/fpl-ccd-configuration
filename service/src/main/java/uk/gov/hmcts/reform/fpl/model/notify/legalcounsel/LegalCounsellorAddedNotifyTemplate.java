@@ -1,16 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.notify.legalcounsel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import lombok.Builder;
+import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
-@EqualsAndHashCode
-@ToString(callSuper = true)
-@Data
-@SuperBuilder
+@Value
+@Builder
 public class LegalCounsellorAddedNotifyTemplate implements NotifyData {
     @JsonProperty("caseID")
     private final String caseId;

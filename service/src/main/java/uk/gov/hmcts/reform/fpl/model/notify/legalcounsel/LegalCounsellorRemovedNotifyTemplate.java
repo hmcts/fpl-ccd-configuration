@@ -1,15 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.notify.legalcounsel;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import lombok.Builder;
+import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
-@EqualsAndHashCode
-@ToString(callSuper = true)
-@Data
-@SuperBuilder
+@Value
+@Builder
 public class LegalCounsellorRemovedNotifyTemplate implements NotifyData {
     private final String caseName;
     private final String childLastName;

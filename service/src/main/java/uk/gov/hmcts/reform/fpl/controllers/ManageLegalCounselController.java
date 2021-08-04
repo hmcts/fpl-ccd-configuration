@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.legalcounsel.ManageLegalCounselService;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 public class ManageLegalCounselController extends CallbackController {
 
     private final ManageLegalCounselService manageLegalCounselService;
+    private final EventService eventPublisher;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -61,7 +63,8 @@ public class ManageLegalCounselController extends CallbackController {
         CaseData previousCaseData = getCaseData(previousCaseDetails);
         CaseData currentCaseData = getCaseData(currentCaseDetails);
 
-        manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData);
+        manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData)
+            .forEach(eventPublisher::publishEvent);
 
         return SubmittedCallbackResponse.builder().build();
     }
