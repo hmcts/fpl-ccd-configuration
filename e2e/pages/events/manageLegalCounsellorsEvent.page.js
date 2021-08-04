@@ -1,4 +1,5 @@
 const {I} = inject();
+const organisationHelper = require('../../helpers/organisation_helper.js');
 
 module.exports = {
   fields: function (index) {
@@ -32,9 +33,7 @@ module.exports = {
     }
     if(legalCounsellor.organisation) {
       await within(this.fields(elementIndex).legalCounsellor.organisationGroup, async () => {
-        I.waitForEnabled('#search-org-text');
-        I.fillField('#search-org-text', legalCounsellor.organisation);
-        I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(legalCounsellor.organisation))));
+        organisationHelper.searchAndSelectGivenRegisteredOrganisation(legalCounsellor);
       });
     }
     await I.runAccessibilityTest();
