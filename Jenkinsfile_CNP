@@ -35,7 +35,10 @@ def otherSecrets = [
   ],
   'ccd-${env}': [
     secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
-    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
+    secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+    secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+    secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD')
   ],
   'fpl-${env}': [
     secret('definition-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
