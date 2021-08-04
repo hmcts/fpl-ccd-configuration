@@ -35,6 +35,7 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(buildUnformattedCalloutWithNextHearing(caseData, time.now()))
             .lastName(helper.getSubjectLineLastName(caseData))
+            .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
             .build();
