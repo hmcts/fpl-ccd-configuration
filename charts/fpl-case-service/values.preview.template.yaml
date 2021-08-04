@@ -48,6 +48,8 @@ java:
         - local-authority-fallback-inbox
         - system-update-user-username
         - system-update-user-password
+        - translation-unit-notification-sender
+        - translation-unit-notification-recipient
         - robotics-notification-sender
         - robotics-notification-recipient
         - ld-sdk-key
