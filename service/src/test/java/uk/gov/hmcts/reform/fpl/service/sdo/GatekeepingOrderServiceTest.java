@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
@@ -68,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -892,6 +894,7 @@ class GatekeepingOrderServiceTest {
                 .dateOfUpload(time.now().toLocalDate())
                 .uploader(userName)
                 .orderDoc(uploadedOrder)
+                .needTranslation(YesNo.NO)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
@@ -922,6 +925,40 @@ class GatekeepingOrderServiceTest {
                 .uploader(userName)
                 .orderDoc(sealedOrder)
                 .lastUploadedOrder(uploadedOrder)
+                .needTranslation(YesNo.NO)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                .build();
+
+            assertThat(actualOrder).isEqualTo(expectedOrder);
+
+            verify(sealingService).sealDocument(uploadedOrder);
+        }
+
+        @Test
+        void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrderAndTranslate() {
+
+            final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
+                .orderStatus(SEALED)
+                .draftDocument(uploadedOrder)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                    .gatekeepingOrderSealDecision(sealDecision)
+                    .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
+                    .build())
+                .build();
+
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
+
+            final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .dateOfUpload(time.now().toLocalDate())
+                .uploader(userName)
+                .orderDoc(sealedOrder)
+                .lastUploadedOrder(uploadedOrder)
+                .needTranslation(YesNo.YES)
+                .translationRequirements(ENGLISH_TO_WELSH)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
@@ -1002,6 +1039,40 @@ class GatekeepingOrderServiceTest {
                 .orderStatus(SEALED)
                 .orderDoc(generatedOrder)
                 .unsealedDocumentCopy(draftOrder)
+                .needTranslation(YesNo.NO)
+                .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), DateFormatterHelper.DATE))
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                .build();
+
+            assertThat(actualOrder).isEqualTo(expectedOrder);
+
+            verifyNoInteractions(sealingService);
+            verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
+        }
+
+        @Test
+        void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrderWithTranslation() {
+            final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
+                .orderStatus(SEALED)
+                .draftDocument(draftOrder)
+                .dateOfIssue(time.now().toLocalDate())
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                    .gatekeepingOrderSealDecision(sealDecision)
+                    .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
+                    .build())
+                .build();
+
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
+
+            final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .orderDoc(generatedOrder)
+                .unsealedDocumentCopy(draftOrder)
+                .needTranslation(YesNo.NO)
+                .translationRequirements(ENGLISH_TO_WELSH)
                 .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), DateFormatterHelper.DATE))
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
