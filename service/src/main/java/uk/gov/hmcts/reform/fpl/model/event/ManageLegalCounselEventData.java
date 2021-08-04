@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 
-@Builder
+@Builder(toBuilder = true)
 @Value
 @Jacksonized
 public class ManageLegalCounselEventData {

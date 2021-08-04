@@ -33,7 +33,7 @@ module.exports = {
     }
     if(legalCounsellor.organisation) {
       await within(this.fields(elementIndex).legalCounsellor.organisationGroup, async () => {
-        organisationHelper.searchAndSelectGivenRegisteredOrganisation(legalCounsellor);
+        organisationHelper.searchAndSelectGivenRegisteredOrganisation(I, legalCounsellor);
       });
     }
     await I.runAccessibilityTest();

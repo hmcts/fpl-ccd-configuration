@@ -32,9 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class ManagingOrganisationRemovedEmailTemplateTest extends EmailTemplateTest {
 
     @MockBean
-    private OrganisationService organisationService;
-
-    @MockBean
     private ValidateEmailService emailService;
 
     @MockBean
