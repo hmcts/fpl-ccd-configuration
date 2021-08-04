@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
@@ -44,6 +45,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.needTranslation;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -85,12 +87,15 @@ public class GatekeepingOrderService {
         DocumentReference draftDocument = decision.getDraftDocument();
         DocumentReference document = decision.isSealed() ? sealingService.sealDocument(draftDocument) : draftDocument;
 
+        LanguageTranslationRequirement translationRequirements =
+            gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
         return buildBaseGatekeepingOrder(caseData).toBuilder()
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
             .orderDoc(document)
             .lastUploadedOrder(decision.isSealed() ? draftDocument : null)
-            .translationRequirements(gatekeepingOrderEventData.getGatekeepingTranslationRequirements())
+            .translationRequirements(translationRequirements)
+            .needTranslation(needTranslation(translationRequirements))
             .build();
     }
 
@@ -104,11 +109,14 @@ public class GatekeepingOrderService {
         if (decision.isSealed()) {
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));
 
+            LanguageTranslationRequirement translationRequirements =
+                gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
                 .unsealedDocumentCopy(decision.getDraftDocument())
                 .orderDoc(sealedDocument)
-                .translationRequirements(gatekeepingOrderEventData.getGatekeepingTranslationRequirements())
+                .translationRequirements(translationRequirements)
+                .needTranslation(needTranslation(translationRequirements))
                 .build();
         } else {
             return currentOrder.toBuilder()

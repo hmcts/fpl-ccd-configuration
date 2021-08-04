@@ -121,6 +121,12 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     }
 
     @Override
+    @JsonIgnore
+    public YesNo getNeedTranslation() {
+        return YesNo.YES;
+    }
+
+    @Override
     public LocalDate amendableSortDate() {
         if (null != approvalDate) {
             return approvalDate;

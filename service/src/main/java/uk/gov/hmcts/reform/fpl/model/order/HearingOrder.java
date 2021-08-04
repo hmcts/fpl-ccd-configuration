@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -102,6 +103,12 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     @JsonIgnore
     public LanguageTranslationRequirement getTranslationRequirements() {
         return ENGLISH_TO_WELSH;
+    }
+
+    @Override
+    @JsonIgnore
+    public YesNo getNeedTranslation() {
+        return YesNo.YES;
     }
 
     @Override

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
@@ -56,6 +57,12 @@ public class DocumentBundle implements TranslatableItem {
     @JsonIgnore
     public LanguageTranslationRequirement getTranslationRequirements() {
         return ENGLISH_TO_WELSH;
+    }
+
+    @Override
+    @JsonIgnore
+    public YesNo getNeedTranslation() {
+        return YesNo.YES;
     }
 
     @Override
