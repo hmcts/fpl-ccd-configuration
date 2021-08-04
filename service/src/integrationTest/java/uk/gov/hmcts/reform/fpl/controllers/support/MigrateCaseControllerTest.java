@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.State.DELETED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -87,6 +89,28 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .build();
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails));
+        }
+    }
+
+    @Nested
+    class Fpla3294 {
+        final String migrationId = "FPLA-3294";
+
+        @Test
+        void shouldRemoveAllDataAndMoveStateToDeleted() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .state("Closed")
+                .data(Map.of(
+                    "familyManCaseNumber", "SA21C50091",
+                    "name", "Test",
+                    "migrationId", migrationId))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            assertThat(response.getData()).isEmpty();
+            assertThat(response.getState()).isEqualTo(DELETED.getValue());
         }
     }
 }

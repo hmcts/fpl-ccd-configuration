@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.State.DELETED;
 
 @Api
 @RestController
@@ -42,6 +43,13 @@ public class MigrateCaseController extends CallbackController {
             case "FPLA-3262":
                 run3262(caseDetails);
                 break;
+            case "FPLA-3294":
+                run3294(caseDetails);
+
+                caseDetails.getData().remove(MIGRATION_ID_KEY);
+                AboutToStartOrSubmitCallbackResponse response = respond(caseDetails);
+                response.setState(DELETED.getValue());
+                return response;
             default:
                 log.error("Unhandled migration {}", migrationId);
         }
@@ -71,6 +79,14 @@ public class MigrateCaseController extends CallbackController {
             throw new IllegalStateException(
                 format("Case %s has unexpected cancelled hearing details", caseDetails.getId()));
         }
+    }
+
+    private void run3294(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        validateFamilyManNumber("FPLA-3294", "SA21C50091", caseData);
+
+        caseDetails.getData().clear();
+        caseDetails.setState(DELETED.getValue());
     }
 
     private void validateFamilyManNumber(String migrationId, String familyManCaseNumber, CaseData caseData) {
