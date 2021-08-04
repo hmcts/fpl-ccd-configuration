@@ -84,14 +84,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            if (isNotEmpty(caseData.getAllOthers()) || isNotEmpty(caseData.getRespondents1())) {
-                caseDetails.getData().put("hasOthers", "Yes");
-                caseDetails.getData().put("others_label", peopleInCaseService.buildPeopleInCaseLabel(
-                    caseData.getAllRespondents(), caseData.getOthers()));
-                caseDetails.getData().put("othersSelector", newSelector(
-                    caseData.getAllRespondents().size() + caseData.getAllOthers().size()));
-            }
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()
+            && isNotEmpty(caseData.getAllOthers()) || isNotEmpty(caseData.getRespondents1())) {
+            caseDetails.getData().put("hasOthers", "Yes");
+            caseDetails.getData().put("others_label", peopleInCaseService.buildPeopleInCaseLabel(
+                caseData.getAllRespondents(), caseData.getOthers()));
+            caseDetails.getData().put("othersSelector", newSelector(
+                caseData.getAllRespondents().size() + caseData.getAllOthers().size()));
         }
 
         return respond(caseDetails);
