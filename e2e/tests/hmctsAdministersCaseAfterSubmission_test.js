@@ -129,7 +129,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   I.seeInTab(['Additional applications 1', 'Other applications', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Applicant'], 'Jonathon Walker');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'People notified'], 'Noah King');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'People notified'], 'Joe Bloggs, Noah King');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Application type'], 'C1 - Parental responsibility');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Date and time of upload']);
