@@ -19,15 +19,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GatekeepingOrderSealDecision",
-    "ListElementCode": "translationRequirements",
-    "FieldType": "FixedRadioList",
-    "ElementLabel": "Is translation needed?",
-    "FieldTypeParameter": "LanguageTranslationRequirement",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "GatekeepingOrderSealDecision",
     "ListElementCode": "dateOfIssue",
     "FieldType": "Date",
     "ElementLabel": "Order issue date",
