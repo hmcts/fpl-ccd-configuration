@@ -44,7 +44,7 @@ public class ManageLegalCounselService {
         + "[%s is not a Registered User] - Email address for Legal representative is not registered on the system. "
         + "They can register at https://manage-org.platform.hmcts.net/register-org/register";
 
-    private final CaseConverter caseConverter;//TODO - can I remove this?
+    private final CaseConverter caseConverter;
     private final CaseRoleLookupService caseRoleLookupService;
     private final OrganisationService organisationService;
     private final EventService eventPublisher;

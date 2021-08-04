@@ -18,9 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -64,20 +62,22 @@ class ManageLegalCounselServiceTest {
     private final ManageLegalCounselService manageLegalCounselService =
         new ManageLegalCounselService(caseConverter, caseRoleLookupService, organisationService, eventPublisher);
 
+    private CaseData caseData;
+
     @BeforeEach
     void setUp() {
         when(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(TEST_CASE_ID))
             .thenReturn(asList(SOLICITORB, SOLICITORC, CHILDSOLICITORA, CHILDSOLICITORC));
-    }
 
-    @Test
-    void shouldRetrieveNoLegalCounselForSolicitorUserWithNoLegalCounsel() {
-        CaseData caseData = CaseData.builder()
+        caseData = CaseData.builder()
             .id(TEST_CASE_ID_AS_LONG)
             .children1(testChildren())
             .respondents1(respondents())
             .build();
+    }
 
+    @Test
+    void shouldRetrieveNoLegalCounselForSolicitorUserWithNoLegalCounsel() {
         List<Element<LegalCounsellor>> retrievedLegalCounsel =
             manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseData);
 
@@ -87,12 +87,8 @@ class ManageLegalCounselServiceTest {
     @Test
     void shouldRetrieveExistingLegalCounselForSolicitorUserWithExistingLegalCounsel() {
         List<Element<LegalCounsellor>> legalCounsellors = singletonList(TEST_LEGAL_COUNSELLOR);
-        List<Element<Respondent>> respondents = respondents();
-        respondents.get(SOLICITORB.getIndex()).getValue().setLegalCounsellors(legalCounsellors);
-        CaseData caseData = CaseData.builder()//TODO - can I have a common object?
-            .id(TEST_CASE_ID_AS_LONG)
-            .children1(testChildren())
-            .respondents1(respondents)
+        caseData.getAllRespondents().get(SOLICITORB.getIndex()).getValue().setLegalCounsellors(legalCounsellors);
+        caseData = caseData.toBuilder()
             .manageLegalCounselEventData(
                 ManageLegalCounselEventData.builder().legalCounsellors(legalCounsellors).build()
             )
@@ -106,14 +102,15 @@ class ManageLegalCounselServiceTest {
 
     @Test
     void shouldUpdateLegalCounselInCaseDataAndResetEventData() {
-        Map<String, Object> incomingCaseData = new HashMap<>() {
-            {
-                put("children1", testChildren());
-                put("respondents1", respondents());
-                put("legalCounsellors", singletonList(TEST_LEGAL_COUNSELLOR));
-            }
-        };
-        CaseDetails caseDetails = CaseDetails.builder().id(TEST_CASE_ID_AS_LONG).data(incomingCaseData).build();
+        caseData = caseData.toBuilder()
+            .manageLegalCounselEventData(
+                ManageLegalCounselEventData.builder().legalCounsellors(singletonList(TEST_LEGAL_COUNSELLOR)).build()
+            )
+            .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(TEST_CASE_ID_AS_LONG)
+            .data(caseConverter.toMap(caseData))
+            .build();
 
         manageLegalCounselService.updateLegalCounsel(caseDetails);
 
@@ -144,8 +141,7 @@ class ManageLegalCounselServiceTest {
         when(organisationService.findUserByEmail("ted.robinson@example.com")).thenReturn(Optional.empty());
         when(organisationService.findUserByEmail("john.johnson@example.com")).thenReturn(Optional.of("testUser2"));
         when(organisationService.findUserByEmail("peter.patrick@example.com")).thenReturn(Optional.empty());
-        CaseData caseData = CaseData.builder()//TODO - can I have a common object?
-            .id(TEST_CASE_ID_AS_LONG)
+        caseData = caseData.toBuilder()
             .manageLegalCounselEventData(
                 ManageLegalCounselEventData.builder()
                     .legalCounsellors(asList(
@@ -177,8 +173,7 @@ class ManageLegalCounselServiceTest {
         when(organisationService.findUserByEmail("damian.king@example.com")).thenReturn(Optional.of("testUser1"));
         when(organisationService.findUserByEmail("john.johnson@example.com")).thenReturn(Optional.of("testUser2"));
         when(organisationService.findUserByEmail("peter.patrick@example.com")).thenReturn(Optional.of("testUser3"));
-        CaseData caseData = CaseData.builder()//TODO - can I have a common object?
-            .id(TEST_CASE_ID_AS_LONG)
+        caseData = caseData.toBuilder()
             .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
                 .legalCounsellors(asList(
                     element(LegalCounsellor.builder().firstName("Damian").lastName("King")
