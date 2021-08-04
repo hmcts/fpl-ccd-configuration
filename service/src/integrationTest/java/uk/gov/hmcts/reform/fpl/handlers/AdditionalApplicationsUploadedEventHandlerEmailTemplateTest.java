@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
@@ -60,7 +62,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     private static final String CHILD_LAST_NAME = "Jones";
     private static final String RESPONDENT_LAST_NAME = "Smith";
 
-    public static final CaseData CASE_DATA = CaseData.builder()
+    private static final CaseData CASE_DATA = CaseData.builder()
         .id(CASE_ID)
         .caseLocalAuthority(LOCAL_AUTHORITY_NAME)
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
@@ -83,6 +85,9 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
             .build()))
         .build();
 
+    private static final OrderApplicant APPLICANT = OrderApplicant.builder()
+        .type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build();
+
     @Autowired
     private AdditionalApplicationsUploadedEventHandler underTest;
 
@@ -98,7 +103,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + name)
@@ -130,7 +135,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
         given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
-        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + name)

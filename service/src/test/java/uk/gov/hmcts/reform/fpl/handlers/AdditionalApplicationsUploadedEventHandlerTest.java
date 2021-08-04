@@ -16,9 +16,12 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -60,11 +63,14 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -109,12 +115,15 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private static final Set<String> DIGITAL_REPS = new HashSet<>(Arrays.asList(DIGITAL_REP_1, DIGITAL_REP_2));
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
     private static final List<Element<Other>> SELECTED_OTHERS = List.of(element(mock(Other.class)));
-    public static final DocumentReference C2_DOCUMENT = testDocumentReference();
-    public static final DocumentReference OTHER_APPLICATION_DOCUMENT = testDocumentReference();
-    public static final DocumentReference SUPPLEMENT_1 = testDocumentReference();
-    public static final DocumentReference SUPPLEMENT_2 = testDocumentReference();
-    public static final DocumentReference SUPPORTING_DOCUMENT_1 = testDocumentReference();
-    public static final DocumentReference SUPPORTING_DOCUMENT_2 = testDocumentReference();
+    private static final List<Element<Respondent>> SELECTED_RESPONDENTS = List.of(element(mock(Respondent.class)));
+    private static final DocumentReference C2_DOCUMENT = testDocumentReference();
+    private static final DocumentReference OTHER_APPLICATION_DOCUMENT = testDocumentReference();
+    private static final DocumentReference SUPPLEMENT_1 = testDocumentReference();
+    private static final DocumentReference SUPPLEMENT_2 = testDocumentReference();
+    private static final DocumentReference SUPPORTING_DOCUMENT_1 = testDocumentReference();
+    private static final DocumentReference SUPPORTING_DOCUMENT_2 = testDocumentReference();
+    private static final OrderApplicant ORDER_APPLICANT_LA = OrderApplicant.builder()
+        .type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build();
 
     final String subjectLine = "Lastname, SACCCCCCCC5676576567";
     AdditionalApplicationsUploadedTemplate additionalApplicationsParameters =
@@ -133,15 +142,20 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         given(CASE_DATA.getAdditionalApplicationsBundle())
             .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT).others(emptyList()).build())
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT)
+                    .respondents(emptyList()).others(emptyList()).build())
                 .build()));
 
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(
             eq(DIGITAL_SERVICE), eq(CASE_DATA), eq(NO_RECIPIENTS), any()))
             .willReturn(Collections.emptySet());
+        given(representativesInbox.getNonSelectedRespondentsRecipients(
+            eq(DIGITAL_SERVICE), eq(CASE_DATA), eq(emptyList()), any()))
+            .willReturn(Collections.emptySet());
 
-        underTest.notifyDigitalRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
+        underTest.notifyDigitalRepresentatives(
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, ORDER_APPLICANT_LA));
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             CASE_ID,
@@ -155,13 +169,19 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(CASE_DATA.getAdditionalApplicationsBundle())
             .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT).others(emptyList()).build())
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT)
+                    .respondents(emptyList())
+                    .others(emptyList()).build())
                 .build()));
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(NO_RECIPIENTS), any()))
             .willReturn(Collections.emptySet());
+        given(representativesInbox.getNonSelectedRespondentsRecipients(
+            eq(EMAIL), eq(CASE_DATA), eq(emptyList()), any()))
+            .willReturn(Collections.emptySet());
 
-        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
+        underTest.notifyEmailServedRepresentatives(
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, ORDER_APPLICANT_LA));
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             CASE_ID,
@@ -171,21 +191,50 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityOnAdditionalApplicationsUploadWhenServingOthersIsToggledOn() {
+    void shouldNotifyLocalAuthorityWhenApplicantIsLocalAuthorityAndServingOthersIsToggledOn() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(CASE_DATA.getAdditionalApplicationsBundle())
             .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT).others(emptyList()).build())
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT)
+                    .applicantName(LOCAL_AUTHORITY_NAME).others(emptyList()).build())
                 .build()));
+        given(CASE_DATA.getCaseLocalAuthorityName()).willReturn(LOCAL_AUTHORITY_NAME);
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            additionalApplicationsParameters,
+            CASE_ID.toString());
+    }
+
+    @Test
+    void shouldNotifyRespondentWhenApplicantIsRespondentAndServingOthersIsToggledOn() {
+        List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                .solicitor(RespondentSolicitor.builder().email("respondent1@test.com").build()).build(),
+            Respondent.builder()
+                .party(RespondentParty.builder().firstName("Ross").lastName("Bob").build())
+                .solicitor(RespondentSolicitor.builder().build()).build());
+
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+        given(CASE_DATA.getAllRespondents()).willReturn(respondents);
+        given(CASE_DATA.getAdditionalApplicationsBundle())
+            .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT)
+                    .applicantName("John Smith").others(emptyList()).build())
+                .build()));
+
+        OrderApplicant applicant = OrderApplicant.builder().name("John Smith").type(RESPONDENT).build();
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, applicant));
+
+        verify(notificationService).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
+            "respondent1@test.com",
             additionalApplicationsParameters,
             CASE_ID.toString());
     }
@@ -203,7 +252,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
             .willReturn(Collections.emptySet());
 
-        underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
+        underTest.notifyEmailServedRepresentatives(
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, ORDER_APPLICANT_LA));
 
         verifyNoMoreInteractions(representativeNotificationService);
     }
@@ -216,19 +266,25 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         List<DocumentReference> documents) {
         final Representative representative1 = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
+        final Representative representative3 = mock(Representative.class);
         final RespondentParty otherRespondent = mock(RespondentParty.class);
 
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(CASE_DATA.getAdditionalApplicationsBundle()).willReturn(wrapElements(additionalApplicationsBundle));
         given(sendDocumentService.getStandardRecipients(CASE_DATA))
-            .willReturn(List.of(representative1, representative2));
+            .willReturn(List.of(representative1, representative2, representative3));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
             .willReturn((Set) Set.of(representative1));
+        given(representativesInbox.getNonSelectedRespondentsRecipients(
+            eq(POST), eq(CASE_DATA), eq(SELECTED_RESPONDENTS), any()))
+            .willReturn((Set) Set.of(representative3));
         given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(SELECTED_OTHERS))
             .willReturn(Set.of(otherRespondent));
+        given(representativesInbox.getSelectedRecipientsWithNoRepresentation(SELECTED_RESPONDENTS))
+            .willReturn(Set.of(representative2));
 
         underTest.sendAdditionalApplicationsByPost(
-            new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, ORDER_APPLICANT_LA));
 
         verify(sendDocumentService).sendDocuments(CASE_DATA, documents, List.of(representative2, otherRespondent));
         verifyNoInteractions(notificationService);
@@ -237,7 +293,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Test
     void shouldNotSendApplicationsByPostWhenServingOthersIsToggledOff() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
-        underTest.sendAdditionalApplicationsByPost(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
+        underTest.sendAdditionalApplicationsByPost(
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, ORDER_APPLICANT_LA));
         verifyNoInteractions(sendDocumentService);
     }
 
@@ -245,7 +302,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     void shouldNotBuildNotificationsToLocalAuthorityAndRepresentativesWhenServingOthersIsToggledOff() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
 
-        underTest.notifyLocalAuthority(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO fix this test
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(
+            CASE_DATA, OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
         underTest.notifyEmailServedRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null));
         underTest.notifyDigitalRepresentatives(new AdditionalApplicationsUploadedEvent(CASE_DATA, null));
 
@@ -259,14 +317,16 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .supplementsBundle(wrapElements(Supplement.builder().document(SUPPLEMENT_1).build()))
             .supportingEvidenceBundle(
                 wrapElements(SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_1).build()))
-            .others(SELECTED_OTHERS).build();
+            .others(SELECTED_OTHERS)
+            .respondents(SELECTED_RESPONDENTS).build();
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .document(OTHER_APPLICATION_DOCUMENT)
             .supplementsBundle(wrapElements(Supplement.builder().document(SUPPLEMENT_2).build()))
             .supportingEvidenceBundle(
                 wrapElements(SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_2).build()))
-            .others(SELECTED_OTHERS).build();
+            .others(SELECTED_OTHERS)
+            .respondents(SELECTED_RESPONDENTS).build();
 
         return Stream.of(
             Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(c2DocumentBundle)
@@ -290,7 +350,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
             .willReturn(additionalApplicationsParameters);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, null));//todo
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
@@ -316,7 +376,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
             .willReturn(additionalApplicationsParameters);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, null)); //TODO
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
@@ -330,7 +390,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(requestData.userRoles()).willReturn(new HashSet<>(Arrays.asList("caseworker", "caseworker-publiclaw",
             "caseworker-publiclaw-courtadmin")));
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, null)); //TODO
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, ORDER_APPLICANT_LA));
 
         verifyNoInteractions(notificationService);
     }

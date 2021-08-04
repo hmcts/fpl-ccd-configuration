@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -32,7 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -46,6 +48,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -94,7 +97,7 @@ class UploadAdditionalApplicationsServiceTest {
     private DocumentSealingService documentSealingService;
 
     @MockBean
-    private OthersService othersService;
+    private PeopleInCaseService peopleInCaseService;
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -162,7 +165,9 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
-        given(othersService.getSelectedOthers(any(), any(), any())).willReturn(List.of());
+        given(peopleInCaseService.getSelectedOthers(any(), any(), any(), any())).willReturn(List.of());
+        given(peopleInCaseService.getSelectedRespondents(any(), any(), any())).willReturn(List.of());
+        given(peopleInCaseService.getPeopleNotified(any(), eq(List.of()), eq(List.of()))).willReturn("");
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
@@ -171,6 +176,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
         assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEmpty();
         assertThat(actual.getOtherApplicationsBundle().getOthers()).isEmpty();
+        assertThat(actual.getOtherApplicationsBundle().getRespondents()).isEmpty();
 
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
     }
@@ -217,14 +223,23 @@ class UploadAdditionalApplicationsServiceTest {
             .applicantsList(applicantsList)
             .build();
 
-        String othersNotified = "Other1, Other2";
         List<Element<Other>> selectedOthers = wrapElements(
             Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
             Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build());
 
+        List<Element<Respondent>> selectedRespondents = wrapElements(
+            Respondent.builder().party(
+                RespondentParty.builder().firstName("First").lastName("Respondent")
+                    .address(Address.builder().postcode("SE1").build()).build()).build());
+
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(othersServedToggledOn);
+
+        String othersNotified = "First Respondent, Other1, Other2";
         if (othersServedToggledOn) {
-            given(othersService.getSelectedOthers(any(), any(), any())).willReturn(selectedOthers);
+            given(peopleInCaseService.getSelectedOthers(any(), any(), any(), any())).willReturn(selectedOthers);
+            given(peopleInCaseService.getSelectedRespondents(any(), any(), any())).willReturn(selectedRespondents);
+            given(peopleInCaseService.getPeopleNotified(any(), eq(selectedRespondents), eq(selectedOthers)))
+                .willReturn(othersNotified);
         }
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);

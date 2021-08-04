@@ -45,7 +45,6 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -75,13 +74,13 @@ public class AdditionalApplicationsUploadedEventHandler {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
             final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
-            Set<Recipient> recipientsToNotify = getRecipientsToNotify(caseData, uploadedBundle);
+            Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
             sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
         }
     }
 
     @SuppressWarnings("unchecked")
-    private Set<Recipient> getRecipientsToNotify(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
+    private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
         Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
         List<Element<Other>> selectedOthers = getOthersSelected(uploadedBundle);
@@ -120,20 +119,19 @@ public class AdditionalApplicationsUploadedEventHandler {
             final OrderApplicant applicant = event.getApplicant();
 
             if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
-                notifyLocalAuthority(event);
+                notifyLocalAuthority(caseData);
             } else {
                 Map<String, String> emails = getRespondentsEmails(caseData);
                 if (isNotEmpty(emails.get(applicant.getName()))) {
                     NotifyData notifyData
                         = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
-                    notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
+                    notificationService.sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
                         emails.get(applicant.getName()), notifyData, event.getCaseData().getId().toString());
                 }
             }
         }
     }
 
-    //TODO: move to case data
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
         Map<String, String> respondentEmails = new HashMap<>();
 
@@ -144,22 +142,17 @@ public class AdditionalApplicationsUploadedEventHandler {
         return respondentEmails;
     }
 
-    @EventListener
-    @Async
-    public void notifyLocalAuthority(final AdditionalApplicationsUploadedEvent event) {
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            final CaseData caseData = event.getCaseData();
-            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
+    private void notifyLocalAuthority(CaseData caseData) {
+        NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
 
-            Collection<String> emails = inboxLookupService.getRecipients(
-                LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        Collection<String> emails = inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-            notificationService.sendEmail(
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
-                emails,
-                notifyData,
-                caseData.getId().toString());
-        }
+        notificationService.sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
+            emails,
+            notifyData,
+            caseData.getId().toString());
     }
 
     @EventListener

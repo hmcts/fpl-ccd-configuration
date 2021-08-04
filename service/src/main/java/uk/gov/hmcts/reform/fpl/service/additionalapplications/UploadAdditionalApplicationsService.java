@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -54,7 +53,6 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
-    private final OthersService othersService;
     private final PeopleInCaseService peopleInCaseService;
     private final FeatureToggleService featureToggleService;
 
@@ -208,6 +206,7 @@ public class UploadAdditionalApplicationsService {
 
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             return otherApplicationsBundleBuilder
+                .respondents(selectedRespondents)
                 .others(selectedOthers)
                 .othersNotified(othersNotified)
                 .build();
@@ -249,15 +248,6 @@ public class UploadAdditionalApplicationsService {
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
         }).collect(Collectors.toList());
-    }
-
-    private String getOthersNotified(List<Element<Other>> selectedOthers) {
-        return Optional.ofNullable(selectedOthers).map(
-            others -> others.stream()
-                .filter(other -> other.getValue().isRepresented() || other.getValue()
-                    .hasAddressAdded())
-                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
-        ).orElse(null);
     }
 
 }
