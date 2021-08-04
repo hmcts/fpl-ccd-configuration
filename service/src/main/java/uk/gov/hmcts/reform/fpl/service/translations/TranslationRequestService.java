@@ -37,7 +37,7 @@ public class TranslationRequestService {
     public void sendRequest(CaseData caseData, Optional<LanguageTranslationRequirement> languageOpt,
                             DocumentReference document) {
 
-        log.info("Sending translation with payload language '{}'", languageOpt);
+        log.info("Sending translation request with payload language '{}'", languageOpt);
 
         if (languageOpt.isEmpty() || languageOpt.get() == LanguageTranslationRequirement.NO) {
             return;
@@ -56,11 +56,6 @@ public class TranslationRequestService {
                 translationRequestFactory.create(caseData, language, "", originalDocumentContent)).getBytes(),
             "translationRequestForm.doc"
         );
-
-        // TODO: Remove this line
-        log.info("Sending translation email to recipient '{}' with sender:'{}' ",
-            configuration.getRecipient(),
-            configuration.getSender());
 
         emailService.sendEmail(configuration.getSender(), EmailData.builder()
             .recipient(configuration.getRecipient())

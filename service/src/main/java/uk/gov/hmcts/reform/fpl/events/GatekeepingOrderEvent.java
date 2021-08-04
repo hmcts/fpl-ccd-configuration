@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import java.util.Optional;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class GatekeepingOrderEvent {
     CaseData caseData;
     DocumentReference order;

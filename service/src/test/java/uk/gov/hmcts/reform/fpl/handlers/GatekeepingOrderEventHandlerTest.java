@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,7 +18,9 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
@@ -26,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
@@ -40,6 +44,8 @@ class GatekeepingOrderEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final SDONotifyData NOTIFY_DATA = mock(SDONotifyData.class);
     private static final DocumentReference ORDER = testDocumentReference();
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT = ENGLISH_TO_WELSH;
 
     @Mock
     private NotificationService notificationService;
@@ -53,6 +59,8 @@ class GatekeepingOrderEventHandlerTest {
     private SDOIssuedContentProvider standardContentProvider;
     @Mock
     private SDOIssuedCafcassContentProvider cafcassContentProvider;
+    @Mock
+    private TranslationRequestService translationRequestService;
 
     @InjectMocks
     private GatekeepingOrderEventHandler underTest;
@@ -123,6 +131,30 @@ class GatekeepingOrderEventHandlerTest {
             NOTIFY_DATA,
             CASE_ID
         );
+    }
+
+    @Test
+    void shouldNotifyLocalAuthority() {
+        underTest.notifyTranslationTeam(
+            gatekeepingOrderEvent(URGENT_AND_NOP, CASE_DATA).toBuilder()
+                .languageTranslationRequirement(TRANSLATION_REQUIREMENT)
+                .build()
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENT),
+            ORDER);
+    }
+
+    @Test
+    void shouldNotifyLocalAuthorityIfNoLanguageRequirementDefaultsToEmpty() {
+        underTest.notifyTranslationTeam(
+            gatekeepingOrderEvent(URGENT_AND_NOP, CASE_DATA)
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.empty(),
+            ORDER);
     }
 
     private GatekeepingOrderEvent gatekeepingOrderEvent(GatekeepingOrderNotificationGroup group, CaseData caseData) {
