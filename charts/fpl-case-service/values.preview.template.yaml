@@ -141,6 +141,7 @@ ccd:
       keyVaults: []
   ccd-data-store-api:
     java:
+      image: hmctspublic.azurecr.io/ccd/data-store-api:prod-9e73c97-20210730194221
       imagePullPolicy: Always
       devmemoryRequests: '1524Mi'
       devmemoryLimits: '2048Mi'
