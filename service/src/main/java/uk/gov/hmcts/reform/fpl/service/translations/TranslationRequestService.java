@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.translations;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.tranlsation.TranslationEmailConfiguration;
@@ -21,6 +22,7 @@ import java.util.Set;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TranslationRequestService {
 
@@ -34,6 +36,8 @@ public class TranslationRequestService {
 
     public void sendRequest(CaseData caseData, Optional<LanguageTranslationRequirement> languageOpt,
                             DocumentReference document) {
+
+        log.info("Sending translation with payload language '{}'", languageOpt);
 
         if (languageOpt.isEmpty() || languageOpt.get() == LanguageTranslationRequirement.NO) {
             return;
@@ -52,6 +56,11 @@ public class TranslationRequestService {
                 translationRequestFactory.create(caseData, language, "", originalDocumentContent)).getBytes(),
             "translationRequestForm.doc"
         );
+
+        // TODO: Remove this line
+        log.info("Sending translation email to recipient '{}' with sender:'{}' ",
+            configuration.getRecipient(),
+            configuration.getSender());
 
         emailService.sendEmail(configuration.getSender(), EmailData.builder()
             .recipient(configuration.getRecipient())
