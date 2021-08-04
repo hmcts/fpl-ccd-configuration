@@ -188,29 +188,25 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         given(documentDownloadService.downloadDocument(ORDER.getBinaryUrl())).willReturn(ORDER_BINARY);
         given(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
             .willReturn(ORDER_DOCUMENT);
-        given(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_WITH_POST_PREFERENCE.getValue())))
-            .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         given(documentService.createCoverDocuments(any(), any(), eq(OTHER_REP_BY_POST.getValue())))
             .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_OTHER_REPRESENTATIVE_BINARY).build());
-        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
-            .willReturn(COVERSHEET_REPRESENTATIVE);
         given(uploadDocumentService.uploadPDF(COVERSHEET_OTHER_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
             .willReturn(COVERSHEET_OTHER_REPRESENTATIVE);
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
-            .willReturn(new SendLetterResponse(LETTER_1_ID))
-            .willReturn(new SendLetterResponse(LETTER_2_ID));
+            .willReturn(new SendLetterResponse(LETTER_1_ID));
     }
 
     @Test
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
+        List<Element<Respondent>> respondents = List.of(element(RESPONDENT_WITH_DIGITAL_REP),
+            element(RESPONDENT_WITH_EMAIL_REP), element(RESPONDENT_WITH_POST_REP), element(UNREPRESENTED_RESPONDENT));
         CaseData caseData = CaseData.builder().id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
             .familyManCaseNumber(String.valueOf(CASE_ID))
-            .respondents1(wrapElements(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
-                RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT))
+            .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
                 REPRESENTATIVE_WITH_POST_PREFERENCE, OTHER_REP_BY_POST))
             .others(Others.builder().firstOther(other).build())
@@ -223,6 +219,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .document(ORDER)
                     .supplementsBundle(new ArrayList<>())
                     .others(List.of(element(other)))
+                    .respondents(List.of(respondents.get(0), respondents.get(1), respondents.get(3)))
                     .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
                 .build())).build();
 
@@ -258,35 +255,22 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(NOTIFICATION_REFERENCE)));
 
-        checkUntil(() -> verify(sendLetterApi, times(2))
+        checkUntil(() -> verify(sendLetterApi, times(1))
             .sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
         checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
-
-        LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY);
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
             CASE_ID, ORDER, COVERSHEET_OTHER_REPRESENTATIVE_BINARY, ORDER_BINARY);
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
-            .isEqualTo(List.of(expectedPrintRequest1, expectedPrintRequest2));
+            .isEqualTo(List.of(expectedPrintRequest2));
 
         final CaseData caseUpdate = getCase(this.caseDetails);
-
-        SentDocument expectedDocumentSentToRepresentative = documentSent(
-            REPRESENTATIVE_WITH_POST_PREFERENCE.getValue(), COVERSHEET_REPRESENTATIVE,
-            ORDER_DOCUMENT, LETTER_1_ID, now());
-
         SentDocument expectedDocumentSentToRespondent = documentSent(OTHER_REP_BY_POST.getValue(),
-            COVERSHEET_OTHER_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_2_ID, now());
+            COVERSHEET_OTHER_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID, now());
 
-        assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(2);
-
+        assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(1);
         assertThat(caseUpdate.getDocumentsSentToParties().get(0).getValue().getDocumentsSentToParty())
-            .extracting(Element::getValue)
-            .containsExactly(expectedDocumentSentToRepresentative);
-
-        assertThat(caseUpdate.getDocumentsSentToParties().get(1).getValue().getDocumentsSentToParty())
             .extracting(Element::getValue)
             .containsExactly(expectedDocumentSentToRespondent);
     }

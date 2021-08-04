@@ -27,6 +27,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -77,11 +78,12 @@ public class PeopleInCaseService {
             List<Integer> selected = selector.getSelected();
 
             int othersIndex = 0;
-            int index = isEmpty(respondents) ? 0 : respondents.size();
-            for (int i = index; i < (index + others.size() - 1); i++) {
+            int respondentsSize = isEmpty(respondents) ? 0 : respondents.size();
+            for (int i = respondentsSize; i < (respondentsSize + others.size()); i++) {
                 if (selected.contains(i)) {
                     selectedOthers.add(others.get(othersIndex));
                 }
+                othersIndex++;
             }
             return selectedOthers;
         }
@@ -113,7 +115,7 @@ public class PeopleInCaseService {
                                     List<Element<Other>> selectedOthers) {
         StringBuilder sb = new StringBuilder();
         sb.append(getSelectedRespondentsNames(allRepresentatives, selectedRespondents));
-        String othersNotified = getSelectedOthers(selectedOthers);
+        String othersNotified = getSelectedOthersNames(selectedOthers);
         if (isNotEmpty(othersNotified) && sb.length() > 0) {
             sb.append(", ");
         }
@@ -139,7 +141,7 @@ public class PeopleInCaseService {
 
     private boolean hasRepresentativeDetails(List<Element<Representative>> representatives,
                                              List<UUID> representedBy) {
-        return representatives.stream()
+        return nullSafeList(representatives).stream()
             .filter(element -> representedBy.contains(element.getId()))
             .anyMatch(element -> validAddressForNotificationByPost(element.getValue())
                 || validEmailForDigitalOrEmailNotification(element.getValue()));
@@ -163,7 +165,7 @@ public class PeopleInCaseService {
         return String.format("%s %s", firstName, lastName);
     }
 
-    private String getSelectedOthers(List<Element<Other>> selectedOthers) {
+    private String getSelectedOthersNames(List<Element<Other>> selectedOthers) {
         return Optional.ofNullable(selectedOthers).map(
             others -> others.stream()
                 .filter(other -> other.getValue().isRepresented() || other.getValue()
