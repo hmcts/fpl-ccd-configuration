@@ -64,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -210,6 +211,45 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             additionalApplicationsParameters,
             CASE_ID.toString());
+    }
+
+    @Test
+    void shouldNotNotifyApplicantWhenApplicantsEmailAddressIsEmptyAndServingOthersIsToggledOn() {
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+
+        final String applicantName = "someone";
+        given(CASE_DATA.getAdditionalApplicationsBundle())
+            .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT)
+                    .applicantName(applicantName).others(emptyList()).build())
+                .build()));
+
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA,
+            OrderApplicant.builder().type(OTHER).name(applicantName).build()));
+
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldNotNotifyRespondentWhenEmailAddressIsEmptyAndServingOthersIsToggledOn() {
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+
+        final String applicantName = "John Smith";
+        given(CASE_DATA.getAdditionalApplicationsBundle())
+            .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT)
+                    .applicantName(applicantName).others(emptyList()).build())
+                .build()));
+
+        final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+            .solicitor(RespondentSolicitor.builder().build()).build();
+        given(CASE_DATA.getRespondents1()).willReturn(wrapElements(respondent));
+
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(
+            CASE_DATA, OrderApplicant.builder().type(RESPONDENT).name(applicantName).build()));
+
+        verifyNoInteractions(notificationService);
     }
 
     @Test

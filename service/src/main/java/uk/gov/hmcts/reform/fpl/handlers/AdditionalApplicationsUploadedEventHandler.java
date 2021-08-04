@@ -87,9 +87,9 @@ public class AdditionalApplicationsUploadedEventHandler {
         List<Element<Other>> selectedOthers = getOthersSelected(uploadedBundle);
         List<Element<Respondent>> selectedRespondents = getRespondentsSelected(uploadedBundle);
 
-        allRecipients.removeAll((LinkedHashSet<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
+        allRecipients.removeAll((Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
             POST, caseData, selectedOthers, Element::getValue));
-        allRecipients.removeAll((LinkedHashSet<Recipient>) representativesInbox.getNonSelectedRespondentsRecipients(
+        allRecipients.removeAll((Set<Recipient>) representativesInbox.getNonSelectedRespondentsRecipients(
             POST, caseData, selectedRespondents, Element::getValue));
 
         allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
@@ -190,12 +190,11 @@ public class AdditionalApplicationsUploadedEventHandler {
         List<Element<Respondent>> respondentsSelected = getRespondentsSelected(uploadedBundle);
 
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
-        digitalRepresentatives.removeAll((LinkedHashSet<String>) otherRecipientsInbox.getNonSelectedRecipients(
+        digitalRepresentatives.removeAll((Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
             servingPreference, caseData, othersSelected, element -> element.getValue().getEmail()));
 
-        digitalRepresentatives.removeAll(
-            (LinkedHashSet<String>) representativesInbox.getNonSelectedRespondentsRecipients(
-                servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail()));
+        digitalRepresentatives.removeAll((Set<String>) representativesInbox.getNonSelectedRespondentsRecipients(
+            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail()));
 
         return digitalRepresentatives;
     }
