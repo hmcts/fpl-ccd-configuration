@@ -72,16 +72,14 @@ class ManageLegalCounselServiceTest {
 
     @Test
     void shouldRetrieveNoLegalCounselForSolicitorUserWithNoLegalCounsel() {
-        Map<String, Object> incomingCaseData = new HashMap<>() {
-            {
-                put("children1", testChildren());
-                put("respondents1", respondents());
-            }
-        };
-        CaseDetails caseDetails = CaseDetails.builder().id(TEST_CASE_ID_AS_LONG).data(incomingCaseData).build();
+        CaseData caseData = CaseData.builder()
+            .id(TEST_CASE_ID_AS_LONG)
+            .children1(testChildren())
+            .respondents1(respondents())
+            .build();
 
         List<Element<LegalCounsellor>> retrievedLegalCounsel =
-            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseDetails);
+            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseData);
 
         assertThat(retrievedLegalCounsel).isEmpty();
     }
@@ -91,17 +89,17 @@ class ManageLegalCounselServiceTest {
         List<Element<LegalCounsellor>> legalCounsellors = singletonList(TEST_LEGAL_COUNSELLOR);
         List<Element<Respondent>> respondents = respondents();
         respondents.get(SOLICITORB.getIndex()).getValue().setLegalCounsellors(legalCounsellors);
-        Map<String, Object> incomingCaseData = new HashMap<>() {
-            {
-                put("children1", testChildren());
-                put("respondents1", respondents);
-                put("legalCounsellors", legalCounsellors);
-            }
-        };
-        CaseDetails caseDetails = CaseDetails.builder().id(TEST_CASE_ID_AS_LONG).data(incomingCaseData).build();
+        CaseData caseData = CaseData.builder()//TODO - can I have a common object?
+            .id(TEST_CASE_ID_AS_LONG)
+            .children1(testChildren())
+            .respondents1(respondents)
+            .manageLegalCounselEventData(
+                ManageLegalCounselEventData.builder().legalCounsellors(legalCounsellors).build()
+            )
+            .build();
 
         List<Element<LegalCounsellor>> retrievedLegalCounsel =
-            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseDetails);
+            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseData);
 
         assertThat(retrievedLegalCounsel).isEqualTo(legalCounsellors);
     }
@@ -146,28 +144,28 @@ class ManageLegalCounselServiceTest {
         when(organisationService.findUserByEmail("ted.robinson@example.com")).thenReturn(Optional.empty());
         when(organisationService.findUserByEmail("john.johnson@example.com")).thenReturn(Optional.of("testUser2"));
         when(organisationService.findUserByEmail("peter.patrick@example.com")).thenReturn(Optional.empty());
-        CaseData incomingCaseData = CaseData.builder()
-            .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
-                .legalCounsellors(asList(
-                    TEST_LEGAL_COUNSELLOR,
-                    element(LegalCounsellor.builder().firstName("John").lastName("Johnson")
-                        .email("john.johnson@example.com")
-                        .organisation(Organisation.organisation("Test organisation 1"))
-                        .build()
-                    ),
-                    element(LegalCounsellor.builder().firstName("Peter").lastName("Patrick")
-                        .email("peter.patrick@example.com")
-                        .organisation(Organisation.organisation("Test organisation 2"))
-                        .build()
-                    )
-                ))
-                .build())
-            .build();
-        CaseDetails caseDetails = CaseDetails.builder().id(TEST_CASE_ID_AS_LONG)
-            .data(caseConverter.toMap(incomingCaseData))
+        CaseData caseData = CaseData.builder()//TODO - can I have a common object?
+            .id(TEST_CASE_ID_AS_LONG)
+            .manageLegalCounselEventData(
+                ManageLegalCounselEventData.builder()
+                    .legalCounsellors(asList(
+                        TEST_LEGAL_COUNSELLOR,
+                        element(LegalCounsellor.builder().firstName("John").lastName("Johnson")
+                            .email("john.johnson@example.com")
+                            .organisation(Organisation.organisation("Test organisation 1"))
+                            .build()
+                        ),
+                        element(LegalCounsellor.builder().firstName("Peter").lastName("Patrick")
+                            .email("peter.patrick@example.com")
+                            .organisation(Organisation.organisation("Test organisation 2"))
+                            .build()
+                        )
+                    ))
+                    .build()
+            )
             .build();
 
-        List<String> errorMessages = manageLegalCounselService.validateEventData(caseDetails);
+        List<String> errorMessages = manageLegalCounselService.validateEventData(caseData);
 
         assertThat(errorMessages).hasSize(2)
             .contains(format(UNREGISTERED_USER_ERROR_MESSAGE_TEMPLATE, "Ted Robinson"))
@@ -179,7 +177,8 @@ class ManageLegalCounselServiceTest {
         when(organisationService.findUserByEmail("damian.king@example.com")).thenReturn(Optional.of("testUser1"));
         when(organisationService.findUserByEmail("john.johnson@example.com")).thenReturn(Optional.of("testUser2"));
         when(organisationService.findUserByEmail("peter.patrick@example.com")).thenReturn(Optional.of("testUser3"));
-        CaseData incomingCaseData = CaseData.builder()
+        CaseData caseData = CaseData.builder()//TODO - can I have a common object?
+            .id(TEST_CASE_ID_AS_LONG)
             .manageLegalCounselEventData(ManageLegalCounselEventData.builder()
                 .legalCounsellors(asList(
                     element(LegalCounsellor.builder().firstName("Damian").lastName("King")
@@ -197,13 +196,11 @@ class ManageLegalCounselServiceTest {
                         .build()
                     )
                 ))
-                .build())
-            .build();
-        CaseDetails caseDetails = CaseDetails.builder().id(TEST_CASE_ID_AS_LONG)
-            .data(caseConverter.toMap(incomingCaseData))
+                .build()
+            )
             .build();
 
-        List<String> errorMessages = manageLegalCounselService.validateEventData(caseDetails);
+        List<String> errorMessages = manageLegalCounselService.validateEventData(caseData);
 
         assertThat(errorMessages).hasSize(1).contains("Legal counsellor Damian King has no selected organisation");
     }
@@ -242,9 +239,10 @@ class ManageLegalCounselServiceTest {
                 )).build()
             )).build();
 
-        manageLegalCounselService.runFinalEventActions(previousCaseDetails, currentCaseDetails);
-
+        CaseData previousCaseData = caseConverter.convert(previousCaseDetails);
         CaseData currentCaseData = caseConverter.convert(currentCaseDetails);
+        manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData);
+
         verify(eventPublisher).publishEvent(
             new LegalCounsellorAdded(currentCaseData, legalCounsellor2)
         );

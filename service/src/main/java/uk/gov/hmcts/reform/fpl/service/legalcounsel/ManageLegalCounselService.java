@@ -44,16 +44,15 @@ public class ManageLegalCounselService {
         + "[%s is not a Registered User] - Email address for Legal representative is not registered on the system. "
         + "They can register at https://manage-org.platform.hmcts.net/register-org/register";
 
-    private final CaseConverter caseConverter;
+    private final CaseConverter caseConverter;//TODO - can I remove this?
     private final CaseRoleLookupService caseRoleLookupService;
     private final OrganisationService organisationService;
     private final EventService eventPublisher;
 
-    public List<Element<LegalCounsellor>> retrieveLegalCounselForLoggedInSolicitor(CaseDetails caseDetails) {
-        String caseId = caseDetails.getId().toString();
+    public List<Element<LegalCounsellor>> retrieveLegalCounselForLoggedInSolicitor(CaseData caseData) {
+        String caseId = caseData.getId().toString();
         List<SolicitorRole> caseSolicitorRoles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseId);
 
-        CaseData caseData = caseConverter.convert(caseDetails);
         return caseSolicitorRoles.stream()
             .filter(solicitorRole -> RELEVANT_REPRESENTED_PARTY_TYPES.contains(solicitorRole.getRepresenting()))
             .findFirst()
@@ -67,10 +66,10 @@ public class ManageLegalCounselService {
     }
 
     public void updateLegalCounsel(CaseDetails caseDetails) {
-        String caseId = caseDetails.getId().toString();
+        CaseData caseData = caseConverter.convert(caseDetails);
+        String caseId = caseData.getId().toString();
         List<SolicitorRole> caseSolicitorRoles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseId);
 
-        CaseData caseData = caseConverter.convert(caseDetails);
         List<Element<LegalCounsellor>> legalCounsellors =
             caseData.getManageLegalCounselEventData().getLegalCounsellors();
 
@@ -97,10 +96,9 @@ public class ManageLegalCounselService {
         data.remove("legalCounsellors");
     }
 
-    public List<String> validateEventData(CaseDetails caseDetails) {
+    public List<String> validateEventData(CaseData caseData) {
         List<String> errorMessages = new ArrayList<>();
 
-        CaseData caseData = caseConverter.convert(caseDetails);
         ManageLegalCounselEventData manageLegalCounselEventData = caseData.getManageLegalCounselEventData();
         List<Element<LegalCounsellor>> legalCounsellors = manageLegalCounselEventData.getLegalCounsellors();
 
@@ -124,15 +122,14 @@ public class ManageLegalCounselService {
         return errorMessages;
     }
 
-    public void runFinalEventActions(CaseDetails previousCaseDetails, CaseDetails currentCaseDetails) {
-        CaseData currentCaseData = caseConverter.convert(currentCaseDetails);
+    public void runFinalEventActions(CaseData previousCaseData, CaseData currentCaseData) {
         Organisation loggedInSolicitorOrganisation = organisationService.findOrganisation().orElseThrow();
 
-        List<LegalCounsellor> currentLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(currentCaseDetails)
+        List<LegalCounsellor> currentLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(currentCaseData)
             .stream()
             .map(Element::getValue)
             .collect(Collectors.toList());
-        List<LegalCounsellor> previousLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(previousCaseDetails)
+        List<LegalCounsellor> previousLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(previousCaseData)
             .stream()
             .map(Element::getValue)
             .collect(Collectors.toList());

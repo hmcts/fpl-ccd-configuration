@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.legalcounsel.ManageLegalCounselService;
@@ -29,7 +30,7 @@ public class ManageLegalCounselController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         List<Element<LegalCounsellor>> legalCounsellors =
-            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseDetails);
+            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(getCaseData(caseDetails));
         caseDetails.getData().put("legalCounsellors", legalCounsellors);
 
         return respond(caseDetails);
@@ -39,7 +40,7 @@ public class ManageLegalCounselController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        List<String> errorMessages = manageLegalCounselService.validateEventData(caseDetails);
+        List<String> errorMessages = manageLegalCounselService.validateEventData(getCaseData(caseDetails));
 
         return respond(caseDetails, errorMessages);
     }
@@ -57,7 +58,10 @@ public class ManageLegalCounselController extends CallbackController {
     public SubmittedCallbackResponse handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails previousCaseDetails = callbackRequest.getCaseDetailsBefore();
         CaseDetails currentCaseDetails = callbackRequest.getCaseDetails();
-        manageLegalCounselService.runFinalEventActions(previousCaseDetails, currentCaseDetails);
+        CaseData previousCaseData = getCaseData(previousCaseDetails);
+        CaseData currentCaseData = getCaseData(currentCaseDetails);
+
+        manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData);
 
         return SubmittedCallbackResponse.builder().build();
     }
