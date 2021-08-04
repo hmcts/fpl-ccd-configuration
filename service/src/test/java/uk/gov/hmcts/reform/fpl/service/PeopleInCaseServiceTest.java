@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -231,6 +232,14 @@ class PeopleInCaseServiceTest {
             "Third", "Respondent", true, List.of());
         Element<Respondent> unrepresentedRespondent = buildRespondentWithRepresentative(
             "Fourth", "Respondent", false, List.of());
+        Element<Representative> repWithInvalidAddress = element(Representative.builder().servingPreferences(POST)
+            .address(Address.builder().build()).build());
+        Element<Respondent> respondentWithPostRep = buildRespondentWithRepresentative(
+            "Fifth", "Respondent", false, wrapElements(repWithInvalidAddress.getId()));
+        Element<Representative> repWithInvalidEmail = element(Representative.builder()
+            .servingPreferences(EMAIL).email("").build());
+        Element<Respondent> respondentWithInvalidEmailRep = buildRespondentWithRepresentative(
+            "Sixth", "Respondent", false, wrapElements(repWithInvalidEmail.getId()));
 
         Element<Other> firstOther = element(Other.builder().name("First Other").build());
         firstOther.getValue().addRepresentative(DIGITAL_REP.getId());
@@ -240,7 +249,8 @@ class PeopleInCaseServiceTest {
             Other.builder().name("Third Other").address(testAddress()).build());
         Element<Other> unrepresentedOtherWithoutAddress = element(Other.builder().name("Fourth Other").build());
 
-        List<Element<Representative>> representatives = List.of(EMAIL_REP, EMAIL_REP2, DIGITAL_REP, POST_REP);
+        List<Element<Representative>> representatives = List.of(
+            EMAIL_REP, EMAIL_REP2, DIGITAL_REP, POST_REP, repWithInvalidAddress, repWithInvalidEmail);
 
         return Stream.of(
             Arguments.of(representatives,
@@ -259,10 +269,10 @@ class PeopleInCaseServiceTest {
                 List.of(unrepresentedRespondent),
                 List.of(firstOther, other2),
                 "First Other, Second Other"),
+            Arguments.of(representatives, List.of(), List.of(), ""),
             Arguments.of(representatives,
-                List.of(),
-                List.of(),
-                "")
+                List.of(respondentWithPostRep, respondentWithInvalidEmailRep),
+                List.of(), "")
         );
     }
 
