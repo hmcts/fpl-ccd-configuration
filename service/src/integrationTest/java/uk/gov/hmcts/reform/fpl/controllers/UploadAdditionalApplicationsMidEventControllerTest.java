@@ -128,6 +128,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Test
     void shouldNotSetC2DocumentBundleWhenOnlyOtherApplicationIsSelected() {
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
             .document(DocumentReference.builder().build())
@@ -149,7 +150,9 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsEntry("temporaryC2Document", null)
             .containsEntry("amountToPay", "100")
-            .containsEntry("displayAmountToPay", YES.getValue());
+            .containsEntry("displayAmountToPay", YES.getValue())
+            .containsEntry("othersSelector", null)
+            .doesNotContainKeys("hasOthers", "others_label");
     }
 
     @Test

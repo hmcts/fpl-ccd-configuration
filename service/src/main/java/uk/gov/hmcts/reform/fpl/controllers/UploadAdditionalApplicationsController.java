@@ -85,7 +85,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()
-            && isNotEmpty(caseData.getAllOthers()) || isNotEmpty(caseData.getRespondents1())) {
+            && (isNotEmpty(caseData.getAllOthers()) || isNotEmpty(caseData.getRespondents1()))) {
             caseDetails.getData().put("hasOthers", "Yes");
             caseDetails.getData().put("others_label", peopleInCaseService.buildPeopleInCaseLabel(
                 caseData.getAllRespondents(), caseData.getOthers()));
