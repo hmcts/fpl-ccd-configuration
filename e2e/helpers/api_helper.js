@@ -2,6 +2,8 @@ const config = require('../config');
 const fetch = require('node-fetch');
 const lodash = require('lodash');
 const output = require('codeceptjs').output;
+const { v4: uuidv4 } = require('uuid');
+
 
 const wait = duration => new Promise(resolve => setTimeout(resolve, duration));
 
@@ -39,10 +41,11 @@ const get = async (url, headers, retry = 2, backoff = 500) => {
 };
 
 const documentData = filename => {
+  const id = uuidv4();
   return {
-    document_url: `${config.dmStoreUrl}/documents/fakeUrl`,
+    document_url: `${config.dmStoreUrl}/documents/${id}`,
     document_filename: filename,
-    document_binary_url: `${config.dmStoreUrl}/documents/fakeUrl/binary`,
+    document_binary_url: `${config.dmStoreUrl}/documents/${id}/binary`,
   };
 };
 
@@ -56,24 +59,7 @@ const updateCaseDataWithTodaysDateTime = (data) => {
 const updateCaseDataWithDocuments = (data) => {
   let caseData = data.caseData;
   caseData.submittedForm = documentData('mockSubmittedForm.pdf');
-  if(caseData.documents_checklist_document) {
-    caseData.documents_checklist_document.typeOfDocument = documentData('mockChecklist.pdf');
-  }
-  if(caseData.documents_threshold_document) {
-    caseData.documents_threshold_document.typeOfDocument = documentData('mockThreshold.pdf');
-  }
-  if(caseData.documents_socialWorkCarePlan_document) {
-    caseData.documents_socialWorkCarePlan_document.typeOfDocument = documentData('mockSWCP.pdf');
-  }
-  if(caseData.documents_socialWorkAssessment_document) {
-    caseData.documents_socialWorkAssessment_document.typeOfDocument = documentData('mockSWA.pdf');
-  }
-  if(caseData.documents_socialWorkChronology_document) {
-    caseData.documents_socialWorkChronology_document.typeOfDocument = documentData('mockSWC.pdf');
-  }
-  if(caseData.documents_socialWorkEvidenceTemplate_document) {
-    caseData.documents_socialWorkEvidenceTemplate_document.typeOfDocument = documentData('mockSWET.pdf');
-  }
+
   if (caseData.standardDirectionOrder) {
     caseData.standardDirectionOrder.orderDoc = documentData('sdo.pdf');
   }
