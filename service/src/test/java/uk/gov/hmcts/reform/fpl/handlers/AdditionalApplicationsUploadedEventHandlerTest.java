@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -69,7 +71,9 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
@@ -101,6 +105,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private SendDocumentService sendDocumentService;
     @Mock
     private FeatureToggleService featureToggleService;
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
     @InjectMocks
     private AdditionalApplicationsUploadedEventHandler underTest;
 
@@ -253,6 +259,51 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotifyCafcassWhendServingOthersIsToggledOn() {
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+
+        given(CASE_DATA.getAdditionalApplicationsBundle())
+            .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT).others(emptyList()).build())
+                .build()));
+
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        CafcassLookupConfiguration.Cafcass cafcass =
+            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(cafcass);
+
+        underTest.notifyCafcass(
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, OrderApplicant.builder().build()));
+
+        verify(notificationService).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
+            Set.of(CAFCASS_EMAIL_ADDRESS),
+            additionalApplicationsParameters,
+            CASE_ID.toString());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotNotifyCafcassWhenEmailAddressIsEmptyAndServingOthersIsToggledOn(String cafcassEmail) {
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+
+        given(CASE_DATA.getAdditionalApplicationsBundle())
+            .willReturn(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().document(TEST_DOCUMENT).others(emptyList()).build())
+                .build()));
+
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        CafcassLookupConfiguration.Cafcass cafcass =
+            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, cafcassEmail);
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(cafcass);
+
+        underTest.notifyCafcass(
+            new AdditionalApplicationsUploadedEvent(CASE_DATA, OrderApplicant.builder().build()));
+
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
     void shouldNotifyRespondentWhenApplicantIsRespondentAndServingOthersIsToggledOn() {
         List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
@@ -274,7 +325,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
-            List.of("respondent1@test.com"),
+            Set.of("respondent1@test.com"),
             additionalApplicationsParameters,
             CASE_ID.toString());
     }
