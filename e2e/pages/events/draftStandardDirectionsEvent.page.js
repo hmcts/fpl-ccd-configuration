@@ -27,10 +27,19 @@ module.exports = {
       reason: '#urgentHearingAllocation_proposalReason',
     },
     urgentHearingOrder: '#urgentHearingOrderDocument',
-    translationRequirement: {
-      no: '#sdoTranslationRequirement-NO',
-      englishToWelsh: '#sdoTranslationRequirement-ENGLISH_TO_WELSH',
-      welshToEnglish: '#sdoTranslationRequirement-WELSH_TO_ENGLISH',
+    upload: {
+      translationRequirement: {
+        no: '#gatekeepingTranslationRequirements-NO',
+        englishToWelsh: '#gatekeepingTranslationRequirements-ENGLISH_TO_WELSH',
+        welshToEnglish: '#gatekeepingTranslationRequirements-WELSH_TO_ENGLISH',
+      },
+    },
+    urgent: {
+      translationRequirement: {
+        no: '#urgentGatekeepingTranslationRequirements-NO',
+        englishToWelsh: '#urgentGatekeepingTranslationRequirements-ENGLISH_TO_WELSH',
+        welshToEnglish: '#urgentGatekeepingTranslationRequirements-WELSH_TO_ENGLISH',
+      },
     },
   },
 
