@@ -7,23 +7,22 @@ const closedCaseData = {
   caseData: caseData.caseData,
 };
 
-// most file names are overridden to the below values in api_helper
 const orders = {
   generated: {
     name: 'C32 - Care order - 7 July 2021',
-    file: 'C32 - Care order.pdf',
+    file: 'mockFile.pdf',
     tabObjectName: 'Order 4',
     tabOrderDocFieldName: 'Order document',
   },
   standardDirectionOrder: {
     name: 'Gatekeeping order - 4 July 2021',
-    file: 'sdo.pdf',
+    file: 'mockFile.pdf',
     tabObjectName: 'Gatekeeping order',
     tabOrderDocFieldName: 'File',
   },
   urgentHearingOrder: {
     name: 'Urgent hearing order - 3 July 2021',
-    file: 'uho.pdf',
+    file: 'mockFile.pdf',
     tabObjectName: 'Gatekeeping order - urgent hearing order',
     tabOrderDocFieldName: 'Order',
   },
