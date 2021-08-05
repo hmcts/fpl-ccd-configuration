@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -29,6 +30,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     ApplicantLocalAuthorityService.class
 })
 class ManagingOrganisationRemovedEmailTemplateTest extends EmailTemplateTest {
+
+    @MockBean
+    private OrganisationService organisationService;
 
     @MockBean
     private ValidateEmailService emailService;
