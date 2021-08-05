@@ -21,6 +21,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -82,7 +83,8 @@ public class RepresentativesInbox {
             caseData.getRepresentativesElementsByServedPreference(servingPreferences)
                 .stream()
                 .filter(representativeElement -> allRepresentativeIds.contains(representativeElement.getId()))
-                .filter(representativeElement -> !selectedRepresentativeIds.contains(representativeElement.getId()))
+                .filter(not(representativeElement ->
+                    selectedRepresentativeIds.contains(representativeElement.getId())))
                 .map(mapperFunction)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
