@@ -48,9 +48,9 @@ const updateCaseDataWithTodaysDateTime = (data) => {
 };
 
 const updateCaseDataWithDocuments = async (data) => {
-  const document = JSON.stringify(await getTestDocument());
-  const caseData = JSON.stringify(data.caseData).replaceAll('"${TEST_DOCUMENT}"', '${TEST_DOCUMENT}');
-  data.caseData = JSON.parse(lodash.template(caseData)({ 'TEST_DOCUMENT': document }));
+  const { document_binary_url, document_url } = await getTestDocument();
+  const caseData = lodash.template(JSON.stringify(data.caseData))({ 'TEST_DOCUMENT_URL': document_url, 'TEST_DOCUMENT_BINARY_URL': document_binary_url });
+  data.caseData = JSON.parse(caseData);
 };
 
 const getHeaders = authToken => ({

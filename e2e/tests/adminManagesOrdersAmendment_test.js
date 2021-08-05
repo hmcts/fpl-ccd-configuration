@@ -10,25 +10,25 @@ const closedCaseData = {
 const orders = {
   generated: {
     name: 'C32 - Care order - 7 July 2021',
-    file: 'mockFile.pdf',
+    file: 'C32 - Care order.pdf',
     tabObjectName: 'Order 4',
     tabOrderDocFieldName: 'Order document',
   },
   standardDirectionOrder: {
     name: 'Gatekeeping order - 4 July 2021',
-    file: 'mockFile.pdf',
+    file: 'sdo.pdf',
     tabObjectName: 'Gatekeeping order',
     tabOrderDocFieldName: 'File',
   },
   urgentHearingOrder: {
     name: 'Urgent hearing order - 3 July 2021',
-    file: 'mockFile.pdf',
+    file: 'uho.pdf',
     tabObjectName: 'Gatekeeping order - urgent hearing order',
     tabOrderDocFieldName: 'Order',
   },
   caseManagementOrder: {
     name: 'Sealed case management order issued on 6 July 2021',
-    file: 'mockFile.pdf',
+    file: 'cmo.pdf',
     tabObjectName: 'Sealed Case Management Order 1',
     tabOrderDocFieldName: 'Order',
   },

@@ -161,7 +161,11 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "${TEST_DOCUMENT}",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -283,7 +287,11 @@
               "id": "02065be0-b622-4594-9716-a3ae007098d5",
               "value": {
                 "type": "DRAFT_CMO",
-                "order": "${TEST_DOCUMENT}",
+                "order": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "document_filename": "mockFile.docx",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
                 "title": "Draft CMO from advocates' meeting",
                 "status": "DRAFT",
                 "hearing": "Case management hearing, 5 January 2020",
@@ -296,7 +304,11 @@
                     "value": {
                       "name": "case summary",
                       "notes": "this is the case summary",
-                      "document": "${TEST_DOCUMENT}"
+                      "document": {
+                        "document_url": "${TEST_DOCUMENT_URL}",
+                        "document_filename": "mockFile.txt",
+                        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                      }
                     }
                   }
                 ],
@@ -319,7 +331,11 @@
               "id": "87165be0-b622-4594-9716-a3ae007098d5",
               "value": {
                 "type": "AGREED_CMO",
-                "order": "${TEST_DOCUMENT}",
+                "order": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "document_filename": "mockFile.docx",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
                 "title": "Draft CMO from advocates' meeting",
                 "status": "SEND_TO_JUDGE",
                 "hearing": "Case management hearing, 5 January 2020",
@@ -332,7 +348,11 @@
                     "value": {
                       "name": "case summary",
                       "notes": "this is the case summary",
-                      "document": "${TEST_DOCUMENT}"
+                      "document": {
+                        "document_url": "${TEST_DOCUMENT_URL}",
+                        "document_filename": "mockFile.txt",
+                        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                      }
                     }
                   }
                 ],
@@ -345,7 +365,11 @@
               "id": "383fc615-b638-41a6-9987-72458a84dcfe",
               "value": {
                 "type": "C21",
-                "order": "${TEST_DOCUMENT}",
+                "order": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "document_filename": "mockFile.docx",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
                 "title": "Draft Order1",
                 "status": "SEND_TO_JUDGE",
                 "hearing": "Case management hearing, 5 January 2020",
@@ -469,7 +493,13 @@
         "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
         "value": {
           "type": "AGREED_CMO",
-          "order": "${TEST_DOCUMENT}",
+          "order": {
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "cmo.pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            }
+          },
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
           "dateSent": "2020-08-27",
@@ -480,7 +510,13 @@
       }
     ],
     "standardDirectionOrder": {
-      "orderDoc": "${TEST_DOCUMENT}",
+      "orderDoc": {
+        "document": {
+          "document_url": "${TEST_DOCUMENT_URL}",
+          "document_filename": "sdo.pdf",
+          "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+        }
+      },
       "directions": [
         {
           "id": "c8f60fdf-d5fb-43cf-ad07-a38f86b6b96e",
@@ -803,7 +839,11 @@
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedBy": null,
           "documentName": null,
           "documentType": "THRESHOLD",
@@ -820,7 +860,13 @@
           "type": "Blank order (C21)",
           "title": "Example Order Title",
           "details": "szvd",
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "Blank order (C21).pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            }
+          },
           "expiryDate": null,
           "dateOfIssue": "26 May 2020",
           "furtherDirections": {},
@@ -856,7 +902,11 @@
               }
             }
           ],
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "Discharge of parental responsibility (C45B).pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploader": null,
           "courtName": null,
           "orderType": "C45B_DISCHARGE_OF_PARENTAL_RESPONSIBILITY",
@@ -881,7 +931,11 @@
             "useAllocatedJudge": null,
             "allocatedJudgeLabel": null
           },
-          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "mockFile.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedOrderDescription": null
         }
       }

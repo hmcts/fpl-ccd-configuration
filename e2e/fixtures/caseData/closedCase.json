@@ -187,7 +187,11 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "${TEST_DOCUMENT}",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -387,7 +391,13 @@
           "type": "Blank order (C21)",
           "title": "Example Order Title",
           "details": "szvd",
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "Blank order (C21).pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            }
+          },
           "expiryDate": null,
           "dateOfIssue": "26 May 2020",
           "furtherDirections": {},
@@ -408,7 +418,11 @@
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedBy": null,
           "documentName": null,
           "documentType": "THRESHOLD",

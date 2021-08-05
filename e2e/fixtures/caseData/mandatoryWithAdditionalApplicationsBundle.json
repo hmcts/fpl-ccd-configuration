@@ -134,7 +134,11 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "${TEST_DOCUMENT}",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "submissionConsent": [
       "agree"
     ],
@@ -146,7 +150,11 @@
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedBy": null,
           "documentName": null,
           "documentType": "THRESHOLD",
@@ -172,7 +180,11 @@
             "id": "2c3d7329-8206-44a1-b1b4-7502ab253b0f",
             "type": "WITHOUT_NOTICE",
             "author": "HMCTS",
-            "document": "${TEST_DOCUMENT}",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "Test.txt",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
             "uploadedDateTime": "25 March 2021, 3:16pm",
             "supplementsBundle": [],
             "supportingEvidenceLA": [],
@@ -186,7 +198,11 @@
           "otherApplicationsBundle": {
             "id": "85bb3a49-e178-4a3a-ad73-165005d8c4bf",
             "author": "HMCTS",
-            "document": "${TEST_DOCUMENT}",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "Test.txt",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
             "applicationType": "C100_CHILD_ARRANGEMENTS",
             "uploadedDateTime": "25 March 2021, 3:16pm",
             "supplementsBundle": [],

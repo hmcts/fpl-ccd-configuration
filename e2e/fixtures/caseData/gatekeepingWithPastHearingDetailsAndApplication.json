@@ -234,7 +234,11 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "${TEST_DOCUMENT}",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -430,7 +434,11 @@
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedBy": null,
           "documentName": null,
           "documentType": "THRESHOLD",
@@ -440,34 +448,38 @@
       }
     ],
     "additionalApplicationsBundle": [
-        {
-            "id": "5c52bfdc-b2a3-48ac-81e4-a9d201339978",
-            "value": {
-                "author": "HMCTS",
-                "pbaPayment": {
-                    "pbaNumber": "PBA0082848",
-                    "clientCode": "8888",
-                    "fileReference": "Example reference",
-                    "usePbaPayment": "Yes"
-                },
-                "c2DocumentBundle": {
-                    "id": "788f1b70-2d7d-4c76-8484-de225ac92ead",
-                    "type": "WITH_NOTICE",
-                    "author": "HMCTS",
-                    "document": "${TEST_DOCUMENT}",
-                    "applicantName": "Joe Bloggs, Respondent 1",
-                    "uploadedDateTime": "16 June 2021, 11:49am",
-                    "supplementsBundle": [],
-                    "supportingEvidenceLA": [],
-                    "supportingEvidenceNC": [],
-                    "supportingEvidenceBundle": [],
-                    "c2AdditionalOrdersRequested": [
-                        "APPOINTMENT_OF_GUARDIAN"
-                    ]
-                },
-                "uploadedDateTime": "16 June 2021, 11:49am"
-            }
+      {
+        "id": "5c52bfdc-b2a3-48ac-81e4-a9d201339978",
+        "value": {
+          "author": "HMCTS",
+          "pbaPayment": {
+            "pbaNumber": "PBA0082848",
+            "clientCode": "8888",
+            "fileReference": "Example reference",
+            "usePbaPayment": "Yes"
+          },
+          "c2DocumentBundle": {
+            "id": "788f1b70-2d7d-4c76-8484-de225ac92ead",
+            "type": "WITH_NOTICE",
+            "author": "HMCTS",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "mockFile.pdf",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "applicantName": "Joe Bloggs, Respondent 1",
+            "uploadedDateTime": "16 June 2021, 11:49am",
+            "supplementsBundle": [],
+            "supportingEvidenceLA": [],
+            "supportingEvidenceNC": [],
+            "supportingEvidenceBundle": [],
+            "c2AdditionalOrdersRequested": [
+              "APPOINTMENT_OF_GUARDIAN"
+            ]
+          },
+          "uploadedDateTime": "16 June 2021, 11:49am"
         }
+      }
     ]
   }
 }

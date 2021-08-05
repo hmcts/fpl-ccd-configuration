@@ -77,7 +77,11 @@
         "id": "7316a1b3-9d75-4596-a811-4fa60b3339c5",
         "value": {
           "type": "AGREED_CMO",
-          "order": "${TEST_DOCUMENT}",
+          "order": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "cmo.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "title": "Agreed CMO discussed at hearing",
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 March 2020",
@@ -89,28 +93,21 @@
               "value": {
                 "name": "case summary",
                 "notes": "this is the case summary",
-                "document": "${TEST_DOCUMENT}",
+                "document": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "document_filename": "mockFile.txt",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
                 "confidential": []
               }
             }
           ],
           "judgeTitleAndName": "Her Honour Judge Reed",
-          "lastUploadedOrder": "${TEST_DOCUMENT}"
-        }
-      },
-      {
-        "id": "22c004bf-17f1-4e86-ba6d-ce5b955d6227",
-        "value": {
-          "type": "AGREED_CMO",
-          "order": "${TEST_DOCUMENT}",
-          "title": "Agreed CMO discussed at hearing",
-          "status": "APPROVED",
-          "hearing": "Case management hearing, 1 January 2020",
-          "dateSent": "2021-07-05",
-          "dateIssued": "2021-07-05",
-          "supportingDocs": [],
-          "judgeTitleAndName": "Her Honour Judge Reed",
-          "lastUploadedOrder": "${TEST_DOCUMENT}"
+          "lastUploadedOrder": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "mockFile.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          }
         }
       }
     ],
@@ -143,7 +140,11 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "${TEST_DOCUMENT}",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -196,7 +197,11 @@
               }
             }
           ],
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "C23 - Emergency protection order.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploader": null,
           "courtName": null,
           "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
@@ -216,7 +221,11 @@
             "judgeLastName": "Moley",
             "judgeEmailAddress": "moley@example.com"
           },
-          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c23_emergency_protection_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedOrderDescription": null
         }
       },
@@ -241,7 +250,11 @@
               }
             }
           ],
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "C23 - Emergency protection order.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploader": null,
           "courtName": null,
           "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
@@ -264,7 +277,11 @@
             "judgeLastName": "Moley",
             "judgeEmailAddress": "moley@example.com"
           },
-          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c23_emergency_protection_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedOrderDescription": null
         }
       },
@@ -289,7 +306,11 @@
               }
             }
           ],
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "Discharge of care order (C32B).pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploader": null,
           "courtName": null,
           "orderType": "C32B_DISCHARGE_OF_CARE_ORDER",
@@ -312,7 +333,11 @@
             "judgeLastName": "Moley",
             "judgeEmailAddress": "moley@example.com"
           },
-          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c32b_discharge_of_care_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedOrderDescription": null
         }
       },
@@ -337,7 +362,11 @@
               }
             }
           ],
-          "document": "${TEST_DOCUMENT}",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "C32 - Care order.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploader": null,
           "courtName": null,
           "orderType": "C32_CARE_ORDER",
@@ -361,7 +390,11 @@
             "legalAdvisorName": "Jack Nickolson",
             "judgeEmailAddress": "jack.nickolson@judge.com"
           },
-          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c32_care_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "uploadedOrderDescription": null
         }
       }
@@ -381,20 +414,36 @@
       "proposal": "District judge"
     },
     "urgentHearingOrder": {
-      "order": "${TEST_DOCUMENT}",
+      "order": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "uho.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
       "dateAdded": "2021-07-03",
       "allocation": "Lay justices",
       "amendedDate": null,
-      "unsealedOrder": "${TEST_DOCUMENT}"
+      "unsealedOrder": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "mockFile.docx",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      }
     },
     "familyManCaseNumber": "mockcaseID",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
     "standardDirectionOrder": {
-      "orderDoc": "${TEST_DOCUMENT}",
+      "orderDoc": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "sdo.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
       "uploader": "judiciary-only@mailnesia.com (judiciary)",
       "orderStatus": "SEALED",
       "dateOfUpload": "2021-07-04",
-      "lastUploadedOrder": "${TEST_DOCUMENT}",
+      "lastUploadedOrder": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "mockFile.docx",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
       "standardDirections": [],
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
@@ -406,13 +455,21 @@
       {
         "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
         "value": {
-          "document": "${TEST_DOCUMENT}"
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "blah_c6.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          }
         }
       },
       {
         "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb92",
         "value": {
-          "document": "${TEST_DOCUMENT}"
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "blah_c6a.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          }
         }
       }
     ]
