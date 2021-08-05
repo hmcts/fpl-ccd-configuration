@@ -22,15 +22,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativesInbox {
 
     public Set<String> getEmailsByPreference(CaseData caseData, RepresentativeServingPreferences preference) {
-        if (preference.equals(RepresentativeServingPreferences.POST)) {
+        if (preference.equals(POST)) {
             throw new IllegalArgumentException("Preference should not be POST");
         }
 
@@ -59,13 +62,14 @@ public class RepresentativesInbox {
         return emails;
     }
 
+    @SuppressWarnings("unchecked")
     public Set<?> getNonSelectedRespondentsRecipients(
         RepresentativeServingPreferences servingPreferences,
         CaseData caseData,
         List<Element<Respondent>> respondentsSelected,
         Function<Element<Representative>, ?> mapperFunction) {
 
-        Set<UUID> representativeIds = caseData.getAllRespondents().stream()
+        Set<UUID> allRepresentativeIds = caseData.getAllRespondents().stream()
             .flatMap(respondentElement -> respondentElement.getValue().getRepresentedBy()
                 .stream().map(Element::getValue))
             .collect(Collectors.toSet());
@@ -74,12 +78,33 @@ public class RepresentativesInbox {
             .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
 
-        return caseData.getRepresentativesElementsByServedPreference(servingPreferences)
-            .stream()
-            .filter(representativeElement -> representativeIds.contains(representativeElement.getId()))
-            .filter(representativeElement -> !selectedRepresentativeIds.contains(representativeElement.getId()))
-            .map(mapperFunction)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+        LinkedHashSet<Recipient> notSelectedRepresentedRespondents = (LinkedHashSet<Recipient>)
+            caseData.getRepresentativesElementsByServedPreference(servingPreferences)
+                .stream()
+                .filter(representativeElement -> allRepresentativeIds.contains(representativeElement.getId()))
+                .filter(representativeElement -> !selectedRepresentativeIds.contains(representativeElement.getId()))
+                .map(mapperFunction)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        final Set<Recipient> nonSelectedRespondents = new LinkedHashSet<>(notSelectedRepresentedRespondents);
+        if (servingPreferences == POST) {
+            nonSelectedRespondents.addAll(getNotSelectedUnrepresentedRespondents(caseData, respondentsSelected));
+        }
+        return nonSelectedRespondents;
+    }
+
+    private Set<Recipient> getNotSelectedUnrepresentedRespondents(CaseData caseData,
+                                                                  List<Element<Respondent>> selectedRespondents) {
+        List<Element<Respondent>> unrepresentedRespondents = caseData.getAllRespondents().stream()
+            .filter(respondent -> isEmpty(respondent.getValue().getRepresentedBy())
+                && !YES.getValue().equals(respondent.getValue().getLegalRepresentation()))
+            .collect(toList());
+
+        List<UUID> selectedRespondentsIds = selectedRespondents.stream().map(Element::getId).collect(toList());
+        return unrepresentedRespondents.stream()
+            .filter(respondentElement -> !selectedRespondentsIds.contains(respondentElement.getId()))
+            .map(resp -> resp.getValue().getParty())
+            .collect(Collectors.toSet());
     }
 
     public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Respondent>> selectedRespondents) {

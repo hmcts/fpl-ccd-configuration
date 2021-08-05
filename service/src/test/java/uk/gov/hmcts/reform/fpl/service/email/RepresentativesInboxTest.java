@@ -367,10 +367,10 @@ class RepresentativesInboxTest {
         CaseData caseData,
         List<Element<Respondent>> selectedRespondents,
         RepresentativeServingPreferences servingPreferences,
-        Set<Element<Representative>> expectedRepresentatives) {
+        Set<Recipient> expectedRepresentatives) {
 
-        Set<Element<Representative>> unselectedRecipients
-            = (Set<Element<Representative>>) underTest.getNonSelectedRespondentsRecipients(
+        Set<Recipient> unselectedRecipients
+            = (Set<Recipient>) underTest.getNonSelectedRespondentsRecipients(
             servingPreferences, caseData, selectedRespondents, Function.identity());
 
         assertThat(unselectedRecipients).isEqualTo(expectedRepresentatives);
@@ -424,17 +424,18 @@ class RepresentativesInboxTest {
             element(EMAIL_REP2_UUID, EMAIL_REP2),
             element(DIGITAL_REP_UUID, DIGITAL_REP));
 
-        Respondent respondentWithEmailRep = Respondent.builder()
-            .representedBy(wrapElements(EMAIL_REP_UUID)).build();
-        Respondent respondentWithDigitalRep = Respondent.builder()
-            .representedBy(wrapElements(DIGITAL_REP_UUID)).build();
-        Respondent unrepresentedRespondent = Respondent.builder()
-            .representedBy(List.of()).build();
+        Element<Respondent> respondentWithEmailRep = element(Respondent.builder()
+            .representedBy(wrapElements(EMAIL_REP_UUID)).build());
+        Element<Respondent> respondentWithDigitalRep = element(Respondent.builder()
+            .representedBy(wrapElements(DIGITAL_REP_UUID)).build());
+        Element<Respondent> unrepresentedRespondent = element(Respondent.builder()
+            .party(RespondentParty.builder().firstName("John").lastName("Smith").address(testAddress()).build())
+            .representedBy(List.of()).build());
 
         Other firstOther = testOther("other1");
         firstOther.addRepresentative(EMAIL_REP2_UUID);
 
-        List<Element<Respondent>> respondents = wrapElements(
+        List<Element<Respondent>> respondents = List.of(
             respondentWithEmailRep, respondentWithDigitalRep, unrepresentedRespondent);
 
         CaseData caseData = CaseData.builder()
@@ -445,15 +446,20 @@ class RepresentativesInboxTest {
 
         return Stream.of(
             Arguments.of(
-                caseData, List.of(respondents.get(0), respondents.get(2)), EMAIL, Set.of()),
-            Arguments.of(caseData, List.of(respondents.get(1)), EMAIL, Set.of(representatives.get(0))),
+                caseData, List.of(respondentWithEmailRep, unrepresentedRespondent), EMAIL, Set.of()),
+            Arguments.of(caseData, List.of(respondentWithDigitalRep), EMAIL, Set.of(representatives.get(0))),
             Arguments.of(
-                caseData, List.of(respondents.get(2)), EMAIL, Set.of(representatives.get(0))),
+                caseData, List.of(unrepresentedRespondent), EMAIL, Set.of(representatives.get(0))),
             Arguments.of(caseData, respondents, EMAIL, Set.of()),
             Arguments.of(caseData, respondents, DIGITAL_SERVICE, Set.of()),
-            Arguments.of(caseData, List.of(respondents.get(1), respondents.get(2)), DIGITAL_SERVICE, Set.of()),
+            Arguments.of(caseData, List.of(respondentWithDigitalRep, unrepresentedRespondent),
+                DIGITAL_SERVICE, Set.of()),
             Arguments.of(
-                caseData, List.of(), DIGITAL_SERVICE, Set.of(representatives.get(2)))
+                caseData, List.of(), DIGITAL_SERVICE, Set.of(representatives.get(2))),
+            Arguments.of(
+                caseData, List.of(respondentWithEmailRep), POST, Set.of(unrepresentedRespondent.getValue().getParty())),
+            Arguments.of(
+                caseData, List.of(respondentWithEmailRep, unrepresentedRespondent), POST, Set.of())
         );
     }
 }
