@@ -6,7 +6,6 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -39,7 +38,6 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
     LocalDate amendedDate;
     List<Element<Other>> others;
     LocalDateTime translationUploadDateTime;
-    YesNo needTranslation;
     LanguageTranslationRequirement translationRequirements;
 
     @Override

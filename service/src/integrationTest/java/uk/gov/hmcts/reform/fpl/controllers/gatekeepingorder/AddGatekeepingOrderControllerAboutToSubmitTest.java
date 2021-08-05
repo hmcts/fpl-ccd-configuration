@@ -219,7 +219,6 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .customDirections(wrapElements(customDirection))
             .standardDirections(wrapElements(standardDirection))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
-            .needTranslation(expectedTranslationNeeded)
             .translationRequirements(translationRequirements)
             .build();
 
@@ -288,7 +287,6 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                 .unsealedOrder(urgentReference)
                 .dateAdded(dateNow())
                 .translationRequirements(translationRequirements)
-                .needTranslation(expectedTranslationNeeded)
                 .build()
         );
     }

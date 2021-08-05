@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
@@ -894,7 +893,6 @@ class GatekeepingOrderServiceTest {
                 .dateOfUpload(time.now().toLocalDate())
                 .uploader(userName)
                 .orderDoc(uploadedOrder)
-                .needTranslation(YesNo.NO)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
@@ -925,7 +923,6 @@ class GatekeepingOrderServiceTest {
                 .uploader(userName)
                 .orderDoc(sealedOrder)
                 .lastUploadedOrder(uploadedOrder)
-                .needTranslation(YesNo.NO)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
@@ -957,7 +954,6 @@ class GatekeepingOrderServiceTest {
                 .uploader(userName)
                 .orderDoc(sealedOrder)
                 .lastUploadedOrder(uploadedOrder)
-                .needTranslation(YesNo.YES)
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
@@ -1039,7 +1035,6 @@ class GatekeepingOrderServiceTest {
                 .orderStatus(SEALED)
                 .orderDoc(generatedOrder)
                 .unsealedDocumentCopy(draftOrder)
-                .needTranslation(YesNo.NO)
                 .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), DateFormatterHelper.DATE))
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
@@ -1071,7 +1066,6 @@ class GatekeepingOrderServiceTest {
                 .orderStatus(SEALED)
                 .orderDoc(generatedOrder)
                 .unsealedDocumentCopy(draftOrder)
-                .needTranslation(YesNo.NO)
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), DateFormatterHelper.DATE))
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())

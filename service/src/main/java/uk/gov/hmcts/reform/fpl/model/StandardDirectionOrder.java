@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -60,7 +59,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, Am
     private String removalReason;
     private final List<Element<Other>> others;
     private final LocalDateTime translationUploadDateTime;
-    private final YesNo needTranslation;
     private final LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore

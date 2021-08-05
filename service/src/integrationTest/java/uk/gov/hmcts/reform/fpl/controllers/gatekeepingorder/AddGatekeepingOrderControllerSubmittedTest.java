@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -256,7 +255,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(status)
                 .orderDoc(SDO_DOCUMENT)
-                .needTranslation(YesNo.YES)
                 .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();
@@ -276,7 +274,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(status)
                 .orderDoc(SDO_DOCUMENT)
-                .needTranslation(YesNo.YES)
                 .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();
@@ -294,7 +291,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         return baseCaseData()
             .urgentHearingOrder(UrgentHearingOrder.builder()
                 .order(URGENT_HEARING_ORDER_DOCUMENT)
-                .needTranslation(YesNo.YES)
                 .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();

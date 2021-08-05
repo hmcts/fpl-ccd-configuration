@@ -79,7 +79,6 @@ class UrgentGatekeepingOrderServiceTest {
             .order(SEALED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
             .dateAdded(time.now().toLocalDate())
-            .needTranslation(YesNo.NO)
             .build();
 
         assertThat(underTest.finalise(caseData)).isEqualTo(Map.of(
@@ -104,7 +103,6 @@ class UrgentGatekeepingOrderServiceTest {
             .order(SEALED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
             .dateAdded(time.now().toLocalDate())
-            .needTranslation(YesNo.YES)
             .translationRequirements(ENGLISH_TO_WELSH)
             .build();
 
@@ -135,7 +133,6 @@ class UrgentGatekeepingOrderServiceTest {
             .unsealedOrder(UPLOADED_ORDER)
             .allocation("some allocation level")
             .dateAdded(time.now().toLocalDate())
-            .needTranslation(YesNo.NO)
             .build();
 
         assertThat(underTest.finalise(caseData)).isEqualTo(Map.of(

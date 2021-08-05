@@ -45,7 +45,6 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.needTranslation;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -95,7 +94,6 @@ public class GatekeepingOrderService {
             .orderDoc(document)
             .lastUploadedOrder(decision.isSealed() ? draftDocument : null)
             .translationRequirements(translationRequirements)
-            .needTranslation(needTranslation(translationRequirements))
             .build();
     }
 
@@ -116,7 +114,6 @@ public class GatekeepingOrderService {
                 .unsealedDocumentCopy(decision.getDraftDocument())
                 .orderDoc(sealedDocument)
                 .translationRequirements(translationRequirements)
-                .needTranslation(needTranslation(translationRequirements))
                 .build();
         } else {
             return currentOrder.toBuilder()
