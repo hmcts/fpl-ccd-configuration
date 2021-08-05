@@ -1,6 +1,6 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
-const mandatorySubmissionWithApplicationDocuments = require('../fixtures/caseData/mandatorySubmissionWithApplicationDocuments.json');
+const mandatorySubmissionWithApplicationDocuments = require('../fixtures/caseData/mandatorySubmissionFields.json');
 
 let caseId;
 

@@ -142,34 +142,23 @@
       "proposal": "District judge"
     },
     "displayAmountToPay": "Yes",
-    "documents_socialWorkOther": [],
-    "documents_checklist_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
+    "applicationDocuments": [
+      {
+        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+        "value": {
+          "document": {
+            "document_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary"
+          },
+          "uploadedBy": null,
+          "documentName": null,
+          "documentType": "THRESHOLD",
+          "includedInSWET": null,
+          "dateTimeUploaded": null
+        }
+      }
+    ],
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
