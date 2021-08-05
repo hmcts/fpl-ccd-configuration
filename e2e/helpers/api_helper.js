@@ -2,12 +2,11 @@ const config = require('../config');
 const fetch = require('node-fetch');
 const lodash = require('lodash');
 const output = require('codeceptjs').output;
-const { v4: uuidv4 } = require('uuid');
-
 
 const wait = duration => new Promise(resolve => setTimeout(resolve, duration));
 
 const post = async (url, data, headers, retry = 2, backoff = 500) => {
+  output.debug(`Performing post to ${url}`);
   return fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -19,12 +18,13 @@ const post = async (url, data, headers, retry = 2, backoff = 500) => {
       if (retry > 0) {
         return wait(backoff).then(() => post(url, data, headers, retry - 1, backoff * 1.5));
       }
-      throw {message: `POST ${url} failed with ${res.status}`};
+      throw { message: `POST ${url} failed with ${res.status}` };
     }
   });
 };
 
 const get = async (url, headers, retry = 2, backoff = 500) => {
+  output.debug(`Performing get to ${url}`);
   return fetch(url, {
     method: 'GET',
     headers: headers,
@@ -35,18 +35,9 @@ const get = async (url, headers, retry = 2, backoff = 500) => {
       if (retry > 0) {
         return wait(backoff).then(() => get(url, headers, retry - 1, backoff * 1.5));
       }
-      throw {message: `GET ${url} failed with ${res.status}`};
+      throw { message: `GET ${url} failed with ${res.status}` };
     }
   });
-};
-
-const documentData = filename => {
-  const id = uuidv4();
-  return {
-    document_url: `${config.dmStoreUrl}/documents/${id}`,
-    document_filename: filename,
-    document_binary_url: `${config.dmStoreUrl}/documents/${id}/binary`,
-  };
 };
 
 const updateCaseDataWithTodaysDateTime = (data) => {
@@ -56,25 +47,10 @@ const updateCaseDataWithTodaysDateTime = (data) => {
   caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
 };
 
-const updateCaseDataWithDocuments = (data) => {
-  let caseData = data.caseData;
-  caseData.submittedForm = documentData('mockSubmittedForm.pdf');
-
-  if (caseData.standardDirectionOrder) {
-    caseData.standardDirectionOrder.orderDoc = documentData('sdo.pdf');
-  }
-  if (caseData.orderCollection) {
-    for (const order of caseData.orderCollection) {
-      order.value.document = documentData(order.value.type + '.pdf');
-    }
-  }
-  if (caseData.sealedCMOs) {
-    for (const cmo of caseData.sealedCMOs) {
-      cmo.value.order = documentData('mockFile.pdf');
-    }
-  }
-
-  data.caseData = JSON.parse(lodash.template(JSON.stringify(caseData))({'DM_STORE_URL': config.dmStoreUrl}));
+const updateCaseDataWithDocuments = async (data) => {
+  const document = JSON.stringify(await getTestDocument());
+  const caseData = JSON.stringify(data.caseData).replaceAll('"${TEST_DOCUMENT}"', '${TEST_DOCUMENT}');
+  data.caseData = JSON.parse(lodash.template(caseData)({ 'TEST_DOCUMENT': document }));
 };
 
 const getHeaders = authToken => ({
@@ -84,7 +60,7 @@ const getHeaders = authToken => ({
 
 const populateWithData = async (caseId, data) => {
   updateCaseDataWithTodaysDateTime(data);
-  updateCaseDataWithDocuments(data);
+  await updateCaseDataWithDocuments(data);
 
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;
@@ -97,9 +73,16 @@ const createCase = async (user, caseName) => {
   const authToken = await getAuthToken(user);
   const url = `${config.fplServiceUrl}/testing-support/case/create`;
   const headers = getHeaders(authToken);
-  const data = {caseName: caseName};
+  const data = { caseName: caseName };
   const response = await post(url, data, headers);
   return await response.json();
+};
+
+const getTestDocument = async () => {
+  const url = `${config.fplServiceUrl}/testing-support/test-document`;
+  return getAuthToken()
+    .then(token => get(url, getHeaders(token)))
+    .then(response => response.json());
 };
 
 const getUser = async (user) => {
@@ -117,7 +100,7 @@ const grantCaseAccess = async (caseId, user, role) => {
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/${caseId}/access`;
   const headers = getHeaders(authToken);
-  const data = {email: user.email, password: user.password, role: role};
+  const data = { email: user.email, password: user.password, role: role };
   return await post(url, data, headers);
 };
 

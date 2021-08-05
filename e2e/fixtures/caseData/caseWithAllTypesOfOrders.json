@@ -77,11 +77,7 @@
         "id": "7316a1b3-9d75-4596-a811-4fa60b3339c5",
         "value": {
           "type": "AGREED_CMO",
-          "order": {
-            "document_url": "${DM_STORE_URL}/documents/579b9962-b976-4cb4-8764-0e09062530ff",
-            "document_filename": "cmo6.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/579b9962-b976-4cb4-8764-0e09062530ff/binary"
-          },
+          "order": "${TEST_DOCUMENT}",
           "title": "Agreed CMO discussed at hearing",
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 March 2020",
@@ -93,32 +89,20 @@
               "value": {
                 "name": "case summary",
                 "notes": "this is the case summary",
-                "document": {
-                  "document_url": "${DM_STORE_URL}/documents/49287bde-be58-4cfc-b4d0-116a122b88ab",
-                  "document_filename": "mockFile.txt",
-                  "document_binary_url": "${DM_STORE_URL}/documents/49287bde-be58-4cfc-b4d0-116a122b88ab/binary"
-                },
+                "document": "${TEST_DOCUMENT}",
                 "confidential": []
               }
             }
           ],
           "judgeTitleAndName": "Her Honour Judge Reed",
-          "lastUploadedOrder": {
-            "document_url": "${DM_STORE_URL}/documents/379976dc-b962-4580-9874-dae881815668",
-            "document_filename": "mockFile.docx",
-            "document_binary_url": "${DM_STORE_URL}/documents/379976dc-b962-4580-9874-dae881815668/binary"
-          }
+          "lastUploadedOrder": "${TEST_DOCUMENT}"
         }
       },
       {
         "id": "22c004bf-17f1-4e86-ba6d-ce5b955d6227",
         "value": {
           "type": "AGREED_CMO",
-          "order": {
-            "document_url": "${DM_STORE_URL}/documents/95cf5a99-0d0b-4e8b-8f60-274fe63016cd",
-            "document_filename": "cmo5.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/95cf5a99-0d0b-4e8b-8f60-274fe63016cd/binary"
-          },
+          "order": "${TEST_DOCUMENT}",
           "title": "Agreed CMO discussed at hearing",
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
@@ -126,11 +110,7 @@
           "dateIssued": "2021-07-05",
           "supportingDocs": [],
           "judgeTitleAndName": "Her Honour Judge Reed",
-          "lastUploadedOrder": {
-            "document_url": "${DM_STORE_URL}/documents/309ee5b7-04d8-4f75-9d5f-a68074024d62",
-            "document_filename": "mockFile.docx",
-            "document_binary_url": "${DM_STORE_URL}/documents/309ee5b7-04d8-4f75-9d5f-a68074024d62/binary"
-          }
+          "lastUploadedOrder": "${TEST_DOCUMENT}"
         }
       }
     ],
@@ -163,7 +143,7 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "${TEST_DOCUMENT}",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -216,11 +196,7 @@
               }
             }
           ],
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/b54ed2cb-f6ff-46bc-9984-6c0f3ae8af99",
-            "document_filename": "c23_emergency_protection_order.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/b54ed2cb-f6ff-46bc-9984-6c0f3ae8af99/binary"
-          },
+          "document": "${TEST_DOCUMENT}",
           "uploader": null,
           "courtName": null,
           "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
@@ -240,11 +216,7 @@
             "judgeLastName": "Moley",
             "judgeEmailAddress": "moley@example.com"
           },
-          "unsealedDocumentCopy": {
-            "document_url": "${DM_STORE_URL}/documents/f60cc589-e4fc-43db-b64a-882fc6c10d5b",
-            "document_filename": "c23_emergency_protection_order.doc",
-            "document_binary_url": "${DM_STORE_URL}/documents/f60cc589-e4fc-43db-b64a-882fc6c10d5b/binary"
-          },
+          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
           "uploadedOrderDescription": null
         }
       },
@@ -269,11 +241,7 @@
               }
             }
           ],
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/1cd958b9-2609-4dd2-9180-866345d080b5",
-            "document_filename": "c23_emergency_protection_order.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/1cd958b9-2609-4dd2-9180-866345d080b5/binary"
-          },
+          "document": "${TEST_DOCUMENT}",
           "uploader": null,
           "courtName": null,
           "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
@@ -296,11 +264,7 @@
             "judgeLastName": "Moley",
             "judgeEmailAddress": "moley@example.com"
           },
-          "unsealedDocumentCopy": {
-            "document_url": "${DM_STORE_URL}/documents/a7be04f5-3333-4895-b0a3-6c709296c09b",
-            "document_filename": "c23_emergency_protection_order.doc",
-            "document_binary_url": "${DM_STORE_URL}/documents/a7be04f5-3333-4895-b0a3-6c709296c09b/binary"
-          },
+          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
           "uploadedOrderDescription": null
         }
       },
@@ -325,11 +289,7 @@
               }
             }
           ],
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/bce01027-cc64-43d5-b277-af00d720fae5",
-            "document_filename": "c32b_discharge_of_care_order.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/bce01027-cc64-43d5-b277-af00d720fae5/binary"
-          },
+          "document": "${TEST_DOCUMENT}",
           "uploader": null,
           "courtName": null,
           "orderType": "C32B_DISCHARGE_OF_CARE_ORDER",
@@ -352,11 +312,7 @@
             "judgeLastName": "Moley",
             "judgeEmailAddress": "moley@example.com"
           },
-          "unsealedDocumentCopy": {
-            "document_url": "${DM_STORE_URL}/documents/2ebfcda3-9b8f-459b-9f43-19af4c7d5442",
-            "document_filename": "c32b_discharge_of_care_order.doc",
-            "document_binary_url": "${DM_STORE_URL}/documents/2ebfcda3-9b8f-459b-9f43-19af4c7d5442/binary"
-          },
+          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
           "uploadedOrderDescription": null
         }
       },
@@ -381,11 +337,7 @@
               }
             }
           ],
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/018b5a1c-628c-418c-9a43-ef431ea6a924",
-            "document_filename": "c32_care_order.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/018b5a1c-628c-418c-9a43-ef431ea6a924/binary"
-          },
+          "document": "${TEST_DOCUMENT}",
           "uploader": null,
           "courtName": null,
           "orderType": "C32_CARE_ORDER",
@@ -409,11 +361,7 @@
             "legalAdvisorName": "Jack Nickolson",
             "judgeEmailAddress": "jack.nickolson@judge.com"
           },
-          "unsealedDocumentCopy": {
-            "document_url": "${DM_STORE_URL}/documents/dc159d92-50ef-4397-a205-e2ecfbb2b465",
-            "document_filename": "c32_care_order.doc",
-            "document_binary_url": "${DM_STORE_URL}/documents/dc159d92-50ef-4397-a205-e2ecfbb2b465/binary"
-          },
+          "unsealedDocumentCopy": "${TEST_DOCUMENT}",
           "uploadedOrderDescription": null
         }
       }
@@ -433,36 +381,20 @@
       "proposal": "District judge"
     },
     "urgentHearingOrder": {
-      "order": {
-        "document_url": "${DM_STORE_URL}/documents/1f0c1de2-971f-4c95-af65-a6e3d594d2b0",
-        "document_filename": "uho.pdf",
-        "document_binary_url": "${DM_STORE_URL}/documents/1f0c1de2-971f-4c95-af65-a6e3d594d2b0/binary"
-      },
+      "order": "${TEST_DOCUMENT}",
       "dateAdded": "2021-07-03",
       "allocation": "Lay justices",
       "amendedDate": null,
-      "unsealedOrder": {
-        "document_url": "${DM_STORE_URL}/documents/46051014-7875-42b0-830f-cf86140fe97b",
-        "document_filename": "mockFile.docx",
-        "document_binary_url": "${DM_STORE_URL}/documents/46051014-7875-42b0-830f-cf86140fe97b/binary"
-      }
+      "unsealedOrder": "${TEST_DOCUMENT}"
     },
     "familyManCaseNumber": "mockcaseID",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
     "standardDirectionOrder": {
-      "orderDoc": {
-        "document_url": "${DM_STORE_URL}/documents/5bbe313e-2e54-46f6-bf53-b5185df60616",
-        "document_filename": "sdo.pdf",
-        "document_binary_url": "${DM_STORE_URL}/documents/5bbe313e-2e54-46f6-bf53-b5185df60616/binary"
-      },
+      "orderDoc": "${TEST_DOCUMENT}",
       "uploader": "judiciary-only@mailnesia.com (judiciary)",
       "orderStatus": "SEALED",
       "dateOfUpload": "2021-07-04",
-      "lastUploadedOrder": {
-        "document_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8",
-        "document_filename": "mockFile.docx",
-        "document_binary_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8/binary"
-      },
+      "lastUploadedOrder": "${TEST_DOCUMENT}",
       "standardDirections": [],
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
@@ -474,21 +406,13 @@
       {
         "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
         "value": {
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8",
-            "document_filename": "blah_c6.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8/binary"
-          }
+          "document": "${TEST_DOCUMENT}"
         }
       },
       {
         "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb92",
         "value": {
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8",
-            "document_filename": "blah_c6a.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/fb9f5f8f-2440-4d14-88aa-30d1db54f8a8/binary"
-          }
+          "document": "${TEST_DOCUMENT}"
         }
       }
     ]

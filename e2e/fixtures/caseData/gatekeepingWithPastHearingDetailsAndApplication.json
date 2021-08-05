@@ -234,7 +234,7 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "${TEST_DOCUMENT}",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -430,11 +430,7 @@
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b",
-            "document_filename": "solicitor-role-tech.docx",
-            "document_binary_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary"
-          },
+          "document": "${TEST_DOCUMENT}",
           "uploadedBy": null,
           "documentName": null,
           "documentType": "THRESHOLD",
@@ -458,11 +454,7 @@
                     "id": "788f1b70-2d7d-4c76-8484-de225ac92ead",
                     "type": "WITH_NOTICE",
                     "author": "HMCTS",
-                    "document": {
-                        "document_url": "${DM_STORE_URL}/documents/a1913b0a-daab-40f2-8b69-e36b8ee67ac1",
-                        "document_filename": "mockFile.pdf",
-                        "document_binary_url": "${DM_STORE_URL}/documents/a1913b0a-daab-40f2-8b69-e36b8ee67ac1/binary"
-                    },
+                    "document": "${TEST_DOCUMENT}",
                     "applicantName": "Joe Bloggs, Respondent 1",
                     "uploadedDateTime": "16 June 2021, 11:49am",
                     "supplementsBundle": [],

@@ -234,7 +234,7 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "${TEST_DOCUMENT}",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -430,11 +430,7 @@
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b",
-            "document_filename": "solicitor-role-tech.docx",
-            "document_binary_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary"
-          },
+          "document": "${TEST_DOCUMENT}",
           "uploadedBy": null,
           "documentName": null,
           "documentType": "THRESHOLD",

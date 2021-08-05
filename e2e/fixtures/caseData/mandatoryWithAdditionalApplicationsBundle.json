@@ -134,7 +134,7 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "${TEST_DOCUMENT}",
     "submissionConsent": [
       "agree"
     ],
@@ -146,11 +146,7 @@
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
-          "document": {
-            "document_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b",
-            "document_filename": "solicitor-role-tech.docx",
-            "document_binary_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary"
-          },
+          "document": "${TEST_DOCUMENT}",
           "uploadedBy": null,
           "documentName": null,
           "documentType": "THRESHOLD",
@@ -176,11 +172,7 @@
             "id": "2c3d7329-8206-44a1-b1b4-7502ab253b0f",
             "type": "WITHOUT_NOTICE",
             "author": "HMCTS",
-            "document": {
-              "document_url": "${DM_STORE_URL}/documents/29dbd747-f70d-4ef2-ac52-86520e0d3a1a",
-              "document_filename": "Test.txt",
-              "document_binary_url": "${DM_STORE_URL}/documents/9e5d0a2c-8884-46ba-a147-dd0ca6b9e684/binary"
-            },
+            "document": "${TEST_DOCUMENT}",
             "uploadedDateTime": "25 March 2021, 3:16pm",
             "supplementsBundle": [],
             "supportingEvidenceLA": [],
@@ -194,11 +186,7 @@
           "otherApplicationsBundle": {
             "id": "85bb3a49-e178-4a3a-ad73-165005d8c4bf",
             "author": "HMCTS",
-            "document": {
-              "document_url": "${DM_STORE_URL}/documents/a6e375ca-c38d-4f4a-88b8-63a5ba428f96",
-              "document_filename": "Test.txt",
-              "document_binary_url": "${DM_STORE_URL}/documents/a928c836-5d25-41d7-a6bd-d973f2c326b1/binary"
-            },
+            "document": "${TEST_DOCUMENT}",
             "applicationType": "C100_CHILD_ARRANGEMENTS",
             "uploadedDateTime": "25 March 2021, 3:16pm",
             "supplementsBundle": [],
