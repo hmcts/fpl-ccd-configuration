@@ -38,7 +38,8 @@ public class PeopleInCaseService {
 
     public String buildPeopleInCaseLabel(List<Element<Respondent>> respondents,
                                          Others others) {
-        if (isEmpty(respondents) && (isNull(others) || !others.hasOthers())) {
+        boolean hasNoOthers = isNull(others) || !others.hasOthers();
+        if (isEmpty(respondents) && hasNoOthers) {
             return "No respondents and others on the case";
         } else {
             StringBuilder sb = new StringBuilder();
@@ -48,7 +49,7 @@ public class PeopleInCaseService {
                 sb.append(respondentLabel);
             }
 
-            if (others.hasOthers()) {
+            if (!hasNoOthers) {
                 String othersLabel = othersService.buildOthersLabel(others);
                 sb.append(othersLabel);
             }
