@@ -22,6 +22,9 @@ public class OrderIssuedEmailContentProviderTypeOfOrderCalculator {
         if (issuedOrderType == GENERATED_ORDER) {
             GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
             if (lastGeneratedOrder.isNewVersion()) {
+                if (lastGeneratedOrder.getType().equalsIgnoreCase("other")) {
+                    return lastGeneratedOrder.getTitle();
+                }
                 return lastGeneratedOrder.getType().toLowerCase();
             }
             // legacy
