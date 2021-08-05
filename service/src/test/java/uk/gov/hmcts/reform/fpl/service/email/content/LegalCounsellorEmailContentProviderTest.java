@@ -54,11 +54,12 @@ class LegalCounsellorEmailContentProviderTest {
             .build();
 
         when(helper.getEldestChildLastName(any())).thenCallRealMethod();
-        when(caseUrlService.getCaseUrl(TEST_CASE_ID_AS_LONG)).thenReturn("myUrl");
     }
 
     @Test
     void buildLegalCounsellorAddedNotificationTemplate() {
+        when(caseUrlService.getCaseUrl(TEST_CASE_ID_AS_LONG)).thenReturn("myUrl");
+
         LegalCounsellorAddedNotifyTemplate returnedTemplate =
             underTest.buildLegalCounsellorAddedNotificationTemplate(caseData);
 
