@@ -471,6 +471,7 @@ public class CaseData {
     private final Others others;
 
     private final String languageRequirement;
+    private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
 
     @JsonIgnore
     public boolean isWelshLanguageRequested() {

@@ -61,7 +61,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "languageRequirement=\"Yes\""
+    "FieldShowCondition": "languageRequirementUrgent=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -73,6 +73,19 @@
     "PageID": "urgentHearingOrder",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "languageRequirementUrgent",
+    "PageFieldDisplayOrder": 6,
+    "DisplayContext": "READONLY",
+    "PageID": "urgentHearingOrder",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderRouter=\"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "N"
   }
 ]
