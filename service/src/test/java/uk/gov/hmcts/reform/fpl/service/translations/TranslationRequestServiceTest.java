@@ -34,6 +34,7 @@ class TranslationRequestServiceTest {
         DocmosisTranslationRequest.class);
     private static final byte[] REQUEST_FORM_CONTENT = "RequestFormContent".getBytes();
     private static final String MESSAGE = "message";
+    private static final String DOCUMENT_DESCRIPTION = "Description";
     private final TranslationEmailConfiguration configuration = mock(TranslationEmailConfiguration.class);
     private final EmailService emailService = mock(EmailService.class);
     private final TranslationRequestEmailContentProvider contentProvider =
@@ -56,7 +57,7 @@ class TranslationRequestServiceTest {
     @Test
     void testIfLanguageRequirementNo() {
         underTest.sendRequest(mock(CaseData.class),
-            Optional.of(LanguageTranslationRequirement.NO), mock(DocumentReference.class));
+            Optional.of(LanguageTranslationRequirement.NO), mock(DocumentReference.class), DOCUMENT_DESCRIPTION);
 
         verifyNoIteractionWithServices();
     }
@@ -64,7 +65,7 @@ class TranslationRequestServiceTest {
     @Test
     void testIfLanguageRequirementEmpty() {
         underTest.sendRequest(mock(CaseData.class),
-            Optional.empty(), mock(DocumentReference.class));
+            Optional.empty(), mock(DocumentReference.class), DOCUMENT_DESCRIPTION);
 
         verifyNoIteractionWithServices();
     }
@@ -79,7 +80,7 @@ class TranslationRequestServiceTest {
             ORIGINAL_DOCUMENT_CONTENT);
         when(translationRequestFactory.create(caseData,
             LANGUAGE_TRANSLATION_REQUIREMENT,
-            "",
+            DOCUMENT_DESCRIPTION,
             ORIGINAL_DOCUMENT_CONTENT))
             .thenReturn(DOCMOSIS_TRANSLATION_REQUEST);
         when(requestFormCreationService.buildTranslationRequestDocuments(DOCMOSIS_TRANSLATION_REQUEST)).thenReturn(
@@ -90,7 +91,7 @@ class TranslationRequestServiceTest {
             Optional.of(LANGUAGE_TRANSLATION_REQUIREMENT),
             DocumentReference.builder().binaryUrl(ORIGINAL_DOCUMENT_BINARY_URL)
                 .filename(ORIGINAL_DOCUMENT_FILENAME)
-                .build()
+                .build(), DOCUMENT_DESCRIPTION
         );
 
         verify(emailService).sendEmail(SENDER_EMAIL, EmailData.builder()

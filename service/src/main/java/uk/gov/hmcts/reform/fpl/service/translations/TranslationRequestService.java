@@ -35,7 +35,7 @@ public class TranslationRequestService {
     private final DocumentDownloadService documentDownloadService;
 
     public void sendRequest(CaseData caseData, Optional<LanguageTranslationRequirement> languageOpt,
-                            DocumentReference document) {
+                            DocumentReference document, String documentDescription) {
 
         log.info("Sending translation request with payload language '{}'", languageOpt);
 
@@ -53,7 +53,8 @@ public class TranslationRequestService {
 
         EmailAttachment translationRequest = document(RenderFormat.WORD.getMediaType(),
             translationRequestFormCreationService.buildTranslationRequestDocuments(
-                translationRequestFactory.create(caseData, language, "", originalDocumentContent)).getBytes(),
+                    translationRequestFactory.create(caseData, language, documentDescription, originalDocumentContent))
+                .getBytes(),
             "translationRequestForm.doc"
         );
 

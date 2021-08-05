@@ -77,6 +77,6 @@ public class GatekeepingOrderEventHandler {
     public void notifyTranslationTeam(GatekeepingOrderEvent event) {
         translationRequestService.sendRequest(event.getCaseData(),
             event.getLanguageTranslationRequirement(),
-            event.getOrder());
+            event.getOrder(), event.getOrderTitle());
     }
 }

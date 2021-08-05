@@ -16,6 +16,7 @@ public class GatekeepingOrderEvent {
     DocumentReference order;
     GatekeepingOrderNotificationGroup notificationGroup;
     LanguageTranslationRequirement languageTranslationRequirement;
+    String orderTitle;
 
     public Optional<LanguageTranslationRequirement> getLanguageTranslationRequirement() {
         return Optional.ofNullable(languageTranslationRequirement);

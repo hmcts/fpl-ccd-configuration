@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
@@ -21,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotific
 class GatekeepingOrderEventNotificationDeciderTest {
 
     private static final DocumentReference ORDER = mock(DocumentReference.class);
+    private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
 
     private final GatekeepingOrderEventNotificationDecider underTest = new GatekeepingOrderEventNotificationDecider();
 
@@ -46,13 +49,14 @@ class GatekeepingOrderEventNotificationDeciderTest {
     @Test
     void buildEventToPublishForUrgentHearingOrder() {
         CaseData caseData = CaseData.builder()
-            .urgentHearingOrder(UrgentHearingOrder.builder().order(ORDER)
+            .urgentHearingOrder(UrgentHearingOrder.builder().order(ORDER).dateAdded(DATE_ADDED)
                 .translationRequirements(WELSH_TO_ENGLISH).build())
             .build();
 
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(URGENT_AND_NOP)
             .order(ORDER)
+            .orderTitle("Urgent hearing order - 4 February 2018")
             .languageTranslationRequirement(WELSH_TO_ENGLISH)
             .caseData(caseData)
             .build()
@@ -62,12 +66,13 @@ class GatekeepingOrderEventNotificationDeciderTest {
     @Test
     void buildEventToPublishForUrgentHearingOrderIfLanguageRequirementNotPresent() {
         CaseData caseData = CaseData.builder()
-            .urgentHearingOrder(UrgentHearingOrder.builder().order(ORDER).build())
+            .urgentHearingOrder(UrgentHearingOrder.builder().order(ORDER).dateAdded(DATE_ADDED).build())
             .build();
 
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(URGENT_AND_NOP)
             .order(ORDER)
+            .orderTitle("Urgent hearing order - 4 February 2018")
             .languageTranslationRequirement(NO)
             .caseData(caseData)
             .build()
@@ -80,6 +85,7 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(OrderStatus.SEALED)
                 .orderDoc(ORDER)
+                .dateOfIssue("6 August 2020")
                 .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();
@@ -87,6 +93,7 @@ class GatekeepingOrderEventNotificationDeciderTest {
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(SDO_AND_NOP)
             .order(ORDER)
+            .orderTitle("Gatekeeping order - 6 August 2020")
             .languageTranslationRequirement(WELSH_TO_ENGLISH)
             .caseData(caseData)
             .build()
@@ -99,6 +106,7 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(OrderStatus.SEALED)
                 .orderDoc(ORDER)
+                .dateOfIssue("6 August 2020")
                 .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();
@@ -107,6 +115,7 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .notificationGroup(SDO)
             .order(ORDER)
             .languageTranslationRequirement(WELSH_TO_ENGLISH)
+            .orderTitle("Gatekeeping order - 6 August 2020")
             .caseData(caseData)
             .build()
         );

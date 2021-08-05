@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreatio
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -72,6 +73,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
         .toBuilder().documentTitle("pdf.pdf").build();
+    private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
 
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
@@ -283,6 +285,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         return baseCaseData()
             .urgentHearingOrder(UrgentHearingOrder.builder()
                 .order(URGENT_HEARING_ORDER_DOCUMENT)
+                .dateAdded(DATE_ADDED)
                 .build())
             .build();
     }
@@ -291,6 +294,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         return baseCaseData()
             .urgentHearingOrder(UrgentHearingOrder.builder()
                 .order(URGENT_HEARING_ORDER_DOCUMENT)
+                .dateAdded(DATE_ADDED)
                 .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
             .build();

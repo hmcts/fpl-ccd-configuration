@@ -46,6 +46,7 @@ class GatekeepingOrderEventHandlerTest {
     private static final DocumentReference ORDER = testDocumentReference();
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT = ENGLISH_TO_WELSH;
+    private static final String ORDER_TITLE = "Document Description";
 
     @Mock
     private NotificationService notificationService;
@@ -143,7 +144,7 @@ class GatekeepingOrderEventHandlerTest {
 
         verify(translationRequestService).sendRequest(CASE_DATA,
             Optional.of(TRANSLATION_REQUIREMENT),
-            ORDER);
+            ORDER, ORDER_TITLE);
     }
 
     @Test
@@ -154,12 +155,13 @@ class GatekeepingOrderEventHandlerTest {
 
         verify(translationRequestService).sendRequest(CASE_DATA,
             Optional.empty(),
-            ORDER);
+            ORDER, ORDER_TITLE);
     }
 
     private GatekeepingOrderEvent gatekeepingOrderEvent(GatekeepingOrderNotificationGroup group, CaseData caseData) {
         return GatekeepingOrderEvent.builder()
             .order(ORDER)
+            .orderTitle(ORDER_TITLE)
             .notificationGroup(group)
             .caseData(caseData)
             .build();

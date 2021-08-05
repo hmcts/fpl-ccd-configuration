@@ -34,10 +34,12 @@ public class GatekeepingOrderEventNotificationDecider {
             event.languageTranslationRequirement(sdo.getTranslationRequirements());
             // if we are in the gatekeeping state send the NoP related notifications
             event.notificationGroup(isInGatekeeping(previousState) ? SDO_AND_NOP : SDO);
+            event.orderTitle(sdo.asLabel());
         } else {
             event.order(urgentHearingOrder.getOrder());
             event.notificationGroup(URGENT_AND_NOP);
             event.languageTranslationRequirement(urgentHearingOrder.getTranslationRequirements());
+            event.orderTitle(urgentHearingOrder.asLabel());
         }
 
         return Optional.of(event.build());
