@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -37,7 +38,7 @@ public class PeopleInCaseService {
 
     public String buildPeopleInCaseLabel(List<Element<Respondent>> respondents,
                                          Others others) {
-        if (isEmpty(respondents) && !others.hasOthers()) {
+        if (isEmpty(respondents) && (isNull(others) || !others.hasOthers())) {
             return "No respondents and others on the case";
         } else {
             StringBuilder sb = new StringBuilder();
@@ -55,10 +56,11 @@ public class PeopleInCaseService {
         }
     }
 
-    public List<Element<Other>> getSelectedOthers(List<Element<Respondent>> respondents,
-                                                  List<Element<Other>> others,
-                                                  Selector selector,
-                                                  String allPeopleSelected) {
+    public List<Element<Other>> getSelectedOthers(CaseData caseData) {
+        final List<Element<Respondent>> respondents = caseData.getAllRespondents();
+        final List<Element<Other>> others = caseData.getAllOthers();
+        final Selector selector = caseData.getOthersSelector();
+        final String allPeopleSelected = caseData.getNotifyApplicationsToAllOthers();
 
         if (useAllPeopleInTheCase(allPeopleSelected)) {
             return others;
@@ -84,9 +86,11 @@ public class PeopleInCaseService {
         }
     }
 
-    public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents,
-                                                            Selector selector,
-                                                            String allPeopleSelected) {
+    public List<Element<Respondent>> getSelectedRespondents(CaseData caseData) {
+        final List<Element<Respondent>> respondents = caseData.getAllRespondents();
+        final Selector selector = caseData.getOthersSelector();
+        final String allPeopleSelected = caseData.getNotifyApplicationsToAllOthers();
+
         if (useAllPeopleInTheCase(allPeopleSelected)) {
             return respondents;
         } else {

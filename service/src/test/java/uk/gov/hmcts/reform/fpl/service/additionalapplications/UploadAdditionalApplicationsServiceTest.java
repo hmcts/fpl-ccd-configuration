@@ -165,8 +165,8 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
-        given(peopleInCaseService.getSelectedOthers(any(), any(), any(), any())).willReturn(List.of());
-        given(peopleInCaseService.getSelectedRespondents(any(), any(), any())).willReturn(List.of());
+        given(peopleInCaseService.getSelectedOthers(any())).willReturn(List.of());
+        given(peopleInCaseService.getSelectedRespondents(any())).willReturn(List.of());
         given(peopleInCaseService.getPeopleNotified(any(), eq(List.of()), eq(List.of()))).willReturn("");
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
@@ -236,8 +236,8 @@ class UploadAdditionalApplicationsServiceTest {
 
         String othersNotified = "First Respondent, Other1, Other2";
         if (othersServedToggledOn) {
-            given(peopleInCaseService.getSelectedOthers(any(), any(), any(), any())).willReturn(selectedOthers);
-            given(peopleInCaseService.getSelectedRespondents(any(), any(), any())).willReturn(selectedRespondents);
+            given(peopleInCaseService.getSelectedOthers(any())).willReturn(selectedOthers);
+            given(peopleInCaseService.getSelectedRespondents(any())).willReturn(selectedRespondents);
             given(peopleInCaseService.getPeopleNotified(any(), eq(selectedRespondents), eq(selectedOthers)))
                 .willReturn(othersNotified);
         }

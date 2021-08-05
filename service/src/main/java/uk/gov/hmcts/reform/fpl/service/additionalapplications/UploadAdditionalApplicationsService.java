@@ -84,16 +84,8 @@ public class UploadAdditionalApplicationsService {
         List<Element<Other>> selectedOthers = new ArrayList<>();
         List<Element<Respondent>> selectedRespondents = new ArrayList<>();
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            selectedOthers = peopleInCaseService.getSelectedOthers(
-                caseData.getRespondents1(),
-                caseData.getAllOthers(),
-                caseData.getOthersSelector(),
-                caseData.getNotifyApplicationsToAllOthers());
-
-            selectedRespondents = peopleInCaseService.getSelectedRespondents(
-                caseData.getRespondents1(),
-                caseData.getOthersSelector(),
-                caseData.getNotifyApplicationsToAllOthers());
+            selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
+            selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
         }
         String othersNotified = peopleInCaseService.getPeopleNotified(
             caseData.getRepresentatives(), selectedRespondents, selectedOthers);

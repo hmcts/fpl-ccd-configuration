@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
@@ -130,83 +132,125 @@ class PeopleInCaseServiceTest {
 
     @Test
     void shouldReturnAllRespondentsAndOthersWhenSelectedAll() {
-        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(
-            SELECTED_RESPONDENTS, SELECTED_OTHERS, Selector.builder().build(), "Yes");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .others(Others.from(SELECTED_OTHERS))
+            .othersSelector(Selector.builder().build())
+            .notifyApplicationsToAllOthers("Yes")
+            .build();
 
-        assertThat(selectedOthers).isEqualTo(SELECTED_OTHERS);
+        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(caseData);
+        assertThat(selectedOthers).hasSize(SELECTED_OTHERS.size());
+        assertThat(unwrapElements(selectedOthers)).isEqualTo(unwrapElements(SELECTED_OTHERS));
     }
 
     @Test
     void shouldReturnSelectedOthers() {
-        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(
-            SELECTED_RESPONDENTS, SELECTED_OTHERS, Selector.builder().selected(List.of(0, 2)).build(), "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .others(Others.from(SELECTED_OTHERS))
+            .othersSelector(Selector.builder().selected(List.of(0, 2)).build())
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedOthers).isEqualTo(List.of(SELECTED_OTHERS.get(0)));
+        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(caseData);
+        assertThat(selectedOthers).hasSize(1);
+        assertThat(unwrapElements(selectedOthers))
+            .containsExactly(SELECTED_OTHERS.get(0).getValue());
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     void shouldReturnSelectedOthersWhenRespondentsAreNullEmpty(List<Element<Respondent>> respondents) {
-        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(
-            respondents, SELECTED_OTHERS, Selector.builder().selected(List.of(0, 2)).build(), "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(respondents)
+            .others(Others.from(SELECTED_OTHERS))
+            .othersSelector(Selector.builder().selected(List.of(0, 2)).build())
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedOthers).isEqualTo(List.of(SELECTED_OTHERS.get(0)));
+        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(caseData);
+        assertThat(selectedOthers).hasSize(1);
+        assertThat(unwrapElements(selectedOthers)).containsExactly(SELECTED_OTHERS.get(0).getValue());
     }
 
     @Test
     void shouldReturnEmptyWhenNoneOfTheOthersAreSelected() {
-        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(
-            SELECTED_RESPONDENTS, SELECTED_OTHERS, Selector.builder().selected(List.of()).build(), "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .others(Others.from(SELECTED_OTHERS))
+            .othersSelector(Selector.builder().selected(List.of()).build())
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedOthers).isEmpty();
+        assertThat(underTest.getSelectedOthers(caseData)).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyWhenSelectorIsNull() {
-        List<Element<Other>> selectedOthers = underTest.getSelectedOthers(
-            SELECTED_RESPONDENTS, SELECTED_OTHERS, null, "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .others(Others.from(SELECTED_OTHERS))
+            .othersSelector(null)
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedOthers).isEmpty();
+        assertThat(underTest.getSelectedOthers(caseData)).isEmpty();
     }
 
     @Test
     void shouldReturnAllRespondentsWhenSelectedAllPeopleInTheCase() {
-        List<Element<Respondent>> selectedRespondents = underTest.getSelectedRespondents(
-            SELECTED_RESPONDENTS, Selector.builder().build(), "Yes");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .othersSelector(Selector.builder().build())
+            .notifyApplicationsToAllOthers("Yes")
+            .build();
 
-        assertThat(selectedRespondents).isEqualTo(SELECTED_RESPONDENTS);
+        assertThat(underTest.getSelectedRespondents(caseData)).isEqualTo(SELECTED_RESPONDENTS);
     }
 
     @Test
     void shouldReturnSelectedRespondents() {
-        List<Element<Respondent>> selectedRespondents = underTest.getSelectedRespondents(
-            SELECTED_RESPONDENTS, Selector.builder().selected(List.of(0, 2)).build(), "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .othersSelector(Selector.builder().selected(List.of(0, 2)).build())
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedRespondents).isEqualTo(List.of(SELECTED_RESPONDENTS.get(0)));
+        assertThat(underTest.getSelectedRespondents(caseData)).isEqualTo(List.of(SELECTED_RESPONDENTS.get(0)));
     }
 
     @Test
     void shouldReturnEmptyWhenNoRespondentsAreSelected() {
-        List<Element<Respondent>> selectedRespondents = underTest.getSelectedRespondents(
-            SELECTED_RESPONDENTS, Selector.builder().selected(List.of(2, 3)).build(), "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .othersSelector(Selector.builder().selected(List.of(2, 3)).build())
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedRespondents).isEmpty();
+        assertThat(underTest.getSelectedRespondents(caseData)).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyWhenSelectedItemsAreEmpty() {
-        List<Element<Respondent>> selectedRespondents = underTest.getSelectedRespondents(
-            SELECTED_RESPONDENTS, Selector.builder().selected(List.of()).build(), "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .othersSelector(Selector.builder().selected(List.of()).build())
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedRespondents).isEmpty();
+        assertThat(underTest.getSelectedRespondents(caseData)).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyRespondentsListWhenSelectorIsNull() {
-        List<Element<Respondent>> selectedRespondents = underTest.getSelectedRespondents(
-            SELECTED_RESPONDENTS, null, "No");
+        CaseData caseData = CaseData.builder()
+            .respondents1(SELECTED_RESPONDENTS)
+            .othersSelector(null)
+            .notifyApplicationsToAllOthers("No")
+            .build();
 
-        assertThat(selectedRespondents).isEmpty();
+        assertThat(underTest.getSelectedRespondents(caseData)).isEmpty();
     }
 
     @ParameterizedTest
