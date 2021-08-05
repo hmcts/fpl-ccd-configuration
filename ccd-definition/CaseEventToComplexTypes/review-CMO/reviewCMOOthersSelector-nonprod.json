@@ -1,0 +1,113 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "optionCount",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "pageShow=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option0",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option1",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option2",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option3",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option4",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option5",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option6",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option7",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option8",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OthersSelector",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "othersSelector",
+    "ListElementCode": "option9",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  }
+]
