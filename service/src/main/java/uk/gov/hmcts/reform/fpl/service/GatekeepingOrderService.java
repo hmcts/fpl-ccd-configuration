@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
@@ -45,6 +46,8 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -107,19 +110,21 @@ public class GatekeepingOrderService {
         if (decision.isSealed()) {
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));
 
-            LanguageTranslationRequirement translationRequirements =
-                gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
                 .unsealedDocumentCopy(decision.getDraftDocument())
                 .orderDoc(sealedDocument)
-                .translationRequirements(translationRequirements)
+                .translationRequirements(translateToWelshIfCaseRequired(caseData))
                 .build();
         } else {
             return currentOrder.toBuilder()
                 .orderDoc(decision.getDraftDocument())
                 .build();
         }
+    }
+
+    private LanguageTranslationRequirement translateToWelshIfCaseRequired(CaseData caseData) {
+        return YesNo.fromString(caseData.getLanguageRequirement()) == YesNo.YES ? ENGLISH_TO_WELSH : NO;
     }
 
     public Optional<HearingBooking> getHearing(CaseData caseData) {

@@ -150,17 +150,25 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
 
     private static Stream<Arguments> translationRequirements() {
         return Stream.of(
-            Arguments.of(LanguageTranslationRequirement.NO, YesNo.NO),
-            Arguments.of(LanguageTranslationRequirement.WELSH_TO_ENGLISH, YesNo.YES),
-            Arguments.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH, YesNo.YES)
+            Arguments.of(LanguageTranslationRequirement.NO),
+            Arguments.of(LanguageTranslationRequirement.WELSH_TO_ENGLISH),
+            Arguments.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+        );
+    }
+
+    private static Stream<Arguments> caseTranslationRequirement() {
+        return Stream.of(
+            Arguments.of(YesNo.YES.getValue(), LanguageTranslationRequirement.ENGLISH_TO_WELSH),
+            Arguments.of(YesNo.NO.getValue(), LanguageTranslationRequirement.NO),
+            Arguments.of("", LanguageTranslationRequirement.NO)
         );
     }
 
     @ParameterizedTest
-    @MethodSource("translationRequirements")
+    @MethodSource("caseTranslationRequirement")
     void shouldBuildSealedSDOAndRemoveTransientFieldsWhenOrderStatusIsSealed(
-        LanguageTranslationRequirement translationRequirements,
-        YesNo expectedTranslationNeeded) {
+        String caseLanguageRequirement,
+        LanguageTranslationRequirement expectedTranslationRequirements) {
 
         final CustomDirection customDirection =
             CustomDirection.builder()
@@ -197,6 +205,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .id(1234123412341234L)
             .state(GATEKEEPING.getLabel())
             .data(ofEntries(
+                entry("languageRequirement", caseLanguageRequirement),
                 entry("gatekeepingOrderRouter", SERVICE),
                 entry("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE),
                 entry("dateSubmitted", dateNow()),
@@ -205,7 +214,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                 entry("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build()),
                 entry("gatekeepingOrderIssuingJudge", JudgeAndLegalAdvisor.builder().build()),
                 entry("gatekeepingOrderSealDecision", gatekeepingOrderSealDecision),
-                entry("gatekeepingTranslationRequirements", translationRequirements),
+                entry("gatekeepingTranslationRequirements", expectedTranslationRequirements),
                 entry("directionsForAllParties", List.of(ATTEND_HEARING)),
                 entry("direction-ATTEND_HEARING", standardDirection),
                 entry("customDirections", wrapElements(customDirection))))
@@ -219,7 +228,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .customDirections(wrapElements(customDirection))
             .standardDirections(wrapElements(standardDirection))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
-            .translationRequirements(translationRequirements)
+            .translationRequirements(expectedTranslationRequirements)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -238,8 +247,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
     @ParameterizedTest
     @MethodSource("translationRequirements")
     void shouldBuildUrgentHearingOrderAndAddAllocationDecision(
-        LanguageTranslationRequirement translationRequirements,
-        YesNo expectedTranslationNeeded) {
+        LanguageTranslationRequirement translationRequirements) {
 
         final DocumentReference urgentReference = testDocumentReference();
         final DocumentReference sealedUrgentReference = testDocumentReference();
