@@ -98,7 +98,7 @@
     "FieldType": "Label",
     "ElementLabel": "Sent for translation",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "needTranslation=\"YES\" AND translatedOrderDoc!=\"*\""
+    "FieldShowCondition": "needTranslation=\"YES\" AND translatedOrderDoc!=\"*\" AND orderStatus=\"SEALED\""
   },
   {
     "LiveFrom": "01/01/2017",
