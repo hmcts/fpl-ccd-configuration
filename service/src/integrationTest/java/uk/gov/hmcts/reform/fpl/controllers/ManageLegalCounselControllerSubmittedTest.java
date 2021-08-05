@@ -99,11 +99,7 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
         ));
         CaseDetails currentCaseDetails = buildCaseDetailsWithGivenChildren(childrenInCurrentCaseData);
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetailsBefore(previousCaseDetails)
-            .caseDetails(currentCaseDetails)
-            .build();
-
+        CallbackRequest callbackRequest = toCallBackRequest(currentCaseDetails, previousCaseDetails);
         postSubmittedEvent(callbackRequest);
 
         String childLastName = childrenInCurrentCaseData.get(0).getValue().getParty().getLastName();
@@ -111,15 +107,14 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
         assertAsyncActionsHappenToRemovedLegalCounsellor(removedLegalCounsellor, childLastName);
     }
 
-    private CaseDetails buildCaseDetailsWithGivenChildren(List<Element<Child>> childrenInPreviousCaseData) {
-        CaseData previousCaseData = CaseData.builder()
-            .children1(childrenInPreviousCaseData)
-            .caseName("testCaseName")
-            .build();
-        return CaseDetails.builder()
-            .id(TEST_CASE_ID_AS_LONG)
-            .data(toMap(previousCaseData))
-            .build();
+    private CaseDetails buildCaseDetailsWithGivenChildren(List<Element<Child>> children) {
+        return asCaseDetails(
+            CaseData.builder()
+                .children1(children)
+                .caseName("testCaseName")
+                .id(TEST_CASE_ID_AS_LONG)
+                .build()
+        );
     }
 
     private void assertAsyncActionsHappenToAddedLegalCounsellor(Pair<String, LegalCounsellor> addedLegalCounsellor,
