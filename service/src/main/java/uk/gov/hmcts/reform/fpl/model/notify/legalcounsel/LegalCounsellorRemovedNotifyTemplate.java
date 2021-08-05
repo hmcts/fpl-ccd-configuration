@@ -7,9 +7,9 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 @Value
 @Builder
 public class LegalCounsellorRemovedNotifyTemplate implements NotifyData {
-    private final String caseName;
-    private final String childLastName;
-    private final String salutation;
-    private final String clientFullName;
-    private final String ccdNumber;
+    String caseName;
+    String childLastName;
+    String salutation;
+    String clientFullName;
+    String ccdNumber;
 }

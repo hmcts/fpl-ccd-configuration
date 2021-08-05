@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -105,10 +104,8 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
             .caseDetails(currentCaseDetails)
             .build();
 
-        SubmittedCallbackResponse response = postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(callbackRequest);
 
-        assertThat(response.getConfirmationHeader()).isNull();
-        assertThat(response.getConfirmationBody()).isNull();
         String childLastName = childrenInCurrentCaseData.get(0).getValue().getParty().getLastName();
         assertAsyncActionsHappenToAddedLegalCounsellor(addedLegalCounsellor, childLastName);
         assertAsyncActionsHappenToRemovedLegalCounsellor(removedLegalCounsellor, childLastName);

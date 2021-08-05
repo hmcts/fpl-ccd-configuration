@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 @Builder
 public class LegalCounsellorAddedNotifyTemplate implements NotifyData {
     @JsonProperty("caseID")
-    private final String caseId;
-    private final String childLastName;
-    private final String caseUrl;
+    String caseId;
+    String childLastName;
+    String caseUrl;
 }

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -57,7 +56,7 @@ public class ManageLegalCounselController extends CallbackController {
     }
 
     @PostMapping("/submitted")
-    public SubmittedCallbackResponse handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails previousCaseDetails = callbackRequest.getCaseDetailsBefore();
         CaseDetails currentCaseDetails = callbackRequest.getCaseDetails();
         CaseData previousCaseData = getCaseData(previousCaseDetails);
@@ -65,8 +64,6 @@ public class ManageLegalCounselController extends CallbackController {
 
         manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData)
             .forEach(eventPublisher::publishEvent);
-
-        return SubmittedCallbackResponse.builder().build();
     }
 
 }
