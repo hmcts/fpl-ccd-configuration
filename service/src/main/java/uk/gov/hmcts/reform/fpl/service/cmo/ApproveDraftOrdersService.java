@@ -9,12 +9,15 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
@@ -43,6 +47,8 @@ public class ApproveDraftOrdersService {
     private final DraftOrdersBundleHearingSelector draftOrdersBundleHearingSelector;
     private final BlankOrderGenerator blankOrderGenerator;
     private final HearingOrderGenerator hearingOrderGenerator;
+    private final OthersService othersService;
+    private final FeatureToggleService featureToggleService;
 
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
@@ -130,6 +136,34 @@ public class ApproveDraftOrdersService {
         return errors;
     }
 
+    @SuppressWarnings("unchecked")
+    public boolean hasApprovedReviewDecision(CaseData caseData, Map<String, Object> data) {
+        Element<HearingOrdersBundle> selectedOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
+        List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
+
+        int counter = 1;
+        for (HearingOrder order : hearingOrders) {
+            if (order.getType().isCmo()) {
+                if (isOrderApproved(caseData.getReviewCMODecision())) {
+                    return true;
+                }
+            } else {
+                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+                ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
+                if (isOrderApproved(reviewDecision)) {
+                    return true;
+                }
+                counter++;
+            }
+        }
+        return false;
+    }
+
+    private boolean isOrderApproved(ReviewDecision reviewCMODecision) {
+        return reviewCMODecision != null && reviewCMODecision.getDecision() != null
+            && reviewCMODecision.getDecision() != JUDGE_REQUESTED_CHANGES;
+    }
+
     public Map<String, Object> reviewCMO(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
         Map<String, Object> data = new HashMap<>();
 
@@ -144,7 +178,14 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(cmoReviewDecision, cmo);
+                    List<Element<Other>> selectedOthers = new ArrayList<>();
+                    if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+                        selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                            caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
+                    }
+
+                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
+                        cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers));
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                     sealedCMOs.add(reviewedOrder);
@@ -207,10 +248,16 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, orderElement);
+                    List<Element<Other>> selectedOthers = new ArrayList<>();
+                    if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
+                        selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                            caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
+                    }
+
+                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
+                        reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers));
                     orderCollection.add(blankOrderGenerator.buildBlankOrder(caseData,
-                        selectedOrdersBundle,
-                        reviewedOrder));
+                        selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers)));
 
                     ordersToBeSent.add(reviewedOrder);
                 } else {
@@ -261,5 +308,14 @@ public class ApproveDraftOrdersService {
             return State.FINAL_HEARING;
         }
         return currentState;
+    }
+
+    private String getOthersNotified(List<Element<Other>> selectedOthers) {
+        return Optional.ofNullable(selectedOthers).map(
+            others -> others.stream()
+                .filter(other -> other.getValue().isRepresented() || other.getValue()
+                    .hasAddressAdded())
+                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
+        ).orElse(null);
     }
 }
