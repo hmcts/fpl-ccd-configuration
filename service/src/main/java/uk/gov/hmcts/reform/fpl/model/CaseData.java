@@ -564,6 +564,11 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public boolean hasRespondentsOrOthers() {
+        return isNotEmpty(getAllRespondents()) || isNotEmpty(getAllOthers());
+    }
+
+    @JsonIgnore
     public String getFurtherDirectionsText() {
         return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
     }

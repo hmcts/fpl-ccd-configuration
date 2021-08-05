@@ -159,6 +159,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representative = element(Representative.builder()
             .servingPreferences(EMAIL).email("rep@test.com").build());
+        Element<Respondent> respondentElement = element(Respondent.builder()
+            .representedBy(wrapElements(representative.getId()))
+            .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build()).build());
+
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder()
             .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
@@ -166,9 +170,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .applicantsList(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE))
             .otherApplicant(OTHER_APPLICANT_NAME)
             .representatives(List.of(representative))
-            .respondents1(wrapElements(Respondent.builder()
-                .representedBy(wrapElements(representative.getId()))
-                .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build()).build()))
+            .respondents1(List.of(respondentElement))
             .others(Others.builder()
                 .firstOther(Other.builder().name("Stephen Miller")
                     .address(Address.builder().postcode("SE1").build()).build())
@@ -200,7 +202,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
                 .isEqualTo(List.of(caseData.getOthers().getAdditionalOthers().get(0)));
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
-                .isEqualTo(List.of(caseData.getRespondents1().get(0)));
+                .hasSize(1)
+                .containsExactly(respondentElement);
         } else {
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified()).isNull();
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers()).isNull();

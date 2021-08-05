@@ -35,7 +35,6 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
@@ -84,13 +83,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()
-            && (isNotEmpty(caseData.getAllOthers()) || isNotEmpty(caseData.getRespondents1()))) {
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && caseData.hasRespondentsOrOthers()) {
             caseDetails.getData().put("hasOthers", "Yes");
             caseDetails.getData().put("others_label", peopleInCaseService.buildPeopleInCaseLabel(
                 caseData.getAllRespondents(), caseData.getOthers()));
-            caseDetails.getData().put("othersSelector", newSelector(
-                caseData.getAllRespondents().size() + caseData.getAllOthers().size()));
+
+            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
+            caseDetails.getData().put("othersSelector", newSelector(selectorSize));
         }
 
         return respond(caseDetails);

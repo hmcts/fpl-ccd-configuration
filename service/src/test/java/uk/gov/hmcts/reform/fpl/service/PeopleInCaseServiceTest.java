@@ -102,7 +102,6 @@ class PeopleInCaseServiceTest {
 
         String expectedRespondentsLabel = "Respondent 1 - John Smith\n";
         given(respondentService.buildRespondentLabel(respondents)).willReturn(expectedRespondentsLabel);
-        given(othersService.buildOthersLabel(Others.builder().build())).willReturn("No others on the case");
 
         String actual = underTest.buildPeopleInCaseLabel(respondents, Others.builder().build());
         assertThat(actual).isEqualTo(expectedRespondentsLabel);
@@ -116,7 +115,6 @@ class PeopleInCaseServiceTest {
 
         String expectedOthersLabel = "Person 1 - James Daniels\n";
         given(othersService.buildOthersLabel(others)).willReturn(expectedOthersLabel);
-        given(respondentService.buildRespondentLabel(List.of())).willReturn("No respondents on the case");
 
         String actual = underTest.buildPeopleInCaseLabel(List.of(), others);
 

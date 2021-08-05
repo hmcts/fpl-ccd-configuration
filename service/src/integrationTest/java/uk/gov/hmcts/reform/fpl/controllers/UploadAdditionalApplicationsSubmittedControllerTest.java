@@ -58,7 +58,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -148,17 +147,17 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .servingPreferences(EMAIL)
             .email("email-rep@test.com")
             .build());
-    public static final Respondent RESPONDENT_WITH_DIGITAL_REP = Respondent.builder()
+    public static final Element<Respondent> RESPONDENT_WITH_DIGITAL_REP = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("George").lastName("Jones").address(testAddress()).build())
         .representedBy(wrapElements(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE.getId()))
-        .build();
-    public static final Respondent RESPONDENT_WITH_EMAIL_REP = Respondent.builder()
+        .build());
+    public static final Element<Respondent> RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
         .representedBy(wrapElements(REPRESENTATIVE_WITH_EMAIL_PREFERENCE.getId()))
         .party(RespondentParty.builder().firstName("Alex").lastName("Jones").address(testAddress()).build())
-        .build();
-    public static final Respondent UNREPRESENTED_RESPONDENT = Respondent.builder()
+        .build());
+    public static final Element<Respondent> UNREPRESENTED_RESPONDENT = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("Emma").lastName("Jones").build())
-        .build();
+        .build());
     private static final Element<Representative> REPRESENTATIVE_WITH_POST_PREFERENCE = element(
         Representative.builder()
             .fullName("Respondent PostRep1")
@@ -170,10 +169,10 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         .servingPreferences(POST)
         .address(testAddress())
         .build());
-    public static final Respondent RESPONDENT_WITH_POST_REP = Respondent.builder()
+    public static final Element<Respondent> RESPONDENT_WITH_POST_REP = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("Tim").lastName("Jones").address(testAddress()).build())
         .representedBy(wrapElements(REPRESENTATIVE_WITH_POST_PREFERENCE.getId()))
-        .build();
+        .build());
 
     private final Other other = Other.builder().address(testAddress()).name("Emily Jones").build();
 
@@ -200,8 +199,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
-        List<Element<Respondent>> respondents = List.of(element(RESPONDENT_WITH_DIGITAL_REP),
-            element(RESPONDENT_WITH_EMAIL_REP), element(RESPONDENT_WITH_POST_REP), element(UNREPRESENTED_RESPONDENT));
+        List<Element<Respondent>> respondents = List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
+            RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT);
         CaseData caseData = CaseData.builder().id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
@@ -219,7 +218,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .document(ORDER)
                     .supplementsBundle(new ArrayList<>())
                     .others(List.of(element(other)))
-                    .respondents(List.of(respondents.get(0), respondents.get(1), respondents.get(3)))
+                    .respondents(List.of(
+                        RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP, UNREPRESENTED_RESPONDENT))
                     .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
                 .build())).build();
 
@@ -255,8 +255,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(NOTIFICATION_REFERENCE)));
 
-        checkUntil(() -> verify(sendLetterApi, times(1))
-            .sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
+        checkUntil(() -> verify(sendLetterApi).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
         checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(

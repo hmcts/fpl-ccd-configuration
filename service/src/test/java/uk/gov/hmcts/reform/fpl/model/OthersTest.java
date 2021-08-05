@@ -106,4 +106,19 @@ class OthersTest {
 
         assertFalse(hasAddressAdded);
     }
+
+    @Test
+    void shouldReturnTrueWhenFirstOtherExists() {
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("First other").build())
+            .build();
+
+        assertTrue(others.hasOthers());
+    }
+
+    @Test
+    void shouldReturnFalseWhenFirstOtherDoesNotExist() {
+        Others others = Others.builder().build();
+        assertFalse(others.hasOthers());
+    }
 }

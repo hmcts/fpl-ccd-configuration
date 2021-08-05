@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
@@ -31,10 +28,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class PeopleInCaseService {
-    private static final String NO_RESPONDENTS_ON_THE_CASE = "No respondents on the case";
-    private static final String NO_OTHERS_ON_THE_CASE = "No others on the case";
     private static final String COMMA_DELIMITER = ", ";
 
     private final OthersService othersService;
@@ -42,22 +37,20 @@ public class PeopleInCaseService {
 
     public String buildPeopleInCaseLabel(List<Element<Respondent>> respondents,
                                          Others others) {
-        StringBuilder sb = new StringBuilder();
-
-        if (isEmpty(respondents) && isNull(others.getFirstOther())) {
+        if (isEmpty(respondents) && !others.hasOthers()) {
             return "No respondents and others on the case";
         } else {
-            String respondentLabel = respondentService.buildRespondentLabel(respondents);
-            String othersLabel = othersService.buildOthersLabel(others);
+            StringBuilder sb = new StringBuilder();
 
-            if (!NO_RESPONDENTS_ON_THE_CASE.equals(respondentLabel)) {
+            if (isNotEmpty(respondents)) {
+                String respondentLabel = respondentService.buildRespondentLabel(respondents);
                 sb.append(respondentLabel);
             }
 
-            if (!NO_OTHERS_ON_THE_CASE.equals(othersLabel)) {
+            if (others.hasOthers()) {
+                String othersLabel = othersService.buildOthersLabel(others);
                 sb.append(othersLabel);
             }
-
             return sb.toString();
         }
     }
@@ -78,8 +71,10 @@ public class PeopleInCaseService {
             List<Integer> selected = selector.getSelected();
 
             int othersIndex = 0;
-            int respondentsSize = isEmpty(respondents) ? 0 : respondents.size();
-            for (int i = respondentsSize; i < (respondentsSize + others.size()); i++) {
+            int startIndexForOthersInSelector = isEmpty(respondents) ? 0 : respondents.size();
+            int lastIndexForOthersInSelector = startIndexForOthersInSelector + others.size();
+
+            for (int i = startIndexForOthersInSelector; i < lastIndexForOthersInSelector; i++) {
                 if (selected.contains(i)) {
                     selectedOthers.add(others.get(othersIndex));
                 }
@@ -114,37 +109,38 @@ public class PeopleInCaseService {
                                     List<Element<Respondent>> selectedRespondents,
                                     List<Element<Other>> selectedOthers) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getSelectedRespondentsNames(allRepresentatives, selectedRespondents));
+        String respondentsNotified = getSelectedRespondentsNames(allRepresentatives, selectedRespondents);
         String othersNotified = getSelectedOthersNames(selectedOthers);
-        if (isNotEmpty(othersNotified) && sb.length() > 0) {
-            sb.append(", ");
+        if (isNotEmpty(respondentsNotified)) {
+            sb.append(respondentsNotified);
         }
-        sb.append(othersNotified);
+
+        if (isNotEmpty(othersNotified)) {
+            if (isNotEmpty(respondentsNotified)) {
+                sb.append(COMMA_DELIMITER);
+            }
+            sb.append(othersNotified);
+        }
         return sb.toString();
     }
 
     private String getSelectedRespondentsNames(List<Element<Representative>> representatives,
                                                List<Element<Respondent>> selectedRespondents) {
-        return Optional.ofNullable(selectedRespondents)
-            .map(respondent -> respondent.stream()
-                .filter(respondentElement -> hasRepresentativeDetails(representatives,
-                    unwrapElements(respondentElement.getValue().getRepresentedBy())) || hasAddress(respondentElement))
-                .map(respondentElement -> getRespondentFullName(respondentElement.getValue().getParty()))
-                .collect(Collectors.joining(COMMA_DELIMITER)))
-            .orElse(EMPTY);
-    }
-
-    private boolean hasAddress(Element<Respondent> respondentElement) {
-        Address address = respondentElement.getValue().getParty().getAddress();
-        return isNotEmpty(address) && isNotEmpty(address.getPostcode());
+        return unwrapElements(selectedRespondents).stream()
+            .filter(respondent -> hasRepresentativeDetails(
+                representatives, unwrapElements(respondent.getRepresentedBy()))
+                || respondent.hasAddress())
+            .map(respondent -> respondent.getParty().getFullName())
+            .collect(Collectors.joining(COMMA_DELIMITER));
     }
 
     private boolean hasRepresentativeDetails(List<Element<Representative>> representatives,
                                              List<UUID> representedBy) {
         return nullSafeList(representatives).stream()
             .filter(element -> representedBy.contains(element.getId()))
-            .anyMatch(element -> validAddressForNotificationByPost(element.getValue())
-                || validEmailForDigitalOrEmailNotification(element.getValue()));
+            .map(Element::getValue)
+            .anyMatch(representative -> validAddressForNotificationByPost(representative)
+                || validEmailForDigitalOrEmailNotification(representative));
     }
 
     private boolean validEmailForDigitalOrEmailNotification(final Representative element) {
@@ -158,25 +154,17 @@ public class PeopleInCaseService {
             && isNotEmpty(representative.getAddress().getPostcode());
     }
 
-    private String getRespondentFullName(RespondentParty respondentParty) {
-        String firstName = defaultIfNull(respondentParty.getFirstName(), EMPTY);
-        String lastName = defaultIfNull(respondentParty.getLastName(), EMPTY);
-
-        return String.format("%s %s", firstName, lastName);
-    }
-
     private String getSelectedOthersNames(List<Element<Other>> selectedOthers) {
         return Optional.ofNullable(selectedOthers).map(
-            others -> others.stream()
-                .filter(other -> other.getValue().isRepresented() || other.getValue()
-                    .hasAddressAdded())
+            others -> unwrapElements(others).stream()
+                .filter(other -> other.isRepresented() || other.hasAddressAdded())
                 .map(this::getOtherPersonName)
                 .collect(Collectors.joining(COMMA_DELIMITER))
         ).orElse(EMPTY);
     }
 
-    private String getOtherPersonName(Element<Other> other) {
-        return defaultIfNull(other.getValue().getName(), "");
+    private String getOtherPersonName(Other other) {
+        return defaultIfNull(other.getName(), "");
     }
 
     private boolean useAllPeopleInTheCase(String sendOrdersToAllPeopleInCase) {

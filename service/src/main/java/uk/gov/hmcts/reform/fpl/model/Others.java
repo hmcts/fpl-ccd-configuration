@@ -27,4 +27,8 @@ public class Others {
             .additionalOthers(others)
             .build();
     }
+
+    public boolean hasOthers() {
+        return firstOther != null;
+    }
 }

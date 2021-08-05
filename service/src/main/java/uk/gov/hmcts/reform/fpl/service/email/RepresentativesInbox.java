@@ -21,12 +21,11 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -69,8 +68,9 @@ public class RepresentativesInbox {
         List<Element<Respondent>> respondentsSelected,
         Function<Element<Representative>, ?> mapperFunction) {
 
-        Set<UUID> allRepresentativeIds = caseData.getAllRespondents().stream()
-            .flatMap(respondentElement -> respondentElement.getValue().getRepresentedBy()
+        Set<UUID> allRepresentativeIds = unwrapElements(caseData.getAllRespondents())
+            .stream()
+            .flatMap(respondent -> respondent.getRepresentedBy()
                 .stream().map(Element::getValue))
             .collect(Collectors.toSet());
 
@@ -110,9 +110,7 @@ public class RepresentativesInbox {
     public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Respondent>> selectedRespondents) {
         return selectedRespondents.stream()
             .map(Element::getValue)
-            .filter(respondent -> isEmpty(respondent.getRepresentedBy())
-                && !isNull(respondent.getParty().getAddress())
-                && isNotEmpty(respondent.getParty().getAddress().getPostcode()))
+            .filter(respondent -> isEmpty(respondent.getRepresentedBy()) && respondent.hasAddress())
             .map(Respondent::toParty)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }

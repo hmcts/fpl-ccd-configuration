@@ -274,7 +274,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
-            "respondent1@test.com",
+            List.of("respondent1@test.com"),
             additionalApplicationsParameters,
             CASE_ID.toString());
     }

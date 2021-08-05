@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -87,13 +87,23 @@ public class AdditionalApplicationsUploadedEventHandler {
         List<Element<Other>> selectedOthers = getOthersSelected(uploadedBundle);
         List<Element<Respondent>> selectedRespondents = getRespondentsSelected(uploadedBundle);
 
-        allRecipients.removeAll((Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
-            POST, caseData, selectedOthers, Element::getValue));
-        allRecipients.removeAll((Set<Recipient>) representativesInbox.getNonSelectedRespondentsRecipients(
-            POST, caseData, selectedRespondents, Element::getValue));
+        Set<Recipient> nonSelectedOthers = (Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
+            POST, caseData, selectedOthers, Element::getValue);
+        allRecipients.removeAll(nonSelectedOthers);
 
-        allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
-        allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents));
+        Set<Recipient> nonSelectedRespondentsRepresentatives
+            = (Set<Recipient>) representativesInbox.getNonSelectedRespondentsRecipients(
+            POST, caseData, selectedRespondents, Element::getValue);
+        allRecipients.removeAll(nonSelectedRespondentsRepresentatives);
+
+        Set<Recipient> selectedUnrepresentedOthers
+            = otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers);
+        allRecipients.addAll(selectedUnrepresentedOthers);
+
+        Set<Recipient> selectedUnrepresentedRespondents
+            = representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents);
+        allRecipients.addAll(selectedUnrepresentedRespondents);
+
         return allRecipients;
     }
 
@@ -127,34 +137,28 @@ public class AdditionalApplicationsUploadedEventHandler {
             final OrderApplicant applicant = event.getApplicant();
 
             if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
-                notifyLocalAuthority(caseData);
+                Collection<String> emails = inboxLookupService.getRecipients(
+                    LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+                sendNotification(caseData, emails);
             } else {
                 Map<String, String> emails = getRespondentsEmails(caseData);
                 if (isNotEmpty(emails.get(applicant.getName()))) {
-                    NotifyData notifyData
-                        = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
-                    notificationService.sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
-                        emails.get(applicant.getName()), notifyData, event.getCaseData().getId().toString());
+                    sendNotification(caseData, List.of(emails.get(applicant.getName())));
                 }
             }
         }
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
-        Map<String, String> respondentEmails = new HashMap<>();
-
-        caseData.getAllRespondents().forEach(respondent -> respondentEmails.put(
-            respondent.getValue().getParty().getFullName(),
-            isNull(respondent.getValue().getSolicitor()) ? EMPTY : respondent.getValue().getSolicitor().getEmail()));
-
-        return respondentEmails;
+        return caseData.getAllRespondents().stream()
+            .collect(Collectors.toMap(respondent -> respondent.getValue().getParty().getFullName(),
+                respondent -> isNull(respondent.getValue().getSolicitor())
+                    || isEmpty(respondent.getValue().getSolicitor().getEmail()) ? EMPTY
+                    : respondent.getValue().getSolicitor().getEmail()));
     }
 
-    private void notifyLocalAuthority(CaseData caseData) {
+    private void sendNotification(CaseData caseData, Collection<String> emails) {
         NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
-
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
         notificationService.sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
@@ -190,11 +194,15 @@ public class AdditionalApplicationsUploadedEventHandler {
         List<Element<Respondent>> respondentsSelected = getRespondentsSelected(uploadedBundle);
 
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
-        digitalRepresentatives.removeAll((Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-            servingPreference, caseData, othersSelected, element -> element.getValue().getEmail()));
 
-        digitalRepresentatives.removeAll((Set<String>) representativesInbox.getNonSelectedRespondentsRecipients(
-            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail()));
+        Set<String> nonSelectedOthers = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+            servingPreference, caseData, othersSelected, element -> element.getValue().getEmail());
+        digitalRepresentatives.removeAll(nonSelectedOthers);
+
+        Set<String> nonSelectedRespondentsRepresentatives
+            = (Set<String>) representativesInbox.getNonSelectedRespondentsRecipients(
+            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail());
+        digitalRepresentatives.removeAll(nonSelectedRespondentsRepresentatives);
 
         return digitalRepresentatives;
     }

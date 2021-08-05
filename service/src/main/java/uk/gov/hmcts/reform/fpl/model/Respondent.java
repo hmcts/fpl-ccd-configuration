@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -43,6 +44,11 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
         if (!unwrapElements(representedBy).contains(representativeId)) {
             this.representedBy.add(element(representativeId));
         }
+    }
+
+    public boolean hasAddress() {
+        return isNotEmpty(party) && isNotEmpty(party.getAddress())
+            && isNotEmpty(party.getAddress().getPostcode());
     }
 
     public boolean containsConfidentialDetails() {
