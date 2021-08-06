@@ -109,6 +109,29 @@
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           }
         }
+      },
+      {
+        "id": "22c004bf-17f1-4e86-ba6d-ce5b955d6227",
+        "value": {
+          "type": "AGREED_CMO",
+          "order": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "cmo5.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "title": "Agreed CMO discussed at hearing",
+          "status": "APPROVED",
+          "hearing": "Case management hearing, 1 January 2020",
+          "dateSent": "2021-07-05",
+          "dateIssued": "2021-07-05",
+          "supportingDocs": [],
+          "judgeTitleAndName": "Her Honour Judge Reed",
+          "lastUploadedOrder": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "mockFile.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          }
+        }
       }
     ],
     "sendToCtsc": "Yes",
@@ -140,11 +163,6 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": {
-      "document_url": "${TEST_DOCUMENT_URL}",
-      "document_filename": "c110a.pdf",
-      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-    },
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -199,7 +217,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "c23_emergency_protection_order.pdf",
+            "document_filename": "C23 - Emergency protection order.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
@@ -252,7 +270,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "c23_emergency_protection_order.pdf",
+            "document_filename": "C23 - Emergency protection order.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
@@ -308,7 +326,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "c32b_discharge_of_care_order.pdf",
+            "document_filename": "Discharge of care order (C32B).pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
@@ -364,7 +382,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "c32_care_order.pdf",
+            "document_filename": "C32 - Care order.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
