@@ -155,32 +155,6 @@
       }
     ],
     "sendToCtsc": "Yes",
-    "others": {
-      "firstOther": {
-        "DOB": "1980-03-31",
-        "name": "Noah King",
-        "gender": "Male",
-        "address": {
-          "County": "",
-          "Country": "United Kingdom",
-          "PostCode": "SE16 6BA",
-          "PostTown": "London",
-          "AddressLine1": "Flat 20",
-          "AddressLine2": "Heron House 8",
-          "AddressLine3": ""
-        },
-        "telephone": "07000 654321",
-        "birthPlace": "London",
-        "detailsHidden": "No",
-        "representedBy": [],
-        "childInformation": null,
-        "litigationIssues": "NO",
-        "detailsHiddenReason": null,
-        "genderIdentification": null,
-        "litigationIssuesDetails": ""
-      },
-      "additionalOthers": []
-    },
     "respondents1": [
       {
         "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
@@ -209,11 +183,7 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": {
-      "document_url": "${TEST_DOCUMENT_URL}",
-      "document_filename": "c110a.pdf",
-      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-    },
+
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -384,13 +354,6 @@
       }
     ],
     "standardDirectionOrder": {
-      "orderDoc": {
-        "document": {
-          "document_url": "${TEST_DOCUMENT_URL}",
-          "document_filename": "sdo.pdf",
-          "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-        }
-      },
       "directions": [
         {
           "id": "749f29dc-c200-4377-9e12-a5b4bad631bc",
@@ -722,22 +685,6 @@
     "respondentDirectionsHearingDate": "1 January 2050, 3:15pm",
     "otherPartiesDirectionsHearingDate": "1 January 2050, 3:15pm",
     "localAuthorityDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "applicationDocuments": [
-      {
-        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
-        "value": {
-          "document": {
-            "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "solicitor-role-tech.docx",
-            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-          },
-          "uploadedBy": null,
-          "documentName": null,
-          "documentType": "THRESHOLD",
-          "includedInSWET": null,
-          "dateTimeUploaded": null
-        }
-      }
-    ]
+    "applicationDocuments": []
   }
 }
