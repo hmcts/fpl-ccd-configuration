@@ -863,7 +863,7 @@
           "document": {
             "document": {
               "document_url": "${TEST_DOCUMENT_URL}",
-              "document_filename": "Blank order (C21).pdf",
+              "document_filename": "blank_order_c21.pdf",
               "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
             }
           },
@@ -904,7 +904,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "Discharge of parental responsibility (C45B).pdf",
+            "document_filename": "c45b_discharge_of_parental_responsibility.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,

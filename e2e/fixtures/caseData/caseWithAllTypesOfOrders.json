@@ -79,7 +79,7 @@
           "type": "AGREED_CMO",
           "order": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "cmo.pdf",
+            "document_filename": "cmo6.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "title": "Agreed CMO discussed at hearing",
@@ -199,7 +199,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "C23 - Emergency protection order.pdf",
+            "document_filename": "c23_emergency_protection_order.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
@@ -252,7 +252,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "C23 - Emergency protection order.pdf",
+            "document_filename": "c23_emergency_protection_order.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
@@ -308,7 +308,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "Discharge of care order (C32B).pdf",
+            "document_filename": "c32b_discharge_of_care_order.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
@@ -364,7 +364,7 @@
           ],
           "document": {
             "document_url": "${TEST_DOCUMENT_URL}",
-            "document_filename": "C32 - Care order.pdf",
+            "document_filename": "c32_care_order.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
