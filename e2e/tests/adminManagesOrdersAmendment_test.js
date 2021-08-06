@@ -28,7 +28,7 @@ const orders = {
   },
   caseManagementOrder: {
     name: 'Sealed case management order issued on 6 July 2021',
-    file: 'cmo.pdf',
+    file: 'cmo6.pdf',
     tabObjectName: 'Sealed Case Management Order 1',
     tabOrderDocFieldName: 'Order',
   },
