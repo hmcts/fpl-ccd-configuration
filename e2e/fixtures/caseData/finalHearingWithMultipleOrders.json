@@ -161,7 +161,6 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -284,9 +283,9 @@
               "value": {
                 "type": "DRAFT_CMO",
                 "order": {
-                  "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
+                  "document_url": "${TEST_DOCUMENT_URL}",
                   "document_filename": "mockFile.docx",
-                  "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
                 },
                 "title": "Draft CMO from advocates' meeting",
                 "status": "DRAFT",
@@ -301,9 +300,9 @@
                       "name": "case summary",
                       "notes": "this is the case summary",
                       "document": {
-                        "document_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df",
+                        "document_url": "${TEST_DOCUMENT_URL}",
                         "document_filename": "mockFile.txt",
-                        "document_binary_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df/binary"
+                        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
                       }
                     }
                   }
@@ -328,9 +327,9 @@
               "value": {
                 "type": "AGREED_CMO",
                 "order": {
-                  "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
-                  "document_filename": "mockFile.docx",
-                  "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "document_filename": "cmo.pdf",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
                 },
                 "title": "Draft CMO from advocates' meeting",
                 "status": "SEND_TO_JUDGE",
@@ -345,9 +344,9 @@
                       "name": "case summary",
                       "notes": "this is the case summary",
                       "document": {
-                        "document_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df",
+                        "document_url": "${TEST_DOCUMENT_URL}",
                         "document_filename": "mockFile.txt",
-                        "document_binary_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df/binary"
+                        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
                       }
                     }
                   }
@@ -362,9 +361,9 @@
               "value": {
                 "type": "C21",
                 "order": {
-                  "document_url": "${DM_STORE_URL}/documents/587ea46d-d7fb-4ad1-a7eb-54b3c6aa6381",
+                  "document_url": "${TEST_DOCUMENT_URL}",
                   "document_filename": "mockFile.docx",
-                  "document_binary_url": "${DM_STORE_URL}/documents/587ea46d-d7fb-4ad1-a7eb-54b3c6aa6381/binary"
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
                 },
                 "title": "Draft Order1",
                 "status": "SEND_TO_JUDGE",
@@ -489,7 +488,11 @@
         "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
         "value": {
           "type": "AGREED_CMO",
-          "order": "TO BE FILLED WITH VALID DATA",
+          "order": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "cmo.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
           "dateSent": "2020-08-27",
@@ -500,7 +503,11 @@
       }
     ],
     "standardDirectionOrder": {
-      "orderDoc": "TO BE FILLED WITH VALID DATA",
+      "orderDoc": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "sdo.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
       "directions": [
         {
           "id": "c8f60fdf-d5fb-43cf-ad07-a38f86b6b96e",
@@ -811,37 +818,31 @@
         }
       }
     ],
-    "documents_socialWorkOther": [],
     "courtDirectionsHearingDate": "1 January 2050, 3:15pm",
     "respondentDirectionsCustom": [],
     "cafcassDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_checklist_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached"
-    },
     "otherPartiesDirectionsCustom": [],
     "localAuthorityDirectionsCustom": [],
     "respondentDirectionsHearingDate": "1 January 2050, 3:15pm",
     "otherPartiesDirectionsHearingDate": "1 January 2050, 3:15pm",
     "localAuthorityDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached"
-    },
+    "applicationDocuments": [
+      {
+        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedBy": null,
+          "documentName": null,
+          "documentType": "THRESHOLD",
+          "includedInSWET": null,
+          "dateTimeUploaded": null
+        }
+      }
+    ],
     "orderCollection": [
       {
         "id": "52caf114-d171-4dc5-ac33-c842dba88205",
@@ -850,7 +851,11 @@
           "type": "Blank order (C21)",
           "title": "Example Order Title",
           "details": "szvd",
-          "document": "TO BE FILLED WITH VALID DATA",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "Blank order (C21).pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "expiryDate": null,
           "dateOfIssue": "26 May 2020",
           "furtherDirections": {},
@@ -887,9 +892,9 @@
             }
           ],
           "document": {
-            "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
-            "document_filename": "c45b_discharge_of_parental_responsibility.pdf",
-            "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "Discharge of parental responsibility (C45B).pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploader": null,
           "courtName": null,
@@ -916,9 +921,9 @@
             "allocatedJudgeLabel": null
           },
           "unsealedDocumentCopy": {
-            "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
+            "document_url": "${TEST_DOCUMENT_URL}",
             "document_filename": "mockFile.docx",
-            "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "uploadedOrderDescription": null
         }
