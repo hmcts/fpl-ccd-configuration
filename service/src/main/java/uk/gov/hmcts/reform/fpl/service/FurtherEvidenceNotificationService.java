@@ -5,10 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,11 +42,12 @@ public class FurtherEvidenceNotificationService {
     }
 
     public void sendNotification(CaseData caseData, Set<String> recipients,
-                                 String sender) {
+                                 String sender, List<String> newNonConfidentialDocuments) {
         if (!recipients.isEmpty()) {
             notificationService.sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
                 recipients,
-                furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, sender),
+                furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, sender,
+                    newNonConfidentialDocuments),
                 caseData.getId().toString());
         }
     }
