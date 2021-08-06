@@ -50,7 +50,6 @@ const updateCaseDataWithTodaysDateTime = (data) => {
 const updateCaseDataWithDocuments = async (data) => {
   const { document_binary_url, document_url } = await getTestDocument();
   const caseData = lodash.template(JSON.stringify(data.caseData))({ 'TEST_DOCUMENT_URL': document_url, 'TEST_DOCUMENT_BINARY_URL': document_binary_url });
-  // data.caseData = JSON.parse(caseData);
   return {state: data.state, caseData: JSON.parse(caseData)};
 };
 
