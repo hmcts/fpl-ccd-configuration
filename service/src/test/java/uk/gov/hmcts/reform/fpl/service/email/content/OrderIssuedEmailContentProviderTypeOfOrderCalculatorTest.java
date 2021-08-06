@@ -68,11 +68,10 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
             .build();
         when(sealedOrderHistoryService.lastGeneratedOrder(caseData)).thenReturn(newGeneratedOrder1);
         when(newGeneratedOrder1.getType()).thenReturn("other");
-        when(newGeneratedOrder1.getTitle()).thenReturn("Test Order");
 
         String actual = underTest.getTypeOfOrder(caseData, IssuedOrderType.GENERATED_ORDER);
 
-        assertThat(actual).isEqualTo("Test Order");
+        assertThat(actual).isEqualTo("order");
     }
 
     @Test
