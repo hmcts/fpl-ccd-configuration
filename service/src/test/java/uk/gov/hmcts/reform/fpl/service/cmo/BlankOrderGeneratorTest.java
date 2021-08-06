@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.util.Lists.newArrayList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
@@ -55,6 +57,8 @@ class BlankOrderGeneratorTest {
             .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
             .judgeLastName("Moley")
             .build();
+        String othersNotified = "John Smith";
+        List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
 
         Element<GeneratedOrder> actual = underTest.buildBlankOrder(CaseData.builder()
                 .state(State.CASE_MANAGEMENT)
@@ -70,10 +74,12 @@ class BlankOrderGeneratorTest {
                 .orderCollection(newArrayList())
                 .build(),
             ordersBundleElement,
-            draftOrder1);
+            draftOrder1,
+            selectedOthers,
+            othersNotified);
 
-        assertThat(actual.getValue())
-            .isEqualTo(expectedBlankOrder(draftOrder1.getValue().getDateIssued(), judgeAndLegalAdvisor));
+        assertThat(actual.getValue()).isEqualTo(expectedBlankOrder(
+            draftOrder1.getValue().getDateIssued(), judgeAndLegalAdvisor, selectedOthers, othersNotified));
     }
 
     @Test
@@ -96,9 +102,12 @@ class BlankOrderGeneratorTest {
                 .orderCollection(newArrayList())
                 .build(),
             ordersBundleElement,
-            draftOrder1);
+            draftOrder1,
+            List.of(),
+            EMPTY);
 
-        assertThat(actual.getValue()).isEqualTo(expectedBlankOrder(draftOrder1.getValue().getDateIssued(), null));
+        assertThat(actual.getValue()).isEqualTo(expectedBlankOrder(
+            draftOrder1.getValue().getDateIssued(), null, List.of(), EMPTY));
     }
 
     private static Element<HearingOrder> buildBlankOrder(LocalDate dateIssued) {
@@ -121,7 +130,10 @@ class BlankOrderGeneratorTest {
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 
-    private GeneratedOrder expectedBlankOrder(LocalDate dateIssued, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    private GeneratedOrder expectedBlankOrder(LocalDate dateIssued,
+                                              JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                              List<Element<Other>> selectedOthers,
+                                              String othersNotified) {
         return GeneratedOrder.builder()
             .type(BLANK_ORDER.getLabel())
             .title("test order1")
@@ -130,6 +142,8 @@ class BlankOrderGeneratorTest {
             .children(emptyList())
             .date(formatLocalDateTimeBaseUsingFormat(TIME.now(), TIME_DATE))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+            .othersNotified(othersNotified)
+            .others(selectedOthers)
             .build();
     }
 }
