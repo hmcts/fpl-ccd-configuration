@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -96,6 +97,9 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .build()))
         .orderCollection(wrapElements(ORDER))
         .build();
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+    private static final String ORDER_TITLE = "orderTitle";
 
     @Autowired
     private GeneratedOrderEventHandler underTest;
@@ -114,7 +118,11 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     void notifyParties(boolean toggle, String name) {
         when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
 
-        underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA, ORDER_DOCUMENT));
+        underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA,
+            ORDER_DOCUMENT,
+            TRANSLATION_REQUIREMENT,
+            ORDER_TITLE
+        ));
 
         SendEmailResponse adminResponse = response();
         SendEmailResponse laResponse = response();

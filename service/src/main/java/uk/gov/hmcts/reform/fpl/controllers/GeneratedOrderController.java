@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -299,7 +300,10 @@ public class GeneratedOrderController extends CallbackController {
         DocumentReference mostRecentUploadedDocument = service.getMostRecentUploadedOrderDocument(
             caseData.getOrderCollection());
 
-        publishEvent(new GeneratedOrderEvent(caseData, mostRecentUploadedDocument));
+        publishEvent(new GeneratedOrderEvent(caseData,
+            mostRecentUploadedDocument,
+            LanguageTranslationRequirement.NO,
+            "REMOVED")); // this is dead
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
