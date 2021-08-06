@@ -11,10 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -40,12 +42,20 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private static final String REP_SOLICITOR_1_EMAIL = "rep_solicitor1@example.com";
     private static final String REP_SOLICITOR_2_EMAIL = "rep_solicitor2@example.com";
     private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
+    private static final String NON_CONFIDENTIAL_1 = "non-confidential-1";
+    private static final String NON_CONFIDENTIAL_2 = "non-confidential-2";
+    private static final String CONFIDENTIAL_1 = "confidential-doc-1";
+    private static final List<String> NON_CONFIDENTIAL = buildNonConfidentialDocumentsNamesList();
+    private static final List<String> CONFIDENTIAL = buildConfidentialDocumentsNamesList();
 
     @Mock
     private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
+
+    @Mock
+    private UserService userService;
 
     @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByLA() {
@@ -64,7 +74,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
         verify(furtherEvidenceNotificationService).sendNotification(
-            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER);
+            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER,
+            NON_CONFIDENTIAL);
     }
 
     @Test
@@ -74,7 +85,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         // buildCaseDataWithConfidentialLADocuments() has a "confidential-doc-1" marked as confidential
         // so we are creating a new list with "confidential-doc-1" not marked as confidential
         CaseData caseData = commonCaseBuilder().furtherEvidenceDocumentsLA(
-            wrapElements(createDummyEvidenceBundle("confidential-doc-1", LA_USER, false))
+            wrapElements(createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, false))
         ).build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -90,7 +101,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
         verify(furtherEvidenceNotificationService).sendNotification(
-            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER);
+            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER, CONFIDENTIAL);
     }
 
     @Test
@@ -100,7 +111,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         // buildCaseDataWithConfidentialLADocuments() has a "confidential-doc-1" marked as confidential
         // so we are creating a new list with "confidential-doc-1" not marked as confidential
         CaseData caseData = commonCaseBuilder().furtherEvidenceDocuments(
-            wrapElements(createDummyEvidenceBundle("confidential-doc-1", HMCTS_USER, false))
+            wrapElements(createDummyEvidenceBundle(CONFIDENTIAL_1, HMCTS_USER, false))
         ).build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -114,11 +125,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
+        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(false);
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
         verify(furtherEvidenceNotificationService).sendNotification(
-            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER);
+            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
+            CONFIDENTIAL);
     }
 
     @Test
@@ -133,7 +146,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any());
+        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
@@ -149,7 +162,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any());
+        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
@@ -165,7 +178,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any());
+        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
@@ -183,11 +196,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
+        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(false);
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
         verify(furtherEvidenceNotificationService).sendNotification(
-            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER);
+            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER, NON_CONFIDENTIAL);
     }
 
     @Test
@@ -203,16 +217,16 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any());
+        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByRespSolicitor() {
-        CaseData caseData = buildCaseDataWithNonConfidentialDocuments(REP_USER);
+        CaseData caseData = buildCaseDataWithNonConfidentialDocumentsSolicitor(REP_USER);
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(
                 caseData,
-                buildCaseDataWithConfidentialDocuments(REP_USER),
+                buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 false,
                 userDetailsRespondentSolicitor());
 
@@ -220,11 +234,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
+        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(true);
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
         verify(furtherEvidenceNotificationService)
-            .sendNotification(caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER);
+            .sendNotification(caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
+                NON_CONFIDENTIAL);
     }
 
     @Test
@@ -238,9 +254,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 false,
                 userDetailsRespondentSolicitor());
 
+        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(true);
+
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any());
+        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     private CaseData buildCaseDataWithNonConfidentialLADocuments() {
@@ -264,9 +282,23 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .build();
     }
 
+    private CaseData buildCaseDataWithNonConfidentialDocumentsSolicitor(final String uploadedBy) {
+        return commonCaseBuilder()
+            .furtherEvidenceDocumentsSolicitor(
+                buildNonConfidentialDocumentList(uploadedBy))
+            .build();
+    }
+
     private CaseData buildCaseDataWithConfidentialDocuments(final String uploadedBy) {
         return commonCaseBuilder()
             .furtherEvidenceDocuments(
+                buildConfidentialDocumentList(uploadedBy))
+            .build();
+    }
+
+    private CaseData buildCaseDataWithConfidentialDocumentsSolicitor(final String uploadedBy) {
+        return commonCaseBuilder()
+            .furtherEvidenceDocumentsSolicitor(
                 buildConfidentialDocumentList(uploadedBy))
             .build();
     }
@@ -295,8 +327,21 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     private List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy) {
         return wrapElements(
-            createDummyEvidenceBundle("non-confidential-1", uploadedBy, false),
-            createDummyEvidenceBundle("non-confidential-2", uploadedBy, false));
+            createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false),
+            createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false));
+    }
+
+    private static final List<String> buildNonConfidentialDocumentsNamesList() {
+        List<String> documents = new ArrayList<>();
+        documents.add(NON_CONFIDENTIAL_1);
+        documents.add(NON_CONFIDENTIAL_2);
+        return documents;
+    }
+
+    private static final List<String> buildConfidentialDocumentsNamesList() {
+        List<String> documents = new ArrayList<>();
+        documents.add(CONFIDENTIAL_1);
+        return documents;
     }
 
     private CaseData.CaseDataBuilder commonCaseBuilder() {

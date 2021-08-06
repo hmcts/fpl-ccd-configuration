@@ -7,11 +7,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,6 +84,8 @@ class FurtherEvidenceNotificationServiceTest {
         .role(CAFCASS_SOLICITOR)
         .servingPreferences(DIGITAL_SERVICE)
         .build();
+
+    private static final List<String> DOCUMENTS = buildDocumentsNamesList();
 
     @Mock
     private InboxLookupService inboxLookupService;
@@ -156,12 +163,11 @@ class FurtherEvidenceNotificationServiceTest {
         FurtherEvidenceDocumentUploadedData furtherEvidenceDocumentUploadedData =
             FurtherEvidenceDocumentUploadedData.builder().build();
 
-        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender")).thenReturn(
+        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender",
+            DOCUMENTS)).thenReturn(
             furtherEvidenceDocumentUploadedData);
 
-        furtherEvidenceNotificationService.sendNotification(caseData,
-            recipients,
-            "Sender");
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verify(notificationService).sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
@@ -173,9 +179,7 @@ class FurtherEvidenceNotificationServiceTest {
 
         Set<String> recipients = Set.of();
 
-        furtherEvidenceNotificationService.sendNotification(caseData,
-            recipients,
-            "Sender");
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verifyNoInteractions(notificationService);
     }
@@ -186,5 +190,12 @@ class FurtherEvidenceNotificationServiceTest {
             .caseLocalAuthority(LOCAL_AUTHORITY)
             .representatives(wrapElements(representatives))
             .build();
+    }
+
+    private static List<String> buildDocumentsNamesList() {
+        List<String> documents = new ArrayList<>();
+        documents.add("DOCUMENT 1");
+        documents.add("DOCUMENT 2");
+        return documents;
     }
 }
