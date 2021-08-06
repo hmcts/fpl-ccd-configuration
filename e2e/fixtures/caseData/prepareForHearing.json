@@ -209,7 +209,6 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -380,7 +379,6 @@
       }
     ],
     "standardDirectionOrder": {
-      "orderDoc": "TO BE FILLED WITH VALID DATA",
       "directions": [
         {
           "id": "749f29dc-c200-4377-9e12-a5b4bad631bc",
@@ -704,36 +702,14 @@
         }
       }
     ],
-    "documents_socialWorkOther": [],
     "courtDirectionsHearingDate": "1 January 2050, 3:15pm",
     "respondentDirectionsCustom": [],
     "cafcassDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_checklist_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached"
-    },
     "otherPartiesDirectionsCustom": [],
     "localAuthorityDirectionsCustom": [],
     "respondentDirectionsHearingDate": "1 January 2050, 3:15pm",
     "otherPartiesDirectionsHearingDate": "1 January 2050, 3:15pm",
     "localAuthorityDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached"
-    }
+    "applicationDocuments": []
   }
 }
