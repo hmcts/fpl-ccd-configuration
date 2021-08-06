@@ -161,11 +161,6 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": {
-      "document_url": "${TEST_DOCUMENT_URL}",
-      "document_filename": "c110a.pdf",
-      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-    },
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -494,11 +489,9 @@
         "value": {
           "type": "AGREED_CMO",
           "order": {
-            "document": {
-              "document_url": "${TEST_DOCUMENT_URL}",
-              "document_filename": "cmo.pdf",
-              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-            }
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "cmo.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
@@ -511,11 +504,9 @@
     ],
     "standardDirectionOrder": {
       "orderDoc": {
-        "document": {
-          "document_url": "${TEST_DOCUMENT_URL}",
-          "document_filename": "sdo.pdf",
-          "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-        }
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "sdo.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
       },
       "directions": [
         {
@@ -861,11 +852,9 @@
           "title": "Example Order Title",
           "details": "szvd",
           "document": {
-            "document": {
-              "document_url": "${TEST_DOCUMENT_URL}",
-              "document_filename": "blank_order_c21.pdf",
-              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-            }
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "blank_order_c21.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
           "expiryDate": null,
           "dateOfIssue": "26 May 2020",
