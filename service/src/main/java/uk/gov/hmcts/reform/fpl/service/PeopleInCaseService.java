@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -23,10 +22,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -167,37 +162,13 @@ public class PeopleInCaseService {
     private String getSelectedRespondentsNames(List<Element<Representative>> representatives,
                                                List<Element<Respondent>> selectedRespondents) {
         return unwrapElements(selectedRespondents).stream()
-            .filter(respondent -> hasRepresentativeDetails(
-                representatives, unwrapElements(respondent.getRepresentedBy()))
-                || respondent.hasAddress())
             .map(respondent -> respondent.getParty().getFullName())
             .collect(Collectors.joining(COMMA_DELIMITER));
-    }
-
-    private boolean hasRepresentativeDetails(List<Element<Representative>> representatives,
-                                             List<UUID> representedBy) {
-        return nullSafeList(representatives).stream()
-            .filter(element -> representedBy.contains(element.getId()))
-            .map(Element::getValue)
-            .anyMatch(representative -> validAddressForNotificationByPost(representative)
-                || validEmailForDigitalOrEmailNotification(representative));
-    }
-
-    private boolean validEmailForDigitalOrEmailNotification(final Representative element) {
-        return (element.getServingPreferences() == DIGITAL_SERVICE || element.getServingPreferences() == EMAIL)
-            && isNotEmpty(element.getEmail());
-    }
-
-    private boolean validAddressForNotificationByPost(Representative representative) {
-        return representative.getServingPreferences() == POST
-            && isNotEmpty(representative.getAddress())
-            && isNotEmpty(representative.getAddress().getPostcode());
     }
 
     private String getSelectedOthersNames(List<Element<Other>> selectedOthers) {
         return Optional.ofNullable(selectedOthers).map(
             others -> unwrapElements(others).stream()
-                .filter(other -> other.isRepresented() || other.hasAddressAdded())
                 .map(this::getOtherPersonName)
                 .collect(Collectors.joining(COMMA_DELIMITER))
         ).orElse(EMPTY);

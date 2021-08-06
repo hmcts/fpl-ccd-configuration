@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -271,51 +270,33 @@ class PeopleInCaseServiceTest {
             "First", "Respondent", false, wrapElements(EMAIL_REP.getId()));
         Element<Respondent> respondentWithDigitalRep = buildRespondentWithRepresentative(
             "Second", "Respondent", false, wrapElements(DIGITAL_REP.getId()));
-        Element<Respondent> unrepresentedRespondentWithAddress = buildRespondentWithRepresentative(
-            "Third", "Respondent", true, List.of());
         Element<Respondent> unrepresentedRespondent = buildRespondentWithRepresentative(
-            "Fourth", "Respondent", false, List.of());
-        Element<Representative> repWithInvalidAddress = element(Representative.builder().servingPreferences(POST)
-            .address(Address.builder().build()).build());
-        Element<Respondent> respondentWithPostRep = buildRespondentWithRepresentative(
-            "Fifth", "Respondent", false, wrapElements(repWithInvalidAddress.getId()));
-        Element<Representative> repWithInvalidEmail = element(Representative.builder()
-            .servingPreferences(EMAIL).email("").build());
-        Element<Respondent> respondentWithInvalidEmailRep = buildRespondentWithRepresentative(
-            "Sixth", "Respondent", false, wrapElements(repWithInvalidEmail.getId()));
+            "Third", "Respondent", true, List.of());
 
         Element<Other> firstOther = element(Other.builder().name("First Other").build());
         firstOther.getValue().addRepresentative(DIGITAL_REP.getId());
         Element<Other> other2 = element(Other.builder().name("Second Other").address(testAddress()).build());
         firstOther.getValue().addRepresentative(POST_REP.getId());
-        Element<Other> unrepresentedOtherWithAddress = element(
+        Element<Other> unrepresentedOther = element(
             Other.builder().name("Third Other").address(testAddress()).build());
-        Element<Other> unrepresentedOtherWithoutAddress = element(Other.builder().name("Fourth Other").build());
 
         List<Element<Representative>> representatives = List.of(
-            EMAIL_REP, EMAIL_REP2, DIGITAL_REP, POST_REP, repWithInvalidAddress, repWithInvalidEmail);
+            EMAIL_REP, EMAIL_REP2, DIGITAL_REP, POST_REP);
 
         return Stream.of(
             Arguments.of(representatives,
-                List.of(respondentWithEmailRep, respondentWithDigitalRep, unrepresentedRespondent),
+                List.of(respondentWithEmailRep, respondentWithDigitalRep),
                 List.of(),
                 "First Respondent, Second Respondent"),
             Arguments.of(representatives,
                 List.of(respondentWithEmailRep, respondentWithDigitalRep, unrepresentedRespondent),
-                List.of(firstOther, unrepresentedOtherWithoutAddress),
-                "First Respondent, Second Respondent, First Other"),
+                List.of(firstOther),
+                "First Respondent, Second Respondent, Third Respondent, First Other"),
             Arguments.of(representatives,
-                List.of(unrepresentedRespondentWithAddress),
-                List.of(other2, unrepresentedOtherWithAddress),
-                "Third Respondent, Second Other, Third Other"),
-            Arguments.of(representatives,
-                List.of(unrepresentedRespondent),
-                List.of(firstOther, other2),
-                "First Other, Second Other"),
-            Arguments.of(representatives, List.of(), List.of(), ""),
-            Arguments.of(representatives,
-                List.of(respondentWithPostRep, respondentWithInvalidEmailRep),
-                List.of(), "")
+                List.of(),
+                List.of(other2, unrepresentedOther),
+                "Second Other, Third Other"),
+            Arguments.of(representatives, List.of(), List.of(), "")
         );
     }
 
