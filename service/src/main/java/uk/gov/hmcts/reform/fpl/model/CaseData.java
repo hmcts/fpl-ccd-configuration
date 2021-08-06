@@ -433,6 +433,7 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
     private final Selector othersSelector;
+    private final Selector personSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;

@@ -110,19 +110,19 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
-            .containsKeys("temporaryC2Document", "othersSelector")
+            .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
 
         if (servingOthersToggledOn) {
-            assertThat(String.valueOf(response.getData().get("hasOthers"))).isEqualTo("Yes");
-            assertThat(String.valueOf(response.getData().get("others_label")))
-                .contains("Respondent 1 - John Smith\nPerson 1 - test1\nOther person 1 - test2\n");
-            assertThat(extractCaseData(response).getOthersSelector()).isEqualTo(Selector.newSelector(3));
+            assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
+            assertThat(String.valueOf(response.getData().get("people_label"))).contains(
+                "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - test1\nPerson 3: Other 2 - test2\n");
+            assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(3));
         } else {
             assertThat(response.getData())
-                .doesNotContainKeys("hasOthers", "others_label")
-                .containsEntry("othersSelector", null);
+                .doesNotContainKeys("hasRespondentsOrOthers", "people_label")
+                .containsEntry("personSelector", null);
         }
     }
 
@@ -151,8 +151,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .containsEntry("temporaryC2Document", null)
             .containsEntry("amountToPay", "100")
             .containsEntry("displayAmountToPay", YES.getValue())
-            .containsEntry("othersSelector", null)
-            .doesNotContainKeys("hasOthers", "others_label");
+            .containsEntry("personSelector", null)
+            .doesNotContainKeys("hasRespondentsOrOthers", "people_label");
     }
 
     @Test

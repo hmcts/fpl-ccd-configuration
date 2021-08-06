@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
 @Builder(toBuilder = true)
@@ -29,6 +30,6 @@ public class Others {
     }
 
     public boolean hasOthers() {
-        return firstOther != null;
+        return firstOther != null || isNotEmpty(additionalOthers);
     }
 }

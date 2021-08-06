@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
@@ -67,7 +66,6 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final SendDocumentService sendDocumentService;
     private final FeatureToggleService featureToggleService;
-    private final CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @EventListener
     @Async
@@ -107,20 +105,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         allRecipients.addAll(selectedUnrepresentedRespondents);
 
         return allRecipients;
-    }
-
-    @Async
-    @EventListener
-    public void notifyCafcass(final AdditionalApplicationsUploadedEvent event) {
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            CaseData caseData = event.getCaseData();
-            final String cafcassEmail = cafcassLookupConfiguration.getCafcass(
-                caseData.getCaseLocalAuthority()).getEmail();
-
-            if (isNotEmpty(cafcassEmail)) {
-                sendNotification(caseData, Set.of(cafcassEmail));
-            }
-        }
     }
 
     @EventListener

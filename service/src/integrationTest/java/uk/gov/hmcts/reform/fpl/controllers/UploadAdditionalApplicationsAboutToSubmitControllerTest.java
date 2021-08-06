@@ -122,7 +122,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
                     .address(Address.builder().postcode("SW2").build()).build())).build());
         if (servingOthersToggledOn) {
-            caseDataBuilder.othersSelector(Selector.newSelector(3))
+            caseDataBuilder.personSelector(Selector.newSelector(3))
                 .notifyApplicationsToAllOthers(YesNo.YES.getValue());
         }
 
@@ -178,9 +178,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                     .address(Address.builder().postcode("SE2").build()).build())).build());
 
         if (servingOthersToggledOn) {
-            Selector othersSelector = Selector.newSelector(3);
-            othersSelector.setSelected(List.of(0, 2));
-            caseDataBuilder.othersSelector(othersSelector)
+            Selector personSelector = Selector.newSelector(3);
+            personSelector.setSelected(List.of(0, 2));
+            caseDataBuilder.personSelector(personSelector)
                 .notifyApplicationsToAllOthers("No");
         }
 
@@ -227,7 +227,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .others(Others.builder()
                 .firstOther(Other.builder().name("Stephen Miller")
                     .address(Address.builder().postcode("SE1").build()).build()).build())
-            .othersSelector(Selector.newSelector(1))
+            .personSelector(Selector.newSelector(1))
             .notifyApplicationsToAllOthers("No").build();
 
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
@@ -288,16 +288,16 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
                 "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),
-                "hasOthers", "Yes",
-                "others_label", "Other 1: Alex",
+                "hasRespondentsOrOthers", "Yes",
+                "people_label", "Other 1: Alex",
                 "notifyApplicationsToAllOthers", "Yes"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
         assertThat(callbackResponse.getData().get("c2Type")).isNull();
-        assertThat(callbackResponse.getData().get("others_label")).isNull();
-        assertThat(callbackResponse.getData().get("hasOthers")).isNull();
+        assertThat(callbackResponse.getData().get("people_label")).isNull();
+        assertThat(callbackResponse.getData().get("hasRespondentsOrOthers")).isNull();
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         assertTemporaryFieldsAreRemoved(caseData);
@@ -376,7 +376,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getApplicantsList()).isNull();
         assertThat(caseData.getOtherApplicant()).isNull();
         assertThat(caseData.getNotifyApplicationsToAllOthers()).isNull();
-        assertThat(caseData.getOthersSelector()).isNull();
+        assertThat(caseData.getPersonSelector()).isNull();
     }
 
     private void assertDocument(DocumentReference actualDocument, DocumentReference expectedDocument) {

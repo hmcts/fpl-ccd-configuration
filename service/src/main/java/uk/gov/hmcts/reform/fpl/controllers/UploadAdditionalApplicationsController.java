@@ -84,12 +84,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && caseData.hasRespondentsOrOthers()) {
-            caseDetails.getData().put("hasOthers", "Yes");
-            caseDetails.getData().put("others_label", peopleInCaseService.buildPeopleInCaseLabel(
+            caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
+            caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
                 caseData.getAllRespondents(), caseData.getOthers()));
 
             int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
-            caseDetails.getData().put("othersSelector", newSelector(selectorSize));
+            caseDetails.getData().put("personSelector", newSelector(selectorSize));
         }
 
         return respond(caseDetails);
@@ -130,7 +130,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
             AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
-            "otherApplicant", "others_label", "hasOthers", "notifyApplicationsToAllOthers", "othersSelector");
+            "otherApplicant", "people_label", "hasRespondentsOrOthers", "notifyApplicationsToAllOthers",
+            "personSelector");
 
         return respond(caseDetails);
     }

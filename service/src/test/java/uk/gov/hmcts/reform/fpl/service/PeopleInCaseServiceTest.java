@@ -6,8 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,7 +22,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -69,12 +66,7 @@ class PeopleInCaseServiceTest {
         .servingPreferences(POST)
         .build());
 
-    @Mock
-    private OthersService othersService;
-    @Mock
-    private RespondentService respondentService;
-    @InjectMocks
-    private PeopleInCaseService underTest;
+    private PeopleInCaseService underTest = new PeopleInCaseService();
 
     @Test
     void shouldBuildExpectedLabelWhenRespondentsAndOthersExistInList() {
@@ -87,26 +79,36 @@ class PeopleInCaseServiceTest {
             .additionalOthers(wrapElements(Other.builder().name("Bob Martyn").build()))
             .build();
 
-        String expectedRespondentsLabel = "Respondent 1 - John Smith\nRespondent 2 - Tim Jones\n";
-        given(respondentService.buildRespondentLabel(respondents)).willReturn(expectedRespondentsLabel);
-
-        String expectedOthersLabel = "Person 1 - James Daniels\nOther person 1 - Bob Martyn\n";
-        given(othersService.buildOthersLabel(others)).willReturn(expectedOthersLabel);
+        String expectedLabel = "Person 1: Respondent 1 - John Smith\nPerson 2: Respondent 2 - Tim Jones\n"
+            + "Person 3: Other 1 - James Daniels\nPerson 4: Other 2 - Bob Martyn\n";
 
         String actual = underTest.buildPeopleInCaseLabel(respondents, others);
-        assertThat(actual).isEqualTo(String.join("", expectedRespondentsLabel, expectedOthersLabel));
+        assertThat(actual).isEqualTo(expectedLabel);
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenRespondentsAndAdditionalOthersExistInList() {
+        List<Element<Respondent>> respondents = wrapElements(
+            Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
+
+        Others others = Others.builder()
+            .additionalOthers(wrapElements(Other.builder().name("Bob Martyn").build()))
+            .build();
+
+        String expectedLabel = "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - Bob Martyn\n";
+
+        String actual = underTest.buildPeopleInCaseLabel(respondents, others);
+        assertThat(actual).isEqualTo(expectedLabel);
     }
 
     @Test
     void shouldBuildExpectedLabelWhenOthersAreEmpty() {
         List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
             .party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
-
-        String expectedRespondentsLabel = "Respondent 1 - John Smith\n";
-        given(respondentService.buildRespondentLabel(respondents)).willReturn(expectedRespondentsLabel);
+        String expectedLabel = "Person 1: Respondent 1 - John Smith\n";
 
         String actual = underTest.buildPeopleInCaseLabel(respondents, Others.builder().build());
-        assertThat(actual).isEqualTo(expectedRespondentsLabel);
+        assertThat(actual).isEqualTo(expectedLabel);
     }
 
     @Test
@@ -115,8 +117,7 @@ class PeopleInCaseServiceTest {
             .firstOther(Other.builder().name("James Daniels").build())
             .build();
 
-        String expectedOthersLabel = "Person 1 - James Daniels\n";
-        given(othersService.buildOthersLabel(others)).willReturn(expectedOthersLabel);
+        String expectedOthersLabel = "Person 1: Other 1 - James Daniels\n";
 
         String actual = underTest.buildPeopleInCaseLabel(List.of(), others);
 
@@ -135,7 +136,7 @@ class PeopleInCaseServiceTest {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
             .others(Others.from(SELECTED_OTHERS))
-            .othersSelector(Selector.builder().build())
+            .personSelector(Selector.builder().build())
             .notifyApplicationsToAllOthers("Yes")
             .build();
 
@@ -149,7 +150,7 @@ class PeopleInCaseServiceTest {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
             .others(Others.from(SELECTED_OTHERS))
-            .othersSelector(Selector.builder().selected(List.of(0, 2)).build())
+            .personSelector(Selector.builder().selected(List.of(0, 2)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
 
@@ -165,7 +166,7 @@ class PeopleInCaseServiceTest {
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
             .others(Others.from(SELECTED_OTHERS))
-            .othersSelector(Selector.builder().selected(List.of(0, 2)).build())
+            .personSelector(Selector.builder().selected(List.of(0, 2)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
 
@@ -179,7 +180,7 @@ class PeopleInCaseServiceTest {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
             .others(Others.from(SELECTED_OTHERS))
-            .othersSelector(Selector.builder().selected(List.of()).build())
+            .personSelector(Selector.builder().selected(List.of()).build())
             .notifyApplicationsToAllOthers("No")
             .build();
 
@@ -191,7 +192,7 @@ class PeopleInCaseServiceTest {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
             .others(Others.from(SELECTED_OTHERS))
-            .othersSelector(null)
+            .personSelector(null)
             .notifyApplicationsToAllOthers("No")
             .build();
 
@@ -202,7 +203,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnAllRespondentsWhenSelectedAllPeopleInTheCase() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersSelector(Selector.builder().build())
+            .personSelector(Selector.builder().build())
             .notifyApplicationsToAllOthers("Yes")
             .build();
 
@@ -213,7 +214,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnSelectedRespondents() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersSelector(Selector.builder().selected(List.of(0, 2)).build())
+            .personSelector(Selector.builder().selected(List.of(0, 2)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
 
@@ -224,7 +225,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnEmptyWhenNoRespondentsAreSelected() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersSelector(Selector.builder().selected(List.of(2, 3)).build())
+            .personSelector(Selector.builder().selected(List.of(2, 3)).build())
             .notifyApplicationsToAllOthers("No")
             .build();
 
@@ -235,7 +236,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnEmptyWhenSelectedItemsAreEmpty() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersSelector(Selector.builder().selected(List.of()).build())
+            .personSelector(Selector.builder().selected(List.of()).build())
             .notifyApplicationsToAllOthers("No")
             .build();
 
@@ -246,7 +247,7 @@ class PeopleInCaseServiceTest {
     void shouldReturnEmptyRespondentsListWhenSelectorIsNull() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
-            .othersSelector(null)
+            .personSelector(null)
             .notifyApplicationsToAllOthers("No")
             .build();
 

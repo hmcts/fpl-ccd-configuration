@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
@@ -33,9 +34,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class PeopleInCaseService {
     private static final String COMMA_DELIMITER = ", ";
 
-    private final OthersService othersService;
-    private final RespondentService respondentService;
-
     public String buildPeopleInCaseLabel(List<Element<Respondent>> respondents,
                                          Others others) {
         boolean hasNoOthers = isNull(others) || !others.hasOthers();
@@ -45,22 +43,59 @@ public class PeopleInCaseService {
             StringBuilder sb = new StringBuilder();
 
             if (isNotEmpty(respondents)) {
-                String respondentLabel = respondentService.buildRespondentLabel(respondents);
+                String respondentLabel = buildRespondentsLabel(respondents);
                 sb.append(respondentLabel);
             }
 
             if (!hasNoOthers) {
-                String othersLabel = othersService.buildOthersLabel(others);
+                int othersStartIndex = respondents.size() + 1;
+                String othersLabel = buildOthersLabel(others, othersStartIndex);
                 sb.append(othersLabel);
             }
             return sb.toString();
         }
     }
 
+    private String buildOthersLabel(Others others, int personIndex) {
+        int otherIndex = 1;
+        StringBuilder sb = new StringBuilder();
+        if (others.getFirstOther() != null) {
+            sb.append(String.format("Person %d: Other %d - %s",
+                personIndex, otherIndex, getOtherPersonName(others.getFirstOther()))).append("\n");
+            personIndex++;
+            otherIndex++;
+        }
+
+        if (others.getAdditionalOthers() != null) {
+            for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
+                Other other = others.getAdditionalOthers().get(i).getValue();
+
+                sb.append(String.format("Person %d: Other %d - %s",
+                    personIndex, otherIndex, getOtherPersonName(other))).append("\n");
+                personIndex++;
+                otherIndex++;
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private String buildRespondentsLabel(List<Element<Respondent>> respondents) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < respondents.size(); i++) {
+            RespondentParty respondentParty = respondents.get(i).getValue().getParty();
+
+            sb.append(String.format("Person %d: Respondent %d - %s", i + 1, i + 1,
+                isNotEmpty(respondentParty) ? respondentParty.getFullName() : EMPTY)).append("\n");
+        }
+        return sb.toString();
+    }
+
     public List<Element<Other>> getSelectedOthers(CaseData caseData) {
         final List<Element<Respondent>> respondents = caseData.getAllRespondents();
         final List<Element<Other>> others = caseData.getAllOthers();
-        final Selector selector = caseData.getOthersSelector();
+        final Selector selector = caseData.getPersonSelector();
         final String allPeopleSelected = caseData.getNotifyApplicationsToAllOthers();
 
         if (useAllPeopleInTheCase(allPeopleSelected)) {
@@ -89,7 +124,7 @@ public class PeopleInCaseService {
 
     public List<Element<Respondent>> getSelectedRespondents(CaseData caseData) {
         final List<Element<Respondent>> respondents = caseData.getAllRespondents();
-        final Selector selector = caseData.getOthersSelector();
+        final Selector selector = caseData.getPersonSelector();
         final String allPeopleSelected = caseData.getNotifyApplicationsToAllOthers();
 
         if (useAllPeopleInTheCase(allPeopleSelected)) {

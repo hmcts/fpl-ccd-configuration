@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -117,8 +119,18 @@ class OthersTest {
     }
 
     @Test
-    void shouldReturnFalseWhenFirstOtherDoesNotExist() {
-        Others others = Others.builder().build();
+    void shouldReturnTrueWhenAdditionalOtherExists() {
+        Others others = Others.builder()
+            .additionalOthers(wrapElements(Other.builder().name("Additional other").build()))
+            .build();
+
+        assertTrue(others.hasOthers());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnFalseWhenFirstOtherAndAdditionalOthersDoNotExist(List<Element<Other>> additionalOthers) {
+        Others others = Others.builder().additionalOthers(additionalOthers).build();
         assertFalse(others.hasOthers());
     }
 }

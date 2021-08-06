@@ -93,7 +93,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);
   await I.goToNextPage();
-  uploadAdditionalApplicationsEventPage.selectOthers(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [0, 2]);
+  uploadAdditionalApplicationsEventPage.selectPeople(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [0, 2]);
   await I.goToNextPage();
   const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();

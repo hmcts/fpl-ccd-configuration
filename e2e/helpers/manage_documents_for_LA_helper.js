@@ -31,7 +31,7 @@ const uploadC2 = async (I, caseViewPage, uploadAdditionalApplicationsEventPage) 
   uploadAdditionalApplicationsEventPage.uploadC2Document(config.testWordFile);
   uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('APPOINTMENT_OF_GUARDIAN');
   await I.goToNextPage();
-  uploadAdditionalApplicationsEventPage.selectOthers(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [2]);
+  uploadAdditionalApplicationsEventPage.selectPeople(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [2]);
   await I.goToNextPage();
   await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
@@ -48,7 +48,7 @@ const uploadOtherApplications = async (I, caseViewPage, uploadAdditionalApplicat
   uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Appointment of a guardian');
   uploadAdditionalApplicationsEventPage.uploadDocument(config.testWordFile);
   await I.goToNextPage();
-  uploadAdditionalApplicationsEventPage.selectOthers(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [2]);
+  uploadAdditionalApplicationsEventPage.selectPeople(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [2]);
   await I.goToNextPage();
   await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
