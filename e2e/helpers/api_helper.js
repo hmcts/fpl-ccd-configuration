@@ -50,7 +50,8 @@ const updateCaseDataWithTodaysDateTime = (data) => {
 const updateCaseDataWithDocuments = async (data) => {
   const { document_binary_url, document_url } = await getTestDocument();
   const caseData = lodash.template(JSON.stringify(data.caseData))({ 'TEST_DOCUMENT_URL': document_url, 'TEST_DOCUMENT_BINARY_URL': document_binary_url });
-  data.caseData = JSON.parse(caseData);
+  // data.caseData = JSON.parse(caseData);
+  return {state: data.state, caseData: JSON.parse(caseData)};
 };
 
 const getHeaders = authToken => ({
@@ -60,7 +61,7 @@ const getHeaders = authToken => ({
 
 const populateWithData = async (caseId, data) => {
   updateCaseDataWithTodaysDateTime(data);
-  await updateCaseDataWithDocuments(data);
+  data = await updateCaseDataWithDocuments(data);
 
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;

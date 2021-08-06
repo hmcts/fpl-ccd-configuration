@@ -26,7 +26,7 @@ async function setupScenario(I, caseViewPage) {
   approvalDate = moment(approvalDate).add(1, 'days').toDate();
 }
 
-Scenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C32A care order (with pre filled hearing details) @f', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -89,7 +89,7 @@ Scenario('Create 32b discharge of care order', async ({ I, caseViewPage, manageO
   });
 });
 
-Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create EPO order @f', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
@@ -124,7 +124,7 @@ Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) 
   });
 });
 
-Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create EPO Prevent removal order @f', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
@@ -164,7 +164,7 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
   });
 });
 
-Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C21 blank order @f', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -390,7 +390,7 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
   });
 });
 
-Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C47A appointment of a Children\'s Guardian @f', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
 
@@ -454,7 +454,7 @@ Scenario('Upload Manual order (other order)', async ({ I, caseViewPage, manageOr
   });
 });
 
-Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create (C26) Secure accommodation order (deprivation of liberty) @f', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
 
