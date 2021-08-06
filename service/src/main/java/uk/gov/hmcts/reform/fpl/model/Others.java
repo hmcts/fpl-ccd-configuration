@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class Others {
             .build();
     }
 
+    @JsonIgnore
     public boolean hasOthers() {
         return firstOther != null || isNotEmpty(additionalOthers);
     }

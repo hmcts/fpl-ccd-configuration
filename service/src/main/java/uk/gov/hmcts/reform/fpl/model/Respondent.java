@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -46,6 +47,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
         }
     }
 
+    @JsonIgnore
     public boolean hasAddress() {
         return isNotEmpty(party) && isNotEmpty(party.getAddress())
             && isNotEmpty(party.getAddress().getPostcode());
