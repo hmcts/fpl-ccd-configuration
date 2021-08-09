@@ -47,8 +47,7 @@ public final class NotifyTemplates {
         = "364aebbb-9ecc-4a46-8f0e-c3567e1b3ec7";
     public static final String INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC
         = "8b77b5a9-bccc-44ea-b3b3-35ee8502161e";
-    public static final String LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE = "7f3bf6f3-64cd-4b36-ba56-6c7a676a4816";
-    public static final String LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME
+    public static final String LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE
         = "a17492b8-3724-4d24-8b5a-d815f64ce5ac";
     public static final String UPCOMING_HEARINGS_TEMPLATE = "c24308e9-cc0b-4548-8927-33c0a8a3cdb8";
     public static final String UNDELIVERED_EMAILS_TEMPLATE = "35840c28-78b7-48c2-bd09-239598dae28b";

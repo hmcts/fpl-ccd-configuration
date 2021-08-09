@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LegalRepresentativeAddedCon
 
 import java.util.Set;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -37,7 +37,7 @@ public class LegalRepresentativesUpdatedHandler {
         Set<LegalRepresentative> added = legalRepresentativesChange.getAdded();
 
         added.forEach(legalRepresentative -> notificationService.sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME,
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
             legalRepresentative.getEmail(),
             legalRepresentativeAddedContentProvider.getNotifyData(legalRepresentative, caseData),
             caseData.getId()

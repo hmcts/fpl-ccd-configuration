@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,7 +71,7 @@ class LegalRepresentativesUpdatedHandlerTest {
         );
 
         verify(notificationService).sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME, REPRESENTATIVE_EMAIL, notifyData, CASE_ID
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE, REPRESENTATIVE_EMAIL, notifyData, CASE_ID
         );
     }
 
@@ -94,10 +94,10 @@ class LegalRepresentativesUpdatedHandlerTest {
         );
 
         verify(notificationService).sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME, REPRESENTATIVE_EMAIL, notifyData1, CASE_ID
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE, REPRESENTATIVE_EMAIL, notifyData1, CASE_ID
         );
         verify(notificationService).sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME, REPRESENTATIVE_EMAIL_2, notifyData2, CASE_ID
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE, REPRESENTATIVE_EMAIL_2, notifyData2, CASE_ID
         );
     }
 

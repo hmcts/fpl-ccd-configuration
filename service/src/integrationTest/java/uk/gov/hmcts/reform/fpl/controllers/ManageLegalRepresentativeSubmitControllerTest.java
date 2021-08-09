@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -62,7 +62,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractCallbackTest
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
         verify(notificationClient).sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE_CHILD_NAME,
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
             REPRESENTATIVE_EMAIL,
             expectedTemplateParameters(),
             NOTIFICATION_REFERENCE
