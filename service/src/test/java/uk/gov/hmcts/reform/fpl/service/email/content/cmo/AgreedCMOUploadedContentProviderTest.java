@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -21,6 +22,7 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -34,9 +36,11 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
     private static final LocalDate SOME_DATE = LocalDate.of(2020, 2, 20);
     private static final Long CASE_NUMBER = 12345L;
     private static final String FAMILY_MAN_CASE_NUMBER = "123456";
-    private static final CaseData CASE_DATA = CaseData.builder()
+
+    private static CaseData caseData = CaseData.builder()
         .id(CASE_NUMBER)
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+        .children1(wrapElements(mock(Child.class)))
         .respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder().lastName("Vlad").build())
             .build()
@@ -51,7 +55,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
     @BeforeEach
     void setUp() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("Vlad");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Vlad");
     }
 
     @Test
@@ -63,7 +67,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
         HearingBooking hearing = buildHearing(judge);
 
-        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, judge, CASE_DATA);
+        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, judge, caseData);
 
         CMOReadyToSealTemplate expected = CMOReadyToSealTemplate.builder()
             .judgeName("Simmons")
@@ -85,7 +89,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
         HearingBooking hearing = buildHearing(judge);
 
-        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, judge, CASE_DATA);
+        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, judge, caseData);
 
         CMOReadyToSealTemplate expected = CMOReadyToSealTemplate.builder()
             .judgeName("Mark Simmons (JP)")
@@ -106,7 +110,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
         HearingBooking hearing = buildHearing(judge);
 
-        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, judge, CASE_DATA);
+        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, judge, caseData);
 
         CMOReadyToSealTemplate expected = CMOReadyToSealTemplate.builder()
             .judgeName("")
@@ -125,7 +129,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .judgeTitle(MAGISTRATES)
             .build();
 
-        assertThatThrownBy(() -> contentProvider.buildTemplate(null, judge, CASE_DATA))
+        assertThatThrownBy(() -> contentProvider.buildTemplate(null, judge, caseData))
             .isInstanceOf(NoHearingBookingException.class);
     }
 

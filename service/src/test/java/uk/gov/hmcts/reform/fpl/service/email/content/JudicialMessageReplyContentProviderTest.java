@@ -69,7 +69,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
             .applicationType("C2 (With notice)")
             .build();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn(LAST_NAME);
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(LAST_NAME);
 
         assertThat(underTest.buildJudicialMessageReplyTemplate(caseData, judicialMessage))
             .isEqualTo(expectedTemplate);

@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -20,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -42,7 +39,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDate;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,16 +56,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans({
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
-    @MockBean(FeatureToggleService.class), @MockBean(ChildrenService.class), @MockBean(IdentityService.class),
-    @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class),
-    @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
-    @MockBean(SealedOrderHistoryTypeGenerator.class),
-    @MockBean(SealedOrderHistoryFinalMarker.class),
-    @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
-    @MockBean(AppointedGuardianFormatter.class),
-    @MockBean(OthersService.class),
-    @MockBean(OthersNotifiedGenerator.class),
-    @MockBean(OtherRecipientsInbox.class)
+    @MockBean(ChildrenService.class), @MockBean(IdentityService.class), @MockBean(OrderCreationService.class),
+    @MockBean(SendDocumentService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(SealedOrderHistoryTypeGenerator.class), @MockBean(SealedOrderHistoryFinalMarker.class),
+    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(AppointedGuardianFormatter.class),
+    @MockBean(OthersService.class), @MockBean(OthersNotifiedGenerator.class), @MockBean(OtherRecipientsInbox.class)
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);
@@ -99,8 +90,6 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Autowired
     private GeneratedOrderEventHandler underTest;
-    @Autowired
-    private FeatureToggleService toggleService;
 
     @BeforeEach
     void mocks() {
@@ -109,11 +98,8 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
         when(ORDER_DOCUMENT.getBinaryUrl()).thenReturn(BINARY_URL);
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyParties(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyParties() {
         underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA, ORDER_DOCUMENT));
 
         SendEmailResponse adminResponse = response();
@@ -122,7 +108,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
         SendEmailResponse emailRepResponse = response();
 
         assertThat(adminResponse)
-            .hasSubject("New care order issued, " + name)
+            .hasSubject("New care order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("A new care order has been issued by " + COURT_NAME)
                 .line()
@@ -142,7 +128,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
 
         assertThat(laResponse)
-            .hasSubject("New care order issued, " + name)
+            .hasSubject("New care order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("A new care order has been issued by " + COURT_NAME + " for:")
                 .line()
@@ -160,7 +146,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
 
         assertThat(notifyRepResponse)
-            .hasSubject("New care order issued, " + name)
+            .hasSubject("New care order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("A new care order has been issued by " + COURT_NAME + " for:")
                 .line()
@@ -178,7 +164,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
 
         assertThat(emailRepResponse)
-            .hasSubject("New care order issued, " + name)
+            .hasSubject("New care order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("A new care order has been issued by " + COURT_NAME)
                 .line()
@@ -191,12 +177,5 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

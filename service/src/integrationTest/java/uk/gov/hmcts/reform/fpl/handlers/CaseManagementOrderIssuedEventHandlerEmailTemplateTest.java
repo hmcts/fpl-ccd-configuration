@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -46,7 +44,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -68,7 +65,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(SealedOrderHistoryExtraTitleGenerator.class), @MockBean(SealedOrderHistoryTypeGenerator.class),
     @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(AppointedGuardianFormatter.class),
     @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class),
-    @MockBean(OthersNotifiedGenerator.class)
+    @MockBean(OthersNotifiedGenerator.class), @MockBean(FeatureToggleService.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
@@ -76,7 +73,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
     private static final long CASE_ID = 123456L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
 
-    @MockBean
+    @Autowired
     private FeatureToggleService toggleService;
 
     @Autowired
@@ -103,16 +100,14 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         .hearing("some hearing")
         .build();
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyLocalAuthority(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+    @Test
+    void notifyLocalAuthority() {
         when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
 
         underTest.notifyLocalAuthority(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
         assertThat(response())
-            .hasSubject("CMO issued, " + name)
+            .hasSubject("CMO issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The case management order has been issued for:")
                 .line()
@@ -134,16 +129,14 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyParties(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+    @Test
+    void notifyParties() {
         when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
 
         underTest.notifyCafcass(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
         assertThat(response())
-            .hasSubject("CMO issued, " + name)
+            .hasSubject("CMO issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The case management order has been issued for:")
                 .line()
@@ -165,16 +158,14 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyCtsc(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+    @Test
+    void notifyCtsc() {
         when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
 
         underTest.notifyAdmin(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
         assertThat(response())
-            .hasSubject("New case management order issued, " + name)
+            .hasSubject("New case management order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("A new case management order has been issued by Family Court")
                 .line()
@@ -192,12 +183,5 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

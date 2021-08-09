@@ -92,7 +92,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @BeforeEach
     void setUp() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("Jones");
+        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn("Jones");
     }
 
     @Test
@@ -143,7 +143,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         when(calculator.getTypeOfOrder(data, CMO)).thenReturn("case management order");
-        when(helper.getSubjectLineLastName(data)).thenReturn("Jones");
+        when(helper.getEldestChildLastName(data.getAllChildren())).thenReturn("Jones");
 
         NotifyData expectedParameters = getExpectedCMOParameters(CMO.getLabel());
         NotifyData actualParameters = underTest.getNotifyDataForCMO(data, testDocument, CMO);
