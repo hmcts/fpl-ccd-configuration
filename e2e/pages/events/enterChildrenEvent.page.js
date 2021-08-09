@@ -216,7 +216,7 @@ module.exports = {
 
   async enterRegisteredOrganisation(solicitor) {
     await clearOldSolicitorOrg();
-    organisationHelper.searchAndSelectGivenRegisteredOrganisation(I, solicitor.details.organisation);
+    organisationHelper.searchAndSelectGivenRegisteredOrganisation(I, solicitor.details);
   },
 
   enterChildrenSpecificRepresentation(index, solicitor) {
