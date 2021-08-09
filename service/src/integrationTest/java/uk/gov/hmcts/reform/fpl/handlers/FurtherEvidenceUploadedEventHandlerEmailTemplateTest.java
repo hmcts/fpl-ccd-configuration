@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -27,6 +28,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -46,6 +49,11 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @Autowired
     private FurtherEvidenceUploadedEventHandler underTest;
+
+    @MockBean
+    private FeatureToggleService toggleService;
+
+    @MockBean UserService userService;
 
     @Test
     void sendNotification() {
@@ -86,6 +94,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .id(CASE_ID)
             .build();
 
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(true);
+
         underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, true,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
@@ -97,6 +108,11 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
                 .line("The Sender has uploaded evidence documents for:")
                 .line()
                 .callout("Smith, 12345, hearing 22 May 2021")
+                .line()
+                .h1("Documents uploaded")
+                .line()
+                .line()
+                .list("Non-Confidential Evidence Document 1")
                 .line()
                 .line("To view them, sign in to:")
                 .line()

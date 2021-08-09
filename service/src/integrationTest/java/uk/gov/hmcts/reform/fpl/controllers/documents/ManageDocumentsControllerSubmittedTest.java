@@ -62,8 +62,8 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     @Test
     void shouldPublishEventWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
-        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
-        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(false);
+        when(userService.getUserDetails()).thenReturn(UserDetails.builder().email("user@email.com").build());
+        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(true);
         postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
 
         verify(notificationClient).sendEmail(
