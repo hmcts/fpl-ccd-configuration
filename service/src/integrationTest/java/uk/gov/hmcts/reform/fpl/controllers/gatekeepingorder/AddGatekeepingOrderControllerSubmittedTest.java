@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -28,12 +29,14 @@ import uk.gov.service.notify.NotificationClient;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -56,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
@@ -69,6 +73,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
+    private static final DocumentReference C6_DOCUMENT = testDocumentReference("notice_of_proceedings_c6.pdf");
+    private static final DocumentReference C6A_DOCUMENT = testDocumentReference("notice_of_proceedings_c6a.pdf");
     private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference();
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
@@ -149,6 +155,15 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldTriggerEventWhenUrgentWithNoPHearingSubmittedAndRequestingTranslation() {
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(), GATEKEEPING_CASE_DATA));
+
+        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
+        verifyEmailSentToTranslation(3);
+        verifyNoMoreNotificationsSent();
+    }
+
+    @Test
     void shouldTriggerEventWhenSDOSubmitted() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
 
@@ -162,6 +177,15 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
         verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
         verifyEmailSentToTranslation();
+        verifyNoMoreNotificationsSent();
+    }
+
+    @Test
+    void shouldTriggerEventWhenSDOAndNoticeOfProceedingsSubmittedWithTranslation() {
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDOAndNopToTranslate(SEALED), GATEKEEPING_CASE_DATA));
+
+        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
+        verifyEmailSentToTranslation(3);
         verifyNoMoreNotificationsSent();
     }
 
@@ -239,6 +263,10 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         checkUntil(() -> verify(emailService).sendEmail(eq("sender@example.com"), any()));
     }
 
+    private void verifyEmailSentToTranslation(int timesCalled) {
+        checkUntil(() -> verify(emailService, times(timesCalled)).sendEmail(eq("sender@example.com"), any()));
+    }
+
     private void verifyNoMoreNotificationsSent() {
         checkThat(() -> verifyNoMoreInteractions(notificationClient, emailService), Duration.ofSeconds(2));
     }
@@ -281,6 +309,25 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .build();
     }
 
+    private CaseData buildCaseDataWithSDOAndNopToTranslate(OrderStatus status) {
+        return baseCaseData()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .orderStatus(status)
+                .orderDoc(SDO_DOCUMENT)
+                .translationRequirements(WELSH_TO_ENGLISH)
+                .build())
+            .noticeOfProceedingsBundle(List.of(
+                element(DocumentBundle.builder()
+                    .document(C6_DOCUMENT)
+                    .translationRequirements(WELSH_TO_ENGLISH)
+                    .build()),
+                element(DocumentBundle.builder()
+                    .document(C6A_DOCUMENT)
+                    .translationRequirements(WELSH_TO_ENGLISH)
+                    .build())
+                )).build();
+    }
+
     private CaseData buildCaseDataWithUrgentHearingOrder() {
         return baseCaseData()
             .urgentHearingOrder(UrgentHearingOrder.builder()
@@ -293,6 +340,25 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private CaseData buildCaseDataWithUrgentHearingOrderToTranslate() {
         return baseCaseData()
             .urgentHearingOrder(UrgentHearingOrder.builder()
+                .order(URGENT_HEARING_ORDER_DOCUMENT)
+                .dateAdded(DATE_ADDED)
+                .translationRequirements(WELSH_TO_ENGLISH)
+                .build())
+            .build();
+    }
+
+    private CaseData buildCaseDataWithUrgentHearingOrderToTranslateWithNop() {
+        return baseCaseData()
+            .noticeOfProceedingsBundle(List.of(
+                element(DocumentBundle.builder()
+                    .document(C6_DOCUMENT)
+                    .translationRequirements(WELSH_TO_ENGLISH)
+                    .build()),
+                element(DocumentBundle.builder()
+                    .document(C6A_DOCUMENT)
+                    .translationRequirements(WELSH_TO_ENGLISH)
+                    .build())
+            )).urgentHearingOrder(UrgentHearingOrder.builder()
                 .order(URGENT_HEARING_ORDER_DOCUMENT)
                 .dateAdded(DATE_ADDED)
                 .translationRequirements(WELSH_TO_ENGLISH)

@@ -180,8 +180,10 @@ public class AddGatekeepingOrderController extends CallbackController {
         if (URGENT == sdoRouter || decision.isSealed()) {
             data.put("state", CASE_MANAGEMENT);
             if (GATEKEEPING == caseData.getState()) {
+                request.getCaseDetails().setData(data);
                 List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
-                data.put("noticeOfProceedingsBundle", nopService.uploadNoticesOfProceedings(caseData, nopTemplates));
+                data.put("noticeOfProceedingsBundle",
+                    nopService.uploadNoticesOfProceedings(getCaseData(request.getCaseDetails()), nopTemplates));
             }
         }
 
