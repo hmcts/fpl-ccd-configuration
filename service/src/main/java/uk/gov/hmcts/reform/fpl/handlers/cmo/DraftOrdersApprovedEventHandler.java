@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -113,7 +112,6 @@ public class DraftOrdersApprovedEventHandler {
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void sendNotificationToDigitalRepresentatives(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
@@ -125,9 +123,10 @@ public class DraftOrdersApprovedEventHandler {
 
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
                 DIGITAL_SERVICE, caseData, approvedOrders.get(0).getSelectedOthers(),
-                element -> element.getValue().getEmail());
+                element -> element.getValue().getEmail()
+            );
             digitalRepresentatives.removeAll(otherRecipientsNotNotified);
         }
 
@@ -146,7 +145,6 @@ public class DraftOrdersApprovedEventHandler {
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void sendNotificationToEmailRepresentatives(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
@@ -160,8 +158,9 @@ public class DraftOrdersApprovedEventHandler {
 
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-                EMAIL, caseData, approvedOrders.get(0).getSelectedOthers(), element -> element.getValue().getEmail());
+            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+                EMAIL, caseData, approvedOrders.get(0).getSelectedOthers(), element -> element.getValue().getEmail()
+            );
             emailRepresentatives.removeAll(otherRecipientsNotNotified);
         }
 
@@ -177,7 +176,6 @@ public class DraftOrdersApprovedEventHandler {
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void sendDocumentToPostRecipients(final DraftOrdersApproved event) {
         final CaseData caseData = event.getCaseData();
 
@@ -190,8 +188,9 @@ public class DraftOrdersApprovedEventHandler {
 
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
             List<Element<Other>> othersSelected = event.getApprovedOrders().get(0).getSelectedOthers();
-            Set<Recipient> nonSelectedRecipients = (Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, Element::getValue);
+            Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
+                POST, caseData, othersSelected, Element::getValue
+            );
             recipients.removeAll(nonSelectedRecipients);
 
             recipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
