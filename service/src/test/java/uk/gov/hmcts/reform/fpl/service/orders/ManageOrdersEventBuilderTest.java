@@ -86,10 +86,8 @@ class ManageOrdersEventBuilderTest {
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(order);
         when(order.getDocument()).thenReturn(document);
         when(order.asLabel()).thenReturn(ORDER_TITLE);
+        when(order.getDocument()).thenReturn(document);
         when(order.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENT);
-        when(historyService.lastGeneratedOrder(caseData)).thenReturn(GeneratedOrder.builder()
-            .document(document)
-            .build());
 
         assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(new GeneratedOrderEvent(caseData,
             document,
