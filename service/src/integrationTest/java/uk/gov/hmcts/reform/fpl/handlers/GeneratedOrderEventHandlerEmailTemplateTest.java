@@ -57,7 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     SealedOrderHistoryService.class, CaseUrlService.class, GeneratedOrderEventHandler.class,
     RepresentativeNotificationService.class, ChildrenSmartSelector.class, ChildSelectionUtils.class
 })
-@MockBeans( {
+@MockBeans({
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
     @MockBean(ChildrenService.class), @MockBean(IdentityService.class), @MockBean(OrderCreationService.class),
     @MockBean(SendDocumentService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
