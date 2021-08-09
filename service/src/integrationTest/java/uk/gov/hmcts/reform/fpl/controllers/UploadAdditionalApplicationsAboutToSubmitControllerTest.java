@@ -20,6 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -45,6 +48,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -52,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -101,17 +106,23 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersToggledOn);
 
         PBAPayment temporaryPbaPayment = createPbaPayment();
+        Element<Representative> representativeElement = element(Representative.builder()
+            .servingPreferences(EMAIL).email("test@test.com").build());
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder()
             .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
             .temporaryC2Document(createTemporaryC2Document())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
+            .representatives(List.of(representativeElement))
+            .respondents1(wrapElements(Respondent.builder()
+                .representedBy(wrapElements(representativeElement.getId()))
+                .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build()).build()))
             .others(Others.builder().firstOther(
                 Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
                     .address(Address.builder().postcode("SW2").build()).build())).build());
         if (servingOthersToggledOn) {
-            caseDataBuilder.othersSelector(Selector.newSelector(2))
+            caseDataBuilder.personSelector(Selector.newSelector(3))
                 .notifyApplicationsToAllOthers(YesNo.YES.getValue());
         }
 
@@ -128,7 +139,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
 
         if (servingOthersToggledOn) {
-            assertThat(uploadedC2DocumentBundle.getOthersNotified()).contains("Tim Jones, Stephen Jones");
+            assertThat(uploadedC2DocumentBundle.getOthersNotified())
+                .contains("Margaret Jones, Tim Jones, Stephen Jones");
             assertThat(unwrapElements(uploadedC2DocumentBundle.getOthers()))
                 .contains(caseData.getOthers().getFirstOther(),
                     caseData.getOthers().getAdditionalOthers().get(0).getValue());
@@ -145,12 +157,20 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected(
         boolean servingOthersToggledOn) {
         PBAPayment temporaryPbaPayment = createPbaPayment();
+        Element<Representative> representative = element(Representative.builder()
+            .servingPreferences(EMAIL).email("rep@test.com").build());
+        Element<Respondent> respondentElement = element(Respondent.builder()
+            .representedBy(wrapElements(representative.getId()))
+            .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build()).build());
+
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder()
             .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE))
             .otherApplicant(OTHER_APPLICANT_NAME)
+            .representatives(List.of(representative))
+            .respondents1(List.of(respondentElement))
             .others(Others.builder()
                 .firstOther(Other.builder().name("Stephen Miller")
                     .address(Address.builder().postcode("SE1").build()).build())
@@ -158,9 +178,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                     .address(Address.builder().postcode("SE2").build()).build())).build());
 
         if (servingOthersToggledOn) {
-            Selector othersSelector = Selector.newSelector(2);
-            othersSelector.setSelected(List.of(1));
-            caseDataBuilder.othersSelector(othersSelector)
+            Selector personSelector = Selector.newSelector(3);
+            personSelector.setSelected(List.of(0, 2));
+            caseDataBuilder.personSelector(personSelector)
                 .notifyApplicationsToAllOthers("No");
         }
 
@@ -178,12 +198,16 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         if (servingOthersToggledOn) {
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
-                .isEqualTo("Alex Smith");
+                .isEqualTo("Margaret Jones, Alex Smith");
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
                 .isEqualTo(List.of(caseData.getOthers().getAdditionalOthers().get(0)));
+            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
+                .hasSize(1)
+                .containsExactly(respondentElement);
         } else {
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified()).isNull();
             assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers()).isNull();
+            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents()).isNull();
         }
 
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
@@ -203,7 +227,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .others(Others.builder()
                 .firstOther(Other.builder().name("Stephen Miller")
                     .address(Address.builder().postcode("SE1").build()).build()).build())
-            .othersSelector(Selector.newSelector(1))
+            .personSelector(Selector.newSelector(1))
             .notifyApplicationsToAllOthers("No").build();
 
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
@@ -264,16 +288,16 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
                 "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),
-                "hasOthers", "Yes",
-                "others_label", "Other 1: Alex",
+                "hasRespondentsOrOthers", "Yes",
+                "people_label", "Other 1: Alex",
                 "notifyApplicationsToAllOthers", "Yes"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
         assertThat(callbackResponse.getData().get("c2Type")).isNull();
-        assertThat(callbackResponse.getData().get("others_label")).isNull();
-        assertThat(callbackResponse.getData().get("hasOthers")).isNull();
+        assertThat(callbackResponse.getData().get("people_label")).isNull();
+        assertThat(callbackResponse.getData().get("hasRespondentsOrOthers")).isNull();
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         assertTemporaryFieldsAreRemoved(caseData);
@@ -352,7 +376,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getApplicantsList()).isNull();
         assertThat(caseData.getOtherApplicant()).isNull();
         assertThat(caseData.getNotifyApplicationsToAllOthers()).isNull();
-        assertThat(caseData.getOthersSelector()).isNull();
+        assertThat(caseData.getPersonSelector()).isNull();
     }
 
     private void assertDocument(DocumentReference actualDocument, DocumentReference expectedDocument) {

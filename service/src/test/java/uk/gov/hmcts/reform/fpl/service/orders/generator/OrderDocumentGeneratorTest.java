@@ -28,7 +28,7 @@ class OrderDocumentGeneratorTest {
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocmosisParameters DOCMOSIS_PARAMETERS = mock(DocmosisParameters.class);
     private static final Map<String, Object> TEMPLATE_DATA = Map.of("key", "value");
-    private static final DocmosisTemplates DOCMOSIS_TEMPLATE = DocmosisTemplates.ORDER;
+    private static final DocmosisTemplates DOCMOSIS_TEMPLATE = DocmosisTemplates.ORDER_V2;
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = mock(DocmosisDocument.class);
     private static final RenderFormat FORMAT = mock(RenderFormat.class);
     private static final OrderStatus STATUS = DRAFT;
