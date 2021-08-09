@@ -142,7 +142,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @ParameterizedTest
-        @EnumSource(value = State.class, names = {"OPEN", "RETURNED", "CLOSED"})
+        @EnumSource(value = State.class, names = {"OPEN", "RETURNED", "CLOSED", "DELETED"})
         void shouldNotPerformMigrationWhenInWrongState(State state) {
             CaseData caseData = CaseData.builder()
                 .id(12345L)

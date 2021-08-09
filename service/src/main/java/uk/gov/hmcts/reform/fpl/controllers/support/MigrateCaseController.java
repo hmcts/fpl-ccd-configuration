@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.N
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private static final List<State> IGNORED_STATES = List.of(State.OPEN, State.RETURNED, State.CLOSED);
+    private static final List<State> IGNORED_STATES = List.of(State.OPEN, State.RETURNED, State.CLOSED, State.DELETED);
     private static final int MAX_CHILDREN = 15;
 
     private final NoticeOfChangeFieldPopulator populator;
