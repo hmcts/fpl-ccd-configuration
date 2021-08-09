@@ -16,6 +16,7 @@ const supplements = require('../fixtures/supplements.js');
 
 const dateFormat = require('dateformat');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
+const api = require('../helpers/api_helper');
 
 let caseId;
 
@@ -150,6 +151,8 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Client code'], c2Payment.clientCode);
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Customer reference'], c2Payment.customerReference);
+
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
