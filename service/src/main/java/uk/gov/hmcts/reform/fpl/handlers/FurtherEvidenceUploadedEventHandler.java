@@ -62,15 +62,6 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    private static boolean hasNewNonConfidentialDocuments(List<Element<SupportingEvidenceBundle>> newEvidenceBundle,
-                                                          List<Element<SupportingEvidenceBundle>> oldEvidenceBundle) {
-        List<SupportingEvidenceBundle> oldEvidenceBundleUnwrapped = unwrapElements(oldEvidenceBundle);
-        return unwrapElements(newEvidenceBundle).stream()
-            .anyMatch(d -> oldEvidenceBundleUnwrapped.stream()
-                .noneMatch(old -> old.getDocument().equals(d.getDocument()))
-                && !d.isConfidentialDocument());
-    }
-
     private List<String> getNewNonConfidentialDocuments(List<Element<SupportingEvidenceBundle>> newEvidenceBundle,
                                                         List<Element<SupportingEvidenceBundle>> oldEvidenceBundle) {
         List<SupportingEvidenceBundle> oldBundleUnwrapped = unwrapElements(oldEvidenceBundle);
