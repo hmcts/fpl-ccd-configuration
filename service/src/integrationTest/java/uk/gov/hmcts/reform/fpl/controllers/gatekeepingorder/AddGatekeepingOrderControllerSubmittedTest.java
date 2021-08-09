@@ -156,7 +156,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentWithNoPHearingSubmittedAndRequestingTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(), GATEKEEPING_CASE_DATA));
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(),
+            GATEKEEPING_CASE_DATA));
 
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
         verifyEmailSentToTranslation(3);
@@ -325,7 +326,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
                     .document(C6A_DOCUMENT)
                     .translationRequirements(WELSH_TO_ENGLISH)
                     .build())
-                )).build();
+            )).build();
     }
 
     private CaseData buildCaseDataWithUrgentHearingOrder() {
