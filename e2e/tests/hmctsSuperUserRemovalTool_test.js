@@ -55,7 +55,7 @@ Scenario('HMCTS super user removes a sealed cmo from a case', async ({I, caseVie
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   const sealedCMO = 'Removed case management orders 1';
-  I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
+  I.seeInTab([sealedCMO, 'Order'], 'cmo.pdf');
   I.seeInTab([sealedCMO, 'Hearing'], 'Case management hearing, 1 January 2020');
   I.seeInTab([sealedCMO, 'Date sent'], '27 Aug 2020');
   I.seeInTab([sealedCMO, 'Date issued'], '27 Aug 2020');
