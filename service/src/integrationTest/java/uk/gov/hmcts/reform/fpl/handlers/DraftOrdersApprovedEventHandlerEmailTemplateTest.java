@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
@@ -45,7 +46,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     RepresentativeNotificationService.class, EmailNotificationHelper.class, OtherRecipientsInbox.class
 })
 @MockBeans({
-    @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class)})
+    @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class), @MockBean(FeatureToggleService.class)
+})
 class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Jones";
     private static final String RESPONDENT_LAST_NAME = "Smith";
