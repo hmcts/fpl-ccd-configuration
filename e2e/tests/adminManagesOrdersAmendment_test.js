@@ -7,7 +7,6 @@ const closedCaseData = {
   caseData: caseData.caseData,
 };
 
-// most file names are overridden to the below values in api_helper
 const orders = {
   generated: {
     name: 'C32 - Care order - 7 July 2021',
@@ -29,7 +28,7 @@ const orders = {
   },
   caseManagementOrder: {
     name: 'Sealed case management order issued on 6 July 2021',
-    file: 'mockFile.pdf',
+    file: 'cmo6.pdf',
     tabObjectName: 'Sealed Case Management Order 1',
     tabOrderDocFieldName: 'Order',
   },

@@ -24,13 +24,18 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.model.payment.Payments;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
@@ -71,6 +76,7 @@ public class TestingSupportController {
     private final NotificationClient notifications;
     private final SystemUpdateUserConfiguration userConfig;
     private final DocumentDownloadService documentDownloadService;
+    private final UploadDocumentService documentUploadService;
 
     @Value("${fpl.env}")
     private String environment;
@@ -186,5 +192,17 @@ public class TestingSupportController {
         caseAccess.addCaseUserRoles(userToken, authToken.generate(), accessRequest);
 
         log.info("Role {} granted to user {} to case {}", role, email, caseId);
+    }
+
+    @GetMapping(value = "/testing-support/test-document", produces = APPLICATION_JSON_VALUE)
+    public DocumentReference getTestDoc() {
+        byte[] pdf = ResourceReader.readBytes("test_support/document.pdf");
+
+        Document document = documentUploadService.uploadDocument(pdf, "mockFile.pdf", RenderFormat.PDF.getMediaType());
+        DocumentReference reference = DocumentReference.buildFromDocument(document);
+
+        log.info("Generated test document {}", reference);
+
+        return reference;
     }
 }
