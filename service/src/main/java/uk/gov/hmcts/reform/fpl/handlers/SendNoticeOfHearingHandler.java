@@ -123,7 +123,7 @@ public class SendNoticeOfHearingHandler {
         List<Other> others = unwrapElements(hearingBooking.getOthers());
 
         others.forEach(other -> {
-            if (!other.isRepresented() && !other.hasAddressAdded()) {
+            if (!other.isEmpty() && !other.isRepresented() && !other.hasAddressAdded()) {
                 NotifyData notifyData =
                     noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
                         caseData, event.getSelectedHearing(), other);

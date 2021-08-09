@@ -435,8 +435,8 @@ class RepresentativesServiceTest {
     void shouldLinkRepresentativeWithRepresentable() {
         Long caseId = RandomUtils.nextLong();
 
-        Other otherPerson1 = Other.builder().build();
-        Other otherPerson2 = Other.builder().build();
+        Other otherPerson1 = Other.builder().name("first other").build();
+        Other otherPerson2 = Other.builder().name("additional other").build();
         Respondent respondent1 = Respondent.builder().build();
         Respondent respondent2 = Respondent.builder().build();
 

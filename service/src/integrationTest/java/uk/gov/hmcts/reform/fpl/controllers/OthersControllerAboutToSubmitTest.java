@@ -48,6 +48,23 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(unwrapElements(caseData.getConfidentialOthers())).containsOnly(confidentialOther());
     }
 
+    @Test
+    void shouldNotSaveFirstOtherWhenItIsEmpty() {
+        List<Element<Other>> additionalOthers = additionalOthers();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("others", Others.builder()
+                .firstOther(Other.builder().build())
+                .additionalOthers(additionalOthers)
+                .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(additionalOthers.get(0).getValue());
+        assertThat(caseData.getOthers().getAdditionalOthers()).isEmpty();
+    }
+
     private Other other() {
         return Other.builder()
             .name("other")

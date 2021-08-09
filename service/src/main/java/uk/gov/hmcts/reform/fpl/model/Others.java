@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
@@ -25,13 +26,13 @@ public class Others {
 
         final LinkedList<Element<Other>> others = new LinkedList<>(Optional.ofNullable(allOthers).orElse(emptyList()));
         return Others.builder()
-            .firstOther(ofNullable(others.pollFirst()).map(Element::getValue).orElse(null))
+            .firstOther(ofNullable(others.pollFirst()).map(Element::getValue).filter(not(Other::isEmpty)).orElse(null))
             .additionalOthers(others)
             .build();
     }
 
     @JsonIgnore
     public boolean hasOthers() {
-        return firstOther != null || isNotEmpty(additionalOthers);
+        return !(firstOther == null || firstOther.isEmpty()) || isNotEmpty(additionalOthers);
     }
 }
