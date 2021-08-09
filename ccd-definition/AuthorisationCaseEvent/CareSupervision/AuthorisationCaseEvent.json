@@ -937,7 +937,8 @@
           "[SOLICITORJ]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[BARRISTER]"
         ],
         "CRUD": "CR"
       },
@@ -1047,7 +1048,8 @@
           "[LAMANAGING]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CR"
       },
