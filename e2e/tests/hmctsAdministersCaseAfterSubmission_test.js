@@ -1,13 +1,4 @@
 const config = require('../config.js');
-const blankOrder = require('../fixtures/orders/blankOrder.js');
-const interimSuperVisionOrder = require('../fixtures/orders/interimSupervision.js');
-const finalSuperVisionOrder = require('../fixtures/orders/finalSupervisionOrder.js');
-const emergencyProtectionOrder = require('../fixtures/orders/emergencyProtectionOrder.js');
-const uploadedOrder = require('../fixtures/orders/uploadedOrder.js');
-const interimCareOrder = require('../fixtures/orders/interimCareOrder.js');
-const finalCareOrder = require('../fixtures/orders/finalCareOrder.js');
-const dischargeOfCareOrder = require('../fixtures/orders/dischargeOfCareOrder.js');
-const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
 const expertReportLog = require('../fixtures/expertReportLog.js');
@@ -236,46 +227,6 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-xScenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
-}).retry(1); //Async case update in prev test
-
 // Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
 xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await setupScenario(I);
@@ -396,15 +347,3 @@ Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEve
   I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
 }).retry(1);
-
-const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
-  const notRepresentedRespondent = mandatoryWithMultipleChildren.caseData.respondents1[1].value.party;
-  const notRepresentedRespondentName = `${notRepresentedRespondent.firstName} ${notRepresentedRespondent.lastName}`;
-  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  const defaultIssuedDate = new Date();
-  await orderFunctions.createOrder(I, createOrderEventPage, order);
-  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  await orderFunctions.assertOrder(I, caseViewPage, order, defaultIssuedDate);
-  await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order);
-  await orderFunctions.assertOrderSentToParty(I, caseViewPage, notRepresentedRespondentName, order, 2);
-};
