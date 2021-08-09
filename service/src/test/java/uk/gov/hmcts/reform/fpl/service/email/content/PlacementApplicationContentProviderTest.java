@@ -29,7 +29,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
 
         CaseData caseData = caseData();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn("Smith");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
 
         BaseCaseNotifyData actual = underTest.buildPlacementApplicationNotificationParameters(caseData);
 

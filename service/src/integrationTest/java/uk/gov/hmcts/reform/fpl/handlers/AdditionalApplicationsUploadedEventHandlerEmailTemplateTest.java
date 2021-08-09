@@ -108,7 +108,6 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyAdmin() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
@@ -139,7 +138,6 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyParties() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(true);
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));

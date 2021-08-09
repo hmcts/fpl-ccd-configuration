@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.service.email.NotificationServiceTest.ENV;
 
 @ExtendWith(SpringExtension.class)
@@ -29,7 +28,7 @@ class NotificationServiceTest {
     private static final String TEST_RECIPIENT_EMAIL_1 = "test1@example.com";
     private static final String TEST_RECIPIENT_EMAIL_2 = "test2@example.com";
     private static final String REFERENCE = "12345L";
-    private static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+    private static final String TEMPLATE_ID = "some template id";
     private static final String NOTIFICATION_REFERENCE = String.format("%s/%s", ENV, REFERENCE);
 
     @MockBean
@@ -52,10 +51,11 @@ class NotificationServiceTest {
         notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL_1, EMAIL_PERSONALISATION, REFERENCE);
 
         verify(notificationClient).sendEmail(
-            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEMPLATE_ID,
             TEST_RECIPIENT_EMAIL_1,
             EXPECTED_EMAIL_PERSONALISATION,
-            NOTIFICATION_REFERENCE);
+            NOTIFICATION_REFERENCE
+        );
     }
 
     @Test
@@ -64,16 +64,18 @@ class NotificationServiceTest {
             EMAIL_PERSONALISATION, REFERENCE);
 
         verify(notificationClient).sendEmail(
-            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEMPLATE_ID,
             TEST_RECIPIENT_EMAIL_1,
             EXPECTED_EMAIL_PERSONALISATION,
-            NOTIFICATION_REFERENCE);
+            NOTIFICATION_REFERENCE
+        );
 
         verify(notificationClient).sendEmail(
-            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEMPLATE_ID,
             TEST_RECIPIENT_EMAIL_2,
             EXPECTED_EMAIL_PERSONALISATION,
-            NOTIFICATION_REFERENCE);
+            NOTIFICATION_REFERENCE
+        );
     }
 
 }

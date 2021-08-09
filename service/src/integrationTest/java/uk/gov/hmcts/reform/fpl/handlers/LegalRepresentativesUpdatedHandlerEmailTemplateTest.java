@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,16 +11,13 @@ import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativesDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.email.content.LegalRepresentativeAddedContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
@@ -39,16 +33,11 @@ class LegalRepresentativesUpdatedHandlerEmailTemplateTest extends EmailTemplateT
     private static final String CHILD_LAST_NAME = "Dorn";
     private static final String RESPONDENT_LAST_NAME = "Magnus";
 
-    @MockBean
-    private FeatureToggleService toggleService;
     @Autowired
     private LegalRepresentativesUpdatedHandler underTest;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void sendToLA(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void sendToLA() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
             .familyManCaseNumber("FAM_NUM")
@@ -71,7 +60,7 @@ class LegalRepresentativesUpdatedHandlerEmailTemplateTest extends EmailTemplateT
         underTest.sendEmailToLegalRepresentativesAddedToCase(new LegalRepresentativesUpdated(caseData, before));
 
         assertThat(response())
-            .hasSubject("You’ve been added to a case, " + name)
+            .hasSubject("You’ve been added to a case, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("Dear Leman Russ")
                 .line()
@@ -87,12 +76,5 @@ class LegalRepresentativesUpdatedHandlerEmailTemplateTest extends EmailTemplateT
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

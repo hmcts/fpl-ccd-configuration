@@ -23,7 +23,7 @@ public class FurtherEvidenceUploadedEmailContentProvider extends AbstractEmailCo
                 caseData.getFamilyManCaseNumber(), caseData.getRespondents1(), caseData.getFirstHearing().orElse(null)
             ))
             .userName(sender)
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();
     }
 }

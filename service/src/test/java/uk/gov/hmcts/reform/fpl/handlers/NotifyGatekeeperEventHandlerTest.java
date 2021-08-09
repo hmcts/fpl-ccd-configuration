@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 
@@ -39,8 +38,6 @@ class NotifyGatekeeperEventHandlerTest {
     private NotificationService notificationService;
     @Mock
     private GatekeeperEmailContentProvider contentProvider;
-    @Mock
-    private FeatureToggleService toggleService;
     @InjectMocks
     private NotifyGatekeeperEventHandler underTest;
 
@@ -57,8 +54,6 @@ class NotifyGatekeeperEventHandlerTest {
 
         when(contentProvider.buildGatekeeperNotification(caseData)).thenReturn(BASE_NOTIFY_DATA);
         when(BASE_NOTIFY_DATA.duplicate()).thenReturn(DUPLICATE_1, DUPLICATE_2);
-
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(false);
 
         underTest.notifyGatekeeper(new NotifyGatekeepersEvent(caseData));
 

@@ -33,7 +33,6 @@ import java.util.Set;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -65,16 +64,14 @@ public class CaseManagementOrderIssuedEventHandler {
         CaseData caseData = event.getCaseData();
         HearingOrder issuedCmo = event.getCmo();
 
-        String template = toggleService.isEldestChildLastNameEnabled()
-            ? CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME
-            : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-
         final IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(
             caseData, issuedCmo, DIGITAL_SERVICE);
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
-        notificationService.sendEmail(template, emails, notifyData, caseData.getId().toString());
+        notificationService.sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, emails, notifyData, caseData.getId().toString()
+        );
     }
 
     @EventListener
@@ -83,15 +80,13 @@ public class CaseManagementOrderIssuedEventHandler {
         CaseData caseData = event.getCaseData();
         HearingOrder issuedCmo = event.getCmo();
 
-        String template = toggleService.isEldestChildLastNameEnabled()
-            ? CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME
-            : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-
         final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
             caseData, issuedCmo, EMAIL);
         final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService.sendEmail(template, cafcassEmail, cafcassParameters, caseData.getId());
+        notificationService.sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters, caseData.getId()
+        );
     }
 
     @EventListener
@@ -100,10 +95,6 @@ public class CaseManagementOrderIssuedEventHandler {
     public void notifyEmailRepresentatives(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         HearingOrder cmo = event.getCmo();
-
-        String template = toggleService.isEldestChildLastNameEnabled()
-            ? CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME
-            : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 
         Set<String> representatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
@@ -114,7 +105,7 @@ public class CaseManagementOrderIssuedEventHandler {
 
         IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(caseData, cmo, EMAIL);
         representatives.forEach(representative -> notificationService.sendEmail(
-            template, representative, notifyData, caseData.getId()
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative, notifyData, caseData.getId()
         ));
     }
 
@@ -124,10 +115,6 @@ public class CaseManagementOrderIssuedEventHandler {
     public void notifyDigitalRepresentatives(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         HearingOrder cmo = event.getCmo();
-
-        String template = toggleService.isEldestChildLastNameEnabled()
-            ? CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME
-            : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 
         Set<String> representatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
@@ -139,7 +126,7 @@ public class CaseManagementOrderIssuedEventHandler {
         IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(
             caseData, cmo, DIGITAL_SERVICE);
         representatives.forEach(representative -> notificationService.sendEmail(
-            template, representative, notifyData, caseData.getId()
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative, notifyData, caseData.getId()
         ));
     }
 
