@@ -47,20 +47,14 @@ const updateCaseDataWithTodaysDateTime = (data) => {
   caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
 };
 
-const updateCaseDataWithPlaceholders = data => {
-  const caseData = data.caseData;
-
-  const placeholders = {
-    'SWANSEA_ORG_ID': config.swanseaOrgId,
-    'DM_STORE_URL': config.dmStoreUrl,
-  };
-
-  data.caseData = JSON.parse(lodash.template(JSON.stringify(caseData))(placeholders));
-};
-
-const updateCaseDataWithDocuments = async (data) => {
+const updateCaseDataWithPlaceholders = async (data) => {
   const { document_binary_url, document_url } = await getTestDocument();
-  const caseData = lodash.template(JSON.stringify(data.caseData))({ 'TEST_DOCUMENT_URL': document_url, 'TEST_DOCUMENT_BINARY_URL': document_binary_url });
+  const placeholders = {
+    SWANSEA_ORG_ID: config.swanseaOrgId,
+    TEST_DOCUMENT_URL: document_url,
+    TEST_DOCUMENT_BINARY_URL: document_binary_url,
+  };
+  const caseData = lodash.template(JSON.stringify(data.caseData))(placeholders);
   return {state: data.state, caseData: JSON.parse(caseData)};
 };
 
@@ -71,8 +65,7 @@ const getHeaders = authToken => ({
 
 const populateWithData = async (caseId, data) => {
   updateCaseDataWithTodaysDateTime(data);
-  updateCaseDataWithPlaceholders(data);
-  data = await updateCaseDataWithDocuments(data);
+  data = await updateCaseDataWithPlaceholders(data);
 
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;
