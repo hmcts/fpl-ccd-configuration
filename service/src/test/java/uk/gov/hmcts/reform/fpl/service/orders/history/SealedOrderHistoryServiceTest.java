@@ -532,7 +532,8 @@ class SealedOrderHistoryServiceTest {
         when(extraTitleGenerator.generate(caseData)).thenReturn(EXTRA_TITLE);
         when(typeGenerator.generate(caseData)).thenReturn(TYPE);
         when(sealedOrderHistoryFinalMarker.calculate(caseData)).thenReturn(FINAL_MARKER);
-        when(languageRequirementGenerator.translationRequirements(caseData)).thenReturn(LANGUAGE_TRANSLATION_REQUIREMENT);
+        when(languageRequirementGenerator.translationRequirements(caseData))
+            .thenReturn(LANGUAGE_TRANSLATION_REQUIREMENT);
     }
 
     private void mockHelper(MockedStatic<JudgeAndLegalAdvisorHelper> jalMock) {
