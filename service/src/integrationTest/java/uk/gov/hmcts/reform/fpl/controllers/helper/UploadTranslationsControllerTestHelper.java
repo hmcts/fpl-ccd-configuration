@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -33,13 +34,21 @@ public class UploadTranslationsControllerTestHelper {
     public static final UUID UUID_2 = UUID.randomUUID();
     public static final UUID UUID_3 = UUID.randomUUID();
     public static final UUID UUID_4 = UUID.randomUUID();
+    public static final UUID UUID_5 = UUID.randomUUID();
 
     public static final CaseData CASE_DATA_WITH_ALL_ORDERS = CaseData.builder()
         .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
         .orderCollection(List.of(element(UUID_1, GeneratedOrder.builder()
-            .type("Generated order type")
-            .dateTimeIssued(LocalDateTime.of(2020, 12, 10, 21, 2, 3))
-            .build())))
+                .type("Generated order type")
+                .dateTimeIssued(LocalDateTime.of(2020, 12, 10, 21, 2, 3))
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .build()),
+            element(UUID_5, GeneratedOrder.builder()
+                .type("Generated order type NOT REQUIRING TRANSLATION")
+                .dateTimeIssued(LocalDateTime.of(2021, 9, 9, 21, 2, 3))
+                .translationRequirements(NO)
+                .build())
+        ))
         .standardDirectionOrder(StandardDirectionOrder.builder()
             .dateOfUpload(LocalDate.of(2020, 12, 11))
             .orderStatus(OrderStatus.SEALED)
