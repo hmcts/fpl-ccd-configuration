@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTit
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderLanguageRequirementGenerator;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -66,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(SealedOrderHistoryTypeGenerator.class),
     @MockBean(AppointedGuardianFormatter.class),
     @MockBean(SealedOrderHistoryFinalMarker.class),
+    @MockBean(SealedOrderLanguageRequirementGenerator.class),
     @MockBean(OthersService.class),
     @MockBean(OthersNotifiedGenerator.class)
 })

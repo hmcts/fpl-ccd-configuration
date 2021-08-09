@@ -33,9 +33,11 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTit
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderLanguageRequirementGenerator;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -66,6 +68,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
     @MockBean(SealedOrderHistoryTypeGenerator.class),
     @MockBean(SealedOrderHistoryFinalMarker.class),
+    @MockBean(SealedOrderLanguageRequirementGenerator.class),
+    @MockBean(TranslationRequestService.class),
     @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
     @MockBean(AppointedGuardianFormatter.class),
     @MockBean(OthersService.class),

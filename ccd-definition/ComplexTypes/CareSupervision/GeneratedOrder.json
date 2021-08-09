@@ -241,7 +241,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "GeneratedOrder",
     "ListElementCode": "translationRequirements",
     "FieldType": "Text",
     "ElementLabel": " ",
@@ -250,7 +250,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "GeneratedOrder",
     "ListElementCode": "needTranslation",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
