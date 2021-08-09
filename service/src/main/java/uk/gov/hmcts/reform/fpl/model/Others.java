@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
 @Builder(toBuilder = true)
@@ -26,5 +28,10 @@ public class Others {
             .firstOther(ofNullable(others.pollFirst()).map(Element::getValue).orElse(null))
             .additionalOthers(others)
             .build();
+    }
+
+    @JsonIgnore
+    public boolean hasOthers() {
+        return firstOther != null || isNotEmpty(additionalOthers);
     }
 }

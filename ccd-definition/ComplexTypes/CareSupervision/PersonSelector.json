@@ -1,0 +1,399 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "optionCount",
+    "FieldType": "Text",
+    "ElementLabel": "placeholder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option0Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option1Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option2Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option3Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 3",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option4Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 4",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option5Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 5",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option6Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 6",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option7Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 7",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option8Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 8",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option9Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 9",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option10Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 10",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option11Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 11",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option12Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 12",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option13Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 13",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option14Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 14",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option15Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 15",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option16Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 16",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option17Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 17",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option18Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 18",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option19Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 19",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option20Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Person 20",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option0",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1*\" AND option0Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option1",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12*\" AND option1Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option2",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 3",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123*\" AND option2Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option3",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 4",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234*\" AND option3Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option4",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 5",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345*\" AND option4Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option5",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 6",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456*\" AND option5Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option6",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 7",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567*\" AND option6Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option7",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 8",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678*\" AND option7Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option8",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 9",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789*\" AND option8Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option9",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 10",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910*\" AND option9Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option10",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 11",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011*\" AND option10Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option11",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 12",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789101112*\" AND option11Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option12",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 13",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910111213*\" AND option12Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option13",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 14",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011121314*\" AND option13Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option14",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 15",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789101112131415*\" AND option14Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option15",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 16",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910111213141516*\" AND option15Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option16",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 17",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011121314151617*\" AND option16Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option17",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 18",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789101112131415161718*\" AND option17Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option18",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 19",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910111213141516171819*\" AND option18Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "ListElementCode": "option19",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "PersonSelector",
+    "ElementLabel": "Person 20",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011121314151617181920*\" AND option19Hidden!=\"Yes\""
+  }
+]

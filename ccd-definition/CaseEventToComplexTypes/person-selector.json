@@ -1,0 +1,213 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "optionCount",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "pageShow=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option0",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option1",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option2",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option3",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option4",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option5",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option6",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option7",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option8",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option9",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option10",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option11",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option12",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 14,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option13",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 15,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option14",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 16,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option15",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 17,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option16",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 18,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option17",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 19,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option18",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 20,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonSelector",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "personSelector",
+    "ListElementCode": "option19",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 21,
+    "DisplayContext": "OPTIONAL"
+  }
+]
