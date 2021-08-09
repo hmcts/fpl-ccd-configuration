@@ -23,8 +23,8 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -35,7 +35,6 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
@@ -59,7 +58,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
     private final ApplicantsListGenerator applicantsListGenerator;
-    private final OthersService othersService;
+    private final PeopleInCaseService peopleInCaseService;
     private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
@@ -84,10 +83,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && isNotEmpty(caseData.getAllOthers())) {
-            caseDetails.getData().put("hasOthers", "Yes");
-            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));
+        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && caseData.hasRespondentsOrOthers()) {
+            caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
+            caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
+                caseData.getAllRespondents(), caseData.getOthers()));
+
+            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
+            caseDetails.getData().put("personSelector", newSelector(selectorSize));
         }
 
         return respond(caseDetails);
@@ -128,7 +130,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
             AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
-            "otherApplicant", "others_label", "hasOthers", "notifyApplicationsToAllOthers", "othersSelector");
+            "otherApplicant", "people_label", "hasRespondentsOrOthers", "notifyApplicationsToAllOthers",
+            "personSelector");
 
         return respond(caseDetails);
     }
@@ -143,7 +146,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-        publishEvent(new AdditionalApplicationsUploadedEvent(caseData));
+        publishEvent(new AdditionalApplicationsUploadedEvent(caseData,
+            applicantsListGenerator.getApplicant(caseData, lastBundle)));
 
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());

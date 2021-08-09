@@ -1,13 +1,4 @@
 const config = require('../config.js');
-const blankOrder = require('../fixtures/orders/blankOrder.js');
-const interimSuperVisionOrder = require('../fixtures/orders/interimSupervision.js');
-const finalSuperVisionOrder = require('../fixtures/orders/finalSupervisionOrder.js');
-const emergencyProtectionOrder = require('../fixtures/orders/emergencyProtectionOrder.js');
-const uploadedOrder = require('../fixtures/orders/uploadedOrder.js');
-const interimCareOrder = require('../fixtures/orders/interimCareOrder.js');
-const finalCareOrder = require('../fixtures/orders/finalCareOrder.js');
-const dischargeOfCareOrder = require('../fixtures/orders/dischargeOfCareOrder.js');
-const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
 const expertReportLog = require('../fixtures/expertReportLog.js');
@@ -16,6 +7,7 @@ const supplements = require('../fixtures/supplements.js');
 
 const dateFormat = require('dateformat');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
+const api = require('../helpers/api_helper');
 
 let caseId;
 
@@ -93,7 +85,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);
   await I.goToNextPage();
-  uploadAdditionalApplicationsEventPage.selectOthers(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [0]);
+  uploadAdditionalApplicationsEventPage.selectPeople(uploadAdditionalApplicationsEventPage.fields.allOthers.options.select, [0, 2]);
   await I.goToNextPage();
   const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
@@ -109,7 +101,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Applicant'], 'Jonathon Walker');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'People notified'], 'Noah King');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'People notified'], 'Joe Bloggs, Noah King');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Uploaded by'], 'HMCTS');
@@ -129,7 +121,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   I.seeInTab(['Additional applications 1', 'Other applications', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Applicant'], 'Jonathon Walker');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'People notified'], 'Noah King');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'People notified'], 'Joe Bloggs, Noah King');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Application type'], 'C1 - Parental responsibility');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Date and time of upload']);
@@ -150,6 +142,8 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Client code'], c2Payment.clientCode);
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Customer reference'], c2Payment.customerReference);
+
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
@@ -232,46 +226,6 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
 
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
-
-xScenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
-}).retry(1); //Async case update in prev test
-
-xScenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
-  await setupScenario(I);
-  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
-}).retry(1); //Async case update in prev test
 
 // Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
 xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
@@ -393,15 +347,3 @@ Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEve
   I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
 }).retry(1);
-
-const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
-  const notRepresentedRespondent = mandatoryWithMultipleChildren.caseData.respondents1[1].value.party;
-  const notRepresentedRespondentName = `${notRepresentedRespondent.firstName} ${notRepresentedRespondent.lastName}`;
-  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  const defaultIssuedDate = new Date();
-  await orderFunctions.createOrder(I, createOrderEventPage, order);
-  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  await orderFunctions.assertOrder(I, caseViewPage, order, defaultIssuedDate);
-  await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order);
-  await orderFunctions.assertOrderSentToParty(I, caseViewPage, notRepresentedRespondentName, order, 2);
-};

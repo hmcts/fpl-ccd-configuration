@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -16,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.CaseService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeCaseRoleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -30,9 +27,7 @@ import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
@@ -51,17 +46,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class PartyAddedToCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "Perturabo";
     private static final String CHILD_LAST_NAME = "Angron";
-    @MockBean
-    private FeatureToggleService toggleService;
 
     @Autowired
     private PartyAddedToCaseEventHandler underTest;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyParties(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyParties() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
             .familyManCaseNumber("FAM_NUM")
@@ -85,7 +75,7 @@ class PartyAddedToCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
         SendEmailResponse digitalRepResponse = responses.get(1);
 
         assertThat(emailRepResponse)
-            .hasSubject("You’ve been added to a case, " + name)
+            .hasSubject("You’ve been added to a case, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("You’ve been added to this case:")
                 .line()
@@ -100,7 +90,7 @@ class PartyAddedToCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
 
         assertThat(digitalRepResponse)
-            .hasSubject("You’ve been added to a case, " + name)
+            .hasSubject("You’ve been added to a case, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("You’ve been added to this case:")
                 .line()
@@ -114,12 +104,5 @@ class PartyAddedToCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

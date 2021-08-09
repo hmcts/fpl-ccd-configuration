@@ -238,7 +238,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         assertThat(responseData.getState()).isEqualTo(CASE_MANAGEMENT);
         assertThat(responseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
-            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
+                .translationRequirements(expectedTranslationRequirements)
+                .build());
         assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "customDirections",
             "standardDirections", "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
     }
@@ -286,7 +288,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         AssertionsForClassTypes.assertThat(responseData.getAllocationDecision()).isEqualTo(expectedAllocation);
         AssertionsForInterfaceTypes.assertThat(responseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
-            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build()
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
+                .translationRequirements(translationRequirements)
+                .build()
             );
         AssertionsForClassTypes.assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
             UrgentHearingOrder.builder()

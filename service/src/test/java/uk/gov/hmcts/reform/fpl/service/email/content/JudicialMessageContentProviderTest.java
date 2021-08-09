@@ -48,7 +48,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
 
     @BeforeEach
     void setUp() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn(LAST_NAME);
+        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(LAST_NAME);
     }
 
     @ParameterizedTest

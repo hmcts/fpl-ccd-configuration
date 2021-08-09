@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 
@@ -17,7 +16,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 
 @Data
 @Builder(toBuilder = true)
@@ -26,6 +26,7 @@ public class DocumentBundle implements TranslatableItem {
     private final DocumentReference document;
     private final DocumentReference translatedDocument;
     private final LocalDateTime translationUploadDateTime;
+    private final LanguageTranslationRequirement translationRequirements;
 
     @Override
     @JsonIgnore
@@ -54,15 +55,8 @@ public class DocumentBundle implements TranslatableItem {
     }
 
     @Override
-    @JsonIgnore
     public LanguageTranslationRequirement getTranslationRequirements() {
-        return ENGLISH_TO_WELSH;
-    }
-
-    @Override
-    @JsonIgnore
-    public YesNo getNeedTranslation() {
-        return YesNo.YES;
+        return defaultIfNull(translationRequirements, NO);
     }
 
     @Override

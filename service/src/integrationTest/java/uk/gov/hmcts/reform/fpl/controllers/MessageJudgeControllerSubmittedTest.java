@@ -5,6 +5,8 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -70,6 +72,13 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                         .lastName("Davidson")
                         .build())
                     .build())))
+            .children1(List.of(
+                element(Child.builder()
+                    .party(ChildParty.builder()
+                        .lastName(LAST_NAME)
+                        .dateOfBirth(dateNow())
+                        .build())
+                    .build())))
             .judicialMessages(List.of(
                 element(latestJudicialMessage),
                 element(JudicialMessage.builder()
@@ -101,7 +110,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             CASE_TYPE,
             CASE_REFERENCE,
             "internal-update-case-summary",
-            caseSummary("Yes"));
+            caseSummary());
     }
 
     @Test
@@ -123,6 +132,13 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                 element(Respondent.builder()
                     .party(RespondentParty.builder()
                         .lastName(LAST_NAME)
+                        .build())
+                    .build())))
+            .children1(List.of(
+                element(Child.builder()
+                    .party(ChildParty.builder()
+                        .lastName(LAST_NAME)
+                        .dateOfBirth(dateNow())
                         .build())
                     .build())))
             .judicialMessages(List.of(
@@ -148,12 +164,13 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         );
 
         verify(notificationClient).sendEmail(
-            JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+            JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345"
+        );
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
             CASE_REFERENCE,
             "internal-update-case-summary",
-            caseSummary("Yes"));
+            caseSummary());
     }
 
     @Test
@@ -177,6 +194,13 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                         .lastName(LAST_NAME)
                         .build())
                     .build())))
+            .children1(List.of(
+                element(Child.builder()
+                    .party(ChildParty.builder()
+                        .lastName(LAST_NAME)
+                        .dateOfBirth(dateNow())
+                        .build())
+                    .build())))
             .judicialMessages(List.of(
                 element(JudicialMessage.builder()
                     .updatedTime(now().minusDays(1))
@@ -195,15 +219,16 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             CASE_TYPE,
             CASE_REFERENCE,
             "internal-update-case-summary",
-            caseSummary("Yes"));
+            caseSummary());
     }
 
-    private Map<String, Object> caseSummary(String withUnresolvedMessages) {
+    private Map<String, Object> caseSummary() {
         return caseConverter.toMap(
             SyntheticCaseSummary.builder()
-                .caseSummaryHasUnresolvedMessages(withUnresolvedMessages)
+                .caseSummaryHasUnresolvedMessages("Yes")
                 .caseSummaryFirstRespondentLastName(LAST_NAME)
                 .caseSummaryCourtName(COURT_NAME)
+                .caseSummaryNumberOfChildren(1)
                 .build());
     }
 }

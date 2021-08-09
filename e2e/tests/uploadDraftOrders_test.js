@@ -1,8 +1,9 @@
 const config = require('../config.js');
 const representatives = require('../fixtures/representatives.js');
-const standardDirectionOrder = require('../fixtures/caseData/prepareForHearing.json');
+const caseData = require('../fixtures/caseData/prepareForHearing.json');
 const draftOrdersHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
+const api = require('../helpers/api_helper');
 
 const changeRequestReason = 'Timetable for the proceedings is incomplete';
 const returnedStatus = 'Returned';
@@ -46,7 +47,7 @@ Feature('Upload Draft Orders Journey');
 
 async function setupScenario(I) {
   if (!caseId) {
-    caseId = await I.submitNewCaseWithData(standardDirectionOrder);
+    caseId = await I.submitNewCaseWithData(caseData);
     today = new Date();
     date = dateFormat(today, 'd mmm yyyy');
   }
@@ -119,6 +120,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   assertSealedCMO(I, 1, hearing2, true);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.dontSeeInTab(hearing2);
@@ -140,6 +142,8 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
 
   await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -184,6 +188,9 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
 
   await I.completeEvent('Save and continue');
 
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
+
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   assertSealedC21(I, 1, draftOrder3, false);
 
@@ -208,6 +215,9 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
   reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
   await I.completeEvent('Save and continue');
 
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
+
   caseViewPage.selectTab(caseViewPage.tabs.orders);
 
   assertSealedCMO(I, 1, hearing2, true);
@@ -223,7 +233,7 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
 
   caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
   assertDocumentSentToParties(I);
-}).retry(1); // Async case update in prev test
+});
 
 const assertDraftOrders = function (I, collectionId, hearingName, orders, title, status, supportingDocs) {
   const hearing = `Hearing ${collectionId}`;

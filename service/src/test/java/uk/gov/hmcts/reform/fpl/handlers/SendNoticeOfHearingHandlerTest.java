@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingNoOtherAddressTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -81,8 +80,6 @@ class SendNoticeOfHearingHandlerTest {
     @Mock
     private SendDocumentService sendDocumentService;
     @Mock
-    private FeatureToggleService toggleService;
-    @Mock
     private CafcassLookupConfiguration cafcassLookup;
     @Mock
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
@@ -92,8 +89,6 @@ class SendNoticeOfHearingHandlerTest {
 
     @Test
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
-
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(inboxLookup.getRecipients(LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
@@ -104,14 +99,13 @@ class SendNoticeOfHearingHandlerTest {
         underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
-            NOTICE_OF_NEW_HEARING, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA, CASE_ID.toString()
+            NOTICE_OF_NEW_HEARING, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA,
+            CASE_ID.toString()
         );
     }
 
     @Test
     void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
-
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(new Cafcass("", CAFCASS_EMAIL_ADDRESS));
@@ -162,8 +156,6 @@ class SendNoticeOfHearingHandlerTest {
 
     @Test
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
-
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REP_NOTIFY_DATA);
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, EMAIL))

@@ -36,8 +36,8 @@ module.exports = {
         select: 'No',
       },
     },
-    othersSelector: {
-      selector: index => `#othersSelector_option${index}-SELECTED`,
+    personSelector: {
+      selector: index => `#personSelector_option${index}-SELECTED`,
     },
   },
 
@@ -45,11 +45,11 @@ module.exports = {
     I.click(this.fields.applicationType.additionalApplicationTypePrefix + type);
   },
 
-  selectOthers(option, indexes = []) {
+  selectPeople(option, indexes = []) {
     I.click(`${this.fields.allOthers.group}_${option}`);
 
     indexes.forEach((selectorIndex) => {
-      I.checkOption(this.fields.othersSelector.selector(selectorIndex));
+      I.checkOption(this.fields.personSelector.selector(selectorIndex));
     });
   },
 

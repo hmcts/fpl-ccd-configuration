@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
@@ -25,9 +22,7 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
@@ -38,12 +33,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {
-    GatekeepingOrderEventHandler.class,
-    SDOIssuedCafcassContentProvider.class,
-    CaseUrlService.class,
-    SDOIssuedContentProvider.class,
-    CtscEmailLookupConfiguration.class,
-    EmailNotificationHelper.class
+    GatekeepingOrderEventHandler.class, SDOIssuedCafcassContentProvider.class, CaseUrlService.class,
+    SDOIssuedContentProvider.class, CtscEmailLookupConfiguration.class, EmailNotificationHelper.class
 })
 @MockBean(TranslationRequestService.class)
 class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
@@ -75,18 +66,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private GatekeepingOrderEventHandler underTest;
 
-    @MockBean
-    private FeatureToggleService toggleService;
-
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void cafcassSDOAndNoPEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void cafcassSDOAndNoPEmailTemplate() {
         underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
 
         assertThat(response())
-            .hasSubject("SDO and notice of proceedings issued, " + name)
+            .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The standard directions order and notice of proceedings have been issued for:")
                 .line()
@@ -104,15 +89,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void cafcassUrgentHearingOrderAndNoPEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void cafcassUrgentHearingOrderAndNoPEmailTemplate() {
         underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(URGENT_AND_NOP).build());
 
         assertThat(response())
-            .hasSubject("Urgent hearing order and notice of proceedings issued, " + name)
+            .hasSubject("Urgent hearing order and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("An urgent hearing order and notice of proceedings have been issued for:")
                 .line()
@@ -130,15 +112,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void cafcassSDOEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void cafcassSDOEmailTemplate() {
         underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(SDO).build());
 
         assertThat(response())
-            .hasSubject("Gatekeeping order issued, " + name)
+            .hasSubject("Gatekeeping order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The gatekeeping order has been issued for:")
                 .line()
@@ -156,15 +135,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void ctcsSDOAndNoPEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void ctcsSDOAndNoPEmailTemplate() {
         underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
 
         assertThat(response())
-            .hasSubject("SDO and notice of proceedings issued, " + name)
+            .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The standard directions order and notice of proceedings have been issued for:")
                 .line()
@@ -174,15 +150,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void ctcsUrgentHearingOrderAndNoPEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void ctcsUrgentHearingOrderAndNoPEmailTemplate() {
         underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(URGENT_AND_NOP).build());
 
         assertThat(response())
-            .hasSubject("Urgent hearing order and notice of proceedings issued, " + name)
+            .hasSubject("Urgent hearing order and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("An urgent hearing order and notice of proceedings have been issued for:")
                 .line()
@@ -192,15 +165,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void ctcsSDOEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void ctcsSDOEmailTemplate() {
         underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(SDO).build());
 
         assertThat(response())
-            .hasSubject("Gatekeeping order issued, " + name)
+            .hasSubject("Gatekeeping order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The gatekeeping order has been issued for:")
                 .line()
@@ -215,15 +185,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void laSDOAndNoPEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void laSDOAndNoPEmailTemplate() {
         underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
 
         assertThat(response())
-            .hasSubject("SDO and notice of proceedings issued, " + name)
+            .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The standard directions order and notice of proceedings have been issued for:")
                 .line()
@@ -243,15 +210,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void laUrgentHearingOrderAndNoPEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void laUrgentHearingOrderAndNoPEmailTemplate() {
         underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(URGENT_AND_NOP).build());
 
         assertThat(response())
-            .hasSubject("Urgent hearing order and notice of proceedings issued, " + name)
+            .hasSubject("Urgent hearing order and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("An urgent hearing order and notice of proceedings have been issued for:")
                 .line()
@@ -271,15 +235,12 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void laSDOEmailTemplate(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void laSDOEmailTemplate() {
         underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(SDO).build());
 
         assertThat(response())
-            .hasSubject("Gatekeeping order issued, " + name)
+            .hasSubject("Gatekeeping order issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The gatekeeping order has been issued for:")
                 .line()
@@ -295,12 +256,5 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

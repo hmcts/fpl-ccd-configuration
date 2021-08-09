@@ -40,13 +40,13 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORO]",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
-          "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate"
@@ -96,13 +96,13 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORO]",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
-          "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate"
@@ -152,13 +152,13 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORO]",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
-          "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate"
@@ -205,7 +205,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -213,8 +214,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -258,7 +258,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -266,8 +267,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -310,6 +310,7 @@
           "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass"
         ],
@@ -319,8 +320,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -364,7 +364,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -372,8 +373,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -417,7 +417,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -425,8 +426,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -470,7 +470,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -478,8 +479,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -523,7 +523,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -531,8 +532,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -580,7 +580,8 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORO]",
+          "[BARRISTER]"
         ],
         "CRUD": "CU"
       },
@@ -594,7 +595,6 @@
       },
       {
         "UserRoles": [
-          "[BARRISTER]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "U"
@@ -636,7 +636,8 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORO]",
+          "[BARRISTER]"
         ],
         "CRUD": "CU"
       },
@@ -657,8 +658,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "U"
       }
@@ -714,15 +714,10 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
+          "[CHILDSOLICITORO]",
           "[BARRISTER]"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -739,7 +734,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -747,8 +743,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -766,6 +761,7 @@
           "[SOLICITOR]",
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass"
         ],
@@ -775,8 +771,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -795,7 +790,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -803,8 +799,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -823,7 +818,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -831,8 +827,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -875,6 +870,7 @@
           "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass"
         ],
@@ -884,8 +880,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -904,6 +899,7 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "[BARRISTER]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CRU"
@@ -912,8 +908,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -932,7 +927,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -940,8 +936,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -960,7 +955,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -968,8 +964,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -988,7 +983,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -996,8 +992,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1016,7 +1011,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1024,8 +1020,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1044,7 +1039,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1052,8 +1048,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1101,7 +1096,8 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORO]",
+          "[BARRISTER]"
         ],
         "CRUD": "CU"
       },
@@ -1115,7 +1111,6 @@
       },
       {
         "UserRoles": [
-          "[BARRISTER]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "U"
@@ -1164,7 +1159,8 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1178,8 +1174,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "U"
       }
@@ -1235,15 +1230,10 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
+          "[CHILDSOLICITORO]",
           "[BARRISTER]"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -1260,7 +1250,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1268,8 +1259,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1288,7 +1278,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1296,8 +1287,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1316,7 +1306,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1324,8 +1315,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1344,7 +1334,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1352,8 +1343,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1372,7 +1362,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1380,8 +1371,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1425,7 +1415,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1433,8 +1424,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1477,6 +1467,59 @@
           "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundle.respondents",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass"
         ],
@@ -1531,7 +1574,8 @@
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -1539,8 +1583,7 @@
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[BARRISTER]"
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
       }
@@ -1583,6 +1626,59 @@
           "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
           "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
+    "ListElementCode": "otherApplicationsBundle.respondents",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass"
         ],
