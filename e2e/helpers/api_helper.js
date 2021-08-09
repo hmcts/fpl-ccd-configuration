@@ -6,6 +6,7 @@ const output = require('codeceptjs').output;
 const wait = duration => new Promise(resolve => setTimeout(resolve, duration));
 
 const post = async (url, data, headers, retry = 2, backoff = 500) => {
+  output.debug(`Performing post to ${url}`);
   return fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -17,12 +18,13 @@ const post = async (url, data, headers, retry = 2, backoff = 500) => {
       if (retry > 0) {
         return wait(backoff).then(() => post(url, data, headers, retry - 1, backoff * 1.5));
       }
-      throw {message: `POST ${url} failed with ${res.status}`};
+      throw { message: `POST ${url} failed with ${res.status}` };
     }
   });
 };
 
 const get = async (url, headers, retry = 2, backoff = 500) => {
+  output.debug(`Performing get to ${url}`);
   return fetch(url, {
     method: 'GET',
     headers: headers,
@@ -33,17 +35,9 @@ const get = async (url, headers, retry = 2, backoff = 500) => {
       if (retry > 0) {
         return wait(backoff).then(() => get(url, headers, retry - 1, backoff * 1.5));
       }
-      throw {message: `GET ${url} failed with ${res.status}`};
+      throw { message: `GET ${url} failed with ${res.status}` };
     }
   });
-};
-
-const documentData = filename => {
-  return {
-    document_url: `${config.dmStoreUrl}/documents/fakeUrl`,
-    document_filename: filename,
-    document_binary_url: `${config.dmStoreUrl}/documents/fakeUrl/binary`,
-  };
 };
 
 const updateCaseDataWithTodaysDateTime = (data) => {
@@ -64,40 +58,10 @@ const updateCaseDataWithPlaceholders = data => {
   data.caseData = JSON.parse(lodash.template(JSON.stringify(caseData))(placeholders));
 };
 
-const updateCaseDataWithDocuments = (data) => {
-  let caseData = data.caseData;
-  caseData.submittedForm = documentData('mockSubmittedForm.pdf');
-  if(caseData.documents_checklist_document) {
-    caseData.documents_checklist_document.typeOfDocument = documentData('mockChecklist.pdf');
-  }
-  if(caseData.documents_threshold_document) {
-    caseData.documents_threshold_document.typeOfDocument = documentData('mockThreshold.pdf');
-  }
-  if(caseData.documents_socialWorkCarePlan_document) {
-    caseData.documents_socialWorkCarePlan_document.typeOfDocument = documentData('mockSWCP.pdf');
-  }
-  if(caseData.documents_socialWorkAssessment_document) {
-    caseData.documents_socialWorkAssessment_document.typeOfDocument = documentData('mockSWA.pdf');
-  }
-  if(caseData.documents_socialWorkChronology_document) {
-    caseData.documents_socialWorkChronology_document.typeOfDocument = documentData('mockSWC.pdf');
-  }
-  if(caseData.documents_socialWorkEvidenceTemplate_document) {
-    caseData.documents_socialWorkEvidenceTemplate_document.typeOfDocument = documentData('mockSWET.pdf');
-  }
-  if (caseData.standardDirectionOrder) {
-    caseData.standardDirectionOrder.orderDoc = documentData('sdo.pdf');
-  }
-  if (caseData.orderCollection) {
-    for (const order of caseData.orderCollection) {
-      order.value.document = documentData(order.value.type + '.pdf');
-    }
-  }
-  if (caseData.sealedCMOs) {
-    for (const cmo of caseData.sealedCMOs) {
-      cmo.value.order = documentData('mockFile.pdf');
-    }
-  }
+const updateCaseDataWithDocuments = async (data) => {
+  const { document_binary_url, document_url } = await getTestDocument();
+  const caseData = lodash.template(JSON.stringify(data.caseData))({ 'TEST_DOCUMENT_URL': document_url, 'TEST_DOCUMENT_BINARY_URL': document_binary_url });
+  return {state: data.state, caseData: JSON.parse(caseData)};
 };
 
 const getHeaders = authToken => ({
@@ -107,8 +71,8 @@ const getHeaders = authToken => ({
 
 const populateWithData = async (caseId, data) => {
   updateCaseDataWithTodaysDateTime(data);
-  updateCaseDataWithDocuments(data);
   updateCaseDataWithPlaceholders(data);
+  data = await updateCaseDataWithDocuments(data);
 
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;
@@ -121,9 +85,16 @@ const createCase = async (user, caseName) => {
   const authToken = await getAuthToken(user);
   const url = `${config.fplServiceUrl}/testing-support/case/create`;
   const headers = getHeaders(authToken);
-  const data = {caseName: caseName};
+  const data = { caseName: caseName };
   const response = await post(url, data, headers);
   return await response.json();
+};
+
+const getTestDocument = async () => {
+  const url = `${config.fplServiceUrl}/testing-support/test-document`;
+  return getAuthToken()
+    .then(token => get(url, getHeaders(token)))
+    .then(response => response.json());
 };
 
 const getUser = async (user) => {
@@ -141,7 +112,7 @@ const grantCaseAccess = async (caseId, user, role) => {
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/${caseId}/access`;
   const headers = getHeaders(authToken);
-  const data = {email: user.email, password: user.password, role: role};
+  const data = { email: user.email, password: user.password, role: role };
   return await post(url, data, headers);
 };
 

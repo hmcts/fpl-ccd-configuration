@@ -45,7 +45,9 @@ import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -1894,6 +1896,53 @@ class CaseDataTest {
                 = caseData.getRespondentStatementByRespondentId(elementId);
 
             assertThat(optionalRespondentStatementElement).isNotPresent();
+        }
+    }
+
+    @Nested
+    class HasRespondentsOrOthers {
+        Element<Respondent> respondent = element(Respondent.builder()
+            .party(RespondentParty.builder().firstName("David").lastName("Jones").build()).build());
+        Other firstOther = Other.builder().name("John Smith").build();
+
+        @Test
+        void shouldReturnTrueWhenRespondentsAndOthersExist() {
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(respondent))
+                .others(Others.builder().firstOther(firstOther).build())
+                .build();
+
+            assertTrue(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnTrueWhenRespondentsExist() {
+            CaseData caseData = CaseData.builder().respondents1(List.of(respondent)).build();
+
+            assertTrue(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnTrueWhenOthersExist() {
+            CaseData caseData = CaseData.builder()
+                .others(Others.builder().firstOther(firstOther).build())
+                .build();
+
+            assertTrue(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnFalseWhenRespondentsAndOthersDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertFalse(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnFalseWhenFirstOtherDoesNotExist() {
+            CaseData caseData = CaseData.builder().others(Others.builder().build()).build();
+
+            assertFalse(caseData.hasRespondentsOrOthers());
         }
     }
 

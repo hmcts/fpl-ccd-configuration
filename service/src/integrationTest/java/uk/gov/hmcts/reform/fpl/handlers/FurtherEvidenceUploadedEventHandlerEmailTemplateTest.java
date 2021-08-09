@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -19,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -30,20 +26,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
-    FurtherEvidenceUploadedEventHandler.class,
-    FurtherEvidenceNotificationService.class,
-    FurtherEvidenceUploadedEmailContentProvider.class,
-    CaseUrlService.class,
-    EmailNotificationHelper.class
+    FurtherEvidenceUploadedEventHandler.class, FurtherEvidenceNotificationService.class,
+    FurtherEvidenceUploadedEmailContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class
 })
 class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;
@@ -56,12 +47,8 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     @Autowired
     private FurtherEvidenceUploadedEventHandler underTest;
 
-    @MockBean
-    private FeatureToggleService toggleService;
-
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void sendNotification(boolean toggle, String name) {
+    @Test
+    void sendNotification() {
         UUID representativeUUID = UUID.randomUUID();
 
         Representative representative = Representative
@@ -99,15 +86,13 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .id(CASE_ID)
             .build();
 
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
         underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, true,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
         assertThat(response())
-            .hasSubject("New documents uploaded, " + name)
+            .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The Sender has uploaded evidence documents for:")
                 .line()
@@ -122,12 +107,5 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
                 .end("Do not reply to this email."
                     + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

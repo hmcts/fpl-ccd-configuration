@@ -122,5 +122,16 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "applicationType=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "respondents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "applicationType=\"DO NOT SHOW\"",
+    "Searchable": "N"
   }
 ]

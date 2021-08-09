@@ -1,8 +1,9 @@
 const config = require('../config.js');
 const representatives = require('../fixtures/representatives.js');
-const standardDirectionOrder = require('../fixtures/caseData/prepareForHearing.json');
+const caseData = require('../fixtures/caseData/prepareForHearing.json');
 const draftOrdersHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
+const api = require('../helpers/api_helper');
 
 const changeRequestReason = 'Timetable for the proceedings is incomplete';
 const returnedStatus = 'Returned';
@@ -46,7 +47,7 @@ Feature('Upload Draft Orders Journey');
 
 async function setupScenario(I) {
   if (!caseId) {
-    caseId = await I.submitNewCaseWithData(standardDirectionOrder);
+    caseId = await I.submitNewCaseWithData(caseData);
     today = new Date();
     date = dateFormat(today, 'd mmm yyyy');
   }
@@ -112,11 +113,14 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   I.see('mockFile.docx');
   await reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
   reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  assertSealedCMO(I, 1, hearing2);
+  assertSealedCMO(I, 1, hearing2, true);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.dontSeeInTab(hearing2);
@@ -138,6 +142,8 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
 
   await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -177,11 +183,16 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
   await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('No hearing');
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectNotifyAllOthersNo();
 
   await I.completeEvent('Save and continue');
 
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
+
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  assertSealedC21(I, 1, draftOrder3);
+  assertSealedC21(I, 1, draftOrder3, false);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.dontSee(noHearing);
@@ -200,14 +211,19 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(2);
 
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
   await I.completeEvent('Save and continue');
+
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
 
-  assertSealedCMO(I, 1, hearing2);
-  assertSealedCMO(I, 2, hearing1);
-  assertSealedC21(I, 2, draftOrder2);
-  assertSealedC21(I, 3, draftOrder1Updated);
+  assertSealedCMO(I, 1, hearing2, true);
+  assertSealedCMO(I, 2, hearing1, true);
+  assertSealedC21(I, 2, draftOrder2, true);
+  assertSealedC21(I, 3, draftOrder1Updated, true);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -217,7 +233,7 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
 
   caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
   assertDocumentSentToParties(I);
-}).retry(1); // Async case update in prev test
+});
 
 const assertDraftOrders = function (I, collectionId, hearingName, orders, title, status, supportingDocs) {
   const hearing = `Hearing ${collectionId}`;
@@ -249,21 +265,31 @@ const assertDraftOrders = function (I, collectionId, hearingName, orders, title,
   });
 };
 
-const assertSealedCMO = (I, collectionId, hearingName) => {
+const assertSealedCMO = (I, collectionId, hearingName, othersSelected) => {
   const sealedCMO = `Sealed Case Management Order ${collectionId}`;
 
   I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
   I.seeInTab([sealedCMO, 'Hearing'], hearingName);
   I.seeInTab([sealedCMO, 'Date issued'], date);
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
+  if (othersSelected) {
+    I.seeInTab([sealedCMO, 'Others notified'], 'Noah King');
+  } else {
+    I.dontSeeInTab([sealedCMO, 'Others notified']);
+  }
 };
 
-const assertSealedC21 = (I, collectionId, draftOrder) => {
+const assertSealedC21 = (I, collectionId, draftOrder, othersSelected) => {
   const order = `Order ${collectionId}`;
 
   I.seeInTab([order, 'Type of order'], 'Blank order (C21)');
   I.seeInTab([order, 'Order title'], draftOrder.title);
   I.seeInTab([order, 'Order document'], 'mockFile.pdf');
+  if (othersSelected) {
+    I.seeInTab([order, 'Others notified'], 'Noah King');
+  } else {
+    I.dontSeeInTab([order, 'Others notified']);
+  }
 };
 
 const assertDocumentSentToParties = I => {

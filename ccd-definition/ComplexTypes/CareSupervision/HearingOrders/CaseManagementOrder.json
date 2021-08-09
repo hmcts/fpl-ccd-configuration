@@ -106,6 +106,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "othersNotified",
+    "FieldType": "Text",
+    "ElementLabel": "Others notified",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "supportingDocs",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",

@@ -9,8 +9,6 @@ public enum DocmosisTemplates {
     C6A("FL-PLW-HNO-ENG-00093.doc", "Notice_of_proceedings_c6a"),
     NOTICE_OF_HEARING("FL-PLW-HNO-ENG-00525.doc", "Notice_of_hearing"),
     SDO("FL-PLW-STD-ENG-00099.doc", "standard-directions-order"),
-    //fallback title 'order.pdf' - file name is generated in GeneratedOrderService based on type of order
-    ORDER("FL-PLW-GOR-ENG-00218.doc", "order"),
     ORDER_V2("FL-PLW-GOR-ENG-00728.doc", "order"),
     EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order"),
     EPO_V2("FL-PLW-GOR-ENG-00744.doc", "emergency_protection_order"),

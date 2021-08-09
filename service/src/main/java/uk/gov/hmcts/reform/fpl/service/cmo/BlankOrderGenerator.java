@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -29,8 +31,11 @@ public class BlankOrderGenerator {
 
     private final Time time;
 
-    public Element<GeneratedOrder> buildBlankOrder(
-        CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle, Element<HearingOrder> sealedOrder) {
+    public Element<GeneratedOrder> buildBlankOrder(CaseData caseData,
+                                                   Element<HearingOrdersBundle> selectedOrdersBundle,
+                                                   Element<HearingOrder> sealedOrder,
+                                                   List<Element<Other>> selectedOthers,
+                                                   String othersNotified) {
 
         Element<HearingBooking> hearingElement =
             defaultIfNull(caseData.getHearingDetails(), new ArrayList<Element<HearingBooking>>())
@@ -50,6 +55,8 @@ public class BlankOrderGenerator {
                 : null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .children(caseData.getAllChildren())
+            .others(selectedOthers)
+            .othersNotified(othersNotified)
             .build());
     }
 }

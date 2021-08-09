@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -21,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
@@ -32,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     RegisteredRepresentativeSolicitorContentProvider.class, CaseUrlService.class, CafcassEmailContentProvider.class,
     HmctsEmailContentProvider.class, EmailNotificationHelper.class
 })
-@MockBeans({@MockBean(PaymentService.class), @MockBean(EventService.class), @MockBean(FeatureToggleService.class)})
+@MockBeans({@MockBean(PaymentService.class), @MockBean(EventService.class)})
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_LAST_NAME = "Watson";
@@ -81,23 +77,17 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private SubmittedCaseEventHandler underTest;
 
-    @Autowired
-    private FeatureToggleService toggleService;
-
     @BeforeEach
     void setUp() {
         when(C110A.getBinaryUrl()).thenReturn(BINARY_URL);
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyManagedLA(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyManagedLA() {
         underTest.notifyManagedLA(new SubmittedCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
 
         assertThat(response())
-            .hasSubject("Urgent application – same day hearing, " + name)
+            .hasSubject("Urgent application – same day hearing, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .start()
                 .line("Third party org has made a new application for:")
@@ -122,15 +112,12 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyAdmin(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyAdmin() {
         underTest.notifyAdmin(new SubmittedCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
 
         assertThat(response())
-            .hasSubject("Urgent application – same day hearing, " + name)
+            .hasSubject("Urgent application – same day hearing, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .start()
                 .line(LOCAL_AUTHORITY_NAME + " has made a new application for:")
@@ -154,15 +141,12 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyCafcass(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyCafcass() {
         underTest.notifyCafcass(new SubmittedCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
 
         assertThat(response())
-            .hasSubject("Urgent application – same day hearing, " + name)
+            .hasSubject("Urgent application – same day hearing, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .start()
                 .line(LOCAL_AUTHORITY_NAME + " has made a new application for:")
@@ -185,12 +169,5 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .end("Do not reply to this email. If you need to contact us, "
                      + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

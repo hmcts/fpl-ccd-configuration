@@ -48,7 +48,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
                 .build()))
             .build();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn("Smith");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
 
         SDONotifyData actualData = underTest.buildNotificationParameters(caseData);
 
