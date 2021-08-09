@@ -81,7 +81,11 @@ public abstract class AbstractApiTest {
     }
 
     void submittedCallback(CaseData caseDetails, User user, String callback) {
-        caseService.submittedCallback(caseDetails, user, "/callback/" + callback);
+        submittedCallback(caseDetails, caseDetails, user, callback);
+    }
+
+    void submittedCallback(CaseData caseDetails, CaseData caseDetailsBefore, User user, String callback) {
+        caseService.submittedCallback(caseDetails, caseDetailsBefore, user, "/callback/" + callback);
     }
 
     private CaseData readCase(String path) {
