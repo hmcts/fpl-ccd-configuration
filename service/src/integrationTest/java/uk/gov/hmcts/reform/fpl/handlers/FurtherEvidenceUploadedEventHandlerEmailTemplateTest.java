@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -51,9 +52,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private FurtherEvidenceUploadedEventHandler underTest;
 
     @MockBean
-    private FeatureToggleService toggleService;
-
-    @MockBean UserService userService;
+    private UserService userService;
 
     @Test
     void sendNotification() {
@@ -94,7 +93,6 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .id(CASE_ID)
             .build();
 
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
         when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(true);
 
         underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
@@ -105,7 +103,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         assertThat(response())
             .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
-                .line("The Sender has uploaded evidence documents for:")
+                .line("The Sender has uploaded documents for:")
                 .line()
                 .callout("Smith, 12345, hearing 22 May 2021")
                 .line()

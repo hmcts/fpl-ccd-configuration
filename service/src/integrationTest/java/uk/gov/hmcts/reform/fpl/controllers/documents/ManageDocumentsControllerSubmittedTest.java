@@ -14,13 +14,11 @@ import uk.gov.service.notify.NotificationClientException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsController.class)
