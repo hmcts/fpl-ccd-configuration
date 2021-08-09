@@ -155,6 +155,32 @@
       }
     ],
     "sendToCtsc": "Yes",
+    "others": {
+      "firstOther": {
+        "DOB": "1980-03-31",
+        "name": "Noah King",
+        "gender": "Male",
+        "address": {
+          "County": "",
+          "Country": "United Kingdom",
+          "PostCode": "SE16 6BA",
+          "PostTown": "London",
+          "AddressLine1": "Flat 20",
+          "AddressLine2": "Heron House 8",
+          "AddressLine3": ""
+        },
+        "telephone": "07000 654321",
+        "birthPlace": "London",
+        "detailsHidden": "No",
+        "representedBy": [],
+        "childInformation": null,
+        "litigationIssues": "NO",
+        "detailsHiddenReason": null,
+        "genderIdentification": null,
+        "litigationIssuesDetails": ""
+      },
+      "additionalOthers": []
+    },
     "respondents1": [
       {
         "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
@@ -183,7 +209,6 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -354,7 +379,6 @@
       }
     ],
     "standardDirectionOrder": {
-      "orderDoc": "TO BE FILLED WITH VALID DATA",
       "directions": [
         {
           "id": "749f29dc-c200-4377-9e12-a5b4bad631bc",
@@ -678,36 +702,14 @@
         }
       }
     ],
-    "documents_socialWorkOther": [],
     "courtDirectionsHearingDate": "1 January 2050, 3:15pm",
     "respondentDirectionsCustom": [],
     "cafcassDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_checklist_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached"
-    },
     "otherPartiesDirectionsCustom": [],
     "localAuthorityDirectionsCustom": [],
     "respondentDirectionsHearingDate": "1 January 2050, 3:15pm",
     "otherPartiesDirectionsHearingDate": "1 January 2050, 3:15pm",
     "localAuthorityDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached"
-    }
+    "applicationDocuments": []
   }
 }

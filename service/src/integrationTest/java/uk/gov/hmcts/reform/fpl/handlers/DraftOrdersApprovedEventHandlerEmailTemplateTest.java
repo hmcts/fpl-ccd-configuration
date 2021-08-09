@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -25,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
-import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,9 +44,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     DraftOrdersApprovedEventHandler.class, ReviewDraftOrdersEmailContentProvider.class, CaseUrlService.class,
     RepresentativeNotificationService.class, EmailNotificationHelper.class, OtherRecipientsInbox.class
 })
-@MockBean(SendDocumentService.class)
+@MockBeans({
+    @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class)})
 class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Jones";
+    private static final String RESPONDENT_LAST_NAME = "Smith";
 
     @Autowired
     private DraftOrdersApprovedEventHandler underTest;
@@ -79,51 +81,50 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
                     .line("HM Courts & Tribunals Service")
                     .line()
                     .end("Do not reply to this email. If you need to contact us, "
-                         + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+                        + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
                 )
         );
     }
 
     @Test
-    void notifyCafcassAndRepresentatives() {
-        underTest.sendNotificationToCafcassAndRepresentatives(buildEvent());
+    void notifyCafcass() {
+        underTest.sendNotificationToCafcass(buildEvent());
 
-        List<SendEmailResponse> responses = allResponses();
+        assertThat(response())
+            .hasSubject("New orders issued, " + CHILD_LAST_NAME)
+            .hasBody(emailContent()
+                .line("New orders have been issued for:")
+                .line()
+                .callout("Smith, case management hearing, 1 February 2020")
+                .line()
+                .line("The orders are:")
+                .line()
+                .callout("Agreed CMO discussed at hearing\nTest order")
+                .line()
+                .h1("Next steps")
+                .line()
+                .line("You should now check the orders to see if you have any directions and compliance dates.")
+                .line()
+                .line("You can review the orders by:")
+                .line(" ")
+                .list("using these links: ")
+                .line()
+                .line(GOV_NOTIFY_DOC_URL)
+                .line()
+                .line(GOV_NOTIFY_DOC_URL)
+                .lines(19)
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email. If you need to contact us, "
+                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+            );
+    }
 
-        // cafcass and email rep
-        responses.subList(0,2).forEach(response ->
-            assertThat(response)
-                .hasSubject("New orders issued, " + CHILD_LAST_NAME)
-                .hasBody(emailContent()
-                    .line("New orders have been issued for:")
-                    .line()
-                    .callout("Smith, case management hearing, 1 February 2020")
-                    .line()
-                    .line("The orders are:")
-                    .line()
-                    .callout("Agreed CMO discussed at hearing\nTest order")
-                    .line()
-                    .h1("Next steps")
-                    .line()
-                    .line("You should now check the orders to see if you have any directions and compliance dates.")
-                    .line()
-                    .line("You can review the orders by:")
-                    .line(" ")
-                    .list("using these links: ")
-                    .line()
-                    .line(GOV_NOTIFY_DOC_URL)
-                    .line()
-                    .line(GOV_NOTIFY_DOC_URL)
-                    .lines(19)
-                    .line("HM Courts & Tribunals Service")
-                    .line()
-                    .end("Do not reply to this email. If you need to contact us, "
-                         + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
-                )
-        );
+    @Test
+    void notifyDigitalRepresentatives() {
+        underTest.sendNotificationToDigitalRepresentatives(buildEvent());
 
-        // digital rep
-        assertThat(responses.get(2))
+        assertThat(response())
             .hasSubject("New orders issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("New orders have been issued for:")
@@ -146,7 +147,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, "
-                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
     }
 
@@ -177,7 +178,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
             .id(100L)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().lastName("Smith").build())
+                .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
                 .build()))
             .children1(wrapElements(Child.builder()
                 .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
