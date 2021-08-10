@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,16 +13,13 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -38,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     NotifyGatekeeperEventHandler.class, GatekeeperEmailContentProvider.class, CaseUrlService.class,
     EmailNotificationHelper.class
 })
-@MockBean(FeatureToggleService.class)
 public class NotifyGatekeeperEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_LAST_NAME = "Watson";
@@ -61,18 +54,12 @@ public class NotifyGatekeeperEventHandlerEmailTemplateTest extends EmailTemplate
     @Autowired
     private NotifyGatekeeperEventHandler underTest;
 
-    @Autowired
-    private FeatureToggleService toggleService;
-
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyGatekeeper(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyGatekeeper() {
         underTest.notifyGatekeeper(new NotifyGatekeepersEvent(CASE_DATA));
 
         assertThat(response())
-            .hasSubject("Urgent application – same day hearing, " + name)
+            .hasSubject("Urgent application – same day hearing, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .start()
                 .line(LOCAL_AUTHORITY_NAME + " has made a new application for:")
@@ -97,12 +84,5 @@ public class NotifyGatekeeperEventHandlerEmailTemplateTest extends EmailTemplate
                 .end("Do not reply to this email. If you need to contact us, "
                      + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

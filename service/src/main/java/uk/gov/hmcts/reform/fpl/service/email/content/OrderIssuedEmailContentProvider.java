@@ -73,7 +73,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private OrderIssuedNotifyData commonOrderIssuedNotifyData(final CaseData caseData,
                                                               final IssuedOrderType type) {
         return OrderIssuedNotifyData.builder()
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .orderType(typeCalculator.getTypeOfOrder(caseData, type))
             .courtName(courtService.getCourtName(caseData))
             .callout(NOTICE_OF_PLACEMENT_ORDER != type ? buildCalloutWithNextHearing(caseData, time.now()) : "")

@@ -17,7 +17,7 @@ public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProv
 
     public BaseCaseNotifyData buildNoticeOfPlacementOrderUploadedNotification(CaseData caseData) {
         return BaseCaseNotifyData.builder()
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .caseUrl(getCaseUrl(caseData.getId(), PLACEMENT))
             .build();
     }

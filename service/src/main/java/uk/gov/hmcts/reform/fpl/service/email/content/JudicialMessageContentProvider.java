@@ -25,7 +25,7 @@ public class JudicialMessageContentProvider extends AbstractEmailContentProvider
     public NewJudicialMessageTemplate buildNewJudicialMessageTemplate(CaseData caseData,
                                                                       JudicialMessage judicialMessage) {
         return NewJudicialMessageTemplate.builder()
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .callout(buildCalloutWithNextHearing(caseData, time.now()))
             .sender(judicialMessage.getSender())
             .latestMessage(judicialMessage.getLatestMessage())

@@ -43,7 +43,7 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
 
         CaseData caseData = buildCaseData();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn(SOME_NAME);
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(SOME_NAME);
 
         FurtherEvidenceDocumentUploadedData actual = underTest.buildParameters(caseData, SENDER);
 

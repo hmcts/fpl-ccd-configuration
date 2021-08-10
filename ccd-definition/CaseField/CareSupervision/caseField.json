@@ -1668,6 +1668,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "peopleToNotifyTitle",
+    "FieldType": "Label",
+    "Label": "#### People in the case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "notifyApplicationsToAllOthers",
     "Label": "Notify all people on the case about this application?",
     "FieldType": "YesOrNo",
@@ -1836,6 +1845,35 @@
     "Label": "Select who should get the order",
     "FieldType": "OthersSelector",
     "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "personSelector",
+    "Label": "Select who should be notified",
+    "FieldType": "PersonSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "people_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of names for respondents and others"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasRespondentsOrOthers",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide people in the case selection as to when there are no respondents or others to notify",
     "Searchable": "N"
   },
   {
