@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDuration",
+    "ListElementCode": "HOURS_MINS",
+    "ListElement": "Set number of hours and minutes",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDuration",
+    "ListElementCode": "DAYS",
+    "ListElement": "Set number of days",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDuration",
+    "ListElementCode": "DATE_TIME",
+    "ListElement": "Specific end date and time",
+    "DisplayOrder": 3
+  }
+]
