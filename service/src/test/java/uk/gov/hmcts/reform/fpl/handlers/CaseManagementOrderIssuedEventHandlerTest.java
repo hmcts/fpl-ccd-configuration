@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,7 +33,6 @@ import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
@@ -46,7 +44,6 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -66,6 +63,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private static final HearingOrder CMO = mock(HearingOrder.class);
     private static final DocumentReference ORDER = mock(DocumentReference.class);
     private static final CaseManagementOrderIssuedEvent EVENT = new CaseManagementOrderIssuedEvent(CASE_DATA, CMO);
+
     @Mock
     private InboxLookupService inboxLookupService;
     @Mock
@@ -101,10 +99,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(CASE_DATA, ORDER, IssuedOrderType.CMO);
     }
 
-    @ParameterizedTest
-    @MethodSource("templateSource")
-    void shouldNotifyLocalAuthority(String template, boolean toggle) {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
+    @Test
+    void shouldNotifyLocalAuthority() {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
@@ -114,16 +110,15 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         underTest.notifyLocalAuthority(EVENT);
 
-        verify(notificationService).sendEmail(template,
-            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             DIGITAL_REP_CMO_TEMPLATE_DATA,
-            String.valueOf(CASE_ID));
+            String.valueOf(CASE_ID)
+        );
     }
 
-    @ParameterizedTest
-    @MethodSource("templateSource")
-    void shouldNotifyCafcass(String template, boolean toggle) {
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
+    @Test
+    void shouldNotifyCafcass() {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS));
@@ -133,23 +128,20 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyCafcass(EVENT);
 
         verify(notificationService).sendEmail(
-            template, "FamilyPublicLaw+cafcass@gmail.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+cafcass@gmail.com",
+            EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
         );
     }
 
     @ParameterizedTest
-    @MethodSource("templateSource")
-    @SuppressWarnings("unchecked")
-    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(
-        String template,
-        boolean eldestChildToggle,
-        boolean servingOthersEnabled) {
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(eldestChildToggle);
+    @ValueSource(booleans = {true, false})
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
+        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL))
             .willReturn(newHashSet("barney@rubble.com", "andrew@rubble.com"));
-        if (servingOthersEnabled) {
+        if (toggle) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), any(), any()))
                 .willReturn((Set) Set.of("andrew@rubble.com"));
         }
@@ -159,29 +151,25 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyEmailRepresentatives(EVENT);
 
         verify(notificationService).sendEmail(
-            template, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
-        if (!servingOthersEnabled) {
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+        if (!toggle) {
             verify(notificationService).sendEmail(
-                template, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+                CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
             verify(notificationService).sendEmail(
-                template, "andrew@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+                CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "andrew@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
         }
     }
 
     @ParameterizedTest
-    @MethodSource("templateSource")
-    @SuppressWarnings("unchecked")
-    void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(
-        String template,
-        boolean eldestChildLastNameEnabled,
-        boolean servingOthersEnabled) {
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
-        given(toggleService.isEldestChildLastNameEnabled()).willReturn(eldestChildLastNameEnabled);
+    @ValueSource(booleans = {true, false})
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
+        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))
             .willReturn(newHashSet("fred@flinstone.com", "barney@rubble.com"));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REP_CMO_TEMPLATE_DATA);
-        if (servingOthersEnabled) {
+        if (toggle) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(CASE_DATA), any(), any()))
                 .willReturn((Set) Set.of("barney@rubble.com"));
         }
@@ -189,10 +177,10 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyDigitalRepresentatives(EVENT);
 
         verify(notificationService).sendEmail(
-            template, "fred@flinstone.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
-        if (!servingOthersEnabled) {
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "fred@flinstone.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+        if (!toggle) {
             verify(notificationService).sendEmail(
-                template, "barney@rubble.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+                CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
         }
     }
 
@@ -230,13 +218,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION, CASE_TYPE, CASE_ID, SEND_DOCUMENT_EVENT, Map.of("documentToBeSent", ORDER)
-        );
-    }
-
-    private static Stream<Arguments> templateSource() {
-        return Stream.of(
-            Arguments.of(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, false, true),
-            Arguments.of(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE_CHILD_NAME, true, false)
         );
     }
 }

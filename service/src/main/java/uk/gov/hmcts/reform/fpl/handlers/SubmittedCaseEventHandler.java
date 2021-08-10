@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
@@ -33,11 +32,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -55,7 +51,6 @@ public class SubmittedCaseEventHandler {
     private final OutsourcedCaseContentProvider outsourcedCaseContentProvider;
     private final PaymentService paymentService;
     private final EventService eventService;
-    private final FeatureToggleService toggleService;
 
     @Async
     @EventListener
@@ -65,9 +60,9 @@ public class SubmittedCaseEventHandler {
         NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
         String recipient = courtService.getCourtEmail(caseData);
 
-        String template = getTemplate(HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME, HMCTS_COURT_SUBMISSION_TEMPLATE);
-
-        notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
+        notificationService.sendEmail(
+            HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId()
+        );
     }
 
     @Async
@@ -78,9 +73,7 @@ public class SubmittedCaseEventHandler {
         NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        String template = getTemplate(CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME, CAFCASS_SUBMISSION_TEMPLATE);
-
-        notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
+        notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @EventListener
@@ -96,9 +89,9 @@ public class SubmittedCaseEventHandler {
 
         NotifyData templateData = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
-        String template = getTemplate(OUTSOURCED_CASE_TEMPLATE_CHILD_NAME, OUTSOURCED_CASE_TEMPLATE);
-
-        notificationService.sendEmail(template, emails, templateData, caseData.getId().toString());
+        notificationService.sendEmail(
+            OUTSOURCED_CASE_TEMPLATE, emails, templateData, caseData.getId().toString()
+        );
     }
 
     @Async
@@ -116,10 +109,6 @@ public class SubmittedCaseEventHandler {
         } else {
             handlePaymentNotTaken(caseData);
         }
-    }
-
-    private String getTemplate(String toggleEnabledTemplate, String toggleDisabledTemplate) {
-        return toggleService.isEldestChildLastNameEnabled() ? toggleEnabledTemplate : toggleDisabledTemplate;
     }
 
     private void makePaymentForCaseOrders(final CaseData caseData) {

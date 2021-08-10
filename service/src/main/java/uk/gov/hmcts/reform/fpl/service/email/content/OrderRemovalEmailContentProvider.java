@@ -17,7 +17,7 @@ public class OrderRemovalEmailContentProvider extends AbstractEmailContentProvid
         return OrderRemovalTemplate.builder()
             .caseReference(String.valueOf(caseData.getId()))
             .caseUrl(getCaseUrl(caseData.getId()))
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .removalReason(removalReason)
             .build();
     }

@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -35,7 +37,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final Long CASE_NUMBER = 12345L;
-    private static final CaseData CASE_DATA = CaseData.builder()
+    private static CaseData caseData = CaseData.builder()
+        .children1(wrapElements(mock(Child.class)))
         .respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder().lastName("White").build())
             .build()))
@@ -50,7 +53,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
 
     @BeforeEach
     void setUp() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("White");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("White");
     }
 
     @Test
@@ -64,7 +67,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
             .build();
 
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, hearing, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, hearing, judge, orders);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("Black")
@@ -83,7 +86,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(HIS_HONOUR_JUDGE, "White");
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, null, judge, orders);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("White")
@@ -102,7 +105,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, null);
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, null, judge, orders);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("")
@@ -121,7 +124,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, "Smith");
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, null, judge, orders);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("Smith (JP)")

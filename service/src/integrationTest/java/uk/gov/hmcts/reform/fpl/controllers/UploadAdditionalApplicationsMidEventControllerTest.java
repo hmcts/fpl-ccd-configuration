@@ -13,14 +13,19 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -42,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIAN
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -75,11 +81,18 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 .build()))
             .build();
 
+        Element<Representative> representative = element(Representative.builder()
+            .servingPreferences(RepresentativeServingPreferences.EMAIL)
+            .email("test@test.com").build());
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
             .temporaryOtherApplicationsBundle(temporaryOtherDocument)
             .temporaryC2Document(temporaryC2Document)
             .c2Type(WITH_NOTICE)
+            .representatives(List.of(representative))
+            .respondents1(wrapElements(Respondent.builder().representedBy(wrapElements(representative.getId()))
+                .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                .build()))
             .others(Others.builder()
                 .firstOther(Other.builder().name("test1").build())
                 .additionalOthers(wrapElements(Other.builder().name("test2").build()))
@@ -97,24 +110,25 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
-            .containsKeys("temporaryC2Document", "othersSelector")
+            .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
 
         if (servingOthersToggledOn) {
-            assertThat(String.valueOf(response.getData().get("hasOthers"))).isEqualTo("Yes");
-            assertThat(String.valueOf(response.getData().get("others_label")))
-                .contains("Other 1: test1", "Other 2: test2");
-            assertThat(extractCaseData(response).getOthersSelector()).isEqualTo(Selector.newSelector(2));
+            assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
+            assertThat(String.valueOf(response.getData().get("people_label"))).contains(
+                "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - test1\nPerson 3: Other 2 - test2\n");
+            assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(3));
         } else {
             assertThat(response.getData())
-                .doesNotContainKeys("hasOthers", "others_label")
-                .containsEntry("othersSelector", null);
+                .doesNotContainKeys("hasRespondentsOrOthers", "people_label")
+                .containsEntry("personSelector", null);
         }
     }
 
     @Test
     void shouldNotSetC2DocumentBundleWhenOnlyOtherApplicationIsSelected() {
+        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
             .document(DocumentReference.builder().build())
@@ -136,7 +150,9 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsEntry("temporaryC2Document", null)
             .containsEntry("amountToPay", "100")
-            .containsEntry("displayAmountToPay", YES.getValue());
+            .containsEntry("displayAmountToPay", YES.getValue())
+            .containsEntry("personSelector", null)
+            .doesNotContainKeys("hasRespondentsOrOthers", "people_label");
     }
 
     @Test

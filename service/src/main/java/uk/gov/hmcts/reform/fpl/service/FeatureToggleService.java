@@ -77,10 +77,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("child-representative-solicitor", createLDUser(), false);
     }
 
-    public boolean isEldestChildLastNameEnabled() {
-        return ldClient.boolVariation("eldest-child-last-name", createLDUser(), false);
-    }
-
     public boolean isApplicantAdditionalContactsEnabled() {
         return ldClient.boolVariation("applicant-additional-contacts", createLDUser(), false);
     }

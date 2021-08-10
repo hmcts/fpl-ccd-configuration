@@ -123,7 +123,6 @@ const setupConfig = {
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
     addGatekeepingOrderEventPage: './e2e/pages/events/addGatekeepingOrderEvent.page.js',
-    createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
     placementEventPage: './e2e/pages/events/placementEvent.page.js',
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',

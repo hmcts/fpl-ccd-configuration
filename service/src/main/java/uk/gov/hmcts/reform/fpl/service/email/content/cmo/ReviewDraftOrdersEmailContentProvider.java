@@ -43,7 +43,7 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
     public RejectedOrdersTemplate buildOrdersRejectedContent(CaseData caseData, HearingBooking hearing,
                                                              List<HearingOrder> hearingOrders) {
         return RejectedOrdersTemplate.builder()
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .subjectLineWithHearingDate(subject(
                 hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()
             ))
@@ -59,7 +59,7 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .digitalPreference("Yes")
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .documentLinks(buildDocumentCaseLinks(orders))
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .subjectLineWithHearingDate(
                 subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))
@@ -76,7 +76,7 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .attachedDocuments(orders.stream()
                 .map(order -> linkToAttachedDocument(order.getOrder()))
                 .collect(Collectors.toList()))
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .subjectLineWithHearingDate(
                 subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))
