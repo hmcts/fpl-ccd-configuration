@@ -97,7 +97,6 @@ function assertLegalCounsellorWasAdded(caseViewPage, I) {
   I.seeInTab(['Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
   I.seeInTab(['Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
   I.seeInTab(['Legal Counsellor 1', 'Email address'], legalCounsellor.email);
-  I.seeInTab(['Legal Counsellor 1', 'Phone number'], legalCounsellor.telephone);
   I.seeOrganisationInTab(['Respondents 1', 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
 }
 

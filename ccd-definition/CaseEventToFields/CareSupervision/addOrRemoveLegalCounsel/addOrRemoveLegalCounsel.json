@@ -15,7 +15,7 @@
     "CaseEventID": "addOrRemoveLegalCounsel",
     "CaseFieldID": "legalCounsellors",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "COMPLEX",
     "PageID": "addOrRemoveLegalCounselDetails",
     "PageDisplayOrder": 2,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-legal-counsel/mid-event",
