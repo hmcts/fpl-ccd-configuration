@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -19,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -52,7 +53,7 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
-    private final OthersService othersService;
+    private final PeopleInCaseService peopleInCaseService;
     private final FeatureToggleService featureToggleService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
@@ -81,11 +82,13 @@ public class UploadAdditionalApplicationsService {
         final LocalDateTime currentDateTime = time.now();
 
         List<Element<Other>> selectedOthers = new ArrayList<>();
+        List<Element<Respondent>> selectedRespondents = new ArrayList<>();
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                caseData.getOthersSelector(), caseData.getNotifyApplicationsToAllOthers());
+            selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
+            selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
         }
-        String othersNotified = getOthersNotified(selectedOthers);
+        String othersNotified = peopleInCaseService.getPeopleNotified(
+            caseData.getRepresentatives(), selectedRespondents, selectedOthers);
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
             .pbaPayment(caseData.getTemporaryPbaPayment())
@@ -96,15 +99,15 @@ public class UploadAdditionalApplicationsService {
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             additionalApplicationsBundleBuilder.c2DocumentBundle(
-                buildC2DocumentBundle(caseData, applicantName.get(), selectedOthers, othersNotified,
-                    uploadedBy, currentDateTime)
+                buildC2DocumentBundle(caseData, applicantName.get(), selectedOthers, selectedRespondents,
+                    othersNotified, uploadedBy, currentDateTime)
             );
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
             additionalApplicationsBundleBuilder.otherApplicationsBundle(
-                buildOtherApplicationsBundle(caseData, applicantName.get(), selectedOthers, othersNotified,
-                    uploadedBy, currentDateTime)
+                buildOtherApplicationsBundle(caseData, applicantName.get(), selectedOthers, selectedRespondents,
+                    othersNotified, uploadedBy, currentDateTime)
             );
         }
 
@@ -129,6 +132,7 @@ public class UploadAdditionalApplicationsService {
     private C2DocumentBundle buildC2DocumentBundle(CaseData caseData,
                                                    String applicantName,
                                                    List<Element<Other>> selectedOthers,
+                                                   List<Element<Respondent>> selectedRespondents,
                                                    String othersNotified,
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
@@ -155,6 +159,7 @@ public class UploadAdditionalApplicationsService {
 
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             return c2DocumentBundleBuilder
+                .respondents(selectedRespondents)
                 .others(selectedOthers)
                 .othersNotified(othersNotified)
                 .build();
@@ -166,6 +171,7 @@ public class UploadAdditionalApplicationsService {
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
                                                                  String applicantName,
                                                                  List<Element<Other>> selectedOthers,
+                                                                 List<Element<Respondent>> selectedRespondents,
                                                                  String othersNotified,
                                                                  String uploadedBy,
                                                                  LocalDateTime uploadedTime) {
@@ -193,6 +199,7 @@ public class UploadAdditionalApplicationsService {
 
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             return otherApplicationsBundleBuilder
+                .respondents(selectedRespondents)
                 .others(selectedOthers)
                 .othersNotified(othersNotified)
                 .build();
@@ -234,15 +241,6 @@ public class UploadAdditionalApplicationsService {
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
         }).collect(Collectors.toList());
-    }
-
-    private String getOthersNotified(List<Element<Other>> selectedOthers) {
-        return Optional.ofNullable(selectedOthers).map(
-            others -> others.stream()
-                .filter(other -> other.getValue().isRepresented() || other.getValue()
-                    .hasAddressAdded())
-                .map(other -> other.getValue().getName()).collect(Collectors.joining(", "))
-        ).orElse(null);
     }
 
 }

@@ -54,13 +54,12 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         CaseData caseData = buildCaseData();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn(RESPONDENT_LAST_NAME);
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
             .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
-            .lastName(RESPONDENT_LAST_NAME)
+            .lastName(CHILD_LAST_NAME)
             .childLastName(CHILD_LAST_NAME)
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
             .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
@@ -89,14 +88,13 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .build()))
             .build();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn(RESPONDENT_LAST_NAME);
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()
                 .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
-                .lastName(RESPONDENT_LAST_NAME)
+                .lastName(CHILD_LAST_NAME)
                 .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
                 .applicationTypes(List.of("C2 (With notice) - Parental responsibility by the father"))

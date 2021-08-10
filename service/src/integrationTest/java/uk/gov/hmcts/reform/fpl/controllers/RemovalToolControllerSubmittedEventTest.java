@@ -103,7 +103,6 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
     @BeforeEach
     void setUp() {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(true);
         when(time.now()).thenReturn(LocalDateTime.of(2010, 3, 20, 20, 20, 0));
     }
 

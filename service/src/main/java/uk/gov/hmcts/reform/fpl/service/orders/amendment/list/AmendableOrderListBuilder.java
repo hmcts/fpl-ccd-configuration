@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -26,8 +27,10 @@ public class AmendableOrderListBuilder {
     private final List<AmendableListItemProvider> providers;
 
     public DynamicList buildList(CaseData caseData) {
+
         Comparator<Element<? extends AmendableOrder>> comparator = comparing(
-            order -> order.getValue().amendableSortDate(), nullsLast(reverseOrder())
+            order ->
+                order.getValue().amendableSortDate(), nullsLast(reverseOrder())
         );
 
         comparator = comparator.thenComparing(order -> order.getValue().asLabel(), nullsLast(naturalOrder()));
