@@ -138,8 +138,34 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingDuration",
-    "Label": "H",
-    "HintText": "Use 24 hour format",
+    "Label": "Hearing duration",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "hearingDays",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Hearing length, in days",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "hearingHours",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Hearing length, in hours",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "hearingMinutes",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Hearing length, in minutes",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
