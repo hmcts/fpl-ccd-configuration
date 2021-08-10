@@ -45,7 +45,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
                 .build()))
             .build();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn("Jones");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Jones");
 
         NotifyData actualData = underTest.buildNoticeOfPlacementOrderUploadedNotification(caseData);
 

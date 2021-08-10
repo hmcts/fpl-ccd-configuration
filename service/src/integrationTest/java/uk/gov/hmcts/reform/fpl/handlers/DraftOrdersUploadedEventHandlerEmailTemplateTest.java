@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -21,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -32,9 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
@@ -44,34 +38,25 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {
-    DraftOrdersUploadedEventHandler.class,
-    DraftOrdersUploadedContentProvider.class,
-    AgreedCMOUploadedContentProvider.class,
-    CaseUrlService.class,
-    EmailNotificationHelper.class
+    DraftOrdersUploadedEventHandler.class, DraftOrdersUploadedContentProvider.class,
+    AgreedCMOUploadedContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class
 })
 class DraftOrdersUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_LAST_NAME = "Smithson";
     private static final String CHILD_LAST_NAME = "Jones";
 
-    @MockBean
-    private FeatureToggleService toggleService;
-
     @Autowired
     private DraftOrdersUploadedEventHandler underTest;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyJudge(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyJudge() {
         CaseData caseData = getCaseData();
 
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         assertThat(response())
-            .hasSubject("New draft orders received, " + name)
+            .hasSubject("New draft orders received, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("Dear Her Honour Judge Smith,")
                 .line()
@@ -89,17 +74,14 @@ class DraftOrdersUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyAdmin(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyAdmin() {
         CaseData caseData = getCaseData();
 
         underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
 
         assertThat(response())
-            .hasSubject("CMO sent for approval, " + name)
+            .hasSubject("CMO sent for approval, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("Her Honour Judge Smith has been notified to approve the CMO for:")
                 .line()
@@ -150,12 +132,5 @@ class DraftOrdersUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
             .hearingDetails(List.of(hearingBooking))
             .lastHearingOrderDraftsHearingId(hearingBooking.getId())
             .build();
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

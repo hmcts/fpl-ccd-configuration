@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -11,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -29,17 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Component
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class EmailNotificationHelper {
-
-    private final FeatureToggleService toggleService;
-
-    // can remove method once enabled
-    public String getSubjectLineLastName(CaseData caseData) {
-        return toggleService.isEldestChildLastNameEnabled()
-                          ? getEldestChildLastName(caseData.getAllChildren())
-                          : getFirstRespondentLastName(caseData.getRespondents1());
-    }
 
     public String getEldestChildLastName(List<Element<Child>> children) {
         return unwrapElements(children).stream()

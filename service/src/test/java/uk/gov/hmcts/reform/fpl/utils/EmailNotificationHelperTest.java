@@ -9,15 +9,12 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
@@ -48,26 +45,7 @@ class EmailNotificationHelperTest {
             .build()
     );
 
-    private final FeatureToggleService toggleService = mock(FeatureToggleService.class);
-    private final EmailNotificationHelper underTest = new EmailNotificationHelper(toggleService);
-
-    @Test
-    void shouldReturnRespondentLastNameWhenToggleDisabled() {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(false);
-
-        CaseData caseData = CaseData.builder().children1(CHILDREN).respondents1(RESPONDENTS).build();
-
-        assertThat(underTest.getSubjectLineLastName(caseData)).isEqualTo("Jones");
-    }
-
-    @Test
-    void shouldReturnRespondentLastNameWhenToggleEnabled() {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(true);
-
-        CaseData caseData = CaseData.builder().children1(CHILDREN).respondents1(RESPONDENTS).build();
-
-        assertThat(underTest.getSubjectLineLastName(caseData)).isEqualTo("Ross");
-    }
+    private final EmailNotificationHelper underTest = new EmailNotificationHelper();
 
     @Test
     void shouldReturnLastNameOfEldestChild() {

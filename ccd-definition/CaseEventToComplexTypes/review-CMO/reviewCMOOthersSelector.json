@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "optionCount",
     "EventElementLabel": " ",
@@ -13,7 +13,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option0",
     "EventElementLabel": " ",
@@ -23,7 +23,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option1",
     "EventElementLabel": " ",
@@ -33,7 +33,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option2",
     "EventElementLabel": " ",
@@ -43,7 +43,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option3",
     "EventElementLabel": " ",
@@ -53,7 +53,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option4",
     "EventElementLabel": " ",
@@ -63,7 +63,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option5",
     "EventElementLabel": " ",
@@ -73,7 +73,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option6",
     "EventElementLabel": " ",
@@ -83,7 +83,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option7",
     "EventElementLabel": " ",
@@ -93,7 +93,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option8",
     "EventElementLabel": " ",
@@ -103,7 +103,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OthersSelector",
-    "CaseEventID": "uploadAdditionalApplications",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "othersSelector",
     "ListElementCode": "option9",
     "EventElementLabel": " ",

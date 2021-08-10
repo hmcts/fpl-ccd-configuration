@@ -9,8 +9,6 @@ properties([
       description: 'The URL of case service callbacks'),
     string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
       description: 'The URL of idam api'),
-    string(name: 'DM_STORE_URL', defaultValue: 'http://dm-store-aat.service.core-compute-aat.internal',
-      description: 'The URL of dm store'),
     string(name: 'SECURITY_RULES',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
@@ -72,7 +70,6 @@ withNightlyPipeline(type, product, component) {
 
   env.URL = params.FRONTEND_URL
   env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
-  env.DM_STORE_URL=params.DM_STORE_URL
   env.IDAM_API_URL=params.IDAM_API_URL
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
   env.SECURITY_RULES = params.SECURITY_RULES

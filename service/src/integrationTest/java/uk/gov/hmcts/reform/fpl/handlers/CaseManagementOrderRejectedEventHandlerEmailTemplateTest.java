@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderRejectedEvent;
@@ -15,15 +12,12 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -36,17 +30,11 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
     private static final String CHILD_LAST_NAME = "slaanesh";
     private static final String RESPONDENT_LAST_NAME = "tzeentch";
 
-    @MockBean
-    private FeatureToggleService toggleService;
-
     @Autowired
     private CaseManagementOrderRejectedEventHandler underTest;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyLocalAuthority(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyLocalAuthority() {
         String familyManCaseNumber = "fam_num";
         long caseId = 12345L;
         CaseData caseData = CaseData.builder()
@@ -70,7 +58,7 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
         underTest.notifyLocalAuthority(new CaseManagementOrderRejectedEvent(caseData, cmo));
 
         assertThat(response())
-            .hasSubject("Changes needed on CMO, " + name)
+            .hasSubject("Changes needed on CMO, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The judge has requested changes to the CMO for:")
                 .line()
@@ -87,12 +75,5 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

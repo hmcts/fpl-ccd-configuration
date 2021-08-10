@@ -19,7 +19,7 @@ public class SDOIssuedContentProvider extends AbstractEmailContentProvider {
 
     public SDONotifyData buildNotificationParameters(CaseData caseData) {
         return SDONotifyData.builder()
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .callout(buildCallout(caseData))
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .build();

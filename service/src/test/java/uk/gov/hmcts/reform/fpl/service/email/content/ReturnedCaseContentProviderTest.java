@@ -38,7 +38,6 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     private static final String ENCODED_BINARY = Base64.getEncoder().encodeToString(C110A_BINARY);
     private static final DocumentReference C110A = testDocumentReference();
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
-    private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(12345L)
@@ -46,7 +45,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
         .children1(wrapElements(mock(Child.class)))
         .respondents1(wrapElements(Respondent.builder()
-            .party(RespondentParty.builder().firstName("Paul").lastName(RESPONDENT_LAST_NAME).build())
+            .party(RespondentParty.builder().firstName("Paul").lastName("Smith").build())
             .build()))
         .submittedForm(C110A)
         .returnApplication(ReturnApplication.builder()
@@ -63,12 +62,12 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     @BeforeEach
     void setUp() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn(RESPONDENT_LAST_NAME);
+        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(CHILD_LAST_NAME);
     }
 
     @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithAllData() {
-        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl(RESPONDENT_LAST_NAME).build();
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl().build();
 
         ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(CASE_DATA);
 
@@ -77,8 +76,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithAllDataWhenToggleEnabled() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn(CHILD_LAST_NAME);
-        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl(CHILD_LAST_NAME).build();
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl().build();
         ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(CASE_DATA);
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -87,9 +85,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithoutOptionalData() {
         CaseData caseData = CASE_DATA.toBuilder().familyManCaseNumber(null).build();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn(RESPONDENT_LAST_NAME);
-
-        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl(RESPONDENT_LAST_NAME)
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl()
             .familyManCaseNumber("")
             .build();
 
@@ -100,7 +96,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Test
     void shouldBuildReturnedCaseTemplateWithApplicationUrl() {
-        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithApplicationUrl(RESPONDENT_LAST_NAME).build();
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithApplicationUrl().build();
 
         when(documentDownloadService.downloadDocument(C110A.getBinaryUrl())).thenReturn(C110A_BINARY);
 
@@ -137,18 +133,18 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         );
     }
 
-    private ReturnedCaseTemplateBuilder returnedCaseTemplateWithCaseUrl(String lastName) {
-        return returnedCaseTemplate(lastName).caseUrl(caseUrl(CASE_REFERENCE));
+    private ReturnedCaseTemplateBuilder returnedCaseTemplateWithCaseUrl() {
+        return returnedCaseTemplate().caseUrl(caseUrl(CASE_REFERENCE));
     }
 
-    private ReturnedCaseTemplateBuilder returnedCaseTemplateWithApplicationUrl(String lastName) {
-        return returnedCaseTemplate(lastName).applicationDocumentUrl(Map.of("file", ENCODED_BINARY, "is_csv", false));
+    private ReturnedCaseTemplateBuilder returnedCaseTemplateWithApplicationUrl() {
+        return returnedCaseTemplate().applicationDocumentUrl(Map.of("file", ENCODED_BINARY, "is_csv", false));
     }
 
-    private ReturnedCaseTemplateBuilder returnedCaseTemplate(String lastName) {
+    private ReturnedCaseTemplateBuilder returnedCaseTemplate() {
         return ReturnedCaseTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_NAME)
-            .lastName(lastName)
+            .lastName(CHILD_LAST_NAME)
             .respondentFullName("Paul Smith")
             .returnedReasons("Application incomplete, clarification needed")
             .returnedNote("Missing children details")

@@ -33,7 +33,7 @@ public class DraftOrdersUploadedContentProvider extends AbstractEmailContentProv
             .caseUrl(getCaseUrl(caseData.getId(), TabUrlAnchor.DRAFT_ORDERS))
             .judgeTitle(getJudgeTitle(judge))
             .judgeName(getJudgeName(judge))
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .subjectLineWithHearingDate(subject(
                 hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()
             ))

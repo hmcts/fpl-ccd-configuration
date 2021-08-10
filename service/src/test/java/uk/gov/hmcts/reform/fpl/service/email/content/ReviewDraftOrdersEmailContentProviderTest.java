@@ -73,7 +73,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .digitalPreference("Yes")
             .build();
 
-        given(helper.getSubjectLineLastName(caseData)).willReturn("Davies");
+        given(helper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
 
         assertThat(underTest.buildOrdersApprovedContent(
             caseData, hearing, orders, DIGITAL_SERVICE)).isEqualTo(expectedTemplate);
@@ -119,7 +119,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .documentLinks(List.of())
             .build();
 
-        given(helper.getSubjectLineLastName(caseData)).willReturn("Davies");
+        given(helper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
 
         assertThat(underTest.buildOrdersApprovedContent(caseData, hearing, orders, EMAIL)).isEqualTo(expectedTemplate);
     }
@@ -155,7 +155,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .subjectLineWithHearingDate("Jones, SN2000, case management hearing, 20 February 2020")
             .build();
 
-        given(helper.getSubjectLineLastName(caseData)).willReturn("Davies");
+        given(helper.getEldestChildLastName(caseData.getAllChildren())).willReturn("Davies");
 
         assertThat(underTest.buildOrdersRejectedContent(caseData, hearing, orders)).isEqualTo(expectedTemplate);
     }
