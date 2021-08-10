@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocum
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -190,9 +189,6 @@ class FurtherEvidenceNotificationServiceTest {
     }
 
     private static List<String> buildDocumentsNamesList() {
-        List<String> documents = new ArrayList<>();
-        documents.add("DOCUMENT 1");
-        documents.add("DOCUMENT 2");
-        return documents;
+        return List.of("DOCUMENT 1", "DOCUMENT 2");
     }
 }

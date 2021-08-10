@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -331,16 +330,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     private static final List<String> buildNonConfidentialDocumentsNamesList() {
-        List<String> documents = new ArrayList<>();
-        documents.add(NON_CONFIDENTIAL_1);
-        documents.add(NON_CONFIDENTIAL_2);
-        return documents;
+        return List.of(NON_CONFIDENTIAL_1, NON_CONFIDENTIAL_2);
     }
 
     private static final List<String> buildConfidentialDocumentsNamesList() {
-        List<String> documents = new ArrayList<>();
-        documents.add(CONFIDENTIAL_1);
-        return documents;
+        return List.of(CONFIDENTIAL_1);
     }
 
     private CaseData.CaseDataBuilder commonCaseBuilder() {

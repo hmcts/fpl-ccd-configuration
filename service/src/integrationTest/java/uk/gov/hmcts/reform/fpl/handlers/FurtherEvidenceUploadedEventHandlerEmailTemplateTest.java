@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
@@ -54,6 +57,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     @MockBean
     private UserService userService;
 
+    @MockBean
+    private CaseAccessDataStoreApi caseAccessDataStoreApi;
+
     @Test
     void sendNotification() {
         UUID representativeUUID = UUID.randomUUID();
@@ -93,7 +99,14 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .id(CASE_ID)
             .build();
 
-        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(true);
+        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+            .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
+                CaseAssignedUserRole.builder()
+                    .caseRole("[SOLICITORA]")
+                    .userId("USER_1_ID")
+                    .caseDataId("123")
+                    .build()))
+                .build());
 
         underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, true,

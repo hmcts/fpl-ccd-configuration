@@ -5,11 +5,15 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -35,7 +39,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     private NotificationClient notificationClient;
 
     @MockBean
-    private UserService userService;
+    private CaseAccessDataStoreApi caseAccessDataStoreApi;
 
     ManageDocumentsControllerSubmittedTest() {
         super("manage-documents");
@@ -52,7 +56,9 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     void shouldNotPublishEventWhenConfidentialDocumentsAreUploaded() {
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
-        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(false);
+        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+            .thenReturn(buildCaseAssignedUserRole("[LASOLICITOR]"));
+
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, true));
         verifyNoInteractions(notificationClient);
     }
@@ -60,8 +66,10 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     @Test
     void shouldPublishEventWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
-        when(userService.getUserDetails()).thenReturn(UserDetails.builder().email("user@email.com").build());
-        when(userService.hasAnyCaseRoleFrom(any(), any())).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+            .thenReturn(buildCaseAssignedUserRole("[SOLICITORA]"));
+
         postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
 
         verify(notificationClient).sendEmail(
@@ -75,5 +83,15 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
             eq(REP_1_EMAIL),
             anyMap(),
             eq(EMAIL_REFERENCE));
+    }
+
+    private CaseAssignedUserRolesResource buildCaseAssignedUserRole(String role) {
+        return CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
+            CaseAssignedUserRole.builder()
+                .caseRole(role)
+                .userId("USER_1_ID")
+                .caseDataId("123")
+                .build()))
+            .build();
     }
 }
