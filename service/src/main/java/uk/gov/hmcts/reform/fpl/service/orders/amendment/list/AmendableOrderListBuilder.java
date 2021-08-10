@@ -26,7 +26,6 @@ public class AmendableOrderListBuilder {
     private final List<AmendableListItemProvider> providers;
 
     public DynamicList buildList(CaseData caseData) {
-
         Comparator<Element<? extends AmendableOrder>> comparator = comparing(
             order -> order.getValue().amendableSortDate(), nullsLast(reverseOrder())
         );
