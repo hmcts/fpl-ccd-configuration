@@ -110,7 +110,7 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
-  ctsc_team_lead_inbox: 'FPLTeamLeaders@justice.gov.uk'
+  ctsc_team_lead_inbox: 'FamilyPublicLaw+ctsc-team-lead@gmail.com'
   env: 'localhost'
 
 robotics:
