@@ -932,6 +932,10 @@ public class CaseData {
     @TimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
     @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
+    private final String hearingDays;
+    private final String hearingMinutes;
+    private final String hearingHours;
+    private final String hearingDuration;
     private final String sendNoticeOfHearing;
     private final HearingOptions hearingOption;
     private final HearingReListOption hearingReListOption;

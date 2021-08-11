@@ -382,7 +382,9 @@ public class ManageHearingsService {
     }
 
     public Map<String, Object> populateFieldsWhenPastHearingDateAdded(LocalDateTime hearingStartDate,
-                                                                      LocalDateTime hearingEndDate) {
+                                                                      LocalDateTime hearingEndDate,
+                                                                      String hearingDuration,
+                                                                      CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
         LocalDateTime currentDateTime = LocalDateTime.now();
 
@@ -394,7 +396,14 @@ public class ManageHearingsService {
             data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
         }
         if (hearingEndDate.isBefore(currentDateTime)) {
-            data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
+            if (hearingDuration.equals("DATE_TIME")) {
+                data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
+            } else if (hearingDuration.equals("DAYS")) {
+                data.put(HEARING_END_DATE_LABEL, caseData.getHearingDays() + " days");
+            } else if (hearingDuration.equals("HOURS_MINS")) {
+                data.put(HEARING_END_DATE_LABEL, caseData.getHearingHours() + " hours" + caseData.getHearingMinutes() + "minutes");
+            }
+
             data.put(END_DATE_FLAG, YES.getValue());
             data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
         }

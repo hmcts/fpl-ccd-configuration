@@ -30,10 +30,12 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
@@ -223,12 +225,28 @@ public class ManageHearingsController extends CallbackController {
             }
         }
 
+//        caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(
+//            caseData.getHearingStartDate(), caseData.getHearingEndDate()));
+
         caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(
-            caseData.getHearingStartDate(), caseData.getHearingEndDate()));
+            caseData.getHearingStartDate(), getHearingEndDate(caseData), caseData.getHearingDuration(), caseData));
 
         caseDetails.getData().put(HAS_SESSION_KEY, YES.getValue());
 
         return respond(caseDetails, errors);
+    }
+
+    private LocalDateTime getHearingEndDate(CaseData caseData) {
+        if(!isNull(caseData.getHearingEndDate())) {
+            return caseData.getHearingEndDate();
+        } else if(!isNull(caseData.getHearingDays())) {
+            return caseData.getHearingStartDate().plusDays(Long.parseLong(caseData.getHearingDays()));
+        } else if(!isNull(caseData.getHearingMinutes()) || !isNull(caseData.getHearingHours())) {
+            LocalDateTime startDate = caseData.getHearingStartDate();
+            return startDate.plusHours(Long.parseLong(caseData.getHearingHours()))
+                .plusMinutes(Long.parseLong(caseData.getHearingMinutes()));
+        }
+        return null;
     }
 
     @PostMapping("/hearing-in-past/mid-event")

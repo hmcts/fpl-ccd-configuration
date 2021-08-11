@@ -494,18 +494,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingDurationLabel",
-    "PageFieldDisplayOrder": 3,
-    "DisplayContext": "READONLY",
-    "PageID": "ConfirmHearingDetails",
-    "ShowSummaryChangeOption": "N",
-    "PageDisplayOrder": 6,
-    "FieldShowCondition": "endDateFlag=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
     "CaseFieldID": "confirmHearingDate",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
