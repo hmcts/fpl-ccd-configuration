@@ -42,7 +42,7 @@ public class UpdateRepresentationService {
             throw new IllegalStateException("Invalid or missing ChangeOrganisationRequest: " + change);
         }
 
-        final SolicitorRole role = SolicitorRole.from(change.getCaseRoleId().getValueCode());
+        final SolicitorRole role = SolicitorRole.from(change.getCaseRoleId().getValueCode()).orElseThrow();
 
         final Representing representing = role.getRepresenting();
 
