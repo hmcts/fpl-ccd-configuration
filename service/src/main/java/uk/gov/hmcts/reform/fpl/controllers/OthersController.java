@@ -48,13 +48,13 @@ public class OthersController extends CallbackController {
 
         confidentialService.addConfidentialDetailsToCase(caseDetails, allOthers, OTHER);
 
-        List<Element<Other>> others = confidentialService.removeConfidentialDetails(allOthers);
+        List<Element<Other>> othersList = confidentialService.removeConfidentialDetails(allOthers);
 
-        Others othersList = Others.from(others);
-        if (isNull(othersList)) {
+        Others others = Others.from(othersList);
+        if (isNull(others)) {
             caseDetails.getData().remove("others");
         } else {
-            caseDetails.getData().put("others", othersList);
+            caseDetails.getData().put("others", others);
         }
 
         return respond(caseDetails);

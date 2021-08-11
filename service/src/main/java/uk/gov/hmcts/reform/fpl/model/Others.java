@@ -29,12 +29,12 @@ public class Others {
 
         if (isEmpty(others)) {
             return null;
-        } else {
-            return Others.builder()
-                .firstOther(ofNullable(others.pollFirst()).map(Element::getValue).orElse(null))
-                .additionalOthers(others)
-                .build();
         }
+
+        return Others.builder()
+            .firstOther(ofNullable(others.pollFirst()).map(Element::getValue).orElse(null))
+            .additionalOthers(others)
+            .build();
     }
 
     @JsonIgnore
