@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
@@ -19,12 +18,12 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -48,6 +47,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -60,7 +61,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final NotificationService notificationService;
     private final CourtService courtService;
     private final AdditionalApplicationsUploadedEmailContentProvider contentProvider;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final RepresentativeNotificationService representativeNotificationService;
@@ -109,8 +110,8 @@ public class AdditionalApplicationsUploadedEventHandler {
             NotifyData notifyData = contentProvider.getNotifyData(caseData);
             String recipient = courtService.getCourtEmail(caseData);
             String template = featureToggleService.isServeOrdersAndDocsToOthersEnabled()
-                              ? UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
-                              : INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
+                ? UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
+                : INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 
             notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
         }
@@ -123,14 +124,33 @@ public class AdditionalApplicationsUploadedEventHandler {
             final CaseData caseData = event.getCaseData();
             final OrderApplicant applicant = event.getApplicant();
 
-            if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
-                Collection<String> emails = inboxLookupService.getRecipients(
-                    LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
-                sendNotification(caseData, emails);
+            if (applicant.getType() == LOCAL_AUTHORITY) {
+
+                final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+                    .caseData(caseData)
+                    .secondaryLocalAuthorityExcluded(true)
+                    .build();
+
+                final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+                sendNotification(caseData, recipients);
+
+            } else if (applicant.getType() == SECONDARY_LOCAL_AUTHORITY) {
+
+                final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+                    .caseData(caseData)
+                    .designatedLocalAuthorityExcluded(true)
+                    .build();
+
+                final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+                sendNotification(caseData, recipients);
+
             } else {
-                Map<String, String> emails = getRespondentsEmails(caseData);
-                if (isNotEmpty(emails.get(applicant.getName()))) {
-                    sendNotification(caseData, Set.of(emails.get(applicant.getName())));
+
+                Map<String, String> recipients = getRespondentsEmails(caseData);
+                if (isNotEmpty(recipients.get(applicant.getName()))) {
+                    sendNotification(caseData, Set.of(recipients.get(applicant.getName())));
                 }
             }
         }
@@ -141,7 +161,7 @@ public class AdditionalApplicationsUploadedEventHandler {
             .collect(Collectors.toMap(
                 respondent -> respondent.getValue().getParty().getFullName(),
                 respondent -> hasNoSolicitorEmail(respondent) ? EMPTY
-                                                              : respondent.getValue().getSolicitor().getEmail()
+                    : respondent.getValue().getSolicitor().getEmail()
             ));
     }
 

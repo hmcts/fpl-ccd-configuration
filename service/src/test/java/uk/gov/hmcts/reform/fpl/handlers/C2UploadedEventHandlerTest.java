@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -49,7 +49,7 @@ class C2UploadedEventHandlerTest {
     private NotificationService notificationService;
 
     @MockBean
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @MockBean
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
@@ -72,7 +72,7 @@ class C2UploadedEventHandlerTest {
     @AfterEach
     void resetInvocations() {
         reset(notificationService);
-        reset(inboxLookupService);
+        reset(localAuthorityRecipients);
         reset(c2UploadedEmailContentProvider);
     }
 

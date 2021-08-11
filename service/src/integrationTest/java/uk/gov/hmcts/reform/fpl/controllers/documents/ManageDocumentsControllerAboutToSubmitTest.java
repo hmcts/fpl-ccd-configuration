@@ -76,7 +76,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     @BeforeEach
     void init() {
         givenCurrentUser(createUserDetailsWithHmctsRole());
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), Long.toString(CASE_ID))).willReturn(false);
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), CASE_ID)).willReturn(false);
     }
 
     @Test

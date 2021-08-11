@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -15,11 +18,15 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDate;
@@ -27,15 +34,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
-    FurtherEvidenceUploadedEventHandler.class, FurtherEvidenceNotificationService.class,
+    FurtherEvidenceUploadedEventHandler.class, FurtherEvidenceNotificationService.class, UserService.class,
     FurtherEvidenceUploadedEmailContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class
 })
+@MockBeans({@MockBean(CaseAccessService.class)})
 class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;
     private static final String LA_EMAIL = "la@example.com";
@@ -44,8 +54,23 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
 
+    @MockBean
+    private IdamClient idamClient;
+
+    @MockBean
+    private RequestData requestData;
+
     @Autowired
     private FurtherEvidenceUploadedEventHandler underTest;
+
+    @BeforeEach
+    void init() {
+
+        final UserDetails userDetails = UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build();
+
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        given(idamClient.getUserDetails(AUTH_TOKEN)).willReturn(userDetails);
+    }
 
     @Test
     void sendNotification() {
@@ -86,10 +111,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .id(CASE_ID)
             .build();
 
-        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, true,
-            UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
-        ));
+        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, true));
 
         assertThat(response())
             .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)

@@ -29,15 +29,11 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.HamcrestCondition.matching;
-import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_FORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -64,7 +60,7 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> emailVariablesCaptor;
 
-    protected ManageLegalCounselControllerSubmittedTest() {
+    ManageLegalCounselControllerSubmittedTest() {
         super("manage-legal-counsel");
     }
 
@@ -73,7 +69,7 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
         when(organisationService.findOrganisation())
             .thenReturn(Optional.of(Organisation.builder().name("Solicitors Ltd").build()));
         when(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(TEST_CASE_ID))
-            .thenReturn(asList(SolicitorRole.CHILDSOLICITORA));
+            .thenReturn(List.of(SolicitorRole.CHILDSOLICITORA));
     }
 
     @Test
@@ -112,7 +108,7 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
             CaseData.builder()
                 .children1(children)
                 .caseName("testCaseName")
-                .id(TEST_CASE_ID_AS_LONG)
+                .id(TEST_CASE_ID)
                 .build()
         );
     }
@@ -121,15 +117,16 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
                                                                 String childLastName) {
         LegalCounsellor legalCounsellor = addedLegalCounsellor.getValue();
         checkUntil(() -> {
-            verify(caseAccessService).grantCaseRoleToUser(TEST_CASE_ID_AS_LONG, "testUserId1", BARRISTER);
+            verify(caseAccessService).grantCaseRoleToUser(TEST_CASE_ID, "testUserId1", BARRISTER);
             verify(notificationClient).sendEmail(any(),
                 eq(legalCounsellor.getEmail()),
                 emailVariablesCaptor.capture(),
-                argThat(endsWith(TEST_CASE_ID)));
+                eq(notificationReference(TEST_CASE_ID)));
+
             assertThat(emailVariablesCaptor.getValue())
                 .containsEntry("childLastName", childLastName)
                 .containsEntry("caseID", TEST_FORMATTED_CASE_ID)
-                .hasEntrySatisfying("caseUrl", matching(endsWith("/cases/case-details/" + TEST_CASE_ID)));
+                .containsEntry("caseUrl", caseUrl(TEST_CASE_ID));
         });
     }
 
@@ -137,11 +134,11 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
                                                                   String childLastName) {
         LegalCounsellor legalCounsellor = removedLegalCounsellor.getValue();
         checkUntil(() -> {
-            verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID_AS_LONG, "testUserId3", BARRISTER);
+            verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID, "testUserId3", BARRISTER);
             verify(notificationClient).sendEmail(any(),
                 eq(legalCounsellor.getEmail()),
                 emailVariablesCaptor.capture(),
-                argThat(endsWith(TEST_CASE_ID)));
+                eq(notificationReference(TEST_CASE_ID)));
             assertThat(emailVariablesCaptor.getValue())
                 .containsEntry("caseName", "testCaseName")
                 .containsEntry("childLastName", childLastName)
