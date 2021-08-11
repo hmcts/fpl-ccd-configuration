@@ -10,9 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -33,14 +33,13 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ModifiedDocumentCommonEventHandler {
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final NotificationService notificationService;
     private final ModifiedItemEmailContentProviderStrategy emailContentProviderStrategy;
     private final RepresentativesInbox representativesInbox;
     private final RepresentativeNotificationService representativeNotificationService;
     private final SendDocumentService sendDocumentService;
     private final OtherRecipientsInbox otherRecipientsInbox;
-
 
     @SuppressWarnings("unchecked")
     public void notifyDigitalRepresentatives(final ModifiedDocumentEvent orderEvent) {
@@ -87,7 +86,6 @@ public class ModifiedDocumentCommonEventHandler {
         if (!emailRepresentatives.isEmpty() && !ModifiedOrderType
             .STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
 
-
             final NotifyData notifyData = emailContentProviderStrategy.getEmailContentProvider(orderEvent)
                 .getProvider()
                 .getNotifyData(caseData,
@@ -102,8 +100,6 @@ public class ModifiedDocumentCommonEventHandler {
         }
     }
 
-
-    @SuppressWarnings("unchecked")
     public void notifyLocalAuthority(final ModifiedDocumentEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getAmendedDocument();
@@ -114,12 +110,15 @@ public class ModifiedDocumentCommonEventHandler {
             .getNotifyData(caseData,
                 orderDocument, orderType);
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
 
-        notificationService.sendEmail(
-            emailContentProviderStrategy.getEmailContentProvider(orderEvent).getTemplateKey(), emails, notifyData,
-            caseData.getId().toString());
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+        notificationService.sendEmail(emailContentProviderStrategy.getEmailContentProvider(orderEvent).getTemplateKey(),
+            recipients, notifyData, caseData.getId());
     }
 
     public void sendOrderByPost(final ModifiedDocumentEvent orderEvent) {

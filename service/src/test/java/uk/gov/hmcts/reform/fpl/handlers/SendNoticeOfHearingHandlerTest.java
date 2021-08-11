@@ -20,10 +20,10 @@ import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingNoOtherAddressTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
@@ -67,7 +67,7 @@ class SendNoticeOfHearingHandlerTest {
     private static final Long CASE_ID = 12345L;
 
     @Mock
-    private InboxLookupService inboxLookup;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private NotificationService notificationService;
     @Mock
@@ -91,7 +91,7 @@ class SendNoticeOfHearingHandlerTest {
     @Test
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
-        given(inboxLookup.getRecipients(LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()))
+        given(localAuthorityRecipients.getRecipients(RecipientsRequest.builder().caseData(CASE_DATA).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REP_NOTIFY_DATA);
@@ -100,9 +100,7 @@ class SendNoticeOfHearingHandlerTest {
         underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
-            NOTICE_OF_NEW_HEARING, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA,
-            CASE_ID.toString()
-        );
+            NOTICE_OF_NEW_HEARING, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA, CASE_ID);
     }
 
     @Test

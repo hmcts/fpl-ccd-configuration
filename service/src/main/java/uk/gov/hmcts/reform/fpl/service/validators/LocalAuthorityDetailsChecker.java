@@ -43,10 +43,6 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
             errors.add("Enter local authority's name");
         }
 
-        if (isBlank(localAuthority.getEmail())) {
-            errors.add("Enter local authority's group email address");
-        }
-
         if (isBlank(localAuthority.getPbaNumber())) {
             errors.add("Enter local authority's pba number");
         }

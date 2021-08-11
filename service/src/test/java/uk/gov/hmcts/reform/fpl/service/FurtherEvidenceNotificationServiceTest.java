@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -7,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmai
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -81,7 +83,7 @@ class FurtherEvidenceNotificationServiceTest {
         .build();
 
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @Mock
     private NotificationService notificationService;
@@ -92,18 +94,55 @@ class FurtherEvidenceNotificationServiceTest {
     @InjectMocks
     private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
-    @Test
-    void shouldReturnLASolicitors() {
-        CaseData caseData = caseData();
+    @Nested
+    class LocalAuthoritiesRecipients {
 
-        when(inboxLookupService.getRecipients(LocalAuthorityInboxRecipientsRequest.builder()
-            .caseData(caseData)
-            .build()))
-            .thenReturn(LOCAL_AUTHORITY_EMAILS);
+        @Test
+        void shouldReturnAllLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
 
-        Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData);
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
 
-        assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+            Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .build());
+        }
+
+        @Test
+        void shouldReturnDesignatedLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
+
+            Set<String> actual = furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .secondaryLocalAuthorityExcluded(true)
+                .build());
+        }
+
+        @Test
+        void shouldReturnSecondaryLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
+
+            Set<String> actual = furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .designatedLocalAuthorityExcluded(true)
+                .build());
+        }
     }
 
     @Test

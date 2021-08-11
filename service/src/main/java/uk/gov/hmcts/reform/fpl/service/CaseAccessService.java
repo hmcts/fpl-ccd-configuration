@@ -66,10 +66,10 @@ public class CaseAccessService {
         caseAccessDataStoreApi.removeCaseUserRoles(userToken, serviceToken, caseAssignedUserRolesRequest);
     }
 
-    public Set<CaseRole> getUserCaseRoles(String caseId) {
+    public Set<CaseRole> getUserCaseRoles(Long caseId) {
         CaseAssignedUserRolesResource userRolesResource = caseAccessDataStoreApi.getUserRoles(
             requestData.authorisation(), authTokenGenerator.generate(),
-            List.of(caseId), List.of(requestData.userId()));
+            List.of(caseId.toString()), List.of(requestData.userId()));
 
         return userRolesResource.getCaseAssignedUserRoles().stream()
             .map(CaseAssignedUserRole::getCaseRole)

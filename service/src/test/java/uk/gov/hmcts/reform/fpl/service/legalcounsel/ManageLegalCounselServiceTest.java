@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.CHILDSOLICITORC;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
@@ -66,7 +65,7 @@ class ManageLegalCounselServiceTest {
             .thenReturn(asList(SOLICITORB, SOLICITORC, CHILDSOLICITORA, CHILDSOLICITORC));
 
         caseData = CaseData.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .children1(testChildren())
             .respondents1(respondents())
             .build();
@@ -104,7 +103,7 @@ class ManageLegalCounselServiceTest {
             )
             .build();
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .data(caseConverter.toMap(caseData))
             .build();
 
@@ -208,7 +207,7 @@ class ManageLegalCounselServiceTest {
         Pair<String, LegalCounsellor> legalCounsellor3 =
             buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "3");
         CaseDetails previousCaseDetails = CaseDetails.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .data(caseConverter.toMap(
                 CaseData.builder().respondents1(asList(
                     element(respondent("First", "Respondent")),
@@ -219,7 +218,7 @@ class ManageLegalCounselServiceTest {
                 )).build()
             )).build();
         CaseDetails currentCaseDetails = CaseDetails.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .data(caseConverter.toMap(
                 CaseData.builder().respondents1(asList(
                     element(respondent("First", "Respondent")),

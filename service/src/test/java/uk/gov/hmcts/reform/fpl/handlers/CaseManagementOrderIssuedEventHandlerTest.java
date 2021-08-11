@@ -18,11 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -65,7 +65,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private static final CaseManagementOrderIssuedEvent EVENT = new CaseManagementOrderIssuedEvent(CASE_DATA, CMO);
 
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private NotificationService notificationService;
     @Mock
@@ -102,8 +102,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
     @Test
     void shouldNotifyLocalAuthority() {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(CASE_DATA).build()
         )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REP_CMO_TEMPLATE_DATA);
@@ -113,7 +113,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             DIGITAL_REP_CMO_TEMPLATE_DATA,
-            String.valueOf(CASE_ID)
+            CASE_ID
         );
     }
 

@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -224,15 +223,11 @@ public class ManageDocumentsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = userService.getUserDetails();
-
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), false,
-                userDetails));
+            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request), false));
         }
     }
 
-    private boolean isSolicitor(Long id) {
-        return userService.hasAnyCaseRoleFrom(representativeSolicitors(), id.toString());
+    private boolean isSolicitor(Long caseId) {
+        return userService.hasAnyCaseRoleFrom(representativeSolicitors(), caseId);
     }
 }

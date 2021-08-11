@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -226,10 +225,7 @@ public class ManageDocumentsLAController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
-
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
-                true, userDetails));
+            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request), true));
         }
     }
 }

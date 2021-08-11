@@ -370,7 +370,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
             .id(caseData.getId())
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            })).build();
+            .data(caseConverter.toMap(caseData))
+            .build();
     }
 }

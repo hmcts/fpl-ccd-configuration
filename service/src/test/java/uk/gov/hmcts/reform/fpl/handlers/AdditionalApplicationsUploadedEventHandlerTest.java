@@ -29,12 +29,12 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -92,7 +92,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Mock
     private AdditionalApplicationsUploadedEmailContentProvider additionalApplicationsUploadedEmailContentProvider;
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private RepresentativesInbox representativesInbox;
     @Mock
@@ -109,6 +109,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @InjectMocks
     private AdditionalApplicationsUploadedEventHandler underTest;
 
+    private static final DocumentReference TEST_DOCUMENT = testDocumentReference();
     private static final Long CASE_ID = 12345L;
     private static final String EMAIL_REP_1 = "email-rep1@test.com";
     private static final String EMAIL_REP_2 = "email-rep2@test.com";
@@ -120,7 +121,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
     private static final List<Element<Other>> SELECTED_OTHERS = List.of(element(testOther()));
     private static final List<Element<Respondent>> SELECTED_RESPONDENTS = List.of(testRespondent("John", "Smith"));
-    private static final DocumentReference TEST_DOCUMENT = testDocumentReference();
     private static final DocumentReference C2_DOCUMENT = testDocumentReference();
     private static final DocumentReference OTHER_APPLICATION_DOCUMENT = testDocumentReference();
     private static final DocumentReference SUPPLEMENT_1 = testDocumentReference();
@@ -202,17 +202,22 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                     .applicantName(LOCAL_AUTHORITY_NAME).others(emptyList()).build())
                 .build()));
         given(caseData.getCaseLocalAuthorityName()).willReturn(LOCAL_AUTHORITY_NAME);
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
-            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(localAuthorityRecipients.getRecipients(any())).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
+
+        final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             additionalApplicationsParameters,
             CASE_ID.toString());
+
+        verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
     }
 
     @Test
@@ -411,8 +416,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
         given(courtService.getCourtEmail(caseData)).willReturn("Ctsc+test@gmail.com");
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
