@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class FurtherEvidenceNotificationService {
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
+    private final FeatureToggleService featureToggleService;
 
     private final FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
 
@@ -41,8 +43,12 @@ public class FurtherEvidenceNotificationService {
 
     public void sendNotification(CaseData caseData, Set<String> recipients,
                                  String sender, List<String> newNonConfidentialDocuments) {
+
+        String notificationTemplate = featureToggleService.isNewDocumentUploadNotificationEnabled()
+            ? DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE : FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
+
         if (!recipients.isEmpty()) {
-            notificationService.sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            notificationService.sendEmail(notificationTemplate,
                 recipients,
                 furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, sender,
                     newNonConfidentialDocuments),

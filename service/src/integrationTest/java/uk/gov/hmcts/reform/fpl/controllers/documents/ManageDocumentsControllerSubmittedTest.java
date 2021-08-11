@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 
 @ActiveProfiles("integration-test")
@@ -46,31 +47,57 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldNotPublishEventWhenUploadNotificationFeatureIsDisabled() {
+    void shouldNotPublishEventForOtherUserWhenUploadNotificationFeatureIsDisabled() {
+        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+            .thenReturn(buildCaseAssignedUserRole("[EPSMANAGING]"));
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(false);
+
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
+
         verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldNotPublishEventWhenConfidentialDocumentsAreUploaded() {
+    void shouldNotPublishEventLAWhenUploadNotificationFeatureIsDisabled() {
+        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+            .thenReturn(buildCaseAssignedUserRole("[SOLICITORA]"));
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
+
+        postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
+
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldNotPublishEventWhenConfidentialDocumentsAreUploadedByOtherUser() {
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(buildCaseAssignedUserRole("[LASOLICITOR]"));
+            .thenReturn(buildCaseAssignedUserRole("[EPSMANAGING]"));
 
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, true));
         verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldPublishEventWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
-        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
+    void shouldNotPublishEventWhenConfidentialDocumentsAreUploadedBySolicitor() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
             .thenReturn(buildCaseAssignedUserRole("[SOLICITORA]"));
 
-        postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
+        postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldPublishEventWithSolUserWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
+        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+            .thenReturn(buildCaseAssignedUserRole("[EPSMANAGING]"));
+
+        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
 
         verify(notificationClient).sendEmail(
             eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
@@ -80,6 +107,28 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
 
         verify(notificationClient).sendEmail(
             eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
+            eq(REP_1_EMAIL),
+            anyMap(),
+            eq(EMAIL_REFERENCE));
+    }
+
+    @Test
+    void shouldPublishEventWithOtherUserWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+            .thenReturn(buildCaseAssignedUserRole("[SOLICITORA]"));
+
+        postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
+
+        verify(notificationClient).sendEmail(
+            eq(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE),
+            eq(LOCAL_AUTHORITY_1_INBOX),
+            anyMap(),
+            eq(EMAIL_REFERENCE));
+
+        verify(notificationClient).sendEmail(
+            eq(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE),
             eq(REP_1_EMAIL),
             anyMap(),
             eq(EMAIL_REFERENCE));

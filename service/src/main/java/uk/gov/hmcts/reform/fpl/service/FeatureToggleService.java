@@ -68,6 +68,11 @@ public class FeatureToggleService {
             createLDUser(), false);
     }
 
+    public boolean isNewDocumentUploadNotificationEnabled() {
+        return ldClient.boolVariation("document-upload-new-notification",
+            createLDUser(), false);
+    }
+
     public boolean isFurtherEvidenceDocumentTabEnabled() {
         return ldClient.boolVariation("further-evidence-document-tab",
             createLDUser(), false);

@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
@@ -19,9 +17,10 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -32,8 +31,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -50,66 +49,54 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2021, 2, 22, 0, 0, 0).plusMonths(3);
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
+    private static final UUID REPRESENTATIVE_UUID = UUID.randomUUID();
+    private static final CaseData caseData = buildCaseData();
+    private static final CaseData caseDataBefore = buildCaseDataBefore();
 
     @Autowired
     private FurtherEvidenceUploadedEventHandler underTest;
 
     @MockBean
-    private UserService userService;
-
-    @MockBean
     private CaseAccessDataStoreApi caseAccessDataStoreApi;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @Test
-    void sendNotification() {
-        UUID representativeUUID = UUID.randomUUID();
+    void sendNotificationWhenFeatureToggleOff() {
 
-        Representative representative = Representative
-            .builder()
-            .email(REP_EMAIL)
-            .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
-            .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
-            .build();
-
-        Respondent respondent = Respondent.builder()
-            .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
-            .representedBy(wrapElements(List.of(representativeUUID)))
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .furtherEvidenceDocumentsLA(
-                wrapElements(SupportingEvidenceBundle.builder()
-                    .name("Non-Confidential Evidence Document 1")
-                    .uploadedBy("LA")
-                    .dateTimeUploaded(LocalDateTime.now())
-                    .document(DocumentReference.builder().build())
-                    .build()))
-            .familyManCaseNumber(CASE_ID.toString())
-            .representatives(List.of(element(representativeUUID, representative)))
-            .respondents1(wrapElements(respondent))
-            .children1(wrapElements(Child.builder()
-                .party(ChildParty.builder().lastName(CHILD_LAST_NAME).dateOfBirth(LocalDate.now()).build())
-                .build()
-            ))
-            .id(CASE_ID)
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .id(CASE_ID)
-            .build();
-
-        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
-                CaseAssignedUserRole.builder()
-                    .caseRole("[SOLICITORA]")
-                    .userId("USER_1_ID")
-                    .caseDataId("123")
-                    .build()))
-                .build());
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
         underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, true,
+            caseData, caseDataBefore, LOCAL_AUTHORITY,
+            UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
+        ));
+
+        assertThat(response())
+            .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
+            .hasBody(emailContent()
+                .line("The Sender has uploaded evidence documents for:")
+                .line()
+                .callout("Smith, 12345, hearing 22 May 2021")
+                .line()
+                .line("To view them, sign in to:")
+                .line()
+                .line("http://fake-url/cases/case-details/12345#Documents")
+                .line()
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email."
+                    + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
+            );
+    }
+
+    @Test
+    void sendNotificationWhenFeatureToggleOn() {
+
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+
+        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+            caseData, caseDataBefore, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
@@ -134,5 +121,46 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
                 .end("Do not reply to this email."
                     + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
+    }
+
+    private static CaseData buildCaseData() {
+        return CaseData.builder()
+            .furtherEvidenceDocumentsLA(
+                wrapElements(SupportingEvidenceBundle.builder()
+                    .name("Non-Confidential Evidence Document 1")
+                    .uploadedBy("LA")
+                    .dateTimeUploaded(LocalDateTime.now())
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            .familyManCaseNumber(CASE_ID.toString())
+            .representatives(buildRepresentativesList())
+            .respondents1(wrapElements(buildRespondent()))
+            .children1(wrapElements(Child.builder()
+                .party(ChildParty.builder().lastName(CHILD_LAST_NAME).dateOfBirth(LocalDate.now()).build())
+                .build()
+            ))
+            .id(CASE_ID)
+            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
+            .build();
+    }
+
+    private static CaseData buildCaseDataBefore() {
+        return CaseData.builder().id(CASE_ID).build();
+    }
+
+    private static List<Element<Representative>>  buildRepresentativesList() {
+        return List.of(element(REPRESENTATIVE_UUID, Representative
+            .builder()
+            .email(REP_EMAIL)
+            .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
+            .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
+            .build()));
+    }
+
+    private static Respondent buildRespondent() {
+        return Respondent.builder()
+            .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
+            .representedBy(wrapElements(List.of(REPRESENTATIVE_UUID)))
+            .build();
     }
 }

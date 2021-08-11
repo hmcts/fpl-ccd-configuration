@@ -35,6 +35,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.HMCTS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
@@ -223,11 +225,17 @@ public class ManageDocumentsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
+
+        CaseData caseData = getCaseData(request);
+        boolean isSolicitor = isSolicitor(caseData.getId());
+        boolean featureToggleValue = isSolicitor ? this.featureToggleService.isNewDocumentUploadNotificationEnabled() :
+            this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled();
+
+        if (featureToggleValue) {
             UserDetails userDetails = userService.getUserDetails();
 
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), false,
+                getCaseDataBefore(request), isSolicitor ? SOLICITOR : HMCTS,
                 userDetails));
         }
     }

@@ -152,6 +152,18 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsNewDocumentUploadNotificationEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isNewDocumentUploadNotificationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("document-upload-new-notification"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsLanguageRequirementsEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 

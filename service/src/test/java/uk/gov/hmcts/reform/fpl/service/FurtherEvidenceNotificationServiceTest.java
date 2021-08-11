@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
@@ -92,6 +94,9 @@ class FurtherEvidenceNotificationServiceTest {
     @Mock
     private FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
@@ -151,7 +156,7 @@ class FurtherEvidenceNotificationServiceTest {
     }
 
     @Test
-    void shouldSendCorrectNotification() {
+    void shouldSendOldNotificationWhenFeatureToggleOff() {
         CaseData caseData = caseData();
 
         Set<String> recipients = Set.of("test@example.com");
@@ -159,6 +164,7 @@ class FurtherEvidenceNotificationServiceTest {
         FurtherEvidenceDocumentUploadedData furtherEvidenceDocumentUploadedData =
             FurtherEvidenceDocumentUploadedData.builder().build();
 
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
         when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender",
             DOCUMENTS)).thenReturn(
             furtherEvidenceDocumentUploadedData);
@@ -166,6 +172,26 @@ class FurtherEvidenceNotificationServiceTest {
         furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verify(notificationService).sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
+            furtherEvidenceDocumentUploadedData, CASE_ID.toString());
+    }
+
+    @Test
+    void shouldSendCorrectNotificationWhenFeatureToggleON() {
+        CaseData caseData = caseData();
+
+        Set<String> recipients = Set.of("test@example.com");
+
+        FurtherEvidenceDocumentUploadedData furtherEvidenceDocumentUploadedData =
+            FurtherEvidenceDocumentUploadedData.builder().build();
+
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender",
+            DOCUMENTS)).thenReturn(
+            furtherEvidenceDocumentUploadedData);
+
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
+
+        verify(notificationService).sendEmail(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
     }
 
