@@ -69,7 +69,7 @@ Scenario('Legal counsel to be remove when respondent representative is removed',
   //TODO - what should we do if the representative is updated, not removed - maybe a different story
 });
 
-//TODO - remove child representative
+//TODO - remove child representative - maybe I can write the scenario where representative is updated, not removed - maybe even both?
 
 //TODO - assign a different solicitor using notice of change
 

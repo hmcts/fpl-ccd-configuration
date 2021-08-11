@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.utils.ListUtils;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.ArrayList;
@@ -135,8 +136,7 @@ public class ManageLegalCounselService {
             .collect(Collectors.toList());
 
         //Grant access to all current legal counsellors
-        List<LegalCounsellor> addedLegalCounsellors = currentLegalCounsellors.stream()
-            .filter(not(previousLegalCounsellors::contains))
+        List<LegalCounsellor> addedLegalCounsellors = ListUtils.getAddedItems(currentLegalCounsellors, previousLegalCounsellors)
             .collect(Collectors.toList());
         addedLegalCounsellors.stream()
             .map(legalCounsellor -> organisationService.findUserByEmail(legalCounsellor.getEmail())
@@ -148,8 +148,7 @@ public class ManageLegalCounselService {
             ));
 
         //Revoke access from all that were in the previous case, but not in the new case
-        List<LegalCounsellor> removedLegalCounsellors = previousLegalCounsellors.stream()
-            .filter(not(currentLegalCounsellors::contains))
+        List<LegalCounsellor> removedLegalCounsellors = ListUtils.getRemovedItems(currentLegalCounsellors, previousLegalCounsellors)
             .collect(Collectors.toList());
         removedLegalCounsellors.stream()
             .map(legalCounsellor -> organisationService.findUserByEmail(legalCounsellor.getEmail())

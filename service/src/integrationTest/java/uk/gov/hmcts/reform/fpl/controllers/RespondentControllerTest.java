@@ -283,7 +283,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
         assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
             .isEqualTo(SOLICITOR_ORG_ID);
 
-        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isNull();
+        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isEmpty();
 
         final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
@@ -293,7 +293,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
-    }
+    }//TODO - maybe I don't need to test this here. This is logic. Should integration test test logic? Logic can be tested in the component and a thin layer of logic can be tested in the e2e test
 
     @Test
     void shouldGenerateRespondentWithLegacyApplicantPoliciesWhenToggleOnAndStateIsNotOpen() {
@@ -324,7 +324,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
         assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
             .isEqualTo(SOLICITOR_ORG_ID);
 
-        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isNull();
+        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isEmpty();
 
         final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
