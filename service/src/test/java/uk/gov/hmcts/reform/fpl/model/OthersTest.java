@@ -21,24 +21,12 @@ class OthersTest {
     void shouldReturnDefaultOthersWhenListOfOthersIsEmpty() {
         final List<Element<Other>> othersList = emptyList();
         final Others actualOthers = Others.from(othersList);
-        final Others expectedOthers = Others.builder()
-            .firstOther(null)
-            .additionalOthers(emptyList())
-            .build();
-
-        assertThat(actualOthers).isEqualTo(expectedOthers);
+        assertThat(actualOthers).isNull();
     }
 
     @Test
     void shouldReturnDefaultOthersWhenListOfOthersIsNull() {
-        final List<Element<Other>> othersList = null;
-        final Others actualOthers = Others.from(othersList);
-        final Others expectedOthers = Others.builder()
-            .firstOther(null)
-            .additionalOthers(emptyList())
-            .build();
-
-        assertThat(actualOthers).isEqualTo(expectedOthers);
+        assertThat(Others.from(null)).isNull();
     }
 
     @Test
@@ -71,9 +59,8 @@ class OthersTest {
     void shouldReturnEmptyWhenFirstOtherAndAdditionalOtherAreEmpty() {
         final List<Element<Other>> othersList = wrapElements(null, Other.builder().build());
         final Others actualOthers = Others.from(othersList);
-        final Others expectedOthers = Others.builder().additionalOthers(List.of()).build();
 
-        assertThat(actualOthers).isEqualTo(expectedOthers);
+        assertThat(actualOthers).isNull();
     }
 
     @Test
