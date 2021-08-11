@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,11 +59,13 @@ class RespondentServiceTest {
 
         @Test
         void shouldBuildExpectedLabelWhenManyElementsInList() {
-            List<Element<Respondent>> respondents = respondents();
+            List<Element<Respondent>> respondents = RespondentsTestHelper.respondents();
 
             String result = service.buildRespondentLabel(respondents);
 
-            assertThat(result).isEqualTo("Respondent 1 - James Daniels\nRespondent 2 - Bob Martyn\n");
+            assertThat(result).isEqualTo("Respondent 1 - James Daniels\n"
+                + "Respondent 2 - Bob Martyn\n"
+                + "Respondent 3 - Rachel Daniels\n");
         }
 
         @Test
@@ -243,24 +247,6 @@ class RespondentServiceTest {
 
         assertThat(registeredSolicitors).isEmpty();
         assertThat(unregisteredSolicitors).isEmpty();
-    }
-
-    private List<Element<Respondent>> respondents() {
-        return wrapElements(respondent("James", "Daniels"), respondent("Bob", "Martyn"));
-    }
-
-    private Respondent respondent(String firstName, String lastName) {
-        return respondent(firstName, lastName, null);
-    }
-
-    private Respondent respondent(String firstName, String lastName, List<Element<UUID>> representedBy) {
-        return Respondent.builder()
-            .party(RespondentParty.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .build())
-            .representedBy(representedBy)
-            .build();
     }
 
     private Respondent buildRespondent(String legalRepresentation, String email) {

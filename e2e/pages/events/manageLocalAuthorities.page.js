@@ -14,12 +14,14 @@ module.exports = {
     I.click('Remove case access from local authority');
   },
 
-  selectLocalAuthority(name) {
+  async selectLocalAuthority(name) {
     I.selectOption(this.fields.localAuthoritiesList, name);
+    await I.runAccessibilityTest();
   },
 
-  setEmailAddress(email) {
+  async setEmailAddress(email) {
     I.fillField(this.fields.localAuthorityEmail, email);
+    await I.runAccessibilityTest();
   },
 
   async getEmailAddress() {

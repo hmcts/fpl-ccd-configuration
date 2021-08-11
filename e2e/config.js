@@ -134,6 +134,7 @@ module.exports = {
     removeManagingOrganisation: 'Remove managing organisation',
     languageRequirement: 'Welsh language requirements',
     selectCourt: 'Select court to issue',
+    addOrRemoveLegalCounsel: 'Add or remove legal counsel',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',

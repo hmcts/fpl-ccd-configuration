@@ -23,12 +23,12 @@ Scenario('HMCTS admin adds secondary local authority', async ({I, caseViewPage, 
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectAddLocalAuthority();
-  manageLocalAuthoritiesEventPage.selectLocalAuthority(secondaryLocalAuthorityName);
+  await manageLocalAuthoritiesEventPage.selectLocalAuthority(secondaryLocalAuthorityName);
   await I.goToNextPage();
 
   const email = manageLocalAuthoritiesEventPage.getEmailAddress();
   assert.ok(email);
-  manageLocalAuthoritiesEventPage.setEmailAddress(secondaryLocalAuthorityEmail);
+  await manageLocalAuthoritiesEventPage.setEmailAddress(secondaryLocalAuthorityEmail);
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
