@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
@@ -23,10 +23,11 @@ public class Others {
     private final List<Element<Other>> additionalOthers;
 
     public static Others from(List<Element<Other>> allOthers) {
-
         final LinkedList<Element<Other>> others = new LinkedList<>(Optional.ofNullable(allOthers).orElse(emptyList()));
+        others.removeIf(other -> isNull(other) || isNull(other.getValue()) || other.getValue().isEmpty());
+
         return Others.builder()
-            .firstOther(ofNullable(others.pollFirst()).map(Element::getValue).filter(not(Other::isEmpty)).orElse(null))
+            .firstOther(ofNullable(others.pollFirst()).map(Element::getValue).orElse(null))
             .additionalOthers(others)
             .build();
     }

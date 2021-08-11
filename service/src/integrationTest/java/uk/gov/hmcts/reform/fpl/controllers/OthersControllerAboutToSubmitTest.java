@@ -20,6 +20,8 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 @WebMvcTest(OthersController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -49,11 +51,15 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotSaveFirstOtherWhenItIsEmpty() {
-        List<Element<Other>> additionalOthers = additionalOthers();
+    void shouldNotSaveOtherWhenOtherPersonDetailsAreEmpty() {
+        Other firstOther = Other.builder().build();
+        Other additionalOther1 = Other.builder().name("Additional Other1").address(testAddress()).build();
+        Other additionalOther2 = Other.builder().name("Additional Other2").build();
+        List<Element<Other>> additionalOthers = wrapElements(additionalOther1, additionalOther2);
+
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("others", Others.builder()
-                .firstOther(Other.builder().build())
+                .firstOther(firstOther)
                 .additionalOthers(additionalOthers)
                 .build()))
             .build();
@@ -61,8 +67,9 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(additionalOthers.get(0).getValue());
-        assertThat(caseData.getOthers().getAdditionalOthers()).isEmpty();
+        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(additionalOther1);
+        assertThat(caseData.getOthers().getAdditionalOthers()).hasSize(1)
+            .containsOnly(additionalOthers.get(1));
     }
 
     private Other other() {

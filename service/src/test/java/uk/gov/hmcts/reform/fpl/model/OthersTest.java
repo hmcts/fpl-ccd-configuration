@@ -55,6 +55,28 @@ class OthersTest {
     }
 
     @Test
+    void shouldIgnoreEmptyOthersWhenOtherDetailsAreNotPresent() {
+        Other firstOther = testOther();
+        final List<Element<Other>> othersList = wrapElements(firstOther, Other.builder().build());
+        final Others actualOthers = Others.from(othersList);
+        final Others expectedOthers = Others.builder()
+            .firstOther(firstOther)
+            .additionalOthers(List.of())
+            .build();
+
+        assertThat(actualOthers).isEqualTo(expectedOthers);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenFirstOtherAndAdditionalOtherAreEmpty() {
+        final List<Element<Other>> othersList = wrapElements(null, Other.builder().build());
+        final Others actualOthers = Others.from(othersList);
+        final Others expectedOthers = Others.builder().additionalOthers(List.of()).build();
+
+        assertThat(actualOthers).isEqualTo(expectedOthers);
+    }
+
+    @Test
     void shouldReturnOthersWhenSingleOtherPresent() {
         final Other other = testOther();
         final List<Element<Other>> othersList = wrapElements(other);
