@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 
 @Api
@@ -51,7 +51,9 @@ public class OthersController extends CallbackController {
         List<Element<Other>> others = confidentialService.removeConfidentialDetails(allOthers);
 
         Others othersList = Others.from(others);
-        if (isNotEmpty(othersList)) {
+        if (isNull(othersList)) {
+            caseDetails.getData().remove("others");
+        } else {
             caseDetails.getData().put("others", othersList);
         }
 
