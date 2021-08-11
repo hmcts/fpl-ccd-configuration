@@ -72,24 +72,6 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
             .containsOnly(additionalOthers.get(1));
     }
 
-    @Test
-    void shouldNotSaveOtherWhenAllOtherElementsAreNullOrEmpty() {
-        Other firstOther = Other.builder().build();
-        List<Element<Other>> additionalOthers = wrapElements(null, Other.builder().build());
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("others", Others.builder()
-                .firstOther(firstOther)
-                .additionalOthers(additionalOthers)
-                .build()))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getOthers()).isNull();
-    }
-
     private Other other() {
         return Other.builder()
             .name("other")
