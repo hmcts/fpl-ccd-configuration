@@ -62,6 +62,7 @@ public class DraftOrderService {
     private final ObjectMapper mapper;
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
+    private final HearingOrderKindEventDataBuilder hearingOrderKindEventDataBuilder;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
         final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -104,8 +105,11 @@ public class DraftOrderService {
             .hearingsForHearingOrderDrafts(rebuildDynamicList(eventData.getHearingsForHearingOrderDrafts(),
                 caseData.getHearingDetails(), NO_HEARING));
 
+        Optional<HearingBooking> hearingMaybe = getSelectedHearing(selectedHearingId, caseData.getHearingDetails());
+
         if (hearingOrderKinds.contains(HearingOrderKind.CMO)) {
-            HearingBooking hearing = getSelectedHearing(selectedHearingId, caseData.getHearingDetails());
+            HearingBooking hearing = hearingMaybe.orElseThrow(() -> new HearingNotFoundException(
+                "No hearing found with id: " + selectedHearingId));
 
             if (hearing.hasCMOAssociation()) {
                 HearingOrder cmo = findElement(hearing.getCaseManagementOrderId(), caseData.getDraftUploadedCMOs())
@@ -123,36 +127,19 @@ public class DraftOrderService {
 
             newEventDataBuilder
                 .cmoUploadType(eventData.getCmoUploadType())
-                .cmoJudgeInfo(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
                 .cmoToSend(getCMO(eventData, hearing, caseData.getDraftUploadedCMOs()))
                 .showReplacementCMO(YesNo.from(hearing.hasCMOAssociation()))
                 .cmoHearingInfo(hearing.toLabel());
         }
 
         if (hearingOrderKinds.contains(HearingOrderKind.C21)) {
-            newEventDataBuilder.currentHearingOrderDrafts(getC21Drafts(caseData, selectedHearingId));
+            hearingOrderKindEventDataBuilder.build(selectedHearingId, caseData, eventData, newEventDataBuilder);
         }
+
+        hearingMaybe
+            .ifPresent(h -> newEventDataBuilder.cmoJudgeInfo(formatJudgeTitleAndName(h.getJudgeAndLegalAdvisor())));
+
         return newEventDataBuilder.build();
-    }
-
-    private List<Element<HearingOrder>> getC21Drafts(CaseData caseData, UUID selectedHearingId) {
-
-        final List<Element<HearingOrder>> draftOrders = unwrapElements(caseData.getHearingOrdersBundlesDrafts())
-            .stream()
-            .filter(bundle -> Objects.equals(bundle.getHearingId(), selectedHearingId))
-            .findFirst()
-            .map(HearingOrdersBundle::getOrders)
-            .orElse(new ArrayList<>());
-
-        final List<Element<HearingOrder>> nonCMODraftOrders = draftOrders.stream()
-            .filter(draftOrder -> C21.equals(draftOrder.getValue().getType()))
-            .collect(toList());
-
-        if (isEmpty(nonCMODraftOrders)) {
-            nonCMODraftOrders.add(element(HearingOrder.builder().build()));
-        }
-
-        return nonCMODraftOrders;
     }
 
     public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
@@ -178,7 +165,8 @@ public class DraftOrderService {
                 hearing.getValue(),
                 time.now().toLocalDate(),
                 eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO,
-                supportingDocs
+                supportingDocs,
+                eventData.getCmoToSendTranslationRequirements()
             ));
 
             Optional<UUID> previousCmoId = updateHearingWithCmoId(hearing.getValue(), order);
@@ -197,10 +185,12 @@ public class DraftOrderService {
                 .flatMap(id -> findElement(id, hearings))
                 .orElse(null);
 
-            eventData.getCurrentHearingOrderDrafts().forEach(o -> {
+            for (int i = 0; i < eventData.getCurrentHearingOrderDrafts().size(); i++) {
+                Element<HearingOrder> o = eventData.getCurrentHearingOrderDrafts().get(i);
                 o.getValue().setDateSent(time.now().toLocalDate());
                 o.getValue().setStatus(SEND_TO_JUDGE);
-            });
+                o.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
+            }
             addOrdersToBundle(bundles, eventData.getCurrentHearingOrderDrafts(), hearing, C21);
         }
 
@@ -338,10 +328,8 @@ public class DraftOrderService {
         return ofNullable(previousCMOId);
     }
 
-    private HearingBooking getSelectedHearing(UUID id, List<Element<HearingBooking>> hearings) {
-        return findElement(id, hearings)
-            .orElseThrow(() -> new HearingNotFoundException("No hearing found with id: " + id))
-            .getValue();
+    private Optional<HearingBooking> getSelectedHearing(UUID id, List<Element<HearingBooking>> hearings) {
+        return findElement(id, hearings).map(Element::getValue);
     }
 
     private UUID getSelectedHearingId(UploadDraftOrdersData eventData) {
