@@ -90,18 +90,22 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
     @Nested
     class PlacementOrderNotification {
+        private final Element<Child> child1 = testChild();
+        private final Element<Child> child2 = element(child1.getValue().toBuilder()
+            .party(child1.getValue().getParty().toBuilder()
+                .dateOfBirth(dateNow().minusMonths(1))
+                .lastName("Watson")
+                .build())
+            .build());
+
+        private final DocumentReference child1Application = testDocumentReference();
+        private final DocumentReference child2Application = testDocumentReference();
+
+        private final Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
+        private final Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
 
         @Test
         void shouldNotifyHmctsAdminWhenAddingNewChildPlacementAndCtscIsDisabled() throws Exception {
-            Element<Child> child1 = testChild();
-            Element<Child> child2 = testChild();
-
-            DocumentReference child1Application = testDocumentReference();
-            DocumentReference child2Application = testDocumentReference();
-
-            Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
-            Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
-
             CallbackRequest callbackRequest = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
                     .id(parseLong(CASE_ID))
@@ -131,15 +135,6 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldNotifyCtscAdminWhenAddingNewChildPlacementAndCtscIsEnabled() throws Exception {
-            Element<Child> child1 = testChild();
-            Element<Child> child2 = testChild();
-
-            DocumentReference child1Application = testDocumentReference();
-            DocumentReference child2Application = testDocumentReference();
-
-            Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
-            Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
-
             CallbackRequest callbackRequest = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
                     .id(parseLong(CASE_ID))
@@ -201,12 +196,13 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
     @Nested
     class NoticeOfPlacementOrderNotification {
-        private final Element<Child> childElement = testChild();
-        private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
         private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
         private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
         private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
         private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
+        private final Element<Child> childElement = testChild();
+        private final String childLastName = childElement.getValue().getParty().getLastName();
+        private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
 
         @Test
         void shouldSendEmailNotificationsWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
@@ -320,8 +316,9 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
         private Map<String, Object> expectedParameters() {
             return Map.of(
-                "respondentLastName", "Jones",
-                "caseUrl", "http://fake-url/cases/case-details/12345#Placement");
+                "respondentLastName", childLastName,
+                "caseUrl", "http://fake-url/cases/case-details/12345#Placement"
+            );
         }
 
         private Respondent respondent() {

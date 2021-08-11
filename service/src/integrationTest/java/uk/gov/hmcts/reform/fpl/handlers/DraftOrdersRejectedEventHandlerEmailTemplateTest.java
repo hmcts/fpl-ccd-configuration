@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRejected;
@@ -18,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -28,9 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
@@ -47,17 +41,11 @@ class DraftOrdersRejectedEventHandlerEmailTemplateTest extends EmailTemplateTest
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final long CASE_ID = 12345L;
 
-    @MockBean
-    private FeatureToggleService toggleService;
-
     @Autowired
     private DraftOrdersRejectedEventHandler underTest;
 
-    @ParameterizedTest
-    @MethodSource("subjectLineSource")
-    void notifyLA(boolean toggle, String name) {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
-
+    @Test
+    void notifyLA() {
         UUID lastHearingId = UUID.randomUUID();
 
         List<Element<HearingBooking>> hearings = List.of(element(lastHearingId, HearingBooking.builder()
@@ -92,7 +80,7 @@ class DraftOrdersRejectedEventHandlerEmailTemplateTest extends EmailTemplateTest
         underTest.sendNotificationToLA(new DraftOrdersRejected(caseData, rejectedOrders));
 
         assertThat(response())
-            .hasSubject("Changes needed on draft orders, " + name)
+            .hasSubject("Changes needed on draft orders, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("The judge has requested changes to the draft orders for:")
                 .line()
@@ -111,12 +99,5 @@ class DraftOrdersRejectedEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .end("Do not reply to this email. If you need to contact us, "
                      + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
-    }
-
-    private static Stream<Arguments> subjectLineSource() {
-        return Stream.of(
-            Arguments.of(true, CHILD_LAST_NAME),
-            Arguments.of(false, RESPONDENT_LAST_NAME)
-        );
     }
 }

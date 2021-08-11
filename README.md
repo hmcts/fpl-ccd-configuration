@@ -112,7 +112,7 @@ If environment requires user to login into hmcts account first then set HMCTS_US
 ## Running E2E against PR enviroment
 
 ```$bash
-PR=<PR_NUMBER> PARALLEL_CHUNKS=1 SHOW_BROWSER_WINDOW=TRUE URL=http://xui-fpl-case-service-pr-$PR.service.core-compute-preview.internal IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL=http://fpl-case-service-pr-$PR.service.core-compute-preview.internal yarn test
+PR=<PR_NUMBER>; PARALLEL_CHUNKS=1 SHOW_BROWSER_WINDOW=TRUE URL=http://xui-fpl-case-service-pr-$PR.service.core-compute-preview.internal IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL=http://fpl-case-service-pr-$PR.service.core-compute-preview.internal yarn test
 ```
 
 ## Running api tests

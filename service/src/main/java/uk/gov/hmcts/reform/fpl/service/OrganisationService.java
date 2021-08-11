@@ -104,7 +104,7 @@ public class OrganisationService {
 
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
         return organisationApi
-            .findUsersInOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
+            .findUsersInCurrentUserOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
             .getUsers()
             .stream()
             .map(OrganisationUser::getUserIdentifier)

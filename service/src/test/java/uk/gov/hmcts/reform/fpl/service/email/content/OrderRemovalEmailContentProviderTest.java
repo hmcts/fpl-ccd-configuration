@@ -6,12 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {OrderRemovalEmailContentProvider.class})
 class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderTest {
@@ -30,7 +35,10 @@ class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderT
     @BeforeEach
     void setUp() {
         when(CASE_DATA.getId()).thenReturn(CASE_ID);
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("Smith");
+
+        List<Element<Child>> children = wrapElements(mock(Child.class));
+        when(CASE_DATA.getAllChildren()).thenReturn(children);
+        when(helper.getEldestChildLastName(children)).thenReturn("Smith");
     }
 
     @Test
