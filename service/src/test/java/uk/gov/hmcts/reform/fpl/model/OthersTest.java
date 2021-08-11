@@ -47,8 +47,8 @@ class OthersTest {
         final List<Element<Other>> othersList = wrapElements(firstOther, testOther());
         final Others actualOthers = Others.from(othersList);
         final Others expectedOthers = Others.builder()
-            .firstOther(null)
-            .additionalOthers(List.of(othersList.get(1)))
+            .firstOther(othersList.get(1).getValue())
+            .additionalOthers(List.of())
             .build();
 
         assertThat(actualOthers).isEqualTo(expectedOthers);
