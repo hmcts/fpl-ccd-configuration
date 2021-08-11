@@ -61,5 +61,14 @@
     "ElementLabel": "Representative",
     "SecurityClassification": "Public",
     "FieldShowCondition": "legalRepresentation=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "legalCounsellors",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LegalCounsellor",
+    "ElementLabel": "Legal Counsellor",
+    "SecurityClassification": "Public"
   }
 ]

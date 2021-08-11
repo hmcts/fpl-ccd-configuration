@@ -47,7 +47,9 @@ public interface Constants {
     String LOCAL_AUTHORITY_1_COURT_EMAIL = "admin@family-court.com";
     String LOCAL_AUTHORITY_3_COURT_A_EMAIL = "court3a@family-court.com";
     String LOCAL_AUTHORITY_3_COURT_B_EMAIL = "court3b@family-court.com";
-
-
+    String USER_ID = "456";
+    String TEST_CASE_ID = "1234123412341234";
+    String TEST_FORMATTED_CASE_ID = "1234-1234-1234-1234";
+    Long TEST_CASE_ID_AS_LONG = 1234123412341234L;
 
 }
