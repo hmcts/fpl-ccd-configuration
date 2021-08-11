@@ -32,6 +32,15 @@ public class LegalCounsellorTestHelper {
     private static Pair<String, LegalCounsellor> buildLegalCounsellor(OrganisationService mockOrganisationService,
                                                                       String uniqueIdentifier,
                                                                       boolean addOrganisation) {
+        LegalCounsellor legalCounsellor = buildLegalCounsellor(uniqueIdentifier, addOrganisation);
+
+        String userId = "testUserId" + uniqueIdentifier;
+        when(mockOrganisationService.findUserByEmail(legalCounsellor.getEmail())).thenReturn(Optional.of(userId));
+
+        return Pair.of(userId, legalCounsellor);
+    }
+
+    public static LegalCounsellor buildLegalCounsellor(String uniqueIdentifier, boolean addOrganisation) {
         LegalCounsellor legalCounsellor = LegalCounsellor.builder()
             .firstName("TestFirstName" + uniqueIdentifier)
             .lastName("TestLastName" + uniqueIdentifier)
@@ -44,10 +53,7 @@ public class LegalCounsellorTestHelper {
                 .build();
         }
 
-        String userId = "testUserId" + uniqueIdentifier;
-        when(mockOrganisationService.findUserByEmail(legalCounsellor.getEmail())).thenReturn(Optional.of(userId));
-
-        return Pair.of(userId, legalCounsellor);
+        return legalCounsellor;
     }
 
 }

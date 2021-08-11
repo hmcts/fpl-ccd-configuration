@@ -6,7 +6,7 @@ const legalCounsellors = require('../fixtures/legalCounsellors.js');
 
 const solicitor1 = config.wiltshireLocalAuthorityUserOne;
 
-let caseId;
+let caseId = 1628670095271359;//TODO - undo
 
 Feature('Legal counsel');
 
@@ -31,14 +31,13 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     assertRepresentative(I, solicitor1.details, solicitor1.details.organisation);
     caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
     assertChangeOfRepresentative(I, 1, 'Notice of change', 'Joe Bloggs', solicitor1.details.email, { addedUser: solicitor1.details });
-  } else {
-    await I.navigateToCaseDetailsAs(solicitor1, caseId);
   }
 }
 
-Scenario('Add legal counsellor', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage }) => {
+Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage }) => {
   await setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage);
 
+  await I.navigateToCaseDetailsAs(solicitor1, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.addOrRemoveLegalCounsel);
   I.see('Add or remove legal counsel');
   I.see('Use this feature to add or remove a legal representative');
@@ -52,6 +51,27 @@ Scenario('Add legal counsellor', async ({ I, caseViewPage, noticeOfChangePage, s
 
   assertLegalCounsellorWasAdded(caseViewPage, I);
 });
+
+//TODO - remove legal counsel - do it last - optional
+
+//TODO - remove respondent representative
+Scenario('Legal counsel to be remove when respondent representative is removed', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage, enterRespondentsEventPage }) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
+
+  await enterRespondentsEventPage.enterRepresentationDetails('No', {}, 0);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.dontSeeInTab(['Respondents 1', 'Legal Counsellor']);
+  //TODO - what happens when representation changes, rather than being removed? Try this later.
+  //TODO - what should we do if the representative is updated, not removed - maybe a different story
+});
+
+//TODO - remove child representative
+
+//TODO - assign a different solicitor using notice of change
 
 const assertRepresentative = (I, user, organisation, index = 1) => {
   I.seeInTab(['Representative', 'Representative\'s first name'], user.forename);

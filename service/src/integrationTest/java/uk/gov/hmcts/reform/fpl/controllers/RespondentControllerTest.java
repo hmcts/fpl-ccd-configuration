@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellor;
 
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -257,6 +259,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
                     .organisationID(SOLICITOR_ORG_ID)
                     .build())
                 .build())
+            .legalCounsellors(asList(element(buildLegalCounsellor("1", true))))
             .build();
 
         final LocalAuthority localAuthority = LocalAuthority.builder()
@@ -277,6 +280,11 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         final CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
+        assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
+            .isEqualTo(SOLICITOR_ORG_ID);
+
+        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isNull();
+
         final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
                 .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
@@ -284,10 +292,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .applicantName(localAuthority.getName())
                 .build())
             .build();
-
-        assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
-            .isEqualTo(SOLICITOR_ORG_ID);
-
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
     }
 
@@ -300,6 +304,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
                     .organisationID(SOLICITOR_ORG_ID)
                     .build())
                 .build())
+            .legalCounsellors(asList(element(buildLegalCounsellor("1", true))))
             .build();
 
         final ApplicantParty legacyApplicant = ApplicantParty.builder()
@@ -316,6 +321,11 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         final CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
+        assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
+            .isEqualTo(SOLICITOR_ORG_ID);
+
+        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isNull();
+
         final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
                 .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
@@ -323,10 +333,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .applicantName(legacyApplicant.getOrganisationName())
                 .build())
             .build();
-
-        assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
-            .isEqualTo(SOLICITOR_ORG_ID);
-
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
     }
 
