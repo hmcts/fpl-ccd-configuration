@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.Jurisdiction;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -77,6 +78,7 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersLinkedApplication;
     String manageOrdersParentResponsible;
     RelationshipWithChild manageOrdersRelationshipWithChild;
+    PlacedUnderOrder manageOrdersPlacedUnderOrder;
     DynamicList manageOrdersAmendmentList;
     DocumentReference manageOrdersOrderToAmend;
     DocumentReference manageOrdersAmendedOrder;

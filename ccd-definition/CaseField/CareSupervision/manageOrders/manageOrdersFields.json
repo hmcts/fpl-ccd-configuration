@@ -532,5 +532,15 @@
     "FieldTypeParameter": "RelationshipWithChild",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPlacedUnderOrder",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Which order placed the child in the care of the local authority?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "PlacedUnderOrder",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

@@ -304,5 +304,14 @@
     "ElementLabel": " ",
     "FieldShowCondition": "parentResponsible=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "orderPlacedChildInCustody",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "orderPlacedChildInCustody=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]

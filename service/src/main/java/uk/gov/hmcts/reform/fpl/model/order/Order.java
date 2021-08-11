@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
@@ -210,12 +211,16 @@ public enum Order {
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C29_RECOVERY_OF_A_CHILD(
-        MANUAL_UPLOAD,
+        DIGITAL,
         "Recovery of a child (C29)",
         "",
         "Recovery of a child (C29)",
         IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
+        List.of(
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
+            FURTHER_DIRECTIONS, ORDER_PLACED_CHILD_IN_CUSTODY,
+            REVIEW_DRAFT_ORDER, WHICH_OTHERS
+        )
     ),
     C30_TO_DISCLOSE_INFORMATION_ABOUT_THE_WHEREABOUTS_OF_A_MISSING_CHILD(
         MANUAL_UPLOAD,

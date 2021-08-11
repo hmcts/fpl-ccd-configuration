@@ -59,6 +59,8 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersIsByConsent")),
     PARENTAL_RESPONSIBILITY("parentResponsible", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersParentResponsible", "manageOrdersRelationshipWithChild")),
+    ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersPlacedUnderOrder")),
     MANAGE_ORDER_END_DATE_WITH_MONTH(
         "manageOrdersExpiryDateWithMonth", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",

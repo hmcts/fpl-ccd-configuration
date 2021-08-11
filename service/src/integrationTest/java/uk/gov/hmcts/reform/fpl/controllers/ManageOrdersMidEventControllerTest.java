@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALEN
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
@@ -103,7 +104,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("isFinalOrder", "NO"),
         Map.entry("orderToAmend","NO"),
         Map.entry("uploadAmendedOrder","NO"),
-        Map.entry("parentResponsible", "NO")
+        Map.entry("parentResponsible", "NO"),
+        Map.entry("orderPlacedChildInCustody", "NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -498,7 +500,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("isFinalOrder", "NO"),
             Map.entry("orderToAmend","NO"),
             Map.entry("uploadAmendedOrder","NO"),
-            Map.entry("parentResponsible", "NO")
+            Map.entry("parentResponsible", "NO"),
+            Map.entry("orderPlacedChildInCustody", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -546,7 +549,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("isFinalOrder", "NO"),
             Map.entry("orderToAmend","NO"),
             Map.entry("uploadAmendedOrder","NO"),
-            Map.entry("parentResponsible", "NO")
+            Map.entry("parentResponsible", "NO"),
+            Map.entry("orderPlacedChildInCustody", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.docmosis.generator;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -29,6 +30,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.Jurisdiction.ENGLAND;
+import static uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation.ABSCOND;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
@@ -201,6 +204,12 @@ public class DocmosisOrderCaseDataGenerator {
                     getManageOrdersEvent(builder)
                         .manageOrdersParentResponsible("Remmy Responsible")
                         .manageOrdersRelationshipWithChild(RelationshipWithChild.FATHER)
+                        .build()
+                );
+            case ORDER_PLACED_CHILD_IN_CUSTODY:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersPlacedUnderOrder(CARE_ORDER)
                         .build()
                 );
             case ICO_EXCLUSION:
