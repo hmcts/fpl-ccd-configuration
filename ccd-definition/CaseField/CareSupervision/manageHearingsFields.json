@@ -146,7 +146,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "hearingDays",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "TextArea",
+    "FieldType": "Text",
     "Label": "Hearing length, in days",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -155,7 +155,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "hearingHours",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "TextArea",
+    "FieldType": "Text",
     "Label": "Hearing length, in hours",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -164,7 +164,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "hearingMinutes",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "TextArea",
+    "FieldType": "Text",
     "Label": "Hearing length, in minutes",
     "SecurityClassification": "Public",
     "Searchable": "N"
