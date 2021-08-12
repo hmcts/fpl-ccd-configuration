@@ -8,16 +8,20 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
@@ -37,9 +41,7 @@ public class FurtherEvidenceUploadedEventHandler {
         final UserDetails uploader = event.getInitiatedBy();
 
         DocumentUploadNotificationUserType userType = event.getUserType();
-        List<Element<SupportingEvidenceBundle>> newBundle = getEvidenceBundle(caseData, userType);
-        List<Element<SupportingEvidenceBundle>> oldBundle = getEvidenceBundle(caseDataBefore, userType);
-        List<String> newNonConfidentialDocuments = getNewNonConfidentialDocumentsNames(newBundle, oldBundle);
+        List<String> newNonConfidentialDocuments = getNewNonConfidentialBundleNames(caseData, caseDataBefore, userType);
 
         final Set<String> recipients = new HashSet<>();
 
@@ -59,8 +61,13 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    private List<String> getNewNonConfidentialDocumentsNames(List<Element<SupportingEvidenceBundle>> newBundle,
-                                                             List<Element<SupportingEvidenceBundle>> oldBundle) {
+
+    private List<String> getNewNonConfidentialBundleNames(CaseData caseData, CaseData caseDataBefore,
+                                                          DocumentUploadNotificationUserType userType) {
+
+        List<Element<SupportingEvidenceBundle>> newBundle = getEvidenceBundle(caseData, userType);
+        List<Element<SupportingEvidenceBundle>> oldBundle = getEvidenceBundle(caseDataBefore, userType);
+
         List<String> documentNames = new ArrayList<String>();
 
         unwrapElements(newBundle).forEach(newDoc -> {
@@ -76,9 +83,33 @@ public class FurtherEvidenceUploadedEventHandler {
         if (userType == LOCAL_AUTHORITY) {
             return caseData.getFurtherEvidenceDocumentsLA();
         } else if (userType == SOLICITOR) {
-            return caseData.getFurtherEvidenceDocumentsSolicitor();
+            List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle =
+                caseData.getFurtherEvidenceDocumentsSolicitor();
+            List<Element<SupportingEvidenceBundle>> respondentStatementsBundle =
+                getEvidenceBundleFromRespondentStatements(caseData);
+
+            return concatEvidenceBundles(furtherEvidenceBundle, respondentStatementsBundle);
         } else {
             return caseData.getFurtherEvidenceDocuments();
+        }
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
+        List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<Element<SupportingEvidenceBundle>>();
+        caseData.getRespondentStatements().forEach( statement -> {
+            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle());
+        });
+        return evidenceBundle;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
+                                                                          List<Element<SupportingEvidenceBundle>> b2) {
+        if (b1 == null) {
+            return b2;
+        } else if (b2 == null) {
+            return b1;
+        } else {
+            return Stream.concat(b1.stream(), b2.stream()).collect(Collectors.toList());
         }
     }
 }
