@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ACTIONS_PERMITTED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
@@ -219,7 +220,7 @@ public enum Order {
         IsFinalOrder.MAYBE,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
-            ORDER_PLACED_CHILD_IN_CUSTODY, ORDER_EX_PARTE, FURTHER_DIRECTIONS, CLOSE_CASE,
+            ORDER_PLACED_CHILD_IN_CUSTODY, ACTIONS_PERMITTED, ORDER_EX_PARTE, FURTHER_DIRECTIONS, CLOSE_CASE,
             REVIEW_DRAFT_ORDER, WHICH_OTHERS
         )
     ),

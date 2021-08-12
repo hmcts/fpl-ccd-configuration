@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C29ActionsPermitted",
+    "ListElementCode": "ENTRY",
+    "ListElement": "Entry",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C29ActionsPermitted",
+    "ListElementCode": "INFORM",
+    "ListElement": "Inform",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C29ActionsPermitted",
+    "ListElementCode": "PRODUCE",
+    "ListElement": "Produce",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C29ActionsPermitted",
+    "ListElementCode": "REMOVE",
+    "ListElement": "Remove",
+    "DisplayOrder": 4
+  }
+]

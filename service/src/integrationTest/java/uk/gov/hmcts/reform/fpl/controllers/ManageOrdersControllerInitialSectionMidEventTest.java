@@ -110,6 +110,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .parentResponsible(NO)
             .orderPlacedChildInCustody(NO)
             .orderIsExParte(YES)
+            .actionsPermitted(YES)
             .build()
         );
     }
@@ -167,6 +168,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .parentResponsible(NO)
             .orderPlacedChildInCustody(NO)
             .orderIsExParte(YES)
+            .actionsPermitted(YES)
             .build()
         );
     }

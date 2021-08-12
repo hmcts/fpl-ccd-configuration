@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
@@ -83,6 +84,9 @@ public class ManageOrdersEventData {
     DocumentReference manageOrdersOrderToAmend;
     DocumentReference manageOrdersAmendedOrder;
     String manageOrdersIsExParte;
+    List<C29ActionsPermitted> manageOrdersActionsPermitted;
+    Address manageOrdersActionsPermittedAddress;
+    String manageOrdersOfficerName;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

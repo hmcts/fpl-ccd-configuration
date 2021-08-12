@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.docmosis.generator;
 
 import org.apache.commons.lang3.tuple.Pair;
+import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,7 +31,6 @@ import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.Jurisdiction.ENGLAND;
 import static uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation.ABSCOND;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
@@ -250,6 +249,12 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersIsExParte("Yes")
+                        .build()
+                );
+            case ACTIONS_PERMITTED:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY, C29ActionsPermitted.REMOVE))
                         .build()
                 );
             default:

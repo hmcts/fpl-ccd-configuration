@@ -42,4 +42,5 @@ public class OrderTempQuestions {
     String parentResponsible;
     String orderPlacedChildInCustody;
     String orderIsExParte;
+    String actionsPermitted;
 }

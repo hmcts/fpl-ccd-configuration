@@ -322,5 +322,14 @@
     "ElementLabel": " ",
     "FieldShowCondition": "orderIsExParte=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "actionsPermitted",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "actionsPermitted=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]

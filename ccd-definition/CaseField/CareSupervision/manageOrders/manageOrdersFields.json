@@ -551,5 +551,33 @@
     "FieldType": "YesOrNo",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersActionsPermitted",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C29ActionsPermitted",
+    "Label": "What does the order allow?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersActionsPermittedAddress",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "AddressUK",
+    "Label": "Add address to be accessed",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersOfficerName",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Officer's name",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

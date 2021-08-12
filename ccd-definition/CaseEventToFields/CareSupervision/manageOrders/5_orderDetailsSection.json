@@ -545,5 +545,44 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.orderIsExParte=\"YES\"",
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersActionsPermitted",
+    "PageFieldDisplayOrder": 43,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.actionsPermitted=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersActionsPermittedAddress",
+    "PageFieldDisplayOrder": 43,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersActionsPermitted CONTAINS \"ENTRY\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersOfficerName",
+    "PageFieldDisplayOrder": 44,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersActionsPermitted CONTAINS \"ENTRY\" OR manageOrdersActionsPermitted CONTAINS \"PRODUCE\"",
+    "ShowSummaryChangeOption": "Y"
   }
 ]
