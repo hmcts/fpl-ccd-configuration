@@ -101,7 +101,7 @@ class RecordFinalDecisionsControllerAboutToSubmitTest extends AbstractCallbackTe
                 Child.builder().build()))
             .recordChildrenFinalDecisionsEventData(RecordChildrenFinalDecisionsEventData.builder()
                 .childFinalDecisionDetails00(ChildFinalDecisionDetails.builder()
-                    .finalDecisionReason(ChildFinalDecisionReason.REFUSAL.name()).build())
+                    .finalDecisionReason(ChildFinalDecisionReason.REFUSAL).build())
                 .childFinalDecisionDetails01(ChildFinalDecisionDetails.builder().build())
                 .finalDecisionDate(FINAL_DECISION_DATE)
                 .build())

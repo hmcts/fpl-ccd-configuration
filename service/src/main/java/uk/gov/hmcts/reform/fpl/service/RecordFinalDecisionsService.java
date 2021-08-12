@@ -80,13 +80,11 @@ public class RecordFinalDecisionsService {
         RecordChildrenFinalDecisionsEventData eventData = caseData.getRecordChildrenFinalDecisionsEventData();
         List<ChildFinalDecisionDetails> childFinalDecisionDetails = eventData.getAllChildrenDecisionDetails();
 
-        System.out.println(childFinalDecisionDetails);
-
         for (int i = 0; i < updatedChildren.size(); i++) {
-            String decisionReason = childFinalDecisionDetails.get(i).getFinalDecisionReason();
+            ChildFinalDecisionReason decisionReason = childFinalDecisionDetails.get(i).getFinalDecisionReason();
             if (decisionReason != null) {
                 updatedChildren.get(i).getValue()
-                    .setFinalDecisionReason(ChildFinalDecisionReason.valueOf(decisionReason).getLabel());
+                    .setFinalDecisionReason(decisionReason.getLabel());
                 updatedChildren.get(i).getValue()
                     .setFinalDecisionDate(formatLocalDateToString(eventData.getFinalDecisionDate(), DATE));
             }

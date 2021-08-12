@@ -17,7 +17,7 @@ class RecordFinalDecisionsControllerAboutToStartTest extends AbstractCallbackTes
     }
 
     @Test
-    void shouldPrePpopulateFields() {
+    void shouldPrePopulateFields() {
         CaseData caseData = CaseData.builder().build();
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
