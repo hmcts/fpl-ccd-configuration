@@ -188,12 +188,23 @@ public class ManageLegalCounselService {
                 .map(organisation -> organisation.getOrganisationID());
 
             if (!organisationIdFromSolicitorInPreviousCaseData.equals(organisationIdFromSolicitorInCurrentCaseData)) {
-                //Remove legal counsel if solicitor was removed from respondent (i.e. organisation has changed)
-                respondentInCurrentCaseData.ifPresent(respondent -> respondent.setLegalCounsellors(emptyList()));
+                //Get legal counsel from another respondent with the same org //TODO - add children later
+                organisationIdFromSolicitorInCurrentCaseData.ifPresent(organisationIdForNewSolicitor -> {
+                    List<Element<LegalCounsellor>> legalCounsel =
+                        getLegalCounselUsedByGivenOrganisation(organisationIdForNewSolicitor, respondentsInPreviousCaseData);
+
+                    respondentInCurrentCaseData.ifPresent(respondent -> respondent.setLegalCounsellors(legalCounsel));
+                });
             }
         }
 
         return respondentsInCurrentCaseData;
+    }
+
+    private List<Element<LegalCounsellor>> getLegalCounselUsedByGivenOrganisation(String organisationId, List<Element<Respondent>> respondents) {
+        return respondents.stream().map(Element::getValue).filter(respondent ->
+            respondent.getSolicitor().getOrganisation().getOrganisationID().equals(organisationId)//TODO - not every respondent will be represented
+        ).findFirst().map(Respondent::getLegalCounsellors).orElse(emptyList());
     }
 
 }
