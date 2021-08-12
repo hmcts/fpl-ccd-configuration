@@ -32,9 +32,11 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
     private final EmailNotificationHelper helper;
 
     public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
+        String lastName = helper.getEldestChildLastName(caseData.getAllChildren());
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(buildUnformattedCalloutWithNextHearing(caseData, time.now()))
-            .lastName(helper.getSubjectLineLastName(caseData))
+            .lastName(lastName)
+            .childLastName(lastName)
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
             .build();

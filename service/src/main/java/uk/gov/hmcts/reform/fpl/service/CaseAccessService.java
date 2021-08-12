@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class CaseAccessService {
 
     private final CaseAccessDataStoreApi caseAccessDataStoreApi;
+    private final RequestData requestData;
     private final AuthTokenGenerator authTokenGenerator;
     private final SystemUserService systemUserService;
     private final OrganisationService organisationService;
@@ -60,6 +64,17 @@ public class CaseAccessService {
             .build();
 
         caseAccessDataStoreApi.removeCaseUserRoles(userToken, serviceToken, caseAssignedUserRolesRequest);
+    }
+
+    public Set<CaseRole> getUserCaseRoles(String caseId) {
+        CaseAssignedUserRolesResource userRolesResource = caseAccessDataStoreApi.getUserRoles(
+            requestData.authorisation(), authTokenGenerator.generate(),
+            List.of(caseId), List.of(requestData.userId()));
+
+        return userRolesResource.getCaseAssignedUserRoles().stream()
+            .map(CaseAssignedUserRole::getCaseRole)
+            .map(CaseRole::from)
+            .collect(Collectors.toSet());
     }
 
     private void grantCaseAccess(Long caseId, Set<String> users, CaseRole caseRole) {

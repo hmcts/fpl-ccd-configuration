@@ -7,6 +7,9 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 class RespondentTest {
 
@@ -93,5 +96,46 @@ class RespondentTest {
 
             assertThat(underTest.hasUnregisteredOrganisation()).isFalse();
         }
+    }
+
+    @Nested
+    class HasAddressAdded {
+
+        private Respondent underTest;
+
+        @Test
+        void shouldReturnTrueWhenRespondentPartyHasAddress() {
+            underTest = Respondent.builder()
+                .party(RespondentParty.builder().address(testAddress()).build())
+                .build();
+
+            assertTrue(underTest.hasAddress());
+        }
+
+        @Test
+        void shouldReturnFalseWhenRespondentPartyIsNull() {
+            underTest = Respondent.builder().build();
+
+            assertFalse(underTest.hasAddress());
+        }
+
+        @Test
+        void shouldReturnFalseWhenPostcodeIsMissing() {
+            underTest = Respondent.builder()
+                .party(RespondentParty.builder().address(Address.builder().addressLine1("address1").build()).build())
+                .build();
+
+            assertFalse(underTest.hasAddress());
+        }
+
+        @Test
+        void shouldReturnFalseWhenAddressIsMissing() {
+            underTest = Respondent.builder()
+                .party(RespondentParty.builder().firstName("first").lastName("name").build())
+                .build();
+
+            assertThat(underTest.hasUnregisteredOrganisation()).isFalse();
+        }
+
     }
 }

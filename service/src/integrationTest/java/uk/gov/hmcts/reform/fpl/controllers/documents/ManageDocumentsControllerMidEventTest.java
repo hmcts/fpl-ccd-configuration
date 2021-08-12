@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
 
 import java.time.LocalDateTime;
@@ -29,6 +32,11 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT_STATEMENT;
@@ -48,19 +56,30 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
     private static final String USER_ROLES = "caseworker-publiclaw-courtadmin";
+    private static final long CASE_ID = 12345L;
 
     @Autowired
     private DynamicListHelper dynamicLists;
+
+    @MockBean
+    private UserService userService;
 
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
     }
 
+    @BeforeEach
+    void init() {
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), Long.toString(CASE_ID))).willReturn(false);
+        given(userService.isHmctsUser()).willReturn(true);
+    }
+
     @Test
-    void shouldInitialiseCorrespondenceCollection() {
+    void shouldInitialiseCorrespondenceCollectionForHMCTS() {
         List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildSupportingEvidenceBundle();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .correspondenceDocuments(correspondenceDocuments)
             .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
@@ -68,6 +87,29 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         CaseData extractedCaseData = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections"));
 
         assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
+
+        assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
+            .type(CORRESPONDENCE)
+            .hasHearings("No")
+            .hasC2s("No")
+            .build());
+    }
+
+    @Test
+    void shouldInitialiseCorrespondenceCollectionForSolicitor() {
+        given(userService.hasAnyCaseRoleFrom(eq(representativeSolicitors()), anyString())).willReturn(true);
+        given(userService.isHmctsUser()).willReturn(false);
+        List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildSupportingEvidenceBundle();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .correspondenceDocumentsSolicitor(correspondenceDocuments)
+            .manageDocument(buildManagementDocument(CORRESPONDENCE))
+            .build();
+
+        CaseData extractedCaseData = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections"));
+
+        assertThat(extractedCaseData.getCorrespondenceDocumentsSolicitor()).isEqualTo(correspondenceDocuments);
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
@@ -89,6 +131,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             element(buildC2DocumentBundle(today.plusDays(2))));
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .c2DocumentBundle(c2DocumentBundle)
             .manageDocument(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .manageDocumentsSupportingC2List(selectedC2DocumentId)
@@ -129,6 +172,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .c2DocumentBundle(c2DocumentBundle)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(selectedC2DocumentBundle)
@@ -164,6 +208,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .c2DocumentBundle(c2DocumentBundle)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(selectedC2DocumentBundle)
@@ -180,8 +225,24 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldThrowExceptionIfUserIsAdminAndHasSolicitorCaseRoles() {
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), Long.toString(CASE_ID))).willReturn(true);
+        given(userService.isHmctsUser()).willReturn(true);
+        given(userService.getUserEmail()).willReturn("test-email@example.com");
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .manageDocument(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
+            .build();
+
+        assertThatThrownBy(() -> postMidEvent(caseData, "initialise-manage-document-collections"))
+            .hasMessageContaining("User test-email@example.com is HMCTS but has solicitor case roles");
+    }
+
+    @Test
     void shouldReturnErrorWhenNoC2sOnCaseAndUserSelectsC2SupportingDocs() {
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .manageDocument(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
@@ -195,6 +256,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInTheFuture() {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(List.of(
                 element(SupportingEvidenceBundle.builder().dateTimeReceived(futureDate).build())
             ))
@@ -210,6 +272,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     void shouldReturnNoValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInThePast() {
         LocalDateTime pastDate = LocalDateTime.now().minusDays(2);
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(List.of(
                 element(SupportingEvidenceBundle.builder().dateTimeReceived(pastDate).build())
             ))
@@ -221,7 +284,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldInitialiseFurtherEvidences() {
+    void shouldInitialiseFurtherEvidencesForHMCTS() {
         final LocalDateTime today = LocalDateTime.now();
 
         final Element<HearingBooking> otherHearing = element(createHearingBooking(today.minusDays(1), today));
@@ -238,6 +301,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
                 .build());
 
         final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .manageDocumentSubtypeList(OTHER)
             .manageDocumentsRelatedToHearing(YES.getValue())
             .manageDocumentsHearingList(selectedHearing.getId())
@@ -261,6 +325,28 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldInitialiseFurtherEvidencesForSolicitor() {
+        given(userService.hasAnyCaseRoleFrom(eq(representativeSolicitors()), anyString())).willReturn(true);
+        given(userService.isHmctsUser()).willReturn(false);
+
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = buildSupportingEvidenceBundle();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor =
+            buildSupportingEvidenceBundleSolicitor();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .manageDocumentSubtypeList(OTHER)
+            .furtherEvidenceDocuments(furtherEvidenceDocuments)
+            .furtherEvidenceDocumentsSolicitor(furtherEvidenceDocumentsSolicitor)
+            .manageDocument(buildManagementDocument(ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS))
+            .build();
+
+        CaseData updatedCase = extractCaseData(postMidEvent(caseData, "further-evidence-documents"));
+
+        assertThat(updatedCase.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceDocumentsSolicitor);
+    }
+
+    @Test
     void shouldInitialiseRespondentStatements() {
 
         final Element<Respondent> selectedRespondent = testRespondent("John", "Smith");
@@ -277,6 +363,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .build());
 
         final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .manageDocumentSubtypeList(RESPONDENT_STATEMENT)
             .respondents1(List.of(selectedRespondent, otherRespondent))
             .respondentStatementList(selectedRespondent.getId())
@@ -305,6 +392,14 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name(RandomStringUtils.randomAlphabetic(10))
             .uploadedBy("HMCTS")
+            .type(GUARDIAN_REPORTS)
+            .build());
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundleSolicitor() {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name(RandomStringUtils.randomAlphabetic(10))
+            .uploadedBy("ExternalSolicitor")
             .type(GUARDIAN_REPORTS)
             .build());
     }

@@ -61,6 +61,7 @@ java:
         - robotics-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
+        - ctsc-team-lead-inbox
         - AppInsightsInstrumentationKey
         - scheduler-db-password
   applicationPort: 4000

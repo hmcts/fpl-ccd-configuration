@@ -53,7 +53,7 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
                 .build()))
             .build();
 
-        when(helper.getSubjectLineLastName(caseData)).thenReturn("Smith");
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
 
         NotifyData expectedParameters = SDONotifyData.builder()
             .lastName("Smith")

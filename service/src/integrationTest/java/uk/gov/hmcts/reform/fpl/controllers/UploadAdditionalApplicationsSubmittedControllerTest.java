@@ -58,7 +58,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -72,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -147,17 +147,17 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .servingPreferences(EMAIL)
             .email("email-rep@test.com")
             .build());
-    public static final Respondent RESPONDENT_WITH_DIGITAL_REP = Respondent.builder()
+    public static final Element<Respondent> RESPONDENT_WITH_DIGITAL_REP = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("George").lastName("Jones").address(testAddress()).build())
         .representedBy(wrapElements(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE.getId()))
-        .build();
-    public static final Respondent RESPONDENT_WITH_EMAIL_REP = Respondent.builder()
+        .build());
+    public static final Element<Respondent> RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
         .representedBy(wrapElements(REPRESENTATIVE_WITH_EMAIL_PREFERENCE.getId()))
         .party(RespondentParty.builder().firstName("Alex").lastName("Jones").address(testAddress()).build())
-        .build();
-    public static final Respondent UNREPRESENTED_RESPONDENT = Respondent.builder()
+        .build());
+    public static final Element<Respondent> UNREPRESENTED_RESPONDENT = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("Emma").lastName("Jones").build())
-        .build();
+        .build());
     private static final Element<Representative> REPRESENTATIVE_WITH_POST_PREFERENCE = element(
         Representative.builder()
             .fullName("Respondent PostRep1")
@@ -169,10 +169,10 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         .servingPreferences(POST)
         .address(testAddress())
         .build());
-    public static final Respondent RESPONDENT_WITH_POST_REP = Respondent.builder()
+    public static final Element<Respondent> RESPONDENT_WITH_POST_REP = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("Tim").lastName("Jones").address(testAddress()).build())
         .representedBy(wrapElements(REPRESENTATIVE_WITH_POST_PREFERENCE.getId()))
-        .build();
+        .build());
 
     private final Other other = Other.builder().address(testAddress()).name("Emily Jones").build();
 
@@ -187,29 +187,25 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         given(documentDownloadService.downloadDocument(ORDER.getBinaryUrl())).willReturn(ORDER_BINARY);
         given(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
             .willReturn(ORDER_DOCUMENT);
-        given(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_WITH_POST_PREFERENCE.getValue())))
-            .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         given(documentService.createCoverDocuments(any(), any(), eq(OTHER_REP_BY_POST.getValue())))
             .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_OTHER_REPRESENTATIVE_BINARY).build());
-        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
-            .willReturn(COVERSHEET_REPRESENTATIVE);
         given(uploadDocumentService.uploadPDF(COVERSHEET_OTHER_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
             .willReturn(COVERSHEET_OTHER_REPRESENTATIVE);
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
-            .willReturn(new SendLetterResponse(LETTER_1_ID))
-            .willReturn(new SendLetterResponse(LETTER_2_ID));
+            .willReturn(new SendLetterResponse(LETTER_1_ID));
     }
 
     @Test
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
         given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
+        List<Element<Respondent>> respondents = List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
+            RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT);
         CaseData caseData = CaseData.builder().id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
             .familyManCaseNumber(String.valueOf(CASE_ID))
-            .respondents1(wrapElements(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
-                RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT))
+            .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
                 REPRESENTATIVE_WITH_POST_PREFERENCE, OTHER_REP_BY_POST))
             .others(Others.builder().firstOther(other).build())
@@ -222,12 +218,14 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .document(ORDER)
                     .supplementsBundle(new ArrayList<>())
                     .others(List.of(element(other)))
+                    .respondents(List.of(
+                        RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP, UNREPRESENTED_RESPONDENT))
                     .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
                 .build())).build();
 
         postSubmittedEvent(caseData);
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
@@ -257,37 +255,36 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(NOTIFICATION_REFERENCE)));
 
-        checkUntil(() -> verify(sendLetterApi, times(2))
-            .sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
+        checkUntil(() -> verify(sendLetterApi).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
         checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
-
-        LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY);
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
             CASE_ID, ORDER, COVERSHEET_OTHER_REPRESENTATIVE_BINARY, ORDER_BINARY);
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
-            .isEqualTo(List.of(expectedPrintRequest1, expectedPrintRequest2));
+            .isEqualTo(List.of(expectedPrintRequest2));
 
         final CaseData caseUpdate = getCase(this.caseDetails);
-
-        SentDocument expectedDocumentSentToRepresentative = documentSent(
-            REPRESENTATIVE_WITH_POST_PREFERENCE.getValue(), COVERSHEET_REPRESENTATIVE,
-            ORDER_DOCUMENT, LETTER_1_ID, now());
-
         SentDocument expectedDocumentSentToRespondent = documentSent(OTHER_REP_BY_POST.getValue(),
-            COVERSHEET_OTHER_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_2_ID, now());
+            COVERSHEET_OTHER_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID, now());
 
-        assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(2);
-
+        assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(1);
         assertThat(caseUpdate.getDocumentsSentToParties().get(0).getValue().getDocumentsSentToParty())
             .extracting(Element::getValue)
-            .containsExactly(expectedDocumentSentToRepresentative);
-
-        assertThat(caseUpdate.getDocumentsSentToParties().get(1).getValue().getDocumentsSentToParty())
-            .extracting(Element::getValue)
             .containsExactly(expectedDocumentSentToRespondent);
+    }
+
+    @Test
+    void submittedEventShouldNotifyCtscAdminWithUpdatedTemplateWhenOthersToggleIsEnabled() {
+        when(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
+        postSubmittedEvent(buildCaseDetails(YES, YES));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        ));
     }
 
     @Test
@@ -395,10 +392,17 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void submittedEventShouldNotNotifyAdminWhenPbaPaymentIsNull() throws Exception {
-        final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters())
-            .put("additionalApplicationType", List.of(C2_ORDER))
-            .put("additionalApplicationsBundle", wrapElements(
+        CaseData caseData = CaseData.builder().caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .familyManCaseNumber(String.valueOf(CASE_ID))
+            .respondents1(List.of(element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName(RESPONDENT_FIRSTNAME)
+                    .lastName(RESPONDENT_SURNAME)
+                    .build())
+                .build())))
+            .additionalApplicationType(List.of(C2_ORDER))
+            .additionalApplicationsBundle(wrapElements(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(null)
                     .c2DocumentBundle(C2DocumentBundle.builder()
@@ -406,10 +410,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                         .supplementsBundle(new ArrayList<>())
                         .usePbaPayment(NO.getValue())
                         .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
-                        .build())))
+                        .build())
+                    .build()))
             .build();
 
-        postSubmittedEvent(createCase(caseData));
+        postSubmittedEvent(caseData);
 
         verify(notificationClient, never()).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,

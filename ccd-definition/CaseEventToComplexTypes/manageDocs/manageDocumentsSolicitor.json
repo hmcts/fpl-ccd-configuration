@@ -1,0 +1,106 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocument",
+    "ListElementCode": "type",
+    "EventElementLabel": "Choose a document category",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "EventHintText": "Your document will be stored in the corresponding tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocument",
+    "ListElementCode": "hasHearings",
+    "EventElementLabel": "Has hearings",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "manageDocument.type=\"DO NOT SHOW\"",
+    "Comment": "Hidden field, must be READONLY to workaround hidden fields deletion"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocument",
+    "ListElementCode": "hasC2s",
+    "EventElementLabel": "has c2s",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "manageDocument.type=\"DO NOT SHOW\"",
+    "Comment": "Hidden field, must be READONLY to workaround hidden fields deletion"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "name",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "EventHintText": "Add a descriptive name. For example, ‘Parenting assessment’, ‘Email with evidence attached’ or ‘Form C110a’."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "notes",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "dateTimeReceived",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "type",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeListLA!=\"RESPONDENT_STATEMENT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "uploadedBy",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
+  }
+]

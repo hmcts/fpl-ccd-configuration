@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +14,13 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -38,11 +41,18 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     private String legalRepresentation;
 
     private RespondentSolicitor solicitor;
+    private List<Element<LegalCounsellor>> legalCounsellors;
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
             this.representedBy.add(element(representativeId));
         }
+    }
+
+    @JsonIgnore
+    public boolean hasAddress() {
+        return isNotEmpty(party) && isNotEmpty(party.getAddress())
+            && isNotEmpty(party.getAddress().getPostcode());
     }
 
     public boolean containsConfidentialDetails() {

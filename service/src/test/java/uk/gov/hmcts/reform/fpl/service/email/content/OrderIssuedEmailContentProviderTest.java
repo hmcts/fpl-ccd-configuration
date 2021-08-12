@@ -21,11 +21,11 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
-import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraOthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     EmailNotificationHelper.class, FixedTimeConfiguration.class, ManageOrdersClosedCaseFieldGenerator.class,
     SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryTypeGenerator.class,
     LookupTestConfig.class, ChildrenService.class, AppointedGuardianFormatter.class,
-    SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryExtraOthersNotifiedGenerator.class,
+    SealedOrderHistoryExtraTitleGenerator.class, OthersNotifiedGenerator.class,
     OthersService.class, OrderIssuedEmailContentProviderTypeOfOrderCalculator.class,
     SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class,
     ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class, ChildSelectionUtils.class, CourtService.class})
@@ -92,7 +92,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @BeforeEach
     void setUp() {
-        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("Jones");
+        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn("Jones");
     }
 
     @Test
@@ -143,7 +143,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         when(calculator.getTypeOfOrder(data, CMO)).thenReturn("case management order");
-        when(helper.getSubjectLineLastName(data)).thenReturn("Jones");
+        when(helper.getEldestChildLastName(data.getAllChildren())).thenReturn("Jones");
 
         NotifyData expectedParameters = getExpectedCMOParameters(CMO.getLabel());
         NotifyData actualParameters = underTest.getNotifyDataForCMO(data, testDocument, CMO);

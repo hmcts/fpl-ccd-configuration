@@ -1,0 +1,21 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addOrRemoveLegalCounselLabel",
+    "Label": "<br/>Use this feature to add or remove a legal representative who'll be taking this case for you.<br/><br/>Legal representatives must be registered to use the service before you can add them to a case.<br/><br/>After they're registered, they'll only have access to cases you add them to. They will not be able to see all your organisation's cases.<br/><br/>They can register at [https://manage-org.platform.hmcts.net/register-org/register](https://manage-org.platform.hmcts.net/register-org/register)",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "legalCounsellors",
+    "Label": "Legal Counsellor",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LegalCounsellor",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

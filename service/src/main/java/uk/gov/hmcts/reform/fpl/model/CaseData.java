@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
@@ -103,6 +104,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -434,6 +436,7 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
     private final Selector othersSelector;
+    private final Selector personSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;
@@ -565,6 +568,11 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public boolean hasRespondentsOrOthers() {
+        return isNotEmpty(getAllRespondents()) || isNotEmpty(getAllOthers());
+    }
+
+    @JsonIgnore
     public String getFurtherDirectionsText() {
         return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
     }
@@ -637,9 +645,11 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
@@ -663,6 +673,10 @@ public class CaseData {
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
         return defaultIfNull(correspondenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsSolicitor() {
+        return defaultIfNull(correspondenceDocumentsSolicitor, new ArrayList<>());
     }
 
     public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
@@ -1005,6 +1019,11 @@ public class CaseData {
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageLegalCounselEventData manageLegalCounselEventData =
+        ManageLegalCounselEventData.builder().build();
 
     @JsonIgnore
     public boolean isOutsourced() {

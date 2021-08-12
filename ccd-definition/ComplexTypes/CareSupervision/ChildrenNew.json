@@ -60,5 +60,14 @@
     "ElementLabel": "Resolution Date",
     "FieldShowCondition": "finalDecisionReason!=\"\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
+    "ListElementCode": "legalCounsellors",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LegalCounsellor",
+    "ElementLabel": "Legal Counsellor",
+    "SecurityClassification": "Public"
   }
 ]

@@ -35,7 +35,10 @@ def otherSecrets = [
   ],
   'ccd-${env}': [
     secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
-    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
+    secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+    secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+    secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD')
   ],
   'fpl-${env}': [
     secret('definition-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
@@ -161,14 +164,11 @@ withPipeline(type, product, component) {
 
             git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
 
-            git fetch origin demo:demo
-            git push --force origin HEAD:demo
-
             git fetch origin perftest:perftest
             git push --force origin HEAD:perftest
           '''
         } catch (err) {
-          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo or perftest branch'
+          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update perftest branch'
         }
       }
     }
@@ -198,7 +198,6 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('preview')
     uploadCoreCaseDataDefinitions('preview')
 
-    env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
@@ -249,9 +248,7 @@ withPipeline(type, product, component) {
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
         withTeamSecrets(pipelineConf, env.ENV) {
           archiveCoreCaseDataDefinitions(env.ENV)
-          if (env.ENV != 'prod') { // TODO: uncomment  && env.ENV != 'prod' once tested in all envs
-            uploadCoreCaseDataDefinitions(env.ENV)
-          }
+          uploadCoreCaseDataDefinitions(env.ENV)
         }
       }
     } else {
