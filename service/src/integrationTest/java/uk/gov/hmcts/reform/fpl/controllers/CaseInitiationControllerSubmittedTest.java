@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
-import uk.gov.hmcts.reform.rd.model.Status;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
+import static uk.gov.hmcts.reform.rd.model.Status.ACTIVE;
 
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -163,7 +163,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void givenUsersInSameOrganisation(String... userIds) {
-        given(organisationApi.findUsersInOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
+        given(organisationApi.findUsersInCurrentUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
             .willReturn(organisation(userIds));
     }
 

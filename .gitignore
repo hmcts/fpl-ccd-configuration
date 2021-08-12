@@ -21,6 +21,7 @@ test-results/
 !gradle/wrapper/gradle-wrapper.jar
 build/
 service/out
+service/bin
 
 ### STS ###
 .apt_generated

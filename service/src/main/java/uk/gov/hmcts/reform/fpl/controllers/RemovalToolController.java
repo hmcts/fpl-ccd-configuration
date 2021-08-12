@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.ApplicationRemovedEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderRemovedEvent;
 import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
@@ -138,6 +139,9 @@ public class RemovalToolController extends CallbackController {
         Optional<HearingOrder> removedCMO = orderService.getRemovedCMO(
             caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs()
         );
+        Optional<AdditionalApplicationsBundle> removedApplication = applicationService.getRemovedApplications(caseData
+                .getHiddenApplicationsBundle(),
+            caseDataBefore.getHiddenApplicationsBundle());
 
         if (removedSDO.isPresent()) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
@@ -146,6 +150,8 @@ public class RemovalToolController extends CallbackController {
         } else if (removedCMO.isPresent()) {
             publishEvent(
                 new CMORemovedEvent(caseData, removedCMO.map(HearingOrder::getRemovalReason).orElse("")));
+        } else if (removedApplication.isPresent()) {
+            publishEvent(new ApplicationRemovedEvent(caseData, removedApplication.get()));
         }
     }
 }
