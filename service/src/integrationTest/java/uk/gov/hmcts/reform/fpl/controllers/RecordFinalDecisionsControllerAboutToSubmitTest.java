@@ -5,7 +5,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildFinalDecisionReason;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -60,7 +59,7 @@ class RecordFinalDecisionsControllerAboutToSubmitTest extends AbstractCallbackTe
             Map.entry(OPTION_COUNT_KEY, "01234567891011121314"),
             Map.entry(CLOSE_CASE_LABEL_KEY, "close case label"),
             Map.entry(CHILDREN_LABEL_KEY, "children label"),
-            Map.entry(ORDER_APPLIES_TO_ALL_CHILDREN_KEY, YES)
+            Map.entry(ORDER_APPLIES_TO_ALL_CHILDREN_KEY, YES.getValue())
 
         );
 
