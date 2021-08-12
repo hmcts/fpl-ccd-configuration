@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellor;
+import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondentWithSolicitor;
 
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -485,18 +486,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(dateOfBirth)
-                .build())
-            .build();
-    }
-
-    private Respondent respondentWithSolicitor(LocalDate dateOfBirth, String solicitorEmail) {
-        return Respondent.builder()
-            .party(RespondentParty.builder()
-                .dateOfBirth(dateOfBirth)
-                .build())
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .email(solicitorEmail)
                 .build())
             .build();
     }

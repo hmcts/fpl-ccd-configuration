@@ -168,7 +168,6 @@ public class ManageLegalCounselService {
     public List<Element<Respondent>> removeLegalCounselForRemovedSolicitors(
         List<Element<Respondent>> respondentsInPreviousCaseData,
         List<Element<Respondent>> respondentsInCurrentCaseData) {
-        //TODO - write unit test
 
         for (int i = 0; i < respondentsInPreviousCaseData.size(); i++) {
             final int index = i;

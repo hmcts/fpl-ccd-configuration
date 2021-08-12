@@ -34,8 +34,10 @@ import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORC;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.getCaseConverterInstance;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorWithOrganisationAndMockUserId;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
+import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondentWithSolicitor;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
@@ -241,6 +243,30 @@ class ManageLegalCounselServiceTest {
                 new LegalCounsellorAdded(currentCaseData, legalCounsellor2),
                 new LegalCounsellorRemoved(currentCaseData, "Solicitors Law Ltd", legalCounsellor3)
             );
+    }
+
+    @Test
+    void shouldRemoveLegalCounselWhenSolicitorIsRemovedFromRepresentedParty() {
+        List<Element<LegalCounsellor>> legalCounsel = asList(TEST_LEGAL_COUNSELLOR);
+        Respondent respondent1 = respondentWithSolicitor().toBuilder()
+            .legalCounsellors(legalCounsel)
+            .build();
+        Respondent respondent2 = respondentWithSolicitor().toBuilder()
+            .legalCounsellors(legalCounsel)
+            .build();
+
+        List<Element<Respondent>> previousRespondents = wrapElements(respondent1, respondent2);
+        List<Element<Respondent>> currentRespondents = wrapElements(
+            respondent1.toBuilder().solicitor(null).build(),
+            respondent2
+        );
+
+        List<Element<Respondent>> modifiedRespondentsForCurrentCaseData =
+            manageLegalCounselService.removeLegalCounselForRemovedSolicitors(previousRespondents, currentRespondents);
+
+        assertThat(modifiedRespondentsForCurrentCaseData).hasSize(2);
+        assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEmpty();
+        assertThat(modifiedRespondentsForCurrentCaseData.get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
     }
 
 }
