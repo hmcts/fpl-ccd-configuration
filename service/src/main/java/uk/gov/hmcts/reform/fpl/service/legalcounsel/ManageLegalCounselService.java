@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -162,6 +163,33 @@ public class ManageLegalCounselService {
             ));
 
         return eventsToPublish;
+    }
+
+    public List<Element<Respondent>> removeLegalCounselForRemovedSolicitors(
+        List<Element<Respondent>> respondentsInPreviousCaseData,
+        List<Element<Respondent>> respondentsInCurrentCaseData) {
+        //TODO - write unit test
+
+        for (int i = 0; i < respondentsInPreviousCaseData.size(); i++) {
+            final int index = i;
+            Optional<RespondentSolicitor> respondentSolicitorInPreviousCaseData = Optional.of(respondentsInPreviousCaseData)
+                .map(respondents -> respondents.get(index))
+                .map(Element::getValue)
+                .map(WithSolicitor::getSolicitor);
+
+            Optional<WithSolicitor> respondentInCurrentCaseData = Optional.ofNullable(respondentsInCurrentCaseData)
+                .map(respondents -> respondents.get(index))
+                .map(Element::getValue);
+            Optional<RespondentSolicitor> respondentSolicitorInCurrentCaseData = respondentInCurrentCaseData
+                .map(WithSolicitor::getSolicitor);
+
+            if (!respondentSolicitorInPreviousCaseData.equals(respondentSolicitorInCurrentCaseData)) {
+                //Remove legal counsel if solicitor was removed from respondent
+                respondentInCurrentCaseData.ifPresent(respondent -> respondent.setLegalCounsellors(emptyList()));
+            }
+        }
+
+        return respondentsInCurrentCaseData;
     }
 
 }

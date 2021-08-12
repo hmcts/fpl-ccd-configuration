@@ -16,19 +16,16 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.legalcounsel.ManageLegalCounselService;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
 import java.util.List;
-import java.util.Optional;
 
-import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
@@ -46,6 +43,7 @@ public class RespondentController extends CallbackController {
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
     private final RespondentValidator respondentValidator;
     private final NoticeOfChangeService noticeOfChangeService;
+    private final ManageLegalCounselService legalCounselService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -89,29 +87,7 @@ public class RespondentController extends CallbackController {
 
         newRespondents = respondentService.removeHiddenFields(newRespondents);
 
-//        /////TODO - write unit test
-        //TODO - extract to service?
-        for (int i = 0; i < oldRespondents.size(); i++) {
-            final int index = i;
-            Optional<RespondentSolicitor> oldRespondentSolicitor = Optional.ofNullable(oldRespondents)
-                .map(respondents -> respondents.get(index))
-                .map(Element::getValue)
-                .map(WithSolicitor::getSolicitor);
-
-            Optional<WithSolicitor> respondentInNewList = Optional.ofNullable(newRespondents)
-                .map(respondents -> respondents.get(index))
-                .map(Element::getValue);
-            Optional<RespondentSolicitor> newRespondentSolicitor = respondentInNewList
-                .map(WithSolicitor::getSolicitor);
-
-            if (!oldRespondentSolicitor.equals(newRespondentSolicitor)) {
-                respondentInNewList.ifPresent(respondent -> respondent.setLegalCounsellors(emptyList()));
-            }
-        }
-        /////
-        //Get removed solicitors
-        //Can I use the existing function? - I think I can make something generic
-        //Remove their legal counsel as well
+        newRespondents = legalCounselService.removeLegalCounselForRemovedSolicitors(oldRespondents, newRespondents);
 
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
         if (!OPEN.equals(caseData.getState())) {

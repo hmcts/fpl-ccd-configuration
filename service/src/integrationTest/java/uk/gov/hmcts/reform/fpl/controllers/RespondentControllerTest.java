@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -59,6 +60,17 @@ class RespondentControllerTest extends AbstractCallbackTest {
     private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
     private static final String CASE_ID = "1234567890123456";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+
+    private static final ApplicantParty TEST_LEGACY_APPLICANT = ApplicantParty.builder()
+        .organisationName("Applicant org name")
+        .build();
+    private static final List<Element<Applicant>> TEST_APPLICANTS = wrapElements(Applicant.builder()
+        .party(TEST_LEGACY_APPLICANT).build());
+    private static final RespondentSolicitor TEST_RESPONDENT_SOLICITOR = RespondentSolicitor.builder()
+        .organisation(Organisation.builder()
+            .organisationID(SOLICITOR_ORG_ID)
+            .build())
+        .build();
 
     RespondentControllerTest() {
         super("enter-respondents");
@@ -130,7 +142,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @Test
     void shouldReturnEmailAddressErrorsForRespondentSolicitorEmailWhenInvalid() {
         CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(respondent(dateNow().plusDays(1), "Test User <e.test@test.com>")))
+            .respondents1(wrapElements(respondentWithSolicitor(dateNow().plusDays(1), "Test User <e.test@test.com>")))
             .state(OPEN)
             .build();
 
@@ -144,8 +156,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnEmailAddressErrorsWhenThereAreMultipleRespondentSolicitors() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(
-                respondent(dateNow(), "Test User <e.test@test.com>"),
-                respondent(dateNow(), "Second Test User <e.test-second@test.com>")
+                respondentWithSolicitor(dateNow(), "Test User <e.test@test.com>"),
+                respondentWithSolicitor(dateNow(), "Second Test User <e.test-second@test.com>")
             ))
             .state(OPEN)
             .build();
@@ -160,7 +172,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @Test
     void shouldReturnNoEmailErrorsForRespondentSolicitorWhenValidEmail() {
         CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(respondent(dateNow(), "test@test.com")))
+            .respondents1(wrapElements(respondentWithSolicitor(dateNow(), "test@test.com")))
             .state(OPEN)
             .build();
 
@@ -172,7 +184,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @Test
     void shouldReturnRespondentRemovedValidationErrorsWhenRespondentRemoved() {
         CaseData caseDataBefore = CaseData.builder()
-            .respondents1(List.of(element(respondent(dateNow(), "test@test.com"))))
+            .respondents1(List.of(element(respondentWithSolicitor(dateNow(), "test@test.com"))))
             .state(SUBMITTED)
             .build();
 
@@ -190,7 +202,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @Test
     void shouldAllowAdminToUpdateRespondentSolicitorOrganisation() {
 
-        Element<Respondent> respondent = element(respondent(dateNow(), "test@test.com"));
+        Element<Respondent> respondent = element(respondentWithSolicitor(dateNow(), "test@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
             .solicitor(respondent.getValue().getSolicitor().toBuilder()
                 .firstName("James")
@@ -219,7 +231,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotAllowLocalAuthorityToUpdateRespondentSolicitorOrganisation() {
 
-        Element<Respondent> respondent = element(respondent(dateNow(), "respondent1@test.com"));
+        Element<Respondent> respondent = element(respondentWithSolicitor(dateNow(), "respondent1@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
             .solicitor(respondent.getValue().getSolicitor().toBuilder()
                 .firstName("James")
@@ -254,27 +266,17 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .firstName("Alex")
                 .lastName("Brown")
                 .build())
-            .solicitor(RespondentSolicitor.builder()
-                .organisation(Organisation.builder()
-                    .organisationID(SOLICITOR_ORG_ID)
-                    .build())
-                .build())
-            .legalCounsellors(asList(element(buildLegalCounsellor("1", true))))
+            .solicitor(TEST_RESPONDENT_SOLICITOR)
             .build();
 
         final LocalAuthority localAuthority = LocalAuthority.builder()
             .name("Local authority name")
             .build();
 
-        final ApplicantParty legacyApplicant = ApplicantParty.builder()
-            .organisationName("Applicant org name")
-            .build();
-
         final CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
             .localAuthorities(wrapElements(localAuthority))
-            .applicants(wrapElements(Applicant.builder()
-                .party(legacyApplicant).build()))
+            .applicants(TEST_APPLICANTS)
             .respondents1(wrapElements(respondentWithRepresentative))
             .build();
 
@@ -282,8 +284,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
             .isEqualTo(SOLICITOR_ORG_ID);
-
-        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isEmpty();
 
         final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
@@ -293,29 +293,18 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
-    }//TODO - maybe I don't need to test this here. This is logic. Should integration test test logic? Logic can be tested in the component and a thin layer of logic can be tested in the e2e test
+    }
 
     @Test
     void shouldGenerateRespondentWithLegacyApplicantPoliciesWhenToggleOnAndStateIsNotOpen() {
         Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .organisation(Organisation.builder()
-                    .organisationID(SOLICITOR_ORG_ID)
-                    .build())
-                .build())
-            .legalCounsellors(asList(element(buildLegalCounsellor("1", true))))
-            .build();
-
-        final ApplicantParty legacyApplicant = ApplicantParty.builder()
-            .organisationName("Applicant org name")
+            .solicitor(TEST_RESPONDENT_SOLICITOR)
             .build();
 
         final CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
-            .applicants(wrapElements(Applicant.builder()
-                .party(legacyApplicant)
-                .build()))
+            .applicants(TEST_APPLICANTS)
             .respondents1(wrapElements(respondentWithRepresentative))
             .build();
 
@@ -324,16 +313,42 @@ class RespondentControllerTest extends AbstractCallbackTest {
         assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
             .isEqualTo(SOLICITOR_ORG_ID);
 
-        assertThat(responseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isEmpty();
-
         final NoticeOfChangeAnswersData expectedAnswers = NoticeOfChangeAnswersData.builder()
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
                 .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
                 .respondentLastName(respondentWithRepresentative.getParty().getLastName())
-                .applicantName(legacyApplicant.getOrganisationName())
+                .applicantName(TEST_LEGACY_APPLICANT.getOrganisationName())
                 .build())
             .build();
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
+    }
+
+    @Test
+    void shouldRemoveLegalCounselFromRespondentWhenRepresentativeIsRemoved() {
+        List<Element<LegalCounsellor>> legalCounsel = asList(element(buildLegalCounsellor("1", true)));
+        Respondent respondent1 = respondent(dateNow()).toBuilder()
+            .solicitor(TEST_RESPONDENT_SOLICITOR)
+            .legalCounsellors(legalCounsel)
+            .build();
+        Respondent respondent2 = respondent(dateNow()).toBuilder()
+            .solicitor(TEST_RESPONDENT_SOLICITOR)
+            .legalCounsellors(legalCounsel)
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .applicants(TEST_APPLICANTS)
+            .respondents1(wrapElements(respondent1, respondent2))
+            .build();
+        CaseData caseDataAfter = CaseData.builder()
+            .applicants(TEST_APPLICANTS)
+            .respondents1(wrapElements(respondent1.toBuilder().solicitor(null).build(), respondent2))
+            .build();
+
+        CallbackRequest callbackRequest = toCallBackRequest(caseDataAfter, caseDataBefore);
+        CaseData returnedCaseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
+
+        assertThat(returnedCaseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isEmpty();
+        assertThat(returnedCaseData.getAllRespondents().get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
     }
 
     @Test
@@ -474,14 +489,14 @@ class RespondentControllerTest extends AbstractCallbackTest {
             .build();
     }
 
-    private Respondent respondent(LocalDate dateOfBirth, String email) {
+    private Respondent respondentWithSolicitor(LocalDate dateOfBirth, String solicitorEmail) {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(dateOfBirth)
                 .build())
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
-                .email(email)
+                .email(solicitorEmail)
                 .build())
             .build();
     }
