@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.utils.ListUtils;
-import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +124,9 @@ public class ManageLegalCounselService {
     public List<? super Object> runFinalEventActions(CaseData previousCaseData, CaseData currentCaseData) {
         List<? super Object> eventsToPublish = new ArrayList<>();
 
-        Organisation loggedInSolicitorOrganisation = organisationService.findOrganisation().orElseThrow();
+        String loggedInSolicitorOrganisationName = organisationService.findOrganisation()
+            .map(organisation -> organisation.getName())
+            .orElseThrow();
 
         List<LegalCounsellor> currentLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(currentCaseData)
             .stream()
@@ -158,7 +159,7 @@ public class ManageLegalCounselService {
             .map(Optional::get)
             .forEach(legalCounsellorPair -> eventsToPublish.add(
                 new LegalCounsellorRemoved(currentCaseData,
-                    loggedInSolicitorOrganisation.getName(),
+                    loggedInSolicitorOrganisationName,
                     legalCounsellorPair)
             ));
 
@@ -169,21 +170,25 @@ public class ManageLegalCounselService {
         List<Element<Respondent>> respondentsInPreviousCaseData,
         List<Element<Respondent>> respondentsInCurrentCaseData) {
 
-        for (int i = 0; i < respondentsInPreviousCaseData.size(); i++) {
+        for (int i = 0; i < respondentsInPreviousCaseData.size(); i++) {//TODO - maybe I could, even should use the same logic as the component that generates the solicitor changes
             final int index = i;
-            Optional<RespondentSolicitor> respondentSolicitorInPreviousCaseData = Optional.of(respondentsInPreviousCaseData)
+            Optional<String> organisationIdFromSolicitorInPreviousCaseData = Optional.of(respondentsInPreviousCaseData)
                 .map(respondents -> respondents.get(index))
                 .map(Element::getValue)
-                .map(WithSolicitor::getSolicitor);
+                .map(WithSolicitor::getSolicitor)
+                .map(RespondentSolicitor::getOrganisation)
+                .map(organisation -> organisation.getOrganisationID());
 
             Optional<WithSolicitor> respondentInCurrentCaseData = Optional.ofNullable(respondentsInCurrentCaseData)
                 .map(respondents -> respondents.get(index))
                 .map(Element::getValue);
-            Optional<RespondentSolicitor> respondentSolicitorInCurrentCaseData = respondentInCurrentCaseData
-                .map(WithSolicitor::getSolicitor);
+            Optional<String> organisationIdFromSolicitorInCurrentCaseData = respondentInCurrentCaseData
+                .map(WithSolicitor::getSolicitor)
+                .map(RespondentSolicitor::getOrganisation)
+                .map(organisation -> organisation.getOrganisationID());
 
-            if (!respondentSolicitorInPreviousCaseData.equals(respondentSolicitorInCurrentCaseData)) {
-                //Remove legal counsel if solicitor was removed from respondent
+            if (!organisationIdFromSolicitorInPreviousCaseData.equals(organisationIdFromSolicitorInCurrentCaseData)) {
+                //Remove legal counsel if solicitor was removed from respondent (i.e. organisation has changed)
                 respondentInCurrentCaseData.ifPresent(respondent -> respondent.setLegalCounsellors(emptyList()));
             }
         }

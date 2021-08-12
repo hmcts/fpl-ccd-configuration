@@ -54,8 +54,7 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
 
 //TODO - remove legal counsel - do it last - optional
 
-//TODO - remove respondent representative
-Scenario('Legal counsel to be remove when respondent representative is removed', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage, enterRespondentsEventPage }) => {
+Scenario('Legal counsel to be remove when respondent representative is removed', async ({ I, caseViewPage, enterRespondentsEventPage }) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
 
@@ -65,8 +64,16 @@ Scenario('Legal counsel to be remove when respondent representative is removed',
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.dontSeeInTab(['Respondents 1', 'Legal Counsellor']);
-  //TODO - what happens when representation changes, rather than being removed? Try this later.
-  //TODO - what should we do if the representative is updated, not removed - maybe a different story
+
+  //TODO - what should we do if the representative is updated, not removed - check logic with Sam
+  //the solicitor shoudl only be considered to have changed if the organisation changes
+
+  //TODO - what happens if the new solicitor already has a legal counsel - should I assign their legal counsel to this party - this link is with a person, not an organisation
+  //RESET IT
+  //
+  //TODO - if we do the above, I'd suggest a size bump on this story
+  //TODO - write comment with the below info, implement it and explain it to Lewis
+  //if solicitor changes to another organisation, grab the first counsel we find in the case for that organisation and copy it over to the party having a solicitor change
 });
 
 //TODO - remove child representative - maybe I can write the scenario where representative is updated, not removed - maybe even both?

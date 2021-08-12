@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -13,6 +14,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class RespondentsTestHelper {
+
+    private static final Organisation TEST_ORGANISATION = Organisation.organisation(UUID.randomUUID().toString());
 
     private RespondentsTestHelper() {
     }
@@ -51,6 +54,7 @@ public class RespondentsTestHelper {
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
                 .email(solicitorEmail)
+                .organisation(TEST_ORGANISATION)
                 .build())
             .build();
     }

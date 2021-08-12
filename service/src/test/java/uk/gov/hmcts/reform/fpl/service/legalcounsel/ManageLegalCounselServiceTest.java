@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
@@ -268,5 +269,30 @@ class ManageLegalCounselServiceTest {
         assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEmpty();
         assertThat(modifiedRespondentsForCurrentCaseData.get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
     }
+
+    @Test
+    void shouldNotRemoveLegalCounselWhenSolicitorOrganisationIdDoesNotChange() {
+        List<Element<LegalCounsellor>> legalCounsel = asList(TEST_LEGAL_COUNSELLOR);
+        Respondent respondentBefore = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder().firstName("Ted").organisation(Organisation.organisation("123")).build())
+            .legalCounsellors(legalCounsel)
+            .build();
+        Respondent respondentAfter = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder().firstName("John").organisation(Organisation.organisation("123")).build())
+            .legalCounsellors(legalCounsel)
+            .build();
+
+        List<Element<Respondent>> modifiedRespondentsForCurrentCaseData =
+            manageLegalCounselService.removeLegalCounselForRemovedSolicitors(
+                wrapElements(respondentBefore),
+                wrapElements(respondentAfter)
+            );//TODO - this should look into children and respondents
+
+        assertThat(modifiedRespondentsForCurrentCaseData).hasSize(1);
+        assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
+    }
+
+    //TODO - should copy existing legal counsel for organisation and it has one
+    //TODO - should remove legal counsel if new organisation doesn't have one
 
 }
