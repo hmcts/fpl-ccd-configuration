@@ -75,7 +75,8 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("childLegalRepresentation", "NO"),
             Map.entry("selectSingleChild", "NO"),
             Map.entry("parentResponsible", "NO"),
-            Map.entry("orderPlacedChildInCustody", "NO")
+            Map.entry("orderPlacedChildInCustody", "NO"),
+            Map.entry("orderIsExParte", "NO")
         ));
     }
 
@@ -140,6 +141,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("appointedGuardian", "NO");
         careOrderQuestions.put("parentResponsible", "NO");
         careOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        careOrderQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> dischargeOfCareQuestions = new HashMap<>(commonQuestions);
         dischargeOfCareQuestions.put("orderTitle", "NO");
@@ -171,6 +173,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("appointedGuardian", "NO");
         dischargeOfCareQuestions.put("parentResponsible", "NO");
         dischargeOfCareQuestions.put("orderPlacedChildInCustody", "NO");
+        dischargeOfCareQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.put("orderTitle", "NO");
@@ -202,6 +205,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("appointedGuardian", "NO");
         epoQuestions.put("parentResponsible", "NO");
         epoQuestions.put("orderPlacedChildInCustody", "NO");
+        epoQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
         blankOrderQuestions.put("orderTitle", "YES");
@@ -233,6 +237,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("appointedGuardian", "NO");
         blankOrderQuestions.put("parentResponsible", "NO");
         blankOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        blankOrderQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
         supervisionOrderQuestions.put("orderTitle", "NO");
@@ -264,6 +269,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("appointedGuardian", "NO");
         supervisionOrderQuestions.put("parentResponsible", "NO");
         supervisionOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        supervisionOrderQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> specialGuardianshipOrderQuestions = new HashMap<>(commonQuestions);
         specialGuardianshipOrderQuestions.put("orderTitle", "NO");
@@ -295,6 +301,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("appointedGuardian", "YES");
         specialGuardianshipOrderQuestions.put("parentResponsible", "NO");
         specialGuardianshipOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        specialGuardianshipOrderQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
         appointmentOfChildrensGuardianQuestions.put("orderTitle", "NO");
@@ -326,6 +333,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("whichOthers", "YES");
         appointmentOfChildrensGuardianQuestions.put("parentResponsible", "NO");
         appointmentOfChildrensGuardianQuestions.put("orderPlacedChildInCustody", "NO");
+        appointmentOfChildrensGuardianQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> childArrangementSpecificOrder = new HashMap<>(commonQuestions);
         childArrangementSpecificOrder.put("orderTitle", "NO");
@@ -357,6 +365,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childArrangementSpecificOrder.put("whichOthers", "YES");
         childArrangementSpecificOrder.put("parentResponsible", "NO");
         childArrangementSpecificOrder.put("orderPlacedChildInCustody", "NO");
+        childArrangementSpecificOrder.put("orderIsExParte", "NO");
 
         Map<String, String> secureAccommodationOrderQuestions = new HashMap<>(commonQuestions);
         secureAccommodationOrderQuestions.put("orderTitle", "NO");
@@ -388,6 +397,7 @@ class OrderShowHideQuestionsCalculatorTest {
         secureAccommodationOrderQuestions.put("whichOthers", "YES");
         secureAccommodationOrderQuestions.put("parentResponsible", "NO");
         secureAccommodationOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        secureAccommodationOrderQuestions.put("orderIsExParte", "NO");
 
         Map<String, String> parentalResponsibilityOrder = new HashMap<>(commonQuestions);
         parentalResponsibilityOrder.put("orderTitle", "NO");
@@ -419,6 +429,7 @@ class OrderShowHideQuestionsCalculatorTest {
         parentalResponsibilityOrder.put("appointedGuardian", "NO");
         parentalResponsibilityOrder.put("parentResponsible", "YES");
         parentalResponsibilityOrder.put("orderPlacedChildInCustody", "NO");
+        parentalResponsibilityOrder.put("orderIsExParte", "NO");
 
         Map<String, String> recoveryOfChildQuestions = new HashMap<>(commonQuestions);
         recoveryOfChildQuestions.put("orderTitle", "NO");
@@ -442,14 +453,15 @@ class OrderShowHideQuestionsCalculatorTest {
         recoveryOfChildQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         recoveryOfChildQuestions.put("whichOthers", "YES");
         recoveryOfChildQuestions.put("dischargeOfCareDetails", "NO");
-        recoveryOfChildQuestions.put("closeCase", "NO");
+        recoveryOfChildQuestions.put("closeCase", "YES");
         recoveryOfChildQuestions.put("whichChildren", "YES");
         recoveryOfChildQuestions.put("orderIsByConsent", "NO");
         recoveryOfChildQuestions.put("furtherDirections", "YES");
-        recoveryOfChildQuestions.put("isFinalOrder", "NO");
+        recoveryOfChildQuestions.put("isFinalOrder", "YES");
         recoveryOfChildQuestions.put("appointedGuardian", "NO");
         recoveryOfChildQuestions.put("parentResponsible", "NO");
         recoveryOfChildQuestions.put("orderPlacedChildInCustody", "YES");
+        recoveryOfChildQuestions.put("orderIsExParte", "YES");
 
         return Stream.of(
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
@@ -503,7 +515,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("orderJurisdiction", "NO"),
                 Map.entry("orderToAmend", "NO"),
                 Map.entry("uploadAmendedOrder", "NO"),
-                Map.entry("orderPlacedChildInCustody", "NO")
+                Map.entry("orderPlacedChildInCustody", "NO"),
+                Map.entry("orderIsExParte", "NO")
             )));
     }
 
@@ -546,7 +559,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("orderToAmend", "NO"),
                 Map.entry("uploadAmendedOrder", "NO"),
                 Map.entry("parentResponsible", "NO"),
-                Map.entry("orderPlacedChildInCustody", "NO")
+                Map.entry("orderPlacedChildInCustody", "NO"),
+                Map.entry("orderIsExParte", "NO")
                 )
             ));
     }

@@ -542,5 +542,14 @@
     "FieldTypeParameter": "PlacedUnderOrder",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIsExParte",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Has the order been made ex parte?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

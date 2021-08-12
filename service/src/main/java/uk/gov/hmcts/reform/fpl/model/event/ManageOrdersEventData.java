@@ -82,6 +82,7 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersAmendmentList;
     DocumentReference manageOrdersOrderToAmend;
     DocumentReference manageOrdersAmendedOrder;
+    String manageOrdersIsExParte;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

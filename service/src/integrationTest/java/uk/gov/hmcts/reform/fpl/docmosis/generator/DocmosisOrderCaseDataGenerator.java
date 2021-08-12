@@ -246,6 +246,12 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersIsByConsent("Yes")
                         .build()
                 );
+            case ORDER_EX_PARTE:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersIsExParte("Yes")
+                        .build()
+                );
             default:
                 throw new RuntimeException("Question block for " + questionBlock + " not implemented");
         }
