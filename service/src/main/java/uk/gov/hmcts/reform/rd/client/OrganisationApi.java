@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 )
 public interface OrganisationApi {
     @GetMapping("/refdata/external/v1/organisations/users")
-    OrganisationUsers findUsersInOrganisation(
+    OrganisationUsers findUsersInCurrentUserOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "status") Status status,

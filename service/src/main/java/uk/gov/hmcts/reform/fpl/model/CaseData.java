@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -102,6 +103,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -1013,6 +1015,11 @@ public class CaseData {
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageLegalCounselEventData manageLegalCounselEventData =
+        ManageLegalCounselEventData.builder().build();
 
     @JsonIgnore
     public boolean isOutsourced() {

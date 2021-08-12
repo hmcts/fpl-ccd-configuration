@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -40,6 +41,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     private String legalRepresentation;
 
     private RespondentSolicitor solicitor;
+    private List<Element<LegalCounsellor>> legalCounsellors;
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {

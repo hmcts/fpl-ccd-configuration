@@ -25,6 +25,7 @@ spring:
         robotics-notification-recipient: robotics.notification.recipient
         ld-sdk-key: ld.sdk_key
         ctsc-inbox: fpl.ctsc_inbox
+        ctsc-team-lead-inbox: fpl.ctsc_team_lead_inbox
         translation-notification-sender: translation.notification.sender
         translation-notification-recipient: translation.notification.recipient
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
