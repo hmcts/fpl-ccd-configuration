@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -33,6 +35,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -52,6 +55,8 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private static final UUID REPRESENTATIVE_UUID = UUID.randomUUID();
     private static final CaseData caseData = buildCaseData();
     private static final CaseData caseDataBefore = buildCaseDataBefore();
+    private static final EmailContent EMAIL_CONTENT_DOC_NAMES = buildEmailContentDocumentNames();
+    private static final EmailContent EMAIL_CONTENT_NO_DOC_NAMES = buildEmailContentNoDocumentNames();
 
     @Autowired
     private FurtherEvidenceUploadedEventHandler underTest;
@@ -63,7 +68,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private FeatureToggleService featureToggleService;
 
     @Test
-    void sendNotificationWhenFeatureToggleOff() {
+    void sendNotificationWhenFeatureToggleOffForLAUser() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
@@ -74,24 +79,26 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         assertThat(response())
             .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("The Sender has uploaded evidence documents for:")
-                .line()
-                .callout("Smith, 12345, hearing 22 May 2021")
-                .line()
-                .line("To view them, sign in to:")
-                .line()
-                .line("http://fake-url/cases/case-details/12345#Documents")
-                .line()
-                .line("HM Courts & Tribunals Service")
-                .line()
-                .end("Do not reply to this email."
-                    + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
-            );
+            .hasBody(EMAIL_CONTENT_NO_DOC_NAMES);
     }
 
     @Test
-    void sendNotificationWhenFeatureToggleOn() {
+    void sendNotificationWhenFeatureToggleOffForSolicitorUser() {
+
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
+
+        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+            caseData, caseDataBefore, SOLICITOR,
+            UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
+        ));
+
+        assertThat(response())
+            .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
+            .hasBody(EMAIL_CONTENT_NO_DOC_NAMES);
+    }
+
+    @Test
+    void sendNotificationWhenFeatureToggleOnForLAUser() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
@@ -102,36 +109,28 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         assertThat(response())
             .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("The Sender has uploaded documents for:")
-                .line()
-                .callout("Smith, 12345, hearing 22 May 2021")
-                .line()
-                .h1("Documents uploaded")
-                .line()
-                .line()
-                .list("Non-Confidential Evidence Document 1")
-                .line()
-                .line("To view them, sign in to:")
-                .line()
-                .line("http://fake-url/cases/case-details/12345#Documents")
-                .line()
-                .line("HM Courts & Tribunals Service")
-                .line()
-                .end("Do not reply to this email."
-                    + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
-            );
+            .hasBody(EMAIL_CONTENT_DOC_NAMES);
+    }
+
+    @Test
+    void sendNotificationWhenFeatureToggleOnForSolicitor() {
+
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+
+        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+            caseData, caseDataBefore, SOLICITOR,
+            UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
+        ));
+
+        assertThat(response())
+            .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
+            .hasBody(EMAIL_CONTENT_DOC_NAMES);
     }
 
     private static CaseData buildCaseData() {
         return CaseData.builder()
-            .furtherEvidenceDocumentsLA(
-                wrapElements(SupportingEvidenceBundle.builder()
-                    .name("Non-Confidential Evidence Document 1")
-                    .uploadedBy("LA")
-                    .dateTimeUploaded(LocalDateTime.now())
-                    .document(DocumentReference.builder().build())
-                    .build()))
+            .furtherEvidenceDocumentsLA(buildSupportingEvidenceBundle("LA"))
+            .respondentStatements(buildRespondentStatementsList())
             .familyManCaseNumber(CASE_ID.toString())
             .representatives(buildRepresentativesList())
             .respondents1(wrapElements(buildRespondent()))
@@ -148,6 +147,22 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         return CaseData.builder().id(CASE_ID).build();
     }
 
+    private static List<Element<RespondentStatement>> buildRespondentStatementsList() {
+        return wrapElements(RespondentStatement.builder()
+            .respondentName("NAME")
+            .respondentId(UUID.randomUUID())
+            .supportingEvidenceBundle(buildSupportingEvidenceBundle("REP")).build());
+    }
+
+    private static List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(String uploadedBy) {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("Non-Confidential Evidence Document 1")
+            .uploadedBy(uploadedBy)
+            .dateTimeUploaded(LocalDateTime.now())
+            .document(DocumentReference.builder().build())
+            .build());
+    }
+
     private static List<Element<Representative>>  buildRepresentativesList() {
         return List.of(element(REPRESENTATIVE_UUID, Representative
             .builder()
@@ -162,5 +177,42 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
             .representedBy(wrapElements(List.of(REPRESENTATIVE_UUID)))
             .build();
+    }
+
+    private static EmailContent buildEmailContentDocumentNames() {
+        return emailContent()
+            .line("The Sender has uploaded documents for:")
+            .line()
+            .callout("Smith, 12345, hearing 22 May 2021")
+            .line()
+            .h1("Documents uploaded")
+            .line()
+            .line()
+            .list("Non-Confidential Evidence Document 1")
+            .line()
+            .line("To view them, sign in to:")
+            .line()
+            .line("http://fake-url/cases/case-details/12345#Documents")
+            .line()
+            .line("HM Courts & Tribunals Service")
+            .line()
+            .end("Do not reply to this email."
+                + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk");
+    }
+
+    private static EmailContent buildEmailContentNoDocumentNames() {
+        return emailContent()
+            .line("The Sender has uploaded evidence documents for:")
+            .line()
+            .callout("Smith, 12345, hearing 22 May 2021")
+            .line()
+            .line("To view them, sign in to:")
+            .line()
+            .line("http://fake-url/cases/case-details/12345#Documents")
+            .line()
+            .line("HM Courts & Tribunals Service")
+            .line()
+            .end("Do not reply to this email."
+                + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk");
     }
 }

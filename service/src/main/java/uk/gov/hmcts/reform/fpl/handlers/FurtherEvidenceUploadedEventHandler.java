@@ -8,14 +8,12 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -96,7 +94,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
         List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<Element<SupportingEvidenceBundle>>();
-        caseData.getRespondentStatements().forEach( statement -> {
+        caseData.getRespondentStatements().forEach(statement -> {
             evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle());
         });
         return evidenceBundle;
