@@ -62,8 +62,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -147,8 +145,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CloseCase expected = CloseCase.builder()
             .date(dateNow())
-            .showFullReason(YES)
-            .reason(FINAL_ORDER)
             .build();
 
         assertThat(closeCase).isEqualTo(expected);

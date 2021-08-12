@@ -53,7 +53,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
@@ -206,7 +205,6 @@ public class GeneratedOrderController extends CallbackController {
         // If can display close case, set the flag in order to show the close case page
         if (service.showCloseCase(orderTypeAndDocument, children)) {
             data.put("showCloseCaseFromOrderPage", YES);
-            data.put("close_case_label", CloseCaseController.LABEL);
         } else {
             data.put("showCloseCaseFromOrderPage", NO);
         }
@@ -283,8 +281,6 @@ public class GeneratedOrderController extends CallbackController {
             data.put("state", CLOSED);
             data.put("closeCaseTabField", CloseCase.builder()
                 .date(time.now().toLocalDate())
-                .showFullReason(YES)
-                .reason(FINAL_ORDER)
                 .build());
         }
 

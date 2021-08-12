@@ -58,7 +58,7 @@ class ChildrenServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void shouldReturnFalseWhenListEmptyOrNull(List<Element<Child>> list) {
-        boolean result = service.allChildrenHaveFinalOrder(list);
+        boolean result = service.allChildrenHaveFinalOrderOrDecision(list);
 
         assertThat(result).isFalse();
     }
@@ -67,7 +67,7 @@ class ChildrenServiceTest {
     void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
         List<Element<Child>> children = List.of(childWithFinalOrderIssued(), childWithoutFinalOrderIssued());
 
-        boolean result = service.allChildrenHaveFinalOrder(children);
+        boolean result = service.allChildrenHaveFinalOrderOrDecision(children);
 
         assertThat(result).isFalse();
     }
@@ -76,7 +76,7 @@ class ChildrenServiceTest {
     void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
         List<Element<Child>> children = List.of(childWithFinalOrderIssued(), childWithFinalOrderIssued());
 
-        boolean result = service.allChildrenHaveFinalOrder(children);
+        boolean result = service.allChildrenHaveFinalOrderOrDecision(children);
 
         assertThat(result).isTrue();
     }

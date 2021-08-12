@@ -60,7 +60,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseControllerAboutToStartTest.EXPECTED_LABEL_TEXT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
@@ -392,8 +391,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
 
-            assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
-                .containsOnly("YES", EXPECTED_LABEL_TEXT);
+            assertThat(response.getData()).extracting("showCloseCaseFromOrderPage")
+                .isEqualTo("YES");
         }
 
         @Test

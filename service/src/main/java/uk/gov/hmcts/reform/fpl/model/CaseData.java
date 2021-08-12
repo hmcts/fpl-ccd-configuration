@@ -50,6 +50,7 @@ import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
@@ -623,6 +624,10 @@ public class CaseData {
     private final String deprivationOfLiberty;
     private final CloseCase closeCaseTabField;
     private final String closeCaseFromOrder;
+    @JsonUnwrapped
+    @Builder.Default
+    private final RecordChildrenFinalDecisionsEventData recordChildrenFinalDecisionsEventData =
+        RecordChildrenFinalDecisionsEventData.builder().build();
 
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;

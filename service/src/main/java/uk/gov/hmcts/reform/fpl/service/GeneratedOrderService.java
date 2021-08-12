@@ -209,11 +209,11 @@ public class GeneratedOrderService {
     public boolean showCloseCase(OrderTypeAndDocument orderType,
                                  List<Element<Child>> children) {
         return orderType.isClosable()
-            && childrenService.allChildrenHaveFinalOrder(children);
+            && childrenService.allChildrenHaveFinalOrderOrDecision(children);
     }
 
     public boolean isFinalOrderAllowed(OrderTypeAndDocument orderType, List<Element<Child>> children) {
-        return !(orderType.isClosable() && childrenService.allChildrenHaveFinalOrder(children));
+        return !(orderType.isClosable() && childrenService.allChildrenHaveFinalOrderOrDecision(children));
     }
 
     private String getManageOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
