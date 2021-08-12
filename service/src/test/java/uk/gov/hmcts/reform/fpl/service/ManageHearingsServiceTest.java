@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.HearingDuration;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
@@ -59,6 +61,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
@@ -686,8 +691,13 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.now().plusDays(3);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDate(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
+
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
@@ -702,8 +712,13 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(3);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDate(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
+
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
@@ -718,8 +733,13 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDate(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
@@ -732,12 +752,62 @@ class ManageHearingsServiceTest {
         }
 
         @Test
+        void shouldSetBothStartAndEndHearingDaysWhenBothHearingDatesAreInThePast() {
+            LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
+
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingDays("3")
+                .hearingDuration(DAYS.getType())
+                .build();
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
+
+            Map<String, Object> extractedFields = Map.of(
+                "showConfirmPastHearingDatesPage", "Yes",
+                "startDateFlag", "Yes",
+                "hearingStartDateLabel", "16 April 2011, 8:20pm",
+                "endDateFlag", "Yes",
+                "hearingEndDateLabel", "3 days");
+
+            assertThat(hearingDateFields).isEqualTo(extractedFields);
+        }
+
+        @Test
+        void shouldSetBothStartAndEndHearingHoursAndMinutesWhenBothHearingDatesAreInThePast() {
+            LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
+
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingHours("3")
+                .hearingMinutes("20")
+                .hearingDuration(HOURS_MINS.getType())
+                .build();
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
+
+            Map<String, Object> extractedFields = Map.of(
+                "showConfirmPastHearingDatesPage", "Yes",
+                "startDateFlag", "Yes",
+                "hearingStartDateLabel", "16 April 2011, 8:20pm",
+                "endDateFlag", "Yes",
+                "hearingEndDateLabel", "3 hours 20 minutes");
+
+            assertThat(hearingDateFields).isEqualTo(extractedFields);
+        }
+
+        @Test
         void shouldHidePastHearingsDatesPageWhenDatesAreInFuture() {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(1);
             LocalDateTime hearingEndDate = hearingStartDate.plusHours(1);
 
-            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDate(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
             Map<String, Object> extractedFields = Map.of("showConfirmPastHearingDatesPage", "No");
 

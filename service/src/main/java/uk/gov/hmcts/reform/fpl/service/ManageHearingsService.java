@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -37,15 +38,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
@@ -56,7 +64,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -381,31 +388,37 @@ public class ManageHearingsService {
         return hearingVenueLookUpService.getHearingVenue(previousHearingBooking);
     }
 
-    public Map<String, Object> populateFieldsWhenPastHearingDateAdded(LocalDateTime hearingStartDate,
-                                                                      LocalDateTime hearingEndDate,
-                                                                      String hearingDuration,
-                                                                      CaseData caseData) {
+    public Map<String, Object> populateFieldsWhenPastHearingDateAdded(CaseData caseData) {
+
         Map<String, Object> data = new HashMap<>();
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         data.put(SHOW_PAST_HEARINGS_PAGE, NO.getValue());
 
-        if (hearingStartDate.isBefore(currentDateTime)) {
-            data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE_TIME));
+        if (caseData.getHearingStartDate().isBefore(currentDateTime)) {
+            data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DateFormatterHelper.DATE_TIME));
             data.put(START_DATE_FLAG, YES.getValue());
             data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
         }
-        if (hearingEndDate.isBefore(currentDateTime)) {
-            if (hearingDuration.equals("DATE_TIME")) {
-                data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
-            } else if (hearingDuration.equals("DAYS")) {
-                data.put(HEARING_END_DATE_LABEL, caseData.getHearingDays() + " days");
-            } else if (hearingDuration.equals("HOURS_MINS")) {
-                data.put(HEARING_END_DATE_LABEL, caseData.getHearingHours() + " hours" + caseData.getHearingMinutes() + "minutes");
-            }
 
-            data.put(END_DATE_FLAG, YES.getValue());
-            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+        BiConsumer<LocalDateTime, String> populateFields = (endDateTime, endDateLabel) -> {
+            if (endDateTime.isBefore(currentDateTime)) {
+                data.put(HEARING_END_DATE_LABEL, endDateLabel);
+                data.put(END_DATE_FLAG, YES.getValue());
+                data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+            }
+        };
+
+        if (DATE_TIME.getType().equals(caseData.getHearingDuration())) {
+            populateFields.accept(caseData.getHearingEndDate(), formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DateFormatterHelper.DATE_TIME));
+        } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
+            LocalDateTime endDateTime = caseData.getHearingStartDate().plusDays(Long.parseLong(caseData.getHearingDays()));
+            populateFields.accept(endDateTime, String.join(" ", caseData.getHearingDays(), "days"));
+        } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
+            LocalDateTime startDate = caseData.getHearingStartDate();
+            LocalDateTime endDateTime = startDate.plusHours(Long.parseLong(caseData.getHearingHours()))
+                .plusMinutes(Long.parseLong(caseData.getHearingMinutes()));
+            populateFields.accept(endDateTime, String.join(" ", caseData.getHearingHours(), "hours", caseData.getHearingMinutes(), "minutes"));
         }
 
         return data;
