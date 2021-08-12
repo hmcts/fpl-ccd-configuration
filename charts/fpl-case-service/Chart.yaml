@@ -16,7 +16,7 @@ dependencies:
     tags:
       - fpl-ccd-stack
   - name: xui-webapp
-    version: 0.2.13
+    version: ~0.2.18
     repository: '@hmctspublic'
     condition: xui-webapp.enabled
   - name: idam-pr
