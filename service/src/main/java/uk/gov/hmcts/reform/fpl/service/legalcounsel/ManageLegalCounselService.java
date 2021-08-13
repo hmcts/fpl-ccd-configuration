@@ -166,7 +166,7 @@ public class ManageLegalCounselService {
         return eventsToPublish;
     }
 
-    public List<Element<Respondent>> removeLegalCounselForRemovedSolicitors(
+    public List<Element<Respondent>> updateLegalCounselForRemovedSolicitors(
         List<Element<Respondent>> respondentsInPreviousCaseData,
         List<Element<Respondent>> respondentsInCurrentCaseData) {
 
@@ -202,9 +202,14 @@ public class ManageLegalCounselService {
     }
 
     private List<Element<LegalCounsellor>> getLegalCounselUsedByGivenOrganisation(String organisationId, List<Element<Respondent>> respondents) {
-        return respondents.stream().map(Element::getValue).filter(respondent ->
-            respondent.getSolicitor().getOrganisation().getOrganisationID().equals(organisationId)//TODO - not every respondent will be represented
-        )
+        return respondents.stream()
+            .map(Element::getValue)
+            .filter(respondent -> Optional.of(respondent)
+                .map(Respondent::getSolicitor)
+                .map(RespondentSolicitor::getOrganisation)
+                .map(organisation -> organisation.getOrganisationID())
+                .map(organisationId::equals)
+                .orElse(false))
             .findFirst()
             .map(Respondent::getLegalCounsellors)
             .orElse(null);

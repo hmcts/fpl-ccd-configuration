@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
@@ -35,10 +34,8 @@ import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORC;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.getCaseConverterInstance;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorWithOrganisationAndMockUserId;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
-import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondentWithSolicitor;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
@@ -244,107 +241,6 @@ class ManageLegalCounselServiceTest {
                 new LegalCounsellorAdded(currentCaseData, legalCounsellor2),
                 new LegalCounsellorRemoved(currentCaseData, "Solicitors Law Ltd", legalCounsellor3)
             );
-    }
-
-    @Test
-    void shouldRemoveLegalCounselWhenSolicitorIsRemovedFromRepresentedParty() {
-        List<Element<LegalCounsellor>> legalCounsel = asList(TEST_LEGAL_COUNSELLOR);
-        Respondent respondent1 = respondentWithSolicitor().toBuilder()
-            .legalCounsellors(legalCounsel)
-            .build();
-        Respondent respondent2 = respondentWithSolicitor().toBuilder()
-            .legalCounsellors(legalCounsel)
-            .build();
-
-        List<Element<Respondent>> previousRespondents = wrapElements(respondent1, respondent2);
-        List<Element<Respondent>> currentRespondents = wrapElements(
-            respondent1.toBuilder().solicitor(null).build(),
-            respondent2
-        );
-
-        List<Element<Respondent>> modifiedRespondentsForCurrentCaseData =
-            manageLegalCounselService.removeLegalCounselForRemovedSolicitors(previousRespondents, currentRespondents);
-
-        assertThat(modifiedRespondentsForCurrentCaseData).hasSize(2);
-        assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEmpty();
-        assertThat(modifiedRespondentsForCurrentCaseData.get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
-    }
-
-    @Test
-    void shouldNotRemoveLegalCounselWhenSolicitorOrganisationIdDoesNotChange() {
-        List<Element<LegalCounsellor>> legalCounsel = asList(TEST_LEGAL_COUNSELLOR);
-        Respondent respondentBefore = Respondent.builder()
-            .solicitor(RespondentSolicitor.builder().firstName("Ted").organisation(Organisation.organisation("123")).build())
-            .legalCounsellors(legalCounsel)
-            .build();
-        Respondent respondentAfter = Respondent.builder()
-            .solicitor(RespondentSolicitor.builder().firstName("John").organisation(Organisation.organisation("123")).build())
-            .legalCounsellors(legalCounsel)
-            .build();
-
-        List<Element<Respondent>> modifiedRespondentsForCurrentCaseData =
-            manageLegalCounselService.removeLegalCounselForRemovedSolicitors(
-                wrapElements(respondentBefore),
-                wrapElements(respondentAfter)
-            );//TODO - this should look into children and respondents
-
-        assertThat(modifiedRespondentsForCurrentCaseData).hasSize(1);
-        assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
-    }
-
-    //TODO - should remove legal counsel if new organisation doesn't have one
-
-    //TODO - shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData
-
-    //TODO - test scenario where there was no solicitor and now there is
-
-    @Test
-    void shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData() {
-        List<Element<LegalCounsellor>> legalCounselA = asList(TEST_LEGAL_COUNSELLOR);
-        List<Element<LegalCounsellor>> legalCounselB = wrapElements(LegalCounsellor.builder()
-            .firstName("Aaron")
-            .build());
-        Organisation solicitorOrganisationA = Organisation.organisation("123");
-        Organisation solicitorOrganisationB = Organisation.organisation("456");
-        RespondentSolicitor solicitorA = RespondentSolicitor.builder()
-            .firstName("Bob")
-            .organisation(solicitorOrganisationA)
-            .build();
-        RespondentSolicitor firstSolicitorFromOrganisationB = RespondentSolicitor.builder()
-            .firstName("Charles")
-            .organisation(solicitorOrganisationB)
-            .build();
-        RespondentSolicitor secondSolicitorFromOrganisationB = RespondentSolicitor.builder()
-            .firstName("Duncan")
-            .organisation(solicitorOrganisationB)
-            .build();
-        Respondent firstRespondentBefore = Respondent.builder()
-            .solicitor(solicitorA)
-            .legalCounsellors(legalCounselA)
-            .build();
-        Respondent secondRespondentBefore = Respondent.builder()
-            .solicitor(firstSolicitorFromOrganisationB)//Solicitor changed to an existing organisation
-            .legalCounsellors(legalCounselB)
-            .build();
-        Respondent firstRespondentAfter = Respondent.builder()
-            .solicitor(secondSolicitorFromOrganisationB)
-            .legalCounsellors(legalCounselA)//Counsel is not changed on screen
-            .build();
-        Respondent secondRespondentAfter = Respondent.builder()
-            .solicitor(firstSolicitorFromOrganisationB)//No change on this solicitor
-            .legalCounsellors(legalCounselB)
-            .build();
-        //TODO - apply this logic for a child later, instead of respondent
-
-        List<Element<Respondent>> modifiedRespondentsForCurrentCaseData =
-            manageLegalCounselService.removeLegalCounselForRemovedSolicitors(
-                wrapElements(firstRespondentBefore, secondRespondentBefore),
-                wrapElements(firstRespondentAfter, secondRespondentAfter)
-            );//TODO - this should look into children and respondents
-
-        assertThat(modifiedRespondentsForCurrentCaseData).hasSize(2);
-        assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEqualTo(legalCounselB);//Legal counsel from the other organisation was copied over
-        assertThat(modifiedRespondentsForCurrentCaseData.get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounselB);//Legal counsel kept intact
     }
 
 }

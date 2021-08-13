@@ -87,7 +87,7 @@ public class RespondentController extends CallbackController {
 
         newRespondents = respondentService.removeHiddenFields(newRespondents);
 
-        newRespondents = legalCounselService.removeLegalCounselForRemovedSolicitors(oldRespondents, newRespondents);
+        newRespondents = legalCounselService.updateLegalCounselForRemovedSolicitors(oldRespondents, newRespondents);
 
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
         if (!OPEN.equals(caseData.getState())) {
