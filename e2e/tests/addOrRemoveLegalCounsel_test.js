@@ -2,7 +2,7 @@ const assert = require('assert');
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const apiHelper = require('../helpers/api_helper.js');
-const mandatoryWithMultipleRespondents = require('../fixtures/caseData/mandatoryWithMultipleRespondents.json');
+const caseData = require('../fixtures/caseData/mandatoryWithChildSolicitorAndMultipleRespondents.json');
 const legalCounsellors = require('../fixtures/legalCounsellors.js');
 
 const solicitor1 = config.wiltshireLocalAuthorityUserOne;
@@ -18,7 +18,7 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     solicitor1.details.organisation = 'Wiltshire County Council';
   }
   if (!caseId) {
-    caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
+    caseId = await I.submitNewCaseWithData(caseData);
 
     //Submit case
     await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
@@ -28,6 +28,14 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
 
     //TODO - add representative for children from another organisation, then use NoC to get access and case role to a different solicitor
     //TODO - it would be a good idea to try this manually before writing code!!!!!
+    //"solicitor": {
+    //   "dx": "160010 Kingsway 7",
+    //   "name": "John Smith",
+    //   "email": "solicitor@email.com",
+    //   "mobile": "07000000000",
+    //   "reference": "reference",
+    //   "telephone": "00000000000"
+    // }
 
     await I.signIn(solicitor1);
 
