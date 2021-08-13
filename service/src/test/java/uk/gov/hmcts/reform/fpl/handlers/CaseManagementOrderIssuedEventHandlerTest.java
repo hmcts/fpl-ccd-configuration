@@ -10,7 +10,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -29,9 +31,12 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -63,6 +68,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private static final HearingOrder CMO = mock(HearingOrder.class);
     private static final DocumentReference ORDER = mock(DocumentReference.class);
     private static final CaseManagementOrderIssuedEvent EVENT = new CaseManagementOrderIssuedEvent(CASE_DATA, CMO);
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
     @Mock
     private InboxLookupService inboxLookupService;
@@ -84,6 +91,9 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
     private SendDocumentService sendDocumentService;
+    @Mock
+    private TranslationRequestService translationRequestService;
+
     @InjectMocks
     private CaseManagementOrderIssuedEventHandler underTest;
 
@@ -135,7 +145,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings( {"unchecked", "rawtypes"})
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
@@ -162,7 +172,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings( {"unchecked", "rawtypes"})
     void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))
@@ -219,5 +229,43 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION, CASE_TYPE, CASE_ID, SEND_DOCUMENT_EVENT, Map.of("documentToBeSent", ORDER)
         );
+    }
+
+    @Test
+    void shouldNotifyTranslationTeam() {
+        underTest.notifyTranslationTeam(
+            CaseManagementOrderIssuedEvent.builder()
+                .caseData(CASE_DATA)
+                .cmo(HearingOrder.builder()
+                    .status(CMOStatus.APPROVED)
+                    .order(ORDER)
+                    .dateIssued(LocalDate.of(2020, 1, 2))
+                    .translationRequirements(TRANSLATION_REQUIREMENTS)
+                    .build()
+                ).build()
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENTS),
+            ORDER, "Sealed case management order issued on 2 January 2020");
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfNoTranslationRequirements() {
+        underTest.notifyTranslationTeam(
+            CaseManagementOrderIssuedEvent.builder()
+                .caseData(CASE_DATA)
+                .cmo(HearingOrder.builder()
+                    .status(CMOStatus.APPROVED)
+                    .order(ORDER)
+                    .dateIssued(LocalDate.of(2020, 1, 2))
+                    .translationRequirements(null)
+                    .build()
+                ).build()
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(LanguageTranslationRequirement.NO),
+            ORDER, "Sealed case management order issued on 2 January 2020");
     }
 }
