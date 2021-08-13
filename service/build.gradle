@@ -307,7 +307,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.12.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.13.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
