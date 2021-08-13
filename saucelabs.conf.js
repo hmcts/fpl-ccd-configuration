@@ -139,6 +139,7 @@ const setupConfig = {
     manageDocumentsLAEventPage: './e2e/pages/events/manageDocumentsLAEvent.page.js',
     changeCaseStateEventPage: './e2e/pages/events/changeCaseStateEvent.page.js',
     manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
+    manageLegalCounsellorsEventPage: './e2e/pages/events/manageLegalCounsellorsEvent.page.js',
     addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
