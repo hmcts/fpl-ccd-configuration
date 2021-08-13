@@ -111,7 +111,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingHours",
+    "ListElementCode": "hearingDuration",
     "FieldType": "Text",
     "ElementLabel": "Hearing duration",
     "SecurityClassification": "Public",

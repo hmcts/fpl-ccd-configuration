@@ -42,15 +42,12 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
@@ -368,7 +365,11 @@ public class ManageHearingsService {
             "hasOthers",
             "sendOrderToAllOthers",
             "othersSelector",
-            "others_label"
+            "others_label",
+            "hearingDays",
+            "hearingMinutes",
+            "hearingHours",
+            "hearingDuration"
         );
     }
 
@@ -414,15 +415,23 @@ public class ManageHearingsService {
             populateFields.accept(caseData.getHearingEndDateTime(), formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime endDateTime = caseData.getHearingStartDate().plusDays(Long.parseLong(caseData.getHearingDays()));
-            populateFields.accept(endDateTime, String.join(" ", caseData.getHearingDays(), "days"));
+            populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();
             LocalDateTime endDateTime = startDate.plusHours(Long.parseLong(caseData.getHearingHours()))
                 .plusMinutes(Long.parseLong(caseData.getHearingMinutes()));
-            populateFields.accept(endDateTime, String.join(" ", caseData.getHearingHours(), "hours", caseData.getHearingMinutes(), "minutes"));
+            populateFields.accept(endDateTime, getHearingHoursAndMins(caseData.getHearingHours(), caseData.getHearingMinutes()));
         }
 
         return data;
+    }
+
+    private String getHearingDays(String days) {
+        return String.join(" ", days, "days");
+    }
+
+    private String getHearingHoursAndMins(String hours, String minutes) {
+        return String.join(" ", hours, "hours", minutes, "minutes");
     }
 
     public Map<String, Object> updateHearingDates(CaseData caseData) {
@@ -452,7 +461,25 @@ public class ManageHearingsService {
         return reListedBooking.getId();
     }
 
+    private String getHearingInfo(String days, String hours, String minutes) {
+        String hearingDuration = null;
+        if (days != null) {
+            hearingDuration = getHearingDays(days);
+        } else if (hours != null && minutes !=null) {
+            hearingDuration = getHearingHoursAndMins(hours, minutes);
+        }
+        return hearingDuration;
+    }
+
     private HearingBooking buildFirstHearing(CaseData caseData) {
+        LocalDateTime endDate = null;
+        String hearingDuration = getHearingInfo(caseData.getHearingDays(),
+            caseData.getHearingHours(), caseData.getHearingMinutes());
+
+        if (hearingDuration == null) {
+            endDate = caseData.getHearingEndDate();
+        }
+
         return HearingBooking.builder()
             .type(caseData.getHearingType())
             .typeDetails(caseData.getHearingTypeDetails())
@@ -462,7 +489,8 @@ public class ManageHearingsService {
             .attendanceDetails(caseData.getHearingAttendanceDetails())
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
-            .endDate(caseData.getHearingEndDate())
+            .endDate(endDate)
+            .hearingDuration(hearingDuration)
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
@@ -490,6 +518,14 @@ public class ManageHearingsService {
             venue = caseData.getPreviousHearingVenue().getNewVenue();
         }
 
+        LocalDateTime endDate = null;
+        String hearingDuration = getHearingInfo(caseData.getHearingDays(),
+            caseData.getHearingHours(), caseData.getHearingMinutes());
+
+        if (hearingDuration == null) {
+            endDate = caseData.getHearingEndDate();
+        }
+
         return HearingBooking.builder()
             .type(caseData.getHearingType())
             .typeDetails(caseData.getHearingTypeDetails())
@@ -500,7 +536,8 @@ public class ManageHearingsService {
             .attendanceDetails(caseData.getHearingAttendanceDetails())
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
-            .endDate(caseData.getHearingEndDate())
+            .endDate(endDate)
+            .hearingDuration(hearingDuration)
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
