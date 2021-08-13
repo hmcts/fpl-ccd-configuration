@@ -145,7 +145,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings( {"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
@@ -172,7 +172,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings( {"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))

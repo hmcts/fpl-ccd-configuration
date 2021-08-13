@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -208,7 +209,7 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void notifyTranslationTeam(DraftOrdersApproved event) {
 
-        event.getApprovedOrders().forEach(
+        ObjectUtils.<List<HearingOrder>>defaultIfNull(event.getApprovedOrders(), List.of()).forEach(
             order -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(order.getTranslationRequirements()),
                 order.getOrder(),
