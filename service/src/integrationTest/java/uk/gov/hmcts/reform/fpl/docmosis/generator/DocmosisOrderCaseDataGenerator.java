@@ -257,6 +257,12 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY, C29ActionsPermitted.REMOVE))
                         .build()
                 );
+            case ORDER_CREATED:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersOrderCreatedDate(LocalDate.of(2021, 8, 20))
+                        .build()
+                );
             default:
                 throw new RuntimeException("Question block for " + questionBlock + " not implemented");
         }

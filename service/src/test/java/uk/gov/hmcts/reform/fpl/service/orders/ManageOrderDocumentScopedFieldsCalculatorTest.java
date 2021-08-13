@@ -81,7 +81,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersRelationshipWithChild",
             "manageOrdersPlacedUnderOrder",
             "manageOrdersIsExParte",
-            "manageOrdersActionsPermitted"
+            "manageOrdersActionsPermitted",
+            "manageOrdersOrderCreatedDate"
         );
     }
 }

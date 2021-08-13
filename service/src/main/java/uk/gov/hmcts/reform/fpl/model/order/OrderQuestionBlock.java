@@ -61,6 +61,8 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersIsExParte")),
     ACTIONS_PERMITTED("actionsPermitted", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersActionsPermitted")),
+    ORDER_CREATED("orderCreatedDate", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersOrderCreatedDate")),
     PARENTAL_RESPONSIBILITY("parentResponsible", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersParentResponsible", "manageOrdersRelationshipWithChild")),
     ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,

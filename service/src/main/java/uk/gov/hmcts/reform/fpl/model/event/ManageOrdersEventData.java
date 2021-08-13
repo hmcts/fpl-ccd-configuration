@@ -87,6 +87,7 @@ public class ManageOrdersEventData {
     List<C29ActionsPermitted> manageOrdersActionsPermitted;
     Address manageOrdersActionsPermittedAddress;
     String manageOrdersOfficerName;
+    LocalDate manageOrdersOrderCreatedDate;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
