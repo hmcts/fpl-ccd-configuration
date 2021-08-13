@@ -70,7 +70,9 @@ module.exports = {
 
   reviewInfo(fileName, judge) {
     I.see(fileName);
-    I.see(judge);
+    if (judge) {
+      I.see(judge);
+    }
   },
 
   async attachSupportingDocs({name, notes, file}) {
