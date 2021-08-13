@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondentWith
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
-public class ManageLegalCounselServiceIndirectCopyOrRemovalTest {
+public class ManageLegalCounselServiceIndirectUpdateTest {
 
     private static final Element<LegalCounsellor> TEST_LEGAL_COUNSELLOR = element(LegalCounsellor.builder()
         .firstName("Ted")
@@ -107,10 +107,30 @@ public class ManageLegalCounselServiceIndirectCopyOrRemovalTest {
         assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
     }
 
-    //TODO - should remove legal counsel if new organisation doesn't have one
+    @Test
+    void shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData() {
+        List<Element<LegalCounsellor>> legalCounsel = asList(TEST_LEGAL_COUNSELLOR);
+        Respondent respondentBefore = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder().firstName("Ted").organisation(Organisation.organisation("123")).build())
+            .legalCounsellors(legalCounsel)
+            .build();
+        Respondent respondentAfter = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder().firstName("Billy").organisation(Organisation.organisation("456")).build())
+            .legalCounsellors(legalCounsel)
+            .build();
+
+        List<Element<Respondent>> modifiedRespondentsForCurrentCaseData =
+            manageLegalCounselService.updateLegalCounselForRemovedSolicitors(
+                wrapElements(respondentBefore),
+                wrapElements(respondentAfter)
+            );//TODO - this should look into children and respondents
+
+        assertThat(modifiedRespondentsForCurrentCaseData).hasSize(1);
+        assertThat(modifiedRespondentsForCurrentCaseData.get(0).getValue().getLegalCounsellors()).isEmpty();
+    }
 
     @Test
-    void shouldCopyLegalCounselOverIfNewSolicitorOrganisationAlreadyHasLegalCounselInCaseData() {
+    void shouldCopyLegalCounselOverIfSameOrganisationAlreadyHasLegalCounselInCaseData() {
         Organisation solicitorOrganisationA = Organisation.organisation("123");
         RespondentSolicitor solicitorA = RespondentSolicitor.builder()
             .firstName("Bob")
@@ -142,10 +162,8 @@ public class ManageLegalCounselServiceIndirectCopyOrRemovalTest {
         assertThat(modifiedRespondentsForCurrentCaseData.get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounselA);//Legal counsel kept intact
     }
 
-    //TODO - shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData
-
     @Test
-    void shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData() {
+    void shouldCopyLegalCounselOverIfNewSolicitorOrganisationAlreadyHasLegalCounselInCaseData() {
         Organisation solicitorOrganisationA = Organisation.organisation("123");
         Organisation solicitorOrganisationB = Organisation.organisation("456");
         RespondentSolicitor solicitorA = RespondentSolicitor.builder()
