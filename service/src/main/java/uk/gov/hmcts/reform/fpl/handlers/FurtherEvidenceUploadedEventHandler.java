@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
@@ -63,8 +64,8 @@ public class FurtherEvidenceUploadedEventHandler {
     private List<String> getNewNonConfidentialBundleNames(CaseData caseData, CaseData caseDataBefore,
                                                           DocumentUploadNotificationUserType userType) {
 
-        List<Element<SupportingEvidenceBundle>> newBundle = getEvidenceBundle(caseData, userType);
-        List<Element<SupportingEvidenceBundle>> oldBundle = getEvidenceBundle(caseDataBefore, userType);
+        var newBundle = getEvidenceBundle(caseData, userType);
+        var oldBundle = getEvidenceBundle(caseDataBefore, userType);
 
         List<String> documentNames = new ArrayList<String>();
 
@@ -82,7 +83,7 @@ public class FurtherEvidenceUploadedEventHandler {
             return caseData.getFurtherEvidenceDocumentsLA();
         } else if (userType == SOLICITOR) {
             List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle =
-                caseData.getFurtherEvidenceDocumentsSolicitor();
+                defaultIfNull(caseData.getFurtherEvidenceDocumentsSolicitor(), List.of());
             List<Element<SupportingEvidenceBundle>> respondentStatementsBundle =
                 getEvidenceBundleFromRespondentStatements(caseData);
 
@@ -93,7 +94,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
-        List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<Element<SupportingEvidenceBundle>>();
+        List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
         caseData.getRespondentStatements().forEach(statement -> {
             evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle());
         });
@@ -102,12 +103,6 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
                                                                           List<Element<SupportingEvidenceBundle>> b2) {
-        if (b1 == null) {
-            return b2;
-        } else if (b2 == null) {
-            return b1;
-        } else {
             return Stream.concat(b1.stream(), b2.stream()).collect(Collectors.toList());
-        }
     }
 }
