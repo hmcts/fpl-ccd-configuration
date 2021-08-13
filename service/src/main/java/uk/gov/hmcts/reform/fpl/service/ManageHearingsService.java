@@ -406,11 +406,12 @@ public class ManageHearingsService {
                 data.put(HEARING_END_DATE_LABEL, endDateLabel);
                 data.put(END_DATE_FLAG, YES.getValue());
                 data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+                data.put(HEARING_END_DATE, endDateTime);
             }
         };
 
         if (DATE_TIME.getType().equals(caseData.getHearingDuration())) {
-            populateFields.accept(caseData.getHearingEndDate(), formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DateFormatterHelper.DATE_TIME));
+            populateFields.accept(caseData.getHearingEndDateTime(), formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime endDateTime = caseData.getHearingStartDate().plusDays(Long.parseLong(caseData.getHearingDays()));
             populateFields.accept(endDateTime, String.join(" ", caseData.getHearingDays(), "days"));

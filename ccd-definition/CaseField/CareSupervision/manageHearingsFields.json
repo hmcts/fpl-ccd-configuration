@@ -125,6 +125,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "hearingEndDateTime",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
+    "Label": "End date and time",
+    "HintText": "Use 24 hour format",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "hearingDuration",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
