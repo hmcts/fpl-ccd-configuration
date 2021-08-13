@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -165,54 +164,4 @@ public class ManageLegalCounselService {
 
         return eventsToPublish;
     }
-
-    public List<Element<Respondent>> updateLegalCounselForRemovedSolicitors(//TODO - I think I need to feature-toggle this
-        List<Element<Respondent>> respondentsInPreviousCaseData,
-        List<Element<Respondent>> respondentsInCurrentCaseData) {
-
-        for (int i = 0; i < respondentsInPreviousCaseData.size(); i++) {
-            final int index = i;
-            Optional<String> organisationIdFromSolicitorInPreviousCaseData = Optional.of(respondentsInPreviousCaseData)
-                .map(respondents -> respondents.get(index))
-                .map(Element::getValue)
-                .map(WithSolicitor::getSolicitor)
-                .map(RespondentSolicitor::getOrganisation)
-                .map(organisation -> organisation.getOrganisationID());
-
-            Optional<WithSolicitor> respondentInCurrentCaseData = Optional.ofNullable(respondentsInCurrentCaseData)
-                .map(respondents -> respondents.get(index))
-                .map(Element::getValue);
-            Optional<String> organisationIdFromSolicitorInCurrentCaseData = respondentInCurrentCaseData
-                .map(WithSolicitor::getSolicitor)
-                .map(RespondentSolicitor::getOrganisation)
-                .map(organisation -> organisation.getOrganisationID());
-
-            if (!organisationIdFromSolicitorInPreviousCaseData.equals(organisationIdFromSolicitorInCurrentCaseData)) {
-                //TODO - add children later
-                //Try getting legal counsel from any respondent within the same organisation
-                List<Element<LegalCounsellor>> legalCounsel = organisationIdFromSolicitorInCurrentCaseData
-                    .map(organisationIdForNewSolicitor -> getLegalCounselUsedByGivenOrganisation(organisationIdForNewSolicitor, respondentsInPreviousCaseData))
-                    .orElse(emptyList());
-
-                respondentInCurrentCaseData.ifPresent(respondent -> respondent.setLegalCounsellors(legalCounsel));
-            }
-        }
-
-        return respondentsInCurrentCaseData;
-    }
-
-    private List<Element<LegalCounsellor>> getLegalCounselUsedByGivenOrganisation(String organisationId, List<Element<Respondent>> respondents) {
-        return respondents.stream()
-            .map(Element::getValue)
-            .filter(respondent -> Optional.of(respondent)
-                .map(Respondent::getSolicitor)
-                .map(RespondentSolicitor::getOrganisation)
-                .map(organisation -> organisation.getOrganisationID())
-                .map(organisationId::equals)
-                .orElse(false))
-            .findFirst()
-            .map(Respondent::getLegalCounsellors)
-            .orElse(null);
-    }
-
 }

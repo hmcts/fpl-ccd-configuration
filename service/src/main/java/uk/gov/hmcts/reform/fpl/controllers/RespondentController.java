@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.legalcounsel.ManageLegalCounselService;
+import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpdater;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class RespondentController extends CallbackController {
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
     private final RespondentValidator respondentValidator;
     private final NoticeOfChangeService noticeOfChangeService;
-    private final ManageLegalCounselService legalCounselService;
+    private final RepresentableLegalCounselUpdater representableCounselUpdater;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -83,11 +83,14 @@ public class RespondentController extends CallbackController {
         // passing the updated list to the method won't work
         List<Element<Respondent>> oldRespondents = caseDataBefore.getAllRespondents();
         List<Element<Respondent>> newRespondents = respondentService.persistRepresentativesRelationship(
-            caseData.getAllRespondents(), oldRespondents);
+            caseData.getAllRespondents(), oldRespondents
+        );
 
         newRespondents = respondentService.removeHiddenFields(newRespondents);
 
-        newRespondents = legalCounselService.updateLegalCounselForRemovedSolicitors(oldRespondents, newRespondents);
+        newRespondents = representableCounselUpdater.updateLegalCounselForRemovedSolicitors(
+            oldRespondents, newRespondents, caseData.getAllChildren()
+        );
 
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
         if (!OPEN.equals(caseData.getState())) {

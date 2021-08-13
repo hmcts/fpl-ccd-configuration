@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationSe
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildrenEventDataFixer;
 import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventValidator;
+import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpdater;
 
 import java.util.List;
 
@@ -49,6 +52,7 @@ public class ChildController extends CallbackController {
     private final ChildrenEventValidator validator;
     private final ChildrenEventDataFixer fixer;
     private final FeatureToggleService toggleService;
+    private final RepresentableLegalCounselUpdater representableCounselUpdater;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -102,13 +106,13 @@ public class ChildController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = fixer.fixRepresentationDetails(request.getCaseDetails());
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(request);
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
 
         if (toggleService.isChildRepresentativeSolicitorEnabled()) {
             caseData = getCaseData(caseDetails);
             if (shouldUpdateRepresentation(caseData)) {
-                CaseData caseDataBefore = getCaseDataBefore(request);
                 caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
                     caseData, caseDataBefore, SolicitorRole.Representing.CHILD,
                     isNotFirstTimeRecordingSolicitor(caseData, caseDataBefore)
@@ -118,7 +122,11 @@ public class ChildController extends CallbackController {
 
         caseData = getCaseData(caseDetails);
 
-        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllChildren(), CHILD);
+        List<Element<Child>> updatedChildren = representableCounselUpdater.updateLegalCounselForRemovedSolicitors(
+            caseDataBefore.getAllChildren(), caseData.getAllChildren(), caseData.getAllRespondents()
+        );
+
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, updatedChildren, CHILD);
 
         removeTemporaryFields(caseDetails, caseData.getChildrenEventData().getTransientFields());
 
