@@ -2,21 +2,27 @@ const assert = require('assert');
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const apiHelper = require('../helpers/api_helper.js');
-const caseData = require('../fixtures/caseData/mandatoryWithChildSolicitorAndMultipleRespondents.json');
+const caseData = require('../fixtures/caseData/mandatoryWithMultipleRespondents.json');
 const legalCounsellors = require('../fixtures/legalCounsellors.js');
 
 const solicitor1 = config.wiltshireLocalAuthorityUserOne;
+const solicitor2 = config.hillingdonLocalAuthorityUserOne;
 
 let caseId;//TODO - undo
 let legalCounselAdded = false;
 
 Feature('Legal counsel');
 
-async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage) {
+async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, enterChildrenEventPage) {
   if (!solicitor1.details) {
     solicitor1.details = await apiHelper.getUser(solicitor1);
     solicitor1.details.organisation = 'Wiltshire County Council';
   }
+  if (!solicitor2.details) {
+    solicitor2.details = await apiHelper.getUser(solicitor2);
+    solicitor2.details.organisation = 'Hillingdon'; // org search on aat does not like London Borough Hillingdon
+  }
+
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(caseData);
 
@@ -26,17 +32,19 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     await submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit', null, true);
 
-    //TODO - add representative for children from another organisation, then use NoC to get access and case role to a different solicitor
-    //TODO - it would be a good idea to try this manually before writing code!!!!!
-    //"solicitor": {
-    //   "dx": "160010 Kingsway 7",
-    //   "name": "John Smith",
-    //   "email": "solicitor@email.com",
-    //   "mobile": "07000000000",
-    //   "reference": "reference",
-    //   "telephone": "00000000000"
-    // }
+    //Add child representation
+    await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+    await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
+    await I.goToNextPage();
+    enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);//TODO - reuse
+    enterChildrenEventPage.enterChildrenMainRepresentation(solicitor2);
+    await enterChildrenEventPage.enterRegisteredOrganisation(solicitor2);
+    await I.completeEvent('Save and continue');
+    I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
+    caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+    assertChild(I, solicitor2);
 
+    //Use NoC to change representative for respondent and child
     await I.signIn(solicitor1);
 
     //Solicitor completes Notice of Change - for respondent
@@ -56,8 +64,8 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
   }
 }
 
-Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage }) => {
-  await setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage);
+Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage, enterChildrenEventPage }) => {
+  await setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, enterChildrenEventPage);
 
   await I.navigateToCaseDetailsAs(solicitor1, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.addOrRemoveLegalCounsel);
@@ -96,10 +104,13 @@ Scenario('Legal counsel to be remove when child representative is removed', asyn
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
 
   await I.goToNextPage();
-  enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.no);
-  await I.goToNextPage();
+  enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);//TODO - reuse
+  enterChildrenEventPage.enterChildrenMainRepresentation(solicitor2);
+  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor2);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  assertChild(I, solicitor2);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.dontSeeInTab(['Child 1', 'Legal Counsellor']);
@@ -107,8 +118,8 @@ Scenario('Legal counsel to be remove when child representative is removed', asyn
 
 //TODO - assign a different solicitor using notice of change - NoC scenario in story
 
-function checkLegalCounselWasAdded(){
-  if (!legalCounselAdded){
+function checkLegalCounselWasAdded() {
+  if (!legalCounselAdded) {
     assert.fail('Cannot proceed with tests if legal counsel was not added');
   }
 }
@@ -152,6 +163,7 @@ const assertChangeOfRepresentative = (I, index, method, respondentName, actingUs
 };
 
 function assertLegalCounsellorWasAdded(caseViewPage, I) {
+  pause();//TODO
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   const legalCounsellor = legalCounsellors.legalCounsellor;
 
@@ -168,3 +180,13 @@ function assertLegalCounsellorWasAdded(caseViewPage, I) {
   I.seeOrganisationInTab([representedParty, 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
 }
 
+function assertChild(I, solicitor) {//TODO - reuse it?
+  const childElement = 'Child 1';
+
+  I.seeInTab([childElement, 'Representative', 'Representative\'s first name'], solicitor.details.forename);
+  I.seeInTab([childElement, 'Representative', 'Representative\'s last name'], solicitor.details.surname);
+  I.seeInTab([childElement, 'Representative', 'Email address'], solicitor.details.email);
+
+  I.waitForText(solicitor.details.organisation, 40);
+  I.seeOrganisationInTab([childElement, 'Representative', 'Name'], solicitor.details.organisation);
+}
