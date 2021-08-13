@@ -21,6 +21,7 @@ public class AdditionalApplicationsBundle {
     private OtherApplicationsBundle otherApplicationsBundle;
     private PBAPayment pbaPayment;
     private String removalReason;
+    private String amountToPay;
 
     @JsonIgnore
     public String toLabel() {
