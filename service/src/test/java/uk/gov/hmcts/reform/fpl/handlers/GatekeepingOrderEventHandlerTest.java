@@ -7,9 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
@@ -17,15 +19,20 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
@@ -33,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +48,15 @@ class GatekeepingOrderEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final SDONotifyData NOTIFY_DATA = mock(SDONotifyData.class);
     private static final DocumentReference ORDER = testDocumentReference();
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT = ENGLISH_TO_WELSH;
+    private static final String ORDER_TITLE = "Document Description";
+    private static final DocumentReference DOCUMENT_C6 = DocumentReference.builder()
+        .filename("notice_of_proceedings_c6.pdf")
+        .build();
+    private static final DocumentReference DOCUMENT_C6A = DocumentReference.builder()
+        .filename("notice_of_proceedings_c6a.pdf")
+        .build();
 
     @Mock
     private NotificationService notificationService;
@@ -53,6 +70,8 @@ class GatekeepingOrderEventHandlerTest {
     private SDOIssuedContentProvider standardContentProvider;
     @Mock
     private SDOIssuedCafcassContentProvider cafcassContentProvider;
+    @Mock
+    private TranslationRequestService translationRequestService;
 
     @InjectMocks
     private GatekeepingOrderEventHandler underTest;
@@ -125,9 +144,66 @@ class GatekeepingOrderEventHandlerTest {
         );
     }
 
+    @Test
+    void shouldNotifyTranslationTeam() {
+        underTest.notifyTranslationTeam(
+            gatekeepingOrderEvent(URGENT_AND_NOP, CASE_DATA).toBuilder()
+                .languageTranslationRequirement(TRANSLATION_REQUIREMENT)
+                .build()
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENT),
+            ORDER, ORDER_TITLE);
+    }
+
+    @Test
+    void shouldNotifyNotifyTranslationTeamIfNoLanguageRequirementDefaultsToEmpty() {
+        underTest.notifyTranslationTeam(
+            gatekeepingOrderEvent(URGENT_AND_NOP, CASE_DATA)
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.empty(),
+            ORDER, ORDER_TITLE);
+
+        verifyNoMoreInteractions(translationRequestService);
+    }
+
+    @Test
+    void shouldNotifyNotifyTranslationTeamIfNoticeOfProceedingsAreAttached() {
+        CaseData caseData = CaseData.builder()
+            .noticeOfProceedingsBundle(List.of(
+                element(DocumentBundle.builder().document(DOCUMENT_C6).build()),
+                element(DocumentBundle.builder().document(DOCUMENT_C6A).build())
+            )).build();
+
+        underTest.notifyTranslationTeam(
+            gatekeepingOrderEvent(URGENT_AND_NOP, caseData)
+                .toBuilder()
+                .languageTranslationRequirement(TRANSLATION_REQUIREMENT)
+                .build()
+        );
+
+        verify(translationRequestService).sendRequest(caseData,
+            Optional.of(TRANSLATION_REQUIREMENT),
+            ORDER, ORDER_TITLE);
+
+        verify(translationRequestService).sendRequest(caseData,
+            Optional.of(TRANSLATION_REQUIREMENT),
+            DOCUMENT_C6, "Notice of proceedings (C6)");
+
+        verify(translationRequestService).sendRequest(caseData,
+            Optional.of(TRANSLATION_REQUIREMENT),
+            DOCUMENT_C6A, "Notice of proceedings (C6A)");
+
+        verifyNoMoreInteractions(translationRequestService);
+    }
+
     private GatekeepingOrderEvent gatekeepingOrderEvent(GatekeepingOrderNotificationGroup group, CaseData caseData) {
         return GatekeepingOrderEvent.builder()
             .order(ORDER)
+            .orderTitle(ORDER_TITLE)
             .notificationGroup(group)
             .caseData(caseData)
             .build();
