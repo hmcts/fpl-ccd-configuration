@@ -462,7 +462,7 @@ public class ManageHearingsService {
             .attendanceDetails(caseData.getHearingAttendanceDetails())
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
-            .endDate(caseData.getHearingEndDate() != null ? caseData.getHearingEndDate() : getHearingEndDate(caseData))
+            .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
@@ -500,7 +500,7 @@ public class ManageHearingsService {
             .attendanceDetails(caseData.getHearingAttendanceDetails())
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
-            .endDate(caseData.getHearingEndDate() != null ? caseData.getHearingEndDate() : getHearingEndDate(caseData))
+            .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
@@ -511,17 +511,6 @@ public class ManageHearingsService {
             .previousHearingVenue(caseData.getPreviousHearingVenue())
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
-    }
-
-    private LocalDateTime getHearingEndDate(CaseData caseData) {
-        if(!isNull(caseData.getHearingDays())) {
-            return caseData.getHearingStartDate().plusDays(Long.parseLong(caseData.getHearingDays()));
-        } else if(!isNull(caseData.getHearingHours())) {
-            LocalDateTime startDate = caseData.getHearingStartDate();
-            return startDate.plusMinutes(Long.parseLong(caseData.getHearingMinutes()))
-                .plusHours(Long.parseLong(caseData.getHearingHours()));
-        }
-        return null;
     }
 
     private Element<HearingBooking> reList(CaseData caseData, HearingBooking hearingBooking) {
