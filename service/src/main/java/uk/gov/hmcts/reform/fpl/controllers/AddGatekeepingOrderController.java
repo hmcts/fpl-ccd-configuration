@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderDataFixer;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
 import uk.gov.hmcts.reform.fpl.service.sdo.UrgentGatekeepingOrderService;
@@ -58,11 +59,12 @@ public class AddGatekeepingOrderController extends CallbackController {
     private final GatekeepingOrderRouteValidator routeValidator;
     private final UrgentGatekeepingOrderService urgentOrderService;
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
+    private final GatekeepingOrderDataFixer dataFixer;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
-        final CaseDetailsMap data = caseDetailsMap(callbackRequest.getCaseDetails());
+        final CaseDetailsMap data = dataFixer.fix(caseDetailsMap(callbackRequest.getCaseDetails()));
         final StandardDirectionOrder draftOrder = caseData.getStandardDirectionOrder();
 
         final GatekeepingOrderRoute draftOrderRoute = caseData.getGatekeepingOrderRouter();
@@ -178,8 +180,10 @@ public class AddGatekeepingOrderController extends CallbackController {
         if (URGENT == sdoRouter || decision.isSealed()) {
             data.put("state", CASE_MANAGEMENT);
             if (GATEKEEPING == caseData.getState()) {
+                request.getCaseDetails().setData(data);
                 List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
-                data.put("noticeOfProceedingsBundle", nopService.uploadNoticesOfProceedings(caseData, nopTemplates));
+                data.put("noticeOfProceedingsBundle",
+                    nopService.uploadNoticesOfProceedings(getCaseData(request.getCaseDetails()), nopTemplates));
             }
         }
 
