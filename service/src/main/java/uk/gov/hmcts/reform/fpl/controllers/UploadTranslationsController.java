@@ -76,4 +76,5 @@ public class UploadTranslationsController extends CallbackController {
             translatableItem.getSelectedOthers()
         ));
     }
+
 }

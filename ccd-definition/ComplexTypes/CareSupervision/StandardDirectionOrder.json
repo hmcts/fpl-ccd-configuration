@@ -27,6 +27,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
     "ListElementCode": "lastUploadedOrder",
     "FieldType": "Document",
     "ElementLabel": "File",
@@ -72,6 +90,15 @@
     "FieldType": "Text",
     "ElementLabel": "Uploaded by",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "sentForTranslationLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Sent for translation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needTranslation=\"YES\" AND translatedOrderDoc!=\"*\" AND orderStatus=\"SEALED\""
   },
   {
     "LiveFrom": "01/01/2017",
