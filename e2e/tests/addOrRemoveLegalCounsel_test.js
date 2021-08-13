@@ -1,3 +1,4 @@
+const assert = require('assert');
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const apiHelper = require('../helpers/api_helper.js');
@@ -6,7 +7,8 @@ const legalCounsellors = require('../fixtures/legalCounsellors.js');
 
 const solicitor1 = config.wiltshireLocalAuthorityUserOne;
 
-let caseId = 1628670095271359;//TODO - undo
+let caseId;//TODO - undo
+let legalCounselAdded = false;
 
 Feature('Legal counsel');
 
@@ -24,11 +26,23 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     await submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit', null, true);
 
-    //Solicitor completes Notice of Change (which gives the a case solicitor role)
+    //TODO - add representative for children from another organisation, then use NoC to get access and case role to a different solicitor
+    //TODO - it would be a good idea to try this manually before writing code!!!!!
+
     await I.signIn(solicitor1);
-    await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
+
+    //Solicitor completes Notice of Change - for respondent
+    await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Alex', 'White');//TODO - maybe put this in a function
     caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-    assertRepresentative(I, solicitor1.details, solicitor1.details.organisation);
+    assertRepresentative(I, solicitor1.details, solicitor1.details.organisation, 'Child 1');
+    caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
+    assertChangeOfRepresentative(I, 1, 'Notice of change', 'Alex White', solicitor1.details.email, { addedUser: solicitor1.details });
+
+    //TODO - this will only work if child has a cafcass representative
+    //Solicitor completes Notice of Change - for child
+    await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');//TODO - maybe put this in a function
+    caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+    assertRepresentative(I, solicitor1.details, solicitor1.details.organisation, 'Respondents 1');
     caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
     assertChangeOfRepresentative(I, 1, 'Notice of change', 'Joe Bloggs', solicitor1.details.email, { addedUser: solicitor1.details });
   }
@@ -50,11 +64,13 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
   I.seeEventSubmissionConfirmation(config.applicationActions.addOrRemoveLegalCounsel);
 
   assertLegalCounsellorWasAdded(caseViewPage, I);
+  legalCounselAdded = true;
 });
 
-//TODO - remove legal counsel - do it last - optional
+//TODO - remove legal counsel - on add or remove legal counsel event - do it last - optional
 
 Scenario('Legal counsel to be remove when respondent representative is removed', async ({ I, caseViewPage, enterRespondentsEventPage }) => {
+  checkLegalCounselWasAdded();
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
 
@@ -66,18 +82,37 @@ Scenario('Legal counsel to be remove when respondent representative is removed',
   I.dontSeeInTab(['Respondents 1', 'Legal Counsellor']);
 });
 
-//TODO - remove child representative - maybe I can write the scenario where representative is updated, not removed - maybe even both?
+Scenario('Legal counsel to be remove when child representative is removed', async ({ I, caseViewPage, enterChildrenEventPage }) => {
+  checkLegalCounselWasAdded();
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
 
-//TODO - assign a different solicitor using notice of change
+  await I.goToNextPage();
+  enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.no);
+  await I.goToNextPage();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
 
-const assertRepresentative = (I, user, organisation, index = 1) => {
-  I.seeInTab(['Representative', 'Representative\'s first name'], user.forename);
-  I.seeInTab(['Representative', 'Representative\'s last name'], user.surname);
-  I.seeInTab(['Representative', 'Email address'], user.email);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.dontSeeInTab(['Child 1', 'Legal Counsellor']);
+});
+
+//TODO - assign a different solicitor using notice of change - NoC scenario in story
+
+function checkLegalCounselWasAdded(){
+  if (!legalCounselAdded){
+    assert.fail('Cannot proceed with tests if legal counsel was not added');
+  }
+}
+
+const assertRepresentative = (I, user, organisation, representedParty) => {
+  I.seeInTab([representedParty, 'Representative', 'Representative\'s first name'], user.forename);
+  I.seeInTab([representedParty, 'Representative', 'Representative\'s last name'], user.surname);
+  I.seeInTab([representedParty, 'Representative', 'Email address'], user.email);
 
   if (organisation) {
     I.waitForText(organisation, 40);
-    I.seeOrganisationInTab([`Respondents ${index}`, 'Representative', 'Name'], organisation);
+    I.seeOrganisationInTab([representedParty, 'Representative', 'Name'], organisation);
   }
 };
 
@@ -111,9 +146,17 @@ const assertChangeOfRepresentative = (I, index, method, respondentName, actingUs
 function assertLegalCounsellorWasAdded(caseViewPage, I) {
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   const legalCounsellor = legalCounsellors.legalCounsellor;
-  I.seeInTab(['Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
-  I.seeInTab(['Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
-  I.seeInTab(['Legal Counsellor 1', 'Email address'], legalCounsellor.email);
-  I.seeOrganisationInTab(['Respondents 1', 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
+
+  let representedParty = 'Respondents 1';
+  I.seeInTab([representedParty, 'Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
+  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
+  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Email address'], legalCounsellor.email);
+  I.seeOrganisationInTab([representedParty, 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
+
+  representedParty = 'Child 1';
+  I.seeInTab([representedParty, 'Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
+  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
+  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Email address'], legalCounsellor.email);
+  I.seeOrganisationInTab([representedParty, 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
 }
 

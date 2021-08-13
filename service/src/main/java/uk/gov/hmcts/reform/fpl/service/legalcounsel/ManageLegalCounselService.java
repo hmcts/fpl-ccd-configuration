@@ -166,7 +166,7 @@ public class ManageLegalCounselService {
         return eventsToPublish;
     }
 
-    public List<Element<Respondent>> updateLegalCounselForRemovedSolicitors(
+    public List<Element<Respondent>> updateLegalCounselForRemovedSolicitors(//TODO - I think I need to feature-toggle this
         List<Element<Respondent>> respondentsInPreviousCaseData,
         List<Element<Respondent>> respondentsInCurrentCaseData) {
 
