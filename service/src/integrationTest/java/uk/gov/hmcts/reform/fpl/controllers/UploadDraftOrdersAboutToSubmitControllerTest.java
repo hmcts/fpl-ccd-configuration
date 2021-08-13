@@ -261,7 +261,29 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
             "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend", "hearingsForHearingOrderDrafts",
-            "currentHearingOrderDrafts", "hearingOrderDraftKind"
+            "currentHearingOrderDrafts", "hearingOrderDraftKind",
+            "cmoToSendTranslationRequirements",
+            "orderToSend0",
+            "orderToSendTranslationRequirements0",
+            "orderToSend1",
+            "orderToSendTranslationRequirements1",
+            "orderToSend2",
+            "orderToSendTranslationRequirements2",
+            "orderToSend3",
+            "orderToSendTranslationRequirements3",
+            "orderToSend4",
+            "orderToSendTranslationRequirements4",
+            "orderToSend5",
+            "orderToSendTranslationRequirements5",
+            "orderToSend6",
+            "orderToSendTranslationRequirements6",
+            "orderToSend7",
+            "orderToSendTranslationRequirements7",
+            "orderToSend8",
+            "orderToSendTranslationRequirements8",
+            "orderToSend9",
+            "orderToSendTranslationRequirements9",
+            "orderToSendOptionCount"
         ));
 
         assertThat(response.getData().keySet()).isEqualTo(keys);
