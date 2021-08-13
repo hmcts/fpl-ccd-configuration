@@ -103,6 +103,6 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
                                                                           List<Element<SupportingEvidenceBundle>> b2) {
-            return Stream.concat(b1.stream(), b2.stream()).collect(Collectors.toList());
+        return Stream.concat(b1.stream(), b2.stream()).collect(Collectors.toList());
     }
 }
