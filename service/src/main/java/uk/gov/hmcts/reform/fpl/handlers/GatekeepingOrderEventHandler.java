@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -9,14 +10,19 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -27,6 +33,7 @@ public class GatekeepingOrderEventHandler {
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final SDOIssuedCafcassContentProvider cafcassContentProvider;
     private final SDOIssuedContentProvider standardContentProvider;
+    private final TranslationRequestService translationRequestService;
 
     @Async
     @EventListener
@@ -68,5 +75,20 @@ public class GatekeepingOrderEventHandler {
         notificationService.sendEmail(
             event.getNotificationGroup().getCtscTemplate(), recipient, notifyData, caseData.getId()
         );
+    }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(GatekeepingOrderEvent event) {
+        translationRequestService.sendRequest(event.getCaseData(),
+            event.getLanguageTranslationRequirement(),
+            event.getOrder(), event.getOrderTitle());
+
+        ObjectUtils.<List<Element<DocumentBundle>>>defaultIfNull(event.getCaseData()
+                .getNoticeOfProceedingsBundle(), Collections.emptyList())
+            .forEach(nop -> translationRequestService.sendRequest(event.getCaseData(),
+                event.getLanguageTranslationRequirement(),
+                nop.getValue().getDocument(), nop.getValue().asLabel())
+            );
     }
 }

@@ -63,6 +63,7 @@ public class UrgentGatekeepingOrderService {
             .order(sealingService.sealDocument(orderDocument))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
+            .translationRequirements(eventData.getUrgentGatekeepingTranslationRequirements())
             .allocation(allocation)
             .build();
 
@@ -86,4 +87,5 @@ public class UrgentGatekeepingOrderService {
     private boolean noPreExistingAllocationDecision(CaseData caseData) {
         return null == caseData.getAllocationDecision();
     }
+
 }
