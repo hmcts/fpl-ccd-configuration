@@ -64,16 +64,6 @@ Scenario('Legal counsel to be remove when respondent representative is removed',
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.dontSeeInTab(['Respondents 1', 'Legal Counsellor']);
-
-  //TODO - what should we do if the representative is updated, not removed - check logic with Sam
-  //the solicitor shoudl only be considered to have changed if the organisation changes
-
-  //TODO - what happens if the new solicitor already has a legal counsel - should I assign their legal counsel to this party - this link is with a person, not an organisation
-  //RESET IT
-  //
-  //TODO - if we do the above, I'd suggest a size bump on this story
-  //TODO - write comment with the below info, implement it and explain it to Lewis
-  //if solicitor changes to another organisation, grab the first counsel we find in the case for that organisation and copy it over to the party having a solicitor change
 });
 
 //TODO - remove child representative - maybe I can write the scenario where representative is updated, not removed - maybe even both?
