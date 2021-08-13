@@ -296,6 +296,8 @@ class ManageLegalCounselServiceTest {
 
     //TODO - shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData
 
+    //TODO - test scenario where there was no solicitor and now there is
+
     @Test
     void shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData() {
         List<Element<LegalCounsellor>> legalCounselA = asList(TEST_LEGAL_COUNSELLOR);

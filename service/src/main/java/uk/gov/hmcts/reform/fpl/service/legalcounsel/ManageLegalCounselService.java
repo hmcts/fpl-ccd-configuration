@@ -170,7 +170,7 @@ public class ManageLegalCounselService {
         List<Element<Respondent>> respondentsInPreviousCaseData,
         List<Element<Respondent>> respondentsInCurrentCaseData) {
 
-        for (int i = 0; i < respondentsInPreviousCaseData.size(); i++) {//TODO - maybe I could, even should use the same logic as the component that generates the solicitor changes
+        for (int i = 0; i < respondentsInPreviousCaseData.size(); i++) {
             final int index = i;
             Optional<String> organisationIdFromSolicitorInPreviousCaseData = Optional.of(respondentsInPreviousCaseData)
                 .map(respondents -> respondents.get(index))
@@ -188,13 +188,13 @@ public class ManageLegalCounselService {
                 .map(organisation -> organisation.getOrganisationID());
 
             if (!organisationIdFromSolicitorInPreviousCaseData.equals(organisationIdFromSolicitorInCurrentCaseData)) {
-                //Get legal counsel from another respondent with the same org //TODO - add children later
-                organisationIdFromSolicitorInCurrentCaseData.ifPresent(organisationIdForNewSolicitor -> {
-                    List<Element<LegalCounsellor>> legalCounsel =
-                        getLegalCounselUsedByGivenOrganisation(organisationIdForNewSolicitor, respondentsInPreviousCaseData);
+                //TODO - add children later
+                //Try getting legal counsel from any respondent within the same organisation
+                List<Element<LegalCounsellor>> legalCounsel = organisationIdFromSolicitorInCurrentCaseData
+                    .map(organisationIdForNewSolicitor -> getLegalCounselUsedByGivenOrganisation(organisationIdForNewSolicitor, respondentsInPreviousCaseData))
+                    .orElse(emptyList());
 
-                    respondentInCurrentCaseData.ifPresent(respondent -> respondent.setLegalCounsellors(legalCounsel));
-                });
+                respondentInCurrentCaseData.ifPresent(respondent -> respondent.setLegalCounsellors(legalCounsel));
             }
         }
 
@@ -204,7 +204,10 @@ public class ManageLegalCounselService {
     private List<Element<LegalCounsellor>> getLegalCounselUsedByGivenOrganisation(String organisationId, List<Element<Respondent>> respondents) {
         return respondents.stream().map(Element::getValue).filter(respondent ->
             respondent.getSolicitor().getOrganisation().getOrganisationID().equals(organisationId)//TODO - not every respondent will be represented
-        ).findFirst().map(Respondent::getLegalCounsellors).orElse(emptyList());
+        )
+            .findFirst()
+            .map(Respondent::getLegalCounsellors)
+            .orElse(null);
     }
 
 }
