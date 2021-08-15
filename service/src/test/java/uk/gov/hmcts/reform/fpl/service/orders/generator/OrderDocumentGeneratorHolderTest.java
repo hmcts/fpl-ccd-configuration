@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
@@ -47,6 +48,8 @@ class OrderDocumentGeneratorHolderTest {
     private C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     @Mock
     private C26SecureAccommodationOrderDocumentParameterGenerator c26SecureAccommodationOrderDocumentParameterGenerator;
+    @Mock
+    private C29RecoveryOfAChildDocumentParameterGenerator c29RecoveryOfAChildDocumentParameterGenerator;
     @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     @Mock
@@ -77,11 +80,12 @@ class OrderDocumentGeneratorHolderTest {
     void setUp() {
         generators = List.of(
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
-            c26SecureAccommodationOrderDocumentParameterGenerator, c32CareOrderDocumentParameterGenerator,
-            c32bDischargeOfCareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
-            c35aSupervisionOrderDocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator,
-            c35bISODocumentParameterGenerator, c43ChildArrangementOrderDocumentParameterGenerator,
-            c43aSGODocumentParameterGenerator, c45aParentalResponsibilityOrderDocumentParameterGenerator
+            c26SecureAccommodationOrderDocumentParameterGenerator, c29RecoveryOfAChildDocumentParameterGenerator,
+            c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
+            c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
+            c47AAppointmentOfAChildrensGuardianParameterGenerator, c35bISODocumentParameterGenerator,
+            c43ChildArrangementOrderDocumentParameterGenerator, c43aSGODocumentParameterGenerator,
+            c45aParentalResponsibilityOrderDocumentParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -90,6 +94,7 @@ class OrderDocumentGeneratorHolderTest {
                 put(C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator);
                 put(C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator);
                 put(C26_SECURE_ACCOMMODATION_ORDER, c26SecureAccommodationOrderDocumentParameterGenerator);
+                put(C29_RECOVERY_OF_A_CHILD, c29RecoveryOfAChildDocumentParameterGenerator);
                 put(C32A_CARE_ORDER, c32CareOrderDocumentParameterGenerator);
                 put(C32B_DISCHARGE_OF_CARE_ORDER, c32bDischargeOfCareOrderDocumentParameterGenerator);
                 put(C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator);

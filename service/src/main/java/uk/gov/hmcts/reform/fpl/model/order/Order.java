@@ -216,7 +216,7 @@ public enum Order {
     C29_RECOVERY_OF_A_CHILD(
         DIGITAL,
         "Recovery of a child (C29)",
-        "",
+        "Section 50 Children Act 1989",
         "Recovery of a child (C29)",
         IsFinalOrder.MAYBE,
         List.of(

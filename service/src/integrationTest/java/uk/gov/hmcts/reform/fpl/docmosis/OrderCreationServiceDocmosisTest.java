@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C21BlankOrderDocumentPar
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPOAdditionalDocumentsCollector;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPODocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C26SecureAccommodationOrderDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C29RecoveryOfAChildDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32CareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32bDischargeOfCareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C33InterimCareOrderDocumentParameterGenerator;
@@ -93,7 +94,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     UploadedOrderDocumentGenerator.class,
     DocumentSealingService.class,
     ChildrenSmartSelector.class,
-    ChildSelectionUtils.class
+    ChildSelectionUtils.class,
+    C29RecoveryOfAChildDocumentParameterGenerator.class
 })
 @MockBeans({@MockBean(DocumentDownloadService.class)})
 class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
