@@ -1,10 +1,13 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
+const moment = require('moment');
 const draftOrdersHelper = require('../helpers/cmo_helper');
 const caseData = require('../fixtures/caseData/caseWithAllTypesOfOrders.json');
 const caseDataGatekeeping = require('../fixtures/caseData/gatekeepingFullDetails.json');
 const caseDataCaseManagement = require('../fixtures/caseData/prepareForHearing.json');
 const caseView = require('../pages/caseView.page.js');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
+const api = require('../helpers/api_helper');
 const closedCaseData = {
   state: 'CLOSED',
   caseData: {
@@ -89,6 +92,13 @@ const orders = {
     translationFile: 'blah_c6a-Welsh.pdf',
     tabName: caseView.tabs.hearings,
     tabObjectName: 'Notice of proceedings 2',
+  },
+  noticeOfHearing: {
+    name: 'Notice of hearing - 24 April 2012',
+    originalFile: 'Notice_of_hearing_16August.pdf',
+    translationFile: 'Notice_of_hearing_16August-Welsh.pdf',
+    tabName: caseView.tabs.hearings,
+    tabObjectName: 'Hearing 4',
   },
 };
 
@@ -247,6 +257,36 @@ Scenario('Upload translation for generated order (closed)', async ({ I, caseView
   await setupScenario(I, closedCaseData);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.generated);
   assertTranslation(I, caseViewPage, orders.generated);
+});
+
+Scenario('Request and upload translation for notice of hearing', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageHearingsEventPage }) => {
+  let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  let hearingStartDate = moment().year(2012).month(3).day(9).hours(10).minutes(30).seconds(15).milliseconds(0).toDate();
+  let hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  manageHearingsEventPage.selectAddNewHearing();
+  await I.goToNextPage();
+  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate, endDate: hearingEndDate}));
+  manageHearingsEventPage.selectPreviousVenue();
+  await I.goToNextPage();
+  manageHearingsEventPage.selectHearingDateCorrect();
+  await I.goToNextPage();
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.goToNextPage();
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  manageHearingsEventPage.requestTranslationForNoticeOfHearing('ENGLISH_TO_WELSH');
+  await I.goToNextPage();
+  await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
+
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
+
+  assertSentToTranslation(I, caseViewPage, orders.noticeOfHearing);
+  await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.noticeOfHearing);
+  assertTranslation(I, caseViewPage, orders.noticeOfHearing);
 });
 
 async function translateOrder(I, caseViewPage, uploadWelshTranslationsPage, item) {

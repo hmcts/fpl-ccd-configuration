@@ -532,7 +532,7 @@
     "CaseEventID": "manageHearings",
     "CaseFieldID": "sendNoticeOfHearingTranslationRequirements",
     "PageFieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 8,
