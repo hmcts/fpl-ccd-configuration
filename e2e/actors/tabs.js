@@ -17,6 +17,18 @@ function tabFieldSelector(pathToField) {
   return `${selector}//*[contains(@class,"complex-panel-simple-field") and .//th/span[text()="${fieldName}"]]`;
 }
 
+function tabLabelSelector(pathToField) {
+  let path = [].concat(pathToField);
+  let fieldName = path.splice(-1, 1)[0];
+  let selector = TAB_CLASS_SELECTOR;
+
+  path.forEach(step => {
+    selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+  });
+
+  return `${selector}//*//p[text()="${fieldName}"]`;
+}
+
 function tabTagSelector(pathToField) {
   let path = [].concat(pathToField);
   let fieldName = path.splice(-1, 1)[0];
@@ -65,6 +77,16 @@ module.exports = {
 
   dontSeeTagInTab: function (pathToTag) {
     const fieldSelector = tabTagSelector(pathToTag);
+    this.dontSeeElement(locate(fieldSelector));
+  },
+
+  seeLabelInTab: function (pathToTag) {
+    const fieldSelector = tabLabelSelector(pathToTag);
+    this.seeElement(locate(fieldSelector));
+  },
+
+  dontSeeLabelInTab: function (pathToTag) {
+    const fieldSelector = tabLabelSelector(pathToTag);
     this.dontSeeElement(locate(fieldSelector));
   },
 

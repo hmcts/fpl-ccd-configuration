@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
@@ -51,6 +52,9 @@ public class GatekeepingOrderEventData {
 
     List<Element<CustomDirection>> customDirections;
     List<Element<StandardDirection>> standardDirections;
+
+    LanguageTranslationRequirement gatekeepingTranslationRequirements;
+    LanguageTranslationRequirement urgentGatekeepingTranslationRequirements;
 
     DocumentReference currentSDO;
     YesNo useUploadRoute;

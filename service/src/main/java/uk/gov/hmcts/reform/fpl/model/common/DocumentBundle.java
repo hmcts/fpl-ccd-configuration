@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
@@ -15,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
@@ -22,6 +26,7 @@ public class DocumentBundle implements TranslatableItem {
     private final DocumentReference document;
     private final DocumentReference translatedDocument;
     private final LocalDateTime translationUploadDateTime;
+    private final LanguageTranslationRequirement translationRequirements;
 
     @Override
     @JsonIgnore
@@ -47,6 +52,11 @@ public class DocumentBundle implements TranslatableItem {
     @Override
     public LocalDateTime translationUploadDateTime() {
         return translationUploadDateTime;
+    }
+
+    @Override
+    public LanguageTranslationRequirement getTranslationRequirements() {
+        return defaultIfNull(translationRequirements, NO);
     }
 
     @Override
