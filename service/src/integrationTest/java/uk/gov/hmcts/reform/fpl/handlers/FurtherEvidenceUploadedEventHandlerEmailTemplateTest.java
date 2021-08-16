@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -19,12 +20,21 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.SendLetterService;
+import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,6 +67,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private FurtherEvidenceUploadedEventHandler underTest;
 
     @MockBean
+    private SendDocumentService sendDocumentService;
+
+    @MockBean
     private CaseAccessDataStoreApi caseAccessDataStoreApi;
 
     @MockBean
@@ -67,7 +80,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
-        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
@@ -95,7 +108,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
-        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
