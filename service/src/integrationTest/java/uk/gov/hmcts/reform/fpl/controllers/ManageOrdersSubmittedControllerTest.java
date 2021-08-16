@@ -9,8 +9,11 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -27,11 +30,14 @@ import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
+import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,6 +50,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
@@ -57,14 +64,17 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMapForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -72,6 +82,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final Long CASE_ID = 1614860986487554L;
@@ -85,6 +96,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     private static final byte[] ORDER_BINARY = testDocumentBinaries();
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinaries();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinaries();
+    private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
+    private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
+        .toBuilder().documentTitle("pdf.pdf").build();
     private static final DocumentReference ORDER = testDocumentReference();
     private static final String ORDER_TYPE = "Care order (C32A)";
     private static final Map<String, Object> NOTIFICATION_PARAMETERS = getExpectedParametersMap(ORDER_TYPE, true);
@@ -125,6 +139,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
         .build();
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;
@@ -137,6 +153,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    TranslationRequestFormCreationService translationRequestFormCreationService;
+
+    @MockBean
+    DocmosisHelper docmosisHelper;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -152,6 +174,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
     @SpyBean
     private EventService eventPublisher;
+
+    @MockBean
+    private EmailService emailService;
 
     ManageOrdersSubmittedControllerTest() {
         super("manage-orders");
@@ -177,6 +202,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         when(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .thenReturn(new SendLetterResponse(LETTER_1_ID), new SendLetterResponse(LETTER_2_ID));
+        when(translationRequestFormCreationService.buildTranslationRequestDocuments(any()))
+            .thenReturn(DOCMOSIS_PDF_DOCUMENT);
+        when(docmosisHelper.extractPdfContent(any())).thenReturn("Some content");
     }
 
     @Test
@@ -286,6 +314,38 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL), any(), any()
             );
         });
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfTranslationIsRequired() {
+        CaseData caseData = caseData().toBuilder().orderCollection(
+            wrapElements(GeneratedOrder.builder()
+                .orderType("C32A_CARE_ORDER")
+                .type(ORDER_TYPE)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Dredd")
+                    .build())
+                .dateTimeIssued(now().plusSeconds(2))
+                .approvalDate(dateNow())
+                .document(ORDER)
+                .translationRequirements(TRANSLATION_REQUIREMENTS)
+                .build())
+        ).build();
+
+        postSubmittedEvent(caseData);
+
+        checkUntil(() -> checkUntil(() -> verify(emailService).sendEmail(eq("sender@example.com"), any())));
+
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfTranslationIsNotRequired() {
+        CaseData caseData = caseData();
+
+        postSubmittedEvent(caseData);
+
+        checkThat(() -> verifyNoInteractions(emailService), Duration.ofSeconds(2));
     }
 
     @Test

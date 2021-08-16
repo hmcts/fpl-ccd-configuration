@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -88,6 +89,8 @@ class SealedOrderHistoryServiceTest {
         Pair.of(LINKED_APPLICATION_ID, "My test application"));
     private static final YesNo FINAL_MARKER = YesNo.NO;
     private static final String OTHERS_NOTIFIED = "First other, Second other";
+    private static final LanguageTranslationRequirement LANGUAGE_TRANSLATION_REQUIREMENT =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
     private final Other other1 = testOther("First other");
@@ -110,7 +113,8 @@ class SealedOrderHistoryServiceTest {
         mock(SealedOrderHistoryFinalMarker.class);
     private final OthersNotifiedGenerator othersNotifiedGenerator = mock(
         OthersNotifiedGenerator.class);
-
+    private final SealedOrderLanguageRequirementGenerator languageRequirementGenerator = mock(
+        SealedOrderLanguageRequirementGenerator.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
@@ -122,6 +126,7 @@ class SealedOrderHistoryServiceTest {
         typeGenerator,
         sealedOrderHistoryFinalMarker,
         othersNotifiedGenerator,
+        languageRequirementGenerator,
         time,
         manageOrdersClosedCaseFieldGenerator
     );
@@ -518,6 +523,7 @@ class SealedOrderHistoryServiceTest {
             .childrenDescription(CHILD_1_FULLNAME)
             .approvalDate(APPROVAL_DATE)
             .document(SEALED_PDF_DOCUMENT)
+            .translationRequirements(LANGUAGE_TRANSLATION_REQUIREMENT)
             .unsealedDocumentCopy(PLAIN_WORD_DOCUMENT)
             .dateTimeIssued(NOW);
     }
@@ -526,6 +532,8 @@ class SealedOrderHistoryServiceTest {
         when(extraTitleGenerator.generate(caseData)).thenReturn(EXTRA_TITLE);
         when(typeGenerator.generate(caseData)).thenReturn(TYPE);
         when(sealedOrderHistoryFinalMarker.calculate(caseData)).thenReturn(FINAL_MARKER);
+        when(languageRequirementGenerator.translationRequirements(caseData))
+            .thenReturn(LANGUAGE_TRANSLATION_REQUIREMENT);
     }
 
     private void mockHelper(MockedStatic<JudgeAndLegalAdvisorHelper> jalMock) {
