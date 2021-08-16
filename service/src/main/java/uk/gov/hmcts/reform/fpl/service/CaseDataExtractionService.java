@@ -192,6 +192,7 @@ public class CaseDataExtractionService {
             .hearingAttendanceDetails(hearing.getAttendanceDetails())
             .preHearingAttendance(hearing.getPreAttendanceDetails())
             .hearingTime(getHearingTime(hearing))
+            .hearingDuration(hearing.getHearingDuration())
             .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
             .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
             .build();
