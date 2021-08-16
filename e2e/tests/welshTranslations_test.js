@@ -28,6 +28,13 @@ const orders = {
     tabName: caseView.tabs.orders,
     tabObjectName: 'Order 4',
   },
+  uploadedOrder: {
+    name: `Order F789s - ${dateFormat('d mmmm yyyy')}`,
+    file: 'other_order.pdf',
+    translationFile: 'other_order-Welsh.pdf',
+    tabName: caseView.tabs.orders,
+    tabObjectName: 'Order 1',
+  },
   standardDirectionOrder: {
     name: `Gatekeeping order - ${dateFormat('d mmmm yyyy')}`,
     file: 'sdo.pdf',
@@ -97,6 +104,32 @@ Scenario('Upload translation for generated order', async ({ I, caseViewPage, upl
   await setupScenario(I);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.generated);
   assertTranslation(I, caseViewPage, orders.generated);
+});
+
+Scenario('Request and upload translation for uploaded order', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageOrdersEventPage }) => {
+  let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectUploadOrder(manageOrdersEventPage.orders.options.other);
+  manageOrdersEventPage.specifyOtherOrderTitle('Order F789s');
+  await I.goToNextPage();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.uploadManualOrder(config.testPdfFile);
+  manageOrdersEventPage.selectManualOrderNeedSealing(manageOrdersEventPage.section4.manualOrderNeedSealing.options.yes);
+  await manageOrdersEventPage.selectIsFinalOrder();
+  await manageOrdersEventPage.selectTranslationRequirement(manageOrdersEventPage.section4.translationRequirement.englishToWelsh);
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertSentToTranslation(I, caseViewPage, orders.uploadedOrder);
+  await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.uploadedOrder);
+  assertTranslation(I, caseViewPage, orders.uploadedOrder);
 });
 
 Scenario('Request and upload translation for standard directions order', async ({ I, caseViewPage, uploadWelshTranslationsPage, draftStandardDirectionsEventPage }) => {
