@@ -693,7 +693,7 @@ class ManageHearingsServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingStartDate(hearingStartDate)
-                .hearingEndDate(hearingEndDate)
+                .hearingEndDateTime(hearingEndDate)
                 .hearingDuration(DATE_TIME.getType())
                 .build();
 
@@ -714,7 +714,7 @@ class ManageHearingsServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingStartDate(hearingStartDate)
-                .hearingEndDate(hearingEndDate)
+                .hearingEndDateTime(hearingEndDate)
                 .hearingDuration(DATE_TIME.getType())
                 .build();
 
@@ -735,7 +735,7 @@ class ManageHearingsServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingStartDate(hearingStartDate)
-                .hearingEndDate(hearingEndDate)
+                .hearingEndDateTime(hearingEndDate)
                 .hearingDuration(DATE_TIME.getType())
                 .build();
 
@@ -803,7 +803,7 @@ class ManageHearingsServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingStartDate(hearingStartDate)
-                .hearingEndDate(hearingEndDate)
+                .hearingEndDateTime(hearingEndDate)
                 .hearingDuration(DATE_TIME.getType())
                 .build();
 
@@ -1652,7 +1652,11 @@ class ManageHearingsServiceTest {
             "hasOthers",
             "sendOrderToAllOthers",
             "others_label",
-            "othersSelector");
+            "othersSelector",
+            "hearingMinutes",
+            "hearingDuration",
+            "hearingDays",
+            "hearingHours");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {
