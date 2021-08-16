@@ -8,13 +8,17 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -25,6 +29,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -32,15 +37,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FurtherEvidenceUploadedEventHandler {
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
+    private final SendDocumentService sendDocumentService;
+    private static final String PDF = "pdf";
 
     @EventListener
-    public void handleDocumentUploadedEvent(final FurtherEvidenceUploadedEvent event) {
+    public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
 
         DocumentUploadNotificationUserType userType = event.getUserType();
-        List<String> newNonConfidentialDocuments = getNewNonConfidentialBundleNames(caseData, caseDataBefore, userType);
+        var newNonConfidentialDocuments = getNewNonConfidentialDocuments(caseData, caseDataBefore, userType);
 
         final Set<String> recipients = new HashSet<>();
 
@@ -55,26 +62,60 @@ public class FurtherEvidenceUploadedEventHandler {
         recipients.removeIf(email -> Objects.equals(email, uploader.getEmail()));
 
         if (isNotEmpty(recipients)) {
+            List<String> newDocumentNames = getDocumentNames(newNonConfidentialDocuments);
             furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                newNonConfidentialDocuments);
+                newDocumentNames);
         }
     }
 
+    @EventListener
+    public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
+        DocumentUploadNotificationUserType userType = event.getUserType();
 
-    private List<String> getNewNonConfidentialBundleNames(CaseData caseData, CaseData caseDataBefore,
-                                                          DocumentUploadNotificationUserType userType) {
+        if (userType == SOLICITOR) {
+            final CaseData caseData = event.getCaseData();
+            final CaseData caseDataBefore = event.getCaseDataBefore();
+
+            var newNonConfidentialDocuments = getNewNonConfidentialDocuments(caseData,
+                caseDataBefore, userType);
+
+            Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+            List<DocumentReference> documents = getDocumentReferences(newNonConfidentialDocuments);
+            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
+        }
+    }
+
+    private List<SupportingEvidenceBundle> getNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore,
+            DocumentUploadNotificationUserType userType) {
 
         var newBundle = getEvidenceBundle(caseData, userType);
         var oldBundle = getEvidenceBundle(caseDataBefore, userType);
 
-        List<String> documentNames = new ArrayList<String>();
+        List<SupportingEvidenceBundle> newDocs = new ArrayList<>();
 
         unwrapElements(newBundle).forEach(newDoc -> {
             if (!newDoc.isConfidentialDocument() && !unwrapElements(oldBundle).contains(newDoc)) {
-                documentNames.add(newDoc.getName());
+                newDocs.add(newDoc);
             }
         });
-        return documentNames;
+        return newDocs;
+    }
+
+    private List<String> getDocumentNames(List<SupportingEvidenceBundle> documentBundle) {
+        return documentBundle.stream().map(SupportingEvidenceBundle::getName).collect(Collectors.toList());
+    }
+
+    private List<DocumentReference> getDocumentReferences(List<SupportingEvidenceBundle> documentBundle) {
+        List<DocumentReference> documentReferences = new ArrayList<>();
+
+        documentBundle.forEach(doc -> {
+            DocumentReference documentReference = doc.getDocument();
+            if (hasExtension(documentReference.getFilename(), PDF)) {
+                documentReferences.add(documentReference);
+            }
+        });
+
+        return documentReferences;
     }
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundle(CaseData caseData,

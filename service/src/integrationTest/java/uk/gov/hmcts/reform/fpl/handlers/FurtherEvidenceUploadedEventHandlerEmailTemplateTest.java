@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -62,6 +63,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private FurtherEvidenceUploadedEventHandler underTest;
 
     @MockBean
+    private SendDocumentService sendDocumentService;
+
+    @MockBean
     private CaseAccessDataStoreApi caseAccessDataStoreApi;
 
     @MockBean
@@ -72,7 +76,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
-        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
@@ -87,7 +91,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
-        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, SOLICITOR,
             UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
         ));
@@ -102,7 +106,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
-        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
@@ -117,7 +121,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
-        underTest.handleDocumentUploadedEvent(new FurtherEvidenceUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             caseData, caseDataBefore, SOLICITOR,
             UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
         ));

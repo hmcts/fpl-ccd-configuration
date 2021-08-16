@@ -4,6 +4,9 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,8 +15,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -44,6 +49,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Map.entry;
@@ -142,8 +148,28 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         assertThat(responseData.getStandardDirectionOrder()).isEqualTo(expectedSDO);
     }
 
-    @Test
-    void shouldBuildSealedSDOAndRemoveTransientFieldsWhenOrderStatusIsSealed() {
+    private static Stream<Arguments> translationRequirements() {
+        return Stream.of(
+            Arguments.of(LanguageTranslationRequirement.NO),
+            Arguments.of(LanguageTranslationRequirement.WELSH_TO_ENGLISH),
+            Arguments.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+        );
+    }
+
+    private static Stream<Arguments> caseTranslationRequirement() {
+        return Stream.of(
+            Arguments.of(YesNo.YES.getValue(), LanguageTranslationRequirement.ENGLISH_TO_WELSH),
+            Arguments.of(YesNo.NO.getValue(), LanguageTranslationRequirement.NO),
+            Arguments.of("", LanguageTranslationRequirement.NO)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("caseTranslationRequirement")
+    void shouldBuildSealedSDOAndRemoveTransientFieldsWhenOrderStatusIsSealed(
+        String caseLanguageRequirement,
+        LanguageTranslationRequirement expectedTranslationRequirements) {
+
         final CustomDirection customDirection =
             CustomDirection.builder()
                 .type(CUSTOM)
@@ -179,6 +205,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .id(1234123412341234L)
             .state(GATEKEEPING.getLabel())
             .data(ofEntries(
+                entry("languageRequirement", caseLanguageRequirement),
                 entry("gatekeepingOrderRouter", SERVICE),
                 entry("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE),
                 entry("dateSubmitted", dateNow()),
@@ -187,6 +214,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                 entry("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build()),
                 entry("gatekeepingOrderIssuingJudge", JudgeAndLegalAdvisor.builder().build()),
                 entry("gatekeepingOrderSealDecision", gatekeepingOrderSealDecision),
+                entry("gatekeepingTranslationRequirements", expectedTranslationRequirements),
                 entry("directionsForAllParties", List.of(ATTEND_HEARING)),
                 entry("direction-ATTEND_HEARING", standardDirection),
                 entry("customDirections", wrapElements(customDirection))))
@@ -200,6 +228,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .customDirections(wrapElements(customDirection))
             .standardDirections(wrapElements(standardDirection))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+            .translationRequirements(expectedTranslationRequirements)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -209,14 +238,18 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         assertThat(responseData.getState()).isEqualTo(CASE_MANAGEMENT);
         assertThat(responseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
-            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
+                .translationRequirements(expectedTranslationRequirements)
+                .build());
         assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "customDirections",
             "standardDirections", "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
     }
 
 
-    @Test
-    void shouldBuildUrgentHearingOrderAndAddAllocationDecision() {
+    @ParameterizedTest
+    @MethodSource("translationRequirements")
+    void shouldBuildUrgentHearingOrderAndAddAllocationDecision(
+        LanguageTranslationRequirement translationRequirements) {
 
         final DocumentReference urgentReference = testDocumentReference();
         final DocumentReference sealedUrgentReference = testDocumentReference();
@@ -240,6 +273,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .urgentHearingAllocation(allocation)
                 .urgentHearingOrderDocument(urgentReference)
+                .urgentGatekeepingTranslationRequirements(translationRequirements)
                 .build())
             .state(GATEKEEPING)
             .id(1234123412341234L)
@@ -254,7 +288,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         AssertionsForClassTypes.assertThat(responseData.getAllocationDecision()).isEqualTo(expectedAllocation);
         AssertionsForInterfaceTypes.assertThat(responseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
-            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build()
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
+                .translationRequirements(translationRequirements)
+                .build()
             );
         AssertionsForClassTypes.assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
             UrgentHearingOrder.builder()
@@ -262,6 +298,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                 .order(sealedUrgentReference)
                 .unsealedOrder(urgentReference)
                 .dateAdded(dateNow())
+                .translationRequirements(translationRequirements)
                 .build()
         );
     }

@@ -477,7 +477,9 @@
             "document_url": "${TEST_DOCUMENT_URL}",
             "document_filename": "blah_c6.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-          }
+          },
+          "needTranslation": "Yes",
+          "translationRequirements": "ENGLISH_TO_WELSH"
         }
       },
       {
@@ -487,7 +489,9 @@
             "document_url": "${TEST_DOCUMENT_URL}",
             "document_filename": "blah_c6a.pdf",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-          }
+          },
+          "needTranslation": "Yes",
+          "translationRequirements": "ENGLISH_TO_WELSH"
         }
       }
     ]

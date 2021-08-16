@@ -33,7 +33,7 @@
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "gatekeepingOrderSealDecision",
     "ListElementCode": "nextSteps",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "nextSteps=\"DO_NOT_SHOW\""
   }
