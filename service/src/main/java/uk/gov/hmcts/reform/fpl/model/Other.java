@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -18,9 +19,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -108,11 +109,18 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @JsonIgnore
     public boolean hasAddressAdded() {
-        return !isNull(getAddress()) && !isEmpty(getAddress().getPostcode());
+        return !isNull(getAddress()) && !ObjectUtils.isEmpty(getAddress().getPostcode());
     }
 
     @JsonIgnore
     public boolean isRepresented() {
-        return !isEmpty(getRepresentedBy());
+        return !ObjectUtils.isEmpty(getRepresentedBy());
+    }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        return Stream.of(dateOfBirth, name, gender, telephone, birthPlace, childInformation, genderIdentification,
+            litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy
+        ).allMatch(ObjectUtils::isEmpty) && (isNull(address) || address.equals(Address.builder().build()));
     }
 }
