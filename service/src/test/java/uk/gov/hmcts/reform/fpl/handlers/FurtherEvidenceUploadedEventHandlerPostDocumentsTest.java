@@ -27,10 +27,13 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.REP_USER;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialDocuments;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialDocumentsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialLADocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialLADocuments;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFDocumentsSolicitor;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsRespondentSolicitor;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +48,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
     @Test
-    void shouldSendDocumentByPostWhenPDFUploadedByRespSolicitor() {
+    void shouldSendDocumentByPostWhenEvidenceBundlePDFUploadedByRespSolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
@@ -63,7 +66,24 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     }
 
     @Test
-    void shouldNotSendDocumentByPostWhenPDFUploadedByLA() {
+    void shouldRemoveNonPdfEvidenceBundles() {
+        final CaseData caseData = buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(REP_USER);
+
+        when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                buildCaseDataWithConfidentialDocuments(REP_USER),
+                SOLICITOR,
+                userDetailsRespondentSolicitor());
+        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+
+        verify(sendDocumentService).sendDocuments(caseData, new ArrayList<>(), RECIPIENTS_LIST);
+    }
+
+    @Test
+    void shouldNotSendDocumentByPostWhenEvidenceBundleIsUploadedByLA() {
         final CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -78,15 +98,33 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     }
 
     @Test
-    void shouldRemoveNonPdfDocumentsFromDocumentsUploadedByRespSolicitor() {
-        final CaseData caseData = buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(REP_USER);
+    void shouldSendDocumentByPostWhenResponseStatementPdfIsUploadedByASolicitor() {
+        final CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(
                 caseData,
-                buildCaseDataWithConfidentialDocuments(REP_USER),
+                buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
+                SOLICITOR,
+                userDetailsRespondentSolicitor());
+        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+
+        List<DocumentReference> documents = List.of(PDF_DOCUMENT_1, PDF_DOCUMENT_2);
+        verify(sendDocumentService).sendDocuments(caseData, documents, RECIPIENTS_LIST);
+    }
+
+    @Test
+    void shouldRemoveNonPdfResponseStatements() {
+        final CaseData caseData = buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor();
+
+        when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
         furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);

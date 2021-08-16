@@ -88,9 +88,15 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
-    public static CaseData buildCaseDataWithNonConfidentialRespondentStatementsSolicitor() {
+    public static CaseData buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
             .respondentStatements(buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(REP_USER)))
+            .build();
+    }
+
+    public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
+        return commonCaseBuilder()
+            .respondentStatements(buildRespondentStatementsList(buildNonConfidentialNonPDFDocumentList(REP_USER)))
             .build();
     }
 
