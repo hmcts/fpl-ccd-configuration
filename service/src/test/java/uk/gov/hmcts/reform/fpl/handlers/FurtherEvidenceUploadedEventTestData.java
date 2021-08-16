@@ -36,19 +36,18 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final DocumentReference PDF_DOCUMENT_2 = getPDFDocument();
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
 
-    public FurtherEvidenceUploadedEventTestData() {};
+    private FurtherEvidenceUploadedEventTestData() {
+    }
 
     public static CaseData buildCaseDataWithNonConfidentialLADocuments() {
         return commonCaseBuilder()
-            .furtherEvidenceDocumentsLA(
-                buildNonConfidentialPdfDocumentList(LA_USER))
+            .furtherEvidenceDocumentsLA(buildNonConfidentialPdfDocumentList(LA_USER))
             .build();
     }
 
     public static CaseData buildCaseDataWithConfidentialLADocuments() {
         return commonCaseBuilder()
-            .furtherEvidenceDocumentsLA(
-                buildConfidentialDocumentList(LA_USER))
+            .furtherEvidenceDocumentsLA(buildConfidentialDocumentList(LA_USER))
             .build();
     }
 
@@ -99,7 +98,8 @@ public class FurtherEvidenceUploadedEventTestData {
             createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2));
     }
 
-    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialNonPDFDocumentList(final String uploadedBy) {
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialNonPDFDocumentList(
+        final String uploadedBy) {
         return wrapElements(
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, NON_PDF_DOCUMENT_1));
     }
