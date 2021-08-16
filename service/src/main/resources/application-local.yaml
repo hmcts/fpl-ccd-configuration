@@ -118,6 +118,11 @@ robotics:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics@gmail.com
 
+translation:
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+translation@gmail.com
+
 scheduler:
   enabled: false
 

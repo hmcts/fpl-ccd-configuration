@@ -102,6 +102,11 @@ robotics:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics-test@gmail.com
 
+translation:
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+translation@gmail.com
+
 security:
   anonymousPaths:
   authorisedServices:

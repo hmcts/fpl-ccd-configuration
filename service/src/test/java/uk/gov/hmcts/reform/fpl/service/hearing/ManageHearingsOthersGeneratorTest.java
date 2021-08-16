@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
 class ManageHearingsOthersGeneratorTest {
-    private static final Other OTHER = Other.builder().build();
+    private static final Other OTHER = Other.builder().name("John").build();
     private static final String OTHER_LABEL = "Other label";
     private static final Selector OTHER_SELECTOR = Selector.builder().build();
 
