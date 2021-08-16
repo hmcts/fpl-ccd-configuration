@@ -21,24 +21,46 @@ class OthersTest {
     void shouldReturnDefaultOthersWhenListOfOthersIsEmpty() {
         final List<Element<Other>> othersList = emptyList();
         final Others actualOthers = Others.from(othersList);
+        assertThat(actualOthers).isNull();
+    }
+
+    @Test
+    void shouldReturnDefaultOthersWhenListOfOthersIsNull() {
+        assertThat(Others.from(null)).isNull();
+    }
+
+    @Test
+    void shouldReturnOthersWithAdditionalOthersWhenFirstOtherIsEmpty() {
+        Other firstOther = Other.builder().build();
+        final List<Element<Other>> othersList = wrapElements(firstOther, testOther());
+        final Others actualOthers = Others.from(othersList);
         final Others expectedOthers = Others.builder()
-            .firstOther(null)
-            .additionalOthers(emptyList())
+            .firstOther(othersList.get(1).getValue())
+            .additionalOthers(List.of())
             .build();
 
         assertThat(actualOthers).isEqualTo(expectedOthers);
     }
 
     @Test
-    void shouldReturnDefaultOthersWhenListOfOthersIsNull() {
-        final List<Element<Other>> othersList = null;
+    void shouldIgnoreEmptyOthersWhenOtherDetailsAreNotPresent() {
+        Other firstOther = testOther();
+        final List<Element<Other>> othersList = wrapElements(firstOther, Other.builder().build());
         final Others actualOthers = Others.from(othersList);
         final Others expectedOthers = Others.builder()
-            .firstOther(null)
-            .additionalOthers(emptyList())
+            .firstOther(firstOther)
+            .additionalOthers(List.of())
             .build();
 
         assertThat(actualOthers).isEqualTo(expectedOthers);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenFirstOtherAndAdditionalOtherAreEmpty() {
+        final List<Element<Other>> othersList = wrapElements(null, Other.builder().build());
+        final Others actualOthers = Others.from(othersList);
+
+        assertThat(actualOthers).isNull();
     }
 
     @Test
@@ -116,6 +138,21 @@ class OthersTest {
             .build();
 
         assertTrue(others.hasOthers());
+    }
+
+    @Test
+    void shouldReturnTrueWhenFirstOtherIsEmptyAndAdditionalOthersExist() {
+        Others others = Others.builder().firstOther(Other.builder().build())
+            .additionalOthers(wrapElements(Other.builder().name("some name").build())).build();
+
+        assertTrue(others.hasOthers());
+    }
+
+    @Test
+    void shouldReturnFalseWhenFirstOtherIsEmpty() {
+        Others others = Others.builder().firstOther(Other.builder().build()).build();
+
+        assertFalse(others.hasOthers());
     }
 
     @Test
