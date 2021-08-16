@@ -1,7 +1,9 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
+const draftOrdersHelper = require('../helpers/cmo_helper');
 const caseData = require('../fixtures/caseData/caseWithAllTypesOfOrders.json');
 const caseDataGatekeeping = require('../fixtures/caseData/gatekeepingFullDetails.json');
+const caseDataCaseManagement = require('../fixtures/caseData/prepareForHearing.json');
 const caseView = require('../pages/caseView.page.js');
 const closedCaseData = {
   state: 'CLOSED',
@@ -19,53 +21,71 @@ const caseDataGatekeepingWithLanguage = {
   },
 };
 
+const caseDataCaseManagementWithLanguage = {
+  state: 'PREPARE_FOR_HEARING',
+  caseData: {
+    ...caseDataCaseManagement.caseData,
+    languageRequirement: 'Yes',
+  },
+};
+
 // most file names are overridden to the below values in api_helper
 const orders = {
+  draftOrder: {
+    title: 'draft order 1',
+    file: config.testWordFile,
+    originalFile: 'mockFile.pdf',
+    translationFile: 'mockFile-Welsh.pdf',
+    name: `draft order 1 - ${dateFormat('d mmmm yyyy')}`,
+    translation: 'ENGLISH_TO_WELSH',
+    tabName: caseView.tabs.orders,
+    tabObjectName: 'Order 1',
+  },
   generated: {
     name: 'C32 - Care order - 7 July 2021',
-    file: 'C32 - Care order.pdf',
+    originalFile: 'C32 - Care order.pdf',
     translationFile: 'C32 - Care order-Welsh.pdf',
     tabName: caseView.tabs.orders,
     tabObjectName: 'Order 4',
   },
   uploadedOrder: {
     name: `Order F789s - ${dateFormat('d mmmm yyyy')}`,
-    file: 'other_order.pdf',
+    originalFile: 'other_order.pdf',
     translationFile: 'other_order-Welsh.pdf',
     tabName: caseView.tabs.orders,
     tabObjectName: 'Order 1',
   },
   standardDirectionOrder: {
     name: `Gatekeeping order - ${dateFormat('d mmmm yyyy')}`,
-    file: 'sdo.pdf',
+    originalFile: 'sdo.pdf',
     translationFile: 'sdo-Welsh.pdf',
     tabName: caseView.tabs.orders,
     tabObjectName: 'Gatekeeping order',
   },
   urgentHearingOrder: {
     name: `Urgent hearing order - ${dateFormat('d mmmm yyyy')}`,
-    file: 'uho.pdf',
+    originalFile: 'uho.pdf',
     translationFile: 'uho-Welsh.pdf',
     tabName: caseView.tabs.orders,
     tabObjectName: 'Gatekeeping order - urgent hearing order',
   },
   caseManagementOrder: {
-    name: 'Sealed case management order issued on 6 July 2021',
-    file: 'cmo6.pdf',
-    translationFile: 'cmo6-Welsh.pdf',
+    name: `Sealed case management order issued on ${dateFormat('d mmmm yyyy')}`,
+    originalFile: 'mockFile.pdf',
+    translationFile: 'mockFile-Welsh.pdf',
     tabName: caseView.tabs.orders,
     tabObjectName: 'Sealed Case Management Order 1',
   },
   noticeOfProceedingsC6: {
     name: 'Notice of proceedings (C6)',
-    file: 'blah_c6.pdf',
+    originalFile: 'blah_c6.pdf',
     translationFile: 'blah_c6-Welsh.pdf',
     tabName: caseView.tabs.hearings,
     tabObjectName: 'Notice of proceedings 1',
   },
   noticeOfProceedingsC6A: {
     name: 'Notice of proceedings (C6A)',
-    file: 'blah_c6a.pdf',
+    originalFile: 'blah_c6a.pdf',
     translationFile: 'blah_c6a-Welsh.pdf',
     tabName: caseView.tabs.hearings,
     tabObjectName: 'Notice of proceedings 2',
@@ -191,8 +211,34 @@ Scenario('Request and upload translation for urgent hearing order', async ({ I, 
   assertTranslation(I, caseViewPage, orders.urgentHearingOrder);
 });
 
-Scenario('Upload translation for case management order', async ({ I, caseViewPage, uploadWelshTranslationsPage }) => {
-  await setupScenario(I);
+Scenario('Request and upload translation for case management order', async ({ I, caseViewPage, uploadWelshTranslationsPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage }) => {
+  const hearing1 = 'Case management hearing, 1 January 2020';
+
+  let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
+  // Local authority upload and request translation
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, orders.draftOrder,'ENGLISH_TO_WELSH');
+
+  // Judge approves and send to translation
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
+  I.see('mockFile.docx');
+  await reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
+  reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
+
+  assertSentToTranslation(I, caseViewPage, orders.draftOrder);
+  assertSentToTranslation(I, caseViewPage, orders.caseManagementOrder);
+
+  // Upload the translated orders
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+
+  await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.draftOrder);
+  assertTranslation(I, caseViewPage, orders.draftOrder);
+
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.caseManagementOrder);
   assertTranslation(I, caseViewPage, orders.caseManagementOrder);
 });
@@ -207,7 +253,7 @@ async function translateOrder(I, caseViewPage, uploadWelshTranslationsPage, item
   await caseViewPage.goToNewActions(config.administrationActions.uploadWelshTranslations);
   uploadWelshTranslationsPage.selectItemToTranslate(item.name);
   await I.goToNextPage();
-  uploadWelshTranslationsPage.reviewItemToTranslate(item.file);
+  uploadWelshTranslationsPage.reviewItemToTranslate(item.originalFile);
   uploadWelshTranslationsPage.uploadTranslatedItem(config.testPdfFile);
   await I.runAccessibilityTest();
   await I.completeEvent('Save and continue');

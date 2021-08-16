@@ -1,14 +1,14 @@
 const config = require('../config');
 
-const localAuthoritySendsAgreedCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s) => {
-  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, () => {
+const localAuthoritySendsAgreedCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, cmoTranslation=null) => {
+  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, cmoTranslation, () => {
     uploadCMOEventPage.selectAgreedCMO();
     uploadCMOEventPage.selectPastHearing(hearing);
   });
 };
 
-const localAuthorityUploadsDraftCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s) => {
-  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, () => {
+const localAuthorityUploadsDraftCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, cmoTranslation=null) => {
+  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, cmoTranslation, () => {
     uploadCMOEventPage.selectDraftCMO();
     uploadCMOEventPage.selectFutureHearing(hearing);
   });
@@ -31,7 +31,7 @@ const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, upload
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 };
 
-const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, selectHearing) => {
+const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, cmoTranslation=null, selectHearing) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
 
   I.waitForElement(uploadCMOEventPage.fields.cmoDraftOrder);
@@ -51,11 +51,17 @@ const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportin
     await uploadCMOEventPage.attachSupportingDocs(supportingDocs);
   }
   await I.goToNextPage();
-  if(c21s) {
+  if (c21s) {
     await uploadCMOEventPage.attachC21({name: c21s.title, file: c21s.file, orderNumber: c21s.number});
     await I.goToNextPage();
   }
   uploadCMOEventPage.reviewInfo('mockFile.docx', 'Her Honour Judge Reed');
+  if (cmoTranslation) {
+    uploadCMOEventPage.requestTranslationForCmo(cmoTranslation);
+  }
+  if (c21s && c21s.translation) {
+    uploadCMOEventPage.requestTranslationForC21(c21s.translation);
+  }
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
 };
