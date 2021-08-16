@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.Collection;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -123,7 +124,7 @@ public class SendNoticeOfHearingHandler {
         List<Other> others = unwrapElements(hearingBooking.getOthers());
 
         others.forEach(other -> {
-            if (!other.isRepresented() && !other.hasAddressAdded()) {
+            if (!other.isRepresented() && !other.hasAddressAdded() && isNotEmpty(other.getName())) {
                 NotifyData notifyData =
                     noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
                         caseData, event.getSelectedHearing(), other);
