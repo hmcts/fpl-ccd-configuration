@@ -4,15 +4,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
+import org.springframework.stereotype.Component;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+@Component
 public class DocmosisHelper {
-
-    private DocmosisHelper() {
-    }
 
     private static final float POINTS_PER_INCH = 72;
     private static final float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
@@ -20,7 +19,7 @@ public class DocmosisHelper {
     private static final int FOOTER_HEIGHT_IN_POINTS = Math.round(POINTS_PER_MM * FOOTER_HEIGHT_IN_MM);
     private static final String DATA_REGION = "dataRegion";
 
-    public static String extractPdfContent(byte[] binaries) {
+    public String extractPdfContent(byte[] binaries) {
 
         try (final PDDocument pdf = PDDocument.load(binaries)) {
 
@@ -49,7 +48,7 @@ public class DocmosisHelper {
         }
     }
 
-    public static String remove(String text, String... ignores) {
+    public String remove(String text, String... ignores) {
         String updatedText = text;
         for (String ignore : ignores) {
             updatedText = updatedText.replaceAll(ignore, "");

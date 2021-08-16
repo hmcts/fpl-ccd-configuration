@@ -20,6 +20,8 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 @WebMvcTest(OthersController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -46,6 +48,44 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseData.getOthers().getFirstOther()).isEqualTo(otherWithDetailsRemoved());
         assertThat(caseData.getOthers().getAdditionalOthers()).isEqualTo(additionalOthers());
         assertThat(unwrapElements(caseData.getConfidentialOthers())).containsOnly(confidentialOther());
+    }
+
+    @Test
+    void shouldNotSaveOtherWhenOtherPersonDetailsAreEmpty() {
+        Other firstOther = Other.builder().build();
+        Other additionalOther1 = Other.builder().name("Additional Other1").address(testAddress()).build();
+        Other additionalOther2 = Other.builder().name("Additional Other2").build();
+        List<Element<Other>> additionalOthers = wrapElements(additionalOther1, additionalOther2);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("others", Others.builder()
+                .firstOther(firstOther)
+                .additionalOthers(additionalOthers)
+                .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(additionalOther1);
+        assertThat(caseData.getOthers().getAdditionalOthers()).hasSize(1)
+            .containsOnly(additionalOthers.get(1));
+    }
+
+    @Test
+    void shouldNotSaveOtherWhenAllOtherElementsAreNullOrEmpty() {
+        Other firstOther = Other.builder().build();
+        List<Element<Other>> additionalOthers = wrapElements(null, Other.builder().build());
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("others", Others.builder()
+                .firstOther(firstOther)
+                .additionalOthers(additionalOthers)
+                .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        assertThat(response.getData()).doesNotContainKey("others");
     }
 
     private Other other() {

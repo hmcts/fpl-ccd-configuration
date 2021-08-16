@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_DOCUMENTS_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_MISSING_ANNEX;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_RESPONSE_TO_THRESHOLD_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class GatekeepingOrderEventDataTest {
@@ -76,5 +77,14 @@ class GatekeepingOrderEventDataTest {
 
         assertThat(underTest.resetStandardDirections()).isEmpty();
         assertThat(underTest.getStandardDirections()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnLanguageRequirements() {
+        final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
+            .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
+            .build();
+
+        assertThat(underTest.getGatekeepingTranslationRequirements()).isEqualTo(ENGLISH_TO_WELSH);
     }
 }

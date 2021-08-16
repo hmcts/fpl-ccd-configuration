@@ -16,15 +16,14 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.extractPdfContent;
-import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.remove;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 @ContextConfiguration(classes = {
     TranslationRequestFormCreationService.class,
-    DocmosisDocumentGeneratorService.class
+    DocmosisDocumentGeneratorService.class,
+    DocmosisHelper.class
 })
 
 public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractDocmosisTest {
@@ -35,9 +34,12 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
     private static final String CONTACT_INFORMATION = "contactfpl@justice.gov.uk";
     private static final String FAMILY_MAN_CASE_NUMBER = "FamilyManCaseNumber123";
     private static final LocalDate FIXED_DATE = LocalDate.of(2021, 7, 28);
-    private static final int WORD_COUNT = 2034;
+    private static final long WORD_COUNT = 2034;
     private final byte[] pdf = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     private final DocmosisDocument orderDocumentToTranslate = new DocmosisDocument("example.pdf", pdf);
+
+    @Autowired
+    private DocmosisHelper docmosisHelper;
 
     @Autowired
     private TranslationRequestFormCreationService underTest;
@@ -84,7 +86,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
         generateWordDocument(request, generatedContentOutputFile);
 
-        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+        assertThat(docmosisHelper.remove(docmosisHelper.extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
@@ -106,7 +108,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
         generateWordDocument(request, generatedContentOutputFile);
 
-        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+        assertThat(docmosisHelper.remove(docmosisHelper.extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
@@ -128,7 +130,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
         generateWordDocument(request, generatedContentOutputFile);
 
-        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+        assertThat(docmosisHelper.remove(docmosisHelper.extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
@@ -150,13 +152,13 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
 
         generateWordDocument(request, generatedContentOutputFile);
 
-        assertThat(remove(extractPdfContent(docmosisDocumentPDF.getBytes())))
+        assertThat(docmosisHelper.remove(docmosisHelper.extractPdfContent(docmosisDocumentPDF.getBytes())))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
     private void assertActualOutputMatchesTestFile(DocmosisTranslationRequest request,
                                                    String expectedContentFileLocation) {
-        assertThat(remove(extractPdfContent(getDocmosisDocumentPDFBytes(request))))
+        assertThat(docmosisHelper.remove(docmosisHelper.extractPdfContent(getDocmosisDocumentPDFBytes(request))))
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
