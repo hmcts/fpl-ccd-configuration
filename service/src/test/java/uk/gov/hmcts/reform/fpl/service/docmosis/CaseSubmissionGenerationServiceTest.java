@@ -1193,6 +1193,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
+                        .name("John")
                         .build())
                     .build())
                 .build();
@@ -1208,6 +1209,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
+                        .name("test")
                         .dateOfBirth("")
                         .build())
                     .build())
