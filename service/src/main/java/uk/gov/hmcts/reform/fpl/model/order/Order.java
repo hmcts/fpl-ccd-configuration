@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAF
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCOMMODATION_ORDER_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -493,7 +494,8 @@ public enum Order {
             NEED_SEALING,
             REVIEW_DRAFT_ORDER,
             CLOSE_CASE,
-            WHICH_OTHERS
+            WHICH_OTHERS,
+            TRANSLATION_REQUIREMENTS
         );
     }
 }

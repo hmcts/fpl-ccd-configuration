@@ -28,7 +28,12 @@ public class ManageOrdersEventBuilder {
 
         if (!isAmendedOrder(currentOrders, oldOrders)) {
             GeneratedOrder lastGeneratedOrder = historyService.lastGeneratedOrder(caseData);
-            return new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument());
+            return new GeneratedOrderEvent(
+                caseData,
+                lastGeneratedOrder.getDocument(),
+                lastGeneratedOrder.getTranslationRequirements(),
+                lastGeneratedOrder.asLabel()
+            );
         }
 
         return finders.stream()

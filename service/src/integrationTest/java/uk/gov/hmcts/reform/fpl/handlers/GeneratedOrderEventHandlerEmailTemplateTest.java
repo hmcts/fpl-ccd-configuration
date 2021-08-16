@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -29,9 +30,11 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTit
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderLanguageRequirementGenerator;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -58,6 +61,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     // All but the feature toggle service are only mocked because they are dependencies that aren't used
     @MockBean(ChildrenService.class), @MockBean(IdentityService.class), @MockBean(OrderCreationService.class),
     @MockBean(SendDocumentService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(SealedOrderLanguageRequirementGenerator.class),
+    @MockBean(TranslationRequestService.class),
     @MockBean(SealedOrderHistoryTypeGenerator.class), @MockBean(SealedOrderHistoryFinalMarker.class),
     @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(AppointedGuardianFormatter.class),
     @MockBean(OthersService.class), @MockBean(OthersNotifiedGenerator.class), @MockBean(OtherRecipientsInbox.class)
@@ -87,6 +92,9 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .build()))
         .orderCollection(wrapElements(ORDER))
         .build();
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+    private static final String ORDER_TITLE = "orderTitle";
 
     @Autowired
     private GeneratedOrderEventHandler underTest;
@@ -100,7 +108,8 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void notifyParties() {
-        underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA, ORDER_DOCUMENT));
+        underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA, ORDER_DOCUMENT, TRANSLATION_REQUIREMENT,
+            ORDER_TITLE));
 
         SendEmailResponse adminResponse = response();
         SendEmailResponse laResponse = response();
