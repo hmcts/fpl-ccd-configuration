@@ -284,6 +284,10 @@ public class ManageHearingsService {
                 NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
 
             hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+
+            Optional.ofNullable(caseData.getSendNoticeOfHearingTranslationRequirements()).ifPresent(
+                hearingBooking::setTranslationRequirements
+            );
         }
     }
 
@@ -331,6 +335,7 @@ public class ManageHearingsService {
             HEARING_START_DATE,
             HEARING_END_DATE,
             "sendNoticeOfHearing",
+            "sendNoticeOfHearingTranslationRequirements",
             "judgeAndLegalAdvisor",
             "noticeOfHearingNotes",
             "previousHearingVenue",

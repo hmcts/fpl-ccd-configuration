@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -824,7 +825,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
-            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+                defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
             .flatMap(Collection::stream).collect(toList());
     }
 
@@ -938,6 +939,7 @@ public class CaseData {
     @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
+    private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
     private final HearingOptions hearingOption;
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
@@ -1002,7 +1004,7 @@ public class CaseData {
     @Builder.Default
     private final NoticeOfChangeChildAnswersData noticeOfChangeChildAnswersData =
         NoticeOfChangeChildAnswersData.builder()
-        .build();
+            .build();
 
     @JsonUnwrapped
     @Builder.Default
