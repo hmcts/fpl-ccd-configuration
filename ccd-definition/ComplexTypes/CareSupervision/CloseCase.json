@@ -7,5 +7,41 @@
     "ElementLabel": "Date",
     "HintText": "For example, 31 3 1980",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "ListElementCode": "showFullReason",
+    "ElementLabel": " ",
+    "FieldType": "Text",
+    "FieldShowCondition": "date=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "ListElementCode": "fullReason",
+    "FieldType": "Text",
+    "ElementLabel": "Reason",
+    "FieldShowCondition": "showFullReason!=\"NO\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "ListElementCode": "partialReason",
+    "FieldType": "Text",
+    "ElementLabel": "Reason",
+    "FieldShowCondition": "showFullReason!=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "ListElementCode": "details",
+    "FieldType": "TextArea",
+    "ElementLabel": "Closure details",
+    "FieldShowCondition": "fullReason=\"OTHER\" OR partialReason=\"OTHER\"",
+    "SecurityClassification": "Public"
   }
 ]
