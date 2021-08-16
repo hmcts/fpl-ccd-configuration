@@ -59,6 +59,8 @@ java:
         - system-update-user-password
         - robotics-notification-sender
         - robotics-notification-recipient
+        - translation-notification-sender
+        - translation-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox

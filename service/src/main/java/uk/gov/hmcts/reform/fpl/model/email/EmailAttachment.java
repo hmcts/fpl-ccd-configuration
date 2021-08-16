@@ -14,6 +14,10 @@ public class EmailAttachment {
         return create("application/json", content, fileName);
     }
 
+    public static EmailAttachment document(String contentType, final byte[] content, final String fileName) {
+        return create(contentType, content, fileName);
+    }
+
     private static EmailAttachment create(final String contentType, final byte[] content, final String filename) {
         return new EmailAttachment(new ByteArrayResource(content), contentType, filename);
     }

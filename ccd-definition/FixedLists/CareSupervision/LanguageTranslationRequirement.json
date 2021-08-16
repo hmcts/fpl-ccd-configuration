@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LanguageTranslationRequirement",
+    "ListElementCode": "NO",
+    "ListElement": "No",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LanguageTranslationRequirement",
+    "ListElementCode": "ENGLISH_TO_WELSH",
+    "ListElement": "Yes - English to Welsh",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LanguageTranslationRequirement",
+    "ListElementCode": "WELSH_TO_ENGLISH",
+    "ListElement": "Yes - Welsh to English",
+    "DisplayOrder": 3
+  }
+]
