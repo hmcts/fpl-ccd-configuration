@@ -78,6 +78,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersAmendmentList",
             "manageOrdersOrderToAmend",
             "manageOrdersAmendedOrder",
+            "manageOrdersTranslationNeeded",
             "manageOrdersRelationshipWithChild"
         );
     }

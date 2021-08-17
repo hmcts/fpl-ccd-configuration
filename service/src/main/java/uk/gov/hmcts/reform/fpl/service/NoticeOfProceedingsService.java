@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.noticeofproceedings.NoticeOfProceedingsLanguageFactory;
 
 import java.time.format.FormatStyle;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class NoticeOfProceedingsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
+    private final NoticeOfProceedingsLanguageFactory noticeOfProceedingsLanguageFactory;
 
     public Map<String, Object> initNoticeOfProceeding(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
@@ -81,7 +83,7 @@ public class NoticeOfProceedingsService {
 
         List<Document> documentReferences = uploadDocuments(noticeOfProceedingDocuments);
 
-        return createNoticeOfProceedingDocumentBundle(documentReferences);
+        return createNoticeOfProceedingDocumentBundle(documentReferences, caseData);
     }
 
     public List<Element<DocumentBundle>> prepareNoticeOfProceedingBundle(
@@ -105,7 +107,7 @@ public class NoticeOfProceedingsService {
     }
 
     private List<DocmosisDocument> buildNoticeOfProceedingDocuments(DocmosisNoticeOfProceeding templateData,
-                                                                   List<DocmosisTemplates> templateTypes) {
+                                                                    List<DocmosisTemplates> templateTypes) {
         return templateTypes.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, template))
             .collect(Collectors.toList());
@@ -117,7 +119,8 @@ public class NoticeOfProceedingsService {
             .collect(Collectors.toList());
     }
 
-    private List<Element<DocumentBundle>> createNoticeOfProceedingDocumentBundle(List<Document> uploadedDocuments) {
+    private List<Element<DocumentBundle>> createNoticeOfProceedingDocumentBundle(List<Document> uploadedDocuments,
+                                                                                 CaseData caseData) {
         return uploadedDocuments.stream()
             .map(document -> Element.<DocumentBundle>builder()
                 .id(UUID.randomUUID())
@@ -127,6 +130,7 @@ public class NoticeOfProceedingsService {
                         .url(document.links.self.href)
                         .binaryUrl(document.links.binary.href)
                         .build())
+                    .translationRequirements(noticeOfProceedingsLanguageFactory.calculate(caseData))
                     .build())
                 .build())
             .collect(Collectors.toList());

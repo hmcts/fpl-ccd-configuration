@@ -40,7 +40,7 @@ class OthersCheckerIsStartedTest {
     @Test
     void shouldReturnTrueWhenMoreThanOneOthersProvided() {
         final Others others = Others.builder()
-                .firstOther(Other.builder().build())
+                .firstOther(Other.builder().name("test").build())
                 .additionalOthers(ElementUtils.wrapElements(Other.builder().build()))
                 .build();
         final CaseData caseData = CaseData.builder()
