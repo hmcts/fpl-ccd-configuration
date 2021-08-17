@@ -91,7 +91,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldPublishEventWithSolUserWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
+    void shouldPublishEventWithSolicitorWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))

@@ -51,8 +51,8 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
     private static final UUID REPRESENTATIVE_UUID = UUID.randomUUID();
-    private static final CaseData caseData = buildCaseData();
-    private static final CaseData caseDataBefore = buildCaseDataBefore();
+    private static final CaseData CASE_DATA = buildCaseData();
+    private static final CaseData CASE_DATA_BEFORE = buildCaseDataBefore();
 
     @Autowired
     private FurtherEvidenceUploadedEventHandler underTest;
@@ -72,7 +72,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, LOCAL_AUTHORITY,
+            CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
@@ -100,7 +100,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, LOCAL_AUTHORITY,
+            CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
