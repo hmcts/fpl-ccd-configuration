@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C29RecoveryOfAChildDocmos
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -64,29 +66,35 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
             .orderTitle(Order.C29_RECOVERY_OF_A_CHILD.getTitle())
             .dateOfIssue(orderMadeDate)
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
-            .orderDetails(getOrderDetails(eventData, selectedChildren.size(), localAuthorityName, orderMadeDate))
+            .orderDetails(getOrderDetails(eventData, selectedChildren.size(), orderMadeDate, localAuthorityName))
             .localAuthorityName(localAuthorityName)
             .orderHeader(getOrderHeader())
             .orderMessage(getOrderMessage())
             .build();
     }
 
-    private String getOrderDetails(ManageOrdersEventData eventData, int numOfChildren, String caseLocalAuthority, String orderMadeDate) {
+    private String getOrderDetails(ManageOrdersEventData eventData, int numOfChildren,
+                                   String orderMadeDate, String localAuthorityName) {
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
         String officerReference = getOfficerReferenceMessage(eventData);
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.ENTRY)){
-            stringBuilder.append(getEntryMessage(officerReference, getAddress(eventData), childOrChildren));
+        stringBuilder.append(getStandardMessage(localAuthorityName, childOrChildren, orderMadeDate));
+
+        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.ENTRY)) {
+            displayAddress = true;
+            stringBuilder.append(getEntryMessage(officerReference,
+                formatAddress(eventData.getManageOrdersActionsPermittedAddress()),
+                childOrChildren));
         }
-        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.INFORM)){
+        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.INFORM)) {
             stringBuilder.append(getInformMessage(officerReference));
         }
-        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.PRODUCE)){
+        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.PRODUCE)) {
             stringBuilder.append(getProduceMessage(officerReference));
         }
-        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.REMOVE)){
+        if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.REMOVE)) {
             stringBuilder.append(getRemoveMessage(officerReference));
             displayWarningMessage = true;
             getOrderMessage();
@@ -98,8 +106,18 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
         return stringBuilder.toString();
     }
 
+    private String getStandardMessage(String localAuthorityName, String childOrChildren, String orderMadeDate) {
+        return format("The Court is satisfied that %s "
+                + "has parental responsibility for the %s "
+                + "by virtue of a [Care Order / Emergency Protection Order] "
+                + "made on %s.%s",
+            localAuthorityName,
+            childOrChildren,
+            orderMadeDate,
+            paragraphBreak);
+    }
+
     private String getEntryMessage(String officerReference, String address, String childOrChildren) {
-        displayAddress = true;
         return format("The court authorises %s to enter "
                 + "the premises known as %s, and search for the %s, using reasonable force if necessary.%s",
             officerReference, address, childOrChildren, paragraphBreak);
@@ -121,9 +139,9 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
     }
 
     private String getIsExparteMessage(ManageOrdersEventData eventData) {
-        return eventData.getManageOrdersIsExParte().equals("Yes") ?
-            format("This order has been made exparte.", paragraphBreak) :
-            format("This order has not been made exparte.", paragraphBreak);
+        return eventData.getManageOrdersIsExParte().equals("Yes")
+            ? format("This order has been made exparte.", paragraphBreak)
+            : format("This order has not been made exparte.", paragraphBreak);
     }
 
     private String getOrderMessage() {
@@ -135,11 +153,13 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
     }
 
     private String getOfficerReferenceMessage(ManageOrdersEventData eventData) {
-        return isNull(eventData.getManageOrdersOfficerName()) ?
-            "a police constable" : eventData.getManageOrdersOfficerName();
+        return isNull(eventData.getManageOrdersOfficerName())
+            ? "a police constable"
+            : eventData.getManageOrdersOfficerName();
     }
 
-    private String getAddress(ManageOrdersEventData eventData) {
-        return eventData.getManageOrdersActionsPermittedAddress().getAddressAsString(", ");
+    private String formatAddress(Address removalAddress) {
+        return Optional.ofNullable(removalAddress)
+            .map(address -> address.getAddressAsString(", ")).orElse("");
     }
 }

@@ -21,6 +21,7 @@ public class OrderValidatorHolder {
     private final EPOEndDateValidator epoEndDateValidator;
     private final ManageOrderEndDateWithMonthValidator manageOrderEndDateWithMonthValidator;
     private final ManageOrderEndDateWithEndOfProceedingsValidator manageOrderEndDateWithEndOfProceedingsValidator;
+    private final OrderMadeDateValidator orderMadeDateValidator;
 
     private Map<OrderQuestionBlock, QuestionBlockOrderValidator> blockToValidator;
 
@@ -35,7 +36,8 @@ public class OrderValidatorHolder {
             dischargeOfCareDateValidator,
             epoEndDateValidator,
             manageOrderEndDateWithMonthValidator,
-            manageOrderEndDateWithEndOfProceedingsValidator
+            manageOrderEndDateWithEndOfProceedingsValidator,
+            orderMadeDateValidator
         ).stream().collect(Collectors.toMap(QuestionBlockOrderValidator::accept, Function.identity()));
 
         return blockToValidator;
