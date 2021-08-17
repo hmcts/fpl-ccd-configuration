@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -46,7 +47,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     RegisteredRepresentativeSolicitorContentProvider.class, CaseUrlService.class, CafcassEmailContentProvider.class,
     HmctsEmailContentProvider.class, EmailNotificationHelper.class
 })
-@MockBeans({@MockBean(PaymentService.class), @MockBean(EventService.class)})
+@MockBeans(value = {
+    @MockBean(PaymentService.class),
+    @MockBean(EventService.class),
+    @MockBean(TranslationRequestService.class)
+})
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_LAST_NAME = "Watson";
@@ -103,14 +108,14 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("CCD case number: 123")
                 .line()
                 .line("Your organisation’s case access administrator should now assign the case "
-                      + "to the relevant person.")
+                    + "to the relevant person.")
                 .line()
                 .line("They can view the application at https://manage-org.platform.hmcts.net")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, "
-                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
     }
 
@@ -169,7 +174,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, "
-                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
     }
 }
