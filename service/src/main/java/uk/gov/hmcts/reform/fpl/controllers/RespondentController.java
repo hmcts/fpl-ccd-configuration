@@ -110,7 +110,7 @@ public class RespondentController extends CallbackController {
 
         if (!OPEN.equals(caseData.getState())) {
             noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore, Representing.RESPONDENT);
-            representableCounselUpdater.buildEventsForAccessRemoval(caseData, caseDataBefore, Representing.CHILD)
+            representableCounselUpdater.buildEventsForAccessRemoval(caseData, caseDataBefore, Representing.RESPONDENT)
                 .forEach(this::publishEvent);
             publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));

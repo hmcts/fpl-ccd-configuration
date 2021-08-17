@@ -66,34 +66,29 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
   legalCounselAdded = true;
 });
 
-//TODO - remove legal counsel - on add or remove legal counsel event - do it last - optional
-
-Scenario('Legal counsel to be remove when respondent representative is removed', async ({ I, caseViewPage, enterRespondentsEventPage }) => {
+Scenario('Legal counsel to be removed when respondent representative is removed through NoC', async ({ I, caseViewPage, noticeOfChangePage }) => {
   checkLegalCounselWasAdded();
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
 
-  await enterRespondentsEventPage.enterRepresentationDetails('No', {}, 0);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
+  await I.signIn(solicitor2);
+  await performNoC(I, caseViewPage, noticeOfChangePage, 'Swansea City Council', 'Joe', 'Bloggs', 'Respondents 1', solicitor2);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.dontSeeInTab(['Respondents 1', 'Legal Counsellor']);
+
+  // assert that it has just been removed from respondent and not child
+  I.seeInTab(['Child 1', 'Legal Counsellor']);
 });
 
-Scenario('Legal counsel to be remove when child representative is updated', async ({ I, caseViewPage, enterChildrenEventPage }) => {
+Scenario('Legal counsel to be removed when child representative is updated', async ({ I, caseViewPage, enterChildrenEventPage }) => {
   checkLegalCounselWasAdded();
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor2);
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
+
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertChild(I, solicitor2);
-
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.dontSeeInTab(['Child 1', 'Legal Counsellor']);
 });
-
-//TODO - assign a different solicitor using notice of change - NoC scenario in story
 
 function checkLegalCounselWasAdded() {
   if (!legalCounselAdded) {

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
 
@@ -24,10 +25,10 @@ public class RepresentableLegalCounselUpdaterTest {
     private final LegalCounsellor testLegalCounsellor = mock(LegalCounsellor.class);
 
     private final OrganisationService orgService = mock(OrganisationService.class);
-    private final ManageLegalCounselService manageService = mock(ManageLegalCounselService.class);
+    private final UserService user = mock(UserService.class);
 
     private final RepresentableLegalCounselUpdater underTest = new RepresentableLegalCounselUpdater(
-        orgService, manageService
+        orgService, user
     );
 
     @BeforeEach

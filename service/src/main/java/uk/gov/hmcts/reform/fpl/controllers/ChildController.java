@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
@@ -122,27 +120,21 @@ public class ChildController extends CallbackController {
 
         caseData = getCaseData(caseDetails);
 
-        List<Element<Child>> updatedChildren = representableCounselUpdater.updateLegalCounsel(
-            caseDataBefore.getAllChildren(), caseData.getAllChildren(), caseData.getAllRespondents()
+        // Confidential details may not update the caseDetails map. It only updates if there are confidential details,
+        // so we need to update the map beforehand
+        caseDetails.getData().put(
+            "children1", representableCounselUpdater.updateLegalCounsel(
+                caseDataBefore.getAllChildren(), caseData.getAllChildren(), caseData.getAllRespondents()
+            )
         );
 
-        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, updatedChildren, CHILD);
+        confidentialDetailsService.addConfidentialDetailsToCase(
+            caseDetails, getCaseData(caseDetails).getAllChildren(), CHILD
+        );
 
         removeTemporaryFields(caseDetails, caseData.getChildrenEventData().getTransientFields());
 
         return respond(caseDetails);
-    }
-
-    private boolean shouldUpdateRepresentation(CaseData caseData) {
-        return !RESTRICTED_STATES.contains(caseData.getState()) && cafcassSolicitorHasBeenSet(caseData);
-    }
-
-    private boolean cafcassSolicitorHasBeenSet(CaseData caseData) {
-        return YES == fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
-    }
-
-    private boolean isNotFirstTimeRecordingSolicitor(CaseData caseData, CaseData caseDataBefore) {
-        return cafcassSolicitorHasBeenSet(caseDataBefore) && cafcassSolicitorHasBeenSet(caseData);
     }
 
     @PostMapping("/submitted")
@@ -160,5 +152,17 @@ public class ChildController extends CallbackController {
                 .forEach(this::publishEvent);
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
+    }
+
+    private boolean shouldUpdateRepresentation(CaseData caseData) {
+        return !RESTRICTED_STATES.contains(caseData.getState()) && cafcassSolicitorHasBeenSet(caseData);
+    }
+
+    private boolean cafcassSolicitorHasBeenSet(CaseData caseData) {
+        return YES == fromString(caseData.getChildrenEventData().getChildrenHaveRepresentation());
+    }
+
+    private boolean isNotFirstTimeRecordingSolicitor(CaseData caseData, CaseData caseDataBefore) {
+        return cafcassSolicitorHasBeenSet(caseDataBefore) && cafcassSolicitorHasBeenSet(caseData);
     }
 }
