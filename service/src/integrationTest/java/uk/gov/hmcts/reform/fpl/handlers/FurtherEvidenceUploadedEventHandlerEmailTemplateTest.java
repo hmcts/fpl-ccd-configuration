@@ -54,8 +54,8 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
     private static final UUID REPRESENTATIVE_UUID = UUID.randomUUID();
-    private static final CaseData caseData = buildCaseData();
-    private static final CaseData caseDataBefore = buildCaseDataBefore();
+    private static final CaseData CASE_DATA = buildCaseData();
+    private static final CaseData CASE_DATA_BEFORE = buildCaseDataBefore();
     private static final EmailContent EMAIL_CONTENT_DOC_NAMES = buildEmailContentDocumentNames();
     private static final EmailContent EMAIL_CONTENT_NO_DOC_NAMES = buildEmailContentNoDocumentNames();
 
@@ -72,12 +72,12 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private FeatureToggleService featureToggleService;
 
     @Test
-    void sendNotificationWhenFeatureToggleOffForLAUser() {
+    void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, LOCAL_AUTHORITY,
+            CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
@@ -87,12 +87,12 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     }
 
     @Test
-    void sendNotificationWhenFeatureToggleOffForSolicitorUser() {
+    void sendNotificationWhenNewDocumentUploadNotificationToggledOffForSolicitor() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, SOLICITOR,
+            CASE_DATA, CASE_DATA_BEFORE, SOLICITOR,
             UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
         ));
 
@@ -102,12 +102,12 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     }
 
     @Test
-    void sendNotificationWhenFeatureToggleOnForLAUser() {
+    void sendNotificationWhenNewDocumentUploadNotificationToggledOnForLA() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, LOCAL_AUTHORITY,
+            CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
@@ -117,12 +117,12 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     }
 
     @Test
-    void sendNotificationWhenFeatureToggleOnForSolicitor() {
+    void sendNotificationWhenNewDocumentUploadNotificationToggledOnForSolicitor() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            caseData, caseDataBefore, SOLICITOR,
+            CASE_DATA, CASE_DATA_BEFORE, SOLICITOR,
             UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
         ));
 
