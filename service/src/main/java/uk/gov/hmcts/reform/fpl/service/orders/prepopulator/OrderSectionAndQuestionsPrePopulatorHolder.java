@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHear
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.SingleChildSelectionBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.TranslationRequirementsBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOthersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
@@ -45,6 +46,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
     private final CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
+    private final TranslationRequirementsBlockPrePopulator translationRequirementsBlockPrePopulator;
     private final AppointedGuardianBlockPrePopulator appointedGuardianBlockPrePopulator;
     private final WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
     private final AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
@@ -75,6 +77,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator,
+            translationRequirementsBlockPrePopulator,
             appointedGuardianBlockPrePopulator,
             whichOthersBlockPrePopulator,
             amendOrderToDownloadPrePopulator,

@@ -32,7 +32,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -53,6 +53,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private final DocumentReference translatedDocument;
     private final DocumentReference unsealedDocumentCopy;
     private final LocalDateTime translationUploadDateTime;
+    private final LanguageTranslationRequirement translationRequirements;
     private final LocalDate amendedDate;
     private final String dateOfIssue;
     private final LocalDateTime dateTimeIssued;
@@ -115,15 +116,8 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     }
 
     @Override
-    @JsonIgnore
     public LanguageTranslationRequirement getTranslationRequirements() {
-        return ENGLISH_TO_WELSH;
-    }
-
-    @Override
-    @JsonIgnore
-    public YesNo getNeedTranslation() {
-        return YesNo.YES;
+        return defaultIfNull(translationRequirements, NO);
     }
 
     @Override

@@ -27,6 +27,7 @@ public class OrderTempQuestions {
     String furtherDirections;
     String orderDetails;
     String isFinalOrder;
+    String translationRequirements;
     String manageOrdersExpiryDateWithMonth;
     String manageOrdersExpiryDateWithEndOfProceedings;
     String manageOrdersExclusionRequirementDetails;
