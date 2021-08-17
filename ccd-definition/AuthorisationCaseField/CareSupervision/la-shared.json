@@ -170,6 +170,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "languageRequirementUrgent",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposal_label",
     "UserRole": "[LASHARED]",
     "CRUD": "R"
@@ -222,6 +229,13 @@
     "CaseFieldID": "courtBundle",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "standardDirectionsDocument",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -492,6 +506,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "people_label",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "confidentialChildren",
     "UserRole": "[LASHARED]",
     "CRUD": "R"
@@ -580,6 +601,7 @@
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
   },
+
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -1262,7 +1284,42 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "personSelector",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherApplicant",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "notifyApplicationsToAllOthers",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hasOthers",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hasRespondentsOrOthers",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "othersSelector",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
   },
@@ -1349,5 +1406,44 @@
     "CaseFieldID": "managingOrganisationName",
     "UserRole": "[LASHARED]",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "court",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASHARED]"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "multiCourts",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASHARED]"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtsList",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASHARED]"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
   }
 ]

@@ -44,6 +44,7 @@ public class TranslatableItemService {
             .map(provider -> provider.provideListItems(caseData))
             .flatMap(Collection::stream)
             .filter(item -> !item.getValue().hasBeenTranslated())
+            .filter(item -> item.getValue().getTranslationRequirements().isNeedAction())
             .collect(Collectors.toList());
 
         return listService.asDynamicList(

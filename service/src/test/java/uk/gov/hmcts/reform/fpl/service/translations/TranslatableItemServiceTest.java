@@ -28,6 +28,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
@@ -120,8 +123,10 @@ class TranslatableItemServiceTest {
                 List.of(element(UUID_ID_3, translatableItem3))
             );
             when(translatableItem1.hasBeenTranslated()).thenReturn(false);
+            when(translatableItem1.getTranslationRequirements()).thenReturn(ENGLISH_TO_WELSH);
             when(translatableItem2.hasBeenTranslated()).thenReturn(true);
             when(translatableItem3.hasBeenTranslated()).thenReturn(false);
+            when(translatableItem3.getTranslationRequirements()).thenReturn(WELSH_TO_ENGLISH);
             when(translatableItem1.asLabel()).thenReturn(ITEM_1_LABEL);
             when(translatableItem3.asLabel()).thenReturn(ITEM_3_LABEL);
 
@@ -135,6 +140,30 @@ class TranslatableItemServiceTest {
                     .code(UUID_ID_3)
                     .label(ITEM_3_LABEL)
                     .build())));
+        }
+
+        @Test
+        void returnNothingIfMultipleProvidersHasMultipleTranslatableItemsWithNoRequirement() {
+            when(providers.getAll()).thenReturn(List.of(provider1, provider2));
+            when(provider1.provideListItems(CASE_DATA)).thenReturn(
+                List.of(element(UUID_ID_1, translatableItem1), element(UUID_ID_2, translatableItem2))
+            );
+            when(provider2.provideListItems(CASE_DATA)).thenReturn(
+                List.of(element(UUID_ID_3, translatableItem3))
+            );
+            when(translatableItem1.hasBeenTranslated()).thenReturn(false);
+            when(translatableItem1.getTranslationRequirements()).thenReturn(NO);
+            when(translatableItem2.hasBeenTranslated()).thenReturn(true);
+            when(translatableItem3.hasBeenTranslated()).thenReturn(false);
+            when(translatableItem3.getTranslationRequirements()).thenReturn(ENGLISH_TO_WELSH);
+            when(translatableItem3.asLabel()).thenReturn(ITEM_3_LABEL);
+
+            DynamicList actual = underTest.generateList(CASE_DATA);
+
+            assertThat(actual).isEqualTo(dynamicListWith(List.of(DynamicListElement.builder()
+                .code(UUID_ID_3)
+                .label(ITEM_3_LABEL)
+                .build())));
         }
 
     }

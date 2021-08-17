@@ -58,8 +58,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.extractPdfContent;
-import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.remove;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
@@ -93,6 +91,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     UploadedOrderDocumentGenerator.class,
     DocumentSealingService.class,
     ChildrenSmartSelector.class,
+    DocmosisHelper.class,
     ChildSelectionUtils.class
 })
 @MockBeans({@MockBean(DocumentDownloadService.class)})
@@ -112,6 +111,8 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     @MockBean
     private CourtService courtService;
+    @Autowired
+    private DocmosisHelper docmosisHelper;
 
     @Autowired
     private OrderCreationService underTest;
@@ -163,8 +164,8 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
             bytes
         );
 
-        String text = extractPdfContent(bytes);
-        return remove(text, ignores);
+        String text = docmosisHelper.extractPdfContent(bytes);
+        return docmosisHelper.remove(text, ignores);
     }
 
 }

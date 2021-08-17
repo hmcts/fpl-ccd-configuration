@@ -120,6 +120,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -478,6 +479,7 @@ public class CaseData {
     private final Others others;
 
     private final String languageRequirement;
+    private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
 
     @JsonIgnore
     public boolean isWelshLanguageRequested() {
@@ -549,7 +551,8 @@ public class CaseData {
     public List<Element<Other>> getAllOthers() {
         List<Element<Other>> othersList = new ArrayList<>();
 
-        ofNullable(this.getOthers()).map(Others::getFirstOther).map(ElementUtils::element).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getFirstOther).filter(not(Other::isEmpty))
+            .map(ElementUtils::element).ifPresent(othersList::add);
         ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);

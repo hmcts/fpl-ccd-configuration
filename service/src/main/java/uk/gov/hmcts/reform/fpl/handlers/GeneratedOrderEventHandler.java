@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +51,7 @@ public class GeneratedOrderEventHandler {
     private final SendDocumentService sendDocumentService;
     private final SealedOrderHistoryService sealedOrderHistoryService;
     private final OtherRecipientsInbox otherRecipientsInbox;
+    private final TranslationRequestService translationRequestService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -82,6 +84,13 @@ public class GeneratedOrderEventHandler {
         }
 
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
+    }
+
+    @EventListener
+    public void notifyTranslationTeam(GeneratedOrderEvent event) {
+        translationRequestService.sendRequest(event.getCaseData(),
+            event.getLanguageTranslationRequirement(),
+            event.getOrderDocument(), event.getOrderTitle());
     }
 
     @SuppressWarnings("unchecked")

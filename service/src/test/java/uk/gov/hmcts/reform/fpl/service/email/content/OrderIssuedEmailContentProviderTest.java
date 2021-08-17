@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTit
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderLanguageRequirementGenerator;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     SealedOrderHistoryExtraTitleGenerator.class, SealedOrderHistoryTypeGenerator.class,
     LookupTestConfig.class, ChildrenService.class, AppointedGuardianFormatter.class,
     SealedOrderHistoryExtraTitleGenerator.class, OthersNotifiedGenerator.class,
+    SealedOrderLanguageRequirementGenerator.class,
     OthersService.class, OrderIssuedEmailContentProviderTypeOfOrderCalculator.class,
     SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class,
     ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class, ChildSelectionUtils.class, CourtService.class})
