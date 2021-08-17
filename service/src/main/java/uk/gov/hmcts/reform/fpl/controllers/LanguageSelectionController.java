@@ -25,8 +25,10 @@ public class LanguageSelectionController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        caseDetails.getData().put("submittedFormTranslationRequirements",calculator.calculate(getCaseData(caseDetails)));
-        caseDetails.getData().put("submittedFormNeedTranslation", getCaseData(caseDetails).getC110A().getSubmittedFormNeedTranslation());
+        caseDetails.getData()
+            .put("submittedFormTranslationRequirements", calculator.calculate(getCaseData(caseDetails)));
+        caseDetails.getData()
+            .put("submittedFormNeedTranslation", getCaseData(caseDetails).getC110A().getSubmittedFormNeedTranslation());
         return respond(caseDetails);
     }
 }

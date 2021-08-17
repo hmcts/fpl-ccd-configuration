@@ -33,7 +33,7 @@ public enum DocmosisTemplates {
         return template;
     }
 
-    public Optional<String> getWelshTemplate(){
+    public Optional<String> getWelshTemplate() {
         return Optional.ofNullable(welshTemplate);
     }
 
@@ -46,7 +46,7 @@ public enum DocmosisTemplates {
     }
 
     public String getTemplate(Language language) {
-        if(language == Language.WELSH) {
+        if (language == Language.WELSH) {
             return getWelshTemplate().orElse(template);
         }
         return template;
