@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
@@ -93,6 +95,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .manageOrdersOfficerName(OFFICER_NAME)
                 .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY))
                 .manageOrdersIsExParte("No")
+                .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
                 .build())
             .build();
 
@@ -102,7 +105,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size())
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
                 + getEntryMessage((int) selectedChildren.stream().count())
                 + getIsExparteMessage(false))
             .build();
@@ -120,6 +123,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.INFORM))
                 .manageOrdersIsExParte("No")
+                .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
                 .build())
             .build();
 
@@ -129,8 +133,8 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size())
-                + getInformMessage()
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
+                + getInformMessage(caseData.getManageOrdersEventData())
                 + getIsExparteMessage(false))
             .build();
 
@@ -148,6 +152,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .manageOrdersOfficerName(OFFICER_NAME)
                 .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.PRODUCE))
                 .manageOrdersIsExParte("No")
+                .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
                 .build())
             .build();
 
@@ -157,7 +162,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size())
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
                 + getProduceMessage()
                 + getIsExparteMessage(false))
             .build();
@@ -177,6 +182,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .manageOrdersOfficerName(OFFICER_NAME)
                 .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.REMOVE))
                 .manageOrdersIsExParte("No")
+                .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
                 .build())
             .build();
 
@@ -186,9 +192,50 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size())
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
                 + getRemoveMessage()
                 + getIsExparteMessage(false))
+            .orderHeader(ORDER_HEADER)
+            .orderMessage(ORDER_MESSAGE)
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldGenerateDocumentWithAllActionsPermittedOfficerNameEnteredAndIsExParte() {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority(LA_CODE)
+            .caseLocalAuthorityName(LA_NAME)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOrderCreatedDate(ORDER_CREATED_DATE)
+                .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+                .manageOrdersActionsPermittedAddress(REMOVAL_ADDRESS)
+                .manageOrdersOfficerName(OFFICER_NAME)
+                .manageOrdersActionsPermitted(List.of(
+                    C29ActionsPermitted.ENTRY,
+                    C29ActionsPermitted.INFORM,
+                    C29ActionsPermitted.PRODUCE,
+                    C29ActionsPermitted.REMOVE
+                ))
+                .manageOrdersPlacedUnderOrder(PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER)
+                .manageOrdersIsExParte("Yes")
+                .build())
+            .build();
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+
+        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+        DocmosisParameters expectedParameters = expectedCommonParameters()
+            .orderDetails(getStandardMessage(selectedChildren.size(),
+                PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER.getLabel())
+                + getEntryMessage(selectedChildren.size())
+                + getInformMessage(caseData.getManageOrdersEventData())
+                + getProduceMessage()
+                + getRemoveMessage()
+                + getIsExparteMessage(true))
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .build();
@@ -205,14 +252,15 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .orderTitle(C29_RECOVERY_OF_A_CHILD.getTitle());
     }
 
-    private String getStandardMessage(int numberOfChildren) {
+    private String getStandardMessage(int numberOfChildren, String order) {
         String childrenGrammar = numberOfChildren > 1 ? "children" : "child";
         return format("The Court is satisfied that %s "
                 + "has parental responsibility for the %s "
-                + "by virtue of a [Care Order / Emergency Protection Order] "
+                + "by virtue of a %s "
                 + "made on %s.%s",
             LA_NAME,
             childrenGrammar,
+            order,
             formattedDate,
             paragraphBreak);
     }
@@ -228,11 +276,14 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         );
     }
 
-    private String getInformMessage() {
+    private String getInformMessage(ManageOrdersEventData eventData) {
+        String policeAssignee = isNull(eventData.getManageOrdersOfficerName())
+            ? "a police constable"
+            : eventData.getManageOrdersOfficerName();
         return format(
             "The court requires any person who has information about where the child is, "
-            + "or may be, to give that information to a police constable or an officer of the court, "
-            + "if asked to do so.%s", paragraphBreak
+            + "or may be, to give that information to %s or an officer of the court, "
+            + "if asked to do so.%s", policeAssignee, paragraphBreak
         );
     }
 

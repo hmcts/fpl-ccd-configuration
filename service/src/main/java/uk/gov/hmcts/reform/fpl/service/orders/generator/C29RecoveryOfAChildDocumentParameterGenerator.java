@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -80,7 +81,7 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(getStandardMessage(localAuthorityName, childOrChildren, orderMadeDate));
+        stringBuilder.append(getStandardMessage(localAuthorityName, childOrChildren, orderMadeDate, eventData));
 
         if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.ENTRY)) {
             displayAddress = true;
@@ -106,13 +107,18 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
         return stringBuilder.toString();
     }
 
-    private String getStandardMessage(String localAuthorityName, String childOrChildren, String orderMadeDate) {
+    private String getStandardMessage(String localAuthorityName, String childOrChildren,
+                                      String orderMadeDate, ManageOrdersEventData eventData) {
+
+        PlacedUnderOrder order = eventData.getManageOrdersPlacedUnderOrder();
+
         return format("The Court is satisfied that %s "
                 + "has parental responsibility for the %s "
-                + "by virtue of a [Care Order / Emergency Protection Order] "
+                + "by virtue of a %s "
                 + "made on %s.%s",
             localAuthorityName,
             childOrChildren,
+            order.getLabel(),
             orderMadeDate,
             paragraphBreak);
     }
