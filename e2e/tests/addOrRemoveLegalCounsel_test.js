@@ -31,13 +31,8 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     await submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit', null, true);
 
-    //Add child representation
-    await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
-    await I.goToNextPage();
-    enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);//TODO - reuse
-    enterChildrenEventPage.enterChildrenMainRepresentation(solicitor2);
-    await enterChildrenEventPage.enterRegisteredOrganisation(solicitor2);
-    await I.completeEvent('Save and continue');
+    //Add child representation (required for noc)
+    await addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor2);
     I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
     caseViewPage.selectTab(caseViewPage.tabs.casePeople);
     assertChild(I, solicitor2);
@@ -45,9 +40,9 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     //Use NoC to change representative for respondent and child
     await I.signIn(solicitor1);
 
-    //Solicitor completes Notice of Change - for respondent
-    await performNoC(I, caseViewPage, noticeOfChangePage, 'Swansea City Council', 'Alex', 'White', 'Child 1', solicitor1);
     //Solicitor completes Notice of Change - for child
+    await performNoC(I, caseViewPage, noticeOfChangePage, 'Swansea City Council', 'Alex', 'White', 'Child 1', solicitor1);
+    //Solicitor completes Notice of Change - for respondent
     await performNoC(I, caseViewPage, noticeOfChangePage, 'Swansea City Council', 'Joe', 'Bloggs', 'Respondents 1', solicitor1);
   }
 }
@@ -86,16 +81,10 @@ Scenario('Legal counsel to be remove when respondent representative is removed',
   I.dontSeeInTab(['Respondents 1', 'Legal Counsellor']);
 });
 
-Scenario('Legal counsel to be remove when child representative is removed', async ({ I, caseViewPage, enterChildrenEventPage }) => {
+Scenario('Legal counsel to be remove when child representative is updated', async ({ I, caseViewPage, enterChildrenEventPage }) => {
   checkLegalCounselWasAdded();
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
-
-  await I.goToNextPage();
-  enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);//TODO - reuse
-  enterChildrenEventPage.enterChildrenMainRepresentation(solicitor2);
-  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor2);
-  await I.completeEvent('Save and continue');
+  await addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor2);
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertChild(I, solicitor2);
@@ -118,7 +107,7 @@ async function performNoC(I, caseViewPage, noticeOfChangePage, applicantName, fi
   assertRepresentative(I, solicitor.details, solicitor.details.organisation, representedParty);
 }
 
-const assertRepresentative = (I, user, organisation, representedParty) => {
+function assertRepresentative(I, user, organisation, representedParty) {
   I.seeInTab([representedParty, 'Representative', 'Representative\'s first name'], user.forename);
   I.seeInTab([representedParty, 'Representative', 'Representative\'s last name'], user.surname);
   I.seeInTab([representedParty, 'Representative', 'Email address'], user.email);
@@ -127,10 +116,9 @@ const assertRepresentative = (I, user, organisation, representedParty) => {
     I.waitForText(organisation, 40);
     I.seeOrganisationInTab([representedParty, 'Representative', 'Name'], organisation);
   }
-};
+}
 
 function assertLegalCounsellorWasAdded(caseViewPage, I) {
-  pause();//TODO
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   const legalCounsellor = legalCounsellors.legalCounsellor;
 
@@ -145,6 +133,15 @@ function assertLegalCounsellorWasAdded(caseViewPage, I) {
   I.seeInTab([representedParty, 'Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
   I.seeInTab([representedParty, 'Legal Counsellor 1', 'Email address'], legalCounsellor.email);
   I.seeOrganisationInTab([representedParty, 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
+}
+
+async function addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor) {
+  await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
+  await I.goToNextPage();
+  enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);
+  enterChildrenEventPage.enterChildrenMainRepresentation(solicitor);
+  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor);
+  await I.completeEvent('Save and continue');
 }
 
 function assertChild(I, solicitor) {

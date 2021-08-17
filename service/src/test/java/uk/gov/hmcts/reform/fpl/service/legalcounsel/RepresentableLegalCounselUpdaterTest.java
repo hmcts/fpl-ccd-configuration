@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 
 import java.util.List;
 
@@ -22,7 +23,12 @@ public class RepresentableLegalCounselUpdaterTest {
     private final Organisation organisation2 = mock(Organisation.class);
     private final LegalCounsellor testLegalCounsellor = mock(LegalCounsellor.class);
 
-    private final RepresentableLegalCounselUpdater underTest = new RepresentableLegalCounselUpdater();
+    private final OrganisationService orgService = mock(OrganisationService.class);
+    private final ManageLegalCounselService manageService = mock(ManageLegalCounselService.class);
+
+    private final RepresentableLegalCounselUpdater underTest = new RepresentableLegalCounselUpdater(
+        orgService, manageService
+    );
 
     @BeforeEach
     void setUp() {
@@ -47,7 +53,7 @@ public class RepresentableLegalCounselUpdaterTest {
             respondent2
         );
 
-        List<Element<Respondent>> updated = underTest.updateLegalCounselForRemovedSolicitors(
+        List<Element<Respondent>> updated = underTest.updateLegalCounsel(
             previousRespondents, currentRespondents, List.of()
         );
 
@@ -74,7 +80,7 @@ public class RepresentableLegalCounselUpdaterTest {
             .legalCounsellors(legalCounsel)
             .build();
 
-        List<Element<Respondent>> updated = underTest.updateLegalCounselForRemovedSolicitors(
+        List<Element<Respondent>> updated = underTest.updateLegalCounsel(
             wrapElements(respondentBefore), wrapElements(respondentAfter), List.of()
         );
 
@@ -100,7 +106,7 @@ public class RepresentableLegalCounselUpdaterTest {
             .legalCounsellors(legalCounsel)
             .build();
 
-        List<Element<Respondent>> updated = underTest.updateLegalCounselForRemovedSolicitors(
+        List<Element<Respondent>> updated = underTest.updateLegalCounsel(
             wrapElements(respondentBefore), wrapElements(respondentAfter), List.of()
         );
 
@@ -128,7 +134,7 @@ public class RepresentableLegalCounselUpdaterTest {
             .legalCounsellors(legalCounsel1)
             .build();
 
-        List<Element<Respondent>> updated = underTest.updateLegalCounselForRemovedSolicitors(
+        List<Element<Respondent>> updated = underTest.updateLegalCounsel(
             wrapElements(respondent1Before, respondent2Before),
             wrapElements(respondent1After, respondent2After),
             List.of()
@@ -178,7 +184,7 @@ public class RepresentableLegalCounselUpdaterTest {
             .legalCounsellors(legalCounsel2)
             .build();
 
-        List<Element<Respondent>> updated = underTest.updateLegalCounselForRemovedSolicitors(
+        List<Element<Respondent>> updated = underTest.updateLegalCounsel(
             wrapElements(respondent1Before, respondent2Before),
             wrapElements(respondent1After, respondent2After),
             List.of()
@@ -219,7 +225,7 @@ public class RepresentableLegalCounselUpdaterTest {
             .legalCounsellors(legalCounsel2)
             .build();
 
-        List<Element<Child>> updated = underTest.updateLegalCounselForRemovedSolicitors(
+        List<Element<Child>> updated = underTest.updateLegalCounsel(
             wrapElements(childBefore), wrapElements(childAfter), wrapElements(respondentBefore)
         );
 

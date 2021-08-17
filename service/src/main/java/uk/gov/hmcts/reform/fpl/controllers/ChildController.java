@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
@@ -30,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpd
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -114,7 +114,7 @@ public class ChildController extends CallbackController {
             caseData = getCaseData(caseDetails);
             if (shouldUpdateRepresentation(caseData)) {
                 caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
-                    caseData, caseDataBefore, SolicitorRole.Representing.CHILD,
+                    caseData, caseDataBefore, Representing.CHILD,
                     isNotFirstTimeRecordingSolicitor(caseData, caseDataBefore)
                 ));
             }
@@ -122,7 +122,7 @@ public class ChildController extends CallbackController {
 
         caseData = getCaseData(caseDetails);
 
-        List<Element<Child>> updatedChildren = representableCounselUpdater.updateLegalCounselForRemovedSolicitors(
+        List<Element<Child>> updatedChildren = representableCounselUpdater.updateLegalCounsel(
             caseDataBefore.getAllChildren(), caseData.getAllChildren(), caseData.getAllRespondents()
         );
 
@@ -153,11 +153,11 @@ public class ChildController extends CallbackController {
 
         if (!RESTRICTED_STATES.contains(caseData.getState())) {
             if (toggleService.isChildRepresentativeSolicitorEnabled()) {
-                noticeOfChangeService.updateRepresentativesAccess(
-                    caseData, caseDataBefore, SolicitorRole.Representing.CHILD
-                );
+                noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore, Representing.CHILD);
                 publishEvent(new ChildrenUpdated(caseData, caseDataBefore));
             }
+            representableCounselUpdater.buildEventsForAccessRemoval(caseData, caseDataBefore, Representing.CHILD)
+                .forEach(this::publishEvent);
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
     }

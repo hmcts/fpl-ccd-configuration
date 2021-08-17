@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.events.LegalCounsellorRemoved;
+import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorAddedNotifyTemplate;
@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -49,7 +49,7 @@ class LegalCounsellorEmailContentProviderTest {
     void setUp() {
         caseData = CaseData.builder()
             .id(TEST_CASE_ID_AS_LONG)
-            .children1(asList(testChild("Beatrice", "Langley", GIRL, LocalDate.now())))
+            .children1(List.of(testChild("Beatrice", "Langley", GIRL, LocalDate.now())))
             .caseName("testCaseName")
             .build();
 

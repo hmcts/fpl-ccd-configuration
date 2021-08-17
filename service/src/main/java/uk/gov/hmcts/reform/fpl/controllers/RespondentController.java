@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
@@ -88,14 +88,14 @@ public class RespondentController extends CallbackController {
 
         newRespondents = respondentService.removeHiddenFields(newRespondents);
 
-        newRespondents = representableCounselUpdater.updateLegalCounselForRemovedSolicitors(
+        newRespondents = representableCounselUpdater.updateLegalCounsel(
             oldRespondents, newRespondents, caseData.getAllChildren()
         );
 
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
         if (!OPEN.equals(caseData.getState())) {
             caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
-                caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT, true
+                caseData, caseDataBefore, Representing.RESPONDENT, true
             ));
         }
 
@@ -109,8 +109,9 @@ public class RespondentController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (!OPEN.equals(caseData.getState())) {
-            noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore,
-                SolicitorRole.Representing.RESPONDENT);
+            noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore, Representing.RESPONDENT);
+            representableCounselUpdater.buildEventsForAccessRemoval(caseData, caseDataBefore, Representing.CHILD)
+                .forEach(this::publishEvent);
             publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }

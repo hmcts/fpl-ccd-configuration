@@ -5,8 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.fpl.events.LegalCounsellorAdded;
-import uk.gov.hmcts.reform.fpl.events.LegalCounsellorRemoved;
+import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorAdded;
+import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorEvent;
+import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
@@ -55,7 +56,7 @@ class ManageLegalCounselServiceTest {
     private final CaseConverter caseConverter = getCaseConverterInstance();
     private final CaseRoleLookupService caseRoleLookupService = mock(CaseRoleLookupService.class);
     private final OrganisationService organisationService = mock(OrganisationService.class);
-    private final ManageLegalCounselService manageLegalCounselService =
+    private final ManageLegalCounselService underTest =
         new ManageLegalCounselService(caseConverter, caseRoleLookupService, organisationService);
 
     private CaseData caseData;
@@ -75,7 +76,7 @@ class ManageLegalCounselServiceTest {
     @Test
     void shouldRetrieveNoLegalCounselForSolicitorUserWithNoLegalCounsel() {
         List<Element<LegalCounsellor>> retrievedLegalCounsel =
-            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseData);
+            underTest.retrieveLegalCounselForLoggedInSolicitor(caseData);
 
         assertThat(retrievedLegalCounsel).isEmpty();
     }
@@ -91,7 +92,7 @@ class ManageLegalCounselServiceTest {
             .build();
 
         List<Element<LegalCounsellor>> retrievedLegalCounsel =
-            manageLegalCounselService.retrieveLegalCounselForLoggedInSolicitor(caseData);
+            underTest.retrieveLegalCounselForLoggedInSolicitor(caseData);
 
         assertThat(retrievedLegalCounsel).isEqualTo(legalCounsellors);
     }
@@ -108,7 +109,7 @@ class ManageLegalCounselServiceTest {
             .data(caseConverter.toMap(caseData))
             .build();
 
-        manageLegalCounselService.updateLegalCounsel(caseDetails);
+        underTest.updateLegalCounsel(caseDetails);
 
         CaseData convertedCaseData = caseConverter.convert(caseDetails);
         assertThat(convertedCaseData.getManageLegalCounselEventData().getLegalCounsellors()).isNull();
@@ -157,7 +158,7 @@ class ManageLegalCounselServiceTest {
             )
             .build();
 
-        List<String> errorMessages = manageLegalCounselService.validateEventData(caseData);
+        List<String> errorMessages = underTest.validateEventData(caseData);
 
         assertThat(errorMessages).hasSize(2)
             .contains(format(UNREGISTERED_USER_ERROR_MESSAGE_TEMPLATE, "Ted Robinson"))
@@ -191,7 +192,7 @@ class ManageLegalCounselServiceTest {
             )
             .build();
 
-        List<String> errorMessages = manageLegalCounselService.validateEventData(caseData);
+        List<String> errorMessages = underTest.validateEventData(caseData);
 
         assertThat(errorMessages).hasSize(1).contains("Legal counsellor Damian King has no selected organisation");
     }
@@ -232,8 +233,7 @@ class ManageLegalCounselServiceTest {
 
         CaseData previousCaseData = caseConverter.convert(previousCaseDetails);
         CaseData currentCaseData = caseConverter.convert(currentCaseDetails);
-        List<? super Object> eventsToPublish =
-            manageLegalCounselService.runFinalEventActions(previousCaseData, currentCaseData);
+        List<LegalCounsellorEvent> eventsToPublish = underTest.runFinalEventActions(previousCaseData, currentCaseData);
 
         assertThat(eventsToPublish)
             .hasSize(2)

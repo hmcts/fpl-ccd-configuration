@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpdater;
 
 import java.util.List;
 import java.util.function.Function;
@@ -38,10 +39,11 @@ public class NoticeOfChangeController extends CallbackController {
     private final CaseAssignmentApi caseAssignmentApi;
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentService respondentService;
+    private final RepresentableLegalCounselUpdater legalCounselUpdater;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+    public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData));
@@ -50,10 +52,25 @@ public class NoticeOfChangeController extends CallbackController {
             decisionRequest(caseDetails));
     }
 
+    @PostMapping("/about-to-submit")
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(request);
+
+        caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounsel(caseData, caseDataBefore));
+
+        return respond(caseDetails);
+    }
+
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
         CaseData newCaseData = getCaseData(callbackRequest);
+
+        Stream.of(SolicitorRole.Representing.values())
+            .flatMap(role -> legalCounselUpdater.buildEventsForAccessRemoval(newCaseData, oldCaseData, role).stream())
+            .forEach(this::publishEvent);
 
         Stream.of(SolicitorRole.Representing.values())
             .flatMap(solicitorRole ->
