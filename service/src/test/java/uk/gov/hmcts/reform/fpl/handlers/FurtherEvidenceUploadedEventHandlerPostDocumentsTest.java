@@ -48,7 +48,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
     @Test
-    void shouldSendDocumentByPostWhenEvidenceBundlePDFUploadedByRespSolicitor() {
+    void shouldSendDocumentByPostWhenEvidenceBundlePDFUploadedByRespondentSolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
