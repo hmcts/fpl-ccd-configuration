@@ -5,6 +5,7 @@ const draftOrdersHelper = require('../helpers/cmo_helper');
 const caseData = require('../fixtures/caseData/caseWithAllTypesOfOrders.json');
 const caseDataGatekeeping = require('../fixtures/caseData/gatekeepingFullDetails.json');
 const caseDataCaseManagement = require('../fixtures/caseData/prepareForHearing.json');
+const mandatoryWithMultipleRespondents = require('../fixtures/caseData/mandatoryWithMultipleRespondents.json');
 const caseView = require('../pages/caseView.page.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const api = require('../helpers/api_helper');
@@ -34,6 +35,12 @@ const caseDataCaseManagementWithLanguage = {
 
 // most file names are overridden to the below values in api_helper
 const orders = {
+  c11a: {
+    name: 'Application (C110A)',
+    originalFile: 'test.pdf',
+    translationFile: 'test-Welsh.pdf',
+    tabName: caseView.tabs.furtherEvidence,
+  },
   draftOrder: {
     title: 'draft order 1',
     file: config.testWordFile,
@@ -134,6 +141,32 @@ Scenario('Upload translation for generated order', async ({ I, caseViewPage, upl
   await setupScenario(I);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.generated);
   assertTranslation(I, caseViewPage, orders.generated);
+});
+
+Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, uploadWelshTranslationsPage, enterLanguageRequirementsEventPage, submitApplicationEventPage }) => {
+  let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.languageRequirement);
+  await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+  enterLanguageRequirementsEventPage.selectApplicationLanguage('WELSH');
+  enterLanguageRequirementsEventPage.selectNeedEnglishTranslation();
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.languageRequirement);
+
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  await submitApplicationEventPage.giveConsent();
+  await I.completeEvent('Submit', null, true);
+
+  caseViewPage.selectTab(orders.c11a.tabName);
+  I.see('Sent for translation');
+
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.c11a);
+
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadWelshTranslations);
+  caseViewPage.selectTab(orders.c11a.tabName);
+  I.see(orders.c11a.translationFile);
+  I.dontSee('Sent for translation');
 });
 
 Scenario('Request and upload translation for uploaded order', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageOrdersEventPage }) => {

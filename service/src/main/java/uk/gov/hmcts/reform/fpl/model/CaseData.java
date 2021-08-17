@@ -55,6 +55,7 @@ import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -104,7 +105,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -773,7 +773,9 @@ public class CaseData {
             .anyMatch(hearingBooking -> hearingBooking.getValue().startsAfterToday());
     }
 
-    private final DocumentReference submittedForm;
+    @JsonUnwrapped
+    @Builder.Default
+    private final C110A c110A = C110A.builder().build();
     private final DocumentReference draftApplicationDocument;
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
