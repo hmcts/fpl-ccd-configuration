@@ -413,6 +413,8 @@
             "document_filename": "c32_care_order.doc",
             "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
           },
+          "needTranslation": "Yes",
+          "translationRequirements": "ENGLISH_TO_WELSH",
           "uploadedOrderDescription": null
         }
       }
