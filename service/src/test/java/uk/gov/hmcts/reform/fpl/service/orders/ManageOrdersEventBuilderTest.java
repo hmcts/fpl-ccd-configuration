@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,6 +32,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 @ExtendWith(MockitoExtension.class)
 class ManageOrdersEventBuilderTest {
     private static final List<Element<GeneratedOrder>> NO_ORDERS = List.of();
+    private static final String ORDER_TITLE = "orderTitle";
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
     private final DocumentReference document = mock(DocumentReference.class);
     private final GeneratedOrder order = mock(GeneratedOrder.class);
@@ -81,10 +85,13 @@ class ManageOrdersEventBuilderTest {
         when(caseDataBefore.getOrderCollection()).thenReturn(NO_ORDERS);
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(order);
         when(order.getDocument()).thenReturn(document);
-        when(historyService.lastGeneratedOrder(caseData)).thenReturn(GeneratedOrder.builder()
-            .document(document)
-            .build());
+        when(order.asLabel()).thenReturn(ORDER_TITLE);
+        when(order.getDocument()).thenReturn(document);
+        when(order.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENT);
 
-        assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(new GeneratedOrderEvent(caseData, document));
+        assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(new GeneratedOrderEvent(caseData,
+            document,
+            TRANSLATION_REQUIREMENT,
+            ORDER_TITLE));
     }
 }
