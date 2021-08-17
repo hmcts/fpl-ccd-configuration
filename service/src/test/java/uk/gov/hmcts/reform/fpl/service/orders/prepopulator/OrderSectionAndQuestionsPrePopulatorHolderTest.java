@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHear
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.SingleChildSelectionBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.TranslationRequirementsBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOthersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLIC
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
@@ -95,6 +97,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private DraftOrderPreviewSectionPrePopulator draftOrderPreviewSectionPrePopulator;
     @Mock
     private CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
+    @Mock
+    private TranslationRequirementsBlockPrePopulator translationRequirementsBlockPrePopulator;
 
     @InjectMocks
     private OrderSectionAndQuestionsPrePopulatorHolder underTest;
@@ -117,6 +121,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator,
+            translationRequirementsBlockPrePopulator,
             appointedGuardianBlockPrePopulator,
             whichOthersBlockPrePopulator,
             amendOrderToDownloadPrePopulator,
@@ -133,6 +138,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             Map.entry(SELECT_SINGLE_CHILD, singleChildSelectionBlockPrePopulator),
             Map.entry(EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator),
             Map.entry(CLOSE_CASE, closeCaseBlockPrePopulator),
+            Map.entry(TRANSLATION_REQUIREMENTS, translationRequirementsBlockPrePopulator),
             Map.entry(WHICH_OTHERS, whichOthersBlockPrePopulator),
             Map.entry(ORDER_TO_AMEND, amendOrderToDownloadPrePopulator),
             Map.entry(PARENTAL_RESPONSIBILITY, parentalResponsibilityPrePopulator)
