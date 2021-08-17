@@ -106,6 +106,7 @@
     "ElementLabel": "End date and time",
     "HintText": "Use 24 hour format",
     "SecurityClassification": "Public",
+    "FieldShowCondition": "endDateDerived=\"No\"",
     "Searchable": "N"
   },
   {
@@ -115,6 +116,17 @@
     "FieldType": "Text",
     "ElementLabel": "Hearing duration",
     "SecurityClassification": "Public",
+    "FieldShowCondition": "endDateDerived=\"Yes\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "endDateDerived",
+    "FieldType": "Text",
+    "ElementLabel": "Derived end date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "startDate=\"DO_NOT_SHOW\"",
     "Searchable": "N"
   },
   {

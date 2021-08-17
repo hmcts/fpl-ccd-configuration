@@ -369,7 +369,8 @@ public class ManageHearingsService {
             "hearingDays",
             "hearingMinutes",
             "hearingHours",
-            "hearingDuration"
+            "hearingDuration",
+            "hearingEndDateTime"
         );
     }
 
@@ -472,12 +473,12 @@ public class ManageHearingsService {
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {
-        LocalDateTime endDate = null;
+        String endDateDerived = "No";
         String hearingDuration = getHearingInfo(caseData.getHearingDays(),
             caseData.getHearingHours(), caseData.getHearingMinutes());
 
-        if (hearingDuration == null) {
-            endDate = caseData.getHearingEndDate();
+        if (hearingDuration != null) {
+            endDateDerived = "Yes";
         }
 
         return HearingBooking.builder()
@@ -489,7 +490,8 @@ public class ManageHearingsService {
             .attendanceDetails(caseData.getHearingAttendanceDetails())
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
-            .endDate(endDate)
+            .endDate(caseData.getHearingEndDate())
+            .endDateDerived(endDateDerived)
             .hearingDuration(hearingDuration)
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
@@ -518,12 +520,12 @@ public class ManageHearingsService {
             venue = caseData.getPreviousHearingVenue().getNewVenue();
         }
 
-        LocalDateTime endDate = null;
+        String endDateDerived = "No";
         String hearingDuration = getHearingInfo(caseData.getHearingDays(),
             caseData.getHearingHours(), caseData.getHearingMinutes());
 
-        if (hearingDuration == null) {
-            endDate = caseData.getHearingEndDate();
+        if (hearingDuration != null) {
+            endDateDerived = "Yes";
         }
 
         return HearingBooking.builder()
@@ -536,8 +538,9 @@ public class ManageHearingsService {
             .attendanceDetails(caseData.getHearingAttendanceDetails())
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
-            .endDate(endDate)
+            .endDate(caseData.getHearingEndDate())
             .hearingDuration(hearingDuration)
+            .endDateDerived(endDateDerived)
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
             .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))

@@ -56,6 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -194,6 +196,8 @@ class GatekeepingOrderGenerationServiceTest {
                 .hearingTime("12:00am - 12:00pm")
                 .hearingJudgeTitleAndName("Her Honour Judge Law")
                 .hearingLegalAdvisorName("Peter Parker")
+                .hearingStartDate(formatLocalDateTimeBaseUsingFormat(LocalDate.now().atStartOfDay(), DATE_TIME))
+                .hearingEndDate(formatLocalDateTimeBaseUsingFormat(LocalDate.now().atTime(NOON), DATE_TIME))
                 .build())
             .respondents(getExpectedRespondents())
             .respondentsProvided(true)

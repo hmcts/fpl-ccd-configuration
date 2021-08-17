@@ -216,7 +216,7 @@ public class ManageHearingsController extends CallbackController {
 
         if (isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
-                caseData.getHearingEndDate());
+                caseData.getHearingEndDateTime());
         } else {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
             if (errors.isEmpty()) {

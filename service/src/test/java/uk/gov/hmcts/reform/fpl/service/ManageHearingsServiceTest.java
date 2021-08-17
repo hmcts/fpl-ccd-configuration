@@ -512,6 +512,7 @@ class ManageHearingsServiceTest {
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .others(SELECTED_OTHERS)
             .additionalNotes("notes")
+            .endDateDerived("No")
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
@@ -552,6 +553,7 @@ class ManageHearingsServiceTest {
             .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
+            .endDateDerived("No")
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
@@ -592,6 +594,7 @@ class ManageHearingsServiceTest {
             .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
+            .endDateDerived("No")
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
@@ -723,8 +726,8 @@ class ManageHearingsServiceTest {
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "15 March 2010, 8:20pm");
-
+                "hearingEndDateLabel", "15 March 2010, 8:20pm",
+                "hearingEndDate", LocalDateTime.parse("2010-03-15T20:20:00"));
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
 
@@ -746,7 +749,8 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "15 March 2010, 8:20pm");
+                "hearingEndDateLabel", "15 March 2010, 8:20pm",
+                "hearingEndDate", LocalDateTime.parse("2010-03-15T20:20:00"));
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
@@ -768,7 +772,9 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "3 days");
+                "hearingEndDateLabel", "3 days",
+                "hearingEndDate", LocalDateTime.parse("2011-04-19T20:20:00"));
+
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
@@ -791,7 +797,8 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "3 hours 20 minutes");
+                "hearingEndDateLabel", "3 hours 20 minutes",
+                "hearingEndDate", LocalDateTime.parse("2011-04-16T23:40:00"));
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }

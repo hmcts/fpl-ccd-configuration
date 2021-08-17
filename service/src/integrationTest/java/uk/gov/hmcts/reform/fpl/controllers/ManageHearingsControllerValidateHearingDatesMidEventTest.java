@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.*;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 
 @OverrideAutoConfiguration(enabled = true)
@@ -32,7 +33,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate)
+            .hearingEndDateTime(pastDate)
+            .hearingDuration(DATE_TIME.getType())
             .hearingOption(hearingOption)
             .build();
 
@@ -49,7 +51,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate.plusDays(1))
+            .hearingEndDateTime(pastDate.plusDays(1))
+            .hearingDuration(DATE_TIME.getType())
             .hearingOption(NEW_HEARING)
             .build();
 
@@ -63,7 +66,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate.plusHours(1))
+            .hearingEndDateTime(pastDate.plusHours(1))
+            .hearingDuration(DATE_TIME.getType())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
@@ -78,7 +82,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(dateWithInvalidTime)
+            .hearingEndDateTime(dateWithInvalidTime)
+            .hearingDuration(DATE_TIME.getType())
             .hearingOption(NEW_HEARING)
             .build();
 
@@ -93,7 +98,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate.minusDays(1))
+            .hearingEndDateTime(pastDate.minusDays(1))
+            .hearingDuration(DATE_TIME.getType())
             .hearingOption(NEW_HEARING)
             .build();
 
@@ -109,7 +115,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(LocalDateTime.now().plusDays(2))
-            .hearingEndDate(LocalDateTime.now().plusDays(1))
+            .hearingEndDateTime(LocalDateTime.now().plusDays(1))
+            .hearingDuration(DATE_TIME.getType())
             .hearingOption(hearingOptions)
             .build();
 
@@ -125,7 +132,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(futureDate)
-            .hearingEndDate(futureDate)
+            .hearingDuration(DATE_TIME.getType())
+            .hearingEndDateTime(futureDate)
             .hearingOption(hearingOptions)
             .build();
 
@@ -140,17 +148,18 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate)
+            .hearingDuration(DATE_TIME.getType())
+            .hearingEndDateTime(pastDate)
             .hearingOption(NEW_HEARING)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         Map<String, Object> responseData = callbackResponse.getData();
-        assertThat(responseData.get("showConfirmPastHearingDatesPage").equals("Yes"));
-        assertThat(responseData.get("startDateFlag").equals("Yes"));
-        assertThat(responseData.get("endDateFlag").equals("Yes"));
-        assertThat(responseData.get("hasSession").equals("Yes"));
+        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
+        assertThat(responseData.get("startDateFlag")).isEqualTo("Yes");
+        assertThat(responseData.get("endDateFlag")).isEqualTo("Yes");
+        assertThat(responseData.get("hasSession")).isEqualTo("Yes");
     }
 
     @Test
@@ -158,7 +167,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(futureDate)
-            .hearingEndDate(futureDate)
+            .hearingDuration(DATE_TIME.getType())
+            .hearingEndDateTime(futureDate)
             .hearingOption(NEW_HEARING)
             .build();
 
@@ -175,7 +185,8 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(futureDate)
-            .hearingEndDate(futureDate.plusMinutes(1))
+            .hearingDuration(DATE_TIME.getType())
+            .hearingEndDateTime(futureDate.plusMinutes(1))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");

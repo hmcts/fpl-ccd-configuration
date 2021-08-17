@@ -11,8 +11,8 @@ public class HasHearingEndDateAfterStartDateValidator implements
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext context) {
-        if (caseData.getHearingStartDate() != null && caseData.getHearingEndDate() != null) {
-            return caseData.getHearingEndDate().isAfter(caseData.getHearingStartDate());
+        if (caseData.getHearingStartDate() != null && caseData.getHearingEndDateTime() != null) {
+            return caseData.getHearingEndDateTime().isAfter(caseData.getHearingStartDate());
         }
         return true;
     }
