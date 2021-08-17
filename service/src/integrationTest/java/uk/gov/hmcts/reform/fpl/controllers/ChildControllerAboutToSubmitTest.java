@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeChildAnswersData;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -33,13 +34,11 @@ import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationSe
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellor;
 
 @WebMvcTest(ChildController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -265,22 +264,19 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresent() {//TODO - maybe I need to change this test...
+    void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresent() {
         when(identityService.generateId()).thenReturn(UUID_1, UUID_2);
 
-        List<Element<LegalCounsellor>> legalCounsellors = asList(element(buildLegalCounsellor("1", true)));//TODO - constant?
         CaseData caseDataBefore = CaseData.builder()
             .localAuthorities(LOCAL_AUTHORITIES)
             .children1(wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
                     .solicitor(MAIN_REPRESENTATIVE)
-                    .legalCounsellors(legalCounsellors)
                     .build(),
                 Child.builder()
                     .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
                     .solicitor(MAIN_REPRESENTATIVE)
-                    .legalCounsellors(legalCounsellors)
                     .build()
             )).childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("Yes")
@@ -469,6 +465,48 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             confidentialParty.toBuilder().address(null).telephoneNumber(null).build(),
             nonConfidentialParty
         );
+    }
+
+    @Test
+    void shouldTransferLegalCounselWhenSolicitorChanged() {
+        List<Element<LegalCounsellor>> legalCounsellors = wrapElements(LegalCounsellor.builder().build());
+        List<Element<LegalCounsellor>> differentLegalCounsellors = wrapElements(LegalCounsellor.builder().build());
+
+        CaseData caseDataBefore = CaseData.builder()
+            .state(NON_RESTRICTED_STATE)
+            .localAuthorities(LOCAL_AUTHORITIES)
+            .children1(wrapElements(
+                Child.builder()
+                    .party(ChildParty.builder().build())
+                    .solicitor(ANOTHER_REPRESENTATIVE)
+                    .legalCounsellors(legalCounsellors)
+                    .build()
+            ))
+            .respondents1(wrapElements(
+                Respondent.builder()
+                    .solicitor(MAIN_REPRESENTATIVE)
+                    .legalCounsellors(differentLegalCounsellors)
+                    .build()
+            ))
+            .childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("Yes")
+                .childrenMainRepresentative(ANOTHER_REPRESENTATIVE)
+                .build())
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .childrenEventData(ChildrenEventData.builder()
+                .childrenHaveRepresentation("Yes")
+                .childrenMainRepresentative(MAIN_REPRESENTATIVE)
+                .build())
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(toCallBackRequest(caseData, caseDataBefore)));
+
+        assertThat(responseData.getChildren1()).hasSize(1)
+            .first()
+            .extracting(e -> e.getValue().getLegalCounsellors())
+            .isEqualTo(differentLegalCounsellors);
     }
 
     private ChildPolicyData.ChildPolicyDataBuilder basePolicyData() {
