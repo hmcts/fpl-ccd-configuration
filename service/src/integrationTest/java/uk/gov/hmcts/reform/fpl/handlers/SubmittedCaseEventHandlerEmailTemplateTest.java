@@ -71,7 +71,9 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .organisationName("Third party org")
                 .build())
             .build())
-        .submittedForm(C110A)
+        .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+            .submittedForm(C110A)
+            .build())
         .build();
 
     @Autowired

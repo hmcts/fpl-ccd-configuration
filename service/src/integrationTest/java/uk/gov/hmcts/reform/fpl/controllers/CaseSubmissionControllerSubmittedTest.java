@@ -174,7 +174,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .id(CASE_ID)
             .caseName(CASE_NAME)
             .displayAmountToPay(YES.getValue())
-            .submittedForm(DocumentReference.builder().binaryUrl("testUrl").build())
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .submittedForm(DocumentReference.builder().binaryUrl("testUrl").build())
+                .build())
             .build();
 
         final Map<String, Object> registeredSolicitorParameters = toMap(getExpectedRegisteredSolicitorParameters());
