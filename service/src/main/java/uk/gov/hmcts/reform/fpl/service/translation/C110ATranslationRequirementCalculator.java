@@ -14,11 +14,13 @@ public class C110ATranslationRequirementCalculator {
 
     public LanguageTranslationRequirement calculate(CaseData caseData) {
         C110A c110A = caseData.getC110A();
-        if (YesNo.YES == YesNo.fromString(caseData.getLanguageRequirement()) && c110A.getLanguageRequirementApplication() == Language.ENGLISH
+        if (YesNo.YES == YesNo.fromString(caseData.getLanguageRequirement())
+            && c110A.getLanguageRequirementApplication() == Language.ENGLISH
             && YesNo.fromString(c110A.getLanguageRequirementApplicationNeedWelsh()) == YES) {
             return LanguageTranslationRequirement.ENGLISH_TO_WELSH;
         }
-        if (YesNo.YES == YesNo.fromString(caseData.getLanguageRequirement()) && c110A.getLanguageRequirementApplication() == Language.WELSH
+        if (YesNo.YES == YesNo.fromString(caseData.getLanguageRequirement())
+            && c110A.getLanguageRequirementApplication() == Language.WELSH
             && YesNo.fromString(c110A.getLanguageRequirementApplicationNeedEnglish()) == YES) {
             return LanguageTranslationRequirement.WELSH_TO_ENGLISH;
         }

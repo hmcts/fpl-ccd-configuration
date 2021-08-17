@@ -33,6 +33,13 @@ public enum DocmosisTemplates {
         return template;
     }
 
+    public String getTemplate(Language language) {
+        if (language == Language.WELSH) {
+            return getWelshTemplate().orElse(template);
+        }
+        return template;
+    }
+
     public Optional<String> getWelshTemplate() {
         return Optional.ofNullable(welshTemplate);
     }
@@ -45,10 +52,4 @@ public enum DocmosisTemplates {
         return String.format("%s_%s.%s", documentTitle, date.format(DateTimeFormatter.ofPattern("ddMMMM")), "pdf");
     }
 
-    public String getTemplate(Language language) {
-        if (language == Language.WELSH) {
-            return getWelshTemplate().orElse(template);
-        }
-        return template;
-    }
 }
