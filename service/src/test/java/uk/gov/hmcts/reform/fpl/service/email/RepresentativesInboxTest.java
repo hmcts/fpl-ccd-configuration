@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,8 +25,12 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -92,6 +97,18 @@ class RepresentativesInboxTest {
                 .organisationID(ORGANISATION_ID)
                 .build())
             .build())
+        .build();
+
+    private static final Representative CARCASS_REP = Representative.builder()
+        .email(EMAIL_1)
+        .servingPreferences(DIGITAL_SERVICE)
+        .role(RepresentativeRole.CAFCASS_GUARDIAN)
+        .build();
+
+    private static final Representative RESPONDENT_REP = Representative.builder()
+        .email(EMAIL_2)
+        .servingPreferences(DIGITAL_SERVICE)
+        .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
         .build();
 
     private final RepresentativesInbox underTest = new RepresentativesInbox();
@@ -358,6 +375,26 @@ class RepresentativesInboxTest {
         Set<String> actual = underTest.getEmailsByPreference(caseData, EMAIL);
 
         assertThat(actual).isEqualTo(Set.of(EMAIL_1, EMAIL_3, EMAIL_5));
+    }
+
+    @Test
+    void testFilterRepresentativesByRole() {
+        CaseData caseData = CaseData.builder().representatives(wrapElements(CARCASS_REP, RESPONDENT_REP)).build();
+        List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
+
+        Set<String> actual = underTest.getRepresentativeEmailsFilteredByRole(caseData, DIGITAL_SERVICE, roles);
+
+        assertThat(actual).isEqualTo(newHashSet(EMAIL_1, EMAIL_2));
+    }
+
+    @Test
+    void testFilterRepresentativesByRoleRemovesRepresentativesWithIncorrectRoles() {
+        CaseData caseData = CaseData.builder().representatives(wrapElements(CARCASS_REP, RESPONDENT_REP)).build();
+        List<RepresentativeRole.Type> roles = List.of(CAFCASS, LASOLICITOR);
+
+        Set<String> actual = underTest.getRepresentativeEmailsFilteredByRole(caseData, DIGITAL_SERVICE, roles);
+
+        assertThat(actual).isEqualTo(newHashSet(EMAIL_1));
     }
 
     @ParameterizedTest

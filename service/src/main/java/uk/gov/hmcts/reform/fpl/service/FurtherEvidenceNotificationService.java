@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -38,7 +37,7 @@ public class FurtherEvidenceNotificationService {
 
     public Set<String> getRepresentativeEmails(CaseData caseData) {
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
-        LinkedHashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
+        HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, roles);
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
         emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));

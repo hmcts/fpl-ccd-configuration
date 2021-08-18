@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,9 +26,6 @@ import java.util.stream.Collectors;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -50,16 +48,16 @@ public class RepresentativesInbox {
 
     public LinkedHashSet<String> getRepresentativeEmails(CaseData caseData,
                                                          RepresentativeServingPreferences preference) {
-         return caseData.getRepresentativesByServedPreference(preference)
+        return caseData.getRepresentativesByServedPreference(preference)
             .stream()
             .map(Representative::getEmail)
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public LinkedHashSet<String> getRepresentativeEmailsFilteredByRole(CaseData caseData,
-                                                             RepresentativeServingPreferences preference,
-                                                             List<RepresentativeRole.Type> roles) {
+    public HashSet<String> getRepresentativeEmailsFilteredByRole(CaseData caseData,
+                                                                 RepresentativeServingPreferences preference,
+                                                                 List<RepresentativeRole.Type> roles) {
         return caseData.getRepresentativesByServedPreference(preference)
             .stream()
             .filter(representative -> hasRole(representative, roles))
@@ -68,7 +66,8 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public LinkedHashSet<String> getRespondentSolicitorEmails(CaseData caseData, RepresentativeServingPreferences preference) {
+    public LinkedHashSet<String> getRespondentSolicitorEmails(CaseData caseData,
+                                                              RepresentativeServingPreferences preference) {
         return caseData.getAllRespondents().stream()
             .filter(respondent -> shouldSend(preference, respondent))
             .map(this::extractEmail)
@@ -76,7 +75,8 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public LinkedHashSet<String> getChildrenSolicitorEmails(CaseData caseData, RepresentativeServingPreferences preference) {
+    public LinkedHashSet<String> getChildrenSolicitorEmails(CaseData caseData,
+                                                            RepresentativeServingPreferences preference) {
         return caseData.getAllChildren().stream()
             .filter(child -> shouldSend(preference, child))
             .map(this::extractEmail)

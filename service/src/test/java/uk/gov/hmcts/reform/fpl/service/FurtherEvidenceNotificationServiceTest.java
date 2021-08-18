@@ -10,11 +10,13 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -26,6 +28,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -97,6 +101,9 @@ class FurtherEvidenceNotificationServiceTest {
     @Mock
     private FeatureToggleService featureToggleService;
 
+    @Mock
+    private RepresentativesInbox representativesInbox;
+
     @InjectMocks
     private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
@@ -125,6 +132,10 @@ class FurtherEvidenceNotificationServiceTest {
             CAFCASS_SOLICITOR_SERVED_BY_EMAIL,
             CAFCASS_SOLICITOR_WITH_SERVICE_ACCESS);
 
+        when(representativesInbox.getRepresentativeEmailsFilteredByRole(caseData, DIGITAL_SERVICE,
+            List.of(CAFCASS, RESPONDENT)))
+            .thenReturn(newHashSet("rep@example.com", "rep2@example.com", "rep3@example.com",
+                "cafcass2@example.com"));
         Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
