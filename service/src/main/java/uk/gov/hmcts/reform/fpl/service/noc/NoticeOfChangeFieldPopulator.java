@@ -38,15 +38,15 @@ public class NoticeOfChangeFieldPopulator {
 
         String applicant = getApplicantName(caseData);
 
-        List<Element<WithSolicitor>> representedParties = representing.getTarget().apply(caseData);
-        int numElements = representedParties.size();
+        List<Element<WithSolicitor>> elements = representing.getTarget().apply(caseData);
+        int numElements = elements.size();
 
         List<SolicitorRole> solicitorRoles = SolicitorRole.values(representing);
         for (int i = 0; i < solicitorRoles.size(); i++) {
             SolicitorRole solicitorRole = solicitorRoles.get(i);
 
             Optional<Element<WithSolicitor>> solicitorContainer = i < numElements
-                                                                  ? Optional.of(representedParties.get(i))
+                                                                  ? Optional.of(elements.get(i))
                                                                   : Optional.empty();
 
             OrganisationPolicy organisationPolicy = policyConverter.generate(

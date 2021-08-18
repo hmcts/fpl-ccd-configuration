@@ -48,13 +48,6 @@ public enum SolicitorRole {
     private final int index;
     private final Representing representing;
 
-    public static Optional<SolicitorRole> from(int index, Representing representing) {
-        return Arrays.stream(SolicitorRole.values())
-            .filter(role -> role.representing.equals(representing))
-            .filter(role -> role.index == index)
-            .findFirst();
-    }
-
     public static Optional<SolicitorRole> from(String label) {
         return Arrays.stream(SolicitorRole.values())
             .filter(role -> role.caseRoleLabel.equals(label))
@@ -67,7 +60,7 @@ public enum SolicitorRole {
             .collect(Collectors.toList());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public enum Representing {
         RESPONDENT(caseData -> (List) caseData.getAllRespondents(),
             "respondentPolicy%d",

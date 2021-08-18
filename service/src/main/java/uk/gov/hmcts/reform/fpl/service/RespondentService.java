@@ -142,13 +142,13 @@ public class RespondentService {
         final List<ChangeOrganisationRequest> changeRequests = new ArrayList<>();
 
         for (int i = 0; i < newRespondents.size(); i++) {
+            SolicitorRole solicitorRole = SolicitorRole.values(target).get(i);
             UUID respondentId = newRespondents.get(i).getId();
 
             Organisation newOrganisation = newRespondentsOrganisations.get(respondentId);
             Organisation oldOrganisation = oldRespondentsOrganisations.get(respondentId);
 
             if (!Objects.equals(newOrganisation, oldOrganisation)) {
-                SolicitorRole solicitorRole = SolicitorRole.values(target).get(i);
                 changeRequests.add(changeRequest(newOrganisation, oldOrganisation, solicitorRole));
             }
         }
