@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildFinalDecision",
+    "ListElementCode": "WITHDRAWN",
+    "ListElement": "Application withdrawn",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildFinalDecision",
+    "ListElementCode": "REFUSAL",
+    "ListElement": "Application refused",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildFinalDecision",
+    "ListElementCode": "NO_ORDER",
+    "ListElement": "No order made",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildFinalDecision",
+    "ListElementCode": "FINAL_ORDER",
+    "ListElement": "Final order issued",
+    "DisplayOrder": 4
+  }
+]
