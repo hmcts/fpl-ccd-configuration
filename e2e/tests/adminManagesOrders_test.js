@@ -248,8 +248,12 @@ Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrd
   await manageOrdersEventPage.selectWhichOrder(manageOrdersEventPage.section4.whichOrder.options.epo);
   await manageOrdersEventPage.enterOrderMadeDate(approvalDate);
   await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.inform);
+
+  await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.produce);
+  await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.remove);
+  await manageOrdersEventPage.enterRemovalAddress(removalAddress);
   await manageOrdersEventPage.selectIsExparte();
-  await manageOrdersEventPage.enterFurtherDirections(manageOrdersEventPage.orders.title.c29 + ' - Further details.');
+  await manageOrdersEventPage.enterOfficerName('Officer Barbrady');
   await manageOrdersEventPage.selectIsFinalOrder();
 
   await I.goToNextPage();

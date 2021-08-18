@@ -208,6 +208,7 @@ const section4 = {
       no: '#manageOrdersIsExParte_No',
     },
   },
+  officerName: '#manageOrdersOfficerName',
 };
 
 const whichOthers = {
@@ -531,6 +532,11 @@ const selectIsExparte = () => {
   I.click(section4.exParte.options.yes);
 };
 
+const enterOfficerName = async (text) => {
+  I.fillField(section4.officerName, text);
+  await I.runAccessibilityTest();
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4, whichOthers, amendment,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
@@ -542,5 +548,5 @@ module.exports = {
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
   enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, enterOrderMadeDate, selectWhichOrder,
-  selectOrderPermissions, selectIsExparte,
+  selectOrderPermissions, selectIsExparte, enterOfficerName,
 };
