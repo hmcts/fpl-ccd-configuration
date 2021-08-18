@@ -119,14 +119,14 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldRemoveLegalCounselFromRespondentWhenRepresentativeIsRemoved() {
-        List<Element<LegalCounsellor>> legalCounsel = List.of(element(buildLegalCounsellor("1", true)));
+        List<Element<LegalCounsellor>> counsel = List.of(element(buildLegalCounsellor("1", true)));
         Respondent respondent1 = respondent(dateNow()).toBuilder()
             .solicitor(TEST_RESPONDENT_SOLICITOR)
-            .legalCounsellors(legalCounsel)
+            .legalCounsellors(counsel)
             .build();
         Respondent respondent2 = respondent(dateNow()).toBuilder()
             .solicitor(TEST_RESPONDENT_SOLICITOR)
-            .legalCounsellors(legalCounsel)
+            .legalCounsellors(counsel)
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
@@ -142,7 +142,7 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData returnedCaseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
 
         assertThat(returnedCaseData.getAllRespondents().get(0).getValue().getLegalCounsellors()).isEmpty();
-        assertThat(returnedCaseData.getAllRespondents().get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounsel);
+        assertThat(returnedCaseData.getAllRespondents().get(1).getValue().getLegalCounsellors()).isEqualTo(counsel);
     }
 
     @Test

@@ -43,7 +43,7 @@ public class RepresentableLegalCounselUpdater {
     private final UserService user;
 
     public Set<LegalCounsellorRemoved> buildEventsForAccessRemoval(CaseData caseData, CaseData caseDataBefore,
-                                                                          final SolicitorRole.Representing representing) {
+                                                                   final SolicitorRole.Representing representing) {
         // need to find the representables that have been updated
         List<WithSolicitor> current = unwrapElements(representing.getTarget().apply(caseData));
         List<WithSolicitor> old = unwrapElements(representing.getTarget().apply(caseDataBefore));

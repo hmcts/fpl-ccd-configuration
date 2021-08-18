@@ -189,6 +189,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             Child.builder()
                 .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
                 .solicitor(MAIN_REPRESENTATIVE)
+                .legalCounsellors(List.of())
                 .build()
         );
 
@@ -239,10 +240,12 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             Child.builder()
                 .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
                 .solicitor(MAIN_REPRESENTATIVE)
+                .legalCounsellors(List.of())
                 .build(),
             Child.builder()
                 .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
                 .solicitor(MAIN_REPRESENTATIVE)
+                .legalCounsellors(List.of())
                 .build()
         );
 
@@ -300,10 +303,12 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             Child.builder()
                 .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
                 .solicitor(ANOTHER_REPRESENTATIVE)
+                .legalCounsellors(List.of())
                 .build(),
             Child.builder()
                 .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
                 .solicitor(ANOTHER_REPRESENTATIVE)
+                .legalCounsellors(List.of())
                 .build()
         );
 

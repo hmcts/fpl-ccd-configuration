@@ -36,23 +36,23 @@ public class RespondentAfterSubmissionRepresentationService {
 
     public Map<String, Object> updateRepresentation(CaseData caseData, CaseData caseDataBefore,
                                                     SolicitorRole.Representing representing,
-                                                    boolean recordChangeOrRepresentation) {//TODO - this is the piece
+                                                    boolean recordChangeOrRepresentation) {
 
         HashMap<String, Object> updatedFields = new HashMap<>(nocFieldPopulator.generate(caseData, representing));
 
         if (recordChangeOrRepresentation) {
             Function<CaseData, List<Element<WithSolicitor>>> target = representing.getTarget();
-            final List<Element<WithSolicitor>> representedPartiesAfter = defaultIfNull(target.apply(caseData), emptyList());
-            final List<Element<WithSolicitor>> representedPartiesBefore = defaultIfNull(target.apply(caseDataBefore),
+            final List<Element<WithSolicitor>> respondentsAfter = defaultIfNull(target.apply(caseData), emptyList());
+            final List<Element<WithSolicitor>> respondentsBefore = defaultIfNull(target.apply(caseDataBefore),
                 emptyList());
 
             List<ChangeOrganisationRequest> representationChanges = respondentService.getRepresentationChanges(
-                representedPartiesAfter, representedPartiesBefore, representing
+                respondentsAfter, respondentsBefore, representing
             );
 
             updatedFields.put("changeOfRepresentatives", representationChanges.stream().reduce(
                 defaultIfNull(caseData.getChangeOfRepresentatives(), new ArrayList<>()),
-                generateRequest(representedPartiesAfter, representedPartiesBefore, representing),
+                generateRequest(respondentsAfter, respondentsBefore, representing),
                 (v, v2) -> v2
             ));
         }
