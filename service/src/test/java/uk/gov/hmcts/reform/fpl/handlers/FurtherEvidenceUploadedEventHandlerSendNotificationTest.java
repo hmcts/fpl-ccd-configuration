@@ -67,7 +67,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
                 LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, LOCAL_AUTHORITY))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
 
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
@@ -94,7 +94,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
                 LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, LOCAL_AUTHORITY))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
 
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
@@ -113,7 +113,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
             wrapElements(createDummyEvidenceBundle(CONFIDENTIAL_1, HMCTS_USER, false, PDF_DOCUMENT_1))
         ).build();
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, HMCTS))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
@@ -182,7 +182,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByHMCTS() {
         CaseData caseData = buildCaseDataWithNonConfidentialDocuments(HMCTS_USER);
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, HMCTS))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
@@ -220,7 +220,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByRespSolicitor() {
         CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, SOLICITOR))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
