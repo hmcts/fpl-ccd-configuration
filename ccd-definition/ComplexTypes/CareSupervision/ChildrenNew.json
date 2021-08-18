@@ -46,6 +46,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildrenNew",
+    "ListElementCode": "finalDecisionReason",
+    "FieldType": "Text",
+    "ElementLabel": "Resolution Reason",
+    "FieldShowCondition": "finalDecisionReason!=\"\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
+    "ListElementCode": "finalDecisionDate",
+    "FieldType": "Text",
+    "ElementLabel": "Resolution Date",
+    "FieldShowCondition": "finalDecisionReason!=\"\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
     "ListElementCode": "legalCounsellors",
     "FieldType": "Collection",
     "FieldTypeParameter": "LegalCounsellor",
