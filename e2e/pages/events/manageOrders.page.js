@@ -20,6 +20,7 @@ const orders = {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c26: 'C26_SECURE_ACCOMMODATION_ORDER',
+    c29: 'C29_RECOVERY_OF_A_CHILD',
     c32: 'C32A_CARE_ORDER',
     c32b: 'C32B_DISCHARGE_OF_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
@@ -35,6 +36,7 @@ const orders = {
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
     c26: 'Authority to keep a child in secure accommodation (C26)',
+    c29: 'Recovery of Child (C29)',
     c32: 'Care order (C32A)',
     c32b: 'Discharge of care order (C32B)',
     c33: 'Interim care order (C33)',
@@ -180,6 +182,30 @@ const section4 = {
     options: {
       father: '#manageOrdersRelationshipWithChild-FATHER',
       second_female_parent: '#manageOrdersRelationshipWithChild-SECOND_FEMALE_PARENT',
+    },
+  },
+  orderMadeDate: '#manageOrdersOrderCreatedDate',
+  whichOrder: {
+    group: '#manageOrdersPlacedUnderOrder-',
+    options: {
+      careOrder: 'CARE_ORDER',
+      epo: 'EMERGENCY_PROTECTION_ORDER',
+    },
+  },
+  orderPermissions: {
+    group: '#manageOrdersActionsPermitted-',
+    options: {
+      entry: 'ENTRY',
+      inform: 'INFORM',
+      produce: 'PRODUCE',
+      remove: 'REMOVE',
+    },
+  },
+  exParte: {
+    group: '#id="manageOrdersIsExParte-',
+    options: {
+      yes: 'YES',
+      no: 'NO',
     },
   },
 };
@@ -488,6 +514,23 @@ const uploadAmendedOrder = amendedOrder => {
   I.attachFile(amendment.upload, amendedOrder);
 };
 
+const enterOrderMadeDate = async (date) => {
+  await I.fillDate(date, section4.orderMadeDate);
+  await I.runAccessibilityTest();
+};
+
+const selectWhichOrder = (order) => {
+  I.click(section4.whichOrder.group + order);
+};
+
+const selectOrderPermissions = (order) => {
+  I.click(section4.orderPermissions.group + order);
+};
+
+const selectIsExparte = (yesOrNo) => {
+  I.click(section4.exParte.options + yesOrNo);
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4, whichOthers, amendment,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
@@ -498,5 +541,6 @@ module.exports = {
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
-  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible,
+  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, enterOrderMadeDate, selectWhichOrder,
+  selectOrderPermissions, selectIsExparte,
 };
