@@ -122,5 +122,23 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"DO NOT SHOW\"",
     "Comment": "Used to store the selected others to notify"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrder",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrder",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
   }
 ]

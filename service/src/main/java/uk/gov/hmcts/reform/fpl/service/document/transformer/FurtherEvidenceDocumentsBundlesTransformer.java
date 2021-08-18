@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
@@ -27,7 +28,7 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
 
     private final FurtherEvidenceDocumentsTransformer furtherEvidenceDocumentsTransformer;
 
-    public List<DocumentBundleView> getFurtherEvidenceDocumentsBundleView(
+    public List<DocumentContainerView> getFurtherEvidenceDocumentsBundleView(
         CaseData caseData,
         DocumentViewType view) {
 
@@ -78,10 +79,10 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
         return combinedDocuments;
     }
 
-    private List<DocumentBundleView> getFurtherEvidenceDocumentBundles(
+    private List<DocumentContainerView> getFurtherEvidenceDocumentBundles(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
 
-        List<DocumentBundleView> documentBundles = new ArrayList<>();
+        List<DocumentContainerView> documentBundles = new ArrayList<>();
         Arrays.stream(FurtherEvidenceType.values())
             .filter(type -> type != APPLICANT_STATEMENT)
             .forEach(
@@ -92,7 +93,7 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
                             true);
 
                     if (!documentView.isEmpty()) {
-                        DocumentBundleView bundleView = buildBundle(type.getLabel(), documentView);
+                        DocumentContainerView bundleView = buildBundle(type.getLabel(), documentView);
                         documentBundles.add(bundleView);
                     }
                 });
