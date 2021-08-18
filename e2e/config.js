@@ -158,7 +158,7 @@ module.exports = {
     bulkScan: 'Attach scanned docs',
     addNote: 'Add a case note',
     addExpertReportLog: 'Log expert report',
-    closeTheCase: 'Close the case',
+    recordFinalDecisions: 'Record final decisions',
     returnApplication: 'Return application',
     manageDocuments: 'Manage documents',
     uploadAdditionalApplications: 'Upload additional applications',
