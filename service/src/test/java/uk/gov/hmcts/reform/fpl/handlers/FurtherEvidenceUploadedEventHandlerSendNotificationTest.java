@@ -260,7 +260,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
     void shouldSendNotificationWhenNonConfidentialResponseStatementIsUploadedByRespSolicitor() {
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, SOLICITOR))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
