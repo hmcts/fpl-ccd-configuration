@@ -264,7 +264,7 @@ class SendNoticeOfHearingHandlerTest {
     }
 
     @Test
-    void shouldNotifyNotifyTranslationTeamIfNoLanguageRequirementDefaultsToEmpty() {
+    void shouldNotifyTranslationTeamIfLanguageRequirementDefaultsToEmpty() {
         underTest.notifyTranslationTeam(
             new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
                 .startDate(START_DATE)

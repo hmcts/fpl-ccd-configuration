@@ -45,7 +45,7 @@ public class TranslatableNoticeOfHearingProvider implements TranslatableListItem
     @Override
     public boolean accept(CaseData caseData, UUID selectedOrderId) {
         return provideListItems(caseData).stream()
-            .anyMatch(hearging -> Objects.equals(selectedOrderId, hearging.getId()));
+            .anyMatch(hearing -> Objects.equals(selectedOrderId, hearing.getId()));
     }
 
     @Override
