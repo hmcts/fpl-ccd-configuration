@@ -222,7 +222,7 @@ Scenario('Request and upload translation for case management order', async ({ I,
   // Judge approves and send to translation
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
-  I.see('mockFile.docx');
+  I.waitForText('mockFile.docx');
   await reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   await I.goToNextPage();
