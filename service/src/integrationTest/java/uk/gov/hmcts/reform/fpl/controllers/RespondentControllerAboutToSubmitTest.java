@@ -36,13 +36,12 @@ import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegal
 class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final String SOLICITOR_ORG_ID = "Organisation ID";
-
-    private static final ApplicantParty TEST_LEGACY_APPLICANT = ApplicantParty.builder()
+    private static final ApplicantParty LEGACY_APPLICANT = ApplicantParty.builder()
         .organisationName("Applicant org name")
         .build();
-    private static final List<Element<Applicant>> TEST_APPLICANTS = wrapElements(Applicant.builder()
-        .party(TEST_LEGACY_APPLICANT).build());
-    private static final RespondentSolicitor TEST_RESPONDENT_SOLICITOR = RespondentSolicitor.builder()
+    private static final List<Element<Applicant>> APPLICANTS = wrapElements(Applicant.builder()
+        .party(LEGACY_APPLICANT).build());
+    private static final RespondentSolicitor RESPONDENT_SOLICITOR = RespondentSolicitor.builder()
         .organisation(Organisation.builder()
             .organisationID(SOLICITOR_ORG_ID)
             .build())
@@ -53,14 +52,14 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldGenerateRespondentPoliciesAndAnswersWhenToggleOnAndStateIsNotOpen() {
+    void shouldGenerateRespondentPoliciesAndAnswersWhenToggledOnAndStateIsNotOpen() {
         final Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
             .party(RespondentParty.builder()
                 .firstName("Alex")
                 .lastName("Brown")
                 .build())
-            .solicitor(TEST_RESPONDENT_SOLICITOR)
+            .solicitor(RESPONDENT_SOLICITOR)
             .build();
 
         final LocalAuthority localAuthority = LocalAuthority.builder()
@@ -70,7 +69,7 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
         final CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
             .localAuthorities(wrapElements(localAuthority))
-            .applicants(TEST_APPLICANTS)
+            .applicants(APPLICANTS)
             .respondents1(wrapElements(respondentWithRepresentative))
             .build();
 
@@ -93,12 +92,12 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldGenerateRespondentWithLegacyApplicantPoliciesWhenToggleOnAndStateIsNotOpen() {
         Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
-            .solicitor(TEST_RESPONDENT_SOLICITOR)
+            .solicitor(RESPONDENT_SOLICITOR)
             .build();
 
         final CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
-            .applicants(TEST_APPLICANTS)
+            .applicants(APPLICANTS)
             .respondents1(wrapElements(respondentWithRepresentative))
             .build();
 
@@ -111,7 +110,7 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
                 .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
                 .respondentLastName(respondentWithRepresentative.getParty().getLastName())
-                .applicantName(TEST_LEGACY_APPLICANT.getOrganisationName())
+                .applicantName(LEGACY_APPLICANT.getOrganisationName())
                 .build())
             .build();
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
@@ -121,20 +120,20 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveLegalCounselFromRespondentWhenRepresentativeIsRemoved() {
         List<Element<LegalCounsellor>> counsel = List.of(element(buildLegalCounsellor("1", true)));
         Respondent respondent1 = respondent(dateNow()).toBuilder()
-            .solicitor(TEST_RESPONDENT_SOLICITOR)
+            .solicitor(RESPONDENT_SOLICITOR)
             .legalCounsellors(counsel)
             .build();
         Respondent respondent2 = respondent(dateNow()).toBuilder()
-            .solicitor(TEST_RESPONDENT_SOLICITOR)
+            .solicitor(RESPONDENT_SOLICITOR)
             .legalCounsellors(counsel)
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
-            .applicants(TEST_APPLICANTS)
+            .applicants(APPLICANTS)
             .respondents1(wrapElements(respondent1, respondent2))
             .build();
         CaseData caseDataAfter = CaseData.builder()
-            .applicants(TEST_APPLICANTS)
+            .applicants(APPLICANTS)
             .respondents1(wrapElements(respondent1.toBuilder().solicitor(null).build(), respondent2))
             .build();
 
@@ -177,7 +176,7 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() {
+    void shouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseData caseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
         CaseData initialData = extractCaseData(callbackRequest);

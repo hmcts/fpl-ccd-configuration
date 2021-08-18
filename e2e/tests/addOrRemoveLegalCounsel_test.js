@@ -23,6 +23,7 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
   }
 
   if (!caseId) {
+    caseData.caseData.caseName = 'Legal counsel test case';
     caseId = await I.submitNewCaseWithData(caseData);
 
     //Submit case
@@ -62,7 +63,10 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
 
   I.seeEventSubmissionConfirmation(config.applicationActions.addOrRemoveLegalCounsel);
 
-  assertLegalCounsellorWasAdded(caseViewPage, I);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+
+  assertLegalCounsellorForParties(I, ['Respondents 1', 'Child 1']);
+
   legalCounselAdded = true;
 });
 
@@ -76,7 +80,7 @@ Scenario('Legal counsel to be removed when respondent representative is removed 
   I.dontSeeInTab(['Respondents 1', 'Legal Counsellor']);
 
   // assert that it has just been removed from respondent and not child
-  I.seeInTab(['Child 1', 'Legal Counsellor']);
+  assertLegalCounsellorForParties(I, ['Child 1']);
 });
 
 Scenario('Legal counsel to be removed when child representative is updated', async ({ I, caseViewPage, enterChildrenEventPage }) => {
@@ -86,7 +90,6 @@ Scenario('Legal counsel to be removed when child representative is updated', asy
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  assertChild(I, solicitor2);
   I.dontSeeInTab(['Child 1', 'Legal Counsellor']);
 });
 
@@ -113,21 +116,15 @@ function assertRepresentative(I, user, organisation, representedParty) {
   }
 }
 
-function assertLegalCounsellorWasAdded(caseViewPage, I) {
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+function assertLegalCounsellorForParties(I, parties) {
   const legalCounsellor = legalCounsellors.legalCounsellor;
 
-  let representedParty = 'Respondents 1';
-  I.seeInTab([representedParty, 'Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
-  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
-  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Email address'], legalCounsellor.email);
-  I.seeOrganisationInTab([representedParty, 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
-
-  representedParty = 'Child 1';
-  I.seeInTab([representedParty, 'Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
-  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
-  I.seeInTab([representedParty, 'Legal Counsellor 1', 'Email address'], legalCounsellor.email);
-  I.seeOrganisationInTab([representedParty, 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
+  for (const party of parties) {
+    I.seeInTab([party, 'Legal Counsellor 1', 'First name'], legalCounsellor.firstName);
+    I.seeInTab([party, 'Legal Counsellor 1', 'Last name'], legalCounsellor.lastName);
+    I.seeInTab([party, 'Legal Counsellor 1', 'Email address'], legalCounsellor.email);
+    I.seeOrganisationInTab([party, 'Legal Counsellor 1', 'Name'], legalCounsellor.organisation);
+  }
 }
 
 async function addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor) {

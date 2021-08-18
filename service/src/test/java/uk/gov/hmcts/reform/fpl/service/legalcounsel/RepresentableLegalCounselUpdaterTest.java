@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
@@ -13,10 +14,13 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -45,7 +49,8 @@ public class RepresentableLegalCounselUpdaterTest {
     );
     private final Organisation organisation1 = mock(Organisation.class);
     private final Organisation organisation2 = mock(Organisation.class);
-    private final LegalCounsellor legalCounsellor = mock(LegalCounsellor.class);
+    private final LegalCounsellor legalCounsellor1 = mock(LegalCounsellor.class);
+    private final LegalCounsellor legalCounsellor2 = mock(LegalCounsellor.class);
 
     private final RespondentSolicitor solicitor1 = mock(RespondentSolicitor.class);
     private final RespondentSolicitor solicitor2 = mock(RespondentSolicitor.class);
@@ -62,14 +67,14 @@ public class RepresentableLegalCounselUpdaterTest {
 
     @BeforeEach
     void setUp() {
-        when(legalCounsellor.getOrganisation()).thenReturn(organisation1);
+        when(legalCounsellor1.getOrganisation()).thenReturn(organisation1);
         when(organisation1.getOrganisationID()).thenReturn(ORG_1_ID);
         when(organisation2.getOrganisationID()).thenReturn(ORG_2_ID);
     }
 
     @Test
     void shouldRemoveLegalCounselWhenSolicitorIsRemovedFromRepresentedParty() {
-        List<Element<LegalCounsellor>> legalCounsel = wrapElements(legalCounsellor);
+        List<Element<LegalCounsellor>> legalCounsel = wrapElements(legalCounsellor1);
         Respondent respondent1 = respondentWithSolicitor().toBuilder()
             .legalCounsellors(legalCounsel)
             .build();
@@ -94,7 +99,7 @@ public class RepresentableLegalCounselUpdaterTest {
 
     @Test
     void shouldNotRemoveLegalCounselWhenSolicitorOrganisationIdDoesNotChange() {
-        List<Element<LegalCounsellor>> legalCounsel = wrapElements(legalCounsellor);
+        List<Element<LegalCounsellor>> legalCounsel = wrapElements(legalCounsellor1);
         Respondent respondentBefore = Respondent.builder()
             .solicitor(RespondentSolicitor.builder()
                 .firstName("Ted")
@@ -120,7 +125,7 @@ public class RepresentableLegalCounselUpdaterTest {
 
     @Test
     void shouldRemoveLegalCounselIfNewSolicitorOrganisationDoesNotHaveLegalCounselInCaseData() {
-        List<Element<LegalCounsellor>> legalCounsel = wrapElements(legalCounsellor);
+        List<Element<LegalCounsellor>> legalCounsel = wrapElements(legalCounsellor1);
         Respondent respondentBefore = Respondent.builder()
             .solicitor(RespondentSolicitor.builder()
                 .firstName("Ted")
@@ -150,7 +155,7 @@ public class RepresentableLegalCounselUpdaterTest {
             .firstName("Bob")
             .organisation(organisation1)
             .build();
-        List<Element<LegalCounsellor>> legalCounsel1 = wrapElements(legalCounsellor);
+        List<Element<LegalCounsellor>> legalCounsel1 = wrapElements(legalCounsellor1);
         Respondent respondent1Before = Respondent.builder().build();//No representation
         Respondent respondent2Before = Respondent.builder()
             .solicitor(solicitor1)
@@ -193,7 +198,7 @@ public class RepresentableLegalCounselUpdaterTest {
             .organisation(organisation2)
             .build();
 
-        List<Element<LegalCounsellor>> legalCounsel1 = wrapElements(legalCounsellor);
+        List<Element<LegalCounsellor>> legalCounsel1 = wrapElements(legalCounsellor1);
         List<Element<LegalCounsellor>> legalCounsel2 = wrapElements(mock(LegalCounsellor.class));
 
         Respondent respondent1Before = Respondent.builder()
@@ -238,8 +243,8 @@ public class RepresentableLegalCounselUpdaterTest {
             .organisation(organisation2)
             .build();
 
-        List<Element<LegalCounsellor>> legalCounsel1 = wrapElements(legalCounsellor);
-        List<Element<LegalCounsellor>> legalCounsel2 = wrapElements(mock(LegalCounsellor.class));
+        List<Element<LegalCounsellor>> legalCounsel1 = wrapElements(legalCounsellor1);
+        List<Element<LegalCounsellor>> legalCounsel2 = wrapElements(legalCounsellor2);
 
         Child childBefore = Child.builder()
             .solicitor(solicitor1)
@@ -262,6 +267,86 @@ public class RepresentableLegalCounselUpdaterTest {
         assertThat(updated).hasSize(1);
         //Legal counsel from the other organisation was copied over
         assertThat(updated.get(0).getValue().getLegalCounsellors()).isEqualTo(legalCounsel2);
+    }
+
+    @Test
+    void shouldUpdateLegalCounselInChildren() {
+        Child childBefore = Child.builder()
+            .solicitor(solicitor1)
+            .legalCounsellors(wrapElements(legalCounsellor1))
+            .build();
+
+        Child childAfter = Child.builder()
+            .solicitor(solicitor2)
+            .legalCounsellors(wrapElements(legalCounsellor1))
+            .build();
+
+        Respondent respondent = Respondent.builder()
+            .solicitor(solicitor1)
+            .legalCounsellors(wrapElements(legalCounsellor2))
+            .build();
+
+        when(caseData.getAllChildren()).thenReturn(wrapElements(childAfter));
+        when(caseDataBefore.getAllChildren()).thenReturn(wrapElements(childBefore));
+        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent));
+
+        when(caseData.getChangeOrganisationRequestField()).thenReturn(
+            ChangeOrganisationRequest.builder()
+                .caseRoleId(DynamicList.builder()
+                    .value(DynamicListElement.builder().code("[CHILDSOLICITORA]").build())
+                    .build())
+            .build()
+        );
+
+        when(solicitor1.getOrganisation()).thenReturn(organisation1);
+        when(solicitor2.getOrganisation()).thenReturn(organisation2);
+
+        Map<String, Object> updated = underTest.updateLegalCounselFromNoC(caseData, caseDataBefore);
+
+        Child expectedChild = Child.builder().solicitor(solicitor2).legalCounsellors(List.of()).build();
+        assertThat(updated).isEqualTo(Map.of(
+            "children1", wrapElements(expectedChild)
+        ));
+    }
+
+    @Test
+    void shouldUpdateLegalCounselInRespondents() {
+        Child child = Child.builder()
+            .solicitor(solicitor1)
+            .legalCounsellors(wrapElements(legalCounsellor1))
+            .build();
+
+        Respondent respondentBefore = Respondent.builder()
+            .solicitor(solicitor1)
+            .legalCounsellors(wrapElements(legalCounsellor2))
+            .build();
+
+        Respondent respondentAfter = Respondent.builder()
+            .solicitor(solicitor2)
+            .legalCounsellors(wrapElements(legalCounsellor2))
+            .build();
+
+        when(caseData.getAllChildren()).thenReturn(wrapElements(child));
+        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondentAfter));
+        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondentBefore));
+
+        when(solicitor1.getOrganisation()).thenReturn(organisation1);
+        when(solicitor2.getOrganisation()).thenReturn(organisation2);
+
+        when(caseData.getChangeOrganisationRequestField()).thenReturn(
+            ChangeOrganisationRequest.builder()
+                .caseRoleId(DynamicList.builder()
+                    .value(DynamicListElement.builder().code("[SOLICITORA]").build())
+                    .build())
+                .build()
+        );
+
+        Map<String, Object> updated = underTest.updateLegalCounselFromNoC(caseData, caseDataBefore);
+
+        Respondent expectedRespondent = Respondent.builder().solicitor(solicitor2).legalCounsellors(List.of()).build();
+        assertThat(updated).isEqualTo(Map.of(
+            "respondents1", wrapElements(expectedRespondent)
+        ));
     }
 
     @Test
@@ -306,14 +391,14 @@ public class RepresentableLegalCounselUpdaterTest {
         when(respondent1.getSolicitor()).thenReturn(solicitor1);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
         when(respondent1.getLegalCounsellors()).thenReturn(List.of());
-        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor));
+        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
 
         when(solicitor1.getOrganisation()).thenReturn(organisation1);
 
         when(orgService.findOrganisation(ORG_1_ID)).thenReturn(Optional.of(prdOrg1));
         when(prdOrg1.getName()).thenReturn(ORG_1_NAME);
 
-        when(legalCounsellor.getEmail()).thenReturn(EMAIL);
+        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
 
         when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
 
@@ -322,7 +407,7 @@ public class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor))
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1))
         ));
     }
 
@@ -334,11 +419,11 @@ public class RepresentableLegalCounselUpdaterTest {
         when(respondent1.getSolicitor()).thenReturn(null);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
         when(respondent1.getLegalCounsellors()).thenReturn(List.of());
-        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor));
+        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
 
         when(user.isHmctsUser()).thenReturn(true);
 
-        when(legalCounsellor.getEmail()).thenReturn(EMAIL);
+        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
 
         when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
 
@@ -347,7 +432,7 @@ public class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, "HMCTS", Pair.of(USER_ID, legalCounsellor))
+            new LegalCounsellorRemoved(caseData, "HMCTS", Pair.of(USER_ID, legalCounsellor1))
         ));
     }
 
@@ -359,13 +444,13 @@ public class RepresentableLegalCounselUpdaterTest {
         when(respondent1.getSolicitor()).thenReturn(null);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
         when(respondent1.getLegalCounsellors()).thenReturn(List.of());
-        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor));
+        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
 
         when(user.isHmctsUser()).thenReturn(false);
         when(orgService.findOrganisation()).thenReturn(Optional.of(prdOrg1));
         when(prdOrg1.getName()).thenReturn(ORG_1_NAME);
 
-        when(legalCounsellor.getEmail()).thenReturn(EMAIL);
+        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
 
         when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
 
@@ -374,7 +459,7 @@ public class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor))
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1))
         ));
     }
 
@@ -386,12 +471,12 @@ public class RepresentableLegalCounselUpdaterTest {
         when(respondent1.getSolicitor()).thenReturn(solicitor1);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
         when(respondent1.getLegalCounsellors()).thenReturn(List.of());
-        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor));
+        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
 
         when(solicitor1.getUnregisteredOrganisation()).thenReturn(unregisteredOrganisation);
         when(unregisteredOrganisation.getName()).thenReturn(ORG_1_NAME);
 
-        when(legalCounsellor.getEmail()).thenReturn(EMAIL);
+        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
 
         when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
 
@@ -400,7 +485,7 @@ public class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor))
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1))
         ));
     }
 
@@ -421,7 +506,7 @@ public class RepresentableLegalCounselUpdaterTest {
         when(respondent4.getSolicitor()).thenReturn(solicitor4);
         when(respondent1.getLegalCounsellors()).thenReturn(List.of());
         when(respondent2.getLegalCounsellors()).thenReturn(List.of());
-        when(respondent3.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor));
+        when(respondent3.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
         when(respondent4.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor2));
 
         when(solicitor1.getOrganisation()).thenReturn(organisation1);
@@ -431,7 +516,7 @@ public class RepresentableLegalCounselUpdaterTest {
         when(orgService.findOrganisation(ORG_2_ID)).thenReturn(Optional.of(prdOrg2));
         when(prdOrg2.getName()).thenReturn(ORG_2_NAME);
 
-        when(legalCounsellor.getEmail()).thenReturn(EMAIL);
+        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
         when(legalCounsellor2.getEmail()).thenReturn(EMAIL);
 
         when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
@@ -441,7 +526,7 @@ public class RepresentableLegalCounselUpdaterTest {
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor)),
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1)),
             new LegalCounsellorRemoved(caseData, ORG_2_NAME, Pair.of(USER_ID, legalCounsellor2))
         ));
     }
@@ -454,8 +539,8 @@ public class RepresentableLegalCounselUpdaterTest {
         when(respondent1.getSolicitor()).thenReturn(null);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
 
-        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor));
-        when(legalCounsellor.getEmail()).thenReturn(EMAIL);
+        when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
+        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
         when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
 
         when(user.isHmctsUser()).thenReturn(false);

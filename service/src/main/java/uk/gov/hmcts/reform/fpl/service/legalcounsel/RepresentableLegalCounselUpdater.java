@@ -1,24 +1,21 @@
 package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,14 +24,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RepresentableLegalCounselUpdater {
@@ -43,14 +41,14 @@ public class RepresentableLegalCounselUpdater {
     private final UserService user;
 
     public Set<LegalCounsellorRemoved> buildEventsForAccessRemoval(CaseData caseData, CaseData caseDataBefore,
-                                                                   final SolicitorRole.Representing representing) {
+                                                                   final Representing representing) {
         // need to find the representables that have been updated
         List<WithSolicitor> current = unwrapElements(representing.getTarget().apply(caseData));
         List<WithSolicitor> old = unwrapElements(representing.getTarget().apply(caseDataBefore));
 
-        Set<LegalCounsellor> allCurrentLegalCounsellors = Arrays.stream(SolicitorRole.Representing.values())
-            .flatMap(r -> unwrapElements(r.getTarget().apply(caseData)).stream())
-            .flatMap(s -> unwrapElements(s.getLegalCounsellors()).stream())
+        Set<LegalCounsellor> allCurrentLegalCounsellors = Arrays.stream(Representing.values())
+            .flatMap(representingType -> unwrapElements(representingType.getTarget().apply(caseData)).stream())
+            .flatMap(represented -> unwrapElements(represented.getLegalCounsellors()).stream())
             .collect(Collectors.toSet());
 
         Set<LegalCounsellorRemoved> events = new HashSet<>();
@@ -72,32 +70,20 @@ public class RepresentableLegalCounselUpdater {
         return events;
     }
 
-    public Map<String, Object> updateLegalCounsel(CaseData caseData, CaseData caseDataBefore) {
-        // make mutable and immutable copies of the current collections
-        List<Element<Respondent>> currentRespondents = new ArrayList<>(caseData.getAllRespondents());
-        List<Element<Respondent>> currentRespondentsCopy = List.copyOf(currentRespondents);
-        List<Element<Respondent>> oldRespondents = caseDataBefore.getAllRespondents();
+    public Map<String, Object> updateLegalCounselFromNoC(CaseData caseData, CaseData caseDataBefore) {
+        ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
+        SolicitorRole role = SolicitorRole.from(change.getCaseRoleId().getValueCode()).orElseThrow();
 
-        List<Element<Child>> currentChildren = new ArrayList<>(caseData.getAllChildren());
-        List<Element<Child>> currentChildrenCopy = List.copyOf(currentChildren);
-        List<Element<Child>> oldChildren = caseDataBefore.getAllChildren();
+        Representing representing = role.getRepresenting();
+        Representing opposite = Representing.CHILD == representing ? Representing.RESPONDENT : Representing.CHILD;
 
-        currentRespondents.removeAll(oldRespondents);
-        currentChildren.removeAll(oldChildren);
-
-        List<Element<Respondent>> updatedRespondents = currentRespondentsCopy;
-        if (!currentRespondents.isEmpty()) {
-            updatedRespondents = updateLegalCounsel(oldRespondents, currentRespondentsCopy, currentChildrenCopy);
-        }
-
-        List<Element<Child>> updatedChildren = currentChildrenCopy;
-        if (!currentChildren.isEmpty()) {
-            updatedChildren = updateLegalCounsel(oldChildren, currentChildrenCopy, currentRespondentsCopy);
-        }
+        Function<CaseData, List<Element<WithSolicitor>>> toUpdateTarget = representing.getTarget();
+        Function<CaseData, List<Element<WithSolicitor>>> toQueryTarget = opposite.getTarget();
 
         return Map.of(
-            "respondents1", updatedRespondents,
-            "children1", updatedChildren
+            representing.getCaseField(), updateLegalCounsel(
+                toUpdateTarget.apply(caseDataBefore), toUpdateTarget.apply(caseData), toQueryTarget.apply(caseData)
+            )
         );
     }
 

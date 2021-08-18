@@ -474,8 +474,12 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldTransferLegalCounselWhenSolicitorChanged() {
-        List<Element<LegalCounsellor>> legalCounsellors = wrapElements(LegalCounsellor.builder().build());
-        List<Element<LegalCounsellor>> differentLegalCounsellors = wrapElements(LegalCounsellor.builder().build());
+        List<Element<LegalCounsellor>> legalCounsellors = wrapElements(
+            LegalCounsellor.builder().firstName("original").build()
+        );
+        List<Element<LegalCounsellor>> differentLegalCounsellors = wrapElements(
+            LegalCounsellor.builder().firstName("shared").build()
+        );
 
         CaseData caseDataBefore = CaseData.builder()
             .state(NON_RESTRICTED_STATE)

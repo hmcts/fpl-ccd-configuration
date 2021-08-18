@@ -45,22 +45,19 @@ public class NoticeOfChangeController extends CallbackController {
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        // deep copy of the original case data to ensure that we preserve the original
+        // in about-to-start caseDetailsBefore is null, this makes sense as this is the first callback that can be
+        // hit so there wouldn't be any difference in caseDetails and caseDetailsBefore
+        CaseData originalCaseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData));
 
+        caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounselFromNoC(caseData, originalCaseData));
+
         return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(),
             decisionRequest(caseDetails));
-    }
-
-    @PostMapping("/about-to-submit")
-    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseDataBefore(request);
-
-        caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounsel(caseData, caseDataBefore));
-
-        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
