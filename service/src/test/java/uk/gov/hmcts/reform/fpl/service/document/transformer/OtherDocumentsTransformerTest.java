@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 
 import java.time.LocalDateTime;
@@ -91,7 +92,7 @@ class OtherDocumentsTransformerTest {
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2)))
                 .build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -129,7 +130,7 @@ class OtherDocumentsTransformerTest {
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_1),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2))).build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, LA);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, LA);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -166,7 +167,7 @@ class OtherDocumentsTransformerTest {
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_1),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2))).build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, NONCONFIDENTIAL);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, NONCONFIDENTIAL);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -189,7 +190,7 @@ class OtherDocumentsTransformerTest {
             DocumentBundleView.builder().name(DOCUMENT_BUNDLE_NAME)
                 .documents(List.of(buildScannedDocumentView(scannedDocument1))).build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -201,7 +202,7 @@ class OtherDocumentsTransformerTest {
             .otherCourtAdminDocuments(List.of())
             .build();
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
 
         assertThat(actualDocumentsView).isEmpty();
     }

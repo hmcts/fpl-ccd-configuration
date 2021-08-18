@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -35,12 +37,15 @@ public class FurtherEvidenceNotificationService {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
     }
 
-    public Set<String> getRepresentativeEmails(CaseData caseData) {
+    public Set<String> getRepresentativeEmails(CaseData caseData, DocumentUploadNotificationUserType userType) {
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
         HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, roles);
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
-        emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
+
+        if (userType == SOLICITOR) {
+            emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
+        }
         return emails;
     }
 

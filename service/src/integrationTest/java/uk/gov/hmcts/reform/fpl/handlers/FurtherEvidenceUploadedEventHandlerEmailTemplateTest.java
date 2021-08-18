@@ -6,7 +6,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -23,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -34,7 +34,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
@@ -53,6 +57,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2021, 2, 22, 0, 0, 0).plusMonths(3);
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
+    private static final List<RepresentativeRole.Type> ROLES = List.of(CAFCASS, RESPONDENT);
     private static final UUID REPRESENTATIVE_UUID = UUID.randomUUID();
     private static final CaseData CASE_DATA = buildCaseData();
     private static final CaseData CASE_DATA_BEFORE = buildCaseDataBefore();
@@ -61,6 +66,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @Autowired
     private FurtherEvidenceUploadedEventHandler underTest;
+
+    @Autowired
+    private RepresentativesInbox representativesInbox;
 
     @MockBean
     private SendDocumentService sendDocumentService;
@@ -75,6 +83,8 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
+        when(representativesInbox.getRepresentativeEmailsFilteredByRole(CASE_DATA, DIGITAL_SERVICE, ROLES))
+            .thenReturn(newHashSet("resp@example.com"));
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
@@ -105,6 +115,8 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     void sendNotificationWhenNewDocumentUploadNotificationToggledOnForLA() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(representativesInbox.getRepresentativeEmailsFilteredByRole(CASE_DATA, DIGITAL_SERVICE, ROLES))
+            .thenReturn(newHashSet("resp@example.com"));
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
@@ -172,7 +184,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .builder()
             .email(REP_EMAIL)
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
-            .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
+            .servingPreferences(DIGITAL_SERVICE)
             .build()));
     }
 

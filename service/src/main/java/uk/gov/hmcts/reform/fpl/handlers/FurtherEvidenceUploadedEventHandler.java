@@ -52,7 +52,7 @@ public class FurtherEvidenceUploadedEventHandler {
         final Set<String> recipients = new HashSet<>();
 
         if (!newNonConfidentialDocuments.isEmpty()) {
-            recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, userType));
 
             if (userType != LOCAL_AUTHORITY) {
                 recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData));

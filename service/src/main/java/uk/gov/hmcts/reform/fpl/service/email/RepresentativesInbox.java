@@ -66,7 +66,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public LinkedHashSet<String> getRespondentSolicitorEmails(CaseData caseData,
+    public HashSet<String> getRespondentSolicitorEmails(CaseData caseData,
                                                               RepresentativeServingPreferences preference) {
         return caseData.getAllRespondents().stream()
             .filter(respondent -> shouldSend(preference, respondent))
@@ -75,7 +75,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public LinkedHashSet<String> getChildrenSolicitorEmails(CaseData caseData,
+    public HashSet<String> getChildrenSolicitorEmails(CaseData caseData,
                                                             RepresentativeServingPreferences preference) {
         return caseData.getAllChildren().stream()
             .filter(child -> shouldSend(preference, child))
