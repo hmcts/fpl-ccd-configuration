@@ -597,5 +597,18 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.orderIsExParte=\"YES\"",
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersTranslationNeeded",
+    "PageFieldDisplayOrder": 50,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.translationRequirements=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
   }
 ]

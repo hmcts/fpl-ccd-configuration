@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
@@ -117,6 +118,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -474,6 +476,7 @@ public class CaseData {
     private final Others others;
 
     private final String languageRequirement;
+    private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
 
     @JsonIgnore
     public boolean isWelshLanguageRequested() {
@@ -545,7 +548,8 @@ public class CaseData {
     public List<Element<Other>> getAllOthers() {
         List<Element<Other>> othersList = new ArrayList<>();
 
-        ofNullable(this.getOthers()).map(Others::getFirstOther).map(ElementUtils::element).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getFirstOther).filter(not(Other::isEmpty))
+            .map(ElementUtils::element).ifPresent(othersList::add);
         ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);
@@ -631,6 +635,10 @@ public class CaseData {
     private final String deprivationOfLiberty;
     private final CloseCase closeCaseTabField;
     private final String closeCaseFromOrder;
+    @JsonUnwrapped
+    @Builder.Default
+    private final RecordChildrenFinalDecisionsEventData recordChildrenFinalDecisionsEventData =
+        RecordChildrenFinalDecisionsEventData.builder().build();
 
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;

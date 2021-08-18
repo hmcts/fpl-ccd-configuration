@@ -62,6 +62,7 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("linkApplication", "NO"),
             Map.entry("isFinalOrder", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("translationRequirements", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("closeCase", "NO"),
@@ -109,6 +110,7 @@ class OrderShowHideQuestionsCalculatorTest {
             "approver", "YES",
             "previewOrder", "YES",
             "orderToAmend", "NO",
+            "translationRequirements", "NO",
             "uploadAmendedOrder", "NO"
         );
 
@@ -516,6 +518,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("cafcassJurisdictions", "NO"),
                 Map.entry("needSealing", "YES"),
                 Map.entry("uploadOrderFile", "YES"),
+                Map.entry("translationRequirements", "YES"),
                 Map.entry("closeCase", "YES"),
                 Map.entry("orderIsByConsent", "NO"),
                 Map.entry("appointedGuardian", "NO"),
@@ -558,6 +561,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("epoExpiryDate", "NO"),
                 Map.entry("isFinalOrder", "NO"),
                 Map.entry("epoTypeAndPreventRemoval", "NO"),
+                Map.entry("translationRequirements", "YES"),
                 Map.entry("epoChildrenDescription", "NO"),
                 Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
                 Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),

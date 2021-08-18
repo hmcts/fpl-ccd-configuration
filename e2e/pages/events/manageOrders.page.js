@@ -173,6 +173,11 @@ const section4 = {
       no: '#manageOrdersIsFinalOrder_No',
     },
   },
+  translationRequirement: {
+    no: '#manageOrdersTranslationNeeded-NO',
+    englishToWelsh: '#manageOrdersTranslationNeeded-ENGLISH_TO_WELSH',
+    welshToEnglish: '#manageOrdersTranslationNeeded-WELSH_TO_ENGLISH',
+  },
   orderByConsent: '#manageOrdersIsByConsent_Yes',
   guardianSelector: {
     selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
@@ -464,6 +469,10 @@ const selectEnglandOffice = office => {
   I.selectOption(section4.englandOffices, office);
 };
 
+const selectTranslationRequirement = (radioOption) => {
+  I.click(radioOption);
+};
+
 const linkApplication = (applicationToChoose) => {
   I.see('Is there an application for the order on the system?');
   I.dontSee('Applications');
@@ -538,7 +547,7 @@ const enterOfficerName = async (text) => {
 };
 
 module.exports = {
-  operations, hearingDetails, orders, section2, section3, section4, whichOthers, amendment,
+  operations, hearingDetails, orders, section2, section3, section4, whichOthers, amendment, selectTranslationRequirement,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, selectIsFinalOrder, selectIsNotFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest, reviewOrderToAmend, uploadAmendedOrder, selectOrderToAmend,

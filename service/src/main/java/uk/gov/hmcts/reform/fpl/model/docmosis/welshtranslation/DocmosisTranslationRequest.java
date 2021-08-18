@@ -19,7 +19,7 @@ public class DocmosisTranslationRequest implements DocmosisData {
     private String description;
     private DocmosisTranslateLanguages translate;
     private DocmosisWelshLayout layout;
-    private int wordCount;
+    private long wordCount;
     private String dateOfReturn;
     private RenderFormat format;
 }

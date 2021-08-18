@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsContr
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.UUID_3;
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.UUID_4;
 import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.dlElement;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(UploadTranslationsController.class)
@@ -84,12 +85,14 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
                     .filename("noticeo_c6.pdf")
                     .build())
                 .translatedDocument(DocumentReference.buildFromDocument(UPLOADED_TRANSFORMED_DOCUMENT))
+                .translationRequirements(ENGLISH_TO_WELSH)
                 .translationUploadDateTime(now())
                 .build()
             ), element(UUID_4, DocumentBundle.builder()
                 .document(DocumentReference.builder()
                     .filename("noticeo_c6a.pdf")
                     .build())
+                .translationRequirements(ENGLISH_TO_WELSH)
                 .build()
             ))).build());
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -126,6 +127,7 @@ class SendNoticeOfHearingHandlerTest {
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.isRepresented()).willReturn(false);
         given(OTHER.hasAddressAdded()).willReturn(false);
+        given(OTHER.getName()).willReturn("John");
         given(noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
             CASE_DATA, HEARING, OTHER)).willReturn(NO_OTHER_ADDRESS_NOTIFY_DATA);
 
@@ -134,6 +136,21 @@ class SendNoticeOfHearingHandlerTest {
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
 
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotSendNotificationToCtscWhenOtherDoesNotHaveAddressAndNameIsNullOrEmpty(String otherName) {
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+        given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
+        given(OTHER.isRepresented()).willReturn(false);
+        given(OTHER.hasAddressAdded()).willReturn(false);
+        given(OTHER.getName()).willReturn(otherName);
+
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+
+        verifyNoInteractions(notificationService);
     }
 
     @ParameterizedTest

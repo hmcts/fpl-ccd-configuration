@@ -158,7 +158,7 @@ module.exports = {
     bulkScan: 'Attach scanned docs',
     addNote: 'Add a case note',
     addExpertReportLog: 'Log expert report',
-    closeTheCase: 'Close the case',
+    recordFinalDecisions: 'Record final decisions',
     returnApplication: 'Return application',
     manageDocuments: 'Manage documents',
     uploadAdditionalApplications: 'Upload additional applications',
@@ -177,6 +177,8 @@ module.exports = {
   testFile: './e2e/fixtures/testFiles/mockFile.txt',
   testPdfFile: './e2e/fixtures/testFiles/mockFile.pdf',
   testWordFile: './e2e/fixtures/testFiles/mockFile.docx',
+  testWordFileSdo: './e2e/fixtures/testFiles/sdo.docx',
+  testPdfFileUho: './e2e/fixtures/testFiles/uho.pdf',
   // urls
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   scheduleUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
