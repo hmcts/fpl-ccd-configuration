@@ -39,7 +39,6 @@ class BundleViewAggregatorTest {
     private static final DocumentContainerView APPLICATION_STATEMENT_BUNDLE_VIEWS = mock(DocumentContainerView.class);
     private static final List<DocumentContainerView> FURTHER_EVIDENCE_BUNDLE_VIEWS =
         List.of(mock(DocumentContainerView.class));
-    private static final List<DocumentContainerView> HEARING_BUNDLE_VIEWS = List.of(mock(DocumentContainerView.class));
     private static final List<DocumentContainerView> RESPONDENT_STATEMENT_BUNDLE_VIEWS =
         List.of(mock(DocumentContainerView.class));
     private static final List<DocumentContainerView> OTHER_DOCUMENTS_BUNDLE_VIEWS =
