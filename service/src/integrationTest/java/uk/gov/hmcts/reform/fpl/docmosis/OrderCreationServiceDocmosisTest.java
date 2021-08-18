@@ -93,7 +93,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     DocumentSealingService.class,
     ChildrenSmartSelector.class,
     ChildSelectionUtils.class,
-    C29RecoveryOfAChildDocumentParameterGenerator.class
+    C29RecoveryOfAChildDocumentParameterGenerator.class,
     DocmosisHelper.class,
     ChildSelectionUtils.class
 })
