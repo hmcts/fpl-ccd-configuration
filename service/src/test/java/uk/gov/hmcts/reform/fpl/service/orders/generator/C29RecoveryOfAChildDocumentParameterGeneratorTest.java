@@ -105,8 +105,8 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
-                + getEntryMessage((int) selectedChildren.stream().count())
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
+                + getEntryMessage(selectedChildren.size())
                 + getIsExparteMessage(false))
             .build();
 
@@ -133,7 +133,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
                 + getInformMessage(caseData.getManageOrdersEventData())
                 + getIsExparteMessage(false))
             .build();
@@ -162,7 +162,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
                 + getProduceMessage()
                 + getIsExparteMessage(false))
             .build();
@@ -192,7 +192,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER.getLabel())
+            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
                 + getRemoveMessage()
                 + getIsExparteMessage(false))
             .orderHeader(ORDER_HEADER)
@@ -230,7 +230,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
             .orderDetails(getStandardMessage(selectedChildren.size(),
-                PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER.getLabel())
+                PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER)
                 + getEntryMessage(selectedChildren.size())
                 + getInformMessage(caseData.getManageOrdersEventData())
                 + getProduceMessage()
@@ -252,15 +252,17 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .orderTitle(C29_RECOVERY_OF_A_CHILD.getTitle());
     }
 
-    private String getStandardMessage(int numberOfChildren, String order) {
+    private String getStandardMessage(int numberOfChildren, PlacedUnderOrder order) {
+        String orderGrammar = order.equals(PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER) ? "an " : "a ";
+
         String childrenGrammar = numberOfChildren > 1 ? "children" : "child";
         return format("The Court is satisfied that %s "
                 + "has parental responsibility for the %s "
-                + "by virtue of a %s "
+                + "by virtue of %s "
                 + "made on %s.%s",
             LA_NAME,
             childrenGrammar,
-            order,
+            orderGrammar + order.getLabel(),
             formattedDate,
             paragraphBreak);
     }
