@@ -3,15 +3,16 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FurtherEvidenceNotificationService {
     private final InboxLookupService inboxLookupService;
+    private final RepresentativesInbox representativesInbox;
     private final NotificationService notificationService;
     private final FeatureToggleService featureToggleService;
 
@@ -35,10 +37,12 @@ public class FurtherEvidenceNotificationService {
     }
 
     public Set<String> getRepresentativeEmails(CaseData caseData) {
-        return unwrapElements(caseData.getRepresentatives()).stream()
-            .filter(FurtherEvidenceNotificationService::notifyRepresentative)
-            .map(Representative::getEmail)
-            .collect(Collectors.toSet());
+        List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
+        LinkedHashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
+            DIGITAL_SERVICE, roles);
+        emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
+        emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
+        return emails;
     }
 
     public void sendNotification(CaseData caseData, Set<String> recipients,
@@ -54,10 +58,5 @@ public class FurtherEvidenceNotificationService {
                     newNonConfidentialDocuments),
                 caseData.getId().toString());
         }
-    }
-
-    private static boolean notifyRepresentative(Representative rep) {
-        return DIGITAL_SERVICE.equals(rep.getServingPreferences())
-            && (CAFCASS.equals(rep.getRole().getType()) || RESPONDENT.equals(rep.getRole().getType()));
     }
 }
