@@ -337,13 +337,26 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.seeInTab('Add comments', 'Comment');
 }).retry(1);
 
-Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
+Scenario('HMCTS admin closes the case', async ({I, caseViewPage, recordFinalDecisionsEventPage}) => {
   await setupScenario(I);
-  await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
-  await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation, undefined, false);
+  await caseViewPage.goToNewActions(config.administrationActions.recordFinalDecisions);
+  await recordFinalDecisionsEventPage.selectChildren(recordFinalDecisionsEventPage.section1.allChildren.options.all, [0]);
+  await I.goToNextPage();
+  await recordFinalDecisionsEventPage.addDate({day: 12, month: 3, year: 2020});
+  recordFinalDecisionsEventPage.selectReason(recordFinalDecisionsEventPage.section2.reason.withdrawn, [0,1]);
+  recordFinalDecisionsEventPage.selectReason(recordFinalDecisionsEventPage.section2.reason.refusal, [2]);
+  recordFinalDecisionsEventPage.selectReason(recordFinalDecisionsEventPage.section2.reason.noOrder, [3]);
   await I.completeEvent('Submit');
-  I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
+  I.seeEventSubmissionConfirmation(config.administrationActions.recordFinalDecisions);
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
-  I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Child 1', 'Resolution Reason'], 'Application withdrawn');
+  I.seeInTab(['Child 1', 'Resolution Date'], '12 March 2020');
+  I.seeInTab(['Child 2', 'Resolution Reason'], 'Application withdrawn');
+  I.seeInTab(['Child 2', 'Resolution Date'], '12 March 2020');
+  I.seeInTab(['Child 3', 'Resolution Reason'], 'Application refused');
+  I.seeInTab(['Child 3', 'Resolution Date'], '12 March 2020');
+  I.seeInTab(['Child 4', 'Resolution Reason'], 'No order made');
+  I.seeInTab(['Child 4', 'Resolution Date'], '12 March 2020');
 }).retry(1);
