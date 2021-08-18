@@ -183,7 +183,6 @@ class ApplicationDocumentBundleTransformerTest {
     private List<DocumentBundleView> expectedApplicationDocumentView() {
         return List.of(DocumentBundleView.builder().name("Threshold").documents(List.of(DocumentView.builder()
                 .document(THRESHOLD_DOCUMENT)
-                .type("Threshold")
                 .uploadedAt("8:20pm, 15 June 2021")
                 .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 20, 0))
                 .includedInSWET(null)
@@ -195,7 +194,6 @@ class ApplicationDocumentBundleTransformerTest {
                 .build())).build(),
             DocumentBundleView.builder().name("SWET").documents(List.of(DocumentView.builder()
                 .document(SWET_DOCUMENT)
-                .type("SWET")
                 .uploadedAt("8:19pm, 15 June 2021")
                 .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 19, 0))
                 .includedInSWET("This is included in SWET")
@@ -207,7 +205,6 @@ class ApplicationDocumentBundleTransformerTest {
                 .build())).build(),
             DocumentBundleView.builder().name("Other").documents(List.of(DocumentView.builder()
                 .document(OTHER_DOCUMENT)
-                .type("Other")
                 .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 18, 0))
                 .uploadedAt("8:18pm, 15 June 2021")
                 .includedInSWET(null)
@@ -264,7 +261,6 @@ class ApplicationDocumentBundleTransformerTest {
     private DocumentView expectedDocumentView(String documentName, String uploadedBy, boolean isConfidential) {
         return DocumentView.builder()
             .document(DocumentReference.builder().build())
-            .type("Applicant statement")
             .uploadedAt("8:20pm, 15th June 2021")
             .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 19, 20, 0))
             .includedInSWET(null)

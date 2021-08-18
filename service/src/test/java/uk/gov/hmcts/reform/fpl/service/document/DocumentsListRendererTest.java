@@ -46,7 +46,6 @@ class DocumentsListRendererTest {
             .documentBundleViews(List.of(DocumentBundleView.builder()
                 .name("SWET")
                 .documents(List.of(DocumentView.builder()
-                    .type("SWET")
                     .document(DocumentReference.builder()
                         .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
                     .title("swet-doc.docx")
@@ -70,7 +69,6 @@ class DocumentsListRendererTest {
                 .name("SWET")
                 .documents(List.of(
                     DocumentView.builder()
-                        .type("SWET")
                         .document(DocumentReference.builder()
                             .filename("swet-doc.docx").url("fake-url.com").binaryUrl("::x").build())
                         .title("swet-doc.docx")
@@ -107,7 +105,6 @@ class DocumentsListRendererTest {
                         .name("SWET")
                         .documents(List.of(
                             DocumentView.builder()
-                                .type("SWET")
                                 .uploadedBy("user1@test.com")
                                 .includedInSWET("SWET update")
                                 .uploadedAt("1:15pm, 3 May 2021")

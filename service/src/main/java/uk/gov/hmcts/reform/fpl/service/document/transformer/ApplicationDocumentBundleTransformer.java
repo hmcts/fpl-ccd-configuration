@@ -142,7 +142,6 @@ public class ApplicationDocumentBundleTransformer {
             applicationDocs = applicationDocuments.stream()
                 .map(doc -> DocumentView.builder()
                     .document(doc.getDocument())
-                    .type(doc.getDocumentType().getLabel())
                     .uploadedDateTime(doc.getDateTimeUploaded())
                     .uploadedAt(isNotEmpty(doc.getDateTimeUploaded())
                         ? formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE) : null)
