@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
@@ -120,7 +119,7 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldRemoveLegalCounselFromRespondentWhenRepresentativeIsRemoved() {
-        List<Element<LegalCounsellor>> legalCounsel = asList(element(buildLegalCounsellor("1", true)));
+        List<Element<LegalCounsellor>> legalCounsel = List.of(element(buildLegalCounsellor("1", true)));
         Respondent respondent1 = respondent(dateNow()).toBuilder()
             .solicitor(TEST_RESPONDENT_SOLICITOR)
             .legalCounsellors(legalCounsel)
