@@ -41,17 +41,18 @@ class DocumentsListRendererTest {
     void shouldRenderDocumentBundlesMinimalSingleElement() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
-        List<DocumentContainerView> documentBundleViews = List.of(
-            DocumentBundleView.builder()
-                .name("Applicant's statements and application documents")
-                .documents(List.of(
-                    DocumentView.builder()
-                        .type("SWET")
-                        .document(DocumentReference.builder()
-                            .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
-                        .title("swet-doc.docx")
-                        .build()))
-                .build());
+        List<DocumentContainerView> documentBundleViews = List.of(DocumentFolderView.builder()
+            .name("Applicant's statements and application documents")
+            .documentBundleViews(List.of(DocumentBundleView.builder()
+                .name("SWET")
+                .documents(List.of(DocumentView.builder()
+                    .type("SWET")
+                    .document(DocumentReference.builder()
+                        .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
+                    .title("swet-doc.docx")
+                    .build()))
+                .build()))
+            .build());
 
         String expectedDocumentView = readString(
             "further-evidence-documents-tab/expected-documents-view-single-element.md").trim();
@@ -63,9 +64,10 @@ class DocumentsListRendererTest {
     void shouldRenderDocumentBundlesMinimalSingleElementWithBadBinaryURL() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
-        List<DocumentContainerView> documentBundleViews = List.of(
-            DocumentBundleView.builder()
-                .name("Applicant's statements and application documents")
+        List<DocumentContainerView> documentBundleViews = List.of(DocumentFolderView.builder()
+            .name("Applicant's statements and application documents")
+            .documentBundleViews(List.of(DocumentBundleView.builder()
+                .name("SWET")
                 .documents(List.of(
                     DocumentView.builder()
                         .type("SWET")
@@ -73,7 +75,8 @@ class DocumentsListRendererTest {
                             .filename("swet-doc.docx").url("fake-url.com").binaryUrl("::x").build())
                         .title("swet-doc.docx")
                         .build()))
-                .build());
+                .build()))
+            .build());
 
         String expectedDocumentView = readString(
             "further-evidence-documents-tab/expected-documents-view-single-element-bad-url.md").trim();
@@ -91,7 +94,6 @@ class DocumentsListRendererTest {
                         .name("Application statement")
                         .documents(List.of(DocumentView.builder()
                             .type("Application statement")
-                            //.fileName("document1.docx")
                             .documentName("supportingDoc1 conf hmcts")
                             .uploadedBy("user@test.com")
                             .uploadedAt("2:22pm, 4 May 2021")
