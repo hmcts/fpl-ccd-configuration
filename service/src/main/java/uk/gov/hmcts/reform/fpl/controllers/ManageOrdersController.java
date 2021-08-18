@@ -27,6 +27,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
+
 @Api
 @RestController
 @RequestMapping("/callback/manage-orders")
@@ -106,7 +108,14 @@ public class ManageOrdersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        String operation = (String) caseDetails.getData().get("manageOrdersOperation");
+
+        if (!AMEND.equals(operation)) {
+            caseDetails.getData().remove("manageOrdersAmendmentList");
+        }
+
         Map<String, Object> data = caseDetails.getData();
+
         CaseData caseData = fixAndRetrieveCaseData(caseDetails);
 
         data.putAll(orderProcessing.process(caseData));
