@@ -36,7 +36,7 @@ const orders = {
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
     c26: 'Authority to keep a child in secure accommodation (C26)',
-    c29: 'Recovery of Child (C29)',
+    c29: 'Recovery of a child (C29)',
     c32: 'Care order (C32A)',
     c32b: 'Discharge of care order (C32B)',
     c33: 'Interim care order (C33)',
@@ -202,10 +202,10 @@ const section4 = {
     },
   },
   exParte: {
-    group: '#id="manageOrdersIsExParte-',
+    group: '#manageOrdersIsExParte',
     options: {
-      yes: 'YES',
-      no: 'NO',
+      yes: '#manageOrdersIsExParte_Yes',
+      no: '#manageOrdersIsExParte_No',
     },
   },
 };
@@ -527,8 +527,8 @@ const selectOrderPermissions = (order) => {
   I.click(section4.orderPermissions.group + order);
 };
 
-const selectIsExparte = (yesOrNo) => {
-  I.click(section4.exParte.options + yesOrNo);
+const selectIsExparte = () => {
+  I.click(section4.exParte.options.yes);
 };
 
 module.exports = {
