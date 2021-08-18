@@ -91,7 +91,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "Document",
     "ElementLabel": "Related documents",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "relatedDocuments=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -133,8 +134,7 @@
     "ListElementCode": "messageHistory",
     "FieldType": "TextArea",
     "ElementLabel": "Message history",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "status=\"CLOSED\""
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -142,6 +142,7 @@
     "ListElementCode": "closeMessageLabel",
     "FieldType": "Label",
     "ElementLabel": "This message will now be marked as closed",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "closeMessageLabel=\"DO_NOT_SHOW\""
   }
 ]
