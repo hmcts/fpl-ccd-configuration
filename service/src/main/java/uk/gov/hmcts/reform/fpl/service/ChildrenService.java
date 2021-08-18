@@ -42,11 +42,13 @@ public class ChildrenService {
         return builder.toString();
     }
 
-    public boolean allChildrenHaveFinalOrder(List<Element<Child>> children) {
+    public boolean allChildrenHaveFinalOrderOrDecision(List<Element<Child>> children) {
         if (children == null || children.isEmpty()) {
             return false;
         }
-        return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
+        return children.stream().allMatch(
+            child -> YES.getValue().equals(child.getValue().getFinalOrderIssued())
+                || child.getValue().getFinalDecisionReason() != null);
     }
 
     public List<Element<Child>> updateFinalOrderIssued(String orderLabel,
@@ -83,8 +85,15 @@ public class ChildrenService {
         });
     }
 
+    public List<Element<Child>> getRemainingChildren(CaseData caseData) {
+        return caseData.getAllChildren().stream()
+            .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued())
+                && child.getValue().getFinalDecisionReason() == null)
+            .collect(toList());
+    }
+
     /**
-     * Returns the index of the only child without a final order issued against them.
+     * Returns the index of the only child without a final order or decision issued against them.
      * If there are multiple children then an empty optional is returned instead.
      * If there are no children then an empty optional is returned.
      *
@@ -94,7 +103,8 @@ public class ChildrenService {
     public Optional<Integer> getRemainingChildIndex(List<Element<Child>> children) {
         Optional<Integer> remainingChildIndex = Optional.empty();
         for (int i = 0; i < children.size(); i++) {
-            if (!YES.getValue().equals(children.get(i).getValue().getFinalOrderIssued())) {
+            if (!YES.getValue().equals(children.get(i).getValue().getFinalOrderIssued())
+                && children.get(i).getValue().getFinalDecisionReason() == null) {
                 if (remainingChildIndex.isEmpty()) {
                     remainingChildIndex = Optional.of(i);
                 } else {
@@ -108,7 +118,8 @@ public class ChildrenService {
 
     public String getRemainingChildrenNames(List<Element<Child>> children) {
         return children.stream()
-            .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued()))
+            .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued())
+                && child.getValue().getFinalDecisionReason() == null)
             .map(child -> child.getValue().getParty().getFullName())
             .collect(Collectors.joining("\n"));
     }
