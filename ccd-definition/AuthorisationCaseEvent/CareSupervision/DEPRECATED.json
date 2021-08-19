@@ -19,6 +19,7 @@
     "CaseEventID": "addStatementOfServiceGatekeeping",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[LASHARED]",
       "[EPSMANAGING]",
       "[LAMANAGING]"
     ],
@@ -100,6 +101,7 @@
     "CaseEventID": "addStatementOfService-PREPARE_FOR_HEARING",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[LASHARED]",
       "[EPSMANAGING]",
       "[LAMANAGING]"
     ],
@@ -122,6 +124,7 @@
           "[LABARRISTER]",
           "[SOLICITOR]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[CAFCASSSOLICITOR]",
@@ -142,6 +145,7 @@
     "CaseEventID": "uploadC2Gatekeeping",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[LASHARED]",
       "[EPSMANAGING]",
       "[LAMANAGING]"
     ],
@@ -223,6 +227,7 @@
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[LASHARED]",
       "[EPSMANAGING]",
       "[LAMANAGING]"
     ],
@@ -297,6 +302,7 @@
     "CaseEventID": "draftCMO",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[LASHARED]",
       "[EPSMANAGING]",
       "[LAMANAGING]"
     ],
@@ -373,6 +379,7 @@
     "CaseEventID": "uploadDocumentsAfterGatekeeping",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[LASHARED]",
       "[EPSMANAGING]",
       "[LAMANAGING]",
       "caseworker-publiclaw-solicitor"
@@ -385,6 +392,7 @@
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[LASHARED]",
       "[EPSMANAGING]",
       "[LAMANAGING]",
       "caseworker-publiclaw-solicitor"

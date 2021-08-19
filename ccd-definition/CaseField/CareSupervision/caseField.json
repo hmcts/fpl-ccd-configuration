@@ -1556,6 +1556,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sharedLocalAuthorityPolicy",
+    "Label": "Secondary local authority policy",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "outsourcingPolicy",
     "Label": "Outsourcing policy",
     "FieldType": "OrganisationPolicy",
