@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,8 +42,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -193,15 +190,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(sendDocumentService).sendDocuments(
             CASE_DATA, List.of(ORDER), newArrayList(otherRecipient2, otherRecipient3));
-    }
-
-    @Test
-    void shouldNotifyPostRepresentativesWhenServingOthersIsDisabled() {
-        underTest.sendDocumentToPostRepresentatives(EVENT);
-
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION, CASE_TYPE, CASE_ID, SEND_DOCUMENT_EVENT, Map.of("documentToBeSent", ORDER)
-        );
     }
 
     @Test
