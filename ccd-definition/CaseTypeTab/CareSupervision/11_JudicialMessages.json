@@ -28,8 +28,7 @@
     "TabDisplayOrder": 11,
     "CaseFieldID": "judicialMessages",
     "TabFieldDisplayOrder": 3,
-    "FieldShowCondition": "judicialMessages!=\"\"",
-    "DisplayContextParameter": "#TABLE(sender, recipient, requestedBy, dateSent, status)"
+    "FieldShowCondition": "judicialMessages!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -50,7 +49,6 @@
     "TabLabel": "Closed messages",
     "TabDisplayOrder": 13,
     "CaseFieldID": "closedJudicialMessages",
-    "TabFieldDisplayOrder": 5,
-    "DisplayContextParameter": "#TABLE(sender, recipient, requestedBy, dateSent, status)"
+    "TabFieldDisplayOrder": 5
   }
 ]
