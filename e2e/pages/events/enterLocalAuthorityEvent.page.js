@@ -102,4 +102,12 @@ module.exports = {
     I.selectOption(this.fields.mainContact, colleague.fullName);
   },
 
+  async getLocalAuthorityName(){
+    return await I.grabValueFrom(this.fields.localAuthority.name);
+  },
+
+  async getLocalAuthorityEmail(){
+    return await I.grabValueFrom(this.fields.localAuthority.email);
+  },
+
 };

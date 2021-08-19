@@ -86,7 +86,7 @@ public class RoboticsDataService {
 
     private Applicant populateApplicant(final CaseData caseData) {
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            final LocalAuthority localAuthority = caseData.getLocalAuthorities().get(0).getValue();
+            final LocalAuthority localAuthority = caseData.getDesignatedLocalAuthority();
             final Optional<Colleague> mainContact = localAuthority.getMainContact();
 
             return Applicant.builder()
@@ -169,8 +169,7 @@ public class RoboticsDataService {
 
     private Optional<String> getSolicitorName(CaseData caseData) {
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getLocalAuthorities().get(0)
-                .getValue()
+            return caseData.getDesignatedLocalAuthority()
                 .getFirstSolicitor()
                 .map(Colleague::getFullName);
         }
