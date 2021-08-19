@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -423,6 +424,7 @@ class ManageHearingsServiceTest {
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .previousHearingVenue(previousHearingVenue)
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .build();
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, null);
@@ -435,7 +437,8 @@ class ManageHearingsServiceTest {
             "previousHearingVenue", previousHearingVenue,
             "hearingAttendance", List.of(IN_PERSON, VIDEO),
             "hearingAttendanceDetails", "Test attendance details",
-            "preHearingAttendanceDetails", "Test pre attendance details"
+            "preHearingAttendanceDetails", "Test pre attendance details",
+            "sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -460,22 +463,23 @@ class ManageHearingsServiceTest {
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .previousHearingVenue(PreviousHearingVenue.builder().build())
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .build();
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
-        Map<String, Object> expectedCaseFields = Map.of(
-            "hearingType", OTHER,
-            "hearingTypeDetails", "Fact finding",
-            "hearingStartDate", startDate,
-            "hearingEndDate", endDate,
-            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
-            "hearingVenue", "OTHER",
-            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS,
-            "hearingAttendance", List.of(IN_PERSON),
-            "hearingAttendanceDetails", "Attendance details",
-            "preHearingAttendanceDetails", "Pre attendance details"
-        );
+        Map<String, Object> expectedCaseFields = new HashMap<>();
+        expectedCaseFields.put("hearingType", OTHER);
+        expectedCaseFields.put("hearingTypeDetails", "Fact finding");
+        expectedCaseFields.put("hearingStartDate", startDate);
+        expectedCaseFields.put("hearingEndDate", endDate);
+        expectedCaseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+        expectedCaseFields.put("hearingVenue", "OTHER");
+        expectedCaseFields.put("hearingVenueCustom", VENUE_CUSTOM_ADDRESS);
+        expectedCaseFields.put("hearingAttendance", List.of(IN_PERSON));
+        expectedCaseFields.put("hearingAttendanceDetails", "Attendance details");
+        expectedCaseFields.put("preHearingAttendanceDetails", "Pre attendance details");
+        expectedCaseFields.put("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS);
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
     }

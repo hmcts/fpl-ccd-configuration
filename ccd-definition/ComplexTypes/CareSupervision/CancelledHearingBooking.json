@@ -194,6 +194,7 @@
     "FieldType": "Document",
     "ElementLabel": "Translated document",
     "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\"",
     "Searchable": "N"
   },
   {
@@ -222,15 +223,6 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CancelledHearingBooking",
-    "ListElementCode": "sentForTranslationLabel",
-    "FieldType": "Label",
-    "ElementLabel": "Sent for translation",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "needTranslation=\"YES\" AND translatedNoticeOfHearing!=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
