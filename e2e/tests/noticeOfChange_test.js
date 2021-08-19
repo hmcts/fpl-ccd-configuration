@@ -7,7 +7,7 @@ const solicitor1 = config.privateSolicitorOne;
 const solicitor2 = config.hillingdonLocalAuthorityUserOne;
 const solicitor3 = config.wiltshireLocalAuthorityUserOne;
 
-Feature('Notice of change @bob');
+Feature('Notice of change');
 // It's not possible to re-run Notice of change scenarios because the case's NoC state persists
 // after retry, so they've been merged into one long scenario so that any failures will retry
 // from the start on a fresh case
@@ -38,7 +38,7 @@ Scenario('Solicitor can request representation of a respondent', async ({I, case
   await noticeOfChangePage.navigate();
   await noticeOfChangePage.enterCaseReference(caseId);
   I.click('Continue');
-  I.see('Your notice of change request has not been submitted');
+  I.waitForText('Your notice of change request has not been submitted');
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   await submitApplicationEventPage.giveConsent();
