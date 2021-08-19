@@ -11,6 +11,11 @@ import java.time.LocalDate;
 @Builder
 @Jacksonized
 public class SyntheticCaseSummary {
+    String caseSummaryFlagAddedByFullName;
+    String caseSummaryFlagAddedByEmail;
+    DocumentReference caseSummaryFlagAssessmentForm;
+    String caseSummaryCaseFlagNotes;
+
     String caseSummaryOrdersRequested;
 
     LocalDate caseSummaryDateOfIssue;

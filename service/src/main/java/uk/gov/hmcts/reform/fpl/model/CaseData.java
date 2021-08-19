@@ -334,6 +334,8 @@ public class CaseData {
     private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
+    private final DocumentReference uploadAssessment;
+    private final String caseFlagNotes;
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
