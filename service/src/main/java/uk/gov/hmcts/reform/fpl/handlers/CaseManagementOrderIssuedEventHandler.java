@@ -28,12 +28,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -99,12 +96,10 @@ public class CaseManagementOrderIssuedEventHandler {
         HearingOrder cmo = event.getCmo();
 
         Set<String> representatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
-                EMAIL, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail()
-            );
-            representatives.removeAll(otherRecipientsNotNotified);
-        }
+        Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+            EMAIL, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail()
+        );
+        representatives.removeAll(otherRecipientsNotNotified);
 
         IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(caseData, cmo, EMAIL);
         representatives.forEach(representative -> notificationService.sendEmail(
@@ -119,12 +114,10 @@ public class CaseManagementOrderIssuedEventHandler {
         HearingOrder cmo = event.getCmo();
 
         Set<String> representatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
-                DIGITAL_SERVICE, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail()
-            );
-            representatives.removeAll(otherRecipientsNotNotified);
-        }
+        Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+            DIGITAL_SERVICE, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail()
+        );
+        representatives.removeAll(otherRecipientsNotNotified);
 
         IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(
             caseData, cmo, DIGITAL_SERVICE);
@@ -136,30 +129,20 @@ public class CaseManagementOrderIssuedEventHandler {
     @Async
     @EventListener
     public void sendDocumentToPostRepresentatives(final CaseManagementOrderIssuedEvent event) {
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            CaseData caseData = event.getCaseData();
-            HearingOrder issuedCmo = event.getCmo();
+        CaseData caseData = event.getCaseData();
+        HearingOrder issuedCmo = event.getCmo();
 
-            Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+        Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
-            List<Element<Other>> othersSelected = issuedCmo.getSelectedOthers();
-            Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, Element::getValue
-            );
-            allRecipients.removeAll(nonSelectedRecipients);
+        List<Element<Other>> othersSelected = issuedCmo.getSelectedOthers();
+        Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
+            POST, caseData, othersSelected, Element::getValue
+        );
+        allRecipients.removeAll(nonSelectedRecipients);
 
-            allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
-            sendDocumentService.sendDocuments(caseData, List.of(event.getCmo().getOrder()),
-                new ArrayList<>(allRecipients));
-        } else {
-            coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                event.getCaseData().getId(),
-                "internal-change-SEND_DOCUMENT",
-                Map.of("documentToBeSent", event.getCmo().getOrder())
-            );
-        }
+        allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
+        sendDocumentService.sendDocuments(caseData, List.of(event.getCmo().getOrder()),
+            new ArrayList<>(allRecipients));
     }
 
     @Async

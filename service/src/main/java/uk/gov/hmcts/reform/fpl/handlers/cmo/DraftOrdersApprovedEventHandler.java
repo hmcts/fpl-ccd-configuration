@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -58,7 +57,6 @@ public class DraftOrdersApprovedEventHandler {
     private final SendDocumentService sendDocumentService;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final TranslationRequestService translationRequestService;
-    private final FeatureToggleService toggleService;
 
     @Async
     @EventListener
@@ -129,13 +127,11 @@ public class DraftOrdersApprovedEventHandler {
             .orElse(null);
 
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
-                DIGITAL_SERVICE, caseData, approvedOrders.get(0).getSelectedOthers(),
-                element -> element.getValue().getEmail()
-            );
-            digitalRepresentatives.removeAll(otherRecipientsNotNotified);
-        }
+        Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+            DIGITAL_SERVICE, caseData, approvedOrders.get(0).getSelectedOthers(),
+            element -> element.getValue().getEmail()
+        );
+        digitalRepresentatives.removeAll(otherRecipientsNotNotified);
 
         if (!digitalRepresentatives.isEmpty()) {
             NotifyData content = contentProvider.buildOrdersApprovedContent(
@@ -164,12 +160,10 @@ public class DraftOrdersApprovedEventHandler {
         NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
 
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
-                EMAIL, caseData, approvedOrders.get(0).getSelectedOthers(), element -> element.getValue().getEmail()
-            );
-            emailRepresentatives.removeAll(otherRecipientsNotNotified);
-        }
+        Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+            EMAIL, caseData, approvedOrders.get(0).getSelectedOthers(), element -> element.getValue().getEmail()
+        );
+        emailRepresentatives.removeAll(otherRecipientsNotNotified);
 
         if (!emailRepresentatives.isEmpty()) {
             representativeNotificationService.sendNotificationToRepresentatives(
@@ -193,15 +187,13 @@ public class DraftOrdersApprovedEventHandler {
 
         final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
 
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            List<Element<Other>> othersSelected = event.getApprovedOrders().get(0).getSelectedOthers();
-            Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, Element::getValue
-            );
-            recipients.removeAll(nonSelectedRecipients);
+        List<Element<Other>> othersSelected = event.getApprovedOrders().get(0).getSelectedOthers();
+        Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
+            POST, caseData, othersSelected, Element::getValue
+        );
+        recipients.removeAll(nonSelectedRecipients);
 
-            recipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
-        }
+        recipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
         sendDocumentService.sendDocuments(caseData, documents, recipients);
     }
 

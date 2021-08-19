@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -103,12 +102,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     public static final FeesData FEES_DATA = FeesData.builder().totalAmount(BigDecimal.TEN).build();
     private static final UUID LETTER_1_ID = randomUUID();
-    private static final UUID LETTER_2_ID = randomUUID();
     private static final Document ORDER_DOCUMENT = testDocument();
-    private static final Document COVERSHEET_REPRESENTATIVE = testDocument();
     private static final Document COVERSHEET_OTHER_REPRESENTATIVE = testDocument();
     private static final byte[] ORDER_BINARY = testDocumentBinary();
-    private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_OTHER_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final DocumentReference ORDER = testDocumentReference();
 
@@ -132,8 +128,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private SendLetterApi sendLetterApi;
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     public static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -197,8 +191,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
-
         List<Element<Respondent>> respondents = List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
             RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT);
         CaseData caseData = CaseData.builder().id(CASE_ID)
@@ -275,8 +267,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWithUpdatedTemplateWhenOthersToggleIsEnabled() {
-        when(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
+    void submittedEventShouldNotifyCtscAdminWithUpdatedTemplate() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
         checkUntil(() -> verify(notificationClient).sendEmail(

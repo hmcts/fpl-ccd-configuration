@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
@@ -59,7 +58,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
     private final ApplicantsListGenerator applicantsListGenerator;
     private final PeopleInCaseService peopleInCaseService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -83,14 +81,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled() && caseData.hasRespondentsOrOthers()) {
-            caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
-            caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
-                caseData.getAllRespondents(), caseData.getOthers()));
+        caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
+        caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
+            caseData.getAllRespondents(), caseData.getOthers()));
 
-            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
-            caseDetails.getData().put("personSelector", newSelector(selectorSize));
-        }
+        int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
+        caseDetails.getData().put("personSelector", newSelector(selectorSize));
 
         return respond(caseDetails);
     }

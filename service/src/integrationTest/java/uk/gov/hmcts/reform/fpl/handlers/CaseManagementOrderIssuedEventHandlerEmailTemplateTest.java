@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -47,7 +46,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
@@ -69,16 +67,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(SealedOrderLanguageRequirementGenerator.class),
     @MockBean(TranslationRequestService.class),
     @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class),
-    @MockBean(OthersNotifiedGenerator.class), @MockBean(FeatureToggleService.class)
+    @MockBean(OthersNotifiedGenerator.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
     private static final String CHILD_LAST_NAME = "nurgle";
     private static final long CASE_ID = 123456L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
-
-    @Autowired
-    private FeatureToggleService toggleService;
 
     @Autowired
     private CaseManagementOrderIssuedEventHandler underTest;
@@ -106,8 +101,6 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
 
     @Test
     void notifyLocalAuthority() {
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
-
         underTest.notifyLocalAuthority(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
         assertThat(response())
@@ -135,8 +128,6 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
 
     @Test
     void notifyParties() {
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
-
         underTest.notifyCafcass(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
         assertThat(response())
@@ -164,8 +155,6 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
 
     @Test
     void notifyCtsc() {
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
-
         underTest.notifyAdmin(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
         assertThat(response())
