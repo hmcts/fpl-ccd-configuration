@@ -5,7 +5,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -25,9 +24,6 @@ public class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsCon
     private static final String BUNDLE_NAME = "furtherEvidenceDocumentsLA";
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private NotificationClient notificationClient;
 
     ManageDocumentsLAControllerSubmittedTest() {
@@ -35,23 +31,14 @@ public class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsCon
     }
 
     @Test
-    void shouldNotPublishEventWhenUploadNotificationFeatureIsDisabled() {
-        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(false);
-        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
-        verifyNoInteractions(notificationClient);
-    }
-
-    @Test
     void shouldNotPublishEventWhenConfidentialDocumentsAreUploaded() {
-        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, true));
         verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldPublishEventWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
-        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
+    void shouldPublishNotificationEventWhenFurtherEvidenceIsUploaded() throws NotificationClientException {
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
 

@@ -223,13 +223,12 @@ public class ManageDocumentsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = userService.getUserDetails();
+        UserDetails userDetails = userService.getUserDetails();
 
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), false,
-                userDetails));
-        }
+        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
+            getCaseDataBefore(request), false,
+            userDetails));
+
     }
 
     private boolean isSolicitor(Long id) {
