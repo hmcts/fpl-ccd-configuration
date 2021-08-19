@@ -11,6 +11,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthority",
+    "ListElementCode": "designated",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Designated",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "id=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "designatedTag",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='govuk-tag govuk-tag--purple'>Designated local authority</div>",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "designated=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Name",

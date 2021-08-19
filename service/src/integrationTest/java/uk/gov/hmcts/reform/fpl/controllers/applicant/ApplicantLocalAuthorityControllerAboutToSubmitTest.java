@@ -19,6 +19,8 @@ import java.util.List;
 
 import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -61,6 +63,7 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
         final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
             .name("ORG")
             .email("org@test.com")
+            .designated("Yes")
             .colleagues(wrapElements(Colleague.builder()
                 .role(ColleagueRole.SOCIAL_WORKER)
                 .fullName("Emma Smith")
@@ -83,7 +86,8 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
             .build());
 
         final LocalAuthority existingLocalAuthority = LocalAuthority.builder()
-            .name("ORG")
+            .id("ORG")
+            .name("ORG name")
             .email("org@test.com")
             .colleagues(existingColleagues)
             .build();
@@ -107,12 +111,15 @@ class ApplicantLocalAuthorityControllerAboutToSubmitTest extends AbstractCallbac
         final List<Element<Colleague>> updatedColleagues = List.of(colleague1, colleague2);
 
         final LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
-            .name("ORG")
+            .id("ORG")
+            .name("ORG name")
             .email("org@test.com")
+            .designated("Yes")
             .colleagues(updatedColleagues)
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASOLICITOR))
             .localAuthorities(wrapElements(existingLocalAuthority))
             .localAuthorityEventData(LocalAuthorityEventData.builder()
                 .localAuthority(updatedLocalAuthority)
