@@ -59,11 +59,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }
 
-    public boolean isFurtherEvidenceUploadNotificationEnabled() {
-        return ldClient.boolVariation("further-evidence-upload-notification",
-            createLDUser(), false);
-    }
-
     public boolean isFurtherEvidenceDocumentTabEnabled() {
         return ldClient.boolVariation("further-evidence-document-tab",
             createLDUser(), false);

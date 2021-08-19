@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 
 class LocalAuthorityEmailLookupConfigurationTest {
 
@@ -18,9 +17,9 @@ class LocalAuthorityEmailLookupConfigurationTest {
 
     @Test
     void shouldReturnLocalAuthorityDetailsWhenLocalAuthorityCodeExists() {
-        Optional<LocalAuthority> localAuthority =
+        Optional<String> localAuthority =
             configuration.getLocalAuthority(LOCAL_AUTHORITY_CODE);
 
-        assertThat(localAuthority).get().isEqualToComparingFieldByField(new LocalAuthority(LOCAL_AUTHORITY_EMAIL));
+        assertThat(localAuthority).contains(LOCAL_AUTHORITY_EMAIL);
     }
 }
