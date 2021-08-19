@@ -2,10 +2,10 @@ const config = require('../config.js');
 const mandatoryWithAdditionalApplicationsBundle = require('../fixtures/caseData/mandatoryWithAdditionalApplicationsBundle.json');
 
 let caseId;
-let message = 'Some note';
-let reply = 'This is a reply';
-const messageHistoryInitial = config.ctscEmail + ' - ' +  message;
-const messageHistoryReply = config.ctscEmail + ' - ' +  message + '\n \n' + config.judicaryUser.email + ' - ' + reply;
+const message = 'Some note';
+const reply = 'This is a reply';
+const messageHistoryInitial = `${config.ctscEmail} - ${message}`;
+const messageHistoryReply = `${messageHistoryInitial}\n \n${config.judicaryUser.email} - ${reply}`;
 
 Feature('Message judge or legal adviser');
 
