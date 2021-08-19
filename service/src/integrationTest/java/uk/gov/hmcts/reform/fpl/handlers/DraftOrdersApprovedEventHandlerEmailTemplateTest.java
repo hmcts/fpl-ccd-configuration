@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     RepresentativeNotificationService.class, EmailNotificationHelper.class, OtherRecipientsInbox.class
 })
 @MockBeans({
+    @MockBean(TranslationRequestService.class),
     @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class), @MockBean(FeatureToggleService.class)
 })
 class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest {

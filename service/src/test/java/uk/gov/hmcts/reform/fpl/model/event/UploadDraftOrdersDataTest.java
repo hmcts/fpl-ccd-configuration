@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOType.AGREED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOType.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData.builder;
 
 class UploadDraftOrdersDataTest {
@@ -39,7 +41,30 @@ class UploadDraftOrdersDataTest {
                 "cmoJudgeInfo",
                 "cmoToSend",
                 "showCMOsSentToJudge",
-                "showReplacementCMO");
+                "showReplacementCMO",
+                "cmoToSendTranslationRequirements",
+                "orderToSend0",
+                "orderToSendTranslationRequirements0",
+                "orderToSend1",
+                "orderToSendTranslationRequirements1",
+                "orderToSend2",
+                "orderToSendTranslationRequirements2",
+                "orderToSend3",
+                "orderToSendTranslationRequirements3",
+                "orderToSend4",
+                "orderToSendTranslationRequirements4",
+                "orderToSend5",
+                "orderToSendTranslationRequirements5",
+                "orderToSend6",
+                "orderToSendTranslationRequirements6",
+                "orderToSend7",
+                "orderToSendTranslationRequirements7",
+                "orderToSend8",
+                "orderToSendTranslationRequirements8",
+                "orderToSend9",
+                "orderToSendTranslationRequirements9",
+                "orderToSendOptionCount"
+            );
     }
 
     @Test
@@ -47,6 +72,64 @@ class UploadDraftOrdersDataTest {
         assertThat(builder().cmoUploadType(AGREED).build().isCmoAgreed()).isTrue();
         assertThat(builder().cmoUploadType(DRAFT).build().isCmoAgreed()).isFalse();
         assertThat(builder().cmoUploadType(null).build().isCmoAgreed()).isFalse();
+    }
+
+    @Nested
+    class GetOrderToSendTranslationRequirements {
+
+        @Test
+        void testEmpty() {
+
+            UploadDraftOrdersData underTest = builder().build();
+
+            IntStream.range(0, 10).forEach(i ->
+                assertThat(underTest.getOrderToSendTranslationRequirements(i)).isNull()
+            );
+
+        }
+
+        @Test
+        void testNotEmpty() {
+
+            UploadDraftOrdersData underTest = builder()
+                .orderToSendTranslationRequirements0(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements1(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements2(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements3(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements4(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements5(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements6(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements7(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements8(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements9(ENGLISH_TO_WELSH)
+                .build();
+
+            IntStream.range(0, 10).forEach(i ->
+                assertThat(underTest.getOrderToSendTranslationRequirements(i)).isEqualTo(ENGLISH_TO_WELSH)
+            );
+        }
+
+        @Test
+        void testPartialOverBoundary() {
+
+            UploadDraftOrdersData underTest = builder()
+                .orderToSendTranslationRequirements0(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements1(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements2(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements3(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements4(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements5(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements6(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements7(ENGLISH_TO_WELSH)
+                .orderToSendTranslationRequirements8(ENGLISH_TO_WELSH)
+                .build();
+
+            IntStream.range(0, 9).forEach(i ->
+                assertThat(underTest.getOrderToSendTranslationRequirements(i)).isEqualTo(ENGLISH_TO_WELSH)
+            );
+            assertThat(underTest.getOrderToSendTranslationRequirements(9)).isNull();
+
+        }
     }
 
     @Nested
