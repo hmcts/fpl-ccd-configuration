@@ -125,11 +125,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(extractedCaseData);
-
-        /*assertThat(response.getData().get("documentViewLA")).isNull();
-        assertThat(response.getData().get("documentViewHMCTS")).isNull();
-        assertThat(response.getData().get("documentViewNC")).isNull();
-        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();*/
     }
 
     @Test
