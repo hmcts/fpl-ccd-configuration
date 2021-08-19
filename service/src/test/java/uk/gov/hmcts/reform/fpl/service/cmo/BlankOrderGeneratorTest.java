@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.cmo;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -28,6 +29,7 @@ import static org.assertj.core.util.Lists.newArrayList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -40,6 +42,7 @@ class BlankOrderGeneratorTest {
     private static final String hearing1 = "Case management hearing, 2 March 2020";
     private static final DocumentReference order = testDocumentReference();
     private static final Time TIME = new FixedTimeConfiguration().stoppedTime();
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
 
     private final BlankOrderGenerator underTest = new BlankOrderGenerator(TIME);
     public static final UUID HEARING_ID = UUID.randomUUID();
@@ -118,6 +121,7 @@ class BlankOrderGeneratorTest {
             .type(HearingOrderType.C21)
             .status(SEND_TO_JUDGE)
             .dateIssued(dateIssued)
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 
@@ -143,6 +147,7 @@ class BlankOrderGeneratorTest {
             .date(formatLocalDateTimeBaseUsingFormat(TIME.now(), TIME_DATE))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .othersNotified(othersNotified)
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .others(selectedOthers)
             .build();
     }

@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentFolderView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 
@@ -27,29 +29,29 @@ class DocumentsListRendererTest {
 
     @Test
     void shouldRenderEmptyDocumentBundles() {
-        List<DocumentBundleView> documentBundleViews = List.of();
+        List<DocumentContainerView> documentContainerViews = List.of();
 
         String expectedDocumentView =
             readString("further-evidence-documents-tab/expected-documents-view-empty.md").trim();
 
-        assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
+        assertThat(underTest.render(documentContainerViews)).isEqualTo(expectedDocumentView);
     }
 
     @Test
     void shouldRenderDocumentBundlesMinimalSingleElement() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
-        List<DocumentBundleView> documentBundleViews = List.of(
-            DocumentBundleView.builder()
-                .name("Applicant's statements and application documents")
-                .documents(List.of(
-                    DocumentView.builder()
-                        .type("SWET")
-                        .document(DocumentReference.builder()
-                            .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
-                        .title("SWET")
-                        .build()))
-                .build());
+        List<DocumentContainerView> documentBundleViews = List.of(DocumentFolderView.builder()
+            .name("Applicant's statements and application documents")
+            .documentBundleViews(List.of(DocumentBundleView.builder()
+                .name("SWET")
+                .documents(List.of(DocumentView.builder()
+                    .document(DocumentReference.builder()
+                        .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
+                    .title("swet-doc.docx")
+                    .build()))
+                .build()))
+            .build());
 
         String expectedDocumentView = readString(
             "further-evidence-documents-tab/expected-documents-view-single-element.md").trim();
@@ -61,17 +63,18 @@ class DocumentsListRendererTest {
     void shouldRenderDocumentBundlesMinimalSingleElementWithBadBinaryURL() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
-        List<DocumentBundleView> documentBundleViews = List.of(
-            DocumentBundleView.builder()
-                .name("Applicant's statements and application documents")
+        List<DocumentContainerView> documentBundleViews = List.of(DocumentFolderView.builder()
+            .name("Applicant's statements and application documents")
+            .documentBundleViews(List.of(DocumentBundleView.builder()
+                .name("SWET")
                 .documents(List.of(
                     DocumentView.builder()
-                        .type("SWET")
                         .document(DocumentReference.builder()
                             .filename("swet-doc.docx").url("fake-url.com").binaryUrl("::x").build())
-                        .title("SWET")
+                        .title("swet-doc.docx")
                         .build()))
-                .build());
+                .build()))
+            .build());
 
         String expectedDocumentView = readString(
             "further-evidence-documents-tab/expected-documents-view-single-element-bad-url.md").trim();
@@ -83,32 +86,33 @@ class DocumentsListRendererTest {
     void shouldRenderDocumentBundles() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
-        List<DocumentBundleView> documentBundleViews = List.of(
-            DocumentBundleView.builder()
+        List<DocumentContainerView> documentBundleViews = List.of(DocumentFolderView.builder()
                 .name("Applicant's statements and application documents")
-                .documents(List.of(DocumentView.builder()
-                        .type("Application statement")
-                        .fileName("supportingDoc1 conf hmcts")
-                        .documentName("supportingDoc1 conf hmcts")
-                        .uploadedBy("user@test.com")
-                        .uploadedAt("2:22pm, 4 May 2021")
-                        .confidential(false)
-                        .document(DocumentReference.builder()
-                            .filename("document1.docx").url("fake-url.com").binaryUrl("test.com").build())
-                        .title("Application statement")
-                        .includeDocumentName(true)
-                        .build(),
-                    DocumentView.builder()
-                        .type("SWET")
-                        .uploadedBy("user1@test.com")
-                        .includedInSWET("SWET update")
-                        .uploadedAt("1:15pm, 3 May 2021")
-                        .includeSWETField(true)
-                        .document(DocumentReference.builder()
-                            .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
-                        .title("SWET")
-                        .build()))
-                .build(),
+                .documentBundleViews(List.of(DocumentBundleView.builder()
+                        .name("Application statement")
+                        .documents(List.of(DocumentView.builder()
+                            .type("Application statement")
+                            .documentName("supportingDoc1 conf hmcts")
+                            .uploadedBy("user@test.com")
+                            .uploadedAt("2:22pm, 4 May 2021")
+                            .confidential(false)
+                            .document(DocumentReference.builder()
+                                .filename("document1.docx").url("fake-url.com").binaryUrl("test.com").build())
+                            .title("document1.docx")
+                            .includeDocumentName(true)
+                            .build())).build(),
+                    DocumentBundleView.builder()
+                        .name("SWET")
+                        .documents(List.of(
+                            DocumentView.builder()
+                                .uploadedBy("user1@test.com")
+                                .includedInSWET("SWET update")
+                                .uploadedAt("1:15pm, 3 May 2021")
+                                .includeSWETField(true)
+                                .document(DocumentReference.builder()
+                                    .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
+                                .title("swet-doc.docx")
+                                .build())).build())).build(),
             DocumentBundleView.builder()
                 .name("Respondent 1 statements")
                 .documents(List.of(DocumentView.builder()
@@ -121,8 +125,7 @@ class DocumentsListRendererTest {
                         .filename("respondent-document.docx").url("fake-url.com").binaryUrl("test.com").build())
                     .uploadedBy("HMCTS")
                     .uploadedAt("10:00am, 1 May 2021")
-                    .build()))
-                .build());
+                    .build())).build());
 
         String expectedDocumentView = readString("further-evidence-documents-tab/expected-documents-view.md").trim();
 
@@ -133,7 +136,7 @@ class DocumentsListRendererTest {
     void shouldRenderDocumentBundlesIfDocumentNull() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
-        List<DocumentBundleView> documentBundleViews = List.of(
+        List<DocumentContainerView> documentBundleViews = List.of(
             DocumentBundleView.builder()
                 .name("Applicant's statements and application documents")
                 .documents(List.of(DocumentView.builder()

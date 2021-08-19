@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 
 import java.util.Collections;
@@ -103,7 +104,7 @@ class FurtherEvidenceDocumentsBundlesTransformerTest {
             DocumentBundleView.builder().name(EXPERT_REPORTS.getLabel())
                 .documents(EXPERT_REPORTS_DOCUMENT_VIEWS).build());
 
-        List<DocumentBundleView> bundle = underTest.getFurtherEvidenceDocumentsBundleView(caseData, HMCTS);
+        List<DocumentContainerView> bundle = underTest.getFurtherEvidenceDocumentsBundleView(caseData, HMCTS);
 
         assertThat(bundle).isEqualTo(expectedBundleViewsHMCTS);
     }
@@ -128,7 +129,7 @@ class FurtherEvidenceDocumentsBundlesTransformerTest {
             DocumentBundleView.builder().name(EXPERT_REPORTS.getLabel())
                 .documents(EXPERT_REPORTS_DOCUMENT_VIEWS_LA).build());
 
-        List<DocumentBundleView> bundle = underTest.getFurtherEvidenceDocumentsBundleView(caseData, LA);
+        List<DocumentContainerView> bundle = underTest.getFurtherEvidenceDocumentsBundleView(caseData, LA);
 
         assertThat(bundle).isEqualTo(expectedBundleViewsLA);
     }
@@ -152,7 +153,7 @@ class FurtherEvidenceDocumentsBundlesTransformerTest {
             DocumentBundleView.builder().name(EXPERT_REPORTS.getLabel())
                 .documents(EXPERT_REPORTS_DOCUMENT_VIEWS_NC).build());
 
-        List<DocumentBundleView> bundle = underTest.getFurtherEvidenceDocumentsBundleView(caseData, NONCONFIDENTIAL);
+        List<DocumentContainerView> bundle = underTest.getFurtherEvidenceDocumentsBundleView(caseData, NONCONFIDENTIAL);
 
         assertThat(bundle).isEqualTo(expectedBundleViewsNC);
     }
@@ -164,7 +165,7 @@ class FurtherEvidenceDocumentsBundlesTransformerTest {
             .furtherEvidenceDocumentsLA(List.of(LA_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT))
             .build();
 
-        List<DocumentBundleView> actual = underTest.getFurtherEvidenceDocumentsBundleView(
+        List<DocumentContainerView> actual = underTest.getFurtherEvidenceDocumentsBundleView(
             caseDataWithApplicantStatements, NONCONFIDENTIAL);
 
         assertThat(actual).isEqualTo(Collections.emptyList());
