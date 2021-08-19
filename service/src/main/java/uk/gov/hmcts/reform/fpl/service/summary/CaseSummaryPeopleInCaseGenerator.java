@@ -53,7 +53,7 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
     private String generateSummaryMainContactEmail(CaseData caseData) {
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getLocalAuthorities().get(0).getValue().getMainContact()
+            return caseData.getDesignatedLocalAuthority().getMainContact()
                 .map(Colleague::getEmail)
                 .orElse(null);
         }
@@ -63,7 +63,7 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
 
     private String generateSummaryMainContactName(CaseData caseData) {
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getLocalAuthorities().get(0).getValue().getMainContact()
+            return caseData.getDesignatedLocalAuthority().getMainContact()
                 .map(Colleague::getFullName)
                 .orElse(null);
         }

@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
@@ -62,7 +63,7 @@ class RespondentStatementsTransformerTest {
             buildDocumentView(respondent1Document1.getValue()),
             buildDocumentView(respondent1Document3WithoutDate.getValue()));
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.HMCTS);
 
         assertThat(documentBundleView).isEqualTo(List.of(
@@ -90,7 +91,7 @@ class RespondentStatementsTransformerTest {
             buildDocumentView(LA_CONFIDENTIAL_DOCUMENT.getValue()),
             buildDocumentView(LA_NON_CONFIDENTIAL_DOCUMENT.getValue()));
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.LA);
 
         assertThat(documentBundleView).isEqualTo(List.of(
@@ -118,7 +119,7 @@ class RespondentStatementsTransformerTest {
                     .build()))
             .build();
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.NONCONFIDENTIAL);
 
         DocumentBundleView respondent1Bundle = DocumentBundleView.builder()
@@ -146,7 +147,7 @@ class RespondentStatementsTransformerTest {
                     .build()))
             .build();
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.NONCONFIDENTIAL);
 
         assertThat(documentBundleView).isEqualTo(List.of());

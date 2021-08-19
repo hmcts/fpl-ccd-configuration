@@ -11,7 +11,7 @@ event.dispatcher.on(event.test.failed, function (test) {
     let tryNum = test.retryNum === undefined ? 1 : test.retryNum + 1;
     output.print(`  ✖ ${test.title} (try ${tryNum}) failed:`);
 
-    let numberOfSteps = Math.min(test.steps.length, 20);
+    let numberOfSteps = Math.min(test.steps.length, 50);
 
     for(let i=0; i<numberOfSteps; i++){
       output.print(`      ${test.steps[test.steps.length-1-i]}`);

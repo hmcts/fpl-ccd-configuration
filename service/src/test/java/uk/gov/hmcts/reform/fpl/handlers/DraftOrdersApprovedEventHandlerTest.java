@@ -115,7 +115,6 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
         List<HearingOrder> orders = List.of();
-        ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder().build();
 
         given(courtService.getCourtEmail(caseData)).willReturn(CTSC_INBOX);
         given(inboxLookupService.getRecipients(
@@ -168,7 +167,6 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings("unchecked")
     void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(
         boolean servingOthersEnabled) {
         List<Representative> digitalReps = unwrapElements(createRepresentatives(DIGITAL_SERVICE));
@@ -186,7 +184,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
         if (servingOthersEnabled) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(caseData), any(), any()))
-                .willReturn((Set) Set.of("digital-rep1@test.com"));
+                .willReturn(Set.of("digital-rep1@test.com"));
         }
 
         List<HearingOrder> orders = List.of(hearingOrder());
@@ -214,7 +212,6 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings("unchecked")
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean othersToggle) {
         List<Representative> emailReps = unwrapElements(createRepresentatives(EMAIL));
         CaseData caseData = CaseData.builder()
@@ -231,7 +228,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
         if (othersToggle) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), any(), any()))
-                .willReturn((Set) Set.of("rep2@test.com"));
+                .willReturn(Set.of("rep2@test.com"));
         }
 
         List<HearingOrder> orders = List.of(hearingOrder());

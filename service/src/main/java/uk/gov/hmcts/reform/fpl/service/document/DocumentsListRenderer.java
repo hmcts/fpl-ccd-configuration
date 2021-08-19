@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentFolderView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 
@@ -33,14 +35,25 @@ class DocumentsListRenderer {
         this.caseUrlService = caseUrlService;
     }
 
-    public String render(List<DocumentBundleView> documents) {
+    public String render(List<DocumentContainerView> documents) {
         final List<String> lines = new LinkedList<>();
         lines.add("<p><div class='width-50'>");
-        for (DocumentBundleView documentBundle : documents) {
-            lines.add(renderBundle(documentBundle));
+        for (DocumentContainerView containerView : documents) {
+            if (containerView instanceof DocumentBundleView) {
+                lines.add(renderBundle((DocumentBundleView) containerView));
+            } else if (containerView instanceof DocumentFolderView) {
+                lines.add(renderFolder((DocumentFolderView) containerView));
+            }
         }
         lines.add("</div></p>");
         return String.join("\n\n", lines);
+    }
+
+    private String renderFolder(DocumentFolderView folderView) {
+        String s = folderView.getDocumentBundleViews().stream()
+            .map(this::renderBundle)
+            .collect(joining(""));
+        return collapsible(folderView.getName(), s);
     }
 
     private String renderBundle(DocumentBundleView bundle) {

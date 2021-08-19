@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Builder
 @Getter
-public class DocumentBundleView {
+public class DocumentBundleView implements DocumentContainerView {
     private String name;
     private List<DocumentView> documents;
 }

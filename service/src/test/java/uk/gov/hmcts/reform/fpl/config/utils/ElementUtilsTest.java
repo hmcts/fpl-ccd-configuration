@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-public class ElementUtilsTest {
+class ElementUtilsTest {
 
     @Nested
     @ExtendWith(SpringExtension.class)
@@ -387,6 +387,34 @@ public class ElementUtilsTest {
             assertThat(element1).isEqualTo(element(id1, "First"));
             assertThat(element2.getId()).isNotNull();
             assertThat(element2.getValue()).isEqualTo("Second");
+        }
+    }
+
+    @Nested
+    class ElementCreation {
+
+        @Test
+        void shouldCreateElementWithGivenValueAndRandomId() {
+
+            final Element<String> actualElement1 = element("Test");
+            final Element<String> actualElement2 = element("Test");
+
+            assertThat(actualElement1.getValue()).isEqualTo("Test");
+            assertThat(actualElement2.getValue()).isEqualTo("Test");
+            assertThat(actualElement1.getId()).isNotNull();
+            assertThat(actualElement2.getId()).isNotNull();
+            assertThat(actualElement1.getId()).isNotEqualTo(actualElement2.getId());
+        }
+
+        @Test
+        void shouldCreateElementWithGivenValueAndId() {
+
+            final UUID id = UUID.randomUUID();
+
+            final Element<String> actualElement = element(id, "Test");
+
+            assertThat(actualElement.getValue()).isEqualTo("Test");
+            assertThat(actualElement.getId()).isEqualTo(id);
         }
     }
 }

@@ -104,18 +104,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isSummaryTabEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("summary-tab-update"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabFirstCronRunEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -134,18 +122,6 @@ class FeatureToggleServiceTest {
         assertThat(service.isFeeAndPayCaseTypeEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("fee-and-pay-case-type"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isFurtherEvidenceUploadNotificationEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("further-evidence-upload-notification"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
