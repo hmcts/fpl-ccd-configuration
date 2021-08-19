@@ -27,8 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
-
 @Api
 @RestController
 @RequestMapping("/callback/manage-orders")
