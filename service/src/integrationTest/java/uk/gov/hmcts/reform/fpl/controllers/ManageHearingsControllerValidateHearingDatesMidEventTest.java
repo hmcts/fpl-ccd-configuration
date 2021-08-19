@@ -9,7 +9,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
@@ -59,6 +61,57 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldNotThrowErrorsWhenDaysAddedOnAddHearing() {
+        LocalDateTime startDate = LocalDateTime.now().minusDays(30);
+        int numberOfDays = 10;
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(startDate)
+            .hearingDays(String.valueOf(numberOfDays))
+            .hearingDuration(DAYS.getType())
+            .hearingOption(NEW_HEARING)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
+        Map<String, Object> responseData = callbackResponse.getData();
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(responseData.get("hearingEndDate")).isNotNull();
+        LocalDateTime hearingEndDate = LocalDateTime.parse((String) responseData.get("hearingEndDate"));
+        assertThat(hearingEndDate).isEqualTo(startDate.plusDays(numberOfDays));
+        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
+        assertThat(responseData.get("startDateFlag")).isEqualTo("Yes");
+        assertThat(responseData.get("endDateFlag")).isEqualTo("Yes");
+        assertThat(responseData.get("hasSession")).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldNotThrowErrorsWhenHoursAndMinsAddedOnAddHearing() {
+        LocalDateTime startDate = LocalDateTime.of(LocalDate.now().minusDays(30), LocalTime.NOON);
+        int hours = 10;
+        int minutes = 30;
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(startDate)
+            .hearingDuration(HOURS_MINS.getType())
+            .hearingHours(String.valueOf(hours))
+            .hearingMinutes(String.valueOf(minutes))
+            .hearingOption(NEW_HEARING)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
+        Map<String, Object> responseData = callbackResponse.getData();
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(responseData.get("hearingEndDate")).isNotNull();
+        LocalDateTime hearingEndDate = LocalDateTime.parse((String) responseData.get("hearingEndDate"));
+        LocalDateTime expectedEndDate = startDate.plusHours(hours).plusMinutes(minutes);
+        assertThat(hearingEndDate).isEqualTo(expectedEndDate);
+        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
+        assertThat(responseData.get("startDateFlag")).isEqualTo("Yes");
+        assertThat(responseData.get("endDateFlag")).isEqualTo("Yes");
+        assertThat(responseData.get("hasSession")).isEqualTo("Yes");
     }
 
     @Test
