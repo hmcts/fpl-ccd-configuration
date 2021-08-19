@@ -60,6 +60,7 @@ public class UploadTranslationsControllerTestHelper {
             .build())
         .sealedCMOs(List.of(element(UUID_2, HearingOrder.builder()
             .status(APPROVED)
+            .translationRequirements(WELSH_TO_ENGLISH)
             .dateIssued(LocalDate.of(2020, 12, 9))
             .build())))
         .noticeOfProceedingsBundle(List.of(element(UUID_3, DocumentBundle.builder()

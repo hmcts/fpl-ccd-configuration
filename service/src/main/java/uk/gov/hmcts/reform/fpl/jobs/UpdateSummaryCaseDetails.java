@@ -52,10 +52,6 @@ public class UpdateSummaryCaseDetails implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
-        if (!toggleService.isSummaryTabEnabled()) {
-            log.info("Job '{}' skipping due to feature toggle", jobName);
-            return;
-        }
         log.info("Job '{}' started", jobName);
 
         log.debug("Job '{}' searching for cases", jobName);
