@@ -29,6 +29,8 @@ public class Child implements WithSolicitor, ConfidentialParty<Child> {
 
     private String finalOrderIssued;
     private String finalOrderIssuedType;
+    private String finalDecisionReason;
+    private String finalDecisionDate;
 
     private RespondentSolicitor solicitor;
     private List<Element<LegalCounsellor>> legalCounsellors;

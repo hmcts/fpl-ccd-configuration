@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsBundlesTransformer;
@@ -36,18 +36,16 @@ class BundleViewAggregatorTest {
     private static final CaseData CASE_DATA = CaseData.builder()
         .hearingFurtherEvidenceDocuments(HEARING_FURTHER_EVIDENCE_DOCUMENTS)
         .build();
-    private static final List<DocumentBundleView> APPLICATION_STATEMENT_BUNDLE_VIEWS =
-        List.of(mock(DocumentBundleView.class));
-    private static final List<DocumentBundleView> FURTHER_EVIDENCE_BUNDLE_VIEWS =
-        List.of(mock(DocumentBundleView.class));
-    private static final List<DocumentBundleView> HEARING_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
-    private static final List<DocumentBundleView> RESPONDENT_STATEMENT_BUNDLE_VIEWS =
-        List.of(mock(DocumentBundleView.class));
-    private static final List<DocumentBundleView> OTHER_DOCUMENTS_BUNDLE_VIEWS =
-        List.of(mock(DocumentBundleView.class));
+    private static final DocumentContainerView APPLICATION_STATEMENT_BUNDLE_VIEWS = mock(DocumentContainerView.class);
+    private static final List<DocumentContainerView> FURTHER_EVIDENCE_BUNDLE_VIEWS =
+        List.of(mock(DocumentContainerView.class));
+    private static final List<DocumentContainerView> RESPONDENT_STATEMENT_BUNDLE_VIEWS =
+        List.of(mock(DocumentContainerView.class));
+    private static final List<DocumentContainerView> OTHER_DOCUMENTS_BUNDLE_VIEWS =
+        List.of(mock(DocumentContainerView.class));
 
     @Mock
-    private ApplicationDocumentBundleTransformer getDocumentBundleViews;
+    private ApplicationDocumentBundleTransformer applicationDocumentsTransformer;
 
     @Mock
     private FurtherEvidenceDocumentsBundlesTransformer furtherEvidenceTransformer;
@@ -63,8 +61,7 @@ class BundleViewAggregatorTest {
 
     @Test
     void testGetDocumentBundleViews() {
-
-        when(getDocumentBundleViews.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
+        when(applicationDocumentsTransformer.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
             .thenReturn(APPLICATION_STATEMENT_BUNDLE_VIEWS);
 
         when(furtherEvidenceTransformer.getFurtherEvidenceDocumentsBundleView(CASE_DATA, DOCUMENT_VIEW_TYPE))
@@ -76,21 +73,20 @@ class BundleViewAggregatorTest {
         when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA, DOCUMENT_VIEW_TYPE))
             .thenReturn(OTHER_DOCUMENTS_BUNDLE_VIEWS);
 
-        List<DocumentBundleView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
+        List<DocumentContainerView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
 
         assertThat(actual).isEqualTo(Stream.of(
-            APPLICATION_STATEMENT_BUNDLE_VIEWS,
+            List.of(APPLICATION_STATEMENT_BUNDLE_VIEWS),
             FURTHER_EVIDENCE_BUNDLE_VIEWS,
             RESPONDENT_STATEMENT_BUNDLE_VIEWS,
             OTHER_DOCUMENTS_BUNDLE_VIEWS
         ).flatMap(Collection::stream).collect(toList()));
-
     }
 
     @Test
     void testGetDocumentBundleViewsIfEmpty() {
-        when(getDocumentBundleViews.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
-            .thenReturn(Collections.emptyList());
+        when(applicationDocumentsTransformer.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(null);
 
         when(furtherEvidenceTransformer.getFurtherEvidenceDocumentsBundleView(CASE_DATA, DOCUMENT_VIEW_TYPE))
             .thenReturn(Collections.emptyList());
@@ -101,9 +97,8 @@ class BundleViewAggregatorTest {
         when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA, DOCUMENT_VIEW_TYPE))
             .thenReturn(Collections.emptyList());
 
-        List<DocumentBundleView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
+        List<DocumentContainerView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
 
         assertThat(actual).isEqualTo(Collections.emptyList());
-
     }
 }
