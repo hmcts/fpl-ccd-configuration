@@ -22,12 +22,14 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -51,6 +53,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final FeatureToggleService toggleService;
     private final SendDocumentService sendDocumentService;
+    private final TranslationRequestService translationRequestService;
 
     @EventListener
     @Async
@@ -158,4 +161,14 @@ public class CaseManagementOrderIssuedEventHandler {
             );
         }
     }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(CaseManagementOrderIssuedEvent event) {
+        translationRequestService.sendRequest(event.getCaseData(),
+            Optional.ofNullable(event.getCmo().getTranslationRequirements()),
+            event.getCmo().getOrder(), event.getCmo().asLabel()
+        );
+    }
+
 }
