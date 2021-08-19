@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -126,7 +127,8 @@ public class DraftOrdersApprovedEventHandler {
             .map(Element::getValue)
             .orElse(null);
 
-        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
+        Set<String> digitalRepresentatives = new LinkedHashSet<>(
+            representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE));
         Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             DIGITAL_SERVICE, caseData, approvedOrders.get(0).getSelectedOthers(),
             element -> element.getValue().getEmail()
@@ -159,7 +161,8 @@ public class DraftOrdersApprovedEventHandler {
 
         NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
 
-        Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
+        Set<String> emailRepresentatives = new LinkedHashSet<>(
+            representativesInbox.getEmailsByPreference(caseData, EMAIL));
         Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL, caseData, approvedOrders.get(0).getSelectedOthers(), element -> element.getValue().getEmail()
         );

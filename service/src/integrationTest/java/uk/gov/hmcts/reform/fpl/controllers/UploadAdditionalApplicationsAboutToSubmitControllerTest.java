@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -138,10 +136,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertTemporaryFieldsAreRemoved(updatedCaseData);
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected(
-        boolean servingOthersToggledOn) {
+    @Test
+    void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected() {
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representative = element(Representative.builder()
             .servingPreferences(EMAIL).email("rep@test.com").build());
@@ -163,12 +159,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .additionalOthers(wrapElements(Other.builder().name("Alex Smith")
                     .address(Address.builder().postcode("SE2").build()).build())).build());
 
-        if (servingOthersToggledOn) {
-            Selector personSelector = Selector.newSelector(3);
-            personSelector.setSelected(List.of(0, 2));
-            caseDataBuilder.personSelector(personSelector)
-                .notifyApplicationsToAllOthers("No");
-        }
+        Selector personSelector = Selector.newSelector(3);
+        personSelector.setSelected(List.of(0, 2));
+        caseDataBuilder.personSelector(personSelector)
+            .notifyApplicationsToAllOthers("No");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDataBuilder.build());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -180,19 +174,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
             .isEqualTo(OTHER_APPLICANT_NAME);
 
-        if (servingOthersToggledOn) {
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
-                .isEqualTo("Margaret Jones, Alex Smith");
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
-                .isEqualTo(List.of(caseData.getOthers().getAdditionalOthers().get(0)));
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
-                .hasSize(1)
-                .containsExactly(respondentElement);
-        } else {
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified()).isNull();
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers()).isNull();
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents()).isNull();
-        }
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
+            .isEqualTo("Margaret Jones, Alex Smith");
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
+            .isEqualTo(List.of(caseData.getOthers().getAdditionalOthers().get(0)));
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
+            .hasSize(1)
+            .containsExactly(respondentElement);
 
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
         assertTemporaryFieldsAreRemoved(caseData);
@@ -370,39 +358,37 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle) {
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(documentBundle);
 
-        assertThat(supportingEvidenceBundle).first()
-            .extracting(
-                SupportingEvidenceBundle::getName,
-                SupportingEvidenceBundle::getNotes,
-                SupportingEvidenceBundle::getDateTimeUploaded,
-                SupportingEvidenceBundle::getDocument,
-                SupportingEvidenceBundle::getUploadedBy
-            ).containsExactly(
-                "Supporting document",
-                "Document notes",
-                time.now(),
-                uploadedDocument,
-                USER_NAME
-            );
+        assertThat(supportingEvidenceBundle).first().extracting(
+            SupportingEvidenceBundle::getName,
+            SupportingEvidenceBundle::getNotes,
+            SupportingEvidenceBundle::getDateTimeUploaded,
+            SupportingEvidenceBundle::getDocument,
+            SupportingEvidenceBundle::getUploadedBy
+        ).containsExactly(
+            "Supporting document",
+            "Document notes",
+            time.now(),
+            uploadedDocument,
+            USER_NAME
+        );
     }
 
     private void assertSupplementsBundle(List<Element<Supplement>> documentBundle) {
         List<Supplement> supplementsBundle = unwrapElements(documentBundle);
 
-        assertThat(supplementsBundle).first()
-            .extracting(
-                Supplement::getName,
-                Supplement::getNotes,
-                Supplement::getDateTimeUploaded,
-                Supplement::getDocument,
-                Supplement::getUploadedBy
-            ).containsExactly(
-                SupplementType.C13A_SPECIAL_GUARDIANSHIP,
-                "Supplement notes",
-                time.now(),
-                sealedDocument,
-                USER_NAME
-            );
+        assertThat(supplementsBundle).first().extracting(
+            Supplement::getName,
+            Supplement::getNotes,
+            Supplement::getDateTimeUploaded,
+            Supplement::getDocument,
+            Supplement::getUploadedBy
+        ).containsExactly(
+            SupplementType.C13A_SPECIAL_GUARDIANSHIP,
+            "Supplement notes",
+            time.now(),
+            sealedDocument,
+            USER_NAME
+        );
     }
 
     private PBAPayment createPbaPayment() {

@@ -85,8 +85,6 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
     private static final String FAMILY_MAN_CASE_NUMBER = "FM001";
     private static final DocumentReference orderDocumentCmo = testDocumentReference("cmo.pdf");
     private static final DocumentReference orderDocumentC21 = testDocumentReference("c21.pdf");
@@ -190,13 +188,6 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 anyMap(),
                 eq(NOTIFICATION_REFERENCE)
             );
-
-            verify(coreCaseDataService).triggerEvent(JURISDICTION,
-                CASE_TYPE,
-                CASE_ID,
-                SEND_DOCUMENT_EVENT,
-                Map.of("documentToBeSent", caseManagementOrder.getOrder()));
-
         });
         verifyNoMoreNotificationsSent();
     }
@@ -269,13 +260,6 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(ADMIN_EMAIL),
                 anyMap(),
                 eq(NOTIFICATION_REFERENCE)
-            );
-
-            verify(coreCaseDataService).triggerEvent(eq(JURISDICTION),
-                eq(CASE_TYPE),
-                eq(CASE_ID),
-                eq(UPDATE_CASE_SUMMARY_EVENT),
-                anyMap()
             );
 
             verify(sendLetters).send(

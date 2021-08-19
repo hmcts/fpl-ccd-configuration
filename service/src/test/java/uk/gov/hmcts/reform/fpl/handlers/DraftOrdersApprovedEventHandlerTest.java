@@ -192,7 +192,7 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
+    void shouldNotifyEmailRepresentativesExcludingUnselectedOthers() {
         List<Representative> emailReps = unwrapElements(createRepresentatives(EMAIL));
         CaseData caseData = CaseData.builder()
             .id(12345L)
@@ -212,6 +212,7 @@ class DraftOrdersApprovedEventHandlerTest {
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, HEARING.getValue(), orders, EMAIL)).willReturn(EXPECTED_TEMPLATE);
 
+        underTest.sendNotificationToEmailRepresentatives(new DraftOrdersApproved(caseData, orders));
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             12345L,
             EXPECTED_TEMPLATE,

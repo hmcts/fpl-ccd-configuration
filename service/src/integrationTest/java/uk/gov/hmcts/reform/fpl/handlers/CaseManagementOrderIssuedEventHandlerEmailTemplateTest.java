@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
@@ -60,14 +59,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     ChildSelectionUtils.class
 })
 @MockBeans({
-    @MockBean(CoreCaseDataService.class), @MockBean(IdentityService.class), @MockBean(ChildrenService.class),
-    @MockBean(OrderCreationService.class), @MockBean(ManageOrdersClosedCaseFieldGenerator.class),
-    @MockBean(SealedOrderHistoryExtraTitleGenerator.class), @MockBean(SealedOrderHistoryTypeGenerator.class),
-    @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(AppointedGuardianFormatter.class),
-    @MockBean(SealedOrderLanguageRequirementGenerator.class),
-    @MockBean(TranslationRequestService.class),
-    @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class), @MockBean(SendDocumentService.class),
-    @MockBean(OthersNotifiedGenerator.class)
+    @MockBean(IdentityService.class), @MockBean(ChildrenService.class), @MockBean(OrderCreationService.class),
+    @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
+    @MockBean(SealedOrderHistoryTypeGenerator.class), @MockBean(SealedOrderHistoryFinalMarker.class),
+    @MockBean(AppointedGuardianFormatter.class), @MockBean(SealedOrderLanguageRequirementGenerator.class),
+    @MockBean(TranslationRequestService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
+    @MockBean(SendDocumentService.class), @MockBean(OthersNotifiedGenerator.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";

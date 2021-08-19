@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -29,17 +30,18 @@ public class ManageHearingsOthersGenerator {
         List<Element<Other>> selectedOthers = hearingBooking.getOthers();
 
         Map<String, Object> data = new HashMap<>();
-        data.put("hasOthers", YES.getValue());
-        data.put("othersSelector",
-            othersService.buildOtherSelector(unwrapElements(allOthers), unwrapElements(selectedOthers)));
-        data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
+        if (isNotEmpty(allOthers)) {
+            data.put("hasOthers", YES.getValue());
+            data.put("othersSelector",
+                othersService.buildOtherSelector(unwrapElements(allOthers), unwrapElements(selectedOthers)));
+            data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
 
-        if (NEW_HEARING != caseData.getHearingOption()) {
-            data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());
-            data.put("sendOrderToAllOthers",
-                sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
+            if (NEW_HEARING != caseData.getHearingOption()) {
+                data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());
+                data.put("sendOrderToAllOthers",
+                    sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
+            }
         }
-
 
         return data;
     }

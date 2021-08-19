@@ -136,9 +136,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsEntry("temporaryC2Document", null)
             .containsEntry("amountToPay", "100")
-            .containsEntry("displayAmountToPay", YES.getValue())
-            .containsEntry("personSelector", null)
-            .doesNotContainKeys("hasRespondentsOrOthers", "people_label");
+            .containsEntry("displayAmountToPay", YES.getValue());
     }
 
     @Test

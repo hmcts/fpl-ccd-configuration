@@ -55,8 +55,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
@@ -350,7 +350,10 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
-            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, "hmcts-non-admin@test.com", notifyData, caseData.getId()
+            UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
+            "hmcts-non-admin@test.com",
+            notifyData,
+            caseData.getId()
         );
     }
 
@@ -373,7 +376,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
-            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
+            UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
         );
     }
 
