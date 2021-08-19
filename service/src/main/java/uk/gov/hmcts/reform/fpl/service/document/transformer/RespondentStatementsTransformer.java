@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
@@ -31,14 +32,14 @@ public class RespondentStatementsTransformer {
 
     private static final String RESPONDENT_STATEMENT_DOCUMENT = "Respondent statements";
 
-    public List<DocumentBundleView> getRespondentStatementsBundle(
+    public List<DocumentContainerView> getRespondentStatementsBundle(
         CaseData caseData,
         DocumentViewType view) {
 
         List<Element<RespondentStatement>> respondentStatements = caseData.getRespondentStatements();
         List<Element<Respondent>> respondents = caseData.getRespondents1();
 
-        List<DocumentBundleView> respondentStatementsView = new ArrayList<>();
+        List<DocumentContainerView> respondentStatementsView = new ArrayList<>();
 
         Map<UUID, List<RespondentStatement>> respondentStatementsById = unwrapElements(respondentStatements)
             .stream().collect(groupingBy(RespondentStatement::getRespondentId));

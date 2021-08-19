@@ -307,6 +307,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersTranslationNeeded",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersCloseCaseWarning",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Label": "The case will remain open for 21 days to allow for appeal.\n\n In a closed case, you can still: \n * add a case note \n * upload a document \n * issue a C21 (blank order) \n * submit a C2 application",
