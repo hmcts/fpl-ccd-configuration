@@ -133,17 +133,7 @@ class UpdateSummaryCaseDetailsTest {
     }
 
     @Test
-    void shouldNotPerformSearchWhenFeatureToggledOff() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(false);
-
-        underTest.execute(executionContext);
-
-        verifyNoInteractions(searchService, ccdService);
-    }
-
-    @Test
     void shouldUseNonStandardQueryWhenFirstRunIsEnabled() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(true);
 
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
@@ -158,7 +148,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldUseStandardQueryWhenFirstRunIsDisabled() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
 
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
@@ -173,7 +162,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldNotCallCCDWhenNothingToUpdate() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
 
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
@@ -188,7 +176,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldUpdateCaseWhenSummaryTabInformationIsUpdated() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
 
         CaseData caseData = CaseData.builder()
@@ -217,7 +204,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldGracefullyHandleErrorsFromCCDWhenUpdatingCaseDetails() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
         when(searchService.searchResultsSize(any())).thenReturn(2);
 
@@ -261,7 +247,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldGracefullyHandleErrorsFromGenerateSummaryFields() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
         when(searchService.searchResultsSize(any())).thenReturn(2);
 
@@ -303,7 +288,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldGracefullyHandleErrorsFromConversion() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
         when(searchService.searchResultsSize(any())).thenReturn(2);
 
@@ -340,7 +324,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldPaginateWhenNumberOfCasesAreMoreThanTheSearchSize() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
         when(searchService.searchResultsSize(any())).thenReturn(75);
 
@@ -376,7 +359,6 @@ class UpdateSummaryCaseDetailsTest {
 
     @Test
     void shouldSkipJobIfPaginationQueryFails() {
-        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
 
         doThrow(feignException(500)).when(searchService).searchResultsSize(ES_QUERY);
