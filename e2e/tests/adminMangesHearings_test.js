@@ -33,9 +33,9 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
 
   assert.strictEqual(await manageHearingsEventPage.grabPreHearingAttendance(), defaultPreHearing);
 
-  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate, endDate: hearingEndDate}));
+  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate}));
   manageHearingsEventPage.enterVenue(hearingDetails[0]);
-  manageHearingsEventPage.selectHearingDuration(hearingDetails[0]);
+  manageHearingsEventPage.selectHearingDuration(Object.assign({}, hearingDetails[0], {endDate: hearingEndDate}));
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
   manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
