@@ -17,7 +17,7 @@
     "TabID": "Summary",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "caseSummaryFlagAddedByFullName",
+    "CaseFieldID": "addCaseFlagEventLink",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -27,7 +27,7 @@
     "TabID": "Summary",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "caseSummaryFlagAddedByEmail",
+    "CaseFieldID": "caseSummaryFlagAddedByFullName",
     "TabFieldDisplayOrder": 6
   },
   {
@@ -37,7 +37,7 @@
     "TabID": "Summary",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "caseSummaryFlagAssessmentForm",
+    "CaseFieldID": "caseSummaryFlagAddedByEmail",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -47,8 +47,18 @@
     "TabID": "Summary",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "caseSummaryCaseFlagNotes",
+    "CaseFieldID": "caseSummaryFlagAssessmentForm",
     "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Summary",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryCaseFlagNotes",
+    "TabFieldDisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
