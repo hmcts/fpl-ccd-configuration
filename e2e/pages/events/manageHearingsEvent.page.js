@@ -22,13 +22,16 @@ module.exports = {
     hearingType: {
       caseManagement: '#hearingType-CASE_MANAGEMENT',
     },
+    hearingDuration: {
+      dateTime: '#hearingDuration-DATE_TIME',
+    },
     hearingVenue: '#hearingVenue',
     usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_Yes',
     dontUsePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_No',
     newVenue: '#previousHearingVenue_newVenue',
     newVenueCustomAddress: '#previousHearingVenue_newVenueCustomAddress_newVenueCustomAddress',
     startDate: '#hearingStartDate',
-    endDate: '#hearingEndDate',
+    endDate: '#hearingEndDateTime',
     sendNotice: '#sendNoticeOfHearing_Yes',
     dontSendNotice: '#sendNoticeOfHearing_No',
     noticeNotes: '#noticeOfHearingNotes',
@@ -98,7 +101,6 @@ module.exports = {
     }
 
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
-    await I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
 
     if (hearingDetails.preAttendanceDetails) {
       I.fillField(this.fields.preAttendanceDetails, hearingDetails.preAttendanceDetails);
@@ -175,6 +177,11 @@ module.exports = {
 
   async grabPreHearingAttendance(){
     return await I.grabValueFrom(this.fields.preAttendanceDetails);
+  },
+
+  selectHearingDuration(hearingDetails) {
+    I.click(this.fields.hearingDuration.dateTime);
+    I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
   },
 
 };

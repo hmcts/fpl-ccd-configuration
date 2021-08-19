@@ -404,11 +404,11 @@ public class ManageHearingsService {
         }
 
         BiConsumer<LocalDateTime, String> populateFields = (endDateTime, endDateLabel) -> {
+            data.put(HEARING_END_DATE, endDateTime);
             if (endDateTime.isBefore(currentDateTime)) {
                 data.put(HEARING_END_DATE_LABEL, endDateLabel);
                 data.put(END_DATE_FLAG, YES.getValue());
                 data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
-                data.put(HEARING_END_DATE, endDateTime);
             }
         };
 
