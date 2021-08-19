@@ -69,10 +69,6 @@ public class FeatureToggleService {
             createLDUser(), false);
     }
 
-    public boolean isChildRepresentativeSolicitorEnabled() {
-        return ldClient.boolVariation("child-representative-solicitor", createLDUser(), false);
-    }
-
     public boolean isApplicantAdditionalContactsEnabled() {
         return ldClient.boolVariation("applicant-additional-contacts", createLDUser(), false);
     }
