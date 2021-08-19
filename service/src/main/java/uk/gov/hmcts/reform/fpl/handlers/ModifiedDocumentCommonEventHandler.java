@@ -42,7 +42,6 @@ public class ModifiedDocumentCommonEventHandler {
     private final OtherRecipientsInbox otherRecipientsInbox;
 
 
-    @SuppressWarnings("unchecked")
     public void notifyDigitalRepresentatives(final ModifiedDocumentEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getAmendedDocument();
@@ -50,15 +49,14 @@ public class ModifiedDocumentCommonEventHandler {
         final String orderType = orderEvent.getAmendedOrderType();
 
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+        Set<String> digitalRecipientsOtherNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             DIGITAL_SERVICE, caseData, selectedOthers, element -> element.getValue().getEmail()
         );
         digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
 
         final NotifyData notifyData = emailContentProviderStrategy.getEmailContentProvider(orderEvent)
             .getProvider()
-            .getNotifyData(caseData,
-                orderDocument, orderType);
+            .getNotifyData(caseData, orderDocument, orderType);
 
         if (!digitalRepresentatives.isEmpty() & !ModifiedOrderType
             .STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
@@ -71,7 +69,6 @@ public class ModifiedDocumentCommonEventHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void notifyEmailRepresentatives(final ModifiedDocumentEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getAmendedDocument();
@@ -79,7 +76,7 @@ public class ModifiedDocumentCommonEventHandler {
         final String orderType = orderEvent.getAmendedOrderType();
 
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+        Set<String> digitalRecipientsOtherNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL, caseData, selectedOthers, element -> element.getValue().getEmail()
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
@@ -87,11 +84,9 @@ public class ModifiedDocumentCommonEventHandler {
         if (!emailRepresentatives.isEmpty() && !ModifiedOrderType
             .STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
 
-
             final NotifyData notifyData = emailContentProviderStrategy.getEmailContentProvider(orderEvent)
                 .getProvider()
-                .getNotifyData(caseData,
-                    orderDocument, orderType);
+                .getNotifyData(caseData, orderDocument, orderType);
 
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
@@ -103,7 +98,6 @@ public class ModifiedDocumentCommonEventHandler {
     }
 
 
-    @SuppressWarnings("unchecked")
     public void notifyLocalAuthority(final ModifiedDocumentEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getAmendedDocument();
@@ -111,8 +105,7 @@ public class ModifiedDocumentCommonEventHandler {
 
         final NotifyData notifyData = emailContentProviderStrategy.getEmailContentProvider(orderEvent)
             .getProvider()
-            .getNotifyData(caseData,
-                orderDocument, orderType);
+            .getNotifyData(caseData, orderDocument, orderType);
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
@@ -131,8 +124,9 @@ public class ModifiedDocumentCommonEventHandler {
         if (!ModifiedOrderType.STANDARD_DIRECTION_ORDER.getLabel().equals(orderType)) {
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
-            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(POST, caseData, selectedOthers,
-                element -> element.getValue()));
+            allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
+                POST, caseData, selectedOthers, Element::getValue
+            ));
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
 
             sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
