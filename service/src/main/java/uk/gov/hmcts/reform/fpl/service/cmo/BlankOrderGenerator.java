@@ -57,6 +57,7 @@ public class BlankOrderGenerator {
             .children(caseData.getAllChildren())
             .others(selectedOthers)
             .othersNotified(othersNotified)
+            .translationRequirements(order.getTranslationRequirements())
             .build());
     }
 }
