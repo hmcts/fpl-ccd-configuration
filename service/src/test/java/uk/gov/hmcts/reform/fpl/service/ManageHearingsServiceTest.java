@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -468,20 +467,19 @@ class ManageHearingsServiceTest {
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
-        Map<String, Object> expectedCaseFields = new HashMap<>();
-        expectedCaseFields.put("hearingType", OTHER);
-        expectedCaseFields.put("hearingTypeDetails", "Fact finding");
-        expectedCaseFields.put("hearingStartDate", startDate);
-        expectedCaseFields.put("hearingEndDate", endDate);
-        expectedCaseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
-        expectedCaseFields.put("hearingVenue", "OTHER");
-        expectedCaseFields.put("hearingVenueCustom", VENUE_CUSTOM_ADDRESS);
-        expectedCaseFields.put("hearingAttendance", List.of(IN_PERSON));
-        expectedCaseFields.put("hearingAttendanceDetails", "Attendance details");
-        expectedCaseFields.put("preHearingAttendanceDetails", "Pre attendance details");
-        expectedCaseFields.put("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS);
-
-        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("hearingType", OTHER),
+            Map.entry("hearingTypeDetails", "Fact finding"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS),
+            Map.entry("hearingAttendance", List.of(IN_PERSON)),
+            Map.entry("hearingAttendanceDetails", "Attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS)
+        ));
     }
 
     @Test
