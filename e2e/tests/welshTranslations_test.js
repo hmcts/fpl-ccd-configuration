@@ -158,14 +158,14 @@ Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, u
   await I.completeEvent('Submit', null, true);
 
   caseViewPage.selectTab(orders.c11a.tabName);
-  I.see('Sent for translation');
+  I.waitForText('Sent for translation');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.c11a);
 
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadWelshTranslations);
   caseViewPage.selectTab(orders.c11a.tabName);
-  I.see(orders.c11a.translationFile);
+  I.waitForText(orders.c11a.translationFile);
   I.dontSee('Sent for translation');
 });
 
@@ -203,12 +203,12 @@ Scenario('Request and upload translation for standard directions order', async (
   await I.goToNextPage();
 
   await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testWordFileSdo);
-  I.see('Case assigned to: Her Honour Judge Moley');
+  I.waitForText('Case assigned to: Her Honour Judge Moley');
   I.click('Yes');
   await I.goToNextPage();
 
   await draftStandardDirectionsEventPage.markAsFinal();
-  I.see('Is translation needed?');
+  I.waitForText('Is translation needed?');
   draftStandardDirectionsEventPage.selectTranslationRequirement(draftStandardDirectionsEventPage.fields.upload.translationRequirement.englishToWelsh);
   await I.completeEvent('Save and continue');
 
@@ -242,7 +242,7 @@ Scenario('Request and upload translation for urgent hearing order', async ({ I, 
   await draftStandardDirectionsEventPage.makeAllocationDecision(allocationDecisionFields.judgeLevelConfirmation.no, allocationDecisionFields.allocationLevel.magistrate, 'some reason');
   await I.goToNextPage();
   await draftStandardDirectionsEventPage.uploadUrgentHearingOrder(config.testPdfFileUho);
-  I.see('Is translation needed?');
+  I.waitForText('Is translation needed?');
   draftStandardDirectionsEventPage.selectTranslationRequirement(draftStandardDirectionsEventPage.fields.urgent.translationRequirement.englishToWelsh);
   await I.completeEvent('Save and continue');
 
