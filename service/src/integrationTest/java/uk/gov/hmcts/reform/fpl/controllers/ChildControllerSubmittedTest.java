@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -26,28 +25,21 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
@@ -96,8 +88,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     private CoreCaseDataService ccdService;
     @MockBean
-    private FeatureToggleService toggleService;
-    @MockBean
     private NotificationClient notificationClient;
     @MockBean
     private OrganisationApi orgApi;
@@ -114,8 +104,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         givenSystemUser();
         when(orgApi.findOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
             .thenReturn(uk.gov.hmcts.reform.rd.model.Organisation.builder().name(ORGANISATION_NAME).build());
-
-        when(toggleService.isChildRepresentativeSolicitorEnabled()).thenReturn(true);
     }
 
     @ParameterizedTest
@@ -127,67 +115,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verifyNoInteractions(toggleService, nocService, eventService);
-    }
-
-    @Test
-    void shouldOnlyUpdateCaseSummaryWhenStateNotRestrictedAndToggleIsOff() {
-        when(toggleService.isChildRepresentativeSolicitorEnabled()).thenReturn(false);
-
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .state(NON_RESTRICTED_STATE)
-            .children1(wrapElements(Child.builder()
-                .solicitor(REGISTERED_REPRESENTATIVE)
-                .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
-                .build()))
-            .childrenEventData(ChildrenEventData.builder()
-                .childrenHaveRepresentation("Yes")
-                .childrenMainRepresentative(REGISTERED_REPRESENTATIVE)
-                .build())
-            .build();
-
-        postSubmittedEvent(toCallBackRequest(caseData, caseData));
-
-        Map<String, Object> caseSummary = new HashMap<>();
-
-        caseSummary.put("caseSummaryFinalHearingDate", null);
-        caseSummary.put("caseSummaryLASolicitorName", null);
-        caseSummary.put("caseSummaryOrdersRequested", null);
-        caseSummary.put("caseSummaryHasUnresolvedMessages", null);
-        caseSummary.put("caseSummaryNextHearingType", null);
-        caseSummary.put("caseSummaryFirstRespondentLastName", null);
-        caseSummary.put("caseSummaryPreviousHearingType", null);
-        caseSummary.put("caseSummaryAllocatedJudgeEmail", null);
-        caseSummary.put("caseSummaryNumberOfChildren", 1);
-        caseSummary.put("caseSummaryLASolicitorEmail", null);
-        caseSummary.put("caseSummaryHasFinalHearing", null);
-        caseSummary.put("caseSummaryFirstRespondentLegalRep", null);
-        caseSummary.put("deadline26week", null);
-        caseSummary.put("caseSummaryHasNextHearing", null);
-        caseSummary.put("caseSummaryNextHearingEmailAddress", null);
-        caseSummary.put("caseSummaryNextHearingJudge", null);
-        caseSummary.put("caseSummaryHasPreviousHearing", null);
-        caseSummary.put("caseSummaryPreviousHearingDate", null);
-        caseSummary.put("caseSummaryPreviousHearingCMO", null);
-        caseSummary.put("caseSummaryDateOfIssue", null);
-        caseSummary.put("caseSummaryAllocatedJudgeName", null);
-        caseSummary.put("caseSummaryCafcassGuardian", null);
-        caseSummary.put("caseSummaryNextHearingCMO", null);
-        caseSummary.put("caseSummaryNextHearingDate", null);
-        caseSummary.put("caseSummaryCourtName", LOCAL_AUTHORITY_1_COURT_NAME);
-
-        verify(eventService).publishEvent(any(AfterSubmissionCaseDataUpdated.class));
-        verify(ccdService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "internal-update-case-summary",
-            caseSummary
-        );
-        verifyNoInteractions(nocService);
-        verifyNoMoreInteractions(ccdService, eventService);
+        verifyNoInteractions(nocService, eventService);
     }
 
     @Test
