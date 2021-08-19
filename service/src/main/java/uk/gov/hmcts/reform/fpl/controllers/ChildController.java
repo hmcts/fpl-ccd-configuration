@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
@@ -48,7 +47,6 @@ public class ChildController extends CallbackController {
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
     private final ChildrenEventValidator validator;
     private final ChildrenEventDataFixer fixer;
-    private final FeatureToggleService toggleService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -105,15 +103,13 @@ public class ChildController extends CallbackController {
 
         caseDetails.getData().putAll(childRepresentationService.finaliseRepresentationDetails(caseData));
 
-        if (toggleService.isChildRepresentativeSolicitorEnabled()) {
-            caseData = getCaseData(caseDetails);
-            if (shouldUpdateRepresentation(caseData)) {
-                CaseData caseDataBefore = getCaseDataBefore(request);
-                caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
-                    caseData, caseDataBefore, SolicitorRole.Representing.CHILD,
-                    isNotFirstTimeRecordingSolicitor(caseData, caseDataBefore)
-                ));
-            }
+        caseData = getCaseData(caseDetails);
+        if (shouldUpdateRepresentation(caseData)) {
+            CaseData caseDataBefore = getCaseDataBefore(request);
+            caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
+                caseData, caseDataBefore, SolicitorRole.Representing.CHILD,
+                isNotFirstTimeRecordingSolicitor(caseData, caseDataBefore)
+            ));
         }
 
         caseData = getCaseData(caseDetails);
@@ -144,12 +140,10 @@ public class ChildController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (!RESTRICTED_STATES.contains(caseData.getState())) {
-            if (toggleService.isChildRepresentativeSolicitorEnabled()) {
-                noticeOfChangeService.updateRepresentativesAccess(
-                    caseData, caseDataBefore, SolicitorRole.Representing.CHILD
-                );
-                publishEvent(new ChildrenUpdated(caseData, caseDataBefore));
-            }
+            noticeOfChangeService.updateRepresentativesAccess(
+                caseData, caseDataBefore, SolicitorRole.Representing.CHILD
+            );
+            publishEvent(new ChildrenUpdated(caseData, caseDataBefore));
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
     }
