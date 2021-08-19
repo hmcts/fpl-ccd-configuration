@@ -1,0 +1,50 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addACaseFlagLabel",
+    "FieldType": "Label",
+    "Label": "Use this page to alert court staff to a potentially violent person expected in hearings.",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "ID": "onlyHMCTSStaffLabel",
+  "FieldType": "Label",
+  "Label": "Only HMCTS staff can see this information.",
+  "SecurityClassification": "Public",
+  "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseFlagAdded",
+    "Label": "Add a case flag?",
+    "HintText": "Select 'No' to remove a case flag.",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "uploadAssessment",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Upload assessment form or security requests",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".doc,.docx,.pdf",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseFlagNotes",
+    "FieldType": "TextArea",
+    "Label": "Additional notes",
+    "HintText": "These will be saved in a separate document.",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]
