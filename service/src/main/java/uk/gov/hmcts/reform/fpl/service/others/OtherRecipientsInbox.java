@@ -18,10 +18,9 @@ import java.util.stream.Collectors;
 @Component
 public class OtherRecipientsInbox {
 
-    public Set<?> getNonSelectedRecipients(
-        RepresentativeServingPreferences servingPreferences,
-        CaseData caseData, List<Element<Other>> othersSelected,
-        Function<Element<Representative>, ?> mapperFunction) {
+    public <R> Set<R> getNonSelectedRecipients(RepresentativeServingPreferences servingPreferences,
+                                               CaseData caseData, List<Element<Other>> othersSelected,
+                                               Function<Element<Representative>, R> mapperFunction) {
 
         Set<UUID> allOthersRepresentativeIds = caseData.getAllOthers().stream()
             .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))

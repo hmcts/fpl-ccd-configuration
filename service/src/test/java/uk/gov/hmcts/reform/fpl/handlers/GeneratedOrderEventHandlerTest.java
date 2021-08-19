@@ -162,7 +162,6 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifyPartiesOnOrderSubmissionWhenNewOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(true);
         given(lastGeneratedOrder.getOthers()).willReturn(LAST_GENERATED_ORDER_OTHERS);
@@ -173,12 +172,12 @@ class GeneratedOrderEventHandlerTest {
             eq(CASE_DATA),
             eq(LAST_GENERATED_ORDER_OTHERS),
             any()))
-            .willReturn((Set) Set.of(EMAIL_REP_1));
+            .willReturn(Set.of(EMAIL_REP_1));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
             eq(CASE_DATA),
             eq(LAST_GENERATED_ORDER_OTHERS),
             any()))
-            .willReturn((Set) Set.of(DIGITAL_REP_1));
+            .willReturn(Set.of(DIGITAL_REP_1));
 
         underTest.notifyParties(EVENT);
 
@@ -234,7 +233,6 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndNewOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(true);
         given(lastGeneratedOrder.getOthers()).willReturn(LAST_GENERATED_ORDER_OTHERS);
@@ -246,7 +244,7 @@ class GeneratedOrderEventHandlerTest {
             representative2));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST),
             eq(CASE_DATA), eq(LAST_GENERATED_ORDER_OTHERS), any()))
-            .willReturn((Set) Set.of(representative));
+            .willReturn(Set.of(representative));
         given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(LAST_GENERATED_ORDER_OTHERS))
             .willReturn(Set.of(otherRespondent));
 
