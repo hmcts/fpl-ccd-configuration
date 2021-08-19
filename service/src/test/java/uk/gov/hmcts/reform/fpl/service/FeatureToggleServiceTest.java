@@ -165,18 +165,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsFurtherEvidenceDocumentTabEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isFurtherEvidenceDocumentTabEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("further-evidence-document-tab"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsServingOtherApplicationsEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 

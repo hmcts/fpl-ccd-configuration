@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -64,9 +63,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final long CASE_ID = 12345L;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private UserService userService;
 
     ManageDocumentsControllerAboutToSubmitTest() {
@@ -98,8 +94,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
 
@@ -126,18 +120,16 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(false);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
 
         assertThat(extractedCaseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(extractedCaseData);
 
-        assertThat(response.getData().get("documentViewLA")).isNull();
+        /*assertThat(response.getData().get("documentViewLA")).isNull();
         assertThat(response.getData().get("documentViewHMCTS")).isNull();
         assertThat(response.getData().get("documentViewNC")).isNull();
-        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();
+        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();*/
     }
 
     @Test
@@ -160,7 +152,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
 
