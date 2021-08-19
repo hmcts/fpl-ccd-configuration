@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondentWithSolicitor;
 
-public class RepresentableLegalCounselUpdaterTest {
+class RepresentableLegalCounselUpdaterTest {
     private static final Representing REPRESENTING = Representing.RESPONDENT;
     private static final String ORG_1_ID = "123";
     private static final String ORG_2_ID = "456";

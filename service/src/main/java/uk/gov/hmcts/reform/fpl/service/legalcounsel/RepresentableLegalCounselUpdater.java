@@ -139,16 +139,9 @@ public class RepresentableLegalCounselUpdater {
     }
 
     private String getOrgName(WithSolicitor changed) {
-        System.out.println(changed);
         return getOrgId(changed)
-            .flatMap(organisationId -> {
-                System.out.println("orgid " + organisationId);
-                return orgService.findOrganisation(organisationId);
-            })
-            .map(organisation -> {
-                System.out.println("org " + organisation);
-                return organisation.getName();
-            })
+            .flatMap(orgService::findOrganisation)
+            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
             .orElseGet(() -> {
                 RespondentSolicitor solicitor = changed.getSolicitor();
                 if (null != solicitor && null != solicitor.getUnregisteredOrganisation()) {
