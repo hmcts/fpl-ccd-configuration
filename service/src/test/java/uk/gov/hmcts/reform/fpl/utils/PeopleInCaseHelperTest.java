@@ -35,6 +35,7 @@ class PeopleInCaseHelperTest {
         void shouldReturnNameOfFirstLocalAuthority() {
             final LocalAuthority localAuthority1 = LocalAuthority.builder()
                 .name("Applicant local authority 1")
+                .designated("Yes")
                 .build();
 
             final LocalAuthority localAuthority2 = LocalAuthority.builder()
@@ -55,6 +56,7 @@ class PeopleInCaseHelperTest {
         @NullAndEmptySource
         void shouldReturnEmptyStringIfFirstLocalAuthorityNameNotPresent(String name) {
             final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .designated("Yes")
                 .name(name)
                 .build();
 
