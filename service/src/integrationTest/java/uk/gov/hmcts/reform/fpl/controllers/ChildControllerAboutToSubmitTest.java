@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 
@@ -33,7 +31,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -81,19 +78,11 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     @MockBean
     private IdentityService identityService;
 
-    @MockBean
-    private FeatureToggleService toggleService;
-
     @SpyBean
     private RespondentAfterSubmissionRepresentationService representationService;
 
     ChildControllerAboutToSubmitTest() {
         super("enter-children");
-    }
-
-    @BeforeEach
-    void setUp() {
-        when(toggleService.isChildRepresentativeSolicitorEnabled()).thenReturn(true);
     }
 
     @Test
@@ -365,27 +354,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                     .build())
                 .build())
         ));
-    }
-
-    @Test
-    void shouldNotInteractWithRepresentativeServiceWhenToggleIsOff() {
-        when(toggleService.isChildRepresentativeSolicitorEnabled()).thenReturn(false);
-
-        CaseData caseData = CaseData.builder()
-            .children1(wrapElements(
-                Child.builder()
-                    .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
-                    .solicitor(MAIN_REPRESENTATIVE)
-                    .build(),
-                Child.builder()
-                    .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
-                    .solicitor(MAIN_REPRESENTATIVE)
-                    .build()
-            )).build();
-
-        postAboutToSubmitEvent(caseData);
-
-        verifyNoInteractions(representationService);
     }
 
     @Test
