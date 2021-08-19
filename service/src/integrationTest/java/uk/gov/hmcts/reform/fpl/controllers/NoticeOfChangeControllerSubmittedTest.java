@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -113,6 +112,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             .firstName("Dave")
             .lastName("Watkins")
             .email(legalCounsellorEmail)
+            .userId(legalCounsellorId)
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
@@ -128,9 +128,6 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
         CaseData caseData = caseDataBefore.toBuilder()
             .respondents1(wrapElements(Respondent.builder().solicitor(NEW_REGISTERED_SOLICITOR).build()))
             .build();
-
-        when(orgApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, legalCounsellorEmail))
-            .thenReturn(OrganisationUser.builder().userIdentifier(legalCounsellorId).build());
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 

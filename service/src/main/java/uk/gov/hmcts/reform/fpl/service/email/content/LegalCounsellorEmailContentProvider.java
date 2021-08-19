@@ -31,7 +31,7 @@ public class LegalCounsellorEmailContentProvider extends AbstractEmailContentPro
     public LegalCounsellorRemovedNotifyTemplate buildLegalCounsellorRemovedNotificationTemplate(
         CaseData caseData, LegalCounsellorRemoved event) {
 
-        LegalCounsellor legalCounsellor = event.getLegalCounsellor().getValue();
+        LegalCounsellor legalCounsellor = event.getLegalCounsellor();
         String solicitorOrganisationName = event.getSolicitorOrganisationName();
 
         return LegalCounsellorRemovedNotifyTemplate.builder()

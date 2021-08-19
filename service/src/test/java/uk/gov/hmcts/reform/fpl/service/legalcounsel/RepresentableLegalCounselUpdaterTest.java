@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -37,8 +36,6 @@ public class RepresentableLegalCounselUpdaterTest {
     private static final String ORG_2_ID = "456";
     private static final String ORG_1_NAME = "Org name";
     private static final String ORG_2_NAME = "Org name2";
-    private static final String EMAIL = "EMAIL";
-    private static final String USER_ID = "USER_ID";
 
     private final UnregisteredOrganisation unregisteredOrganisation = mock(UnregisteredOrganisation.class);
     private final uk.gov.hmcts.reform.rd.model.Organisation prdOrg1 = mock(
@@ -398,16 +395,12 @@ public class RepresentableLegalCounselUpdaterTest {
         when(orgService.findOrganisation(ORG_1_ID)).thenReturn(Optional.of(prdOrg1));
         when(prdOrg1.getName()).thenReturn(ORG_1_NAME);
 
-        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
-
-        when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
-
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
             caseData, caseDataBefore, REPRESENTING
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1))
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1)
         ));
     }
 
@@ -423,16 +416,12 @@ public class RepresentableLegalCounselUpdaterTest {
 
         when(user.isHmctsUser()).thenReturn(true);
 
-        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
-
-        when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
-
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
             caseData, caseDataBefore, REPRESENTING
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, "HMCTS", Pair.of(USER_ID, legalCounsellor1))
+            new LegalCounsellorRemoved(caseData, "HMCTS", legalCounsellor1)
         ));
     }
 
@@ -450,16 +439,12 @@ public class RepresentableLegalCounselUpdaterTest {
         when(orgService.findOrganisation()).thenReturn(Optional.of(prdOrg1));
         when(prdOrg1.getName()).thenReturn(ORG_1_NAME);
 
-        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
-
-        when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
-
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
             caseData, caseDataBefore, REPRESENTING
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1))
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1)
         ));
     }
 
@@ -476,16 +461,12 @@ public class RepresentableLegalCounselUpdaterTest {
         when(solicitor1.getUnregisteredOrganisation()).thenReturn(unregisteredOrganisation);
         when(unregisteredOrganisation.getName()).thenReturn(ORG_1_NAME);
 
-        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
-
-        when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
-
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
             caseData, caseDataBefore, REPRESENTING
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1))
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1)
         ));
     }
 
@@ -516,18 +497,13 @@ public class RepresentableLegalCounselUpdaterTest {
         when(orgService.findOrganisation(ORG_2_ID)).thenReturn(Optional.of(prdOrg2));
         when(prdOrg2.getName()).thenReturn(ORG_2_NAME);
 
-        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
-        when(legalCounsellor2.getEmail()).thenReturn(EMAIL);
-
-        when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
-
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
             caseData, caseDataBefore, REPRESENTING
         );
 
         assertThat(events).isEqualTo(Set.of(
-            new LegalCounsellorRemoved(caseData, ORG_1_NAME, Pair.of(USER_ID, legalCounsellor1)),
-            new LegalCounsellorRemoved(caseData, ORG_2_NAME, Pair.of(USER_ID, legalCounsellor2))
+            new LegalCounsellorRemoved(caseData, ORG_1_NAME, legalCounsellor1),
+            new LegalCounsellorRemoved(caseData, ORG_2_NAME, legalCounsellor2)
         ));
     }
 
@@ -540,8 +516,6 @@ public class RepresentableLegalCounselUpdaterTest {
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
 
         when(respondent2.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
-        when(legalCounsellor1.getEmail()).thenReturn(EMAIL);
-        when(orgService.findUserByEmail(EMAIL)).thenReturn(Optional.of(USER_ID));
 
         when(user.isHmctsUser()).thenReturn(false);
         when(orgService.findOrganisation()).thenReturn(Optional.empty());

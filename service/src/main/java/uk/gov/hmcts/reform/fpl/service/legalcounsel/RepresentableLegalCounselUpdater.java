@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -57,12 +56,10 @@ public class RepresentableLegalCounselUpdater {
             WithSolicitor currentRepresentable = current.get(i);
             WithSolicitor oldRepresentable = old.get(i);
             if (!Objects.equals(currentRepresentable.getSolicitor(), oldRepresentable.getSolicitor())) {
+                String orgName = getOrgName(currentRepresentable);
                 events.addAll(unwrapElements(oldRepresentable.getLegalCounsellors()).stream()
                     .filter(not(allCurrentLegalCounsellors::contains))
-                    .map(this::mapLegalCounsellor)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(pair -> new LegalCounsellorRemoved(caseData, getOrgName(currentRepresentable), pair))
+                    .map(counsellor -> new LegalCounsellorRemoved(caseData, orgName, counsellor))
                     .collect(Collectors.toSet()));
             }
         }
@@ -141,14 +138,17 @@ public class RepresentableLegalCounselUpdater {
             .map(Organisation::getOrganisationID);
     }
 
-    private Optional<Pair<String, LegalCounsellor>> mapLegalCounsellor(LegalCounsellor counsellor) {
-        return orgService.findUserByEmail(counsellor.getEmail()).map(id -> Pair.of(id, counsellor));
-    }
-
     private String getOrgName(WithSolicitor changed) {
+        System.out.println(changed);
         return getOrgId(changed)
-            .flatMap(orgService::findOrganisation)
-            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
+            .flatMap(organisationId -> {
+                System.out.println("orgid " + organisationId);
+                return orgService.findOrganisation(organisationId);
+            })
+            .map(organisation -> {
+                System.out.println("org " + organisation);
+                return organisation.getName();
+            })
             .orElseGet(() -> {
                 RespondentSolicitor solicitor = changed.getSolicitor();
                 if (null != solicitor && null != solicitor.getUnregisteredOrganisation()) {

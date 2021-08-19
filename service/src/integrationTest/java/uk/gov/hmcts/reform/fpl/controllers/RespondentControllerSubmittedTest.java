@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -216,11 +215,13 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         final String legalCounsellorId = "some id";
         final String legalCounsellorEmail = "some email";
         final List<Element<LegalCounsellor>> legalCounsellors = wrapElements(
-            LegalCounsellor.builder().firstName("first").lastName("last").email(legalCounsellorEmail).build()
+            LegalCounsellor.builder()
+                .firstName("first")
+                .lastName("last")
+                .email(legalCounsellorEmail)
+                .userId(legalCounsellorId)
+                .build()
         );
-
-        when(orgApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, legalCounsellorEmail))
-            .thenReturn(OrganisationUser.builder().userIdentifier(legalCounsellorId).build());
 
         CaseData caseDataBefore = CaseData.builder()
             .state(NON_RESTRICTED_STATE)
@@ -300,6 +301,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .state(SUBMITTED)
             .respondents1(updatedRespondents)
             .build();
+
+        when(orgApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
+            .thenReturn(uk.gov.hmcts.reform.rd.model.Organisation.builder().name(ORGANISATION_NAME).build());
 
         postSubmittedEvent(toCallBackRequest(caseData, nocCaseDataBefore));
 

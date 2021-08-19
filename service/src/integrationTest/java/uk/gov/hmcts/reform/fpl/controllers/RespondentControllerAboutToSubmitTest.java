@@ -118,7 +118,7 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldRemoveLegalCounselFromRespondentWhenRepresentativeIsRemoved() {
-        List<Element<LegalCounsellor>> counsel = List.of(element(buildLegalCounsellor("1", true)));
+        List<Element<LegalCounsellor>> counsel = wrapElements(buildLegalCounsellor("1"));
         Respondent respondent1 = respondent(dateNow()).toBuilder()
             .solicitor(RESPONDENT_SOLICITOR)
             .legalCounsellors(counsel)

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -35,7 +34,8 @@ import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORC;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.getCaseConverterInstance;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellorWithOrganisationAndMockUserId;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellor;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
@@ -48,6 +48,10 @@ class ManageLegalCounselServiceTest {
         .email("ted.robinson@example.com")
         .organisation(Organisation.organisation("123"))
         .build()
+    );
+    private static final String USER_ID = "user_id";
+    private static final Element<LegalCounsellor> UPDATED_LEGAL_COUNSELLOR = element(
+        TEST_LEGAL_COUNSELLOR.getId(), TEST_LEGAL_COUNSELLOR.getValue().toBuilder().userId(USER_ID).build()
     );
     private static final String UNREGISTERED_USER_ERROR_MESSAGE_TEMPLATE = "Unable to grant access "
         + "[%s is not a Registered User] - Email address for Legal representative is not registered on the system. "
@@ -109,6 +113,9 @@ class ManageLegalCounselServiceTest {
             .data(caseConverter.toMap(caseData))
             .build();
 
+        when(organisationService.findUserByEmail(TEST_LEGAL_COUNSELLOR.getValue().getEmail()))
+            .thenReturn(Optional.of(USER_ID));
+
         underTest.updateLegalCounsel(caseDetails);
 
         CaseData convertedCaseData = caseConverter.convert(caseDetails);
@@ -117,20 +124,20 @@ class ManageLegalCounselServiceTest {
         List<Element<Child>> allChildren = convertedCaseData.getAllChildren();
         assertThat(allChildren.get(0).getValue().getLegalCounsellors())
             .hasSize(1)
-            .contains(TEST_LEGAL_COUNSELLOR);
+            .contains(UPDATED_LEGAL_COUNSELLOR);
         assertThat(allChildren.get(1).getValue().getLegalCounsellors()).isNull();
         assertThat(allChildren.get(2).getValue().getLegalCounsellors())
             .hasSize(1)
-            .contains(TEST_LEGAL_COUNSELLOR);
+            .contains(UPDATED_LEGAL_COUNSELLOR);
 
         List<Element<Respondent>> allRespondents = convertedCaseData.getAllRespondents();
         assertThat(allRespondents.get(0).getValue().getLegalCounsellors()).isNull();
         assertThat(allRespondents.get(1).getValue().getLegalCounsellors())
             .hasSize(1)
-            .contains(TEST_LEGAL_COUNSELLOR);
+            .contains(UPDATED_LEGAL_COUNSELLOR);
         assertThat(allRespondents.get(2).getValue().getLegalCounsellors())
             .hasSize(1)
-            .contains(TEST_LEGAL_COUNSELLOR);
+            .contains(UPDATED_LEGAL_COUNSELLOR);
     }
 
     @Test
@@ -202,37 +209,35 @@ class ManageLegalCounselServiceTest {
         when(organisationService.findOrganisation()).thenReturn(
             Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder().name("Solicitors Law Ltd").build())
         );
-        Pair<String, LegalCounsellor> legalCounsellor1 =
-            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "1");
-        Pair<String, LegalCounsellor> legalCounsellor2 =
-            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "2");
-        Pair<String, LegalCounsellor> legalCounsellor3 =
-            buildLegalCounsellorWithOrganisationAndMockUserId(organisationService, "3");
-        CaseDetails previousCaseDetails = CaseDetails.builder()
-            .id(TEST_CASE_ID_AS_LONG)
-            .data(caseConverter.toMap(
-                CaseData.builder().respondents1(asList(
-                    element(respondent("First", "Respondent")),
-                    element(Respondent.builder().legalCounsellors(asList(
-                        element(legalCounsellor1.getValue()),//Will be kept
-                        element(legalCounsellor3.getValue())//Will be removed
-                    )).build())
-                )).build()
-            )).build();
-        CaseDetails currentCaseDetails = CaseDetails.builder()
-            .id(TEST_CASE_ID_AS_LONG)
-            .data(caseConverter.toMap(
-                CaseData.builder().respondents1(asList(
-                    element(respondent("First", "Respondent")),
-                    element(Respondent.builder().legalCounsellors(asList(
-                        element(legalCounsellor1.getValue()),//Existing
-                        element(legalCounsellor2.getValue())//Added
-                    )).build())
-                )).build()
-            )).build();
+        LegalCounsellor legalCounsellor1 = buildLegalCounsellor("1");
+        LegalCounsellor legalCounsellor2 = buildLegalCounsellor("2");
+        LegalCounsellor legalCounsellor3 = buildLegalCounsellor("3");
 
-        CaseData previousCaseData = caseConverter.convert(previousCaseDetails);
-        CaseData currentCaseData = caseConverter.convert(currentCaseDetails);
+        CaseData previousCaseData = CaseData.builder()
+            .id(TEST_CASE_ID_AS_LONG)
+            .respondents1(wrapElements(
+                respondent("First", "Respondent"),
+                Respondent.builder()
+                    .legalCounsellors(wrapElements(
+                        legalCounsellor1, //Will be kept
+                        legalCounsellor3 //Will be removed
+                    ))
+                    .build()
+            ))
+            .build();
+        CaseData currentCaseData = CaseData.builder()
+            .id(TEST_CASE_ID_AS_LONG)
+            .respondents1(wrapElements(
+                respondent("First", "Respondent"),
+                Respondent.builder()
+                    .legalCounsellors(wrapElements(
+                        legalCounsellor1,//Existing
+                        legalCounsellor2 //Added
+                    ))
+                    .build()
+            ))
+            .build();
+
         List<LegalCounsellorEvent> eventsToPublish = underTest.runFinalEventActions(previousCaseData, currentCaseData);
 
         assertThat(eventsToPublish)

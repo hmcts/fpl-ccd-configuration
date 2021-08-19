@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
@@ -33,6 +32,8 @@ import static java.util.Collections.emptyList;
 import static java.util.function.Predicate.not;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @RequiredArgsConstructor
 @Component
@@ -62,7 +63,8 @@ public class ManageLegalCounselService {
             .map(solicitorRole -> solicitorRole.getRepresenting()
                 .getTarget()
                 .apply(caseData)
-                .get(solicitorRole.getIndex()))
+                .get(solicitorRole.getIndex())
+            )
             .map(Element::getValue)
             .map(WithSolicitor::getLegalCounsellors)
             .orElse(emptyList());
@@ -73,8 +75,9 @@ public class ManageLegalCounselService {
         String caseId = caseData.getId().toString();
         List<SolicitorRole> caseSolicitorRoles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseId);
 
-        List<Element<LegalCounsellor>> legalCounsellors =
-            caseData.getManageLegalCounselEventData().getLegalCounsellors();
+        List<Element<LegalCounsellor>> legalCounsellors = populateWithUserIds(
+            caseData.getManageLegalCounselEventData().getLegalCounsellors()
+        );
 
         Map<String, Object> data = caseDetails.getData();
 
@@ -103,74 +106,59 @@ public class ManageLegalCounselService {
         List<String> errorMessages = new ArrayList<>();
 
         ManageLegalCounselEventData manageLegalCounselEventData = caseData.getManageLegalCounselEventData();
-        List<Element<LegalCounsellor>> legalCounsellors = manageLegalCounselEventData.getLegalCounsellors();
+        List<LegalCounsellor> legalCounsellors = unwrapElements(manageLegalCounselEventData.getLegalCounsellors());
 
         legalCounsellors.stream()
-            .map(Element::getValue)
             .filter(legalCounsellor -> organisationService.findUserByEmail(legalCounsellor.getEmail()).isEmpty())
             .map(legalCounsellor -> format(UNREGISTERED_USER_ERROR_MESSAGE_TEMPLATE, legalCounsellor.getFullName()))
             .forEach(errorMessages::add);
 
         legalCounsellors.stream()
-            .map(Element::getValue)
             .filter(legalCounsellor -> Optional.ofNullable(legalCounsellor.getOrganisation())
                 .map(uk.gov.hmcts.reform.ccd.model.Organisation::getOrganisationID)
                 .filter(not(Strings::isNullOrEmpty))
                 .isEmpty())
-            .map(legalCounsellor -> format("Legal counsellor %s %s has no selected organisation",
-                legalCounsellor.getFirstName(),
-                legalCounsellor.getLastName()))
+            .map(legalCounsellor -> format(
+                "Legal counsellor %s %s has no selected organisation",
+                legalCounsellor.getFirstName(), legalCounsellor.getLastName()
+            ))
             .forEach(errorMessages::add);
 
         return errorMessages;
     }
 
     public List<LegalCounsellorEvent> runFinalEventActions(CaseData previousCaseData, CaseData currentCaseData) {
-        List<LegalCounsellorEvent> eventsToPublish = new ArrayList<>();
+        List<LegalCounsellorEvent> events = new ArrayList<>();
 
-        String loggedInSolicitorOrganisationName = organisationService.findOrganisation()
+        String orgName = organisationService.findOrganisation()
             .map(Organisation::getName)
             .orElseThrow();
 
-        List<LegalCounsellor> currentLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(currentCaseData)
-            .stream()
-            .map(Element::getValue)
-            .collect(Collectors.toList());
-        List<LegalCounsellor> previousLegalCounsellors = retrieveLegalCounselForLoggedInSolicitor(previousCaseData)
-            .stream()
-            .map(Element::getValue)
-            .collect(Collectors.toList());
+        List<LegalCounsellor> currentLegalCounsellors = unwrapElements(
+            retrieveLegalCounselForLoggedInSolicitor(currentCaseData)
+        );
+        List<LegalCounsellor> previousLegalCounsellors = unwrapElements(
+            retrieveLegalCounselForLoggedInSolicitor(previousCaseData)
+        );
 
-        //Grant access to all current legal counsellors
-        List<LegalCounsellor> addedLegalCounsellors = currentLegalCounsellors.stream()
+        //Grant case access to all new legal counsellors
+        currentLegalCounsellors.stream()
             .filter(not(previousLegalCounsellors::contains))
-            .collect(Collectors.toList());
+            .forEach(counsellor -> events.add(new LegalCounsellorAdded(currentCaseData, counsellor)));
 
-        addedLegalCounsellors.stream()
-            .map(legalCounsellor -> organisationService.findUserByEmail(legalCounsellor.getEmail())
-                .map(userId -> Pair.of(userId, legalCounsellor)))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(legalCounsellorPair -> eventsToPublish.add(
-                new LegalCounsellorAdded(currentCaseData, legalCounsellorPair)
-            ));
-
-        //Revoke access from all that were in the previous case, but not in the new case
-        List<LegalCounsellor> removedLegalCounsellors = previousLegalCounsellors.stream()
+        //Revoke case access from all removed legal counsellors
+        previousLegalCounsellors.stream()
             .filter(not(currentLegalCounsellors::contains))
-            .collect(Collectors.toList());
+            .forEach(counsellor -> events.add(new LegalCounsellorRemoved(currentCaseData, orgName, counsellor)));
 
-        removedLegalCounsellors.stream()
-            .map(legalCounsellor -> organisationService.findUserByEmail(legalCounsellor.getEmail())
-                .map(userId -> Pair.of(userId, legalCounsellor)))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(legalCounsellorPair -> eventsToPublish.add(
-                new LegalCounsellorRemoved(
-                    currentCaseData, loggedInSolicitorOrganisationName, legalCounsellorPair
-                )
-            ));
+        return events;
+    }
 
-        return eventsToPublish;
+    private List<Element<LegalCounsellor>> populateWithUserIds(List<Element<LegalCounsellor>> counsellors) {
+        return counsellors.stream().map(counsellorElement -> {
+            LegalCounsellor counsellor = counsellorElement.getValue();
+            String userId = organisationService.findUserByEmail(counsellor.getEmail()).orElseThrow();
+            return element(counsellorElement.getId(), counsellor.toBuilder().userId(userId).build());
+        }).collect(Collectors.toList());
     }
 }

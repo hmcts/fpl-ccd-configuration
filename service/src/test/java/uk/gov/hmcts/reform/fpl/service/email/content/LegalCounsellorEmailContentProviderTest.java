@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +28,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 @ExtendWith(MockitoExtension.class)
 class LegalCounsellorEmailContentProviderTest {
 
-    private static final Pair<String, LegalCounsellor> TEST_LEGAL_COUNCILLOR = Pair.of(
-        "testUserId",
-        LegalCounsellor.builder().email("ted.baker@example.com").firstName("Ted").lastName("Baker").build()
-    );
+    private static final LegalCounsellor TEST_LEGAL_COUNCILLOR = LegalCounsellor.builder()
+        .email("ted.baker@example.com")
+        .firstName("Ted")
+        .lastName("Baker")
+        .build();
 
     @Mock
     private CaseUrlService caseUrlService;
@@ -72,9 +72,9 @@ class LegalCounsellorEmailContentProviderTest {
 
     @Test
     void buildLegalCounsellorRemovedNotificationTemplate() {
-        LegalCounsellorRemoved event = new LegalCounsellorRemoved(caseData,
-            "Peter Taylor Solicitors Ltd",
-            TEST_LEGAL_COUNCILLOR);
+        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
+            caseData, "Peter Taylor Solicitors Ltd", TEST_LEGAL_COUNCILLOR
+        );
         LegalCounsellorRemovedNotifyTemplate returnedTemplate =
             underTest.buildLegalCounsellorRemovedNotificationTemplate(caseData, event);
 

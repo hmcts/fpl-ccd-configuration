@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -357,11 +356,13 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         final String legalCounsellorId = "some id";
         final String legalCounsellorEmail = "some email";
         final List<Element<LegalCounsellor>> legalCounsellors = wrapElements(
-            LegalCounsellor.builder().firstName("first").lastName("last").email(legalCounsellorEmail).build()
+            LegalCounsellor.builder()
+                .firstName("first")
+                .lastName("last")
+                .email(legalCounsellorEmail)
+                .userId(legalCounsellorId)
+                .build()
         );
-
-        when(orgApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, legalCounsellorEmail))
-            .thenReturn(OrganisationUser.builder().userIdentifier(legalCounsellorId).build());
 
         CaseData caseDataBefore = CaseData.builder()
             .state(NON_RESTRICTED_STATE)
