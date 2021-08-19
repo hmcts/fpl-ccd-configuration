@@ -106,7 +106,6 @@ class ModifiedDocumentCommonEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifyLocalAuthorityWhenOrderAmended() {
         underTest.notifyLocalAuthority(EVENT);
 
@@ -119,14 +118,10 @@ class ModifiedDocumentCommonEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldNotifyEmailRepsWhenOrderAmended() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
-            eq(CASE_DATA),
-            eq(SELECTED_OTHERS),
-            any()))
-            .willReturn((Set) Set.of(EMAIL_REP_1));
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
+            .willReturn(Set.of(EMAIL_REP_1));
 
         underTest.notifyEmailRepresentatives(EVENT);
 
@@ -139,14 +134,11 @@ class ModifiedDocumentCommonEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldNotifyDigitalRepsWhenOrderAmended() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
-            eq(CASE_DATA),
-            eq(SELECTED_OTHERS),
-            any()))
-            .willReturn((Set) Set.of(DIGITAL_REP_1));
+        given(otherRecipientsInbox.getNonSelectedRecipients(
+            eq(DIGITAL_SERVICE), eq(CASE_DATA), eq(SELECTED_OTHERS), any()
+        )).willReturn(Set.of(DIGITAL_REP_1));
 
         underTest.notifyDigitalRepresentatives(EVENT);
 
@@ -159,7 +151,6 @@ class ModifiedDocumentCommonEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPost() {
         final Representative representative = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
@@ -167,9 +158,8 @@ class ModifiedDocumentCommonEventHandlerTest {
 
         given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(List.of(representative,
             representative2));
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST),
-            eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
-            .willReturn((Set) Set.of(representative));
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
+            .willReturn(Set.of(representative));
         given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(SELECTED_OTHERS))
             .willReturn(Set.of(otherRespondent));
 
@@ -183,20 +173,14 @@ class ModifiedDocumentCommonEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
     void shouldOnlySendNotificationToLAWhenOrderTypeIsSDO() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL),
-            eq(CASE_DATA),
-            eq(SELECTED_OTHERS),
-            any()))
-            .willReturn((Set) Set.of(EMAIL_REP_1));
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
-            eq(CASE_DATA),
-            eq(SELECTED_OTHERS),
-            any()))
-            .willReturn((Set) Set.of(DIGITAL_REP_1));
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
+            .willReturn(Set.of(EMAIL_REP_1));
+        given(otherRecipientsInbox.getNonSelectedRecipients(
+            eq(DIGITAL_SERVICE), eq(CASE_DATA), eq(SELECTED_OTHERS), any()
+        )).willReturn(Set.of(DIGITAL_REP_1));
         given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "Standard direction order"))
             .willReturn(NOTIFY_DATA);
 

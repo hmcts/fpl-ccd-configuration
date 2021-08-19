@@ -78,7 +78,7 @@ public class GeneratedOrderEventHandler {
         if (lastGeneratedOrder.isNewVersion()) {
             List<Element<Other>> othersSelected = getOthersSelected(lastGeneratedOrder);
             allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, element -> element.getValue()
+                POST, caseData, othersSelected, Element::getValue
             ));
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
         }
@@ -93,12 +93,11 @@ public class GeneratedOrderEventHandler {
             event.getOrderDocument(), event.getOrderTitle());
     }
 
-    @SuppressWarnings("unchecked")
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
                                                               final DocumentReference orderDocument,
                                                               final List<Element<Other>> othersSelected) {
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+        Set<String> digitalRecipientsOtherNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL, caseData, othersSelected, element -> element.getValue().getEmail()
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
@@ -116,12 +115,11 @@ public class GeneratedOrderEventHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
                                                                            final DocumentReference orderDocument,
                                                                            List<Element<Other>> othersSelected) {
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+        Set<String> digitalRecipientsOtherNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             DIGITAL_SERVICE, caseData, othersSelected, element -> element.getValue().getEmail()
         );
         digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
@@ -150,9 +148,8 @@ public class GeneratedOrderEventHandler {
     }
 
     private List<Element<Other>> getOthersSelected(GeneratedOrder lastGeneratedOrder) {
-        List<Element<Other>> othersSelected = lastGeneratedOrder.isNewVersion()
+        return lastGeneratedOrder.isNewVersion()
             ? defaultIfNull(lastGeneratedOrder.getOthers(), new ArrayList<>()) : new ArrayList<>();
-        return othersSelected;
     }
 
 }
