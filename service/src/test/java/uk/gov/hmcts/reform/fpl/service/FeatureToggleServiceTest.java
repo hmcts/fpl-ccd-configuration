@@ -140,19 +140,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsChildRepresentativeSolicitor(boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isChildRepresentativeSolicitorEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("child-representative-solicitor"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false)
-        );
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsFurtherEvidenceDocumentTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
