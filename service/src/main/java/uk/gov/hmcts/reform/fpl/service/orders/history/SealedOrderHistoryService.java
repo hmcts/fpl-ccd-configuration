@@ -52,6 +52,7 @@ public class SealedOrderHistoryService {
     private final SealedOrderHistoryTypeGenerator typeGenerator;
     private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker;
     private final OthersNotifiedGenerator othersNotifiedGenerator;
+    private final SealedOrderLanguageRequirementGenerator languageRequirementGenerator;
     private final Time time;
 
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
@@ -80,6 +81,7 @@ public class SealedOrderHistoryService {
             .specialGuardians(appointedGuardianFormatter.getGuardiansNamesForTab(caseData))
             .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
             .document(sealedPdfOrder)
+            .translationRequirements(languageRequirementGenerator.translationRequirements(caseData))
             .unsealedDocumentCopy(plainWordOrder);
 
         Optional.ofNullable(manageOrdersEventData.getManageOrdersLinkedApplication())

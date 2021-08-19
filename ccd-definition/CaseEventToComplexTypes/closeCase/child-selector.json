@@ -1,0 +1,163 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "optionCount",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "pageShow=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option0",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option1",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option2",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option3",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option4",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option5",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option6",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option7",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option8",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option9",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option10",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option11",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option12",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 14,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option13",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 15,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childSelector",
+    "ListElementCode": "option14",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 16,
+    "DisplayContext": "OPTIONAL"
+  }
+]

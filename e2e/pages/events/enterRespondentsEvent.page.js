@@ -102,7 +102,6 @@ module.exports = {
   async enterRepresentationDetails(option, respondent, index) {
     const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
 
-
     I.click(this.fields(elementIndex).legalRepresentation(option).option);
     if (option === 'Yes') {
       I.fillField(this.fields(elementIndex).solicitor.firstName, respondent.solicitor.firstName);
@@ -128,7 +127,7 @@ module.exports = {
     const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
 
     await within(this.fields(elementIndex).solicitor.element, () => {
-      I.click('Clear');
+      I.click('.//a[text()="Clear"]');
       I.fillField('.//input[@id="search-org-text"]', organisationName.split(' ')[0]);
       I.click(`.//*[@id="organisation-table"]/caption/h3[text()="${organisationName}"]/../../tbody//a`);
     });
