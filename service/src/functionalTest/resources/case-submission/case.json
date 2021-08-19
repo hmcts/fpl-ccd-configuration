@@ -43,6 +43,7 @@
     {
       "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
       "value": {
+        "designated": "Yes",
         "name": "Test",
         "email": "test@test.com",
         "phone": "077766655544",

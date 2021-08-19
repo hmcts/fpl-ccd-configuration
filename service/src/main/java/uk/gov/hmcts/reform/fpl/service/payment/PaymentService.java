@@ -63,7 +63,7 @@ public class PaymentService {
             localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            final LocalAuthority localAuthority = caseData.getLocalAuthorities().get(0).getValue();
+            final LocalAuthority localAuthority = caseData.getDesignatedLocalAuthority();
 
             return getCreditAccountPaymentRequest(caseData.getId(),
                 localAuthority.getPbaNumber(),

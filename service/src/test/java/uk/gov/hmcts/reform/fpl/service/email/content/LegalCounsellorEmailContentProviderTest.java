@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_FORMATTED_CASE_ID;
@@ -53,7 +53,7 @@ class LegalCounsellorEmailContentProviderTest {
             .caseName("testCaseName")
             .build();
 
-        when(helper.getEldestChildLastName(any())).thenCallRealMethod();
+        when(helper.getEldestChildLastName(anyList())).thenCallRealMethod();
     }
 
     @Test

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 
 @Service
@@ -28,10 +29,10 @@ public class ManagingOrganisationService {
             throw new CaseNotOutsourcedException(caseData.getId());
         }
 
-        final String outsourcingOrganisationId = caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
+        final String outsourcingOrgId = caseData.getOutsourcingPolicy().getOrganisation().getOrganisationID();
 
-        return organisationService.findOrganisation(outsourcingOrganisationId)
-            .orElseThrow(() -> new OrganisationNotFound(outsourcingOrganisationId));
+        return organisationService.findOrganisation(outsourcingOrgId)
+            .orElseThrow(() -> new OrganisationNotFound(format("Organisation %s not found", outsourcingOrgId)));
     }
 
     public ChangeOrganisationRequest getRemovalRequest(CaseData caseData) {

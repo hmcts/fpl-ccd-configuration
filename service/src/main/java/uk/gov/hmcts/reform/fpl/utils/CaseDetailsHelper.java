@@ -53,10 +53,12 @@ public class CaseDetailsHelper {
         }
     }
 
-    public static void removeTemporaryFields(CaseDetails caseDetails, Class clazz) {
+    public static CaseDetails removeTemporaryFields(CaseDetails caseDetails, Class clazz) {
         getFieldsListWithAnnotation(clazz, Temp.class).stream()
             .map(Field::getName)
             .forEach(caseDetails.getData()::remove);
+
+        return caseDetails;
     }
 
     public static boolean isInOpenState(CaseDetails caseDetails) {

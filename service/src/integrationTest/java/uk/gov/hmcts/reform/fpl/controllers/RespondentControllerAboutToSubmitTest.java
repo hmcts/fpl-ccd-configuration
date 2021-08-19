@@ -64,6 +64,7 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         final LocalAuthority localAuthority = LocalAuthority.builder()
             .name("Local authority name")
+            .designated("Yes")
             .build();
 
         final CaseData caseData = CaseData.builder()

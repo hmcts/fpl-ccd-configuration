@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
@@ -86,6 +87,10 @@ public class OrganisationService {
             log.error("Organisation {} not registered", organisationId);
             return Optional.empty();
         }
+    }
+
+    public Organisation getOrganisation(String organisationId) {
+        return findOrganisation(organisationId).orElseThrow(() -> new OrganisationNotFound(organisationId));
     }
 
     private Set<String> useLocalMapping(String localAuthorityCode) {

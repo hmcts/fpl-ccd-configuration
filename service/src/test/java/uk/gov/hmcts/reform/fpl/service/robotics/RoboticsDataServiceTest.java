@@ -134,6 +134,7 @@ class RoboticsDataServiceTest {
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
                 .name("Local authority")
+                .designated("Yes")
                 .address(Address.builder()
                     .addressLine1("Line 1")
                     .postcode("AB 100")
@@ -220,6 +221,7 @@ class RoboticsDataServiceTest {
         void shouldReturnEmptyApplicantDataFromLocalAuthority() {
             final CaseData caseData = prepareCaseData().toBuilder()
                 .localAuthorities(wrapElements(LocalAuthority.builder()
+                    .designated("Yes")
                     .build()))
                 .applicants(wrapElements(Applicant.builder()
                     .party(ApplicantParty.builder().build())
@@ -415,6 +417,7 @@ class RoboticsDataServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(colleague1, colleague2))
                 .build();
 
@@ -446,6 +449,7 @@ class RoboticsDataServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(colleague1, colleague2))
                 .build();
 
@@ -477,6 +481,7 @@ class RoboticsDataServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(colleague1, colleague2))
                 .build();
 
@@ -499,6 +504,7 @@ class RoboticsDataServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(colleague))
                 .build();
 
@@ -520,6 +526,7 @@ class RoboticsDataServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(colleague))
                 .build();
 

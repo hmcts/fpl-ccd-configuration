@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -17,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CaseAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpdater;
@@ -26,17 +25,13 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.aac.model.DecisionRequest.decisionRequest;
-
 @Api
 @RestController
 @RequestMapping("/callback/noc-decision")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class NoticeOfChangeController extends CallbackController {
 
-    private final RequestData requestData;
-    private final AuthTokenGenerator tokenGenerator;
-    private final CaseAssignmentApi caseAssignmentApi;
+    private final CaseAssignmentService caseAssignmentService;
     private final NoticeOfChangeService noticeOfChangeService;
     private final RespondentService respondentService;
     private final RepresentableLegalCounselUpdater legalCounselUpdater;
@@ -56,8 +51,7 @@ public class NoticeOfChangeController extends CallbackController {
 
         caseDetails.getData().putAll(legalCounselUpdater.updateLegalCounselFromNoC(caseData, originalCaseData));
 
-        return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(),
-            decisionRequest(caseDetails));
+        return caseAssignmentService.applyDecision(caseDetails);
     }
 
     @PostMapping("/submitted")
