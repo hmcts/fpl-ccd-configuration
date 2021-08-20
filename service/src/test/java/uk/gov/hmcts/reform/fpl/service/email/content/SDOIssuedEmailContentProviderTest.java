@@ -31,7 +31,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(any())).thenReturn("name");
+        when(helper.getEldestChildLastName(any(CaseData.class))).thenReturn("name");
     }
 
     @Test

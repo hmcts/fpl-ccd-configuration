@@ -440,6 +440,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
 
     private List<Element<LocalAuthority>> getLocalAuthority() {
         return wrapElements(LocalAuthority.builder()
+            .designated("Yes")
             .name("Local authority name")
             .build());
     }

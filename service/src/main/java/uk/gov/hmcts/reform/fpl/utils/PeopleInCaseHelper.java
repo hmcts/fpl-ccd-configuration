@@ -25,9 +25,7 @@ public class PeopleInCaseHelper {
 
     public static String getFirstApplicantName(CaseData caseData) {
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getLocalAuthorities().stream()
-                .findFirst()
-                .map(Element::getValue)
+            return Optional.ofNullable(caseData.getDesignatedLocalAuthority())
                 .map(LocalAuthority::getName)
                 .orElse("");
         }

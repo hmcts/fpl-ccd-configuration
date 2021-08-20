@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -23,18 +24,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSubmittedBaseTest {
 
-    private static final String BUNDLE_NAME = "furtherEvidenceDocuments";
     private static final String SOLICITOR_BUNDLE_NAME = "furtherEvidenceDocumentsSolicitor";
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -42,19 +38,11 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     @MockBean
     private CaseAccessDataStoreApi caseAccessDataStoreApi;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     ManageDocumentsControllerSubmittedTest() {
         super("manage-documents");
-    }
-
-    @Test
-    void shouldNotPublishEventForOtherUserWhenUploadNotificationFeatureIsDisabled() {
-        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(buildCaseAssignedUserRole("[EPSMANAGING]"));
-        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(false);
-
-        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
-
-        verifyNoInteractions(notificationClient);
     }
 
     @Test
@@ -69,17 +57,6 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldNotPublishEventWhenConfidentialDocumentsAreUploadedByOtherUser() {
-        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
-        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
-        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(buildCaseAssignedUserRole("[EPSMANAGING]"));
-
-        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, true));
-        verifyNoInteractions(notificationClient);
-    }
-
-    @Test
     void shouldNotPublishEventWhenConfidentialDocumentsAreUploadedBySolicitor() {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
@@ -88,28 +65,6 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
 
         postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, true));
         verifyNoInteractions(notificationClient);
-    }
-
-    @Test
-    void shouldPublishEventWithSolicitorWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
-        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
-        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
-        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(buildCaseAssignedUserRole("[EPSMANAGING]"));
-
-        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
-
-        verify(notificationClient).sendEmail(
-            eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_1_INBOX),
-            anyMap(),
-            eq(EMAIL_REFERENCE));
-
-        verify(notificationClient).sendEmail(
-            eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
-            eq(REP_1_EMAIL),
-            anyMap(),
-            eq(EMAIL_REFERENCE));
     }
 
     @Test
