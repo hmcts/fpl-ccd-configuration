@@ -21,6 +21,7 @@ class SupportingEvidenceBundleTranslatorDecoratorTest {
     private static final DocumentReference DOCUMENT_REFERENCE = mock(DocumentReference.class);
     private static final String NAME = "Name";
     private static final LocalDateTime NOW = LocalDateTime.of(2012, 1, 2, 3, 4);
+    private static final UUID ANOTHER_ID = UUID.randomUUID();
 
     private final Time time = mock(Time.class);
 
@@ -50,13 +51,13 @@ class SupportingEvidenceBundleTranslatorDecoratorTest {
 
         when(time.now()).thenReturn(NOW);
         Element<SupportingEvidenceBundle> actual = underTest.apply(
-            element(UUID.randomUUID(), SupportingEvidenceBundle.builder()
+            element(ANOTHER_ID, SupportingEvidenceBundle.builder()
                 .name(NAME)
                 .build())
         );
 
         assertThat(actual).isEqualTo(
-            element(SELECTED_ORDER_ID, SupportingEvidenceBundle.builder()
+            element(ANOTHER_ID, SupportingEvidenceBundle.builder()
                 .name(NAME)
                 .build()));
 

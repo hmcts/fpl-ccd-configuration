@@ -29,8 +29,9 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class TranslatableFurtherEvidenceProvider implements TranslatableListItemProvider {
 
     private static final String FURTHER_EVIDENCE_DOCUMENTS_KEY = "furtherEvidenceDocuments";
+
     private final ConfidentialDocumentsSplitter confidentialDocumentsSplitter;
-    private SupportingEvidenceBundleTranslatorDecorator decorator;
+    private final SupportingEvidenceBundleTranslatorDecorator decorator;
 
     @Override
     public List<Element<? extends TranslatableItem>> provideListItems(CaseData caseData) {
