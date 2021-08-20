@@ -35,7 +35,7 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
 
   await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate}));
   manageHearingsEventPage.enterVenue(hearingDetails[0]);
-  manageHearingsEventPage.selectHearingDuration(Object.assign({}, hearingDetails[0], {endDate: hearingEndDate}));
+  await manageHearingsEventPage.selectHearingDuration(Object.assign({}, hearingDetails[0], {endDate: hearingEndDate}));
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
   manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
@@ -72,6 +72,7 @@ Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, man
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
+  await manageHearingsEventPage.selectHearingDuration(hearingDetails[1]);
   manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
   manageHearingsEventPage.selectedAllocatedJudge();
@@ -179,6 +180,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   manageHearingsEventPage.selectCancellationAction('Yes - and I can add the new date now');
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[0]);
+  await manageHearingsEventPage.selectHearingDuration(hearingDetails[0]);
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeName(reListedHearingJudgeName);
   await I.goToNextPage();
@@ -220,6 +222,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   manageHearingsEventPage.selectCancellationReason('No key issue analysis');
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
+  await manageHearingsEventPage.selectHearingDuration(hearingDetails[1]);
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeName(hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
   await I.goToNextPage();
@@ -262,6 +265,7 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   manageHearingsEventPage.selectReListHearing('Case management hearing, 1 January 2060 - vacated');
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[2]);
+  await manageHearingsEventPage.selectHearingDuration(hearingDetails[2]);
   await I.goToNextPage();
   await I.goToNextPage();
   manageHearingsEventPage.dontSendNoticeOfHearing();
@@ -300,7 +304,8 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
 
-  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate, endDate: hearingEndDate}));
+  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate}));
+  await manageHearingsEventPage.selectHearingDuration(Object.assign({}, hearingDetails[0], {endDate: hearingEndDate}));
   manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
 
