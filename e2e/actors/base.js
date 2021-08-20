@@ -125,8 +125,8 @@ module.exports = {
   },
 
   async seeAvailableEvents(expectedEvents) {
-    const actualEvents = await this.grabTextFrom('//ccd-event-trigger//option')
-      .then(options => Array.isArray(options) ? options : [options])
+    const actualEvents = await this.grabTextFrom('//ccd-event-trigger//select')
+      .then(options => Array.isArray(options) ? options : options.split('\n'))
       .then(options => {
         return lodash.without(options, 'Select action');
       });

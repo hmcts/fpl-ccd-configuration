@@ -304,9 +304,7 @@ public class CaseSubmissionGenerationService
 
     private Optional<String> getLegalTeamManager(CaseData caseData) {
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return ofNullable(caseData.getLocalAuthorities())
-                .map(localAuthority -> localAuthority.get(0))
-                .map(Element::getValue)
+            return ofNullable(caseData.getDesignatedLocalAuthority())
                 .map(LocalAuthority::getLegalTeamManager);
         }
 
@@ -331,7 +329,7 @@ public class CaseSubmissionGenerationService
     private List<DocmosisApplicant> buildDocmosisApplicants(CaseData caseData) {
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return List.of(buildApplicant(caseData.getLocalAuthorities().get(0).getValue()));
+            return List.of(buildApplicant(caseData.getDesignatedLocalAuthority()));
         }
 
         final Solicitor legacySolicitor = caseData.getSolicitor();

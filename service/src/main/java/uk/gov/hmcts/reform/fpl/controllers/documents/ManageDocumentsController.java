@@ -213,23 +213,20 @@ public class ManageDocumentsController extends CallbackController {
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, "manageDocumentSubtypeList",
             "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP");
 
-        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
-            caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
-        }
+        CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
+        caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
 
         return respond(caseDetailsMap);
     }
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = userService.getUserDetails();
+        UserDetails userDetails = userService.getUserDetails();
 
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), false,
-                userDetails));
-        }
+        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
+            getCaseDataBefore(request), false,
+            userDetails));
+
     }
 
     private boolean isSolicitor(Long id) {

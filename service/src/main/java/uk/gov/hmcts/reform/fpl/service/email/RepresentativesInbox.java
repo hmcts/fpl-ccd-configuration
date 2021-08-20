@@ -62,51 +62,36 @@ public class RepresentativesInbox {
         return emails;
     }
 
-    @SuppressWarnings("unchecked")
-    public Set<?> getNonSelectedRespondentsRecipients(
-        RepresentativeServingPreferences servingPreferences,
-        CaseData caseData,
-        List<Element<Respondent>> respondentsSelected,
-        Function<Element<Representative>, ?> mapperFunction) {
+    public Set<Recipient> getNonSelectedRespondentRecipientsByPost(CaseData caseData,
+                                                                   List<Element<Respondent>> respondentsSelected) {
+        Set<Recipient> nonSelectedRespondentsRecipients = getNonSelectedRespondentRecipients(
+            POST, caseData, respondentsSelected, Element::getValue
+        );
 
-        Set<UUID> allRepresentativeIds = unwrapElements(caseData.getAllRespondents())
-            .stream()
-            .flatMap(respondent -> respondent.getRepresentedBy()
-                .stream().map(Element::getValue))
-            .collect(Collectors.toSet());
+        nonSelectedRespondentsRecipients.addAll(getNotSelectedUnrepresentedRespondents(caseData, respondentsSelected));
 
-        Set<UUID> selectedRepresentativeIds = respondentsSelected.stream()
-            .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
-            .collect(Collectors.toSet());
-
-        LinkedHashSet<Recipient> notSelectedRepresentedRespondents = (LinkedHashSet<Recipient>)
-            caseData.getRepresentativesElementsByServedPreference(servingPreferences)
-                .stream()
-                .filter(representativeElement -> allRepresentativeIds.contains(representativeElement.getId()))
-                .filter(not(representativeElement ->
-                    selectedRepresentativeIds.contains(representativeElement.getId())))
-                .map(mapperFunction)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        final Set<Recipient> nonSelectedRespondents = new LinkedHashSet<>(notSelectedRepresentedRespondents);
-        if (servingPreferences == POST) {
-            nonSelectedRespondents.addAll(getNotSelectedUnrepresentedRespondents(caseData, respondentsSelected));
-        }
-        return nonSelectedRespondents;
+        return nonSelectedRespondentsRecipients;
     }
 
-    private Set<Recipient> getNotSelectedUnrepresentedRespondents(CaseData caseData,
-                                                                  List<Element<Respondent>> selectedRespondents) {
-        List<Element<Respondent>> unrepresentedRespondents = caseData.getAllRespondents().stream()
-            .filter(respondent -> isEmpty(respondent.getValue().getRepresentedBy())
-                && !YES.getValue().equals(respondent.getValue().getLegalRepresentation()))
-            .collect(toList());
-
-        List<UUID> selectedRespondentsIds = selectedRespondents.stream().map(Element::getId).collect(toList());
-        return unrepresentedRespondents.stream()
-            .filter(respondentElement -> !selectedRespondentsIds.contains(respondentElement.getId()))
-            .map(resp -> resp.getValue().getParty())
+    public <R> Set<R> getNonSelectedRespondentRecipients(RepresentativeServingPreferences servingPreferences,
+                                                         CaseData caseData,
+                                                         List<Element<Respondent>> respondentsSelected,
+                                                         Function<Element<Representative>, R> mapperFunction) {
+        Set<UUID> allRepresentativeIds = unwrapElements(caseData.getAllRespondents())
+            .stream()
+            .flatMap(respondent -> respondent.getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
+
+        Set<UUID> selectedRepresentativeIds = unwrapElements(respondentsSelected).stream()
+            .flatMap(respondent -> respondent.getRepresentedBy().stream().map(Element::getValue))
+            .collect(Collectors.toSet());
+
+        return caseData.getRepresentativesElementsByServedPreference(servingPreferences)
+            .stream()
+            .filter(representativeElement -> allRepresentativeIds.contains(representativeElement.getId()))
+            .filter(not(representativeElement -> selectedRepresentativeIds.contains(representativeElement.getId())))
+            .map(mapperFunction)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Respondent>> selectedRespondents) {
@@ -115,6 +100,20 @@ public class RepresentativesInbox {
             .filter(respondent -> isEmpty(respondent.getRepresentedBy()) && respondent.hasAddress())
             .map(Respondent::toParty)
             .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private Set<Recipient> getNotSelectedUnrepresentedRespondents(CaseData caseData,
+                                                                  List<Element<Respondent>> selectedRespondents) {
+        List<Element<Respondent>> unrepresentedRespondents = caseData.getAllRespondents().stream()
+            .filter(respondent -> isEmpty(respondent.getValue().getRepresentedBy())
+                                  && !YES.getValue().equals(respondent.getValue().getLegalRepresentation()))
+            .collect(toList());
+
+        List<UUID> selectedRespondentsIds = selectedRespondents.stream().map(Element::getId).collect(toList());
+        return unrepresentedRespondents.stream()
+            .filter(respondentElement -> !selectedRespondentsIds.contains(respondentElement.getId()))
+            .map(resp -> resp.getValue().getParty())
+            .collect(Collectors.toSet());
     }
 
     private boolean shouldSend(RepresentativeServingPreferences preference,

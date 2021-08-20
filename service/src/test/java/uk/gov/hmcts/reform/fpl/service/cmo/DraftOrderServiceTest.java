@@ -8,10 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -68,6 +71,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ExtendWith(MockitoExtension.class)
 class DraftOrderServiceTest {
 
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
     private DraftOrderService service;
@@ -77,7 +82,11 @@ class DraftOrderServiceTest {
 
     @BeforeEach
     void init() {
-        service = new DraftOrderService(new ObjectMapper(), time, documentUploadHelper);
+        service = new DraftOrderService(new ObjectMapper(),
+            time,
+            documentUploadHelper,
+            new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder())
+        );
     }
 
     @Nested
@@ -488,6 +497,7 @@ class DraftOrderServiceTest {
             UploadDraftOrdersData actualEventData = service.getDraftsInfo(caseData);
 
             assertThat(actualEventData.getCurrentHearingOrderDrafts()).containsExactly(hearingOrder2, hearingOrder3);
+            assertThat(actualEventData.getCmoJudgeInfo()).isEqualTo("His Honour Judge Dredd");
         }
 
         @Test
@@ -516,6 +526,8 @@ class DraftOrderServiceTest {
             UploadDraftOrdersData actualEventData = service.getDraftsInfo(caseData);
 
             assertThat(actualEventData.getCurrentHearingOrderDrafts()).containsExactly(hearingOrder2, hearingOrder3);
+            assertThat(actualEventData.getCmoJudgeInfo()).isNull();
+
         }
     }
 
@@ -538,6 +550,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(1).getId(), List.of(hearings.get(1))))
                 .cmoSupportingDocs(bundle)
                 .cmoUploadType(CMOType.DRAFT)
+                .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
                 .build();
 
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
@@ -558,6 +571,7 @@ class DraftOrderServiceTest {
                     .judgeTitleAndName("His Honour Judge Dredd")
                     .hearing("Case management hearing, 2 March 2020")
                     .dateSent(time.now().toLocalDate())
+                    .translationRequirements(TRANSLATION_REQUIREMENTS)
                     .order(eventData.getUploadedCaseManagementOrder())
                     .status(DRAFT)
                     .build());
@@ -582,6 +596,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .uploadedCaseManagementOrder(testDocumentReference())
                 .cmoSupportingDocs(bundle)
+                .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
                 .cmoUploadType(CMOType.AGREED)
                 .build();
 
@@ -630,6 +645,7 @@ class DraftOrderServiceTest {
                 .uploadedCaseManagementOrder(testDocumentReference())
                 .cmoSupportingDocs(cmoSupportingDocuments)
                 .cmoUploadType(CMOType.AGREED)
+                .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
                 .build();
 
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
@@ -660,6 +676,7 @@ class DraftOrderServiceTest {
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
                 .pastHearingsForCMO(dynamicList(selectedHearing.getId(), hearings))
                 .uploadedCaseManagementOrder(testDocumentReference())
+                .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
                 .build();
 
             Element<HearingOrder> previousCmoOrder = hearingOrder(AGREED_CMO);
@@ -677,6 +694,7 @@ class DraftOrderServiceTest {
                 .order(eventData.getUploadedCaseManagementOrder())
                 .hearing("Case management hearing, 2 March 2020")
                 .judgeTitleAndName("His Honour Judge Dredd")
+                .translationRequirements(TRANSLATION_REQUIREMENTS)
                 .supportingDocs(List.of())
                 .build();
 
@@ -751,6 +769,8 @@ class DraftOrderServiceTest {
                 .hearingOrderDraftKind(List.of(HearingOrderKind.C21))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings.get(0).getId(), hearings))
                 .currentHearingOrderDrafts(newArrayList(hearingOrder1, hearingOrder2))
+                .orderToSendTranslationRequirements0(TRANSLATION_REQUIREMENTS)
+                .orderToSendTranslationRequirements1(TRANSLATION_REQUIREMENTS)
                 .build();
 
             List<Element<HearingFurtherEvidenceBundle>> evidenceBundles = newArrayList();
@@ -785,6 +805,8 @@ class DraftOrderServiceTest {
                 .hearingOrderDraftKind(List.of(HearingOrderKind.C21))
                 .hearingsForHearingOrderDrafts(dynamicList(selectedHearing.getId(), hearings))
                 .currentHearingOrderDrafts(List.of(hearingOrder1, hearingOrder3))
+                .orderToSendTranslationRequirements0(TRANSLATION_REQUIREMENTS)
+                .orderToSendTranslationRequirements1(TRANSLATION_REQUIREMENTS)
                 .build();
 
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(originalOrdersBundle);
@@ -815,6 +837,8 @@ class DraftOrderServiceTest {
                 .hearingOrderDraftKind(List.of(HearingOrderKind.C21))
                 .hearingsForHearingOrderDrafts(dynamicList(selectedHearing.getId(), hearings))
                 .currentHearingOrderDrafts(emptyList())
+                .orderToSendTranslationRequirements0(TRANSLATION_REQUIREMENTS)
+                .orderToSendTranslationRequirements1(TRANSLATION_REQUIREMENTS)
                 .build();
 
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(selectedHearingOrderBundle,

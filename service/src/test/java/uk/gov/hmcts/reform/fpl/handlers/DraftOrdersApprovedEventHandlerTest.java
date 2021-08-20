@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
@@ -33,9 +35,12 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,10 +51,13 @@ import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -68,6 +76,10 @@ class DraftOrdersApprovedEventHandlerTest {
     private static final UUID HEARING_ID = randomUUID();
     private static final Element<HearingBooking> HEARING = element(HEARING_ID, HearingBooking.builder().build());
     private static final ApprovedOrdersTemplate EXPECTED_TEMPLATE = ApprovedOrdersTemplate.builder().build();
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
+    private static final DocumentReference ORDER = mock(DocumentReference.class);
+    private static final DocumentReference ORDER_2 = mock(DocumentReference.class);
 
     @Mock
     private SendDocumentService sendDocumentService;
@@ -89,6 +101,8 @@ class DraftOrdersApprovedEventHandlerTest {
     private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
     private FeatureToggleService toggleService;
+    @Mock
+    private TranslationRequestService translationRequestService;
 
     @InjectMocks
     private DraftOrdersApprovedEventHandler underTest;
@@ -101,7 +115,6 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
         List<HearingOrder> orders = List.of();
-        ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder().build();
 
         given(courtService.getCourtEmail(caseData)).willReturn(CTSC_INBOX);
         given(inboxLookupService.getRecipients(
@@ -154,7 +167,6 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings("unchecked")
     void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(
         boolean servingOthersEnabled) {
         List<Representative> digitalReps = unwrapElements(createRepresentatives(DIGITAL_SERVICE));
@@ -172,7 +184,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
         if (servingOthersEnabled) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(caseData), any(), any()))
-                .willReturn((Set) Set.of("digital-rep1@test.com"));
+                .willReturn(Set.of("digital-rep1@test.com"));
         }
 
         List<HearingOrder> orders = List.of(hearingOrder());
@@ -200,7 +212,6 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings("unchecked")
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean othersToggle) {
         List<Representative> emailReps = unwrapElements(createRepresentatives(EMAIL));
         CaseData caseData = CaseData.builder()
@@ -217,7 +228,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
         if (othersToggle) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), any(), any()))
-                .willReturn((Set) Set.of("rep2@test.com"));
+                .willReturn(Set.of("rep2@test.com"));
         }
 
         List<HearingOrder> orders = List.of(hearingOrder());
@@ -353,6 +364,76 @@ class DraftOrdersApprovedEventHandlerTest {
         verify(sendDocumentService).sendDocuments(caseData,
             List.of(hearingOrder1.getOrder(), hearingOrder2.getOrder()),
             List.of(representative, respondent, otherParty));
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfEmpty() {
+        underTest.notifyTranslationTeam(
+            new DraftOrdersApproved(CASE_DATA, List.of())
+        );
+
+        verifyNoInteractions(translationRequestService);
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfTranslationRequired() {
+        underTest.notifyTranslationTeam(
+            new DraftOrdersApproved(CASE_DATA, List.of(HearingOrder.builder()
+                .translationRequirements(TRANSLATION_REQUIREMENTS)
+                .title("Title")
+                .dateIssued(LocalDate.of(2020, 1, 2))
+                .order(ORDER)
+                .build()))
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENTS),
+            ORDER, "Title - 2 January 2020");
+        verifyNoMoreInteractions(translationRequestService);
+
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfNoTranslationRequired() {
+        underTest.notifyTranslationTeam(
+            new DraftOrdersApproved(CASE_DATA, List.of(HearingOrder.builder()
+                .title("Title")
+                .dateIssued(LocalDate.of(2020, 1, 2))
+                .order(ORDER)
+                .build()))
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(NO),
+            ORDER, "Title - 2 January 2020");
+        verifyNoMoreInteractions(translationRequestService);
+
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfTranslationRequiredMultipleOrders() {
+        underTest.notifyTranslationTeam(
+            new DraftOrdersApproved(CASE_DATA, List.of(HearingOrder.builder()
+                    .translationRequirements(TRANSLATION_REQUIREMENTS)
+                    .title("Title")
+                    .dateIssued(LocalDate.of(2020, 1, 2))
+                    .order(ORDER)
+                    .build(),
+                HearingOrder.builder()
+                    .translationRequirements(TRANSLATION_REQUIREMENTS)
+                    .title("Title 2")
+                    .dateIssued(LocalDate.of(2020, 2, 3))
+                    .order(ORDER_2)
+                    .build()))
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENTS),
+            ORDER, "Title - 2 January 2020");
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENTS),
+            ORDER_2, "Title 2 - 3 February 2020");
+        verifyNoMoreInteractions(translationRequestService);
     }
 
     private HearingOrder hearingOrder() {

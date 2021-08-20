@@ -22,12 +22,14 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -51,6 +53,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final FeatureToggleService toggleService;
     private final SendDocumentService sendDocumentService;
+    private final TranslationRequestService translationRequestService;
 
     @EventListener
     @Async
@@ -91,15 +94,15 @@ public class CaseManagementOrderIssuedEventHandler {
 
     @EventListener
     @Async
-    @SuppressWarnings("unchecked")
     public void notifyEmailRepresentatives(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         HearingOrder cmo = event.getCmo();
 
         Set<String> representatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-                EMAIL, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail());
+            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+                EMAIL, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail()
+            );
             representatives.removeAll(otherRecipientsNotNotified);
         }
 
@@ -111,15 +114,15 @@ public class CaseManagementOrderIssuedEventHandler {
 
     @EventListener
     @Async
-    @SuppressWarnings("unchecked")
     public void notifyDigitalRepresentatives(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         HearingOrder cmo = event.getCmo();
 
         Set<String> representatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-                DIGITAL_SERVICE, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail());
+            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+                DIGITAL_SERVICE, caseData, cmo.getSelectedOthers(), element -> element.getValue().getEmail()
+            );
             representatives.removeAll(otherRecipientsNotNotified);
         }
 
@@ -132,7 +135,6 @@ public class CaseManagementOrderIssuedEventHandler {
 
     @Async
     @EventListener
-    @SuppressWarnings("unchecked")
     public void sendDocumentToPostRepresentatives(final CaseManagementOrderIssuedEvent event) {
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
             CaseData caseData = event.getCaseData();
@@ -141,8 +143,9 @@ public class CaseManagementOrderIssuedEventHandler {
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
             List<Element<Other>> othersSelected = issuedCmo.getSelectedOthers();
-            Set<Recipient> nonSelectedRecipients = (Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, Element::getValue);
+            Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
+                POST, caseData, othersSelected, Element::getValue
+            );
             allRecipients.removeAll(nonSelectedRecipients);
 
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
@@ -158,4 +161,14 @@ public class CaseManagementOrderIssuedEventHandler {
             );
         }
     }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(CaseManagementOrderIssuedEvent event) {
+        translationRequestService.sendRequest(event.getCaseData(),
+            Optional.ofNullable(event.getCmo().getTranslationRequirements()),
+            event.getCmo().getOrder(), event.getCmo().asLabel()
+        );
+    }
+
 }
