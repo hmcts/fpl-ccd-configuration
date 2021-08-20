@@ -37,14 +37,14 @@ class RespondentStatementsTransformerTest {
     void shouldReturnRespondentStatementsForHmctsViewAndSortByUploadedDateTime() {
         Element<SupportingEvidenceBundle> respondent1Document1 = buildFurtherEvidenceBundle(
             "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS,
-            LocalDateTime.of(2021, 5, 13, 20, 55, 0));
+            LocalDateTime.of(2021, 5, 13, 20, 55, 0), null, null);
 
         Element<SupportingEvidenceBundle> respondent1Document2 = buildFurtherEvidenceBundle(
             "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS,
-            LocalDateTime.of(2021, 5, 13, 22, 13, 0));
+            LocalDateTime.of(2021, 5, 13, 22, 13, 0), null, null);
 
         Element<SupportingEvidenceBundle> respondent1Document3WithoutDate = buildFurtherEvidenceBundle(
-            "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS, null);
+            "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS, null, null, null);
 
         CaseData caseData = CaseData.builder()
             .respondents1(List.of(RESPONDENT1, RESPONDENT2))

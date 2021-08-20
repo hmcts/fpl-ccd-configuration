@@ -76,6 +76,8 @@ public class OtherDocumentsTransformer {
             .sorted(comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
+                .translatedDocument(doc.getTranslatedDocument())
+                .sentForTranslation(doc.sentForTranslation())
                 .fileName(doc.getName())
                 .uploadedBy(doc.getUploadedBy())
                 .uploadedAt(isNotEmpty(doc.getDateTimeUploaded())
