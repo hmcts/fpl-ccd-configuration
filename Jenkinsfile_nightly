@@ -14,7 +14,7 @@ properties([
     string(name: 'SECURITY_RULES',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
-    password(name: 'DEMO_ENV_USER_USERNAME',
+    string(name: 'DEMO_ENV_USER_USERNAME',
       defaultValue: '',
       description: 'Only needed for running against Demo'),
     password(name: 'DEMO_ENV_USER_PASSWORD',
