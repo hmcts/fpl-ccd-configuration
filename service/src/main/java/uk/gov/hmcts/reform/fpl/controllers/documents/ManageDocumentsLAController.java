@@ -228,8 +228,8 @@ public class ManageDocumentsLAController extends CallbackController {
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
 
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
-                LOCAL_AUTHORITY, userDetails));
-        }
+        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
+            LOCAL_AUTHORITY, userDetails));
     }
+
 }
