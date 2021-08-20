@@ -277,7 +277,8 @@ class FurtherEvidenceNotificationServiceTest {
         return CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY)
-            .respondents1(wrapElements())
+            .respondents1(wrapElements(respondents))
+            .children1(wrapElements(children))
             .build();
     }
 
