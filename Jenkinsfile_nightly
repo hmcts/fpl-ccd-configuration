@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('0 18 * * *')]),
+  pipelineTriggers([cron('0 03 * * *')]),
   parameters([
     string(name: 'FRONTEND_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
       description: 'The URL you want to run the full functional tests against'),
@@ -76,6 +76,8 @@ withNightlyPipeline(type, product, component) {
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
   env.SECURITY_RULES = params.SECURITY_RULES
   env.ORG_ID = params.ORG_ID
+  env.HMCTS_USER_USERNAME = params.DEMO_ENV_USER_USERNAME
+  env.HMCTS_USER_PASSWORD = params.DEMO_ENV_USER_PASSWORD
 
   loadVaultSecrets(integrationTestSecrets)
 
