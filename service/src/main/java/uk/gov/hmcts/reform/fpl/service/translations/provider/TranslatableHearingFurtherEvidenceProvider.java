@@ -26,7 +26,7 @@ public class TranslatableHearingFurtherEvidenceProvider implements TranslatableL
 
     private static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY = "hearingFurtherEvidenceDocuments";
 
-    private SupportingEvidenceBundleTranslatorDecorator decorator;
+    private final SupportingEvidenceBundleTranslatorDecorator decorator;
 
     @Override
     public List<Element<? extends TranslatableItem>> provideListItems(CaseData caseData) {
@@ -62,9 +62,10 @@ public class TranslatableHearingFurtherEvidenceProvider implements TranslatableL
             translateHearingFurtherEvidenceDocuments(caseData, document, selectedOrderId));
     }
 
-    private List<Element<HearingFurtherEvidenceBundle>> translateHearingFurtherEvidenceDocuments(CaseData caseData,
-                                                                                                 DocumentReference document,
-                                                                                                 UUID selectedOrderId) {
+    private List<Element<HearingFurtherEvidenceBundle>>
+        translateHearingFurtherEvidenceDocuments(CaseData caseData,
+                                             DocumentReference document,
+                                             UUID selectedOrderId) {
         return caseData.getHearingFurtherEvidenceDocuments().stream().map(
             it -> element(it.getId(), it.getValue().toBuilder()
                 .supportingEvidenceBundle(it.getValue().getSupportingEvidenceBundle().stream()

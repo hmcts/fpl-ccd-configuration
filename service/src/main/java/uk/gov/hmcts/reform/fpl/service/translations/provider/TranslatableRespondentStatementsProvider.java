@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class TranslatableRespondentStatementsProvider implements TranslatableListItemProvider {
 
     private static final String RESPONDENT_STATEMENTS_KEY = "respondentStatements";
-    private SupportingEvidenceBundleTranslatorDecorator decorator;
+    private final SupportingEvidenceBundleTranslatorDecorator decorator;
 
 
     @Override
@@ -59,8 +59,8 @@ public class TranslatableRespondentStatementsProvider implements TranslatableLis
     }
 
 
-    private List<Element<RespondentStatement>> translateRespondentStatements(CaseData caseData, DocumentReference document,
-                                                          UUID selectedOrderId) {
+    private List<Element<RespondentStatement>> translateRespondentStatements(
+        CaseData caseData, DocumentReference document, UUID selectedOrderId) {
         return caseData.getRespondentStatements().stream().map(
             it -> element(it.getId(), it.getValue().toBuilder()
                 .supportingEvidenceBundle(it.getValue().getSupportingEvidenceBundle().stream()

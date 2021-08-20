@@ -22,8 +22,8 @@ public class SupportingEvidenceBundleTranslatorDecorator {
 
     public Function<Element<SupportingEvidenceBundle>, Element<SupportingEvidenceBundle>> translatedBundle(
         DocumentReference document, UUID selectedOrderId) {
-        return bundle -> element(bundle.getId(), bundleMatch(selectedOrderId, bundle) ?
-            addTranslationInfo(document, bundle) : bundle.getValue());
+        return bundle -> element(bundle.getId(), bundleMatch(selectedOrderId, bundle)
+            ? addTranslationInfo(document, bundle) : bundle.getValue());
     }
 
     private boolean bundleMatch(UUID selectedOrderId, Element<SupportingEvidenceBundle> bundle) {
