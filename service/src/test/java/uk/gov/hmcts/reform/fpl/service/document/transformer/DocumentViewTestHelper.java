@@ -30,6 +30,19 @@ public class DocumentViewTestHelper {
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
         "Admin uploaded evidence2", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1), null, null);
 
+    public static final Element<SupportingEvidenceBundle> ADMIN_TRANSLATED_DOCUMENT = buildFurtherEvidenceBundle(
+        "Admin translated",
+        "HMCTS",
+        false,
+        EXPERT_REPORTS,
+        now().minusMinutes(6),
+        testDocumentReference("translation.pdf"),
+        WELSH_TO_ENGLISH);
+
+    public static final Element<SupportingEvidenceBundle> ADMIN_SENT_FOR_TRANSLATION_DOCUMENT =
+        buildFurtherEvidenceBundle(
+        "Admin sent for translation", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(7), null, WELSH_TO_ENGLISH);
+
     public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
         "LA uploaded evidence1", "Kurt LA", true, GUARDIAN_REPORTS, now().minusMinutes(2), null, null);
 
@@ -38,7 +51,13 @@ public class DocumentViewTestHelper {
 
     public static final Element<SupportingEvidenceBundle> SOLICITOR_NON_CONFIDENTIAL_DOCUMENT =
         buildFurtherEvidenceBundle(
-        "Solicitor uploaded evidence1", "External solicitor", false, APPLICANT_STATEMENT, now().minusMinutes(5), null, null);
+            "Solicitor uploaded evidence1",
+            "External solicitor",
+            false,
+            APPLICANT_STATEMENT,
+            now().minusMinutes(5),
+            null,
+            null);
 
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT =
         buildFurtherEvidenceBundle(
