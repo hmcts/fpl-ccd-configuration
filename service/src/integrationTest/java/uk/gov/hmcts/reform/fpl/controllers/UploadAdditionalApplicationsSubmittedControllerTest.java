@@ -70,7 +70,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -217,7 +216,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         postSubmittedEvent(caseData);
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
@@ -226,12 +225,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
             eq(LOCAL_AUTHORITY_1_INBOX),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)));
-
-        checkUntil(() -> verify(notificationClient, never()).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)));
 
@@ -271,7 +264,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
@@ -281,21 +274,12 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
-        checkUntil(() -> {
-            verify(notificationClient).sendEmail(
-                eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-                eq("FamilyPublicLaw+ctsc@gmail.com"),
-                anyMap(),
-                eq(NOTIFICATION_REFERENCE)
-            );
-
-            verify(notificationClient, never()).sendEmail(
-                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-                eq("admin@family-court.com"),
-                anyMap(),
-                eq(NOTIFICATION_REFERENCE)
-            );
-        });
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        ));
     }
 
     @Test
@@ -316,7 +300,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(createCase(caseData));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("admin@family-court.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)));
