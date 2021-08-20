@@ -1,0 +1,240 @@
+{
+  "state": "Open",
+  "caseData": {
+    "orders": {
+      "address": {
+        "County": null,
+        "Country": null,
+        "PostCode": null,
+        "PostTown": null,
+        "AddressLine1": null,
+        "AddressLine2": null,
+        "AddressLine3": null
+      },
+      "epoType": null,
+      "excluded": null,
+      "orderType": [
+        "CARE_ORDER",
+        "INTERIM_CARE_ORDER"
+      ],
+      "directions": "No",
+      "otherOrder": null,
+      "directionDetails": null,
+      "emergencyProtectionOrders": [],
+      "emergencyProtectionOrderDetails": null,
+      "emergencyProtectionOrderDirections": [],
+      "emergencyProtectionOrderDirectionDetails": null
+    },
+    "grounds": {
+      "thresholdReason": [
+        "beyondControl",
+        "noCare"
+      ],
+      "thresholdDetails": "test details"
+    },
+    "hearing": {
+      "type": "Standard case management hearing",
+      "reason": null,
+      "timeFrame": "Within 18 days",
+      "reason2Days": null,
+      "reason7Days": null,
+      "reason12Days": null,
+      "reducedNotice": "No",
+      "withoutNotice": "No",
+      "type_GiveReason": "test",
+      "respondentsAware": "No",
+      "reducedNoticeReason": null,
+      "withoutNoticeReason": null,
+      "respondentsAwareReason": null
+    },
+    "caseName": "test",
+    "children1": [
+      {
+        "id": "7a05ba23-03b5-4c2e-acec-fc4e24c0f499",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "address": {
+              "County": null,
+              "Country": null,
+              "PostCode": null,
+              "PostTown": null,
+              "AddressLine1": null,
+              "AddressLine2": null,
+              "AddressLine3": null
+            },
+            "partyId": "c0b7c184-6d35-4f3d-9ba4-763b76edee4d",
+            "adoption": null,
+            "keyDates": null,
+            "lastName": "White",
+            "firstName": "Alex",
+            "partyType": null,
+            "dateOfBirth": "2016-01-01",
+            "fathersName": null,
+            "mothersName": null,
+            "detailsHidden": null,
+            "placementCourt": null,
+            "additionalNeeds": null,
+            "livingSituation": null,
+            "litigationIssues": null,
+            "socialWorkerName": null,
+            "careAndContactPlan": null,
+            "detailsHiddenReason": null,
+            "genderIdentification": null,
+            "fathersResponsibility": null,
+            "additionalNeedsDetails": null,
+            "livingSituationDetails": null,
+            "litigationIssuesDetails": null,
+            "placementOrderApplication": null,
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": null,
+              "contactDirection": null
+            },
+            "showAddressInConfidentialTab": null
+          },
+          "solicitor":{
+            "firstName": "Test",
+            "organisation": {
+              "OrganisationID": "123",
+              "OrganisationName": "Test Solicitors"
+            },
+            "regionalOfficeAddress": {},
+            "unregisteredOrganisation": {
+              "name": null,
+              "address": {}
+            }
+          },
+          "finalOrderIssued": null,
+          "finalOrderIssuedType": null
+        }
+      }
+    ],
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "respondents1": [
+      {
+        "id": "cb0775db-a1b4-4109-85b9-91312f5be2ab",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {},
+            "partyId": "97649861-d73e-4ca8-ad50-c6aa584d4857",
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "2018-01-01",
+            "telephoneNumber": {},
+            "relationshipToChild": "uncle"
+          },
+          "solicitor": {
+            "email": null,
+            "lastName": null,
+            "firstName": null,
+            "organisation": {},
+            "regionalOfficeAddress": {},
+            "unregisteredOrganisation": {
+              "name": null,
+              "address": {}
+            }
+          },
+          "representedBy": [],
+          "legalRepresentation": "No"
+        }
+      },
+      {
+        "id": "0ad407e1-92bc-4eb3-93ad-c62fb54999d9",
+        "value": {
+          "party": {
+            "gender": "Female",
+            "address": {},
+            "lastName": "White",
+            "firstName": "Emma",
+            "dateOfBirth": "2004-01-01",
+            "telephoneNumber": {},
+            "relationshipToChild": "sister"
+          },
+          "solicitor": {
+            "email": null,
+            "lastName": null,
+            "firstName": null,
+            "organisation": {},
+            "regionalOfficeAddress": {},
+            "unregisteredOrganisation": {
+              "name": null,
+              "address": {}
+            }
+          },
+          "representedBy": [],
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "groundsForEPO": {
+      "reason": []
+    },
+    "allocationProposal": {
+      "proposal": "Circuit judge",
+      "proposalReason": "test"
+    },
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
+    "caseSummaryDateOfIssue": null,
+    "caseSummaryHasNextHearing": null,
+    "caseSummaryNextHearingCMO": null,
+    "caseSummaryCafcassGuardian": null,
+    "caseSummaryHasFinalHearing": null,
+    "caseSummaryLASolicitorName": "Solicitor 1",
+    "caseSummaryNextHearingDate": null,
+    "caseSummaryNextHearingType": null,
+    "caseSummaryOrdersRequested": "Care order, Interim care order",
+    "caseSummaryFinalHearingDate": null,
+    "caseSummaryLASolicitorEmail": "test@test.com",
+    "caseSummaryNextHearingJudge": null,
+    "caseSummaryNumberOfChildren": null,
+    "caseSummaryAllocatedJudgeName": null,
+    "caseSummaryHasPreviousHearing": null,
+    "caseSummaryPreviousHearingCMO": null,
+    "caseSummaryAllocatedJudgeEmail": null,
+    "caseSummaryPreviousHearingDate": null,
+    "caseSummaryPreviousHearingType": null,
+    "caseSummaryHasUnresolvedMessages": null,
+    "caseSummaryFirstRespondentLastName": null,
+    "caseSummaryFirstRespondentLegalRep": null,
+    "caseSummaryNextHearingEmailAddress": null
+  }
+}
