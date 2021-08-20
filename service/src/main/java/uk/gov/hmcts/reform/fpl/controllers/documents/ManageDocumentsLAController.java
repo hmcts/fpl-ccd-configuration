@@ -226,11 +226,10 @@ public class ManageDocumentsLAController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
-            UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
+        UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
 
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
-                LOCAL_AUTHORITY, userDetails));
-        }
+        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
+            LOCAL_AUTHORITY, userDetails));
     }
+
 }

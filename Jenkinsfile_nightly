@@ -9,6 +9,8 @@ properties([
       description: 'The URL of case service callbacks'),
     string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
       description: 'The URL of idam api'),
+    string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
+      description: 'The organisation id of Swansea local authority'),
     string(name: 'SECURITY_RULES',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
@@ -73,6 +75,7 @@ withNightlyPipeline(type, product, component) {
   env.IDAM_API_URL=params.IDAM_API_URL
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
   env.SECURITY_RULES = params.SECURITY_RULES
+  env.ORG_ID = params.ORG_ID
 
   loadVaultSecrets(integrationTestSecrets)
 

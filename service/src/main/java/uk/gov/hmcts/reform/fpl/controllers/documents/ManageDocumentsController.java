@@ -225,11 +225,9 @@ public class ManageDocumentsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-
         CaseData caseData = getCaseData(request);
         boolean isSolicitor = isSolicitor(caseData.getId());
-        boolean featureToggleValue = isSolicitor ? this.featureToggleService.isNewDocumentUploadNotificationEnabled() :
-            this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled();
+        boolean featureToggleValue = !isSolicitor || this.featureToggleService.isNewDocumentUploadNotificationEnabled();
 
         if (featureToggleValue) {
             UserDetails userDetails = userService.getUserDetails();
