@@ -116,6 +116,56 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CancelledHearingBooking",
+    "ListElementCode": "hearingDuration",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing duration",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
+    "ListElementCode": "endDateDerived",
+    "FieldType": "Text",
+    "ElementLabel": "Derived end date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
+    "ListElementCode": "hearingMinutes",
+    "FieldType": "Text",
+    "ElementLabel": "minutes",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
+    "ListElementCode": "hearingHours",
+    "FieldType": "Text",
+    "ElementLabel": "hours",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
+    "ListElementCode": "hearingDays",
+    "FieldType": "Text",
+    "ElementLabel": "days",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
     "ListElementCode": "hearingNeedsBooked",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingNeedsBooked",

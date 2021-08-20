@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -59,8 +60,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -88,6 +87,8 @@ public class ManageHearingsService {
     public static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
     public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
     public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
+    private static final String YES = "Yes";
+    private static final String NO = "No";
     private static final String HEARING_START_DATE = "hearingStartDate";
     private static final String HEARING_END_DATE = "hearingEndDate";
     private static final String HEARING_START_DATE_LABEL = "hearingStartDateLabel";
@@ -97,6 +98,11 @@ public class ManageHearingsService {
     private static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
     public static final String TO_RE_LIST_HEARING_LABEL = "toReListHearingsLabel";
     public static final String DEFAULT_PRE_ATTENDANCE = "1 hour before the hearing";
+    private static final String HEARING_DURATION = "hearingDuration";
+    private static final String HEARING_DAYS = "hearingDays";
+    private final static String HEARING_MINUTES = "hearingMinutes";
+    private final static String HEARING_HOURS = "hearingHours";
+    private final static String HEARING_END_DATE_TIME = "hearingEndDateTime";
 
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -107,6 +113,7 @@ public class ManageHearingsService {
     private final ObjectMapper mapper;
     private final IdentityService identityService;
     private final Time time;
+
 
     public Map<String, Object> populateHearingLists(CaseData caseData) {
 
@@ -123,23 +130,23 @@ public class ManageHearingsService {
         ));
 
         if (isNotEmpty(caseData.getHearingDetails()) || isNotEmpty(caseData.getToBeReListedHearings())) {
-            listAndLabel.put(HAS_EXISTING_HEARINGS_FLAG, YES.getValue());
+            listAndLabel.put(HAS_EXISTING_HEARINGS_FLAG, YesNo.YES.getValue());
         }
 
         if (isNotEmpty(futureHearings)) {
-            listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YES.getValue());
+            listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YesNo.YES.getValue());
         }
 
         if (isNotEmpty(pastAndTodayHearings)) {
-            listAndLabel.put(HAS_HEARINGS_TO_ADJOURN, YES.getValue());
+            listAndLabel.put(HAS_HEARINGS_TO_ADJOURN, YesNo.YES.getValue());
         }
 
         if (isNotEmpty(futureAndTodayHearing)) {
-            listAndLabel.put(HAS_HEARINGS_TO_VACATE, YES.getValue());
+            listAndLabel.put(HAS_HEARINGS_TO_VACATE, YesNo.YES.getValue());
         }
 
         if (isNotEmpty(toBeReListedHearings)) {
-            listAndLabel.put(HAS_HEARING_TO_RE_LIST, YES.getValue());
+            listAndLabel.put(HAS_HEARING_TO_RE_LIST, YesNo.YES.getValue());
             listAndLabel.put(TO_RE_LIST_HEARING_LABEL, hearingLabels(toBeReListedHearings));
         }
 
@@ -248,6 +255,20 @@ public class ManageHearingsService {
         caseFields.put("hearingAttendanceDetails", hearingBooking.getAttendanceDetails());
         caseFields.put("preHearingAttendanceDetails", hearingBooking.getPreAttendanceDetails());
 
+        if (YES.equals(hearingBooking.getEndDateDerived())) {
+            if (hearingBooking.getHearingDays() != null) {
+                caseFields.put(HEARING_DURATION, DAYS.getType());
+                caseFields.put(HEARING_DAYS, hearingBooking.getHearingDays());
+            } else if (hearingBooking.getHearingHours() != null || hearingBooking.getHearingMinutes() != null) {
+                caseFields.put(HEARING_DURATION, HOURS_MINS.getType());
+                caseFields.put(HEARING_HOURS, hearingBooking.getHearingHours());
+                caseFields.put(HEARING_MINUTES, hearingBooking.getHearingMinutes());
+            }
+        } else if (hearingBooking.getEndDate() != null) {
+            caseFields.put(HEARING_DURATION, DATE_TIME.getType());
+            caseFields.put(HEARING_END_DATE_TIME, hearingBooking.getEndDate());
+        }
+
         if (hearingBooking.getPreviousHearingVenue() == null
             || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
             caseFields.put("hearingVenue", hearingBooking.getVenue());
@@ -261,7 +282,7 @@ public class ManageHearingsService {
 
     public void findAndSetPreviousVenueId(CaseData caseData) {
         if (isNotEmpty(caseData.getHearingDetails()) && caseData.getPreviousHearingVenue() != null
-            && YES.getValue().equals(caseData.getPreviousHearingVenue().getUsePreviousVenue())) {
+            && YesNo.YES.getValue().equals(caseData.getPreviousHearingVenue().getUsePreviousVenue())) {
 
             PreviousHearingVenue previousVenueForEditedHearing = caseData.getPreviousHearingVenue();
 
@@ -280,7 +301,7 @@ public class ManageHearingsService {
     }
 
     public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
-        if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
+        if (YesNo.YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
             DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
             DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
                 NOTICE_OF_HEARING);
@@ -366,11 +387,11 @@ public class ManageHearingsService {
             "sendOrderToAllOthers",
             "othersSelector",
             "others_label",
-            "hearingDays",
-            "hearingMinutes",
-            "hearingHours",
-            "hearingDuration",
-            "hearingEndDateTime"
+            HEARING_DAYS,
+            HEARING_MINUTES,
+            HEARING_HOURS,
+            HEARING_DURATION,
+            HEARING_END_DATE_TIME
         );
     }
 
@@ -395,20 +416,20 @@ public class ManageHearingsService {
         Map<String, Object> data = new HashMap<>();
         LocalDateTime currentDateTime = LocalDateTime.now();
 
-        data.put(SHOW_PAST_HEARINGS_PAGE, NO.getValue());
+        data.put(SHOW_PAST_HEARINGS_PAGE, YesNo.NO.getValue());
 
         if (caseData.getHearingStartDate().isBefore(currentDateTime)) {
             data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DateFormatterHelper.DATE_TIME));
-            data.put(START_DATE_FLAG, YES.getValue());
-            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+            data.put(START_DATE_FLAG, YesNo.YES.getValue());
+            data.put(SHOW_PAST_HEARINGS_PAGE, YesNo.YES.getValue());
         }
 
         BiConsumer<LocalDateTime, String> populateFields = (endDateTime, endDateLabel) -> {
             data.put(HEARING_END_DATE, endDateTime);
             if (endDateTime.isBefore(currentDateTime)) {
                 data.put(HEARING_END_DATE_LABEL, endDateLabel);
-                data.put(END_DATE_FLAG, YES.getValue());
-                data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+                data.put(END_DATE_FLAG, YesNo.YES.getValue());
+                data.put(SHOW_PAST_HEARINGS_PAGE, YesNo.YES.getValue());
             }
         };
 
@@ -416,7 +437,7 @@ public class ManageHearingsService {
             populateFields.accept(caseData.getHearingEndDateTime(), formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime endDateTime = caseData.getHearingStartDate().plusDays(Long.parseLong(caseData.getHearingDays()));
-            populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
+            populateFields.accept(endDateTime, getHEARING_DAYS(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();
             LocalDateTime endDateTime = startDate.plusHours(Long.parseLong(caseData.getHearingHours()))
@@ -427,7 +448,7 @@ public class ManageHearingsService {
         return data;
     }
 
-    private String getHearingDays(String days) {
+    private String getHEARING_DAYS(String days) {
         return String.join(" ", days, "days");
     }
 
@@ -465,7 +486,7 @@ public class ManageHearingsService {
     private String getHearingInfo(String days, String hours, String minutes) {
         String hearingDuration = null;
         if (days != null) {
-            hearingDuration = getHearingDays(days);
+            hearingDuration = getHEARING_DAYS(days);
         } else if (hours != null && minutes !=null) {
             hearingDuration = getHearingHoursAndMins(hours, minutes);
         }
@@ -473,12 +494,13 @@ public class ManageHearingsService {
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {
-        String endDateDerived = "No";
+
+        String endDateDerived = NO;
         String hearingDuration = getHearingInfo(caseData.getHearingDays(),
             caseData.getHearingHours(), caseData.getHearingMinutes());
 
         if (hearingDuration != null) {
-            endDateDerived = "Yes";
+            endDateDerived = YES;
         }
 
         return HearingBooking.builder()
@@ -491,6 +513,9 @@ public class ManageHearingsService {
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
+            .hearingDays(caseData.getHearingDays())
+            .hearingHours(caseData.getHearingHours())
+            .hearingMinutes(caseData.getHearingMinutes())
             .endDateDerived(endDateDerived)
             .hearingDuration(hearingDuration)
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
@@ -511,7 +536,7 @@ public class ManageHearingsService {
         String usePreviousVenue = caseData.getPreviousHearingVenue().getUsePreviousVenue();
 
         //Set venue fields based on what the user chose on the venue screen
-        if ("Yes".equals(usePreviousVenue)) {
+        if (YES.equals(usePreviousVenue)) {
             venue = caseData.getPreviousVenueId();
             if ("OTHER".equals(venue)) {
                 customPreviousVenue = caseData.getPreviousHearingVenue().getPreviousVenue();
@@ -520,12 +545,12 @@ public class ManageHearingsService {
             venue = caseData.getPreviousHearingVenue().getNewVenue();
         }
 
-        String endDateDerived = "No";
+        String endDateDerived = NO;
         String hearingDuration = getHearingInfo(caseData.getHearingDays(),
             caseData.getHearingHours(), caseData.getHearingMinutes());
 
         if (hearingDuration != null) {
-            endDateDerived = "Yes";
+            endDateDerived = YES;
         }
 
         return HearingBooking.builder()

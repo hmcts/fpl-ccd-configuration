@@ -132,6 +132,36 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "hearingMinutes",
+    "FieldType": "Text",
+    "ElementLabel": "minutes",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "startDate=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "hearingHours",
+    "FieldType": "Text",
+    "ElementLabel": "hours",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "startDate=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "hearingDays",
+    "FieldType": "Text",
+    "ElementLabel": "days",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "startDate=\"DO_NOT_SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingNeedsBooked",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingNeedsBooked",

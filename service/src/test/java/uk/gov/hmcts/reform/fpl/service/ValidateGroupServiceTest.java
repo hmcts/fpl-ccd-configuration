@@ -8,9 +8,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Validation;
@@ -61,5 +65,32 @@ class ValidateGroupServiceTest {
             .validateGroup(caseData, NoticeOfProceedingsGroup.class);
 
         assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldReturnAnErrorWhenTimeIsMidNight() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(LocalDateTime.of(LocalDate.now().plusDays(10), LocalTime.NOON))
+            .hearingEndDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT))
+            .build();
+
+        List<String> errors = validateGroupService
+            .validateGroup(caseData, HearingDatesGroup.class);
+
+        assertThat(errors)
+            .containsExactly("Enter an end date in the future", "Enter a valid end time");
+
+    }
+
+    @Test
+    void shouldReturnNoErrorsrWhenEndDateTimeNotSet() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(LocalDateTime.of(LocalDate.now().plusDays(10), LocalTime.NOON))
+            .build();
+
+        List<String> errors = validateGroupService
+            .validateGroup(caseData, HearingDatesGroup.class);
+
+        assertThat(errors).isNullOrEmpty();
     }
 }
