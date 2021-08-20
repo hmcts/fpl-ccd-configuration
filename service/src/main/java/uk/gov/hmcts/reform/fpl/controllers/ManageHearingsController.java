@@ -161,6 +161,10 @@ public class ManageHearingsController extends CallbackController {
                 .previousHearingVenue(null)
                 .startDate(null)
                 .endDate(null)
+                .endDateDerived(null)
+                .hearingDays(null)
+                .hearingHours(null)
+                .hearingMinutes(null)
                 .build();
 
             caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
@@ -197,6 +201,10 @@ public class ManageHearingsController extends CallbackController {
             .previousHearingVenue(null)
             .startDate(null)
             .endDate(null)
+            .endDateDerived(null)
+            .hearingDays(null)
+            .hearingHours(null)
+            .hearingMinutes(null)
             .build();
 
         caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
