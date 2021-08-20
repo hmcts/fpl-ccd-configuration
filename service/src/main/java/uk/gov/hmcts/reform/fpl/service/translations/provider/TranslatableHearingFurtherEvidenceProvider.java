@@ -58,17 +58,19 @@ public class TranslatableHearingFurtherEvidenceProvider implements TranslatableL
     public Map<String, Object> applyTranslatedOrder(CaseData caseData, DocumentReference document,
                                                     UUID selectedOrderId) {
 
-        return Map.of(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, translateHearingFurtherEvidenceDocuments(caseData, document, selectedOrderId));
+        return Map.of(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY,
+            translateHearingFurtherEvidenceDocuments(caseData, document, selectedOrderId));
     }
 
-    private List<Element<HearingFurtherEvidenceBundle>> translateHearingFurtherEvidenceDocuments(CaseData caseData, DocumentReference document,
+    private List<Element<HearingFurtherEvidenceBundle>> translateHearingFurtherEvidenceDocuments(CaseData caseData,
+                                                                                                 DocumentReference document,
                                                                                                  UUID selectedOrderId) {
         return caseData.getHearingFurtherEvidenceDocuments().stream().map(
-                it -> element(it.getId(), it.getValue().toBuilder()
-                    .supportingEvidenceBundle(it.getValue().getSupportingEvidenceBundle().stream()
-                        .map(decorator.translatedBundle(document, selectedOrderId))
-                        .collect(Collectors.toList()))
-                    .build())).collect(Collectors.toList());
+            it -> element(it.getId(), it.getValue().toBuilder()
+                .supportingEvidenceBundle(it.getValue().getSupportingEvidenceBundle().stream()
+                    .map(decorator.translatedBundle(document, selectedOrderId))
+                    .collect(Collectors.toList()))
+                .build())).collect(Collectors.toList());
     }
 
 
