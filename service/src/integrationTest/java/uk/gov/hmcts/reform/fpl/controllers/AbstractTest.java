@@ -23,7 +23,6 @@ import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 
 @ActiveProfiles("integration-test")
 public abstract class AbstractTest {
@@ -79,8 +78,9 @@ public abstract class AbstractTest {
     }
 
     protected void givenSystemUser() {
-        given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder()
+        given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
+            .willReturn(USER_AUTH_TOKEN);
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder()
             .uid(SYS_USER_ID)
             .build());
     }
