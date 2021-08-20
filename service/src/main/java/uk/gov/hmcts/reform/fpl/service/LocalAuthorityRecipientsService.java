@@ -37,17 +37,18 @@ public class LocalAuthorityRecipientsService {
 
     public Set<String> getRecipients(RecipientsRequest request) {
         final Set<String> recipients = new HashSet<>();
+        final CaseData caseData = request.getCaseData();
 
         if (!request.isDesignatedLocalAuthorityExcluded()) {
-            recipients.addAll(getDesignatedLocalAuthorityContacts(request));
+            recipients.addAll(getDesignatedLocalAuthorityContacts(caseData));
         }
 
         if (!request.isSecondaryLocalAuthorityExcluded()) {
-            recipients.addAll(getSecondaryLocalAuthorityContacts(request));
+            recipients.addAll(getSecondaryLocalAuthorityContacts(caseData));
         }
 
         if (!request.isLegalRepresentativesExcluded()) {
-            recipients.addAll(getLegalRepresentatives(request));
+            recipients.addAll(getLegalRepresentatives(caseData));
         }
 
         if (recipients.isEmpty()) {
@@ -59,23 +60,23 @@ public class LocalAuthorityRecipientsService {
             .collect(Collectors.toSet());
     }
 
-    private List<String> getDesignatedLocalAuthorityContacts(RecipientsRequest request) {
+    private List<String> getDesignatedLocalAuthorityContacts(CaseData caseData) {
         final List<String> recipients = new ArrayList<>();
 
-        if (isNotEmpty(request.getCaseData().getLocalAuthorities())) {
-            final Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(request.getCaseData());
+        if (isNotEmpty(caseData.getLocalAuthorities())) {
+            final Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(caseData);
 
             localAuthority.map(LocalAuthority::getEmail).ifPresent(recipients::add);
 
-            if (featureToggles.emailsToSolicitorEnabled(request.getCaseData().getCaseLocalAuthority())) {
+            if (featureToggles.emailsToSolicitorEnabled(caseData.getCaseLocalAuthority())) {
                 localAuthority.map(LocalAuthority::getContactEmails).ifPresent(recipients::addAll);
             }
 
         } else {
-            localAuthorityInboxes.getSharedInbox(request.getCaseData().getCaseLocalAuthority())
+            localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority())
                 .ifPresent(recipients::add);
 
-            ofNullable(request.getCaseData().getSolicitor())
+            ofNullable(caseData.getSolicitor())
                 .map(Solicitor::getEmail)
                 .filter(StringUtils::isNotBlank)
                 .ifPresent(recipients::add);
@@ -84,10 +85,10 @@ public class LocalAuthorityRecipientsService {
         return recipients;
     }
 
-    private List<String> getSecondaryLocalAuthorityContacts(RecipientsRequest request) {
+    private List<String> getSecondaryLocalAuthorityContacts(CaseData caseData) {
         final List<String> recipients = new ArrayList<>();
 
-        getSecondaryLocalAuthority(request.getCaseData()).ifPresent(la -> {
+        getSecondaryLocalAuthority(caseData).ifPresent(la -> {
             final String localAuthorityCode = localAuthorityIds.getLocalAuthorityCode(la.getId()).orElse(null);
 
             ofNullable(la.getEmail()).ifPresent(recipients::add);
@@ -100,9 +101,9 @@ public class LocalAuthorityRecipientsService {
         return recipients;
     }
 
-    private List<String> getLegalRepresentatives(RecipientsRequest request) {
+    private List<String> getLegalRepresentatives(CaseData caseData) {
 
-        return unwrapElements(request.getCaseData().getLegalRepresentatives()).stream()
+        return unwrapElements(caseData.getLegalRepresentatives()).stream()
             .map(LegalRepresentative::getEmail)
             .collect(Collectors.toList());
     }

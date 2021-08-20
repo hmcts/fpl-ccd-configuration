@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
@@ -70,8 +70,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DraftOrdersApprovedEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final UUID HEARING_ID = randomUUID();
@@ -79,8 +80,8 @@ class DraftOrdersApprovedEventHandlerTest {
     private static final ApprovedOrdersTemplate EXPECTED_TEMPLATE = ApprovedOrdersTemplate.builder().build();
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
-    private static final DocumentReference ORDER = mock(DocumentReference.class);
-    private static final DocumentReference ORDER_2 = mock(DocumentReference.class);
+    private static final DocumentReference ORDER = testDocumentReference();
+    private static final DocumentReference ORDER_2 = testDocumentReference();
 
     @Mock
     private SendDocumentService sendDocumentService;

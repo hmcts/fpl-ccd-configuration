@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -124,6 +125,8 @@ public class AdditionalApplicationsUploadedEventHandler {
             final CaseData caseData = event.getCaseData();
             final OrderApplicant applicant = event.getApplicant();
 
+            final Set<String> recipients = new HashSet<>();
+
             if (applicant.getType() == LOCAL_AUTHORITY) {
 
                 final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
@@ -131,9 +134,7 @@ public class AdditionalApplicationsUploadedEventHandler {
                     .secondaryLocalAuthorityExcluded(true)
                     .build();
 
-                final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
-
-                sendNotification(caseData, recipients);
+                recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
 
             } else if (applicant.getType() == SECONDARY_LOCAL_AUTHORITY) {
 
@@ -142,16 +143,18 @@ public class AdditionalApplicationsUploadedEventHandler {
                     .designatedLocalAuthorityExcluded(true)
                     .build();
 
-                final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
-
-                sendNotification(caseData, recipients);
-
+                recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
             } else {
 
-                Map<String, String> recipients = getRespondentsEmails(caseData);
-                if (isNotEmpty(recipients.get(applicant.getName()))) {
-                    sendNotification(caseData, Set.of(recipients.get(applicant.getName())));
+                final Map<String, String> respondentsEmails = getRespondentsEmails(caseData);
+
+                if (isNotEmpty(respondentsEmails.get(applicant.getName()))) {
+                    recipients.add(respondentsEmails.get(applicant.getName()));
                 }
+            }
+
+            if (isNotEmpty(recipients)) {
+                sendNotification(caseData, recipients);
             }
         }
     }

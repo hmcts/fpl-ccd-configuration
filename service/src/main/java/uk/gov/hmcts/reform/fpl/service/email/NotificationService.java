@@ -36,7 +36,6 @@ public class NotificationService {
     public void sendEmail(String templateId, String recipient, NotifyData data, String reference) {
         Map<String, Object> personalisation = mapper.convertValue(data, new TypeReference<>() {
         });
-        log.info("EMAIL " + recipient);
         log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(recipient));
         try {
             notificationClient.sendEmail(templateId, recipient, personalisation, environment + SEPARATOR + reference);
@@ -46,7 +45,6 @@ public class NotificationService {
     }
 
     public void sendEmail(String templateId, Collection<String> emails, NotifyData data, String reference) {
-        log.info("EMAILS XXXXXXXXXXXXXX " + emails);
         emails.stream().distinct().forEach(email -> sendEmail(templateId, email, data, reference));
     }
 
