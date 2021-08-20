@@ -55,7 +55,7 @@ public class ManageOrdersCaseDataFixer {
         if (!isNull((caseDetails.getData().get("manageOrdersOperation")))) {
             String operation = caseDetails.getData().get("manageOrdersOperation").toString();
 
-            if (!AMEND.toString().equals(operation)) {
+            if (!AMEND.name().equals(operation)) {
                 caseDetails.getData().remove("manageOrdersAmendmentList");
             }
         }

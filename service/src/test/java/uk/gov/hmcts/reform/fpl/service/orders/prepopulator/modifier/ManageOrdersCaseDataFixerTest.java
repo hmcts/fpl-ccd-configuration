@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
+import uk.gov.hmcts.reform.fpl.service.children.validation.ChildrenEventSection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -135,7 +136,7 @@ class ManageOrdersCaseDataFixerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = OrderOperation.class, names = {"CREATE", "UPLOAD"})
+    @EnumSource(value = OrderOperation.class, mode = EnumSource.Mode.EXCLUDE, names = {"AMEND"})
     void shouldRemoveAmendmentListIfNotAmendJourney(OrderOperation operation) {
         UUID orderID = UUID.randomUUID();
         DynamicList expectedList = DynamicList.builder()
