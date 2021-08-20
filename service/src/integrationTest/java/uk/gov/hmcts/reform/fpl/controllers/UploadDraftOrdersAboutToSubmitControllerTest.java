@@ -3,11 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -24,11 +21,11 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +35,6 @@ import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
@@ -52,9 +48,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
     private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     UploadDraftOrdersAboutToSubmitControllerTest() {
         super();
@@ -254,8 +247,11 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
-        Set<String> keys = mapper.convertValue(caseData, new TypeReference<Map<String, Object>>() {
-        }).keySet();
+        Set<String> keys = new HashSet<>(
+            mapper.convertValue(caseData, new TypeReference<Map<String, Object>>() {
+            }).keySet());
+        // document tab fields are populated in the about-to-submit callback
+        keys.addAll(List.of("documentViewLA", "documentViewHMCTS", "documentViewNC", "showFurtherEvidenceTab"));
 
         keys.removeAll(List.of(
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
@@ -289,9 +285,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         assertThat(response.getData().keySet()).isEqualTo(keys);
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldUpdateDocumentViews(boolean isFurtherEvidenceTabEnabled) {
+    @Test
+    void shouldUpdateDocumentViews() {
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
         List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
         List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
@@ -321,21 +316,12 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .draftUploadedCMOs(draftCMOs)
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(isFurtherEvidenceTabEnabled);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
-        if (isFurtherEvidenceTabEnabled) {
-            assertThat((String) response.getData().get("documentViewLA")).isNotEmpty();
-            assertThat((String) response.getData().get("documentViewHMCTS")).isNotEmpty();
-            assertThat((String) response.getData().get("documentViewNC")).isNotEmpty();
-            assertThat(response.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
-        } else {
-            assertThat((String) response.getData().get("documentViewLA")).isNull();
-            assertThat((String) response.getData().get("documentViewHMCTS")).isNull();
-            assertThat((String) response.getData().get("documentViewNC")).isNull();
-            assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();
-        }
+        assertThat((String) response.getData().get("documentViewLA")).isNotEmpty();
+        assertThat((String) response.getData().get("documentViewHMCTS")).isNotEmpty();
+        assertThat((String) response.getData().get("documentViewNC")).isNotEmpty();
+        assertThat(response.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
     }
 
     private List<Element<HearingFurtherEvidenceBundle>> getFurtherEvidenceBundle(
