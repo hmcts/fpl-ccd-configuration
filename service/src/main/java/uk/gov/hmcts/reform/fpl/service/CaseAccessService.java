@@ -64,6 +64,8 @@ public class CaseAccessService {
             .build();
 
         caseAccessDataStoreApi.removeCaseUserRoles(userToken, serviceToken, caseAssignedUserRolesRequest);
+
+        log.info("User {} revoked {} to case {}", userId, caseRole, caseId);
     }
 
     public Set<CaseRole> getUserCaseRoles(String caseId) {
