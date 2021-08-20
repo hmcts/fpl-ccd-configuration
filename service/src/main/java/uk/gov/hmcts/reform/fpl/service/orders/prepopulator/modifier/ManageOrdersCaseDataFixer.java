@@ -52,7 +52,7 @@ public class ManageOrdersCaseDataFixer {
     }
 
     public CaseDetails fixAndRetriveCaseDetails(CaseDetails caseDetails) {
-        if(!isNull((caseDetails.getData().get("manageOrdersOperation")))) {
+        if (!isNull((caseDetails.getData().get("manageOrdersOperation")))) {
             String operation = caseDetails.getData().get("manageOrdersOperation").toString();
 
             if (!AMEND.toString().equals(operation)) {
