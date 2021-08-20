@@ -37,7 +37,7 @@ class HasHearingEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
 
         CaseData caseData = CaseData.builder()
             .hearingStartDate(startTime)
-            .hearingEndDate(endTime)
+            .hearingEndDateTime(endTime)
             .build();
 
         List<String> errorMessages = validateGroupService.validateGroup(caseData, HearingEndDateGroup.class);
@@ -51,7 +51,7 @@ class HasHearingEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
 
         CaseData caseData = CaseData.builder()
             .hearingStartDate(startTime)
-            .hearingEndDate(endTime)
+            .hearingEndDateTime(endTime)
             .build();
 
         List<String> errorMessages = validateGroupService.validateGroup(caseData, HearingEndDateGroup.class);

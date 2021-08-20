@@ -437,7 +437,9 @@ class ManageHearingsServiceTest {
             "previousHearingVenue", previousHearingVenue,
             "hearingAttendance", List.of(IN_PERSON, VIDEO),
             "hearingAttendanceDetails", "Test attendance details",
-            "preHearingAttendanceDetails", "Test pre attendance details"
+            "preHearingAttendanceDetails", "Test pre attendance details",
+            "hearingDuration", "DATE_TIME",
+            "hearingEndDateTime", endDate
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -466,18 +468,20 @@ class ManageHearingsServiceTest {
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
-        Map<String, Object> expectedCaseFields = Map.of(
-            "hearingType", OTHER,
-            "hearingTypeDetails", "Fact finding",
-            "hearingStartDate", startDate,
-            "hearingEndDate", endDate,
-            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
-            "hearingVenue", "OTHER",
-            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS,
-            "hearingAttendance", List.of(IN_PERSON),
-            "hearingAttendanceDetails", "Attendance details",
-            "preHearingAttendanceDetails", "Pre attendance details"
-        );
+        Map<String, Object> expectedCaseFields = Map.ofEntries(
+            Map.entry("hearingType", OTHER),
+            Map.entry("hearingTypeDetails", "Fact finding"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS),
+            Map.entry("hearingAttendance", List.of(IN_PERSON)),
+            Map.entry("hearingAttendanceDetails", "Attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
+            Map.entry("hearingDuration", "DATE_TIME"),
+            Map.entry("hearingEndDateTime", endDate));
+
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
     }
@@ -705,7 +709,8 @@ class ManageHearingsServiceTest {
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
                 "startDateFlag", "Yes",
-                "hearingStartDateLabel", "15 March 2010, 8:20pm");
+                "hearingStartDateLabel", "15 March 2010, 8:20pm",
+                "hearingEndDate" ,hearingEndDate);
 
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
@@ -816,7 +821,9 @@ class ManageHearingsServiceTest {
 
             Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
-            Map<String, Object> extractedFields = Map.of("showConfirmPastHearingDatesPage", "No");
+            Map<String, Object> extractedFields = Map.of(
+                "showConfirmPastHearingDatesPage", "No",
+                "hearingEndDate", hearingEndDate);
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
@@ -1663,7 +1670,8 @@ class ManageHearingsServiceTest {
             "hearingMinutes",
             "hearingDuration",
             "hearingDays",
-            "hearingHours");
+            "hearingHours",
+            "hearingEndDateTime");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {
