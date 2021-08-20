@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -31,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
-import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
@@ -51,6 +50,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private LocalDate dateIssued;
     private final LocalDate amendedDate;
     private final LocalDateTime translationUploadDateTime;
+    private LanguageTranslationRequirement translationRequirements;
     private CMOStatus status;
     private String judgeTitleAndName;
     private String requestedChanges;
@@ -60,12 +60,13 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String othersNotified;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
-        return from(order, hearing, date, AGREED_CMO, null);
+        return from(order, hearing, date, AGREED_CMO, null, null);
     }
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date,
                                     HearingOrderType orderType,
-                                    List<Element<SupportingEvidenceBundle>> supportingDocs) {
+                                    List<Element<SupportingEvidenceBundle>> supportingDocs,
+                                    LanguageTranslationRequirement translationRequirement) {
         return HearingOrder.builder()
             .type(orderType)
             .title(orderType == AGREED_CMO ? "Agreed CMO discussed at hearing" : "Draft CMO from advocates' meeting")
@@ -75,6 +76,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             .status(orderType == AGREED_CMO ? SEND_TO_JUDGE : DRAFT)
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
             .supportingDocs(supportingDocs)
+            .translationRequirements(translationRequirement)
             .build();
     }
 
@@ -101,15 +103,8 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     }
 
     @Override
-    @JsonIgnore
     public LanguageTranslationRequirement getTranslationRequirements() {
-        return ENGLISH_TO_WELSH;
-    }
-
-    @Override
-    @JsonIgnore
-    public YesNo getNeedTranslation() {
-        return YesNo.YES;
+        return defaultIfNull(translationRequirements, NO);
     }
 
     @Override

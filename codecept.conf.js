@@ -119,7 +119,7 @@ exports.config = {
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
     addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
     addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
-    closeTheCaseEventPage: './e2e/pages/events/closeTheCaseEvent.page.js',
+    recordFinalDecisionsEventPage: './e2e/pages/events/recordFinalDecisionsEvent.page.js',
     returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
     uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js',
     reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js',
@@ -134,6 +134,7 @@ exports.config = {
     uploadAdditionalApplicationsEventPage: './e2e/pages/events/uploadAdditionalApplicationsEvent.page.js',
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
     uploadWelshTranslationsPage: './e2e/pages/events/uploadWelshTranslation.page.js',
+    manageLocalAuthoritiesEventPage: './e2e/pages/events/manageLocalAuthorities.page.js',
   },
   plugins: {
     retryFailedStep: {

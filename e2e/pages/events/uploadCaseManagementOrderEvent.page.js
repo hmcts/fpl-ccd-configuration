@@ -18,6 +18,9 @@ module.exports = {
     uploadCMO: {
       main: '#uploadedCaseManagementOrder',
       replacement: '#replacementCMO',
+      translationRequirement(request) {
+        return `#cmoToSendTranslationRequirements-${request}`;
+      },
     },
     supportingDocuments: {
       id: '#cmoSupportingDocs',
@@ -28,6 +31,9 @@ module.exports = {
         return {
           name: `#currentHearingOrderDrafts_${index}_title`,
           document: `#currentHearingOrderDrafts_${index}_order`,
+          translationRequirement(request) {
+            return `#orderToSendTranslationRequirements${index}-${request}`;
+          },
         };
       },
     },
@@ -68,9 +74,19 @@ module.exports = {
     }
   },
 
+  requestTranslationForCmo(translationRequirement) {
+    I.click(this.fields.uploadCMO.translationRequirement(translationRequirement));
+  },
+
+  requestTranslationForC21(translationRequirement, index=0) {
+    I.click(this.fields.c21Documents.fields(index).translationRequirement(translationRequirement));
+  },
+
   reviewInfo(fileName, judge) {
     I.see(fileName);
-    I.see(judge);
+    if (judge) {
+      I.see(judge);
+    }
   },
 
   async attachSupportingDocs({name, notes, file}) {

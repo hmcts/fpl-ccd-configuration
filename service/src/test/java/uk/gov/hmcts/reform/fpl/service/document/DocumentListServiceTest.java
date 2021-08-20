@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.aggregator.BundleViewAggregator;
 
@@ -24,10 +25,10 @@ import static org.mockito.Mockito.when;
 class DocumentListServiceTest {
 
     private static final CaseData CASE_DATA = mock(CaseData.class);
-    private static final List<DocumentBundleView> LA_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
-    private static final List<DocumentBundleView> HMCTS_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
-    private static final List<DocumentBundleView> NON_CONFIDENTIAL_BUNDLE_VIEWS =
-        List.of(mock(DocumentBundleView.class));
+    private static final List<DocumentContainerView> LA_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
+    private static final List<DocumentContainerView> HMCTS_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
+    private static final List<DocumentContainerView> NON_CONFIDENTIAL_BUNDLE_VIEWS =
+        List.of(mock(DocumentContainerView.class));
     private static final String LA_RENDERED_VIEW = "LA_RENDERED_VIEW";
     private static final String HMCTS_RENDERED_VIEW = "HMCTS_RENDERED_VIEW";
     private static final String NON_CONFIDENTIAL_RENDERED_VIEW = "NON_CONFIDENTIAL_RENDERED_VIEW";

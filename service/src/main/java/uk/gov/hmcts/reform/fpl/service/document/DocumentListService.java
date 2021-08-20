@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.aggregator.BundleViewAggregator;
 
@@ -42,7 +42,7 @@ public class DocumentListService {
     }
 
     private String renderDocumentBundleViews(CaseData caseData, DocumentViewType view) {
-        List<DocumentBundleView> bundles = bundleViewAggregator.getDocumentBundleViews(caseData, view);
+        List<DocumentContainerView> bundles = bundleViewAggregator.getDocumentBundleViews(caseData, view);
         if (isNotEmpty(bundles)) {
             return documentsListRenderer.render(bundles);
         }

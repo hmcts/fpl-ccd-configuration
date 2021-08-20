@@ -60,7 +60,7 @@ public enum SolicitorRole {
             .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public enum Representing {
         RESPONDENT(caseData -> (List) caseData.getAllRespondents(),
             "respondentPolicy%d",
@@ -96,5 +96,8 @@ public enum SolicitorRole {
             return nocAnswersTemplate;
         }
 
+        public String getCaseField() {
+            return caseField;
+        }
     }
 }

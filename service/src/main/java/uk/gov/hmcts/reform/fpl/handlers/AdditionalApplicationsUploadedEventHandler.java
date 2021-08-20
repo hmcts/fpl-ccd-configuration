@@ -59,7 +59,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final RequestData requestData;
     private final NotificationService notificationService;
     private final CourtService courtService;
-    private final AdditionalApplicationsUploadedEmailContentProvider additionalApplicationsUploadedEmailContentProvider;
+    private final AdditionalApplicationsUploadedEmailContentProvider contentProvider;
     private final InboxLookupService inboxLookupService;
     private final RepresentativesInbox representativesInbox;
     private final OtherRecipientsInbox otherRecipientsInbox;
@@ -80,29 +80,21 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
         Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
         List<Element<Other>> selectedOthers = getOthersSelected(uploadedBundle);
         List<Element<Respondent>> selectedRespondents = getRespondentsSelected(uploadedBundle);
 
-        Set<Recipient> nonSelectedOthers = (Set<Recipient>) otherRecipientsInbox.getNonSelectedRecipients(
-            POST, caseData, selectedOthers, Element::getValue);
-        allRecipients.removeAll(nonSelectedOthers);
+        allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
+            POST, caseData, selectedOthers, Element::getValue
+        ));
+        allRecipients.removeAll(representativesInbox.getNonSelectedRespondentRecipientsByPost(
+            caseData, selectedRespondents
+        ));
 
-        Set<Recipient> nonSelectedRespondentsRepresentatives
-            = (Set<Recipient>) representativesInbox.getNonSelectedRespondentsRecipients(
-            POST, caseData, selectedRespondents, Element::getValue);
-        allRecipients.removeAll(nonSelectedRespondentsRepresentatives);
-
-        Set<Recipient> selectedUnrepresentedOthers
-            = otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers);
-        allRecipients.addAll(selectedUnrepresentedOthers);
-
-        Set<Recipient> selectedUnrepresentedRespondents
-            = representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents);
-        allRecipients.addAll(selectedUnrepresentedRespondents);
+        allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
+        allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents));
 
         return allRecipients;
     }
@@ -114,18 +106,13 @@ public class AdditionalApplicationsUploadedEventHandler {
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
             CaseData caseData = event.getCaseData();
 
-            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider
-                .getNotifyData(caseData);
+            NotifyData notifyData = contentProvider.getNotifyData(caseData);
             String recipient = courtService.getCourtEmail(caseData);
+            String template = featureToggleService.isServeOrdersAndDocsToOthersEnabled()
+                              ? UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
+                              : INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 
-            if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-                notificationService
-                    .sendEmail(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData,
-                        caseData.getId());
-            } else {
-                notificationService
-                    .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
-            }
+            notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
         }
     }
 
@@ -151,20 +138,24 @@ public class AdditionalApplicationsUploadedEventHandler {
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
         return caseData.getAllRespondents().stream()
-            .collect(Collectors.toMap(respondent -> respondent.getValue().getParty().getFullName(),
-                respondent -> isNull(respondent.getValue().getSolicitor())
-                    || isEmpty(respondent.getValue().getSolicitor().getEmail()) ? EMPTY
-                    : respondent.getValue().getSolicitor().getEmail()));
+            .collect(Collectors.toMap(
+                respondent -> respondent.getValue().getParty().getFullName(),
+                respondent -> hasNoSolicitorEmail(respondent) ? EMPTY
+                                                              : respondent.getValue().getSolicitor().getEmail()
+            ));
+    }
+
+    private boolean hasNoSolicitorEmail(Element<Respondent> respondent) {
+        return isNull(respondent.getValue().getSolicitor()) || isEmpty(respondent.getValue().getSolicitor().getEmail());
     }
 
     private void sendNotification(CaseData caseData, Collection<String> emails) {
-        NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
+        NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
         notificationService.sendEmail(
-            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS,
-            emails,
-            notifyData,
-            caseData.getId().toString());
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, emails, notifyData,
+            caseData.getId().toString()
+        );
     }
 
     @EventListener
@@ -172,7 +163,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     public void notifyDigitalRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             final CaseData caseData = event.getCaseData();
-            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
+            NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
             Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
 
@@ -185,7 +176,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private Set<String> getRepresentativesEmails(CaseData caseData,
                                                  RepresentativeServingPreferences servingPreference) {
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
@@ -195,25 +185,25 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
 
-        Set<String> nonSelectedOthers = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
-            servingPreference, caseData, othersSelected, element -> element.getValue().getEmail());
+        Set<String> nonSelectedOthers = otherRecipientsInbox.getNonSelectedRecipients(
+            servingPreference, caseData, othersSelected, element -> element.getValue().getEmail()
+        );
         digitalRepresentatives.removeAll(nonSelectedOthers);
 
-        Set<String> nonSelectedRespondentsRepresentatives
-            = (Set<String>) representativesInbox.getNonSelectedRespondentsRecipients(
-            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail());
+        Set<String> nonSelectedRespondentsRepresentatives = representativesInbox.getNonSelectedRespondentRecipients(
+            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail()
+        );
         digitalRepresentatives.removeAll(nonSelectedRespondentsRepresentatives);
 
         return digitalRepresentatives;
     }
-
 
     @EventListener
     @Async
     public void notifyEmailServedRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
             final CaseData caseData = event.getCaseData();
-            NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData);
+            NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
             Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
 

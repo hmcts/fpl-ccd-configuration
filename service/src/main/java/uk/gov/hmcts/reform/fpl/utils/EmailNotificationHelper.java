@@ -37,6 +37,10 @@ public class EmailNotificationHelper {
             .orElse("");
     }
 
+    public String getEldestChildLastName(CaseData caseData) {
+        return getEldestChildLastName(caseData.getAllChildren());
+    }
+
     public static String buildSubjectLine(final String familyManCaseNumber,
                                           final List<Element<Respondent>> respondents) {
         final String respondentlastName = getFirstRespondentLastName(respondents);
