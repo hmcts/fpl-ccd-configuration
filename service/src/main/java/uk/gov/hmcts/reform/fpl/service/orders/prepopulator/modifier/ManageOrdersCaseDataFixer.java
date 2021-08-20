@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
@@ -51,11 +52,14 @@ public class ManageOrdersCaseDataFixer {
     }
 
     public CaseDetails fixAndRetriveCaseDetails(CaseDetails caseDetails) {
-        String operation = caseDetails.getData().get("manageOrdersOperation").toString();
+        if(!isNull((caseDetails.getData().get("manageOrdersOperation")))) {
+            String operation = caseDetails.getData().get("manageOrdersOperation").toString();
 
-        if (!AMEND.toString().equals(operation)) {
-            caseDetails.getData().remove("manageOrdersAmendmentList");
+            if (!AMEND.toString().equals(operation)) {
+                caseDetails.getData().remove("manageOrdersAmendmentList");
+            }
         }
+
         return caseDetails;
     }
 }
