@@ -145,6 +145,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnFormLocalAuthorityLegalTeamManager() {
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .legalTeamManager("John Manager in local authority")
                 .build();
 
@@ -167,6 +168,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnCurrentUserWhenLocalAuthorityDoesNotHaveLegalTeamManager(String legalTeamManager) {
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .legalTeamManager(legalTeamManager)
                 .build();
 
@@ -892,6 +894,7 @@ class CaseSubmissionGenerationServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .name("Local authority 1")
                 .email("la@test.com")
                 .phone("0777999999")
@@ -956,6 +959,7 @@ class CaseSubmissionGenerationServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(solicitor, mainContact))
                 .build();
 
@@ -1003,6 +1007,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldTakeApplicantDetailsFromLocalAuthorityWhenNoSolicitorNorMainContact() {
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .build();
 
             final CaseData updatedCaseData = givenCaseData.toBuilder()

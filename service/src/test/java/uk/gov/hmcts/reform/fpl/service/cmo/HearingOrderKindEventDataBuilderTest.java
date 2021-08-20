@@ -67,7 +67,7 @@ class HearingOrderKindEventDataBuilderTest {
     }
 
     @Test
-    void testExistingHearingOrderBundleDraftWitC21() {
+    void testExistingHearingOrderBundleDraftWithC21() {
 
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
 
@@ -102,7 +102,7 @@ class HearingOrderKindEventDataBuilderTest {
     }
 
     @Test
-    void testExistingHearingOrderBundleDraftWitMultipleC21() {
+    void testExistingHearingOrderBundleDraftWithMultipleC21() {
 
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
 

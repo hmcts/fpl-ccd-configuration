@@ -45,7 +45,7 @@ public class FurtherEvidenceDocumentsTransformer {
                 .uploadedBy(doc.getUploadedBy())
                 .documentName(doc.getName())
                 .confidential(doc.isConfidentialDocument())
-                .title(type == APPLICANT_STATEMENT ? doc.getType().getLabel() : doc.getName())
+                .title(doc.getName())
                 .includeDocumentName(asList(APPLICANT_STATEMENT, OTHER).contains(doc.getType()))
                 .build())
             .collect(Collectors.toUnmodifiableList());

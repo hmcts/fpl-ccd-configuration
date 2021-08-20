@@ -98,7 +98,7 @@ public class CaseDataExtractionService {
 
     public String getApplicantName(CaseData caseData) {
         if (ObjectUtils.isNotEmpty(caseData.getLocalAuthorities())) {
-            return ofNullable(caseData.getLocalAuthorities().get(0).getValue())
+            return ofNullable(caseData.getDesignatedLocalAuthority())
                 .map(LocalAuthority::getName)
                 .orElse("");
         }

@@ -28,6 +28,7 @@ public class LocalAuthority {
     private String clientCode;
     private String customerReference;
     private List<Element<Colleague>> colleagues;
+    private String designated;
 
     @JsonIgnore
     public Optional<Colleague> getFirstSolicitor() {

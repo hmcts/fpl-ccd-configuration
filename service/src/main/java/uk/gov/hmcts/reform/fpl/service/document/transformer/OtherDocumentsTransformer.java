@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.ScannedDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
@@ -30,11 +31,11 @@ public class OtherDocumentsTransformer {
 
     private static final String DOCUMENT_BUNDLE_NAME = "Any other documents";
 
-    public List<DocumentBundleView> getOtherDocumentsView(
+    public List<DocumentContainerView> getOtherDocumentsView(
         CaseData caseData,
         DocumentViewType viewType) {
 
-        List<DocumentBundleView> documentBundleViews = new ArrayList<>();
+        List<DocumentContainerView> documentBundleViews = new ArrayList<>();
 
         List<DocumentView> documentViewList = getHearingFurtherEvidenceView(caseData, viewType);
 
