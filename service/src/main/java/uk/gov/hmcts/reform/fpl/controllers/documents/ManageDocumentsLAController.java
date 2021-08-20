@@ -215,10 +215,8 @@ public class ManageDocumentsLAController extends CallbackController {
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
             COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENTS_LIST_KEY);
 
-        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
-            caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
-        }
+        CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
+        caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
 
         return respond(caseDetailsMap);
     }
