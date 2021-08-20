@@ -5,7 +5,7 @@
     "ID": "addACaseFlagLabel",
     "FieldType": "Label",
     "Label": "Use this page to alert court staff to a potentially violent person expected in hearings.",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
   {
@@ -14,7 +14,7 @@
   "ID": "onlyHMCTSStaffLabel",
   "FieldType": "Label",
   "Label": "Only HMCTS staff can see this information.",
-  "SecurityClassification": "Public",
+  "SecurityClassification": "PUBLIC",
   "Searchable": "N"
   },
   {
@@ -24,12 +24,12 @@
     "Label": "Add a case flag?",
     "HintText": "Select 'No' to remove a case flag.",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "uploadAssessment",
+    "ID": "redDotAssessmentForm",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Label": "Upload assessment form or security requests",
     "FieldType": "Document",
@@ -44,7 +44,7 @@
     "FieldType": "TextArea",
     "Label": "Additional notes",
     "HintText": "These will be saved in a separate document.",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   }
 ]

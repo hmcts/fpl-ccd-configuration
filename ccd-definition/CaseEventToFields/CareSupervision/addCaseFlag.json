@@ -39,7 +39,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addCaseFlag",
-    "CaseFieldID": "uploadAssessment",
+    "CaseFieldID": "redDotAssessmentForm",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL",
     "PageID": "AddCaseFlag",
