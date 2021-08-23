@@ -61,6 +61,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -99,10 +100,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 @OverrideAutoConfiguration(enabled = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
-    private static final String HMCTS_ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
-    private static final String LA_EMAIL = "FamilyPublicLaw+PublicLawEmail@gmail.com";
     private static final String SOLICITOR_EMAIL = "solicitor@email.com";
     private static final String SOLICITOR_FIRST_NAME = "John";
     private static final String SOLICITOR_LAST_NAME = "Smith";
@@ -111,7 +110,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String SURVEY_LINK = "https://fake.survey.url";
     private static final Long CASE_ID = 1234567890123456L;
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String CASE_NAME = "test case name1";
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
@@ -167,15 +165,15 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
-                HMCTS_ADMIN_EMAIL,
+                COURT_1.getEmail(),
                 expectedHmctsParameters,
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 CAFCASS_SUBMISSION_TEMPLATE,
                 CAFCASS_EMAIL,
                 completeCafcassParameters,
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
@@ -215,7 +213,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 SOLICITOR_EMAIL,
                 registeredSolicitorParameters,
-                NOTIFICATION_REFERENCE));
+                notificationReference(CASE_ID)));
     }
 
     @Test
@@ -299,15 +297,15 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
-                HMCTS_ADMIN_EMAIL,
+                COURT_1.getEmail(),
                 expectedIncompleteHmctsParameters,
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 CAFCASS_SUBMISSION_TEMPLATE,
                 CAFCASS_EMAIL,
                 getExpectedCafcassParameters(false),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
@@ -328,15 +326,15 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 CTSC_EMAIL,
                 expectedIncompleteHmctsParameters,
-                NOTIFICATION_REFERENCE
+                notificationReference(CASE_ID)
             ));
 
         checkThat(() ->
             verify(notificationClient, never()).sendEmail(
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
-                HMCTS_ADMIN_EMAIL,
+                COURT_1.getEmail(),
                 expectedIncompleteHmctsParameters,
-                NOTIFICATION_REFERENCE
+                notificationReference(CASE_ID)
             ));
     }
 
@@ -359,7 +357,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(OUTSOURCED_CASE_TEMPLATE), eq(LOCAL_AUTHORITY_2_INBOX),
-            anyMap(), eq(NOTIFICATION_REFERENCE)));
+            anyMap(), eq(notificationReference(CASE_ID))));
     }
 
     @Test
@@ -397,7 +395,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 SOLICITOR_EMAIL,
                 expectedParameters,
-                NOTIFICATION_REFERENCE
+                notificationReference(CASE_ID)
             ));
     }
 
@@ -434,7 +432,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 SOLICITOR_EMAIL,
                 expectedUnregisteredSolicitorParameters,
-                NOTIFICATION_REFERENCE
+                notificationReference(CASE_ID)
             ));
     }
 
@@ -476,13 +474,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
                 expectedLocalAuthorityNotificationParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         });
     }
 
@@ -498,13 +496,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
                 expectedLocalAuthorityNotificationParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         });
     }
 
@@ -521,13 +519,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_1_INBOX,
                 expectedLocalAuthorityNotificationParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         });
     }
 
@@ -565,7 +563,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, state);
             postSubmittedEvent(callbackRequest);
 
-            checkUntil(() -> resubmissionNotificationsSent(HMCTS_ADMIN_EMAIL));
+            checkUntil(() -> resubmissionNotificationsSent(COURT_1.getEmail()));
             checkThat(this::paymentNotTakenAndNoMoreEmailsSent);
         }
 
@@ -586,13 +584,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 eq(AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE),
                 eq(adminEmail),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE));
+                eq(notificationReference(CASE_ID)));
 
             verify(notificationClient).sendEmail(
                 eq(AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE));
+                eq(notificationReference(CASE_ID)));
         }
 
         private void paymentNotTakenAndNoMoreEmailsSent() {
@@ -608,13 +606,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C110a",
-            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID,
+            "caseUrl", caseUrl(CASE_ID),
             "applicant", LOCAL_AUTHORITY_1_NAME);
     }
 
     private Map<String, Object> expectedLocalAuthorityNotificationParameters() {
         return Map.of("applicationType", "C110a",
-            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID);
+            "caseUrl", caseUrl(CASE_ID));
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
@@ -712,7 +710,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
         template.setLocalAuthority(LOCAL_AUTHORITY_1_NAME);
         template.setReference(CASE_ID.toString());
-        template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", CASE_ID));
+        template.setCaseUrl(caseUrl(CASE_ID));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));

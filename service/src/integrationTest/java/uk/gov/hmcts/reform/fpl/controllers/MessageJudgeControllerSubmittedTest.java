@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
     private static final String JUDICIAL_MESSAGE_RECIPIENT = "recipient@test.com";
-    private static final Long CASE_REFERENCE = 12345L;
+    private static final Long CASE_ID = 12345L;
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final String MESSAGE = "Some note";
     private static final String REPLY = "Reply";
@@ -64,7 +64,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_REFERENCE)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .respondents1(List.of(
                 element(Respondent.builder()
@@ -94,7 +94,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", "http://fake-url/cases/case-details/12345#Judicial%20messages",
+            "caseUrl", caseUrl(CASE_ID, "Judicial messages"),
             "callout", "^Davidson",
             "sender", "sender@fpla.com",
             "urgency", "High",
@@ -105,10 +105,10 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         );
 
         verify(notificationClient).sendEmail(
-            JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+            JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
-            CASE_REFERENCE,
+            CASE_ID,
             "internal-update-case-summary",
             caseSummary());
     }
@@ -126,7 +126,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_REFERENCE)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .respondents1(List.of(
                 element(Respondent.builder()
@@ -156,7 +156,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", "http://fake-url/cases/case-details/12345#Judicial%20messages",
+            "caseUrl", caseUrl(CASE_ID, "Judicial messages"),
             "callout", "^Davidson",
             "hasApplication", "No",
             "applicationType", "",
@@ -164,11 +164,10 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         );
 
         verify(notificationClient).sendEmail(
-            JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345"
-        );
+            JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
-            CASE_REFERENCE,
+            CASE_ID,
             "internal-update-case-summary",
             caseSummary());
     }
@@ -186,7 +185,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_REFERENCE)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .respondents1(List.of(
                 element(Respondent.builder()
@@ -217,7 +216,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoInteractions(notificationClient);
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
-            CASE_REFERENCE,
+            CASE_ID,
             "internal-update-case-summary",
             caseSummary());
     }

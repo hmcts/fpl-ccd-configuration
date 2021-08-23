@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 @Data
-@Builder(toBuilder = true)
+@Builder
 @RequiredArgsConstructor
-public class AfterSubmissionCaseDataUpdated {
+public class CaseTransferred {
 
     private final CaseData caseData;
     private final CaseData caseDataBefore;
