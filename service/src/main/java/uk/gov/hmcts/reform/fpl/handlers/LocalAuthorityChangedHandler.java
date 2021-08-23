@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
 import uk.gov.hmcts.reform.fpl.exceptions.RecipientNotFoundException;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityChangedContentProvider;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE;
@@ -69,6 +72,36 @@ public class LocalAuthorityChangedHandler {
         final NotifyData notifyData = contentProvider.getNotifyDataForDesignatedLocalAuthority(caseData);
 
         notificationService.sendEmail(LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE, localAuthorityEmail,
+            notifyData, caseData.getId());
+    }
+
+    @Async
+    @EventListener
+    public void notifyNewDesignatedLocalAuthority(final CaseTransferred event) {
+
+        final CaseData caseData = event.getCaseData();
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+
+        final String localAuthorityEmail = getDesignatedLocalAuthorityEmail(caseData);
+
+        final NotifyData notifyData = contentProvider.getCaseTransferredNotifyData(caseData, caseDataBefore);
+
+        notificationService.sendEmail(CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE, localAuthorityEmail,
+            notifyData, caseData.getId());
+    }
+
+    @Async
+    @EventListener
+    public void notifyPreviousDesignatedLocalAuthority(final CaseTransferred event) {
+
+        final CaseData caseData = event.getCaseData();
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+
+        final String localAuthorityEmail = getDesignatedLocalAuthorityEmail(caseDataBefore);
+
+        final NotifyData notifyData = contentProvider.getCaseTransferredNotifyData(caseData, caseDataBefore);
+
+        notificationService.sendEmail(CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE, localAuthorityEmail,
             notifyData, caseData.getId());
     }
 

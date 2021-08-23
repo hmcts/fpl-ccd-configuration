@@ -54,7 +54,7 @@ public class CourtService {
             return null;
         }
 
-        return courtLookup.getCourt(caseData.getCaseLocalAuthority()).get(0);
+        return courtLookup.getCourts(caseData.getCaseLocalAuthority()).get(0);
     }
 
 
