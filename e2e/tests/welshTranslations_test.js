@@ -263,7 +263,6 @@ Scenario('Request and upload translation for notice of hearing', async ({ I, cas
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   let hearingStartDate = moment().set({'year':2012,'month':3,'date':9,'hour':10,'minutes':30,'seconds':15,'milliseconds':0}).toDate();
-  console.log(hearingStartDate);
   let hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
