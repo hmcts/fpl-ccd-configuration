@@ -212,7 +212,7 @@ public class ApplicantLocalAuthorityService {
                     .map(Telephone::getTelephoneNumber)
                     .orElse(null))
                 .address(party.getAddress())
-                .colleagues(legacySolicitor.map(this::migrateFromLegacySolicitor).orElse(null))
+                .colleagues(legacySolicitor.map(this::migrateFromLegacySolicitor).orElse(emptyList()))
                 .build());
     }
 
@@ -271,7 +271,7 @@ public class ApplicantLocalAuthorityService {
             .findFirst();
     }
 
-    private Optional<Element<LocalAuthority>> findLocalAuthority(CaseData caseData, String orgId) {
+    public Optional<Element<LocalAuthority>> findLocalAuthority(CaseData caseData, String orgId) {
 
         return caseData.getLocalAuthorities().stream()
             .filter(la -> orgId.equals(la.getValue().getId()))

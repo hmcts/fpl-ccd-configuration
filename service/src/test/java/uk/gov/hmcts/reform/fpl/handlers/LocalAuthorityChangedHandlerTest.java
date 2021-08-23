@@ -7,11 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
 import uk.gov.hmcts.reform.fpl.exceptions.RecipientNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.notify.CaseTransferredNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedLocalAuthorityChangedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -24,6 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE;
@@ -55,7 +59,7 @@ class LocalAuthorityChangedHandlerTest {
         .build();
 
     @Nested
-    class LocalAuthorityAdded {
+    class SharedLocalAuthorityAdded {
 
         final SecondaryLocalAuthorityAdded event = SecondaryLocalAuthorityAdded.builder()
             .caseData(caseData)
@@ -119,7 +123,7 @@ class LocalAuthorityChangedHandlerTest {
     }
 
     @Nested
-    class LocalAuthorityRemoved {
+    class SharedLocalAuthorityRemoved {
 
         final SecondaryLocalAuthorityRemoved event = SecondaryLocalAuthorityRemoved.builder()
             .caseData(caseData)
@@ -161,5 +165,59 @@ class LocalAuthorityChangedHandlerTest {
 
             verifyNoInteractions(notificationService);
         }
+    }
+
+    @Nested
+    class CaseTransfer {
+
+        final CaseTransferred event = CaseTransferred.builder()
+            .caseData(caseData)
+            .caseDataBefore(caseDataBefore)
+            .build();
+
+        final CaseTransferredNotifyData notifyData = CaseTransferredNotifyData.builder()
+            .ccdNumber(caseData.getId().toString())
+            .build();
+
+        @Test
+        void shouldNotifyNewDesignatedLocalAuthority() {
+
+            when(localAuthorityService.getDesignatedLocalAuthority(caseData))
+                .thenReturn(localAuthority);
+
+            when(notifyDataProvider.getCaseTransferredNotifyData(caseData, caseDataBefore))
+                .thenReturn(notifyData);
+
+            underTest.notifyNewDesignatedLocalAuthority(event);
+
+            verify(notificationService).sendEmail(
+                CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE,
+                localAuthority.getEmail(),
+                notifyData,
+                caseData.getId());
+
+            verifyNoMoreInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotifyPrevDesignatedLocalAuthority() {
+
+            when(localAuthorityService.getDesignatedLocalAuthority(caseDataBefore))
+                .thenReturn(localAuthority);
+
+            when(notifyDataProvider.getCaseTransferredNotifyData(caseData, caseDataBefore))
+                .thenReturn(notifyData);
+
+            underTest.notifyPreviousDesignatedLocalAuthority(event);
+
+            verify(notificationService).sendEmail(
+                CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE,
+                localAuthority.getEmail(),
+                notifyData,
+                caseData.getId());
+
+            verifyNoMoreInteractions(notificationService);
+        }
+
     }
 }
