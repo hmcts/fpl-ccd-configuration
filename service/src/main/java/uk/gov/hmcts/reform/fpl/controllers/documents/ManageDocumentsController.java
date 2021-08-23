@@ -35,6 +35,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.HMCTS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
@@ -213,22 +215,25 @@ public class ManageDocumentsController extends CallbackController {
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, "manageDocumentSubtypeList",
             "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP");
 
-        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
-            caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
-        }
+        CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
+        caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
 
         return respond(caseDetailsMap);
     }
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        UserDetails userDetails = userService.getUserDetails();
+        CaseData caseData = getCaseData(request);
+        boolean isSolicitor = isSolicitor(caseData.getId());
+        boolean featureToggleValue = !isSolicitor || this.featureToggleService.isNewDocumentUploadNotificationEnabled();
 
-        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-            getCaseDataBefore(request), false,
-            userDetails));
+        if (featureToggleValue) {
+            UserDetails userDetails = userService.getUserDetails();
 
+            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
+                getCaseDataBefore(request), isSolicitor ? SOLICITOR : HMCTS,
+                userDetails));
+        }
     }
 
     private boolean isSolicitor(Long id) {
