@@ -128,6 +128,16 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsNewDocumentUploadNotificationEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isNewDocumentUploadNotificationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("document-upload-new-notification"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     void shouldMakeCorrectCallForIsLanguageRequirementsEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -136,19 +146,6 @@ class FeatureToggleServiceTest {
             eq("language-requirements"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsChildRepresentativeSolicitor(boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isChildRepresentativeSolicitorEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("child-representative-solicitor"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false)
-        );
     }
 
     @ParameterizedTest

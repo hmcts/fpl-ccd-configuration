@@ -45,6 +45,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     @Test
     void shouldNotPublishEventWhenConfidentialDocumentsAreUploaded() {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
 
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, true));
 
@@ -95,12 +96,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         verify(notificationClient).sendEmail(
             eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
             eq(LOCAL_AUTHORITY_1_INBOX),
-            anyMap(),
-            eq(notificationReference(TEST_CASE_ID)));
-
-        verify(notificationClient).sendEmail(
-            eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_2_INBOX),
             anyMap(),
             eq(notificationReference(TEST_CASE_ID)));
     }

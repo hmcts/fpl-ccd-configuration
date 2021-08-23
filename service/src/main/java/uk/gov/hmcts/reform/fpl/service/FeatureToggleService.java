@@ -59,13 +59,15 @@ public class FeatureToggleService {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }
 
+    public boolean isNewDocumentUploadNotificationEnabled() {
+        return ldClient.boolVariation("document-upload-new-notification",
+            createLDUser(), false);
+
+    }
+
     public boolean isFurtherEvidenceDocumentTabEnabled() {
         return ldClient.boolVariation("further-evidence-document-tab",
             createLDUser(), false);
-    }
-
-    public boolean isChildRepresentativeSolicitorEnabled() {
-        return ldClient.boolVariation("child-representative-solicitor", createLDUser(), false);
     }
 
     public boolean isApplicantAdditionalContactsEnabled() {

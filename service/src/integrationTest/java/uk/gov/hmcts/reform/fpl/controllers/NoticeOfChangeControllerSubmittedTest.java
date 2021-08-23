@@ -1,19 +1,25 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +27,8 @@ import java.util.Map;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_NEW_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -30,39 +38,40 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(NoticeOfChangeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
-    private static final Long CASE_ID = 10L;
+    private static final Long CASE_ID = 1234567890123456L;
     private static final String CASE_NAME = "Test";
     private static final String NEW_EMAIL = "new@test.com";
     private static final String OLD_EMAIL = "old@test.com";
+    private static final String ORG_NAME = "org name";
 
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-
-    public static final RespondentParty RESPONDENT_PARTY = RespondentParty.builder()
+    private static final RespondentParty RESPONDENT_PARTY = RespondentParty.builder()
         .firstName("John").lastName("Smith").build();
 
-    public static final RespondentSolicitor OLD_REGISTERED_SOLICITOR = RespondentSolicitor.builder()
+    private static final String OLD_ORG_ID = "123";
+    private static final RespondentSolicitor OLD_REGISTERED_SOLICITOR = RespondentSolicitor.builder()
         .firstName("Old")
         .lastName("Solicitor")
         .email(OLD_EMAIL)
-        .organisation(Organisation.builder().organisationID("123").build()).build();
-
-    public static final RespondentSolicitor NEW_REGISTERED_SOLICITOR = RespondentSolicitor.builder()
+        .organisation(Organisation.builder().organisationID(OLD_ORG_ID).build())
+        .build();
+    private static final Element<Respondent> OLD_RESPONDENT = element(Respondent.builder()
+        .party(RESPONDENT_PARTY)
+        .solicitor(OLD_REGISTERED_SOLICITOR)
+        .build());
+    private static final String NEW_ORG_ID = "321";
+    private static final RespondentSolicitor NEW_REGISTERED_SOLICITOR = RespondentSolicitor.builder()
         .firstName("New")
         .lastName("Solicitor")
         .email(NEW_EMAIL)
-        .organisation(Organisation.builder().organisationID("321").build()).build();
-
-    public static final Element<Respondent> OLD_RESPONDENT = element(Respondent.builder()
-        .party(RESPONDENT_PARTY)
-        .solicitor(OLD_REGISTERED_SOLICITOR).build());
-
+        .organisation(Organisation.builder().organisationID(NEW_ORG_ID).build())
+        .build();
     private static final Element<Respondent> OTHER_RESPONDENT = element(Respondent.builder()
         .legalRepresentation("Yes")
         .solicitor(RespondentSolicitor.builder()
             .firstName("Other")
             .lastName("Solicitor")
             .email("other@test.com")
-            .organisation(Organisation.builder().organisationID("123").build()).build())
+            .organisation(Organisation.builder().organisationID(OLD_ORG_ID).build()).build())
         .build());
 
     private static final List<Element<Child>> CHILDREN = wrapElements(Child.builder()
@@ -73,9 +82,74 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private NotificationClient notificationClient;
+    @MockBean
+    private OrganisationApi orgApi;
+
 
     NoticeOfChangeControllerSubmittedTest() {
         super("noc-decision");
+    }
+
+    @BeforeEach
+    void setUp() {
+        givenFplService();
+        givenSystemUser();
+
+        when(orgApi.findOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, NEW_ORG_ID))
+            .thenReturn(uk.gov.hmcts.reform.rd.model.Organisation.builder().name(ORG_NAME).build());
+    }
+
+    @Test
+    void shouldRevokeAccessFromLegalCounsellors() throws NotificationClientException {
+        String legalCounsellorEmail = "email";
+        String legalCounsellorId = "id";
+        LegalCounsellor counsellor = LegalCounsellor.builder()
+            .firstName("Dave")
+            .lastName("Watkins")
+            .email(legalCounsellorEmail)
+            .userId(legalCounsellorId)
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .id(CASE_ID)
+            .caseName(CASE_NAME)
+            .respondents1(wrapElements(Respondent.builder()
+                .solicitor(OLD_REGISTERED_SOLICITOR)
+                .legalCounsellors(wrapElements(counsellor))
+                .build()))
+            .children1(CHILDREN)
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .respondents1(wrapElements(Respondent.builder().solicitor(NEW_REGISTERED_SOLICITOR).build()))
+            .build();
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+
+        CaseAssignedUserRolesRequest revokeRequestPayload = CaseAssignedUserRolesRequest.builder()
+            .caseAssignedUserRoles(List.of(
+                CaseAssignedUserRoleWithOrganisation.builder()
+                    .userId(legalCounsellorId)
+                    .caseRole("[BARRISTER]")
+                    .caseDataId(CASE_ID.toString())
+                    .build()
+            ))
+            .build();
+
+        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
+
+        Map<String, Object> notifyData = Map.of(
+            "caseName", CASE_NAME,
+            "ccdNumber", "1234-5678-9012-3456",
+            "childLastName", "Jones",
+            "clientFullName", ORG_NAME,
+            "salutation", "Dear Dave Watkins"
+        );
+
+        verify(notificationClient).sendEmail(
+            LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE, legalCounsellorEmail, notifyData, "localhost/" + CASE_ID
+        );
+
     }
 
     @Test
@@ -116,13 +190,13 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                     NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
                     NEW_EMAIL,
                     newSolicitorParameters,
-                    NOTIFICATION_REFERENCE);
+                    notificationReference(CASE_ID));
 
                 verify(notificationClient, times(1)).sendEmail(
                     NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
                     OLD_EMAIL,
                     oldSolicitorParameters,
-                    NOTIFICATION_REFERENCE);
+                    notificationReference(CASE_ID));
             }
         );
     }
@@ -161,7 +235,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
             NEW_EMAIL,
             newSolicitorParameters,
-            NOTIFICATION_REFERENCE)
+            notificationReference(CASE_ID))
         );
     }
 

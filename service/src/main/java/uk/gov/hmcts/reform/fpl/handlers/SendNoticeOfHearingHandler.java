@@ -24,9 +24,11 @@ import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContent
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
@@ -50,6 +52,7 @@ public class SendNoticeOfHearingHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final SendDocumentService sendDocumentService;
+    private final TranslationRequestService translationRequestService;
 
     @Async
     @EventListener
@@ -134,5 +137,15 @@ public class SendNoticeOfHearingHandler {
                     caseData.getId());
             }
         });
+    }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(SendNoticeOfHearing event) {
+        HearingBooking selectedHearing = event.getSelectedHearing();
+        translationRequestService.sendRequest(event.getCaseData(),
+            Optional.ofNullable(selectedHearing.getTranslationRequirements()),
+            selectedHearing.getNoticeOfHearing(), selectedHearing.asLabel()
+        );
     }
 }

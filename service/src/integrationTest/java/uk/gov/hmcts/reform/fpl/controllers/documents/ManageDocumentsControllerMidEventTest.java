@@ -28,12 +28,14 @@ import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
@@ -224,7 +226,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldThrowExceptionIfUserIsAdminAndHasSolicitorCaseRoles() {
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), CASE_ID)).willReturn(true);
+        given(userService.getCaseRoles(CASE_ID)).willReturn(Set.of(SOLICITORA));
         given(userService.isHmctsUser()).willReturn(true);
         given(userService.getUserEmail()).willReturn("test-email@example.com");
 
@@ -324,7 +326,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldInitialiseFurtherEvidencesForSolicitor() {
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), CASE_ID)).willReturn(true);
+        given(userService.getCaseRoles(CASE_ID)).willReturn(Set.of(SOLICITORA));
         given(userService.isHmctsUser()).willReturn(false);
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = buildSupportingEvidenceBundle();
