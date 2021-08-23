@@ -107,6 +107,18 @@ const orders = {
     tabName: caseView.tabs.hearings,
     tabObjectName: 'Hearing 4',
   },
+  furtherEvidence: {
+    name: `Expert reports - Email to say evidence will be late - ${dateFormat('d mmmm yyyy')}`,
+    originalFile: 'mockFile.pdf',
+    translationFile: 'mockFile-Welsh.pdf',
+    tabName: caseView.tabs.furtherEvidence,
+    description: {
+      name: 'Email to say evidence will be late',
+      notes: 'Evidence will be late',
+      document: config.testPdfFile,
+      type: 'Expert reports',
+    },
+  },
 };
 
 let caseId;
@@ -320,6 +332,28 @@ Scenario('Request and upload translation for notice of hearing', async ({ I, cas
   assertSentToTranslation(I, caseViewPage, orders.noticeOfHearing);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.noticeOfHearing);
   assertTranslation(I, caseViewPage, orders.noticeOfHearing);
+});
+
+Scenario('Request and upload translation for HMCTS further evidence documents', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageDocumentsEventPage }) => {
+  let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
+  manageDocumentsEventPage.selectFurtherEvidence();
+  await I.goToNextPage();
+  manageDocumentsEventPage.selectAnyOtherDocument();
+  manageDocumentsEventPage.selectFurtherEvidenceIsNotRelatedToHearing();
+  await I.goToNextPage();
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(orders.furtherEvidence.description, true);
+  await manageDocumentsEventPage.selectTranslationRequirement(0, 'ENGLISH_TO_WELSH');
+  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+  caseViewPage.selectTab(orders.furtherEvidence.tabName);
+  I.expandDocumentSection(orders.furtherEvidence.description.type, orders.furtherEvidence.description.type.name);
+  I.seeInExpandedDocumentSentForTranslation(orders.furtherEvidence.description.type.name, 'HMCTS', dateFormat(new Date(), 'd mmm yyyy'));
+  await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.furtherEvidence);
+  caseViewPage.selectTab(orders.furtherEvidence.tabName);
+  I.expandDocumentSection(orders.furtherEvidence.description.type, orders.furtherEvidence.description.type.name);
+  I.seeInExpandedDocumentTranslated(orders.furtherEvidence.description.type.name, 'HMCTS', dateFormat(new Date(), 'd mmm yyyy'));
 });
 
 async function translateOrder(I, caseViewPage, uploadWelshTranslationsPage, item) {
