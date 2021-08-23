@@ -162,6 +162,7 @@ class CaseDataExtractionServiceTest {
         void shouldGetApplicantNameFromLocalAuthorityIfPresent() {
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .name("Local authority organisation")
                 .build();
 
@@ -180,6 +181,7 @@ class CaseDataExtractionServiceTest {
         void shouldReturnEmptyApplicantNameWhenLocalAuthorityNameIsMissing(String localAuthorityName) {
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .name(localAuthorityName)
                 .build();
 

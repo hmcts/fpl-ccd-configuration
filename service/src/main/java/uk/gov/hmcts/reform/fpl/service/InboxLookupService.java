@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import java.util.HashSet;
 import java.util.Set;
 
-import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -30,7 +29,6 @@ public class InboxLookupService {
         CaseData caseData = request.getCaseData();
         Set<String> recipients = new HashSet<>();
         localAuthorityEmailLookupConfiguration.getLocalAuthority(caseData.getCaseLocalAuthority())
-            .map(LocalAuthority::getEmail)
             .filter(StringUtils::isNotBlank)
             .ifPresent(recipients::add);
 

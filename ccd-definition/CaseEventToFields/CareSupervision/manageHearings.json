@@ -554,6 +554,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
+    "CaseFieldID": "languageRequirement",
+    "PageFieldDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "PageID": "SendNoticeOfHearing",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 8,
+    "FieldShowCondition": "sendNoticeOfHearing=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "sendNoticeOfHearing",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
@@ -573,6 +585,18 @@
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 8,
     "FieldShowCondition": "sendNoticeOfHearing=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "sendNoticeOfHearingTranslationRequirements",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "SendNoticeOfHearing",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 8,
+    "FieldShowCondition": "sendNoticeOfHearing=\"Yes\" AND languageRequirement=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

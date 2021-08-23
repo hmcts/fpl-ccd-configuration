@@ -5,11 +5,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -29,9 +31,12 @@ import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContent
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -64,6 +69,10 @@ class SendNoticeOfHearingHandlerTest {
     private static final Other OTHER = mock(Other.class);
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final Long CASE_ID = 12345L;
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+    private static final DocumentReference NOTICE_OF_HEARING = mock(DocumentReference.class);
+    private static final LocalDateTime START_DATE = LocalDateTime.of(2012, 3, 1, 12, 3, 4);
 
     @Mock
     private InboxLookupService inboxLookup;
@@ -83,6 +92,8 @@ class SendNoticeOfHearingHandlerTest {
     private CafcassLookupConfiguration cafcassLookup;
     @Mock
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+    @Mock
+    private TranslationRequestService translationRequestService;
 
     @InjectMocks
     private SendNoticeOfHearingHandler underTest;
@@ -126,6 +137,7 @@ class SendNoticeOfHearingHandlerTest {
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.isRepresented()).willReturn(false);
         given(OTHER.hasAddressAdded()).willReturn(false);
+        given(OTHER.getName()).willReturn("John");
         given(noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
             CASE_DATA, HEARING, OTHER)).willReturn(NO_OTHER_ADDRESS_NOTIFY_DATA);
 
@@ -134,6 +146,21 @@ class SendNoticeOfHearingHandlerTest {
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
 
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotSendNotificationToCtscWhenOtherDoesNotHaveAddressAndNameIsNullOrEmpty(String otherName) {
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+        given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
+        given(OTHER.isRepresented()).willReturn(false);
+        given(OTHER.hasAddressAdded()).willReturn(false);
+        given(OTHER.getName()).willReturn(otherName);
+
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+
+        verifyNoInteractions(notificationService);
     }
 
     @ParameterizedTest
@@ -219,6 +246,35 @@ class SendNoticeOfHearingHandlerTest {
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldNotifyTranslationTeam() {
+        underTest.notifyTranslationTeam(
+            new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
+                .noticeOfHearing(NOTICE_OF_HEARING)
+                .startDate(START_DATE)
+                .translationRequirements(TRANSLATION_REQUIREMENTS)
+                .build())
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENTS),
+            NOTICE_OF_HEARING, "Notice of hearing - 1 March 2012");
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfLanguageRequirementDefaultsToEmpty() {
+        underTest.notifyTranslationTeam(
+            new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
+                .startDate(START_DATE)
+                .noticeOfHearing(NOTICE_OF_HEARING)
+                .build())
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(LanguageTranslationRequirement.NO),
+            NOTICE_OF_HEARING, "Notice of hearing - 1 March 2012");
     }
 
     private static Stream<Arguments> shouldNotSendOtherSource() {

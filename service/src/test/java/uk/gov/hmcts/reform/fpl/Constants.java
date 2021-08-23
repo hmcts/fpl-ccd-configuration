@@ -1,21 +1,7 @@
 package uk.gov.hmcts.reform.fpl;
 
-@SuppressWarnings("LineLength")
 public interface Constants {
 
-    /**
-     * Service auth token issued for 'fpl_case_service' valid until end of the day on 31st December 2049.
-     *
-     * <p>Decoded payload:
-     *
-     * <code>
-     * {
-     *   "sub": "fpl_case_service",
-     *   "exp": 2524607999
-     * }
-     * </code>
-     */
-    String SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmcGxfY2FzZV9zZXJ2aWNlIiwiZXhwIjoyNTI0NjA3OTk5fQ.LLvcAFmBnIpTbmuoEBuFUzRE6prE0_1ALbCkEkY6mS0kHPQVghgWPNBeVOKUoa-w1P1IUqZ5H-6eYnDzJRxTwA";
     String LOCAL_AUTHORITY_1_CODE = "test1";
     String LOCAL_AUTHORITY_2_CODE = "test2";
     String LOCAL_AUTHORITY_3_CODE = "test3";
@@ -47,7 +33,9 @@ public interface Constants {
     String LOCAL_AUTHORITY_1_COURT_EMAIL = "admin@family-court.com";
     String LOCAL_AUTHORITY_3_COURT_A_EMAIL = "court3a@family-court.com";
     String LOCAL_AUTHORITY_3_COURT_B_EMAIL = "court3b@family-court.com";
-
-
+    String USER_ID = "456";
+    String TEST_CASE_ID = "1234123412341234";
+    String TEST_FORMATTED_CASE_ID = "1234-1234-1234-1234";
+    Long TEST_CASE_ID_AS_LONG = 1234123412341234L;
 
 }

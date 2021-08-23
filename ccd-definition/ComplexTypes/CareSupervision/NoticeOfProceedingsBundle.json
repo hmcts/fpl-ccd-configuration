@@ -23,5 +23,32 @@
     "ElementLabel": "Welsh translation upload time",
     "SecurityClassification": "Public",
     "FieldShowCondition": "translatedDocument=\"DO_NOT_SHOW\""
+  } ,
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedingsBundle",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedingsBundle",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedingsBundle",
+    "ListElementCode": "sentForTranslationLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Sent for translation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needTranslation=\"YES\" AND translatedDocument!=\"*\""
   }
 ]

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.converter.BasicChildConverter;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -31,6 +32,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -51,6 +53,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private final DocumentReference translatedDocument;
     private final DocumentReference unsealedDocumentCopy;
     private final LocalDateTime translationUploadDateTime;
+    private final LanguageTranslationRequirement translationRequirements;
     private final LocalDate amendedDate;
     private final String dateOfIssue;
     private final LocalDateTime dateTimeIssued;
@@ -110,6 +113,11 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     @Override
     public LocalDateTime translationUploadDateTime() {
         return translationUploadDateTime;
+    }
+
+    @Override
+    public LanguageTranslationRequirement getTranslationRequirements() {
+        return defaultIfNull(translationRequirements, NO);
     }
 
     @Override

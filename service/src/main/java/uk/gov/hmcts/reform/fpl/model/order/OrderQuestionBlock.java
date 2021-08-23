@@ -78,6 +78,8 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning")),
     WHICH_OTHERS("whichOthers", OrderSection.OTHER_DETAILS,
         List.of("sendOrderToAllOthers", "others_label", "othersSelector")),
+    TRANSLATION_REQUIREMENTS("translationRequirements", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersTranslationNeeded")),
     ORDER_TO_AMEND("orderToAmend", OrderSection.AMEND_DOWNLOAD,
         List.of("manageOrdersOrderToAmend")),
     UPLOAD_AMENDED_ORDER("uploadAmendedOrder", OrderSection.AMEND_DOWNLOAD,

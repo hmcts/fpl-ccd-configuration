@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -67,7 +68,10 @@ class GeneratedOrderEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final DocumentReference TEST_DOCUMENT = mock(DocumentReference.class);
-    private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT);
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT = LanguageTranslationRequirement.NO;
+    private static final String ORDER_TITLE = "orderTitle";
+    private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT,
+        TRANSLATION_REQUIREMENT, ORDER_TITLE);
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITH_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITHOUT_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
@@ -158,7 +162,6 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifyPartiesOnOrderSubmissionWhenNewOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(true);
         given(lastGeneratedOrder.getOthers()).willReturn(LAST_GENERATED_ORDER_OTHERS);
@@ -169,12 +172,12 @@ class GeneratedOrderEventHandlerTest {
             eq(CASE_DATA),
             eq(LAST_GENERATED_ORDER_OTHERS),
             any()))
-            .willReturn((Set) Set.of(EMAIL_REP_1));
+            .willReturn(Set.of(EMAIL_REP_1));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE),
             eq(CASE_DATA),
             eq(LAST_GENERATED_ORDER_OTHERS),
             any()))
-            .willReturn((Set) Set.of(DIGITAL_REP_1));
+            .willReturn(Set.of(DIGITAL_REP_1));
 
         underTest.notifyParties(EVENT);
 
@@ -230,7 +233,6 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndNewOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(true);
         given(lastGeneratedOrder.getOthers()).willReturn(LAST_GENERATED_ORDER_OTHERS);
@@ -238,10 +240,11 @@ class GeneratedOrderEventHandlerTest {
         final Representative representative2 = mock(Representative.class);
         final RespondentParty otherRespondent = mock(RespondentParty.class);
 
-        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(List.of(representative,representative2));
+        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(List.of(representative,
+            representative2));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST),
             eq(CASE_DATA), eq(LAST_GENERATED_ORDER_OTHERS), any()))
-            .willReturn((Set) Set.of(representative));
+            .willReturn(Set.of(representative));
         given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(LAST_GENERATED_ORDER_OTHERS))
             .willReturn(Set.of(otherRespondent));
 

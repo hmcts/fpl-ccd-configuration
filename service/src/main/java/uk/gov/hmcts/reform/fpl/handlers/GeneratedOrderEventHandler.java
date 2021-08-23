@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +51,7 @@ public class GeneratedOrderEventHandler {
     private final SendDocumentService sendDocumentService;
     private final SealedOrderHistoryService sealedOrderHistoryService;
     private final OtherRecipientsInbox otherRecipientsInbox;
+    private final TranslationRequestService translationRequestService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -76,7 +78,7 @@ public class GeneratedOrderEventHandler {
         if (lastGeneratedOrder.isNewVersion()) {
             List<Element<Other>> othersSelected = getOthersSelected(lastGeneratedOrder);
             allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, element -> element.getValue()
+                POST, caseData, othersSelected, Element::getValue
             ));
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
         }
@@ -84,12 +86,18 @@ public class GeneratedOrderEventHandler {
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
     }
 
-    @SuppressWarnings("unchecked")
+    @EventListener
+    public void notifyTranslationTeam(GeneratedOrderEvent event) {
+        translationRequestService.sendRequest(event.getCaseData(),
+            event.getLanguageTranslationRequirement(),
+            event.getOrderDocument(), event.getOrderTitle());
+    }
+
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
                                                               final DocumentReference orderDocument,
                                                               final List<Element<Other>> othersSelected) {
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+        Set<String> digitalRecipientsOtherNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL, caseData, othersSelected, element -> element.getValue().getEmail()
         );
         emailRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
@@ -107,12 +115,11 @@ public class GeneratedOrderEventHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
                                                                            final DocumentReference orderDocument,
                                                                            List<Element<Other>> othersSelected) {
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        Set<String> digitalRecipientsOtherNotNotified = (Set<String>) otherRecipientsInbox.getNonSelectedRecipients(
+        Set<String> digitalRecipientsOtherNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
             DIGITAL_SERVICE, caseData, othersSelected, element -> element.getValue().getEmail()
         );
         digitalRepresentatives.removeAll(digitalRecipientsOtherNotNotified);
@@ -141,9 +148,8 @@ public class GeneratedOrderEventHandler {
     }
 
     private List<Element<Other>> getOthersSelected(GeneratedOrder lastGeneratedOrder) {
-        List<Element<Other>> othersSelected = lastGeneratedOrder.isNewVersion()
+        return lastGeneratedOrder.isNewVersion()
             ? defaultIfNull(lastGeneratedOrder.getOthers(), new ArrayList<>()) : new ArrayList<>();
-        return othersSelected;
     }
 
 }

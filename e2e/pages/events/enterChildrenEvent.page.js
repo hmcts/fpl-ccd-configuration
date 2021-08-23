@@ -1,5 +1,6 @@
-const {I} = inject();
+const { I } = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
+const organisationHelper = require('../../helpers/organisation_helper.js');
 const output = require('codeceptjs').output;
 
 async function clearOldSolicitorOrg() {
@@ -58,8 +59,8 @@ module.exports = {
       child: {
         firstName: `#children1_${index}_party_firstName`,
         lastName: `#children1_${index}_party_lastName`,
-        dateOfBirth: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[@id="dateOfBirth"]`,
-        addressChangeDate: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[@id="addressChangeDate"]`,
+        dateOfBirth: `(//*[contains(@class, "collection-title")])[${index + 1}]/parent::div//*[@id="dateOfBirth"]`,
+        addressChangeDate: `(//*[contains(@class, "collection-title")])[${index + 1}]/parent::div//*[@id="addressChangeDate"]`,
         address: `#children1_${index}_party_address_address`,
         gender: `#children1_${index}_party_gender`,
         genderIdentification: `#children1_${index}_party_genderIdentification`,
@@ -99,7 +100,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).child.firstName, firstName);
     I.fillField(this.fields(elementIndex).child.lastName, lastName);
 
-    I.fillDate({'day': day, 'month': month, 'year': year}, this.fields(elementIndex).child.dateOfBirth );
+    I.fillDate({ 'day': day, 'month': month, 'year': year }, this.fields(elementIndex).child.dateOfBirth);
     I.selectOption(this.fields(elementIndex).child.gender, gender);
   },
 
@@ -110,7 +111,7 @@ module.exports = {
       I.click(locate('label').withText('Living with respondents'));
     });
     await I.runAccessibilityTest();
-    I.fillDate({'day': day, 'month': month, 'year': year}, this.fields(elementIndex).child.addressChangeDate);
+    I.fillDate({ 'day': day, 'month': month, 'year': year }, this.fields(elementIndex).child.addressChangeDate);
   },
 
   async enterAddress(address) {
@@ -215,9 +216,7 @@ module.exports = {
 
   async enterRegisteredOrganisation(solicitor) {
     await clearOldSolicitorOrg();
-    I.waitForEnabled('#search-org-text');
-    I.fillField('#search-org-text', solicitor.details.organisation);
-    I.click(locate('a').withText('Select').inside(locate('#organisation-table').withDescendant(locate('h3').withText(solicitor.details.organisation))));
+    organisationHelper.searchAndSelectGivenRegisteredOrganisation(I, solicitor.details);
   },
 
   enterChildrenSpecificRepresentation(index, solicitor) {

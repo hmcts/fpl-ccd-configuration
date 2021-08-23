@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.Jurisdiction;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -72,6 +73,7 @@ public class ManageOrdersEventData {
     String manageOrdersIsChildRepresented;
     Jurisdiction manageOrdersOrderJurisdiction;
     String manageOrdersCafcassRegion;
+    LanguageTranslationRequirement manageOrdersTranslationNeeded;
     EnglandOffices manageOrdersCafcassOfficesEngland;
     WalesOffices manageOrdersCafcassOfficesWales;
     DynamicList manageOrdersLinkedApplication;

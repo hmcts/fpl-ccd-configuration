@@ -356,6 +356,7 @@ class PaymentServiceTest {
                 .build());
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .pbaNumber("PBA1234567")
                 .customerReference("localAuthorityReference")
                 .clientCode("localAuthorityCode")
@@ -591,6 +592,7 @@ class PaymentServiceTest {
             .id(CASE_ID)
             .caseLocalAuthority("LA")
             .localAuthorities(wrapElements(LocalAuthority.builder()
+                .designated("Yes")
                 .pbaNumber("PBA123")
                 .clientCode(clientCode)
                 .customerReference(customerReference)

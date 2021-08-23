@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
+import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -47,9 +49,12 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
@@ -104,6 +109,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -115,8 +121,10 @@ import javax.validation.constraints.PastOrPresent;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -152,6 +160,7 @@ public class CaseData {
     private final String caseLocalAuthorityName;
     private OrganisationPolicy localAuthorityPolicy;
     private OrganisationPolicy outsourcingPolicy;
+    private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
     private Object outsourcingLAs;
     private Court court;
@@ -172,7 +181,7 @@ public class CaseData {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
-    private final List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
+    private List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -474,6 +483,7 @@ public class CaseData {
     private final Others others;
 
     private final String languageRequirement;
+    private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
 
     @JsonIgnore
     public boolean isWelshLanguageRequested() {
@@ -545,7 +555,8 @@ public class CaseData {
     public List<Element<Other>> getAllOthers() {
         List<Element<Other>> othersList = new ArrayList<>();
 
-        ofNullable(this.getOthers()).map(Others::getFirstOther).map(ElementUtils::element).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getFirstOther).filter(not(Other::isEmpty))
+            .map(ElementUtils::element).ifPresent(othersList::add);
         ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);
@@ -631,6 +642,10 @@ public class CaseData {
     private final String deprivationOfLiberty;
     private final CloseCase closeCaseTabField;
     private final String closeCaseFromOrder;
+    @JsonUnwrapped
+    @Builder.Default
+    private final RecordChildrenFinalDecisionsEventData recordChildrenFinalDecisionsEventData =
+        RecordChildrenFinalDecisionsEventData.builder().build();
 
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
@@ -821,7 +836,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
-            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+                defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
             .flatMap(Collection::stream).collect(toList());
     }
 
@@ -940,6 +955,7 @@ public class CaseData {
     private final String hearingHours;
     private final String hearingDuration;
     private final String sendNoticeOfHearing;
+    private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
     private final HearingOptions hearingOption;
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
@@ -1004,7 +1020,7 @@ public class CaseData {
     @Builder.Default
     private final NoticeOfChangeChildAnswersData noticeOfChangeChildAnswersData =
         NoticeOfChangeChildAnswersData.builder()
-        .build();
+            .build();
 
     @JsonUnwrapped
     @Builder.Default
@@ -1020,6 +1036,11 @@ public class CaseData {
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
 
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageLegalCounselEventData manageLegalCounselEventData =
+        ManageLegalCounselEventData.builder().build();
+
     @JsonIgnore
     public boolean isOutsourced() {
         return Optional.ofNullable(outsourcingPolicy)
@@ -1030,8 +1051,30 @@ public class CaseData {
     }
 
     public List<Element<LocalAuthority>> getLocalAuthorities() {
-        return defaultIfNull(localAuthorities, new ArrayList<>());
+        if (isNull(localAuthorities)) {
+            localAuthorities = new ArrayList<>();
+        }
+        return localAuthorities;
     }
 
     private final DynamicList courtsList;
+
+    @JsonIgnore
+    public LocalAuthority getDesignatedLocalAuthority() {
+
+        if (isEmpty(getLocalAuthorities())) {
+            return null;
+        }
+
+        return getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
+            .findFirst()
+            .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+    }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
+
 }

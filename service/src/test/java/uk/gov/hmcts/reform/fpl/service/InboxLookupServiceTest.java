@@ -22,7 +22,6 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import static uk.gov.hmcts.reform.fpl.service.InboxLookupServiceTest.FALLBACK_INBOX;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -58,7 +57,7 @@ class InboxLookupServiceTest {
         CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
+            .willReturn(Optional.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
@@ -72,7 +71,7 @@ class InboxLookupServiceTest {
             .legalRepresentatives(LEGAL_REPRESENTATIVES).build();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
+            .willReturn(Optional.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -93,7 +92,7 @@ class InboxLookupServiceTest {
             .legalRepresentatives(LEGAL_REPRESENTATIVES).build();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
+            .willReturn(Optional.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -112,7 +111,7 @@ class InboxLookupServiceTest {
         ;
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
+            .willReturn(Optional.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -128,7 +127,7 @@ class InboxLookupServiceTest {
         CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
+            .willReturn(Optional.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -160,7 +159,7 @@ class InboxLookupServiceTest {
         CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority("")));
+            .willReturn(Optional.of(""));
 
         given(localAuthorityService.getContactsEmails(caseData))
             .willReturn(List.of(ADDITIONAL_EMAIL_1, ADDITIONAL_EMAIL_2));
@@ -176,7 +175,7 @@ class InboxLookupServiceTest {
         CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
+            .willReturn(Optional.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(featureToggleService.isSendLAEmailsToSolicitorEnabled(LOCAL_AUTHORITY_CODE)).willReturn(true);
         given(localAuthorityService.getContactsEmails(caseData))
@@ -198,7 +197,7 @@ class InboxLookupServiceTest {
             .build();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(Optional.of(new LocalAuthority("")));
+            .willReturn(Optional.of(""));
 
         Collection<String> emails = underTest.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());

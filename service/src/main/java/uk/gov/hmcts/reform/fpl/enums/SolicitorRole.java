@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,11 +48,10 @@ public enum SolicitorRole {
     private final int index;
     private final Representing representing;
 
-    public static SolicitorRole from(String label) {
+    public static Optional<SolicitorRole> from(String label) {
         return Arrays.stream(SolicitorRole.values())
             .filter(role -> role.caseRoleLabel.equals(label))
-            .findFirst()
-            .orElseThrow();
+            .findFirst();
     }
 
     public static List<SolicitorRole> values(Representing representing) {
@@ -60,7 +60,7 @@ public enum SolicitorRole {
             .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public enum Representing {
         RESPONDENT(caseData -> (List) caseData.getAllRespondents(),
             "respondentPolicy%d",
@@ -96,5 +96,8 @@ public enum SolicitorRole {
             return nocAnswersTemplate;
         }
 
+        public String getCaseField() {
+            return caseField;
+        }
     }
 }

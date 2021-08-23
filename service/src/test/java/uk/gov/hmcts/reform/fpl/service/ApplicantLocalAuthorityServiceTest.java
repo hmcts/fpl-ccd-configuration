@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -29,13 +31,17 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -62,12 +68,24 @@ class ApplicantLocalAuthorityServiceTest {
 
         @Test
         void shouldGetLocalAuthorityFromCaseIfExists() {
-            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
-                .name("ORG1")
+
+            final Organisation userOrganisation = Organisation.builder()
+                .name("Organisation 1")
+                .organisationIdentifier("ORG1")
+                .build();
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id("ORG0")
+                .name("Organisation 0")
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(userOrganisation.getOrganisationIdentifier())
+                .name(userOrganisation.getName())
                 .build();
 
             final CaseData caseData = CaseData.builder()
-                .localAuthorities(wrapElements(expectedLocalAuthority))
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
                 .applicants(wrapElements(Applicant.builder()
                     .party(ApplicantParty.builder()
                         .organisationName("Legacy org")
@@ -78,13 +96,20 @@ class ApplicantLocalAuthorityServiceTest {
                     .build())
                 .build();
 
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 
-            assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
+            assertThat(actualLocalAuthority).isEqualTo(localAuthority2);
         }
 
         @Test
-        void shouldGetLocalAuthorityFromLegacyApplicantWhenNoExistingLocalAuthority() {
+        void shouldGetLocalAuthorityFromLegacyApplicantWhenNoExistingLocalAuthorityAndUserBelongsToDesignatedOrg() {
+
+            final Organisation userOrganisation = Organisation.builder()
+                .name("Organisation 1")
+                .organisationIdentifier("ORG1")
+                .build();
 
             final ApplicantParty legacyApplicant = ApplicantParty.builder()
                 .organisationName("Applicant org")
@@ -115,12 +140,19 @@ class ApplicantLocalAuthorityServiceTest {
                 .email("solicitor@legacy.com")
                 .build();
 
+            final OrganisationPolicy designatedOrg = organisationPolicy(
+                userOrganisation.getOrganisationIdentifier(),
+                userOrganisation.getName(),
+                LASOLICITOR);
+
             final CaseData caseData = CaseData.builder()
                 .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
                 .solicitor(legacySolicitor)
+                .localAuthorityPolicy(designatedOrg)
                 .build();
 
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .id(userOrganisation.getOrganisationIdentifier())
                 .name(legacyApplicant.getOrganisationName())
                 .address(legacyApplicant.getAddress())
                 .email(legacyApplicant.getEmail().getEmail())
@@ -140,15 +172,20 @@ class ApplicantLocalAuthorityServiceTest {
                     .build()))
                 .build();
 
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 
             assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
-
-            verifyNoInteractions(organisationService);
         }
 
         @Test
         void shouldGetLocalAuthorityFromLegacyApplicantWithoutSolicitor() {
+
+            final Organisation userOrganisation = Organisation.builder()
+                .name("Organisation 1")
+                .organisationIdentifier("ORG1")
+                .build();
 
             final ApplicantParty legacyApplicant = ApplicantParty.builder()
                 .organisationName("Applicant org")
@@ -170,11 +207,18 @@ class ApplicantLocalAuthorityServiceTest {
                 .clientCode("APPLICANT_CODE")
                 .build();
 
+            final OrganisationPolicy designatedOrg = organisationPolicy(
+                userOrganisation.getOrganisationIdentifier(),
+                userOrganisation.getName(),
+                LASOLICITOR);
+
             final CaseData caseData = CaseData.builder()
                 .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
+                .localAuthorityPolicy(designatedOrg)
                 .build();
 
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .id(userOrganisation.getOrganisationIdentifier())
                 .name(legacyApplicant.getOrganisationName())
                 .address(legacyApplicant.getAddress())
                 .email(legacyApplicant.getEmail().getEmail())
@@ -184,15 +228,20 @@ class ApplicantLocalAuthorityServiceTest {
                 .clientCode(legacyApplicant.getClientCode())
                 .build();
 
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 
             assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
-
-            verifyNoInteractions(organisationService);
         }
 
         @Test
         void shouldGetLocalAuthorityFromLegacyApplicantAndUseMobileNumbersWhenMainNumberNotPresent() {
+
+            final Organisation userOrganisation = Organisation.builder()
+                .name("Organisation 1")
+                .organisationIdentifier("ORG1")
+                .build();
 
             final ApplicantParty legacyApplicant = ApplicantParty.builder()
                 .mobileNumber(Telephone.builder()
@@ -204,12 +253,19 @@ class ApplicantLocalAuthorityServiceTest {
                 .mobile("0111111111")
                 .build();
 
+            final OrganisationPolicy designatedOrg = organisationPolicy(
+                userOrganisation.getOrganisationIdentifier(),
+                userOrganisation.getName(),
+                LASOLICITOR);
+
             final CaseData caseData = CaseData.builder()
                 .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
                 .solicitor(legacySolicitor)
+                .localAuthorityPolicy(designatedOrg)
                 .build();
 
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .id(userOrganisation.getOrganisationIdentifier())
                 .phone(legacyApplicant.getMobileNumber().getTelephoneNumber())
                 .colleagues(ElementUtils.wrapElements(Colleague.builder()
                     .role(SOLICITOR)
@@ -219,11 +275,11 @@ class ApplicantLocalAuthorityServiceTest {
                     .build()))
                 .build();
 
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 
             assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
-
-            verifyNoInteractions(organisationService);
         }
 
         @Test
@@ -232,7 +288,7 @@ class ApplicantLocalAuthorityServiceTest {
             final CaseData caseData = CaseData.builder()
                 .build();
 
-            final Organisation organisation = Organisation.builder()
+            final Organisation userOrganisation = Organisation.builder()
                 .name("Organisation 1")
                 .organisationIdentifier("ORG1")
                 .contactInformation(List.of(ContactInformation.builder()
@@ -260,7 +316,7 @@ class ApplicantLocalAuthorityServiceTest {
                     .build())
                 .build();
 
-            when(organisationService.findOrganisation()).thenReturn(Optional.of(organisation));
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
 
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 
@@ -272,7 +328,7 @@ class ApplicantLocalAuthorityServiceTest {
             final CaseData caseData = CaseData.builder()
                 .build();
 
-            final Organisation organisation = Organisation.builder()
+            final Organisation userOrganisation = Organisation.builder()
                 .name("Organisation 1")
                 .organisationIdentifier("ORG1")
                 .contactInformation(List.of(ContactInformation.builder()
@@ -290,7 +346,7 @@ class ApplicantLocalAuthorityServiceTest {
                     .build())
                 .build();
 
-            when(organisationService.findOrganisation()).thenReturn(Optional.of(organisation));
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
 
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 
@@ -298,20 +354,15 @@ class ApplicantLocalAuthorityServiceTest {
         }
 
         @Test
-        void shouldGetEmptyLocalAuthorityWhenOrganisationNotFound() {
+        void shouldThrowExceptionWhenNoUserOrganisation() {
             final CaseData caseData = CaseData.builder()
                 .build();
 
             when(organisationService.findOrganisation()).thenReturn(Optional.empty());
 
-            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
-                .address(Address.builder()
-                    .build())
-                .build();
 
-            final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
-
-            assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
+            assertThatThrownBy(() -> underTest.getUserLocalAuthority(caseData))
+                .isInstanceOf(OrganisationNotFound.class);
         }
     }
 
@@ -417,15 +468,15 @@ class ApplicantLocalAuthorityServiceTest {
 
         @Test
         void shouldSetMainContactFromUserSelectionWhenMultipleContacts() {
-            final Element<Colleague> colleague1 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
                 .fullName("1")
                 .mainContact("Yes")
                 .build());
-            final Element<Colleague> colleague2 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
                 .fullName("2")
                 .mainContact("No")
                 .build());
-            final Element<Colleague> colleague3 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
                 .fullName("3")
                 .mainContact("No")
                 .build());
@@ -450,13 +501,13 @@ class ApplicantLocalAuthorityServiceTest {
 
         @Test
         void shouldNotSetMainContactWhenMultipleColleaguesAndUsedDidNotSelectAny() {
-            final Element<Colleague> colleague1 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
                 .fullName("1")
                 .build());
-            final Element<Colleague> colleague2 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
                 .fullName("2")
                 .build());
-            final Element<Colleague> colleague3 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
                 .fullName("3")
                 .build());
 
@@ -480,7 +531,7 @@ class ApplicantLocalAuthorityServiceTest {
 
         @Test
         void shouldSetSingleColleagueAsMainContact() {
-            final Element<Colleague> colleague1 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
                 .fullName("1")
                 .build());
 
@@ -512,13 +563,13 @@ class ApplicantLocalAuthorityServiceTest {
 
         @Test
         void shouldBuildListOfContactsFromMultipleColleagues() {
-            final Element<Colleague> colleague1 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
                 .fullName("1")
                 .build());
-            final Element<Colleague> colleague2 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
                 .fullName("2")
                 .build());
-            final Element<Colleague> colleague3 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
                 .fullName("3")
                 .build());
 
@@ -534,14 +585,14 @@ class ApplicantLocalAuthorityServiceTest {
 
         @Test
         void shouldBuildListOfContactsFromMultipleColleaguesWithMainContact() {
-            final Element<Colleague> colleague1 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague1 = element(randomUUID(), Colleague.builder()
                 .fullName("1")
                 .build());
-            final Element<Colleague> colleague2 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague2 = element(randomUUID(), Colleague.builder()
                 .fullName("2")
                 .mainContact("Yes")
                 .build());
-            final Element<Colleague> colleague3 = element(UUID.randomUUID(), Colleague.builder()
+            final Element<Colleague> colleague3 = element(randomUUID(), Colleague.builder()
                 .fullName("3")
                 .build());
 
@@ -710,8 +761,9 @@ class ApplicantLocalAuthorityServiceTest {
     class Save {
 
         @Test
-        void shouldAddNewLocalAuthority() {
+        void shouldAddNewLocalAuthorityWhenNoLocalAuthoritiesPresent() {
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .id("ORG1")
                 .name("LA")
                 .email("la@test.com")
                 .build();
@@ -719,10 +771,6 @@ class ApplicantLocalAuthorityServiceTest {
             final List<Element<Colleague>> colleagues = wrapElements(
                 Colleague.builder()
                     .fullName("John Smith")
-                    .build(),
-                Colleague.builder()
-                    .fullName("Alex Brown")
-                    .mainContact("Yes")
                     .build());
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
@@ -730,28 +778,83 @@ class ApplicantLocalAuthorityServiceTest {
                 .localAuthorityColleagues(colleagues)
                 .build();
 
-            final CaseData caseData = CaseData.builder().build();
+            final OrganisationPolicy organisationPolicy = organisationPolicy(localAuthority.getId(), "LA", LASOLICITOR);
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .build();
+
+            final List<Element<LocalAuthority>> localAuthorities = underTest.save(caseData, eventData);
+
+            final LocalAuthority expectedLocalAuthority = localAuthority.toBuilder()
+                .designated("Yes")
+                .colleagues(colleagues)
+                .build();
+
+            assertThat(localAuthorities)
+                .extracting(Element::getValue)
+                .containsExactly(expectedLocalAuthority);
+        }
+
+        @Test
+        void shouldAddNewLocalAuthorityWhenNoLocalAuthorityForCurrentUserPresent() {
+            final LocalAuthority newLocalAuthority = LocalAuthority.builder()
+                .id("ORGNEW")
+                .name("LA NEW")
+                .build();
+
+            final LocalAuthority existingLocalAuthority1 = LocalAuthority.builder()
+                .id("ORG1")
+                .name("LA 2")
+                .build();
+
+            final LocalAuthority existingLocalAuthority2 = LocalAuthority.builder()
+                .id("ORG2")
+                .name("LA 2")
+                .build();
+
+            final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
+                .localAuthority(newLocalAuthority)
+                .build();
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(existingLocalAuthority1.getId(), "LA",
+                LASOLICITOR);
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(existingLocalAuthority1, existingLocalAuthority2))
+                .localAuthorityPolicy(organisationPolicy)
+                .build();
 
             final List<Element<LocalAuthority>> localAuthorities = underTest.save(caseData, eventData);
 
             assertThat(localAuthorities)
                 .extracting(Element::getValue)
-                .containsExactly(localAuthority);
+                .containsExactly(existingLocalAuthority1, existingLocalAuthority2, newLocalAuthority);
 
+            assertThat(existingLocalAuthority1.getDesignated()).isEqualTo("Yes");
+            assertThat(existingLocalAuthority2.getDesignated()).isEqualTo("No");
+            assertThat(newLocalAuthority.getDesignated()).isEqualTo("No");
         }
 
         @Test
         void shouldUpdateExistingLocalAuthority() {
-            final UUID localAuthorityId = UUID.randomUUID();
-            final Element<LocalAuthority> existingLocalAuthority = element(localAuthorityId, LocalAuthority.builder()
-                .name("LA old")
-                .email("old@test.com")
+            final Element<LocalAuthority> existingLocalAuthority1 = element(randomUUID(), LocalAuthority.builder()
+                .id("ORG1")
+                .name("LA old 1")
+                .email("old1@test.com")
                 .colleagues(wrapElements(Colleague.builder()
                     .fullName("Enrique Green")
                     .build()))
                 .build());
 
+            final Element<LocalAuthority> existingLocalAuthority2 = element(randomUUID(), LocalAuthority.builder()
+                .id("ORG2")
+                .name("LA old 2")
+                .email("old2@test.com")
+                .build());
+
             final LocalAuthority updatedLocalAuthority = LocalAuthority.builder()
+                .id("ORG2")
                 .name("LA new")
                 .email("new@test.com")
                 .build();
@@ -759,10 +862,6 @@ class ApplicantLocalAuthorityServiceTest {
             final List<Element<Colleague>> updatedColleagues = wrapElements(
                 Colleague.builder()
                     .fullName("John Smith")
-                    .build(),
-                Colleague.builder()
-                    .fullName("Alex Brown")
-                    .mainContact("Yes")
                     .build());
 
             final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
@@ -771,12 +870,245 @@ class ApplicantLocalAuthorityServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
-                .localAuthorities(List.of(existingLocalAuthority))
+                .localAuthorities(List.of(existingLocalAuthority1, existingLocalAuthority2))
                 .build();
 
             final List<Element<LocalAuthority>> actualLocalAuthorities = underTest.save(caseData, eventData);
 
-            assertThat(actualLocalAuthorities).containsExactly(element(localAuthorityId, updatedLocalAuthority));
+            assertThat(actualLocalAuthorities).containsExactly(
+                existingLocalAuthority1,
+                element(existingLocalAuthority2.getId(), updatedLocalAuthority));
+
+        }
+    }
+
+    @Nested
+    class UpdateDesignatedLocalAuthority {
+
+        @Test
+        void shouldMarkLocalAuthorityAsDesignated() {
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(randomAlphanumeric(3), "ORG", LASHARED);
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(organisationPolicy.getOrganisation().getOrganisationID())
+                .build();
+
+            final LocalAuthority localAuthority3 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2, localAuthority3))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("Yes");
+            assertThat(localAuthority3.getDesignated()).isEqualTo("No");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyListWhenNoLocalAuthorities(List<Element<LocalAuthority>> localAuthorities) {
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(localAuthorities)
+                .build();
+
+            assertThat(underTest.updateDesignatedLocalAuthority(caseData)).isEmpty();
+        }
+
+        @Test
+        void shouldMarkAllAsNotDesignatedWhenNoneMatchLocalAuthorityPolicy() {
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(randomAlphanumeric(3), "ORG", LASHARED);
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("No");
+        }
+
+        @Test
+        void shouldMarkAllAsNotDesignatedWhenNoLocalAuthorityPolicy() {
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("No");
+        }
+
+        @Test
+        void shouldChangeDesignatedLocalAuthority() {
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(randomAlphanumeric(3), "ORG", LASHARED);
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .designated("Yes")
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(organisationPolicy.getOrganisation().getOrganisationID())
+                .designated("No")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("Yes");
+        }
+    }
+
+    @Nested
+    class DesignatedLocalAuthority {
+
+        @Test
+        void shouldMarkLocalAuthorityAsDesignated() {
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(randomAlphanumeric(3), "ORG", LASHARED);
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(organisationPolicy.getOrganisation().getOrganisationID())
+                .build();
+
+            final LocalAuthority localAuthority3 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2, localAuthority3))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("Yes");
+            assertThat(localAuthority3.getDesignated()).isEqualTo("No");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyListWhenNoLocalAuthorities(List<Element<LocalAuthority>> localAuthorities) {
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(localAuthorities)
+                .build();
+
+            assertThat(underTest.updateDesignatedLocalAuthority(caseData)).isEmpty();
+        }
+
+        @Test
+        void shouldMarkAllAsNotDesignatedWhenNoneMatchLocalAuthorityPolicy() {
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(randomAlphanumeric(3), "ORG", LASHARED);
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("No");
+        }
+
+        @Test
+        void shouldMarkAllAsNotDesignatedWhenNoLocalAuthorityPolicy() {
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("No");
+        }
+
+        @Test
+        void shouldChangeDesignatedLocalAuthority() {
+
+            final OrganisationPolicy organisationPolicy = organisationPolicy(randomAlphanumeric(3), "ORG", LASHARED);
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(randomAlphanumeric(5))
+                .designated("Yes")
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(organisationPolicy.getOrganisation().getOrganisationID())
+                .designated("No")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy)
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            underTest.updateDesignatedLocalAuthority(caseData);
+
+            assertThat(localAuthority1.getDesignated()).isEqualTo("No");
+            assertThat(localAuthority2.getDesignated()).isEqualTo("Yes");
         }
     }
 }
