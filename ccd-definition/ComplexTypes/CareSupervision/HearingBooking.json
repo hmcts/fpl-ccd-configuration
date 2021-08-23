@@ -23,6 +23,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "typeReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "type=\"ACCELERATED_DISCHARGE_OF_CARE\"",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "venue",
     "FieldType": "FixedList",
     "FieldTypeParameter": "HearingVenue",

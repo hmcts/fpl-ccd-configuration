@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -85,7 +84,6 @@ public class CaseSubmissionGenerationService
 
     private final Time time;
     private final UserService userService;
-    private final RequestData requestData;
     private final CourtService courtService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
@@ -111,6 +109,7 @@ public class CaseSubmissionGenerationService
             .others(buildDocmosisOthers(caseData.getAllOthers()))
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings()))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings()))
+            .dischargeOfOrder(caseData.isDischargeOfCareApplication())
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
                 ? getGroundsForEPOReason(caseData.getOrders().getOrderType(), caseData.getGroundsForEPO())
                 : DEFAULT_STRING)

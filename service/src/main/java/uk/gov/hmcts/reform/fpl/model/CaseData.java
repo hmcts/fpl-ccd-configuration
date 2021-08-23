@@ -836,7 +836,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
-                defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
             .flatMap(Collection::stream).collect(toList());
     }
 
@@ -1072,4 +1072,11 @@ public class CaseData {
     @Builder.Default
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
+    @JsonIgnore
+    public boolean isDischargeOfCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
 }

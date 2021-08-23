@@ -37,6 +37,9 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 class CaseSubmissionCheckerTest {
 
     @Mock
+    private CaseData caseData;
+
+    @Mock
     private EventsChecker eventsChecker;
 
     @Mock
@@ -44,8 +47,6 @@ class CaseSubmissionCheckerTest {
 
     @InjectMocks
     private CaseSubmissionChecker caseSubmissionValidator;
-
-    private final CaseData caseData = CaseData.builder().build();
 
     private final List<String> caseNameErrors = List.of("Case name error");
     private final List<String> ordersNeededErrors = List.of("Orders needed error 1", "Orders needed error 2");
@@ -107,9 +108,8 @@ class CaseSubmissionCheckerTest {
 
         @Test
         void shouldReportEventsErrorIncludingCourtSelectionErrorWhenCourtNotSelected() {
-            final CaseData caseData = CaseData.builder()
-                .multiCourts(YES)
-                .build();
+
+            when(caseData.getMultiCourts()).thenReturn(YES);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
@@ -198,6 +198,51 @@ class CaseSubmissionCheckerTest {
             assertThat(isAvailable).isFalse();
 
             verify(eventsChecker, never()).validate(eq(ORGANISATION_DETAILS), any());
+        }
+
+        @Test
+        void shouldExcludeGroundForApplicationWhenDischargeOfCareApplication() {
+
+            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+            when(caseData.isDischargeOfCareApplication()).thenReturn(true);
+
+            when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
+            when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
+            when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
+            when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
+            when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
+            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
+            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
+            when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
+            when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
+
+            final List<String> errors = caseSubmissionValidator.validate(caseData);
+            final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
+
+            assertThat(errors).containsExactly(
+                "In the change case name section:",
+                "• Case name error",
+                "In the orders and directions sought section:",
+                "• Orders needed error 1",
+                "• Orders needed error 2",
+                "In the hearing urgency section:",
+                "• Hearing needed error",
+                "In the local authority's details section:",
+                "• Local authority error 1",
+                "• Local authority error 2",
+                "In the child's details section:",
+                "• Children error",
+                "In the respondents' details section:",
+                "• Respondent error 1",
+                "• Respondent error 2",
+                "In the allocation proposal section:",
+                "• Allocation proposal error"
+            );
+
+            assertThat(isAvailable).isFalse();
+
+            verify(eventsChecker, never()).validate(eq(GROUNDS), any());
         }
 
         @Test

@@ -11,6 +11,7 @@ public enum HearingType {
     ISSUE_RESOLUTION("Issue resolution"),
     FINAL("Final"),
     INTERIM_CARE_ORDER("Interim care order"),
+    ACCELERATED_DISCHARGE_OF_CARE("Accelerated discharge of care"),
     OTHER("Other");
 
     final String label;

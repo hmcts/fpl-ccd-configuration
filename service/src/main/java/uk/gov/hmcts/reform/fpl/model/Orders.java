@@ -41,4 +41,8 @@ public class Orders {
     public boolean orderContainsEPO() {
         return this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
     }
+
+    public boolean isDischargeOfCareOrder() {
+        return List.of(OrderType.OTHER).equals(this.getOrderType());
+    }
 }

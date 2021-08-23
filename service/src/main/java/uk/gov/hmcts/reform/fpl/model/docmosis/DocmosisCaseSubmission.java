@@ -36,6 +36,7 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisProceeding> proceeding;
     private final DocmosisAnnexDocuments annexDocuments;
     private final String relevantProceedings;
+    private final boolean dischargeOfOrder;
 
     private String caseNumber;
     private String courtSeal;

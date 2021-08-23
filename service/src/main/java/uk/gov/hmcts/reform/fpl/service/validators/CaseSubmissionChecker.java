@@ -55,19 +55,27 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
 
     private List<Event> getRequiredEvents(CaseData caseData) {
 
-        boolean hasMultipleCourt = YesNo.YES.equals(caseData.getMultiCourts());
+        final List<Event> events = new ArrayList<>();
 
-        List<Event> events = new ArrayList<>(List.of(
-            CASE_NAME,
-            ORDERS_SOUGHT,
-            HEARING_URGENCY,
-            GROUNDS,
-            featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
-            CHILDREN,
-            RESPONDENTS,
-            ALLOCATION_PROPOSAL));
+        events.add(CASE_NAME);
+        events.add(ORDERS_SOUGHT);
+        events.add(HEARING_URGENCY);
 
-        if (hasMultipleCourt) {
+        if (!caseData.isDischargeOfCareApplication()) {
+            events.add(GROUNDS);
+        }
+
+        if (featureToggles.isApplicantAdditionalContactsEnabled()) {
+            events.add(LOCAL_AUTHORITY_DETAILS);
+        } else {
+            events.add(ORGANISATION_DETAILS);
+        }
+
+        events.add(CHILDREN);
+        events.add(RESPONDENTS);
+        events.add(ALLOCATION_PROPOSAL);
+
+        if (YesNo.YES.equals(caseData.getMultiCourts())) {
             events.add(SELECT_COURT);
         }
 

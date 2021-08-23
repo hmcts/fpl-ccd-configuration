@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -233,6 +234,35 @@ class TaskListRendererTest {
 
             assertThat(taskListRenderer.render(tasks, errors))
                 .isEqualTo(read("task-list/expected-task-list-no-errors-multi-courts.md"));
+        }
+    }
+
+    @Nested
+    class ExcludingGroundForApplication {
+
+        private final List<Task> tasks = List.of(
+            task(CASE_NAME, COMPLETED_FINISHED),
+            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(HEARING_URGENCY, COMPLETED_FINISHED),
+            task(APPLICATION_DOCUMENTS, COMPLETED),
+            task(LOCAL_AUTHORITY_DETAILS, COMPLETED),
+            task(CHILDREN, COMPLETED),
+            task(RESPONDENTS, IN_PROGRESS),
+            task(ALLOCATION_PROPOSAL, COMPLETED),
+            task(OTHER_PROCEEDINGS, NOT_STARTED),
+            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(OTHERS, NOT_STARTED),
+            task(COURT_SERVICES, IN_PROGRESS),
+            task(SUBMIT_APPLICATION, NOT_AVAILABLE),
+            task(LANGUAGE_REQUIREMENTS, COMPLETED_FINISHED)
+        );
+
+        @Test
+        void shouldRenderTaskList() {
+            when(toggleService.isLanguageRequirementsEnabled()).thenReturn(true);
+
+            assertThat(taskListRenderer.render(tasks, emptyList()))
+                .isEqualTo(read("task-list/expected-task-list-no-grounds.md"));
         }
     }
 

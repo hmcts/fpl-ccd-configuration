@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,7 +44,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -86,7 +86,6 @@ class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
-    private static final String AUTH_TOKEN = "Bearer token";
     private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
 
     @MockBean
@@ -94,9 +93,6 @@ class CaseSubmissionGenerationServiceTest {
 
     @MockBean
     private CaseSubmissionDocumentAnnexGenerator annexGenerator;
-
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private CourtService courtService;
@@ -112,7 +108,6 @@ class CaseSubmissionGenerationServiceTest {
     @BeforeEach
     void init() {
         givenCaseData = prepareCaseData();
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(userService.getUserName()).willReturn("Professor");
         given(courtService.getCourtName(any())).willReturn(COURT_NAME);
     }
@@ -125,7 +120,7 @@ class CaseSubmissionGenerationServiceTest {
             .annexDocuments(null)
             .build();
 
-        assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(updatedCaseSubmission);
+        assertThat(returnedCaseSubmission).isEqualTo(updatedCaseSubmission);
     }
 
     @Test
@@ -791,7 +786,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            assertThat(caseSubmission.getHearing()).isEqualToComparingFieldByField(expectedDefaultHearing);
+            assertThat(caseSubmission.getHearing()).isEqualTo(expectedDefaultHearing);
         }
 
         @Test
@@ -811,8 +806,7 @@ class CaseSubmissionGenerationServiceTest {
                 .welshDetails("-")
                 .build();
 
-            assertThat(caseSubmission.getHearingPreferences())
-                .isEqualToComparingFieldByField(expectedDefaultHearingPreference);
+            assertThat(caseSubmission.getHearingPreferences()).isEqualTo(expectedDefaultHearingPreference);
         }
 
         @Test
@@ -830,7 +824,7 @@ class CaseSubmissionGenerationServiceTest {
                 .sexualAbuseDetails("-")
                 .build();
 
-            assertThat(caseSubmission.getRisks()).isEqualToComparingFieldByField(expectedDefaultRisk);
+            assertThat(caseSubmission.getRisks()).isEqualTo(expectedDefaultRisk);
         }
 
         @Test
@@ -847,7 +841,7 @@ class CaseSubmissionGenerationServiceTest {
                 .domesticViolenceDetails("-")
                 .build();
 
-            assertThat(caseSubmission.getFactorsParenting()).isEqualToComparingFieldByField(expectedFactorsParenting);
+            assertThat(caseSubmission.getFactorsParenting()).isEqualTo(expectedFactorsParenting);
         }
 
         @Test
@@ -866,8 +860,7 @@ class CaseSubmissionGenerationServiceTest {
                 .significantEvents("-")
                 .build();
 
-            assertThat(caseSubmission.getInternationalElement())
-                .isEqualToComparingFieldByField(expectedInternationalElement);
+            assertThat(caseSubmission.getInternationalElement()).isEqualTo(expectedInternationalElement);
         }
     }
 
@@ -1314,6 +1307,18 @@ class CaseSubmissionGenerationServiceTest {
 
             assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(DONT_KNOW.getValue());
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldSetDischargeOfOrder(boolean dischargeOfCare) {
+        final CaseData updatedCaseData = mock(CaseData.class);
+
+        when(updatedCaseData.isDischargeOfCareApplication()).thenReturn(dischargeOfCare);
+
+        DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+        assertThat(caseSubmission.isDischargeOfOrder()).isEqualTo(dischargeOfCare);
     }
 
     @Test

@@ -69,6 +69,29 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
+Scenario('local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
+  await setupScenario(I);
+  await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+  enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
+
+  caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterOrdersAndDirectionsNeeded);
+
+  await caseViewPage.checkTaskIsNoPresent(config.applicationActions.enterGrounds);
+  await caseViewPage.checkTaskIsNoPresent(config.applicationActions.enterRiskAndHarmToChildren);
+  await caseViewPage.checkTaskIsNoPresent(config.applicationActions.enterFactorsAffectingParenting);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the hearing urgency details in the Hearing urgency',
+    'Add local authority\'s details in the Local authority\'s details',
+    'Add the child\'s details in the Child\'s details',
+    'Add the respondents\' details in the Respondents\' details',
+    'Add the allocation proposal in the Allocation proposal']);
+});
+
 Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
@@ -100,7 +123,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-  I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Variation or discharge of care or supervision order']);
+  I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Variation or discharge of care or supervision order', 'Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order']);
   I.seeInTab(['Orders and directions needed', 'What type of EPO are you requesting?'], 'Prevent removal from an address');
   I.seeInTab(['Orders and directions needed', 'Do you need any of these related orders?'], ['Information on the whereabouts of the child', 'Authorisation for entry of premises', 'Authorisation to search for another child on the premises', 'Other order under section 48 of the Children Act 1989']);
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');

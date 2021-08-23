@@ -70,12 +70,10 @@ public class TaskListService {
     }
 
     private List<Event> getEvents(CaseData caseData) {
+
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
             HEARING_URGENCY,
-            GROUNDS,
-            RISK_AND_HARM,
-            FACTORS_AFFECTING_PARENTING,
             featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
@@ -92,6 +90,12 @@ public class TaskListService {
 
         if (YES.equals(caseData.getMultiCourts())) {
             events.add(SELECT_COURT);
+        }
+
+        if (!caseData.isDischargeOfCareApplication()) {
+            events.add(GROUNDS);
+            events.add(RISK_AND_HARM);
+            events.add(FACTORS_AFFECTING_PARENTING);
         }
 
         return events;

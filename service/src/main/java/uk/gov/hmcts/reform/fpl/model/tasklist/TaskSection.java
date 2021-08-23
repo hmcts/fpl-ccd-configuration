@@ -2,14 +2,17 @@ package uk.gov.hmcts.reform.fpl.model.tasklist;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Getter
 public class TaskSection {
 
     private final String name;
-    private final List<Task> tasks;
+    private List<Task> tasks;
     private String hint;
     private String info;
 
@@ -18,8 +21,13 @@ public class TaskSection {
         this.tasks = tasks;
     }
 
-    public static TaskSection newSection(String name, List<Task> tasks) {
-        return new TaskSection(name, tasks);
+    public static TaskSection newSection(String name) {
+        return new TaskSection(name, new ArrayList<>());
+    }
+
+    public TaskSection withTask(Task task) {
+        tasks.add(task);
+        return this;
     }
 
     public TaskSection withHint(String hint) {
@@ -38,5 +46,9 @@ public class TaskSection {
 
     public Optional<String> getInfo() {
         return Optional.ofNullable(info);
+    }
+
+    public boolean hasAnyTask() {
+        return isNotEmpty(tasks);
     }
 }
