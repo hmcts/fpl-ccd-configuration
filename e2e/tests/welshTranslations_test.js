@@ -101,7 +101,7 @@ const orders = {
     tabObjectName: 'Notice of proceedings 2',
   },
   noticeOfHearing: {
-    name: 'Notice of hearing - 24 April 2012',
+    name: 'Notice of hearing - 9 April 2012',
     originalFile: `Notice_of_hearing_${dateFormat('dmmmm')}.pdf`,
     translationFile: `Notice_of_hearing_${dateFormat('dmmmm')}-Welsh.pdf`,
     tabName: caseView.tabs.hearings,
@@ -295,7 +295,7 @@ Scenario('Upload translation for generated order (closed)', async ({ I, caseView
 Scenario('Request and upload translation for notice of hearing', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageHearingsEventPage }) => {
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  let hearingStartDate = moment().year(2012).month(3).day(9).hours(10).minutes(30).seconds(15).milliseconds(0).toDate();
+  let hearingStartDate = moment().set({'year':2012,'month':3,'date':9,'hour':10,'minutes':30,'seconds':15,'milliseconds':0}).toDate();
   let hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
