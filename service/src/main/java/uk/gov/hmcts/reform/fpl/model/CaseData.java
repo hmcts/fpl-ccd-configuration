@@ -156,8 +156,8 @@ public class CaseData {
     private final State state;
     @NotBlank(message = "Enter a case name")
     private final String caseName;
-    private final String caseLocalAuthority;
-    private final String caseLocalAuthorityName;
+    private String caseLocalAuthority;
+    private String caseLocalAuthorityName;
     private OrganisationPolicy localAuthorityPolicy;
     private OrganisationPolicy outsourcingPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
