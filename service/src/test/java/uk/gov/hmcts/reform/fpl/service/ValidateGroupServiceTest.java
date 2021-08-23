@@ -78,7 +78,7 @@ class ValidateGroupServiceTest {
             .validateGroup(caseData, HearingDatesGroup.class);
 
         assertThat(errors)
-            .containsExactly("Enter an end date in the future", "Enter a valid end time");
+            .containsExactlyInAnyOrder("Enter an end date in the future", "Enter a valid end time");
 
     }
 
