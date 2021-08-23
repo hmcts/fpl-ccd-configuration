@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocum
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,8 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
     private static final Long CASE_ID = 12345L;
     private static final String SENDER = "SENDER";
     private static final String SOME_NAME = "SOME NAME";
+    private static final List<String> DOCUMENT_NAMES = List.of("DOCUMENT");
+
 
     @MockBean
     private EmailNotificationHelper helper;
@@ -39,13 +42,14 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
             .lastName(SOME_NAME)
             .userName(SENDER)
             .callout(CALLOUT)
+            .documents(DOCUMENT_NAMES)
             .build();
 
         CaseData caseData = buildCaseData();
 
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(SOME_NAME);
 
-        FurtherEvidenceDocumentUploadedData actual = underTest.buildParameters(caseData, SENDER);
+        FurtherEvidenceDocumentUploadedData actual = underTest.buildParameters(caseData, SENDER, DOCUMENT_NAMES);
 
         assertThat(actual).isEqualTo(expected);
     }
