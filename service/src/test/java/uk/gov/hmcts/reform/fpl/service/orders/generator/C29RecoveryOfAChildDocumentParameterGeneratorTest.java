@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C29RecoveryOfAChildDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C29RecoveryOfAChildDocmosisParameters.C29RecoveryOfAChildDocmosisParametersBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.time.LocalDate;
@@ -57,7 +58,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     private static final String paragraphBreak = "\n\n";
 
     @Mock
-    private static Child CHILD;
+    private Child child;
 
     @Mock
     private ChildrenService childrenService;
@@ -99,7 +100,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .build())
             .build();
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+        List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
 
@@ -127,7 +128,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .build())
             .build();
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+        List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
 
@@ -156,7 +157,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .build())
             .build();
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+        List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
 
@@ -186,7 +187,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .build())
             .build();
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+        List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
 
@@ -223,7 +224,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .build())
             .build();
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+        List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
 
@@ -243,8 +244,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    private C29RecoveryOfAChildDocmosisParameters.C29RecoveryOfAChildDocmosisParametersBuilder
-        <?,?> expectedCommonParameters() {
+    private C29RecoveryOfAChildDocmosisParametersBuilder<?,?> expectedCommonParameters() {
         return C29RecoveryOfAChildDocmosisParameters.builder()
             .furtherDirections(FURTHER_DIRECTIONS)
             .localAuthorityName(LA_NAME)
@@ -256,10 +256,8 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         String orderGrammar = order.equals(PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER) ? "an " : "a ";
 
         String childrenGrammar = numberOfChildren > 1 ? "children" : "child";
-        return format("The Court is satisfied that %s "
-                + "has parental responsibility for the %s "
-                + "by virtue of %s "
-                + "made on %s.%s",
+        return format(
+            "The Court is satisfied that %s has parental responsibility for the %s by virtue of %s made on %s.%s",
             LA_NAME,
             childrenGrammar,
             orderGrammar + order.getLabel(),

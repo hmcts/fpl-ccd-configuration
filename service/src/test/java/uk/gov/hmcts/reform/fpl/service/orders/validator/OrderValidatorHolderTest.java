@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_D
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_CREATED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +44,8 @@ class OrderValidatorHolderTest {
     private ManageOrderEndDateWithMonthValidator manageOrderEndDateValidator;
     @Mock
     private ManageOrderEndDateWithEndOfProceedingsValidator manageOrderEndDateWithEndOfProceedingsValidator;
+    @Mock
+    private OrderMadeDateValidator orderMadeDateValidator;
 
     @InjectMocks
     private OrderValidatorHolder underTest;
@@ -56,7 +59,8 @@ class OrderValidatorHolderTest {
             dischargeOfCareDateValidator,
             epoEndDateValidator,
             manageOrderEndDateValidator,
-            manageOrderEndDateWithEndOfProceedingsValidator
+            manageOrderEndDateWithEndOfProceedingsValidator,
+            orderMadeDateValidator
         );
 
         orderQuestionBlockValidators = Map.of(
@@ -66,7 +70,8 @@ class OrderValidatorHolderTest {
             DISCHARGE_DETAILS, dischargeOfCareDateValidator,
             EPO_EXPIRY_DATE, epoEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_MONTH, manageOrderEndDateValidator,
-            MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, manageOrderEndDateWithEndOfProceedingsValidator
+            MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, manageOrderEndDateWithEndOfProceedingsValidator,
+            ORDER_CREATED, orderMadeDateValidator
         );
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());

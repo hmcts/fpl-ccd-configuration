@@ -78,7 +78,8 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
             Map.entry("orderIsExParte", "NO"),
-            Map.entry("actionsPermitted", "NO")
+            Map.entry("actionsPermitted", "NO"),
+            Map.entry("orderCreatedDate", "NO")
         ));
     }
 
@@ -111,7 +112,8 @@ class OrderShowHideQuestionsCalculatorTest {
             "previewOrder", "YES",
             "orderToAmend", "NO",
             "translationRequirements", "NO",
-            "uploadAmendedOrder", "NO"
+            "uploadAmendedOrder", "NO",
+            "orderCreatedDate", "NO"
         );
 
         Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
@@ -476,6 +478,7 @@ class OrderShowHideQuestionsCalculatorTest {
         recoveryOfChildQuestions.put("orderPlacedChildInCustody", "YES");
         recoveryOfChildQuestions.put("orderIsExParte", "YES");
         recoveryOfChildQuestions.put("actionsPermitted", "YES");
+        recoveryOfChildQuestions.put("orderCreatedDate", "YES");
 
         return Stream.of(
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
@@ -532,7 +535,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("uploadAmendedOrder", "NO"),
                 Map.entry("orderPlacedChildInCustody", "NO"),
                 Map.entry("orderIsExParte", "NO"),
-                Map.entry("actionsPermitted", "NO")
+                Map.entry("actionsPermitted", "NO"),
+                Map.entry("orderCreatedDate", "NO")
             )));
     }
 
@@ -578,8 +582,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("parentResponsible", "NO"),
                 Map.entry("orderPlacedChildInCustody", "NO"),
                 Map.entry("orderIsExParte", "NO"),
-                Map.entry("actionsPermitted", "NO")
-                )
-            ));
+                Map.entry("actionsPermitted", "NO"),
+                Map.entry("orderCreatedDate", "NO")
+            )));
     }
 }

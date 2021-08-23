@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.SPECIFIC_ISSUE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
@@ -227,7 +227,13 @@ class OrderTest {
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.of(OTHER_DETAILS)),
-            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, OTHER_DETAILS, Optional.empty())
+            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, OTHER_DETAILS, Optional.empty())
         );
     }
 

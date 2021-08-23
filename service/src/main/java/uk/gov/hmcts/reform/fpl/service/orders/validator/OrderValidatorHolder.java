@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -29,7 +29,7 @@ public class OrderValidatorHolder {
         if (blockToValidator != null) {
             return blockToValidator;
         }
-        blockToValidator = List.of(
+        blockToValidator = Stream.of(
             whichChildrenValidator,
             approvalDateValidator,
             approvalDateTimeValidator,
@@ -38,7 +38,7 @@ public class OrderValidatorHolder {
             manageOrderEndDateWithMonthValidator,
             manageOrderEndDateWithEndOfProceedingsValidator,
             orderMadeDateValidator
-        ).stream().collect(Collectors.toMap(QuestionBlockOrderValidator::accept, Function.identity()));
+        ).collect(Collectors.toMap(QuestionBlockOrderValidator::accept, Function.identity()));
 
         return blockToValidator;
     }

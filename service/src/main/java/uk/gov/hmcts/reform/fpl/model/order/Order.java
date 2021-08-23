@@ -85,6 +85,19 @@ public enum Order {
             SECURE_ACCOMMODATION_ORDER_JURISDICTION, MANAGE_ORDER_END_DATE_WITH_MONTH, FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
     ),
+    C29_RECOVERY_OF_A_CHILD(
+        DIGITAL,
+        "Recovery of a child (C29)",
+        "Section 50 Children Act 1989",
+        "Recovery of a child (C29)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
+            ORDER_PLACED_CHILD_IN_CUSTODY, ACTIONS_PERMITTED, ORDER_CREATED, ORDER_EX_PARTE,
+            FURTHER_DIRECTIONS, CLOSE_CASE,
+            REVIEW_DRAFT_ORDER, WHICH_OTHERS
+        )
+    ),
     C32A_CARE_ORDER(
         DIGITAL,
         "Care order",
@@ -180,6 +193,27 @@ public enum Order {
             WHICH_OTHERS
         )
     ),
+    C45A_PARENTAL_RESPONSIBILITY_ORDER(
+        DIGITAL,
+        "Parental responsibility order (C45A)",
+        "",
+        "Parental responsibility order (C45A)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            LINKED_TO_HEARING,
+            LINK_APPLICATION,
+            APPROVER,
+            APPROVAL_DATE_TIME,
+            WHICH_CHILDREN,
+            ORDER_BY_CONSENT,
+            PARENTAL_RESPONSIBILITY,
+            WHICH_OTHERS,
+            CLOSE_CASE,
+            FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
+
 
     /* MANUAL UPLOADS */
     C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER(
@@ -213,19 +247,6 @@ public enum Order {
         "Authority to search for another child (C27)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    C29_RECOVERY_OF_A_CHILD(
-        DIGITAL,
-        "Recovery of a child (C29)",
-        "Section 50 Children Act 1989",
-        "Recovery of a child (C29)",
-        IsFinalOrder.MAYBE,
-        List.of(
-            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
-            ORDER_PLACED_CHILD_IN_CUSTODY, ACTIONS_PERMITTED, ORDER_CREATED, ORDER_EX_PARTE,
-            FURTHER_DIRECTIONS, CLOSE_CASE,
-            REVIEW_DRAFT_ORDER, WHICH_OTHERS
-        )
     ),
     C30_TO_DISCLOSE_INFORMATION_ABOUT_THE_WHEREABOUTS_OF_A_MISSING_CHILD(
         MANUAL_UPLOAD,
@@ -322,26 +343,6 @@ public enum Order {
         "Leave to remove a child from the UK (C44B)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    C45A_PARENTAL_RESPONSIBILITY_ORDER(
-        DIGITAL,
-        "Parental responsibility order (C45A)",
-        "",
-        "Parental responsibility order (C45A)",
-        IsFinalOrder.MAYBE,
-        List.of(
-            LINKED_TO_HEARING,
-            LINK_APPLICATION,
-            APPROVER,
-            APPROVAL_DATE_TIME,
-            WHICH_CHILDREN,
-            ORDER_BY_CONSENT,
-            PARENTAL_RESPONSIBILITY,
-            WHICH_OTHERS,
-            CLOSE_CASE,
-            FURTHER_DIRECTIONS,
-            REVIEW_DRAFT_ORDER
-        )
     ),
     C45B_DISCHARGE_OF_PARENTAL_RESPONSIBILITY(
         MANUAL_UPLOAD,
