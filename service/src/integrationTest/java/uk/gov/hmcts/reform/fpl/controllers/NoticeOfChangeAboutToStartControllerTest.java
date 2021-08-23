@@ -16,6 +16,9 @@ import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -36,6 +39,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @WebMvcTest(NoticeOfChangeController.class)
@@ -241,6 +245,60 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         assertThat(actualResponse).isEqualTo(ASSIGNMENT_RESPONSE);
     }
 
+    @Test
+    void shouldTransferLegalCounselWhenSolicitorChanged() {
+        List<Element<LegalCounsellor>> legalCounsellors = wrapElements(
+            LegalCounsellor.builder().firstName("original").build()
+        );
+        List<Element<LegalCounsellor>> differentLegalCounsellors = wrapElements(
+            LegalCounsellor.builder().firstName("shared").build()
+        );
+
+        RespondentSolicitor sharedRepresentative = RespondentSolicitor.builder()
+            .firstName(SOLICITOR_FIRST_NAME)
+            .lastName(SOLICITOR_LAST_NAME)
+            .email(SOLICITOR_USER_EMAIL)
+            .organisation(NEW_ORGANISATION)
+            .build();
+        RespondentSolicitor representativeToRemove = RespondentSolicitor.builder()
+            .firstName(OLD_SOLICITOR_FIRST_NAME)
+            .lastName(OLD_SOLICITOR_LAST_NAME)
+            .email(OLD_SOLICITOR_EMAIL)
+            .organisation(OLD_ORGANISATION)
+            .build();
+
+        ChangeOrganisationRequest changeRequest = ChangeOrganisationRequest.builder()
+            .organisationToAdd(NEW_ORGANISATION)
+            .caseRoleId(caseRoleDynamicList("[CHILDSOLICITORA]"))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .children1(wrapElements(
+                Child.builder()
+                    .party(ChildParty.builder().build())
+                    .solicitor(representativeToRemove)
+                    .legalCounsellors(legalCounsellors)
+                    .build()
+            ))
+            .respondents1(wrapElements(
+                Respondent.builder()
+                    .solicitor(sharedRepresentative)
+                    .legalCounsellors(differentLegalCounsellors)
+                    .build()
+            ))
+            .changeOrganisationRequestField(changeRequest)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+        CaseData updatedCaseData = extractCaseData(requestCaptor.getValue().getCaseDetails());
+
+        assertThat(response).isEqualTo(ASSIGNMENT_RESPONSE);
+        assertThat(updatedCaseData.getChildren1().get(0).getValue().getLegalCounsellors())
+            .isEqualTo(differentLegalCounsellors);
+    }
+
+
     private Element<Respondent> update(Element<Respondent> respondent, UserDetails solicitor, Organisation org) {
         return element(respondent.getId(), respondent.getValue().toBuilder()
             .legalRepresentation("Yes")
@@ -250,6 +308,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
                 .email(solicitor.getEmail())
                 .organisation(org)
                 .build())
+            .legalCounsellors(List.of())
             .build());
     }
 
