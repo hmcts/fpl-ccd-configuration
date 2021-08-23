@@ -16,7 +16,11 @@ import java.util.Map;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.*;
+
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
+
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 
 @OverrideAutoConfiguration(enabled = true)

@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
