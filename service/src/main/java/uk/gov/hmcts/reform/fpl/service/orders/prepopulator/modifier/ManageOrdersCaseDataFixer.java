@@ -52,12 +52,9 @@ public class ManageOrdersCaseDataFixer {
     }
 
     public CaseDetails fixAndRetriveCaseDetails(CaseDetails caseDetails) {
-        if (!isNull((caseDetails.getData().get("manageOrdersOperation")))) {
-            String operation = caseDetails.getData().get("manageOrdersOperation").toString();
-
-            if (!AMEND.name().equals(operation)) {
-                caseDetails.getData().remove("manageOrdersAmendmentList");
-            }
+        Object operation = caseDetails.getData().get("manageOrdersOperation");
+        if (!isNull((operation)) && !AMEND.name().equals(operation.toString())) {
+            caseDetails.getData().remove("manageOrdersAmendmentList");
         }
 
         return caseDetails;
