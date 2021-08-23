@@ -27,13 +27,13 @@ public class CaseSummaryCaseFlagGenerator implements CaseSummaryFieldsGenerator 
     }
 
     private String generateUploadedByEmail(CaseData caseData) {
-        return caseData.getCaseFlagValueUpdated().equals(YES)
+        return caseData.getCaseFlagValueUpdated() != null && caseData.getCaseFlagValueUpdated().equals(YES)
             ? documentUploadHelper.getUploadedDocumentUserDetails()
             : caseData.getCaseSummaryFlagAddedByEmail();
     }
 
     private String generateUploadedFullName(CaseData caseData) {
-        return caseData.getCaseFlagValueUpdated().equals(YES)
+        return caseData.getCaseFlagValueUpdated() != null && caseData.getCaseFlagValueUpdated().equals(YES)
             ? documentUploadHelper.getUploadedDocumentName()
             : caseData.getCaseSummaryFlagAddedByFullName();
     }

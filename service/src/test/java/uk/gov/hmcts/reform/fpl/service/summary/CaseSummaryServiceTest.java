@@ -28,6 +28,7 @@ class CaseSummaryServiceTest {
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY6 = mock(SyntheticCaseSummary.class);
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY7 = mock(SyntheticCaseSummary.class);
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY8 = mock(SyntheticCaseSummary.class);
+    private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY9 = mock(SyntheticCaseSummary.class);
 
     private final CaseSummaryCaseFlagGenerator caseSummaryCaseFlagGenerator = mock(
         CaseSummaryCaseFlagGenerator.class);
@@ -73,6 +74,7 @@ class CaseSummaryServiceTest {
         when(caseSummaryFinalHearingGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY6);
         when(caseSummaryPeopleInCaseGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY7);
         when(caseSummaryCourtGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY8);
+        when(caseSummaryCaseFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY9);
 
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field0", "value0"));
@@ -92,6 +94,8 @@ class CaseSummaryServiceTest {
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field7", "value7"));
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY8),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field8", "value8"));
+        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY9),
+            Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field9", "value9"));
     }
 
     @Test
@@ -108,7 +112,8 @@ class CaseSummaryServiceTest {
             "field5", "value5",
             "field6", "value6",
             "field7", "value7",
-            "field8", "value8"
+            "field8", "value8",
+            "field9", "value9"
         ));
 
     }
@@ -137,6 +142,7 @@ class CaseSummaryServiceTest {
         expected.put("field6", "value6");
         expected.put("field7", "value7");
         expected.put("field8", "value8");
+        expected.put("field9", "value9");
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
 
@@ -168,7 +174,8 @@ class CaseSummaryServiceTest {
             "field5", "value5",
             "field6", "value6",
             "field7", "value7",
-            "field8", "value8"
+            "field8", "value8",
+            "field9", "value9"
         ));
 
     }
@@ -197,7 +204,8 @@ class CaseSummaryServiceTest {
             "field5", "value5",
             "field6", "value6",
             "field7", "value7",
-            "field8", "value8"
+            "field8", "value8",
+            "field9", "value9"
         ));
 
     }
