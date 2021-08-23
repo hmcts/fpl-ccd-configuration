@@ -437,7 +437,7 @@ public class ManageHearingsService {
             populateFields.accept(caseData.getHearingEndDateTime(), formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime endDateTime = caseData.getHearingStartDate().plusDays(Long.parseLong(caseData.getHearingDays()));
-            populateFields.accept(endDateTime, getHEARING_DAYS(caseData.getHearingDays()));
+            populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();
             LocalDateTime endDateTime = startDate.plusHours(Long.parseLong(caseData.getHearingHours()))
@@ -448,7 +448,7 @@ public class ManageHearingsService {
         return data;
     }
 
-    private String getHEARING_DAYS(String days) {
+    private String getHearingDays(String days) {
         return String.join(" ", days, "days");
     }
 
@@ -486,7 +486,7 @@ public class ManageHearingsService {
     private String getHearingInfo(String days, String hours, String minutes) {
         String hearingDuration = null;
         if (days != null) {
-            hearingDuration = getHEARING_DAYS(days);
+            hearingDuration = getHearingDays(days);
         } else if (hours != null && minutes !=null) {
             hearingDuration = getHearingHoursAndMins(hours, minutes);
         }
