@@ -81,7 +81,8 @@ class TranslationRequestServiceTest {
         when(translationRequestFactory.create(caseData,
             LANGUAGE_TRANSLATION_REQUIREMENT,
             DOCUMENT_DESCRIPTION,
-            ORIGINAL_DOCUMENT_CONTENT))
+            ORIGINAL_DOCUMENT_CONTENT,
+            ORIGINAL_DOCUMENT_FILENAME))
             .thenReturn(DOCMOSIS_TRANSLATION_REQUEST);
         when(requestFormCreationService.buildTranslationRequestDocuments(DOCMOSIS_TRANSLATION_REQUEST)).thenReturn(
             DocmosisDocument.builder().bytes(REQUEST_FORM_CONTENT).build());

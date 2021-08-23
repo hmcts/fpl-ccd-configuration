@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.translations;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Slf4j
 public class DocmosisTranslationRequestFactory {
 
     private static final String NAME = "Courts and Tribunals Service Centre";
@@ -30,7 +32,8 @@ public class DocmosisTranslationRequestFactory {
 
     public DocmosisTranslationRequest create(CaseData caseData,
                                              LanguageTranslationRequirement language,
-                                             String documentDescription, byte[] originalDocumentContent) {
+                                             String documentDescription, byte[] originalDocumentContent,
+                                             String filename) {
         return DocmosisTranslationRequest.builder()
             .format(RenderFormat.WORD)
             .name(NAME)
@@ -49,9 +52,19 @@ public class DocmosisTranslationRequestFactory {
                 .englishToWelsh(language == ENGLISH_TO_WELSH)
                 .welshToEnglish(language == WELSH_TO_ENGLISH)
                 .build())
-            .wordCount(documentWordCounter.count(originalDocumentContent))
+            .wordCount(getWordCount(originalDocumentContent, filename))
             .dateOfReturn(formatLocalDateToString(time.now().toLocalDate().plusDays(1), DATE_SHORT))
             .build();
+    }
+
+    private long getWordCount(byte[] originalDocumentContent, String filename) {
+        // Defensive: Don't fail the translation process if cannot calculate the number of words
+        try {
+            return documentWordCounter.count(originalDocumentContent, filename);
+        } catch (Exception e) {
+            log.warn("Could not count the words for the translated document. The count will be defaulted to 0.", e);
+            return 0;
+        }
     }
 
 }
