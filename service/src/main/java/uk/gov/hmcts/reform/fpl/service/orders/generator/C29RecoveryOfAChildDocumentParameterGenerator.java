@@ -37,7 +37,6 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
     private static final String ORDER_HEADER = "Warning\n";
     private static final String ORDER_MESSAGE = "It is an offence intentionally to obstruct the "
         + "person from removing the child (Section 50(9) Children Act 1989).";
-    private boolean displayWarningMessage = false;
 
     @Override
     public Order accept() {
@@ -60,16 +59,19 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
         String dayOrdinalSuffix = getDayOfMonthSuffix(eventData.getManageOrdersOrderCreatedDate().getDayOfMonth());
 
         final String orderMadeDate = formatLocalDateToString(
-            eventData.getManageOrdersOrderCreatedDate(),
-            String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix));
+            eventData.getManageOrdersOrderCreatedDate(), String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        );
+
+        List<C29ActionsPermitted> actions = eventData.getManageOrdersActionsPermitted();
+
         return C29RecoveryOfAChildDocmosisParameters.builder()
             .orderTitle(Order.C29_RECOVERY_OF_A_CHILD.getTitle())
             .dateOfIssue(orderMadeDate)
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(getOrderDetails(eventData, selectedChildren.size(), orderMadeDate, localAuthorityName))
             .localAuthorityName(localAuthorityName)
-            .orderHeader(getOrderHeader())
-            .orderMessage(getOrderMessage())
+            .orderHeader(getOrderHeader(actions))
+            .orderMessage(getOrderMessage(actions))
             .build();
     }
 
@@ -83,9 +85,9 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
         stringBuilder.append(getStandardMessage(localAuthorityName, childOrChildren, orderMadeDate, eventData));
 
         if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.ENTRY)) {
-            stringBuilder.append(getEntryMessage(officerReference,
-                formatAddress(eventData.getManageOrdersActionsPermittedAddress()),
-                childOrChildren));
+            stringBuilder.append(getEntryMessage(
+                officerReference, formatAddress(eventData.getManageOrdersActionsPermittedAddress()), childOrChildren
+            ));
         }
 
         if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.INFORM)) {
@@ -98,8 +100,6 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
 
         if (eventData.getManageOrdersActionsPermitted().contains(C29ActionsPermitted.REMOVE)) {
             stringBuilder.append(getRemoveMessage(officerReference));
-            displayWarningMessage = true;
-            getOrderMessage();
         }
 
         stringBuilder.append(getIsExparteMessage(eventData));
@@ -113,19 +113,18 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
 
         PlacedUnderOrder order = eventData.getManageOrdersPlacedUnderOrder();
 
-        return format("The Court is satisfied that %s "
-                + "has parental responsibility for the %s "
-                + "by virtue of %s "
-                + "made on %s.%s",
+        return format(
+            "The Court is satisfied that %s has parental responsibility for the %s by virtue of %s made on %s.%s",
             localAuthorityName,
             childOrChildren,
             getOrderGrammar(order).concat(order.getLabel()),
             orderMadeDate,
-            paragraphBreak);
+            paragraphBreak
+        );
     }
 
     private String getOrderGrammar(PlacedUnderOrder order) {
-        return order.getLabel().equals(PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER.getLabel()) ? "an " : "a ";
+        return PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER.getLabel().equals(order.getLabel()) ? "an " : "a ";
     }
 
     private String getEntryMessage(String officerReference, String address, String childOrChildren) {
@@ -150,20 +149,17 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
     }
 
     private String getIsExparteMessage(ManageOrdersEventData eventData) {
-        return eventData.getManageOrdersIsExParte().equals("Yes")
-            ? format("This order has been made exparte.")
-            : format("This order has not been made exparte.");
+        return "Yes".equals(eventData.getManageOrdersIsExParte())
+            ? "This order has been made exparte."
+            : "This order has not been made exparte.";
     }
 
-    /*
-    Below requires rework to ensure they do as they intend
-     */
-    private String getOrderMessage() {
-        return displayWarningMessage ? ORDER_MESSAGE : null;
+    private String getOrderMessage(List<C29ActionsPermitted> actions) {
+        return actions.contains(C29ActionsPermitted.REMOVE) ? ORDER_MESSAGE : null;
     }
 
-    private String getOrderHeader() {
-        return displayWarningMessage ? ORDER_HEADER : null;
+    private String getOrderHeader(List<C29ActionsPermitted> actions) {
+        return actions.contains(C29ActionsPermitted.REMOVE) ? ORDER_HEADER : null;
     }
 
     private String getOfficerReferenceMessage(ManageOrdersEventData eventData) {
