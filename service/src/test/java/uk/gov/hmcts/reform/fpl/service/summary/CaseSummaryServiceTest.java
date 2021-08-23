@@ -29,6 +29,8 @@ class CaseSummaryServiceTest {
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY7 = mock(SyntheticCaseSummary.class);
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY8 = mock(SyntheticCaseSummary.class);
 
+    private final CaseSummaryCaseFlagGenerator caseSummaryCaseFlagGenerator = mock(
+        CaseSummaryCaseFlagGenerator.class);
     private final CaseSummaryOrdersRequestedGenerator caseSummaryOrdersRequestedGenerator = mock(
         CaseSummaryOrdersRequestedGenerator.class);
     private final CaseSummaryDeadlineGenerator caseSummaryDeadlineGenerator = mock(CaseSummaryDeadlineGenerator.class);
@@ -48,6 +50,7 @@ class CaseSummaryServiceTest {
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
 
     private CaseSummaryService underTest = new CaseSummaryService(
+        caseSummaryCaseFlagGenerator,
         caseSummaryOrdersRequestedGenerator,
         caseSummaryDeadlineGenerator,
         caseSummaryJudgeInformationGenerator,

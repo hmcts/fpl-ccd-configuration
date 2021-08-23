@@ -334,9 +334,13 @@ public class CaseData {
     private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
-    private final DocumentReference uploadAssessment;
+
     private final DocumentReference redDotAssessmentForm;
     private final String caseFlagNotes;
+    private final String caseFlagAdded;
+    private YesNo caseFlagValueUpdated;
+    private final String caseSummaryFlagAddedByFullName;
+    private final String caseSummaryFlagAddedByEmail;
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
