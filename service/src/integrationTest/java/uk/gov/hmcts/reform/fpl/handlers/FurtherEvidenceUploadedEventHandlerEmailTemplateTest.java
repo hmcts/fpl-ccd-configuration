@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -172,7 +171,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         return CaseData.builder().id(CASE_ID).build();
     }
 
-    private static List<Element<Representative>>  buildRepresentativesList() {
+    private static List<Element<Representative>> buildRepresentativesList() {
         return List.of(element(REPRESENTATIVE_UUID, Representative
             .builder()
             .email(REP_EMAIL)

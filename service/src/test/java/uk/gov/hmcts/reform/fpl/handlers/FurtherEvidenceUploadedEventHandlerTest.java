@@ -281,6 +281,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
+
     @Test
     void shouldNotNotifyTranslationTeamWhenNoChange() {
         when(calculator.calculate(CASE_DATA, CASE_DATA_BEFORE)).thenReturn(List.of());
