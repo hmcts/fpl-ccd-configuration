@@ -123,7 +123,7 @@ module.exports = {
     this.selectConfidential(index);
   },
 
-  async selectTranslationRequirement(index, requirement) {
+  selectTranslationRequirement(index, requirement) {
     I.waitForElement(this.fields.translationRequirement(index, requirement));
     I.click(this.fields.translationRequirement(index, requirement));
   },

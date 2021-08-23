@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.service.translations.provider.decorator.SupportingEvidenceBundleTranslatorDecorator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -152,7 +153,7 @@ class TranslatableFurtherEvidenceProviderTest {
 
             when(time.now()).thenReturn(NOW);
 
-            List<Element<SupportingEvidenceBundle>> bundleCollection = new java.util.ArrayList<>();
+            List<Element<SupportingEvidenceBundle>> bundleCollection = new ArrayList<>();
             bundleCollection.add(element(SELECTED_ORDER_ID, SupportingEvidenceBundle.builder().build()));
 
             Map<String, Object> actual = underTest.applyTranslatedOrder(CaseData.builder()
@@ -180,7 +181,7 @@ class TranslatableFurtherEvidenceProviderTest {
 
             when(time.now()).thenReturn(NOW);
 
-            List<Element<SupportingEvidenceBundle>> bundleCollection = new java.util.ArrayList<>();
+            List<Element<SupportingEvidenceBundle>> bundleCollection = new ArrayList<>();
             bundleCollection.add(element(SELECTED_ORDER_ID,
                 SupportingEvidenceBundle.builder().confidential(List.of("CONFIDENTIAL")).build()));
 
@@ -205,7 +206,7 @@ class TranslatableFurtherEvidenceProviderTest {
 
             when(time.now()).thenReturn(NOW);
 
-            List<Element<SupportingEvidenceBundle>> bundleCollection = new java.util.ArrayList<>();
+            List<Element<SupportingEvidenceBundle>> bundleCollection = new ArrayList<>();
             bundleCollection.add(element(UUID_1, A_BUNDLE));
             bundleCollection.add(element(SELECTED_ORDER_ID, SupportingEvidenceBundle.builder().build()));
             bundleCollection.add(element(UUID_2, ANOTHER_BUNDLE));
