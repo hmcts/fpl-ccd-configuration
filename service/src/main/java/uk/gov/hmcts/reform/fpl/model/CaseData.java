@@ -335,6 +335,7 @@ public class CaseData {
     private final DynamicList applicantsList;
     private final String otherApplicant;
     private final DocumentReference uploadAssessment;
+    private final DocumentReference redDotAssessmentForm;
     private final String caseFlagNotes;
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
