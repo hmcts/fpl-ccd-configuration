@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -75,9 +74,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         .build();
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private UserService userService;
 
     ManageDocumentsLAControllerAboutToSubmitTest() {
@@ -108,8 +104,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentSubtypeListLA(OTHER)
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData responseData = extractCaseData(response);
 
@@ -135,18 +129,11 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentSubtypeListLA(OTHER)
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(false);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData responseData = extractCaseData(response);
 
         assertThat(responseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(responseData);
-
-        assertThat(response.getData().get("documentViewLA")).isNull();
-        assertThat(response.getData().get("documentViewHMCTS")).isNull();
-        assertThat(response.getData().get("documentViewNC")).isNull();
-        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();
     }
 
     @Test

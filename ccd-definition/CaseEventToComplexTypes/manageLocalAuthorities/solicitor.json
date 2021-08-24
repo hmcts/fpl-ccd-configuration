@@ -1,0 +1,32 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransferSolicitor",
+    "ListElementCode": "fullName",
+    "EventElementLabel": "Full name",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransferSolicitor",
+    "ListElementCode": "email",
+    "EventElementLabel": "Email",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransferSolicitor",
+    "ListElementCode": "mainContact",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 8,
+    "FieldShowCondition": "role=\"DO NOT SHOW\""
+  }
+]

@@ -10,8 +10,10 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -57,7 +59,8 @@ class CaseSubmissionServiceTest {
         expectedCaseSubmission = expectedDocmosisCaseSubmission();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+        given(documentGeneratorService
+            .generateDocmosisDocument(any(DocmosisData.class), any(), any(), any()))
             .willReturn(new DocmosisDocument("case_submission_c110a.pdf", PDF));
 
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
@@ -66,10 +69,33 @@ class CaseSubmissionServiceTest {
     }
 
     @Test
-    void shouldGenerateCaseSubmissionDocumentSuccessfully() {
+    void shouldGenerateCaseSubmissionDocumentSuccessfullyDefault() {
         caseSubmissionService.generateSubmittedFormPDF(givenCaseData, false);
 
-        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(), eq(C110A));
+        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(),
+            eq(C110A),
+            eq(RenderFormat.PDF),
+            eq(Language.ENGLISH));
+
+        DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();
+        assertThat(caseSubmission).isEqualTo(expectedCaseSubmission);
+
+        verify(uploadDocumentService).uploadPDF(eq(PDF), any());
+    }
+
+    @Test
+    void shouldGenerateCaseSubmissionDocumentSuccessfullyIfWelsh() {
+        caseSubmissionService.generateSubmittedFormPDF(givenCaseData.toBuilder()
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .languageRequirementApplication(Language.WELSH)
+                .build())
+            .build(), false);
+
+        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(),
+            eq(C110A),
+            eq(RenderFormat.PDF),
+            eq(Language.WELSH));
+
         DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();
         assertThat(caseSubmission).isEqualTo(expectedCaseSubmission);
 

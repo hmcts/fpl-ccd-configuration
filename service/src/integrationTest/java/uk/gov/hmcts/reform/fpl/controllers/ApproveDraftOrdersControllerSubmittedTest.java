@@ -52,6 +52,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
@@ -82,9 +83,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12345L;
-    private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
+    private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
     private static final String FAMILY_MAN_CASE_NUMBER = "FM001";
     private static final DocumentReference orderDocumentCmo = testDocumentReference("cmo.pdf");
     private static final DocumentReference orderDocumentC21 = testDocumentReference("c21.pdf");
@@ -158,35 +160,35 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("robert@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("charlie@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(ADMIN_EMAIL),
+                eq(COURT_1.getEmail()),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
         });
         verifyNoMoreNotificationsSent();
@@ -231,35 +233,35 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("robert@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("charlie@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                eq(ADMIN_EMAIL),
+                eq(COURT_1.getEmail()),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(sendLetters).send(
@@ -315,7 +317,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)
+            eq(notificationReference(CASE_ID))
         ));
 
         verifyNoMoreInteractions(notificationClient);
@@ -335,7 +337,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             eq(JUDGE_REJECTS_DRAFT_ORDERS),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)
+            eq(notificationReference(CASE_ID))
         ));
 
         verifyNoMoreInteractions(notificationClient);
