@@ -249,6 +249,16 @@ class SendNoticeOfHearingHandlerTest {
     }
 
     @Test
+    void shouldNotSendNoticeOfHearingByPostIfTranslationNeeded() {
+        underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
+            .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+            .build()));
+        
+        verifyNoInteractions(sendDocumentService, otherRecipientsInbox, notificationService);
+    }
+
+
+    @Test
     void shouldNotifyTranslationTeam() {
         underTest.notifyTranslationTeam(
             new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
