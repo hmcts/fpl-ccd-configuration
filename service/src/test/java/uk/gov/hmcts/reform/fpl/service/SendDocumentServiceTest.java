@@ -45,7 +45,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ExtendWith( {MockitoExtension.class, TestLogsExtension.class})
+@ExtendWith({MockitoExtension.class, TestLogsExtension.class})
 class SendDocumentServiceTest {
 
     @Mock
