@@ -37,7 +37,7 @@ public class ReturnApplicationController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        DocumentReference submittedForm = caseData.getSubmittedForm();
+        DocumentReference submittedForm = caseData.getC110A().getSubmittedForm();
 
         returnApplicationService.appendReturnedToFileName(submittedForm);
 
