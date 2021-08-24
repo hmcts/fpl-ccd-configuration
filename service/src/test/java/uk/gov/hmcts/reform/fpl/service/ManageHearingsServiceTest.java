@@ -763,7 +763,7 @@ class ManageHearingsServiceTest {
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "15 March 2010, 8:20pm",
+                "hearingDurationLabel", "15 March 2010, 8:20pm",
                 "hearingEndDate", LocalDateTime.parse("2010-03-15T20:20:00"));
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
@@ -786,7 +786,7 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "15 March 2010, 8:20pm",
+                "hearingDurationLabel", "15 March 2010, 8:20pm",
                 "hearingEndDate", LocalDateTime.parse("2010-03-15T20:20:00"));
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
@@ -809,7 +809,7 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "3 days",
+                "hearingDurationLabel", "3 days",
                 "hearingEndDate", LocalDateTime.parse("2011-04-19T20:20:00"));
 
 
@@ -834,7 +834,7 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "3 hours 20 minutes",
+                "hearingDurationLabel", "3 hours 20 minutes",
                 "hearingEndDate", LocalDateTime.parse("2011-04-16T23:40:00"));
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
@@ -1685,7 +1685,7 @@ class ManageHearingsServiceTest {
             "hearingReListOption",
             "hearingStartDateLabel",
             "showConfirmPastHearingDatesPage",
-            "hearingEndDateLabel",
+            "hearingDurationLabel",
             "confirmHearingDate",
             "hearingStartDateConfirmation",
             "hearingEndDateConfirmation",

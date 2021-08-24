@@ -91,7 +91,7 @@ public class ManageHearingsService {
     private static final String HEARING_START_DATE = "hearingStartDate";
     private static final String HEARING_END_DATE = "hearingEndDate";
     private static final String HEARING_START_DATE_LABEL = "hearingStartDateLabel";
-    private static final String HEARING_END_DATE_LABEL = "hearingEndDateLabel";
+    private static final String HEARING_DURATION_LABEL = "hearingDurationLabel";
     private static final String START_DATE_FLAG = "startDateFlag";
     private static final String END_DATE_FLAG = "endDateFlag";
     private static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
@@ -376,7 +376,7 @@ public class ManageHearingsService {
             "hearingReListOption",
             HEARING_START_DATE_LABEL,
             "showConfirmPastHearingDatesPage",
-            HEARING_END_DATE_LABEL,
+            HEARING_DURATION_LABEL,
             "confirmHearingDate",
             "hearingStartDateConfirmation",
             "hearingEndDateConfirmation",
@@ -432,7 +432,7 @@ public class ManageHearingsService {
         BiConsumer<LocalDateTime, String> populateFields = (endDateTime, endDateLabel) -> {
             data.put(HEARING_END_DATE, endDateTime);
             if (endDateTime.isBefore(currentDateTime)) {
-                data.put(HEARING_END_DATE_LABEL, endDateLabel);
+                data.put(HEARING_DURATION_LABEL, endDateLabel);
                 data.put(END_DATE_FLAG, YES.getValue());
                 data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
             }

@@ -22,6 +22,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @OverrideAutoConfiguration(enabled = true)
 @WebMvcTest(ManageHearingsController.class)
@@ -85,10 +87,10 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         assertThat(responseData.get("hearingEndDate")).isNotNull();
         LocalDateTime hearingEndDate = LocalDateTime.parse((String) responseData.get("hearingEndDate"));
         assertThat(hearingEndDate).isEqualTo(startDate.plusDays(numberOfDays));
-        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
-        assertThat(responseData.get("startDateFlag")).isEqualTo("Yes");
-        assertThat(responseData.get("endDateFlag")).isEqualTo("Yes");
-        assertThat(responseData.get("hasSession")).isEqualTo("Yes");
+        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("startDateFlag")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("endDateFlag")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("hasSession")).isEqualTo(YES.getValue());
     }
 
     @Test
@@ -112,10 +114,10 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         LocalDateTime hearingEndDate = LocalDateTime.parse((String) responseData.get("hearingEndDate"));
         LocalDateTime expectedEndDate = startDate.plusHours(hours).plusMinutes(minutes);
         assertThat(hearingEndDate).isEqualTo(expectedEndDate);
-        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
-        assertThat(responseData.get("startDateFlag")).isEqualTo("Yes");
-        assertThat(responseData.get("endDateFlag")).isEqualTo("Yes");
-        assertThat(responseData.get("hasSession")).isEqualTo("Yes");
+        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("startDateFlag")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("endDateFlag")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("hasSession")).isEqualTo(YES.getValue());
     }
 
     @Test
@@ -213,10 +215,10 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         Map<String, Object> responseData = callbackResponse.getData();
-        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
-        assertThat(responseData.get("startDateFlag")).isEqualTo("Yes");
-        assertThat(responseData.get("endDateFlag")).isEqualTo("Yes");
-        assertThat(responseData.get("hasSession")).isEqualTo("Yes");
+        assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("startDateFlag")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("endDateFlag")).isEqualTo(YES.getValue());
+        assertThat(responseData.get("hasSession")).isEqualTo(YES.getValue());
     }
 
     @Test
@@ -234,7 +236,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         Map<String, Object> responseData = callbackResponse.getData();
 
         assertThat(responseData).doesNotContainKeys("startDateFlag", "endDateFlag");
-        assertThat(responseData).containsEntry("showConfirmPastHearingDatesPage", "No");
+        assertThat(responseData).containsEntry("showConfirmPastHearingDatesPage", NO.getValue());
     }
 
     @Test
