@@ -7,6 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,9 @@ public class LocalAuthority {
     private String pbaNumber;
     private String clientCode;
     private String customerReference;
-    private List<Element<Colleague>> colleagues;
+    @Builder.Default
+    private List<Element<Colleague>> colleagues = new ArrayList<>();
+    private String designated;
 
     @JsonIgnore
     public Optional<Colleague> getFirstSolicitor() {

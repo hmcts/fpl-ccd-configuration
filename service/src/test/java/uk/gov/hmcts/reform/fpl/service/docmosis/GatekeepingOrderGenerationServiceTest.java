@@ -137,6 +137,7 @@ class GatekeepingOrderGenerationServiceTest {
     private CaseData caseDataForSealed() {
         return caseDataForSealedWithLegacyApplicant().toBuilder()
             .localAuthorities(wrapElements(LocalAuthority.builder()
+                .designated("Yes")
                 .name("Local authority name")
                 .build()))
             .build();
@@ -156,6 +157,7 @@ class GatekeepingOrderGenerationServiceTest {
     private CaseData caseDataForDraft() {
         return caseDataForDraftWithLegacyApplicant().toBuilder()
             .localAuthorities(wrapElements(LocalAuthority.builder()
+                .designated("Yes")
                 .name("Local authority name")
                 .build()))
             .build();

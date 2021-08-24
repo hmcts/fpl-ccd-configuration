@@ -297,6 +297,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
 
     private List<Element<LocalAuthority>> getLocalAuthority(String name) {
         return wrapElements(LocalAuthority.builder()
+            .designated("Yes")
             .name(name)
             .build());
     }

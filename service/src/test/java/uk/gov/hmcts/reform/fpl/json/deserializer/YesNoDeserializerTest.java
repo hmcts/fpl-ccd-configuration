@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.json.deserializer;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -25,23 +24,25 @@ class YesNoDeserializerTest extends DeserializerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"yes", "Yes", "No", "no", "a", "b"})
+    @ValueSource(strings = {"a", "b"})
     void shouldThrowsExceptionWhenValueDoesNotRepresentEnum(String value) {
         assertThatThrownBy(() -> mapper.readValue(json(value), TestClass.class))
             .isInstanceOf(JsonMappingException.class)
             .hasCauseInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
-    void shouldDeserializeYesValue() throws Exception {
-        final TestClass actual = mapper.readValue(json("YES"), TestClass.class);
+    @ParameterizedTest
+    @ValueSource(strings = {"yes", "Yes", "YES"})
+    void shouldDeserializeYesValue(String value) throws Exception {
+        final TestClass actual = mapper.readValue(json(value), TestClass.class);
 
         assertThat(actual.test).isEqualTo(YesNo.YES);
     }
 
-    @Test
-    void shouldDeserializeNoValue() throws Exception {
-        final TestClass actual = mapper.readValue(json("NO"), TestClass.class);
+    @ParameterizedTest
+    @ValueSource(strings = {"no", "No", "NO"})
+    void shouldDeserializeNoValue(String value) throws Exception {
+        final TestClass actual = mapper.readValue(json(value), TestClass.class);
 
         assertThat(actual.test).isEqualTo(YesNo.NO);
     }

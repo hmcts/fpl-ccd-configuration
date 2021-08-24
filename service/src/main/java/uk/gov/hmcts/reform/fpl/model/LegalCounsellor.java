@@ -14,6 +14,7 @@ public class LegalCounsellor {
     String email;
     String telephoneNumber;
     Organisation organisation;
+    String userId;
 
     @JsonIgnore
     public String getFullName() {

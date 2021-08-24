@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
@@ -289,7 +290,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(PDF), eq(ENGLISH)))
             .thenReturn(DOCMOSIS_DOCUMENT);
         when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
             .thenReturn(UPLOADED_DOCUMENT);
@@ -341,7 +342,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().minusDays(4), now().plusDays(1))).build();
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF), eq(ENGLISH)))
             .thenReturn(DOCMOSIS_DOCUMENT);
 
         when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
@@ -362,7 +363,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             buildPreventRemovalEventData(Address.builder().addressLine1("test").postcode("SW").build()))
             .build();
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF), eq(ENGLISH)))
             .thenReturn(DOCMOSIS_DOCUMENT);
         when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
             .thenReturn(UPLOADED_DOCUMENT);

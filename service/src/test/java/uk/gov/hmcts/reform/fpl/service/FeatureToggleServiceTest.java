@@ -104,18 +104,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isSummaryTabEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("summary-tab-update"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabFirstCronRunEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -140,18 +128,16 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsNewDocumentUploadNotificationEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isFurtherEvidenceUploadNotificationEnabled()).isEqualTo(toggleState);
+        assertThat(service.isNewDocumentUploadNotificationEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("further-evidence-upload-notification"),
+            eq("document-upload-new-notification"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsLanguageRequirementsEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -160,19 +146,6 @@ class FeatureToggleServiceTest {
             eq("language-requirements"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsChildRepresentativeSolicitor(boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isChildRepresentativeSolicitorEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("child-representative-solicitor"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false)
-        );
     }
 
     @ParameterizedTest

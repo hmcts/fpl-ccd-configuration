@@ -7,11 +7,14 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
@@ -22,12 +25,14 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -41,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
@@ -52,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Builder(toBuilder = true)
 @Jacksonized
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
-public class HearingBooking {
+public class HearingBooking implements TranslatableItem {
     private final HearingType type;
     private HearingStatus status;
     private final String typeDetails;
@@ -81,6 +87,9 @@ public class HearingBooking {
     private final String othersNotified;
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
+    private final DocumentReference translatedNoticeOfHearing;
+    private final LocalDateTime translationUploadDateTime;
+    private LanguageTranslationRequirement translationRequirements;
     private final PreviousHearingVenue previousHearingVenue;
     private String cancellationReason;
 
@@ -172,4 +181,45 @@ public class HearingBooking {
     public boolean isRemote() {
         return isNotEmpty(getAttendance()) && (getAttendance().contains(VIDEO) || getAttendance().contains(PHONE));
     }
+
+    @Override
+    public LanguageTranslationRequirement getTranslationRequirements() {
+        return defaultIfNull(translationRequirements, NO);
+    }
+
+    @Override
+    public LocalDateTime translationUploadDateTime() {
+        return translationUploadDateTime;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean hasBeenTranslated() {
+        return Objects.nonNull(translatedNoticeOfHearing);
+    }
+
+    @Override
+    @JsonIgnore
+    public DocumentReference getTranslatedDocument() {
+        return translatedNoticeOfHearing;
+    }
+
+    @Override
+    @JsonIgnore
+    public String asLabel() {
+        return String.format("Notice of hearing - %s", formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+    }
+
+    @Override
+    @JsonIgnore
+    public String getModifiedItemType() {
+        return ModifiedOrderType.NOTICE_OF_HEARING.getLabel();
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Element<Other>> getSelectedOthers() {
+        return defaultIfNull(this.getOthers(), new ArrayList<>());
+    }
+
 }

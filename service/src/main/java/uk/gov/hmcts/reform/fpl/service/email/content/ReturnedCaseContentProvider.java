@@ -28,7 +28,7 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
 
     public ReturnedCaseTemplate parametersWithApplicationLink(CaseData caseData) {
         return templateData(caseData)
-            .applicationDocumentUrl(linkToAttachedDocument(caseData.getSubmittedForm()))
+            .applicationDocumentUrl(linkToAttachedDocument(caseData.getC110A().getSubmittedForm()))
             .build();
     }
 

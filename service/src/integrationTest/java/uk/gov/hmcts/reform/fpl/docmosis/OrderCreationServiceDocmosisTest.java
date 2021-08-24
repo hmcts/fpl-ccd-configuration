@@ -152,7 +152,7 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
         when(uploadDocumentService.uploadDocument(any(byte[].class),
             anyString(),
             anyString())).thenReturn(testDocument());
-        doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any());
+        doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any(), any());
 
         underTest.createOrderDocument(caseData,
             OrderStatus.PLAIN,
