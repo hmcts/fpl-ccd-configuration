@@ -46,32 +46,34 @@ public class SendDocumentService {
 
     public void sendDocuments(SendDocumentRequest sendDocumentRequest) {
 
-        List<Recipient> recipients = defaultIfNull(sendDocumentRequest.getParties(), emptyList());
+        List<Recipient> parties = sendDocumentRequest.getParties();
+        CaseData caseData = sendDocumentRequest.getCaseData();
+        List<DocumentReferenceWithLanguage> documentToBeSent = sendDocumentRequest.getDocumentToBeSent();
+        List<Recipient> recipients = defaultIfNull(parties, emptyList());
 
         List<Recipient> deliverableRecipients = recipients.stream()
             .filter(Recipient::isDeliverable)
             .collect(toList());
 
         if (recipients.size() != deliverableRecipients.size()) {
-            log.error("Case {} has {} recipients with incomplete postal information", sendDocumentRequest.getCaseData().getId(),
+            log.error("Case {} has {} recipients with incomplete postal information", caseData.getId(),
                 recipients.size() - deliverableRecipients.size());
         }
 
-        if (isNotEmpty(deliverableRecipients) && isNotEmpty(sendDocumentRequest.getDocumentToBeSent())) {
+        if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
 
-            List<SentDocument> docs = sendDocumentRequest.getDocumentToBeSent().stream()
+            List<SentDocument> docs = documentToBeSent.stream()
                 .flatMap(document -> sendLetters.send(document.getDocumentReference(),
                     deliverableRecipients,
-                    sendDocumentRequest.getCaseData().getId(),
-                    sendDocumentRequest.getCaseData().getFamilyManCaseNumber(),
-                    document.getLanguage()
-                ).stream())
+                    caseData.getId(),
+                    caseData.getFamilyManCaseNumber(),
+                    document.getLanguage()).stream())
                 .collect(toList());
 
             List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
-                sendDocumentRequest.getCaseData().getDocumentsSentToParties(), docs);
+                caseData.getDocumentsSentToParties(), docs);
 
-            caseService.updateCase(sendDocumentRequest.getCaseData().getId(), Map.of("documentsSentToParties", documentsSent));
+            caseService.updateCase(caseData.getId(), Map.of("documentsSentToParties", documentsSent));
         }
     }
 

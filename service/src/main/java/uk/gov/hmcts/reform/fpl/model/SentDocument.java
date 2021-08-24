@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class SentDocument {
     String letterId;
     Language language;
 
+    @JsonIgnore
     public Language getLanguage() {
         return defaultIfNull(language, ENGLISH);
     }
