@@ -116,6 +116,7 @@ exports.config = {
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
     attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
+    addCaseFlagEventPage: './e2e/pages/events/addCaseFlagEvent.page.js',
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
     addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
     addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
