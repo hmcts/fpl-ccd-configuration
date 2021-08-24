@@ -72,7 +72,7 @@ class TranslatableRespondentStatementsProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .respondentStatements(List.of(
                         element(RespondentStatement.builder()
                             .supportingEvidenceBundle(List.of(element(SELECTED_ORDER_ID,
@@ -84,14 +84,16 @@ class TranslatableRespondentStatementsProviderTest {
                     .build(),
                 SELECTED_ORDER_ID);
 
-            assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(SupportingEvidenceBundle.builder()
+                .document(DOCUMENT_REFERENCE)
+                .build());
 
         }
 
         @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .respondentStatements(List.of(
                             element(RespondentStatement.builder()
                                 .supportingEvidenceBundle(List.of(element(UUID_1,
@@ -108,7 +110,7 @@ class TranslatableRespondentStatementsProviderTest {
         @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .respondentStatements(null)
                         .build(),
                     SELECTED_ORDER_ID));

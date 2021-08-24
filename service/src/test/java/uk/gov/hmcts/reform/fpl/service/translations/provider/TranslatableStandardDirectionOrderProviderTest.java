@@ -76,14 +76,16 @@ class TranslatableStandardDirectionOrderProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .standardDirectionOrder(StandardDirectionOrder.builder()
                         .orderDoc(DOCUMENT_REFERENCE)
                         .build())
                     .build(),
                 SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            AssertionsForClassTypes.assertThat(actual).isEqualTo(StandardDirectionOrder.builder()
+                .orderDoc(DOCUMENT_REFERENCE)
+                .build());
         }
     }
 

@@ -72,7 +72,7 @@ class TranslatableHearingFurtherEvidenceProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .hearingFurtherEvidenceDocuments(List.of(
                         element(HearingFurtherEvidenceBundle.builder()
                             .supportingEvidenceBundle(List.of(element(SELECTED_ORDER_ID,
@@ -84,14 +84,16 @@ class TranslatableHearingFurtherEvidenceProviderTest {
                     .build(),
                 SELECTED_ORDER_ID);
 
-            assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(SupportingEvidenceBundle.builder()
+                .document(DOCUMENT_REFERENCE)
+                .build());
 
         }
 
         @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .hearingFurtherEvidenceDocuments(List.of(
                             element(HearingFurtherEvidenceBundle.builder()
                                 .supportingEvidenceBundle(List.of(element(UUID_1,
@@ -108,7 +110,7 @@ class TranslatableHearingFurtherEvidenceProviderTest {
         @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .hearingFurtherEvidenceDocuments(null)
                         .build(),
                     SELECTED_ORDER_ID));

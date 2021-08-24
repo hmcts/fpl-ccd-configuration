@@ -34,11 +34,11 @@ public class TranslatableNoticeOfHearingProvider implements TranslatableListItem
 
     @Override
     @SuppressWarnings("unchecked")
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
         return ((List<Element<HearingBooking>>) defaultIfNull(caseData.getHearingDetails(), List.of()))
             .stream()
             .filter(order -> order.getId().equals(selectedOrderId))
-            .findFirst().map(it -> it.getValue().getNoticeOfHearing())
+            .findFirst().map(Element::getValue)
             .orElseThrow(IllegalArgumentException::new);
     }
 

@@ -66,7 +66,7 @@ class TranslatableCaseManagementOrderProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
 
                     .sealedCMOs(List.of(element(SELECTED_ORDER_ID, HearingOrder.builder()
                         .order(DOCUMENT_REFERENCE)
@@ -74,14 +74,16 @@ class TranslatableCaseManagementOrderProviderTest {
                     .build(),
                 SELECTED_ORDER_ID);
 
-            assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(HearingOrder.builder()
+                .order(DOCUMENT_REFERENCE)
+                .build());
 
         }
 
         @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .sealedCMOs(List.of(element(UUID_1, HearingOrder.builder()
                             .order(DOCUMENT_REFERENCE)
                             .build())))
@@ -93,7 +95,7 @@ class TranslatableCaseManagementOrderProviderTest {
         @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .sealedCMOs(null)
                         .build(),
                     SELECTED_ORDER_ID));

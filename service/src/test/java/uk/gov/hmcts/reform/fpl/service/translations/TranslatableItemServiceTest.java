@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
@@ -240,7 +241,7 @@ class TranslatableItemServiceTest {
 
         private void mockDocumentGeneration(CaseData caseData) {
             when(translatedDocumentGenerator.generate(caseData)).thenReturn(DOCUMENT_BYTES);
-            when(translatedFileNameGenerator.generate(caseData)).thenReturn(FILENAME);
+            when(translatedFileNameGenerator.generate(caseData, any())).thenReturn(FILENAME);
             when(uploadDocumentService.uploadDocument(DOCUMENT_BYTES,
                 FILENAME,
                 RenderFormat.PDF.getMediaType())).thenReturn(TEST_DOCUMENT);

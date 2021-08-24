@@ -39,11 +39,11 @@ public class TranslatableRespondentStatementsProvider implements TranslatableLis
     }
 
     @Override
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
         return getElements(caseData)
             .stream()
             .filter(order -> order.getId().equals(selectedOrderId))
-            .findFirst().map(it -> it.getValue().getDocument())
+            .findFirst().map(Element::getValue)
             .orElseThrow(IllegalArgumentException::new);
     }
 

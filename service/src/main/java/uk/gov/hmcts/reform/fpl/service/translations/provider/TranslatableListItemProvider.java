@@ -13,7 +13,7 @@ public interface TranslatableListItemProvider {
 
     List<Element<? extends TranslatableItem>> provideListItems(CaseData caseData);
 
-    DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId);
+    TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId);
 
     boolean accept(CaseData caseData, UUID selectedOrderId);
 

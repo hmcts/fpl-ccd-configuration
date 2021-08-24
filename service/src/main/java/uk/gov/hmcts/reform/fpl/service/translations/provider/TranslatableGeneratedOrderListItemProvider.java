@@ -32,11 +32,11 @@ public class TranslatableGeneratedOrderListItemProvider implements TranslatableL
     }
 
     @Override
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
         return caseData.getOrderCollection()
             .stream()
             .filter(order -> order.getId().equals(selectedOrderId))
-            .findFirst().map(it -> it.getValue().getDocument())
+            .findFirst().map(Element::getValue)
             .orElseThrow(IllegalArgumentException::new);
     }
 

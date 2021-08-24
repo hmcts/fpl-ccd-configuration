@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.translations.provider;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -62,14 +61,16 @@ class TranslatableC110AProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .c110A(C110A.builder()
                         .submittedForm(DOCUMENT_REFERENCE)
                         .build())
                     .build(),
                 SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(C110A.builder()
+                .submittedForm(DOCUMENT_REFERENCE)
+                .build());
         }
     }
 
@@ -81,7 +82,7 @@ class TranslatableC110AProviderTest {
 
             boolean actual = underTest.accept(CaseData.builder().build(), C110A.COLLECTION_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isTrue();
+            assertThat(actual).isTrue();
 
         }
 
@@ -89,7 +90,7 @@ class TranslatableC110AProviderTest {
         void testIfNotMatchingInCollection() {
             boolean actual = underTest.accept(CaseData.builder().build(), SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isFalse();
+            assertThat(actual).isFalse();
 
         }
 
