@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -17,7 +17,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.COVER_DOCS;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, DocmosisCoverDocumentsService.class})
@@ -26,6 +28,7 @@ class DocmosisCoverDocumentsServiceTest {
     private static final String FAMILY_MAN_NUMBER = "12345";
     private static final Long CCD_CASE_NUMBER = 1234123412341234L;
     private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
+    private static final Language LANGUAGE = Language.ENGLISH;
 
     private byte[] pdf = {1, 2, 3, 4, 5};
     private DocmosisDocument docmosisDocument = new DocmosisDocument("example.pdf", pdf);
@@ -37,16 +40,18 @@ class DocmosisCoverDocumentsServiceTest {
     @Autowired
     private DocmosisCoverDocumentsService underTest;
 
-    @BeforeEach
-    void setup() {
-        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(docmosisDocument);
-    }
 
     @Test
     void shouldGenerateExpectedDocumentWhenAllDataProvided() {
-        DocmosisDocument pdfDocument = underTest.createCoverDocuments(FAMILY_MAN_NUMBER,
-            CCD_CASE_NUMBER, testRepresentative, Language.ENGLISH);
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), eq(COVER_DOCS),
+            eq(RenderFormat.PDF), eq(Language.ENGLISH))).willReturn(docmosisDocument);
+
+        DocmosisDocument pdfDocument = underTest.createCoverDocuments(
+            FAMILY_MAN_NUMBER,
+            CCD_CASE_NUMBER,
+            testRepresentative,
+            LANGUAGE
+        );
 
         assertThat(pdfDocument).isEqualTo(docmosisDocument);
     }
