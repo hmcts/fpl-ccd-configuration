@@ -146,7 +146,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings(value = {"unchecked", "rawtypes"})
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
@@ -154,7 +153,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(newHashSet("barney@rubble.com", "andrew@rubble.com"));
         if (toggle) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), any(), any()))
-                .willReturn((Set) Set.of("andrew@rubble.com"));
+                .willReturn(Set.of("andrew@rubble.com"));
         }
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, EMAIL))
             .willReturn(EMAIL_REP_CMO_TEMPLATE_DATA);
@@ -173,7 +172,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings(value = {"unchecked", "rawtypes"})
     void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))
@@ -182,7 +180,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(DIGITAL_REP_CMO_TEMPLATE_DATA);
         if (toggle) {
             given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(CASE_DATA), any(), any()))
-                .willReturn((Set) Set.of("barney@rubble.com"));
+                .willReturn(Set.of("barney@rubble.com"));
         }
 
         underTest.notifyDigitalRepresentatives(EVENT);
@@ -196,7 +194,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifyPostRepresentativesWhenServingOthersIsEnabled() {
         Other other1 = Other.builder().name("other1")
             .address(Address.builder().postcode("SW1").build()).build();
@@ -213,7 +210,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         List<Element<Other>> selectedOthers = wrapElements(other1);
         given(CMO.getSelectedOthers()).willReturn(selectedOthers);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(CASE_DATA), any(), any()))
-            .willReturn((Set) Set.of(otherRecipient1));
+            .willReturn(Set.of(otherRecipient1));
         given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers))
             .willReturn(Set.of(otherRecipient3));
 
