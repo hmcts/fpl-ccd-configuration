@@ -47,7 +47,9 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         .respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder().firstName("Paul").lastName("Smith").build())
             .build()))
-        .submittedForm(C110A)
+        .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+            .submittedForm(C110A)
+            .build())
         .returnApplication(ReturnApplication.builder()
             .reason(List.of(ReturnedApplicationReasons.INCOMPLETE, ReturnedApplicationReasons.CLARIFICATION_NEEDED))
             .note("Missing children details")
@@ -125,7 +127,11 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Test
     void shouldThrowExceptionWhenDocumentIsNotSpecified() {
-        CaseData caseData = CASE_DATA.toBuilder().submittedForm(null).build();
+        CaseData caseData = CASE_DATA.toBuilder()
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .submittedForm(null)
+                .build())
+            .build();
 
         assertThrows(
             DocumentException.class,
