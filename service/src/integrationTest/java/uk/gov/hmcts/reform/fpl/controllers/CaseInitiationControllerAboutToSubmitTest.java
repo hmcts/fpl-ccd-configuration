@@ -15,8 +15,8 @@ import java.util.Map;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_ID;
@@ -60,7 +60,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         final Court expectedCourt = Court.builder()
             .code(LOCAL_AUTHORITY_1_COURT_ID)
             .name(LOCAL_AUTHORITY_1_COURT_NAME)
-            .email(LOCAL_AUTHORITY_1_COURT_EMAIL)
+            .email(COURT_1.getEmail())
             .build();
 
         Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
@@ -96,7 +96,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         final Court expectedCourt = Court.builder()
             .code(LOCAL_AUTHORITY_1_COURT_ID)
             .name(LOCAL_AUTHORITY_1_COURT_NAME)
-            .email(LOCAL_AUTHORITY_1_COURT_EMAIL)
+            .email(COURT_1.getEmail())
             .build();
 
         assertThat(caseDetails.get("caseName")).isEqualTo(caseData.getCaseName());
@@ -122,7 +122,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         final Court expectedCourt = Court.builder()
             .code(LOCAL_AUTHORITY_1_COURT_ID)
             .name(LOCAL_AUTHORITY_1_COURT_NAME)
-            .email(LOCAL_AUTHORITY_1_COURT_EMAIL)
+            .email(COURT_1.getEmail())
             .build();
 
         Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();

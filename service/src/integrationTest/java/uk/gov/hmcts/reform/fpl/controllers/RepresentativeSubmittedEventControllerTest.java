@@ -129,7 +129,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         return Map.of(
             "familyManCaseNumber", "",
             "firstRespondentLastName", RESPONDENT_SURNAME,
-            "caseUrl", "http://fake-url/cases/case-details/12345",
+            "caseUrl", caseUrl(CASE_ID),
             "childLastName", CHILD_LAST_NAME
         );
     }

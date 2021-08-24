@@ -249,7 +249,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             .salutation(expectedSalutation)
             .caseName(CASE_NAME)
             .ccdNumber(CASE_ID.toString())
-            .caseUrl("http://fake-url/cases/case-details/" + CASE_ID)
+            .caseUrl(caseUrl(CASE_ID))
             .clientFullName("John Smith")
             .childLastName("Jones")
             .build();

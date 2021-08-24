@@ -5,6 +5,7 @@ const draftOrdersHelper = require('../helpers/cmo_helper');
 const caseData = require('../fixtures/caseData/caseWithAllTypesOfOrders.json');
 const caseDataGatekeeping = require('../fixtures/caseData/gatekeepingFullDetails.json');
 const caseDataCaseManagement = require('../fixtures/caseData/prepareForHearing.json');
+const mandatoryWithMultipleRespondents = require('../fixtures/caseData/mandatoryWithMultipleRespondents.json');
 const caseView = require('../pages/caseView.page.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const api = require('../helpers/api_helper');
@@ -34,6 +35,12 @@ const caseDataCaseManagementWithLanguage = {
 
 // most file names are overridden to the below values in api_helper
 const orders = {
+  c11a: {
+    name: 'Application (C110A)',
+    originalFile: 'test.pdf',
+    translationFile: 'test-Welsh.pdf',
+    tabName: caseView.tabs.furtherEvidence,
+  },
   draftOrder: {
     title: 'draft order 1',
     file: config.testWordFile,
@@ -94,7 +101,7 @@ const orders = {
     tabObjectName: 'Notice of proceedings 2',
   },
   noticeOfHearing: {
-    name: 'Notice of hearing - 24 April 2012',
+    name: 'Notice of hearing - 9 April 2012',
     originalFile: `Notice_of_hearing_${dateFormat('dmmmm')}.pdf`,
     translationFile: `Notice_of_hearing_${dateFormat('dmmmm')}-Welsh.pdf`,
     tabName: caseView.tabs.hearings,
@@ -136,6 +143,32 @@ Scenario('Upload translation for generated order', async ({ I, caseViewPage, upl
   assertTranslation(I, caseViewPage, orders.generated);
 });
 
+Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, uploadWelshTranslationsPage, enterLanguageRequirementsEventPage, submitApplicationEventPage }) => {
+  let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.languageRequirement);
+  await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+  enterLanguageRequirementsEventPage.selectApplicationLanguage('WELSH');
+  enterLanguageRequirementsEventPage.selectNeedEnglishTranslation();
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.languageRequirement);
+
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  await submitApplicationEventPage.giveConsent();
+  await I.completeEvent('Submit', null, true);
+
+  caseViewPage.selectTab(orders.c11a.tabName);
+  I.waitForText('Sent for translation');
+
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.c11a);
+
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadWelshTranslations);
+  caseViewPage.selectTab(orders.c11a.tabName);
+  I.waitForText(orders.c11a.translationFile);
+  I.dontSee('Sent for translation');
+});
+
 Scenario('Request and upload translation for uploaded order', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageOrdersEventPage }) => {
   let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
@@ -170,12 +203,12 @@ Scenario('Request and upload translation for standard directions order', async (
   await I.goToNextPage();
 
   await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testWordFileSdo);
-  I.see('Case assigned to: Her Honour Judge Moley');
+  I.waitForText('Case assigned to: Her Honour Judge Moley');
   I.click('Yes');
   await I.goToNextPage();
 
   await draftStandardDirectionsEventPage.markAsFinal();
-  I.see('Is translation needed?');
+  I.waitForText('Is translation needed?');
   draftStandardDirectionsEventPage.selectTranslationRequirement(draftStandardDirectionsEventPage.fields.upload.translationRequirement.englishToWelsh);
   await I.completeEvent('Save and continue');
 
@@ -209,7 +242,7 @@ Scenario('Request and upload translation for urgent hearing order', async ({ I, 
   await draftStandardDirectionsEventPage.makeAllocationDecision(allocationDecisionFields.judgeLevelConfirmation.no, allocationDecisionFields.allocationLevel.magistrate, 'some reason');
   await I.goToNextPage();
   await draftStandardDirectionsEventPage.uploadUrgentHearingOrder(config.testPdfFileUho);
-  I.see('Is translation needed?');
+  I.waitForText('Is translation needed?');
   draftStandardDirectionsEventPage.selectTranslationRequirement(draftStandardDirectionsEventPage.fields.urgent.translationRequirement.englishToWelsh);
   await I.completeEvent('Save and continue');
 
@@ -262,7 +295,7 @@ Scenario('Upload translation for generated order (closed)', async ({ I, caseView
 Scenario('Request and upload translation for notice of hearing', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageHearingsEventPage }) => {
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  let hearingStartDate = moment().year(2012).month(3).day(9).hours(10).minutes(30).seconds(15).milliseconds(0).toDate();
+  let hearingStartDate = moment().set({'year':2012,'month':3,'date':9,'hour':10,'minutes':30,'seconds':15,'milliseconds':0}).toDate();
   let hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
