@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
@@ -27,9 +28,11 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -51,6 +54,7 @@ public class SubmittedCaseEventHandler {
     private final OutsourcedCaseContentProvider outsourcedCaseContentProvider;
     private final PaymentService paymentService;
     private final EventService eventService;
+    private final TranslationRequestService translationRequestService;
 
     @Async
     @EventListener
@@ -129,4 +133,15 @@ public class SubmittedCaseEventHandler {
             .type(ApplicantType.LOCAL_AUTHORITY).build();
         eventService.publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), applicant));
     }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(SubmittedCaseEvent event) {
+        C110A c110A = event.getCaseData().getC110A();
+        translationRequestService.sendRequest(event.getCaseData(),
+            Optional.ofNullable(c110A.getTranslationRequirements()),
+            c110A.getSubmittedForm(), c110A.asLabel()
+        );
+    }
+
 }
