@@ -158,7 +158,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
             .thenReturn(COVERSHEET_REPRESENTATIVE);
 
         when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty()),
-            Language.ENGLISH))
+            any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
             .thenReturn(COVERSHEET_RESPONDENT);
