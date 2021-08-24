@@ -34,7 +34,9 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .returnApplication(returnApplication)
             .dateSubmitted(LocalDate.of(2050, 5, 19))
-            .submittedForm(submittedForm)
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .submittedForm(submittedForm)
+                .build())
             .state(State.OPEN)
             .build();
 
@@ -46,7 +48,7 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
             .document(buildSubmittedForm("mockSubmittedForm_returned.pdf"))
             .build();
 
-        assertThat(extractedCaseData.getSubmittedForm()).isNull();
+        assertThat(extractedCaseData.getC110A().getSubmittedForm()).isNull();
         assertThat(extractedCaseData.getReturnApplication()).isEqualTo(expectedReturnApplication);
     }
 

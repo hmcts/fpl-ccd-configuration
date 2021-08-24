@@ -20,7 +20,7 @@ public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
 
         template.setCourt(courtService.getCourtName(caseData));
         template.setLocalAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
-        template.setDocumentLink(getDocumentUrl(caseData.getSubmittedForm()));
+        template.setDocumentLink(getDocumentUrl(caseData.getC110A().getSubmittedForm()));
 
         return template;
     }
