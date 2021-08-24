@@ -61,6 +61,11 @@ class TranslatableItemTest {
         }
 
         @Override
+        public DocumentReference getDocument() {
+            throw new RuntimeException("Not implemented");
+        }
+
+        @Override
         public LanguageTranslationRequirement getTranslationRequirements() {
             return translationRequirements;
         }

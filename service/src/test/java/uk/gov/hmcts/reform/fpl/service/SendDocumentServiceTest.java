@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
@@ -135,7 +136,7 @@ class SendDocumentServiceTest {
                 .documentsSentToParty(wrapElements(sentDocument))
                 .build());
 
-            when(sendLetters.send(any(), any(), any(), any()))
+            when(sendLetters.send(any(), any(), any(), any(), Language.ENGLISH))
                 .thenReturn(sentDocuments);
 
             when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(), sentDocuments))
@@ -144,7 +145,8 @@ class SendDocumentServiceTest {
             underTest.sendDocuments(caseData, List.of(document), List.of(recipient1, recipient2, recipient3));
 
             verify(sendLetters)
-                .send(document, List.of(recipient3), caseData.getId(), caseData.getFamilyManCaseNumber());
+                .send(document, List.of(recipient3), caseData.getId(), caseData.getFamilyManCaseNumber(),
+                    Language.ENGLISH);
 
             verify(caseService)
                 .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
@@ -174,10 +176,10 @@ class SendDocumentServiceTest {
                     .documentsSentToParty(wrapElements(sentDocument2ForRecipient1, sentDocument2ForRecipient2))
                     .build());
 
-            when(sendLetters.send(eq(document1), any(), any(), any()))
+            when(sendLetters.send(eq(document1), any(), any(), any(), Language.ENGLISH))
                 .thenReturn(List.of(sentDocument1ForRecipient1, sentDocument1ForRecipient2));
 
-            when(sendLetters.send(eq(document2), any(), any(), any()))
+            when(sendLetters.send(eq(document2), any(), any(), any(), Language.ENGLISH))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
             when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
@@ -191,10 +193,12 @@ class SendDocumentServiceTest {
             underTest.sendDocuments(caseData, List.of(document1, document2), List.of(recipient1, recipient2));
 
             verify(sendLetters)
-                .send(document1, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber());
+                .send(document1, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
+                    Language.ENGLISH);
 
             verify(sendLetters)
-                .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber());
+                .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
+                    Language.ENGLISH);
 
             verify(caseService)
                 .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));

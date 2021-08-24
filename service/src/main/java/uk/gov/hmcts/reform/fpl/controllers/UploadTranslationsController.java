@@ -69,12 +69,14 @@ public class UploadTranslationsController extends CallbackController {
 
         TranslatableItem translatableItem = lastTranslatedItem.getValue();
 
-        publishEvent(new TranslationUploadedEvent(
-            getCaseData(callbackRequest),
-            translatableItem.getTranslatedDocument(),
-            translatableItem.getModifiedItemType(),
-            translatableItem.getSelectedOthers()
-        ));
+        publishEvent(TranslationUploadedEvent.builder()
+            .caseData(getCaseData(callbackRequest))
+            .originalDocument(translatableItem.getDocument())
+            .amendedDocument(translatableItem.getTranslatedDocument())
+            .amendedOrderType(translatableItem.getModifiedItemType())
+            .selectedOthers(translatableItem.getSelectedOthers())
+            .translationRequirements(translatableItem.getTranslationRequirements())
+        );
     }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
@@ -45,7 +46,7 @@ class DocmosisCoverDocumentsServiceTest {
     @Test
     void shouldGenerateExpectedDocumentWhenAllDataProvided() {
         DocmosisDocument pdfDocument = underTest.createCoverDocuments(FAMILY_MAN_NUMBER,
-            CCD_CASE_NUMBER, testRepresentative);
+            CCD_CASE_NUMBER, testRepresentative, Language.ENGLISH);
 
         assertThat(pdfDocument).isEqualTo(docmosisDocument);
     }

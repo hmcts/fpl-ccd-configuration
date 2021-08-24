@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -39,7 +40,7 @@ public class SendLetterService {
     private final UploadDocumentService uploadDocumentService;
 
     public List<SentDocument> send(DocumentReference mainDocument, List<Recipient> recipients, Long caseId,
-                                   String familyManCaseNumber) {
+                                   String familyManCaseNumber, Language language) {
         List<SentDocument> sentDocuments = new ArrayList<>();
         byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
         var mainDocumentCopy = uploadDocument(mainDocumentBinary, mainDocument.getFilename());
@@ -48,7 +49,7 @@ public class SendLetterService {
         for (Recipient recipient : recipients) {
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
                 caseId,
-                recipient).getBytes();
+                recipient, language).getBytes();
 
             String coverDocumentEncoded = Base64.getEncoder().encodeToString(coverDocument);
 

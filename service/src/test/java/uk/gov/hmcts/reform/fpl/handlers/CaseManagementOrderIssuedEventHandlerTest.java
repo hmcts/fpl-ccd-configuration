@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
@@ -145,7 +146,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings(value = {"unchecked", "rawtypes"})
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
@@ -172,7 +173,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings(value = {"unchecked", "rawtypes"})
     void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
         given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))
@@ -220,6 +221,15 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(sendDocumentService).sendDocuments(
             CASE_DATA, List.of(ORDER), newArrayList(otherRecipient2, otherRecipient3));
+    }
+
+    @Test
+    void shouldNotNotifyPostRepresentativesWhenTranslationIsRequired() {
+        underTest.sendDocumentToPostRepresentatives(new CaseManagementOrderIssuedEvent(CASE_DATA, HearingOrder.builder()
+            .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+            .build()));
+
+        verifyNoInteractions(coreCaseDataService, sendDocumentService);
     }
 
     @Test

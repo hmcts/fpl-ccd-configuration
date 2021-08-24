@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -136,6 +137,11 @@ public class CaseManagementOrderIssuedEventHandler {
     @Async
     @EventListener
     public void sendDocumentToPostRepresentatives(final CaseManagementOrderIssuedEvent event) {
+
+        if (event.getCmo().getNeedTranslation() == YesNo.YES) {
+            return;
+        }
+
         if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
             CaseData caseData = event.getCaseData();
             HearingOrder issuedCmo = event.getCmo();

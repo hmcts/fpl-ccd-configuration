@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -314,9 +315,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
             .willReturn(COVERSHEET_RESPONDENT);
 
-        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue()))
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue(),
+            Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_REPRESENTATIVE_BINARY));
-        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty()))
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty(),
+            Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
 
         postSubmittedEvent(toCallBackRequest(cd, cdb));

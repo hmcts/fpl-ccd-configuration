@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.ArrayList;
@@ -36,6 +37,11 @@ public class SendDocumentService {
     private final SentDocumentHistoryService sentDocuments;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
+        sendDocuments(caseData,documentToBeSent,parties,Language.ENGLISH);
+    }
+
+    public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties,
+                              Language language) {
 
         List<Recipient> recipients = defaultIfNull(parties, emptyList());
 
@@ -54,7 +60,9 @@ public class SendDocumentService {
                 .flatMap(document -> sendLetters.send(document,
                     deliverableRecipients,
                     caseData.getId(),
-                    caseData.getFamilyManCaseNumber()).stream())
+                    caseData.getFamilyManCaseNumber(),
+                    language
+                ).stream())
                 .collect(toList());
 
             List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(

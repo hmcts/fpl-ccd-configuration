@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -106,6 +107,11 @@ public class SendNoticeOfHearingHandler {
     @Async
     @EventListener
     public void sendNoticeOfHearingByPost(final SendNoticeOfHearing event) {
+
+        if (event.getSelectedHearing().getNeedTranslation() == YesNo.YES) {
+            return;
+        }
+
         final CaseData caseData = event.getCaseData();
         final DocumentReference noticeOfHearing = event.getSelectedHearing().getNoticeOfHearing();
         final List<Element<Other>> others = event.getSelectedHearing().getOthers();

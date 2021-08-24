@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -78,7 +79,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     void setup() {
         givenFplService();
         given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BINARIES);
-        given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any()))
+        given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any(), Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
         given(uploadDocumentService.uploadPDF(eq(COVERSHEET_BINARIES), any())).willReturn(COVERSHEET_DOCUMENT);
         given(uploadDocumentService.uploadPDF(eq(MAIN_DOCUMENT_BINARIES), any())).willReturn(MAIN_DOCUMENT);
@@ -103,7 +104,8 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
         verify(documentDownloadService).downloadDocument(documentToBeSent.getBinaryUrl());
         verify(sendLetterApi).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
         verify(uploadDocumentService).uploadPDF(COVERSHEET_BINARIES, "Coversheet.pdf");
-        verify(docmosisCoverDocumentsService).createCoverDocuments(FAMILY_MAN_NO, caseDetails.getId(), representative1);
+        verify(docmosisCoverDocumentsService).createCoverDocuments(FAMILY_MAN_NO, caseDetails.getId(), representative1,
+            Language.ENGLISH);
 
         List<SentDocuments> documentsSentToParties = unwrapElements(mapper.convertValue(
             callbackResponse.getData().get("documentsSentToParties"), new TypeReference<>() {
@@ -145,7 +147,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     }
 
     private void verifyNoDocumentSent() {
-        verify(docmosisCoverDocumentsService, never()).createCoverDocuments(any(), any(), any());
+        verify(docmosisCoverDocumentsService, never()).createCoverDocuments(any(), any(), any(), Language.ENGLISH);
         verify(documentDownloadService, never()).downloadDocument(any());
         verify(uploadDocumentService, never()).uploadPDF(any(), any());
         verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
