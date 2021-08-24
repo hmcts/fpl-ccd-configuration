@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.fpl.events.TranslationUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentRequest;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 
@@ -62,15 +64,20 @@ public class TranslationUploadedEventHandler {
             ));
             allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
 
-            sendDocumentService.sendDocuments(caseData,
-                List.of(orderEvent.getOriginalDocument()),
-                new ArrayList<>(allRecipients),
-                orderEvent.getTranslationRequirements().getSourceLanguage().get());
+            sendDocumentService.sendDocuments(
+                new SendDocumentRequest(caseData,
+                    List.of(
+                        DocumentReferenceWithLanguage.builder()
+                            .documentReference(orderEvent.getOriginalDocument())
+                            .language(orderEvent.getTranslationRequirements().getSourceLanguage().get())
+                            .build(),
+                        DocumentReferenceWithLanguage.builder()
+                            .documentReference(orderEvent.getAmendedDocument())
+                            .language(orderEvent.getTranslationRequirements().getTargetLanguage().get())
+                            .build()
+                    ), new ArrayList<>(allRecipients)));
 
-            sendDocumentService.sendDocuments(caseData,
-                List.of(orderEvent.getAmendedDocument()),
-                new ArrayList<>(allRecipients),
-                orderEvent.getTranslationRequirements().getTargetLanguage().get());
+
         }
     }
 }

@@ -7,8 +7,9 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentRequest;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 
@@ -25,6 +26,8 @@ import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLI
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType.STANDARD_DIRECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class TranslationUploadedEventHandlerTest {
@@ -98,14 +101,17 @@ class TranslationUploadedEventHandlerTest {
             .amendedOrderType("type")
             .build());
 
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(AMENDED_DOCUMENT),
-            List.of(RECIPIENT_1),
-            Language.ENGLISH);
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(ORIGINAL_DOCUMENT),
-            List.of(RECIPIENT_1),
-            Language.WELSH);
+        verify(sendDocumentService).sendDocuments(
+            new SendDocumentRequest(CASE_DATA, List.of(
+                DocumentReferenceWithLanguage.builder()
+                    .documentReference(ORIGINAL_DOCUMENT)
+                    .language(WELSH)
+                    .build(),
+                DocumentReferenceWithLanguage.builder()
+                    .documentReference(AMENDED_DOCUMENT)
+                    .language(ENGLISH)
+                    .build()
+            ), List.of(RECIPIENT_1)));
 
         verifyNoInteractions(modifiedDocumentCommonEventHandler);
     }
@@ -128,15 +134,16 @@ class TranslationUploadedEventHandlerTest {
             .amendedOrderType("type")
             .build());
 
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(AMENDED_DOCUMENT),
-            List.of(RECIPIENT_1),
-            Language.WELSH);
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(ORIGINAL_DOCUMENT),
-            List.of(RECIPIENT_1),
-            Language.ENGLISH);
-
+        verify(sendDocumentService).sendDocuments(
+            new SendDocumentRequest(CASE_DATA, List.of(
+                DocumentReferenceWithLanguage.builder()
+                    .documentReference(ORIGINAL_DOCUMENT)
+                    .language(ENGLISH)
+                    .build(),
+                DocumentReferenceWithLanguage.builder()
+                    .documentReference(AMENDED_DOCUMENT)
+                    .language(WELSH)
+                    .build()), List.of(RECIPIENT_1)));
         verifyNoInteractions(modifiedDocumentCommonEventHandler);
     }
 
@@ -159,14 +166,18 @@ class TranslationUploadedEventHandlerTest {
             .amendedOrderType("type")
             .build());
 
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(AMENDED_DOCUMENT),
-            List.of(RECIPIENT_1, RECIPIENT_3),
-            Language.WELSH);
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(ORIGINAL_DOCUMENT),
-            List.of(RECIPIENT_1, RECIPIENT_3),
-            Language.ENGLISH);
+        verify(sendDocumentService).sendDocuments(
+            new SendDocumentRequest(CASE_DATA,
+                List.of(DocumentReferenceWithLanguage.builder()
+                        .documentReference(ORIGINAL_DOCUMENT)
+                        .language(ENGLISH)
+                        .build(),
+                    DocumentReferenceWithLanguage.builder()
+                        .documentReference(AMENDED_DOCUMENT)
+                        .language(WELSH)
+                        .build()),
+                List.of(RECIPIENT_1, RECIPIENT_3)
+            ));
 
         verifyNoInteractions(modifiedDocumentCommonEventHandler);
     }
@@ -190,14 +201,18 @@ class TranslationUploadedEventHandlerTest {
             .amendedOrderType("type")
             .build());
 
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(AMENDED_DOCUMENT),
-            List.of(RECIPIENT_1, RECIPIENT_3),
-            Language.WELSH);
-        verify(sendDocumentService).sendDocuments(CASE_DATA,
-            List.of(ORIGINAL_DOCUMENT),
-            List.of(RECIPIENT_1, RECIPIENT_3),
-            Language.ENGLISH);
+        verify(sendDocumentService).sendDocuments(
+            new SendDocumentRequest(CASE_DATA,
+                List.of(DocumentReferenceWithLanguage.builder()
+                        .documentReference(ORIGINAL_DOCUMENT)
+                        .language(ENGLISH)
+                        .build(),
+                    DocumentReferenceWithLanguage.builder()
+                        .documentReference(AMENDED_DOCUMENT)
+                        .language(WELSH)
+                        .build()),
+                List.of(RECIPIENT_1, RECIPIENT_3)
+            ));
 
         verifyNoInteractions(modifiedDocumentCommonEventHandler);
     }

@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.ArrayList;
@@ -37,38 +37,41 @@ public class SendDocumentService {
     private final SentDocumentHistoryService sentDocuments;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
-        sendDocuments(caseData,documentToBeSent,parties,Language.ENGLISH);
+        sendDocuments(new SendDocumentRequest(caseData, documentToBeSent.stream()
+            .map(doc -> DocumentReferenceWithLanguage.builder()
+                .documentReference(doc)
+                .build())
+            .collect(toList()), parties));
     }
 
-    public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties,
-                              Language language) {
+    public void sendDocuments(SendDocumentRequest sendDocumentRequest) {
 
-        List<Recipient> recipients = defaultIfNull(parties, emptyList());
+        List<Recipient> recipients = defaultIfNull(sendDocumentRequest.getParties(), emptyList());
 
         List<Recipient> deliverableRecipients = recipients.stream()
             .filter(Recipient::isDeliverable)
             .collect(toList());
 
         if (recipients.size() != deliverableRecipients.size()) {
-            log.error("Case {} has {} recipients with incomplete postal information", caseData.getId(),
+            log.error("Case {} has {} recipients with incomplete postal information", sendDocumentRequest.getCaseData().getId(),
                 recipients.size() - deliverableRecipients.size());
         }
 
-        if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
+        if (isNotEmpty(deliverableRecipients) && isNotEmpty(sendDocumentRequest.getDocumentToBeSent())) {
 
-            List<SentDocument> docs = documentToBeSent.stream()
-                .flatMap(document -> sendLetters.send(document,
+            List<SentDocument> docs = sendDocumentRequest.getDocumentToBeSent().stream()
+                .flatMap(document -> sendLetters.send(document.getDocumentReference(),
                     deliverableRecipients,
-                    caseData.getId(),
-                    caseData.getFamilyManCaseNumber(),
-                    language
+                    sendDocumentRequest.getCaseData().getId(),
+                    sendDocumentRequest.getCaseData().getFamilyManCaseNumber(),
+                    document.getLanguage()
                 ).stream())
                 .collect(toList());
 
             List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
-                caseData.getDocumentsSentToParties(), docs);
+                sendDocumentRequest.getCaseData().getDocumentsSentToParties(), docs);
 
-            caseService.updateCase(caseData.getId(), Map.of("documentsSentToParties", documentsSent));
+            caseService.updateCase(sendDocumentRequest.getCaseData().getId(), Map.of("documentsSentToParties", documentsSent));
         }
     }
 
