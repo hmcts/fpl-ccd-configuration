@@ -79,7 +79,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     void setup() {
         givenFplService();
         given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BINARIES);
-        given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any(), Language.ENGLISH))
+        given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any(), any()))
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
         given(uploadDocumentService.uploadPDF(eq(COVERSHEET_BINARIES), any())).willReturn(COVERSHEET_DOCUMENT);
         given(uploadDocumentService.uploadPDF(eq(MAIN_DOCUMENT_BINARIES), any())).willReturn(MAIN_DOCUMENT);
@@ -147,7 +147,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     }
 
     private void verifyNoDocumentSent() {
-        verify(docmosisCoverDocumentsService, never()).createCoverDocuments(any(), any(), any(), Language.ENGLISH);
+        verify(docmosisCoverDocumentsService, never()).createCoverDocuments(any(), any(), any(), any());
         verify(documentDownloadService, never()).downloadDocument(any());
         verify(uploadDocumentService, never()).uploadPDF(any(), any());
         verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));

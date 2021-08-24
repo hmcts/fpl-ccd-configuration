@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -185,7 +184,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         given(documentDownloadService.downloadDocument(ORDER.getBinaryUrl())).willReturn(ORDER_BINARY);
         given(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
             .willReturn(ORDER_DOCUMENT);
-        given(documentService.createCoverDocuments(any(), any(), eq(OTHER_REP_BY_POST.getValue()), Language.ENGLISH))
+        given(documentService.createCoverDocuments(any(), any(), eq(OTHER_REP_BY_POST.getValue()), any()))
             .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_OTHER_REPRESENTATIVE_BINARY).build());
         given(uploadDocumentService.uploadPDF(COVERSHEET_OTHER_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
             .willReturn(COVERSHEET_OTHER_REPRESENTATIVE);

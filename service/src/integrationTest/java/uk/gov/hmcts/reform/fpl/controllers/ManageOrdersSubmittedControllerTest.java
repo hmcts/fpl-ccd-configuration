@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -191,13 +190,13 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
             .thenReturn(ORDER_DOCUMENT);
 
-        when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), Language.ENGLISH))
+        when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
             .thenReturn(COVERSHEET_REPRESENTATIVE);
 
         when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty()),
-            Language.ENGLISH))
+            any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
             .thenReturn(COVERSHEET_RESPONDENT);
