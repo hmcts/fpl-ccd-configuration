@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,10 +29,10 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -55,11 +54,16 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
     @MockBean(FeatureToggleService.class)
 })
 class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
-    private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);
-    private static final DocumentReference ORIGINAL_DOCUMENT = mock(DocumentReference.class);
-    private static final DocumentReference TRANSLATED_DOCUMENT = mock(DocumentReference.class);
-    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
+    private static final GeneratedOrder ORDER = GeneratedOrder.builder()
+        .dateTimeIssued(LocalDateTime.now())
+        .type("Care order")
+        .build();
     private static final String BINARY_URL = "/documents/some-random-string/binary";
+    private static final DocumentReference ORIGINAL_DOCUMENT = mock(DocumentReference.class);
+    private static final DocumentReference TRANSLATED_DOCUMENT = DocumentReference.builder()
+        .binaryUrl(BINARY_URL)
+        .build();
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
     private static final long CASE_ID = 12345L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final String CHILD_LAST_NAME = "Smith";
@@ -84,13 +88,6 @@ class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
     @Autowired
     private TranslationUploadedEventHandler underTest;
-
-    @BeforeEach
-    void mocks() {
-        when(ORDER.isNewVersion()).thenReturn(true);
-        when(ORDER.getType()).thenReturn("Care order");
-        when(TRANSLATED_DOCUMENT.getBinaryUrl()).thenReturn(BINARY_URL);
-    }
 
     @Test
     void notifyLocalAuthority() {
