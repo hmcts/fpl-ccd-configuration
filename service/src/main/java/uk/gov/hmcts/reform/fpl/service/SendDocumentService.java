@@ -37,11 +37,13 @@ public class SendDocumentService {
     private final SentDocumentHistoryService sentDocuments;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
-        sendDocuments(new SendDocumentRequest(caseData, documentToBeSent.stream()
-            .map(doc -> DocumentReferenceWithLanguage.builder()
-                .documentReference(doc)
-                .build())
-            .collect(toList()), parties));
+        sendDocuments(new SendDocumentRequest(caseData,
+            defaultIfNull(documentToBeSent, new ArrayList<DocumentReference>()).stream()
+                .map(doc -> DocumentReferenceWithLanguage.builder()
+                    .documentReference(doc)
+                    .build())
+                .collect(toList()),
+            parties));
     }
 
     public void sendDocuments(SendDocumentRequest sendDocumentRequest) {

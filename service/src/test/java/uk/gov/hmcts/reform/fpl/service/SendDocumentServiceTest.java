@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -37,12 +38,14 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ExtendWith({MockitoExtension.class, TestLogsExtension.class})
+@ExtendWith( {MockitoExtension.class, TestLogsExtension.class})
 class SendDocumentServiceTest {
 
     @Mock
@@ -136,7 +139,7 @@ class SendDocumentServiceTest {
                 .documentsSentToParty(wrapElements(sentDocument))
                 .build());
 
-            when(sendLetters.send(any(), any(), any(), any(), Language.ENGLISH))
+            when(sendLetters.send(any(), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(sentDocuments);
 
             when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(), sentDocuments))
@@ -146,7 +149,7 @@ class SendDocumentServiceTest {
 
             verify(sendLetters)
                 .send(document, List.of(recipient3), caseData.getId(), caseData.getFamilyManCaseNumber(),
-                    Language.ENGLISH);
+                    ENGLISH);
 
             verify(caseService)
                 .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
@@ -176,10 +179,10 @@ class SendDocumentServiceTest {
                     .documentsSentToParty(wrapElements(sentDocument2ForRecipient1, sentDocument2ForRecipient2))
                     .build());
 
-            when(sendLetters.send(eq(document1), any(), any(), any(), Language.ENGLISH))
+            when(sendLetters.send(eq(document1), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument1ForRecipient1, sentDocument1ForRecipient2));
 
-            when(sendLetters.send(eq(document2), any(), any(), any(), Language.ENGLISH))
+            when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
             when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
@@ -194,11 +197,73 @@ class SendDocumentServiceTest {
 
             verify(sendLetters)
                 .send(document1, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
-                    Language.ENGLISH);
+                    ENGLISH);
 
             verify(sendLetters)
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
-                    Language.ENGLISH);
+                    ENGLISH);
+
+            verify(caseService)
+                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+
+            assertThat(logs.getErrors()).isEmpty();
+        }
+
+        @Test
+        void shouldSendMultipleDocumentsForMultipleRecipientsAndDifferentLanguage() {
+            final DocumentReference document1 = testDocumentReference();
+            final DocumentReference document2 = testDocumentReference();
+
+            final Recipient recipient1 = recipient("Test 1", testAddress());
+            final Recipient recipient2 = recipient("Test 2", testAddress());
+
+            final SentDocument sentDocument1ForRecipient1 = sentDocument();
+            final SentDocument sentDocument1ForRecipient2 = sentDocument();
+            final SentDocument sentDocument2ForRecipient1 = sentDocument();
+            final SentDocument sentDocument2ForRecipient2 = sentDocument();
+
+            final List<Element<SentDocuments>> sentDocumentsHistory = wrapElements(
+                SentDocuments.builder()
+                    .documentsSentToParty(wrapElements(sentDocument1ForRecipient1, sentDocument1ForRecipient2))
+                    .build(),
+                SentDocuments.builder()
+                    .documentsSentToParty(wrapElements(sentDocument2ForRecipient1, sentDocument2ForRecipient2))
+                    .build());
+
+            when(sendLetters.send(eq(document1), any(), any(), any(), eq(WELSH)))
+                .thenReturn(List.of(sentDocument1ForRecipient1, sentDocument1ForRecipient2));
+
+            when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
+                .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
+
+            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
+                List.of(
+                    sentDocument1ForRecipient1,
+                    sentDocument1ForRecipient2,
+                    sentDocument2ForRecipient1,
+                    sentDocument2ForRecipient2)))
+                .thenReturn(sentDocumentsHistory);
+
+            underTest.sendDocuments(
+                new SendDocumentRequest(
+                    caseData, List.of(
+                    DocumentReferenceWithLanguage.builder()
+                        .documentReference(document1)
+                        .language(Language.WELSH)
+                        .build(),
+                    DocumentReferenceWithLanguage.builder()
+                        .documentReference(document2)
+                        .build()
+                ), List.of(recipient1, recipient2))
+            );
+
+            verify(sendLetters)
+                .send(document1, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
+                    WELSH);
+
+            verify(sendLetters)
+                .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
+                    ENGLISH);
 
             verify(caseService)
                 .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));

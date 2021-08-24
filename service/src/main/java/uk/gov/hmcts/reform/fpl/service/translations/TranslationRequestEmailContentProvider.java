@@ -19,7 +19,9 @@ public class TranslationRequestEmailContentProvider {
         + ".gov.uk";
 
     public String generate(LanguageTranslationRequirement language) {
-        return new StringSubstitutor(Map.of("targetLanguage", language.getTargetLanguage().get())).replace(TEMPLATE);
+        return new StringSubstitutor(Map.of(
+            "targetLanguage", language.getTargetLanguage().get().getLabel())
+        ).replace(TEMPLATE);
     }
 
 }
