@@ -58,6 +58,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -363,6 +364,53 @@ class DraftOrdersApprovedEventHandlerTest {
         verify(sendDocumentService).getStandardRecipients(caseData);
         verify(sendDocumentService).sendDocuments(caseData,
             List.of(hearingOrder1.getOrder(), hearingOrder2.getOrder()),
+            List.of(representative, respondent, otherParty));
+    }
+
+    @Test
+    void shouldPostOrderDocumentToRecipientsWhenServingOthersIsEnabledFilterIfTranslationNeeded() {
+        final Other firstOther = Other.builder().name("other1")
+            .address(Address.builder().postcode("SE1").build()).build();
+
+        final HearingOrder hearingOrder1 = hearingOrder(wrapElements(firstOther));
+        final HearingOrder hearingOrder2 = hearingOrder().toBuilder()
+            .translationRequirements(WELSH_TO_ENGLISH)
+            .build();
+
+        final Representative representative = Representative.builder()
+            .fullName("Postal Rep")
+            .servingPreferences(POST)
+            .address(testAddress())
+            .build();
+
+        final RespondentParty respondent = RespondentParty.builder()
+            .firstName("Postal")
+            .lastName("Person")
+            .address(testAddress())
+            .build();
+
+        final List<HearingOrder> orders = List.of(hearingOrder1, hearingOrder2);
+
+        final CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .representatives(wrapElements(representative))
+            .respondents1(wrapElements(Respondent.builder().party(respondent).build()))
+            .others(Others.builder().firstOther(firstOther).build())
+            .build();
+
+        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
+        Party otherParty = firstOther.toParty();
+        given(sendDocumentService.getStandardRecipients(caseData))
+            .willReturn(newArrayList(representative, respondent, otherParty));
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(caseData), any(), any()))
+            .willReturn(Set.of());
+        given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(any())).willReturn(Set.of());
+
+        underTest.sendDocumentToPostRecipients(new DraftOrdersApproved(caseData, orders));
+
+        verify(sendDocumentService).getStandardRecipients(caseData);
+        verify(sendDocumentService).sendDocuments(caseData,
+            List.of(hearingOrder1.getOrder()),
             List.of(representative, respondent, otherParty));
     }
 
