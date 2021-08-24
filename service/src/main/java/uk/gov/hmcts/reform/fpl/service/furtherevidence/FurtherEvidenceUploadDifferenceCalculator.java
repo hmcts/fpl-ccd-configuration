@@ -43,27 +43,27 @@ public class FurtherEvidenceUploadDifferenceCalculator {
 
     private List<Element<SupportingEvidenceBundle>> getElements(CaseData caseData) {
         List<Element<SupportingEvidenceBundle>> list = new ArrayList<>();
-        list.addAll(getElements1(caseData));
-        list.addAll(getElements2(caseData));
-        list.addAll(getElements3(caseData));
+        list.addAll(getHearingFurtherEvidenceDocuments(caseData));
+        list.addAll(getRespondentStatements(caseData));
+        list.addAll(getFurtherEvidenceDocuments(caseData));
         return list.stream().filter(p ->
             p.getValue().getNeedTranslation() == YesNo.YES && !p.getValue().hasBeenTranslated()
         ).collect(Collectors.toList());
     }
 
-    private List<Element<SupportingEvidenceBundle>> getElements1(CaseData caseData) {
+    private List<Element<SupportingEvidenceBundle>> getHearingFurtherEvidenceDocuments(CaseData caseData) {
         return caseData.getHearingFurtherEvidenceDocuments()
             .stream()
             .flatMap(x -> x.getValue().getSupportingEvidenceBundle().stream())
             .collect(Collectors.toList());
     }
 
-    private List<Element<SupportingEvidenceBundle>> getElements2(CaseData caseData) {
+    private List<Element<SupportingEvidenceBundle>> getRespondentStatements(CaseData caseData) {
         return caseData.getRespondentStatements().stream()
             .flatMap(a -> a.getValue().getSupportingEvidenceBundle().stream()).collect(Collectors.toList());
     }
 
-    private List<Element<SupportingEvidenceBundle>> getElements3(CaseData caseData) {
+    private List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocuments(CaseData caseData) {
         return defaultIfNull(caseData.getFurtherEvidenceDocuments(), new ArrayList<>());
     }
 

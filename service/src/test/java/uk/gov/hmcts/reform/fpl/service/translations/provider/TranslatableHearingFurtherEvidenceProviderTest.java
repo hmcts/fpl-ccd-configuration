@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.service.translations.provider.decorator.SupportingEvidenceBundleTranslatorDecorator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -180,7 +181,7 @@ class TranslatableHearingFurtherEvidenceProviderTest {
 
             when(time.now()).thenReturn(NOW);
 
-            List<Element<HearingFurtherEvidenceBundle>> bundles = new java.util.ArrayList<>();
+            List<Element<HearingFurtherEvidenceBundle>> bundles = new ArrayList<>();
             bundles.add(element(UUID_1, HearingFurtherEvidenceBundle.builder()
                 .supportingEvidenceBundle(
                     List.of(element(SELECTED_ORDER_ID, SupportingEvidenceBundle.builder().build())))
@@ -209,7 +210,7 @@ class TranslatableHearingFurtherEvidenceProviderTest {
 
             when(time.now()).thenReturn(NOW);
 
-            List<Element<SupportingEvidenceBundle>> bundles = new java.util.ArrayList<>();
+            List<Element<SupportingEvidenceBundle>> bundles = new ArrayList<>();
 
             bundles.add(element(UUID_1, A_BUNDLE));
             bundles.add(element(SELECTED_ORDER_ID, SupportingEvidenceBundle.builder().build()));
@@ -242,7 +243,7 @@ class TranslatableHearingFurtherEvidenceProviderTest {
         void applyMatchedOrderNotFound() {
             when(time.now()).thenReturn(NOW);
 
-            List<Element<SupportingEvidenceBundle>> bundles = new java.util.ArrayList<>();
+            List<Element<SupportingEvidenceBundle>> bundles = new ArrayList<>();
 
             bundles.add(element(UUID_1, A_BUNDLE));
             bundles.add(element(UUID_2, ANOTHER_BUNDLE));

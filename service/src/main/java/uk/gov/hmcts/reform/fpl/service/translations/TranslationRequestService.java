@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 
 import java.net.URLConnection;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -50,7 +49,7 @@ public class TranslationRequestService {
 
         EmailAttachment originalDocument = document(
             defaultIfNull(URLConnection.guessContentTypeFromName(document.getFilename()), "application/octet-stream"),
-            Arrays.copyOf(originalDocumentContent, originalDocumentContent.length),
+            originalDocumentContent,
             document.getFilename());
 
         EmailAttachment translationRequest = document(RenderFormat.WORD.getMediaType(),
