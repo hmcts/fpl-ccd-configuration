@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
+import java.util.List;
+
 @Data
 @Builder
 public class FurtherEvidenceDocumentUploadedData implements NotifyData {
@@ -13,4 +15,5 @@ public class FurtherEvidenceDocumentUploadedData implements NotifyData {
     private String lastName;
     private String userName;
     private String callout;
+    private List<String> documents;
 }

@@ -43,23 +43,41 @@ class HmctsCourtLookupConfigurationTest {
 
     @Test
     void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeIsNull() {
-        Assertions.assertThatThrownBy(() -> configuration.getCourt(null))
+        Assertions.assertThatThrownBy(() -> configuration.getCourts(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Local authority code cannot be null");
     }
 
     @Test
     void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeDoesNotExist() {
-        Assertions.assertThatThrownBy(() -> configuration.getCourt("FAKE"))
+        Assertions.assertThatThrownBy(() -> configuration.getCourts("FAKE"))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Local authority 'FAKE' not found");
     }
 
     @Test
     void shouldReturnCourtInformationWhenLocalAuthorityCodeExists() {
-        List<Court> court = configuration.getCourt(LOCAL_AUTHORITY_CODE);
+        List<Court> court = configuration.getCourts(LOCAL_AUTHORITY_CODE);
 
         assertThat(court).containsExactly(new Court(COURT_NAME, COURT_EMAIL, COURT_CODE));
+    }
+
+    @Test
+    void shouldReturnCourtByItsCode() {
+
+        final Court expectedCourt = Court.builder()
+            .code(COURT_CODE)
+            .name(COURT_NAME)
+            .email(COURT_EMAIL)
+            .build();
+
+        assertThat(configuration.getCourtByCode(COURT_CODE)).contains(expectedCourt);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenCourtWithGivenCodeDoesNotExists() {
+
+        assertThat(configuration.getCourtByCode("NON EXISTING")).isEmpty();
     }
 
 }

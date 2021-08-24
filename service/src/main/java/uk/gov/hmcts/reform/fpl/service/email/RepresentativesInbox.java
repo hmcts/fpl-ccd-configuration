@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -37,29 +39,49 @@ public class RepresentativesInbox {
             throw new IllegalArgumentException("Preference should not be POST");
         }
 
-        LinkedHashSet<String> emails = caseData.getRepresentativesByServedPreference(preference)
+        LinkedHashSet<String> emails = getRepresentativeEmails(caseData, preference);
+        emails.addAll(getRespondentSolicitorEmails(caseData, preference));
+        emails.addAll(getChildrenSolicitorEmails(caseData, preference));
+
+        return emails;
+    }
+
+    public LinkedHashSet<String> getRepresentativeEmails(CaseData caseData,
+                                                         RepresentativeServingPreferences preference) {
+        return caseData.getRepresentativesByServedPreference(preference)
             .stream()
             .map(Representative::getEmail)
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
 
-        emails.addAll(
-            caseData.getAllRespondents().stream()
-                .filter(respondent -> shouldSend(preference, respondent))
-                .map(this::extractEmail)
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toCollection(LinkedHashSet::new))
-        );
+    public HashSet<String> getRepresentativeEmailsFilteredByRole(CaseData caseData,
+                                                                 RepresentativeServingPreferences preference,
+                                                                 List<RepresentativeRole.Type> roles) {
+        return caseData.getRepresentativesByServedPreference(preference)
+            .stream()
+            .filter(representative -> hasRole(representative, roles))
+            .map(Representative::getEmail)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
 
-        emails.addAll(
-            caseData.getAllChildren().stream()
-                .filter(child -> shouldSend(preference, child))
-                .map(this::extractEmail)
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toCollection(LinkedHashSet::new))
-        );
+    public HashSet<String> getRespondentSolicitorEmails(CaseData caseData,
+                                                              RepresentativeServingPreferences preference) {
+        return caseData.getAllRespondents().stream()
+            .filter(respondent -> shouldSend(preference, respondent))
+            .map(this::extractEmail)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
 
-        return emails;
+    public HashSet<String> getChildrenSolicitorEmails(CaseData caseData,
+                                                            RepresentativeServingPreferences preference) {
+        return caseData.getAllChildren().stream()
+            .filter(child -> shouldSend(preference, child))
+            .map(this::extractEmail)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public Set<Recipient> getNonSelectedRespondentRecipientsByPost(CaseData caseData,
@@ -129,5 +151,10 @@ public class RepresentativesInbox {
         return Optional.ofNullable(element.getValue().getSolicitor())
             .map(RespondentSolicitor::getEmail)
             .orElse(null);
+    }
+
+    private static boolean hasRole(Representative rep, List<RepresentativeRole.Type> roles) {
+        RepresentativeRole.Type representativeRole = rep.getRole().getType();
+        return roles.contains(representativeRole);
     }
 }
