@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.fpl.controllers.helper;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -35,8 +37,12 @@ public class UploadTranslationsControllerTestHelper {
     public static final UUID UUID_3 = UUID.randomUUID();
     public static final UUID UUID_4 = UUID.randomUUID();
     public static final UUID UUID_5 = UUID.randomUUID();
+    public static final UUID UUID_6 = UUID.randomUUID();
 
     public static final CaseData CASE_DATA_WITH_ALL_ORDERS = CaseData.builder()
+        .c110A(C110A.builder()
+            .submittedFormTranslationRequirements(ENGLISH_TO_WELSH)
+            .build())
         .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
         .orderCollection(List.of(element(UUID_1, GeneratedOrder.builder()
                 .type("Generated order type")
@@ -63,6 +69,16 @@ public class UploadTranslationsControllerTestHelper {
             .translationRequirements(WELSH_TO_ENGLISH)
             .dateIssued(LocalDate.of(2020, 12, 9))
             .build())))
+        .hearingDetails(List.of(
+            element(UUID_6, HearingBooking.builder()
+                .noticeOfHearing(DocumentReference.builder()
+                    .filename("noticeOfHearing.pdf")
+                    .build())
+                .startDate(LocalDateTime.of(2010, 1, 3, 12, 1, 2))
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .build()
+            )
+        ))
         .noticeOfProceedingsBundle(List.of(element(UUID_3, DocumentBundle.builder()
                 .document(DocumentReference.builder()
                     .filename("noticeo_c6.pdf")
@@ -86,7 +102,9 @@ public class UploadTranslationsControllerTestHelper {
             dlElement(StandardDirectionOrder.COLLECTION_ID, "Gatekeeping order - 11 December 2020"),
             dlElement(UUID_3, "Notice of proceedings (C6)"),
             dlElement(UUID_4, "Notice of proceedings (C6A)"),
-            dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020")
+            dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),
+            dlElement(UUID_6, "Notice of hearing - 3 January 2010"),
+            dlElement(C110A.COLLECTION_ID, "Application (C110A)")
         )).build();
     public static final DocumentReference TEST_DOCUMENT = DocumentReference.buildFromDocument(testDocument());
     public static final byte[] TRANSLATED_DOC_BYTES = "TranslatedDocumentContent".getBytes();

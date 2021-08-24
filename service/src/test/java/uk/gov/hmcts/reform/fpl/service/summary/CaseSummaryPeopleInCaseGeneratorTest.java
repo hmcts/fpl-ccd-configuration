@@ -77,7 +77,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .build();
 
         @Test
-        void shouldPopulateMainContactFromLocalAuthority() {
+        void shouldPopulateMainContactFromDesignatedLocalAuthority() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
                 .email("john.smith@test.com")
@@ -89,13 +89,25 @@ class CaseSummaryPeopleInCaseGeneratorTest {
                 .mainContact("No")
                 .build();
 
-            final LocalAuthority localAuthority = LocalAuthority.builder()
+            final Colleague colleague3 = Colleague.builder()
+                .fullName("Emma White")
+                .mainContact("Yes")
+                .build();
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
                 .name("LA")
+                .designated("Yes")
                 .colleagues(wrapElements(colleague1, colleague2))
                 .build();
 
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .name("LA2")
+                .designated("No")
+                .colleagues(wrapElements(colleague3))
+                .build();
+
             final CaseData caseData = CaseData.builder()
-                .localAuthorities(wrapElements(localAuthority))
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
                 .solicitor(legacySolicitor)
                 .build();
 
@@ -108,13 +120,25 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         }
 
         @Test
-        void shouldNotPopulateMainContactWhenLocalAuthorityDoesNotHaveColleagues() {
-            final LocalAuthority localAuthority = LocalAuthority.builder()
+        void shouldNotPopulateMainContactWhenDesignatedLocalAuthorityDoesNotHaveColleagues() {
+            final Colleague colleague = Colleague.builder()
+                .mainContact("Yes")
+                .fullName("John Smith")
+                .build();
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .designated("Yes")
                 .name("LA")
                 .build();
 
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .designated("No")
+                .name("LA")
+                .colleagues(wrapElements(colleague))
+                .build();
+
             final CaseData caseData = CaseData.builder()
-                .localAuthorities(wrapElements(localAuthority))
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
                 .solicitor(legacySolicitor)
                 .build();
 
@@ -125,7 +149,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         }
 
         @Test
-        void shouldNotPopulateMainContactWhenLocalAuthorityDoesNotHaveOne() {
+        void shouldNotPopulateMainContactWhenDesignatedLocalAuthorityDoesNotHaveOne() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
                 .email("john.smith@test.com")
@@ -139,6 +163,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
                 .name("LA")
+                .designated("Yes")
                 .colleagues(wrapElements(colleague1, colleague2))
                 .build();
 

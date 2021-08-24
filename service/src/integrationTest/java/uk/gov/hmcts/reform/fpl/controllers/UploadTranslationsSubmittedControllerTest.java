@@ -65,7 +65,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final Long CASE_ID = 1614860986487554L;
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String FAMILY_MAN_CASE_NUMBER = "FMN1";
     private static final UUID LETTER_1_ID = randomUUID();
     private static final UUID LETTER_2_ID = randomUUID();
@@ -176,9 +175,10 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(request);
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_1_INBOX), eq(NOTIFICATION_PARAMETERS),
-            eq(NOTIFICATION_REFERENCE)
+            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
+            LOCAL_AUTHORITY_1_INBOX,
+            NOTIFICATION_PARAMETERS,
+            notificationReference(CASE_ID)
         ));
     }
 
@@ -205,7 +205,8 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
             .isEqualTo(List.of(expectedPrintRequest1, expectedPrintRequest2));
 
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(
-            caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {}
+            caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {
+            }
         );
 
         SentDocument expectedRepresentativeDocument = documentSent(
@@ -231,10 +232,10 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData());
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE),
-            eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eq(NOTIFICATION_PARAMETERS),
-            eq(NOTIFICATION_REFERENCE)
-        ));
+            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
+            REPRESENTATIVE_DIGITAL.getValue().getEmail(),
+            NOTIFICATION_PARAMETERS,
+            notificationReference(CASE_ID)));
     }
 
     @Test
@@ -243,9 +244,8 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData());
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(ITEM_TRANSLATED_NOTIFICATION_TEMPLATE), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
-            eq(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
-        ));
+            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE, REPRESENTATIVE_EMAIL.getValue().getEmail(),
+            NOTIFICATION_PARAMETERS, notificationReference(CASE_ID)));
     }
 
     private CaseData caseData() {

@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,6 +29,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
@@ -50,11 +53,13 @@ public class ApplicantLocalAuthorityService {
 
     public LocalAuthority getUserLocalAuthority(CaseData caseData) {
 
-        if (isEmpty(caseData.getLocalAuthorities())) {
-            return migrateFromLegacyApplicant(caseData).orElseGet(this::getFromOrganisation);
-        } else {
-            return caseData.getLocalAuthorities().get(0).getValue();
-        }
+        final Organisation userOrganisation = organisationService.findOrganisation()
+            .orElseThrow(() -> new OrganisationNotFound("Organisation not found for logged in user"));
+
+        return findLocalAuthority(caseData, userOrganisation.getOrganisationIdentifier())
+            .map(Element::getValue)
+            .orElseGet(() -> migrateFromLegacyApplicant(caseData, userOrganisation.getOrganisationIdentifier())
+                .orElse(getLocalAuthority(userOrganisation)));
     }
 
     public void normalisePba(LocalAuthority localAuthority) {
@@ -128,18 +133,18 @@ public class ApplicantLocalAuthorityService {
 
     public List<Element<LocalAuthority>> save(CaseData caseData, LocalAuthorityEventData eventData) {
 
-        final LocalAuthority localAuthority = eventData.getLocalAuthority();
-        localAuthority.setColleagues(updateMainContact(eventData));
+        final LocalAuthority editedLocalAuthority = eventData.getLocalAuthority();
+        final String userOrgId = editedLocalAuthority.getId();
+
+        editedLocalAuthority.setColleagues(updateMainContact(eventData));
 
         final List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
 
-        if (isEmpty(localAuthorities)) {
-            localAuthorities.add(element(localAuthority));
-        } else {
-            localAuthorities.get(0).setValue(localAuthority);
-        }
+        findLocalAuthority(caseData, userOrgId).ifPresentOrElse(
+            laElement -> laElement.setValue(editedLocalAuthority),
+            () -> localAuthorities.add(element(editedLocalAuthority)));
 
-        return localAuthorities;
+        return updateDesignatedLocalAuthority(caseData);
     }
 
     private UUID getMainContactId(List<Element<Colleague>> colleagues) {
@@ -174,10 +179,20 @@ public class ApplicantLocalAuthorityService {
         return Address.builder().build();
     }
 
-    private Optional<LocalAuthority> migrateFromLegacyApplicant(CaseData caseData) {
+    private Optional<LocalAuthority> migrateFromLegacyApplicant(CaseData caseData, String organisationId) {
 
         if (isEmpty(caseData.getAllApplicants())) {
-            return Optional.empty();
+            return empty();
+        }
+
+        final Optional<String> designatedOrgId = getDesignatedOrgId(caseData);
+
+        if (designatedOrgId.isEmpty()) {
+            return empty();
+        }
+
+        if (!designatedOrgId.get().equals(organisationId)) {
+            return empty();
         }
 
         final Optional<Applicant> legacyApplicant = ofNullable(caseData.getAllApplicants().get(0).getValue());
@@ -186,6 +201,7 @@ public class ApplicantLocalAuthorityService {
         return legacyApplicant
             .map(Applicant::getParty)
             .map(party -> LocalAuthority.builder()
+                .id(designatedOrgId.get())
                 .name(party.getOrganisationName())
                 .email(ofNullable(party.getEmail()).map(EmailAddress::getEmail).orElse(null))
                 .legalTeamManager(party.getLegalTeamManager())
@@ -196,7 +212,7 @@ public class ApplicantLocalAuthorityService {
                     .map(Telephone::getTelephoneNumber)
                     .orElse(null))
                 .address(party.getAddress())
-                .colleagues(legacySolicitor.map(this::migrateFromLegacySolicitor).orElse(null))
+                .colleagues(legacySolicitor.map(this::migrateFromLegacySolicitor).orElse(emptyList()))
                 .build());
     }
 
@@ -219,10 +235,7 @@ public class ApplicantLocalAuthorityService {
             .orElse(null);
     }
 
-    private LocalAuthority getFromOrganisation() {
-
-        final Organisation organisation = organisationService.findOrganisation()
-            .orElse(Organisation.builder().build());
+    public LocalAuthority getLocalAuthority(Organisation organisation) {
 
         return LocalAuthority.builder()
             .id(organisation.getOrganisationIdentifier())
@@ -231,4 +244,43 @@ public class ApplicantLocalAuthorityService {
             .build();
     }
 
+    public List<Element<LocalAuthority>> updateDesignatedLocalAuthority(CaseData caseData) {
+
+        final String designatedOrgId = getDesignatedOrgId(caseData).orElse(null);
+
+        caseData.getLocalAuthorities()
+            .stream()
+            .map(Element::getValue)
+            .forEach(la -> la.setDesignated(YesNo.from(Objects.equals(la.getId(), designatedOrgId)).getValue()));
+
+        return caseData.getLocalAuthorities();
+    }
+
+    public LocalAuthority getDesignatedLocalAuthority(CaseData caseData) {
+        return caseData.getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> YES.getValue().equals(la.getDesignated()))
+            .findFirst()
+            .orElseThrow();
+    }
+
+    public Optional<LocalAuthority> getSecondaryLocalAuthority(CaseData caseData) {
+        return caseData.getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> !YES.getValue().equals(la.getDesignated()))
+            .findFirst();
+    }
+
+    public Optional<Element<LocalAuthority>> findLocalAuthority(CaseData caseData, String orgId) {
+
+        return caseData.getLocalAuthorities().stream()
+            .filter(la -> orgId.equals(la.getValue().getId()))
+            .findFirst();
+    }
+
+    private Optional<String> getDesignatedOrgId(CaseData caseData) {
+        return Optional.ofNullable(caseData.getLocalAuthorityPolicy())
+            .map(OrganisationPolicy::getOrganisation)
+            .map(uk.gov.hmcts.reform.ccd.model.Organisation::getOrganisationID);
+    }
 }

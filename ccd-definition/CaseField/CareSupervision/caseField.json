@@ -327,7 +327,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "languageRequirementDescriptionLabel",
-    "Label": "Parties on a case can request orders in Welsh.\n\nIf one party on a case requests this, all parties will receive orders in English and Welsh.\n\nIf they leave the case, or no longer want orders in Welsh, choose the 'No' button below.\nThis will remove the request from the case.",
+    "Label": "Parties on a case can request orders and documents in Welsh, or translations from Welsh to English.\n\nIf they leave the case, or if translation is no longer needed, choose the ‘No’ button below.\nThis will remove the request from the case.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -336,7 +336,35 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "languageRequirement",
-    "Label": "Has any party requested orders in Welsh?",
+    "Label": "Will English or Welsh translations be needed on this case?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementApplication",
+    "Label": "What language are you using to fill in this form?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "Language",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementApplicationNeedWelsh",
+    "Label": "Do you need this form translating into Welsh?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementApplicationNeedEnglish",
+    "Label": "Do you need this form translating into English?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -412,6 +440,52 @@
     "ID": "submittedForm",
     "Label": "C110a Application",
     "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "translatedSubmittedForm",
+    "Label": "Translated document",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormTranslationUploadDateTime",
+    "Label": "Welsh translation upload time",
+    "FieldType": "DateTime",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormTranslationRequirements",
+    "Label": "Welsh translation requirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormNeedTranslation",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormSentForTranslationLabel",
+    "Label": "Sent for translation",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1549,6 +1623,15 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorityPolicy",
     "Label": "Organisation policy",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sharedLocalAuthorityPolicy",
+    "Label": "Secondary local authority policy",
     "FieldType": "OrganisationPolicy",
     "SecurityClassification": "Public",
     "Searchable": "Y"

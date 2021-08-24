@@ -27,7 +27,7 @@ public class CourtSelectionService {
             .map(Court::getCode)
             .orElse(null);
 
-        final List<Court> availableCourts = courtLookup.getCourt(caseData.getCaseLocalAuthority());
+        final List<Court> availableCourts = courtLookup.getCourts(caseData.getCaseLocalAuthority());
 
         return dynamicListService.asDynamicList(availableCourts, selectedCourtCode, Court::getCode, Court::getName);
     }
@@ -37,7 +37,7 @@ public class CourtSelectionService {
             .map(DynamicList::getValueCode)
             .orElse(null);
 
-        return courtLookup.getCourt(caseData.getCaseLocalAuthority())
+        return courtLookup.getCourts(caseData.getCaseLocalAuthority())
             .stream()
             .filter(court -> Objects.equals(court.getCode(), selectedCourtCode))
             .findFirst()

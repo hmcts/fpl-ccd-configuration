@@ -45,7 +45,6 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractCallbackTest
     private static final Long CASE_ID = 12345L;
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final String CHILD_SURNAME = "Holmes";
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -65,7 +64,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractCallbackTest
             LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
             REPRESENTATIVE_EMAIL,
             expectedTemplateParameters(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
     }
 
@@ -85,7 +84,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractCallbackTest
             "localAuthority", LOCAL_AUTHORITY_1_NAME,
             "firstRespondentLastName", RESPONDENT_SURNAME,
             "familyManCaseNumber", FAMILY_MAN_CASE_NO,
-            "caseUrl", "http://fake-url/cases/case-details/12345",
+            "caseUrl", caseUrl(CASE_ID),
             "childLastName", CHILD_SURNAME
         );
     }

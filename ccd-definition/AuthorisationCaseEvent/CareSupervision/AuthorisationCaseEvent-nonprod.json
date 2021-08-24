@@ -102,6 +102,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LAMANAGING]",
           "[EPSMANAGING]"
         ],
@@ -117,6 +118,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LAMANAGING]",
           "[EPSMANAGING]"
         ],
@@ -127,25 +129,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addOrRemoveLegalCounsel",
+    "CaseEventID": "manageLocalAuthorities",
     "AccessControl": [
       {
-        "UserRoles": ["[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
-          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
-          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
-          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "R"
       }

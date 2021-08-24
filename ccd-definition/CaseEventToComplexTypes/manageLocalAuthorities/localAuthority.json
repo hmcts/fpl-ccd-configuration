@@ -1,0 +1,90 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "name",
+    "EventElementLabel": "Local authority's name",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "email",
+    "EventElementLabel": "Group email address",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 2
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address",
+    "EventElementLabel": "Address",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 8
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address.AddressLine1",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address.PostCode",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "LocalAuthority",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "localAuthorityToTransfer",
+    "ListElementCode": "address.Country",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "ListElementCode": "colleagues",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Colleague",
+    "ElementLabel": "Colleague",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "email=\"DO NOT SHOW\""
+  }
+]

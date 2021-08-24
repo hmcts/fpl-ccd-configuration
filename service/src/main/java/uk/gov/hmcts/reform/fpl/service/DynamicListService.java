@@ -2,12 +2,15 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -31,6 +34,14 @@ public class DynamicListService {
 
         return Optional.ofNullable(mapper.convertValue(dynamicList, DynamicList.class))
             .map(DynamicList::getValueCode);
+    }
+
+    public <T> DynamicList asDynamicList(Map<String, String> entries) {
+        return asDynamicList(new ArrayList<>(entries.entrySet()), Map.Entry::getKey, Map.Entry::getValue);
+    }
+
+    public <T> DynamicList asDynamicList(List<Pair<String, String>> entries) {
+        return asDynamicList(entries, Pair::getKey, Pair::getValue);
     }
 
     public <T> DynamicList asDynamicList(List<T> elements,

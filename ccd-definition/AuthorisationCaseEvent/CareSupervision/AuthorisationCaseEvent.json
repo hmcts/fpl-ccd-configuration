@@ -644,6 +644,7 @@
         "UserRoles": [
           "[LABARRISTER]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
@@ -688,12 +689,22 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageLegalRepresentatives",
-    "UserRoles": [
-      "[LASOLICITOR]",
-      "[EPSMANAGING]",
-      "[LAMANAGING]"
-    ],
-    "CRUD": "CR"
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "[LASHARED]"
+        ],
+        "CRUD": "R"
+      }
+    ]
   },
   {
     "LiveFrom": "01/01/2017",
@@ -987,6 +998,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LABARRISTER]"
@@ -1009,6 +1021,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
@@ -1041,6 +1054,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "caseworker-publiclaw-magistrate"
@@ -1069,6 +1083,7 @@
           "[SOLICITORI]",
           "[SOLICITORJ]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[CAFCASSSOLICITOR]",
@@ -1299,5 +1314,31 @@
         "CRUD": "CR"
       }
     ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addOrRemoveLegalCounsel",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]", "[SOLICITORE]", "[SOLICITORF]",
+          "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
+          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor", "caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      }
+    ]
   }
+
 ]
