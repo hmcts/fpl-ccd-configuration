@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -42,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -152,13 +151,12 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
             .thenReturn(ORDER_DOCUMENT);
 
-        when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), Language.ENGLISH))
+        when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
             .thenReturn(COVERSHEET_REPRESENTATIVE);
 
-        when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty()),
-            any()))
+        when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty()), any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
             .thenReturn(COVERSHEET_RESPONDENT);
@@ -176,12 +174,12 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
-            LOCAL_AUTHORITY_1_INBOX,
-            NOTIFICATION_PARAMETERS,
-            notificationReference(CASE_ID)
-        ));
+        checkUntil(() ->
+            verify(notificationClient).sendEmail(
+                ITEM_TRANSLATED_NOTIFICATION_TEMPLATE, LOCAL_AUTHORITY_1_INBOX,
+                NOTIFICATION_PARAMETERS, notificationReference(CASE_ID)
+            )
+        );
     }
 
     @Test
@@ -190,7 +188,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData());
 
         checkUntil(() -> {
-            verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
+            verify(sendLetterApi, times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
                 printRequest.capture());
             verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
         });
@@ -233,11 +231,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData());
 
-        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
-            REPRESENTATIVE_DIGITAL.getValue().getEmail(),
-            NOTIFICATION_PARAMETERS,
-            notificationReference(CASE_ID)));
+        checkUntil(() ->
+            verify(notificationClient).sendEmail(
+                ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
+                REPRESENTATIVE_DIGITAL.getValue().getEmail(),
+                NOTIFICATION_PARAMETERS,
+                notificationReference(CASE_ID)
+            )
+        );
     }
 
     @Test
@@ -245,9 +246,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData());
 
-        checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE, REPRESENTATIVE_EMAIL.getValue().getEmail(),
-            NOTIFICATION_PARAMETERS, notificationReference(CASE_ID)));
+        checkUntil(() ->
+            verify(notificationClient).sendEmail(
+                ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
+                REPRESENTATIVE_EMAIL.getValue().getEmail(),
+                NOTIFICATION_PARAMETERS,
+                notificationReference(CASE_ID)
+            )
+        );
     }
 
     private CaseData caseData() {
@@ -272,12 +278,13 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
             .build();
     }
 
-    public static Map<String, Object> getExpectedParametersMap(String orderType) {
+    private static Map<String, Object> getExpectedParametersMap(String orderType) {
         return Map.of(
             "childLastName", "ChildLast",
             "docType", orderType,
             "callout", "^Jones, FMN1",
             "courtName", "Family Court",
-            "caseUrl", "http://fake-url/cases/case-details/1614860986487554");
+            "caseUrl", "http://fake-url/cases/case-details/1614860986487554"
+        );
     }
 }

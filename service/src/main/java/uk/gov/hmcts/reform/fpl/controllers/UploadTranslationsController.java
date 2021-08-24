@@ -76,6 +76,7 @@ public class UploadTranslationsController extends CallbackController {
             .amendedOrderType(translatableItem.getModifiedItemType())
             .selectedOthers(translatableItem.getSelectedOthers())
             .translationRequirements(translatableItem.getTranslationRequirements())
+            .build()
         );
     }
 
