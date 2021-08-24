@@ -78,15 +78,16 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseData.getTemporaryC2Document().setType(caseData.getC2Type());
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, caseData.getTemporaryC2Document());
         }
-
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
-        caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
-        caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
-            caseData.getAllRespondents(), caseData.getOthers()));
+        if (caseData.hasRespondentsOrOthers()) {
+            caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
+            caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
+                caseData.getAllRespondents(), caseData.getOthers()));
 
-        int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
-        caseDetails.getData().put("personSelector", newSelector(selectorSize));
+            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
+            caseDetails.getData().put("personSelector", newSelector(selectorSize));
+        }
 
         return respond(caseDetails);
     }
