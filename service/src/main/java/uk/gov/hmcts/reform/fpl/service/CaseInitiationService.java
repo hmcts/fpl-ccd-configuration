@@ -185,7 +185,7 @@ public class CaseInitiationService {
     }
 
     private CaseData addCourtDetails(CaseData caseData) {
-        final List<Court> courts = courtLookup.getCourt(caseData.getCaseLocalAuthority());
+        final List<Court> courts = courtLookup.getCourts(caseData.getCaseLocalAuthority());
 
         if (isNotEmpty(courts)) {
             if (courts.size() == 1) {

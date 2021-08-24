@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.events.LegalCounsellorRemoved;
+import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorAddedNotifyTemplate;
@@ -31,7 +31,7 @@ public class LegalCounsellorEmailContentProvider extends AbstractEmailContentPro
     public LegalCounsellorRemovedNotifyTemplate buildLegalCounsellorRemovedNotificationTemplate(
         CaseData caseData, LegalCounsellorRemoved event) {
 
-        LegalCounsellor legalCounsellor = event.getLegalCounsellor().getValue();
+        LegalCounsellor legalCounsellor = event.getLegalCounsellor();
         String solicitorOrganisationName = event.getSolicitorOrganisationName();
 
         return LegalCounsellorRemovedNotifyTemplate.builder()

@@ -38,5 +38,14 @@
     "FieldType": "Organisation",
     "ElementLabel": "Organisation",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalCounsellor",
+    "ListElementCode": "userId",
+    "FieldType": "Text",
+    "ElementLabel": "User id",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "organisation = \"DO_NOT_SHOW\""
   }
 ]

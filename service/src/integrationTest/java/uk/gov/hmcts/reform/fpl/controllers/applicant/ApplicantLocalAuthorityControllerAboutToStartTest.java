@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -75,6 +76,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
                     .postcode(organisation.getContactInformation().get(0).getPostCode())
                     .build())
                 .build())
+            .localAuthorityColleagues(emptyList())
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedData);
@@ -121,7 +123,6 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
-
     }
 
     @Test

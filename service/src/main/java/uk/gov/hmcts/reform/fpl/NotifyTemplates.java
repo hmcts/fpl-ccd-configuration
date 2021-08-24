@@ -73,6 +73,7 @@ public final class NotifyTemplates {
     public static final String JUDGE_APPROVES_DRAFT_ORDERS = "632ea051-0ab0-447d-9d6c-54118b04a5c1";
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
+    public static final String DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE = "47b6ec09-da8c-452d-9ec7-bc3153890959";
     public static final String REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "d07b90b8-1e55-4258-8880-346b2268ec0e";
     public static final String UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "2c43b535-b4d3-466c-b85c-9919f77311ba";
     public static final String NOTICE_OF_CHANGE_NEW_REPRESENTATIVE = "f313d6a7-a6ff-4d83-be4e-819a4b34d890";
@@ -86,4 +87,6 @@ public final class NotifyTemplates {
     public static final String LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE = "0ee6157a-a11a-4a0c-be75-508d66857d67";
     public static final String LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE = "db77b13c-3f17-48ee-a7c0-90ba5adf73b6";
     public static final String LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE = "c02ac29c-2d84-4d1a-80f6-888b3fc31e19";
+    public static final String CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE = "47f8e012-363e-4e0a-b0ab-2746a5392ab5";
+    public static final String CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE = "c454c247-e9c7-429c-af8e-7939f1816581";
 }

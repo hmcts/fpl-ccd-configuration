@@ -61,6 +61,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
@@ -100,15 +101,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private static final String RESPONDENT_FIRSTNAME = "John";
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final Long CASE_ID = 12345L;
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-    public static final FeesData FEES_DATA = FeesData.builder().totalAmount(BigDecimal.TEN).build();
+    private static final FeesData FEES_DATA = FeesData.builder().totalAmount(BigDecimal.TEN).build();
     private static final UUID LETTER_1_ID = randomUUID();
-    private static final UUID LETTER_2_ID = randomUUID();
     private static final Document ORDER_DOCUMENT = testDocument();
-    private static final Document COVERSHEET_REPRESENTATIVE = testDocument();
     private static final Document COVERSHEET_OTHER_REPRESENTATIVE = testDocument();
     private static final byte[] ORDER_BINARY = testDocumentBinary();
-    private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_OTHER_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final DocumentReference ORDER = testDocumentReference();
 
@@ -135,27 +132,27 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    public static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
+    private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
             .fullName("Digital Representative ")
             .servingPreferences(DIGITAL_SERVICE)
             .email("digital-rep@test.com")
             .build());
-    public static final Element<Representative> REPRESENTATIVE_WITH_EMAIL_PREFERENCE = element(
+    private static final Element<Representative> REPRESENTATIVE_WITH_EMAIL_PREFERENCE = element(
         Representative.builder()
             .fullName("Email Representative")
             .servingPreferences(EMAIL)
             .email("email-rep@test.com")
             .build());
-    public static final Element<Respondent> RESPONDENT_WITH_DIGITAL_REP = element(Respondent.builder()
+    private static final Element<Respondent> RESPONDENT_WITH_DIGITAL_REP = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("George").lastName("Jones").address(testAddress()).build())
         .representedBy(wrapElements(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE.getId()))
         .build());
-    public static final Element<Respondent> RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
+    private static final Element<Respondent> RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
         .representedBy(wrapElements(REPRESENTATIVE_WITH_EMAIL_PREFERENCE.getId()))
         .party(RespondentParty.builder().firstName("Alex").lastName("Jones").address(testAddress()).build())
         .build());
-    public static final Element<Respondent> UNREPRESENTED_RESPONDENT = element(Respondent.builder()
+    private static final Element<Respondent> UNREPRESENTED_RESPONDENT = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("Emma").lastName("Jones").build())
         .build());
     private static final Element<Representative> REPRESENTATIVE_WITH_POST_PREFERENCE = element(
@@ -169,7 +166,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         .servingPreferences(POST)
         .address(testAddress())
         .build());
-    public static final Element<Respondent> RESPONDENT_WITH_POST_REP = element(Respondent.builder()
+    private static final Element<Respondent> RESPONDENT_WITH_POST_REP = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("Tim").lastName("Jones").address(testAddress()).build())
         .representedBy(wrapElements(REPRESENTATIVE_WITH_POST_PREFERENCE.getId()))
         .build());
@@ -226,34 +223,34 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(caseData);
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("admin@family-court.com"),
+            eq(COURT_1.getEmail()),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)
+            eq(notificationReference(CASE_ID))
         ));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)));
+            eq(notificationReference(CASE_ID))));
 
         checkUntil(() -> verify(notificationClient, never()).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)));
+            eq(notificationReference(CASE_ID))));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
             eq("digital-rep@test.com"),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)));
+            eq(notificationReference(CASE_ID))));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
             eq("email-rep@test.com"),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)));
+            eq(notificationReference(CASE_ID))));
 
         checkUntil(() -> verify(sendLetterApi).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
         checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
@@ -283,7 +280,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)
+            eq(notificationReference(CASE_ID))
         ));
     }
 
@@ -295,14 +292,14 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                 eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
                 eq("FamilyPublicLaw+ctsc@gmail.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient, never()).sendEmail(
                 eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-                eq("admin@family-court.com"),
+                eq(COURT_1.getEmail()),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
         });
     }
@@ -326,9 +323,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            eq("admin@family-court.com"),
+            eq(COURT_1.getEmail()),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)));
+            eq(notificationReference(CASE_ID))));
     }
 
     @Test
@@ -343,16 +340,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         verify(notificationClient).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
-            "admin@family-court.com",
+            COURT_1.getEmail(),
             expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
 
         verify(notificationClient, never()).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
 
         verifyNoInteractions(paymentService);
@@ -365,16 +362,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         verify(notificationClient, never()).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
-            "admin@family-court.com",
+            COURT_1.getEmail(),
             expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
 
         verify(notificationClient).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
     }
 
@@ -418,16 +415,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         verify(notificationClient, never()).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
-            "admin@family-court.com",
+            COURT_1.getEmail(),
             expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
 
         verify(notificationClient, never()).sendEmail(
             INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
 
         verifyNoInteractions(paymentService);
@@ -482,16 +479,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             LOCAL_AUTHORITY_1_INBOX,
             Map.of("applicationType", "C2, C1 - Appointment of a guardian",
-                "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications"),
-            NOTIFICATION_REFERENCE);
+                "caseUrl", caseUrl(CASE_ID, "Other applications")),
+            notificationReference(CASE_ID));
 
         verify(notificationClient).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             Map.of("applicationType", "C2, C1 - Appointment of a guardian",
-                "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
+                "caseUrl", caseUrl(CASE_ID, "Other applications"),
                 "applicant", LOCAL_AUTHORITY_1_NAME),
-            NOTIFICATION_REFERENCE);
+            notificationReference(CASE_ID));
     }
 
     @Test
@@ -508,13 +505,13 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             LOCAL_AUTHORITY_1_INBOX,
             expectedApplicantNotificationParameters(),
-            NOTIFICATION_REFERENCE);
+            notificationReference(CASE_ID));
 
         verify(notificationClient).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
-            NOTIFICATION_REFERENCE);
+            notificationReference(CASE_ID));
     }
 
     @Test
@@ -599,16 +596,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications",
+            "caseUrl", caseUrl(CASE_ID, "Other applications"),
             "applicant", LOCAL_AUTHORITY_1_NAME);
     }
 
     private Map<String, Object> expectedApplicantNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications");
+            "caseUrl", caseUrl(CASE_ID, "Other applications"));
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
-        return Map.of("caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications");
+        return Map.of("caseUrl", caseUrl(CASE_ID, "Other applications"));
     }
 }

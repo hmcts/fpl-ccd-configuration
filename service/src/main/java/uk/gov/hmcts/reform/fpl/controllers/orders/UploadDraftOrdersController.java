@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -45,7 +44,6 @@ public class UploadDraftOrdersController extends CallbackController {
     private final DraftOrderService service;
     private final CaseConverter caseConverter;
     private final DocumentListService documentListService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/populate-initial-data/mid-event")
     public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
@@ -95,10 +93,7 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
 
-        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
-        }
-
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 
         return respond(caseDetails);
