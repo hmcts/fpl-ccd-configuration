@@ -11,10 +11,13 @@ import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
@@ -23,8 +26,10 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -45,6 +50,9 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.asser
 class SubmittedCaseEventHandlerTest {
 
     private static final long CASE_ID = 12345L;
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+    private static final DocumentReference SUBMITTED_FORM = mock(DocumentReference.class);
 
     @Mock
     private NotificationService notificationService;
@@ -66,6 +74,9 @@ class SubmittedCaseEventHandlerTest {
 
     @Mock
     private PaymentService paymentService;
+
+    @Mock
+    private TranslationRequestService translationRequestService;
 
     @InjectMocks
     private SubmittedCaseEventHandler submittedCaseEventHandler;
@@ -107,8 +118,51 @@ class SubmittedCaseEventHandlerTest {
     }
 
     @Test
+    void shouldNotifyTranslationTeam() {
+        final CaseData caseData = CaseData.builder()
+            .c110A(C110A.builder()
+                .submittedFormTranslationRequirements(TRANSLATION_REQUIREMENTS)
+                .submittedForm(SUBMITTED_FORM)
+                .build())
+            .build();
+        final CaseData caseDataBefore = mock(CaseData.class);
+
+        submittedCaseEventHandler.notifyTranslationTeam(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        verify(translationRequestService).sendRequest(caseData,
+            Optional.of(TRANSLATION_REQUIREMENTS),
+            SUBMITTED_FORM, "Application (C110A)");
+        verifyNoMoreInteractions(translationRequestService);
+
+    }
+
+    @Test
+    void shouldNotifyNotifyTranslationTeamIfNoLanguageRequirementDefaultsToEmpty() {
+        final CaseData caseData = CaseData.builder()
+            .c110A(C110A.builder()
+                .submittedForm(SUBMITTED_FORM)
+                .build())
+            .build();
+        final CaseData caseDataBefore = mock(CaseData.class);
+
+        submittedCaseEventHandler.notifyTranslationTeam(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        verify(translationRequestService).sendRequest(caseData,
+            Optional.of(LanguageTranslationRequirement.NO),
+            SUBMITTED_FORM, "Application (C110A)");
+
+        verifyNoMoreInteractions(translationRequestService);
+    }
+
+
+    @Test
     void shouldExecuteAsynchronously() {
-        assertClass(SubmittedCaseEventHandler.class).hasAsyncMethods("notifyAdmin", "notifyCafcass", "makePayment");
+        assertClass(SubmittedCaseEventHandler.class).hasAsyncMethods(
+            "notifyAdmin",
+            "notifyCafcass",
+            "makePayment",
+            "notifyTranslationTeam"
+        );
     }
 
     @Nested
