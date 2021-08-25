@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -54,7 +53,6 @@ public class UploadAdditionalApplicationsService {
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
     private final PeopleInCaseService peopleInCaseService;
-    private final FeatureToggleService featureToggleService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -81,12 +79,8 @@ public class UploadAdditionalApplicationsService {
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime currentDateTime = time.now();
 
-        List<Element<Other>> selectedOthers = new ArrayList<>();
-        List<Element<Respondent>> selectedRespondents = new ArrayList<>();
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
-            selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
-        }
+        List<Element<Other>> selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
+        List<Element<Respondent>> selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
         String othersNotified = peopleInCaseService.getPeopleNotified(
             caseData.getRepresentatives(), selectedRespondents, selectedOthers);
 
@@ -147,7 +141,7 @@ public class UploadAdditionalApplicationsService {
             getSupplementsBundle(defaultIfNull(temporaryC2Document.getSupplementsBundle(), emptyList()),
                 uploadedBy, uploadedTime);
 
-        var c2DocumentBundleBuilder = temporaryC2Document.toBuilder()
+        return temporaryC2Document.toBuilder()
             .id(UUID.randomUUID())
             .applicantName(applicantName)
             .author(uploadedBy)
@@ -155,17 +149,11 @@ public class UploadAdditionalApplicationsService {
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-            .type(caseData.getC2Type());
-
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            return c2DocumentBundleBuilder
-                .respondents(selectedRespondents)
-                .others(selectedOthers)
-                .othersNotified(othersNotified)
-                .build();
-        } else {
-            return c2DocumentBundleBuilder.build();
-        }
+            .type(caseData.getC2Type())
+            .respondents(selectedRespondents)
+            .others(selectedOthers)
+            .othersNotified(othersNotified)
+            .build();
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
@@ -187,7 +175,7 @@ public class UploadAdditionalApplicationsService {
         List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
             temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime);
 
-        var otherApplicationsBundleBuilder = temporaryOtherApplicationsBundle.toBuilder()
+        return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
             .id(UUID.randomUUID())
             .applicantName(applicantName)
@@ -195,17 +183,11 @@ public class UploadAdditionalApplicationsService {
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
             .document(sealedDocument)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
-            .supplementsBundle(updatedSupplementsBundle);
-
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            return otherApplicationsBundleBuilder
-                .respondents(selectedRespondents)
-                .others(selectedOthers)
-                .othersNotified(othersNotified)
-                .build();
-        } else {
-            return otherApplicationsBundleBuilder.build();
-        }
+            .supplementsBundle(updatedSupplementsBundle)
+            .respondents(selectedRespondents)
+            .others(selectedOthers)
+            .othersNotified(othersNotified)
+            .build();
     }
 
     public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(

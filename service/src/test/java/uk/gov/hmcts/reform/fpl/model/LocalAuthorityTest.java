@@ -130,4 +130,59 @@ class LocalAuthorityTest {
         }
     }
 
+    @Nested
+    class Contacts {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyListOfContactEmails(List<Element<Colleague>> colleagues) {
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(colleagues)
+                .build();
+
+            assertThat(localAuthority.getContactEmails()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnContactEmails() {
+            final Colleague colleague1 = Colleague.builder()
+                .build();
+
+            final Colleague colleague2 = Colleague.builder()
+                .email("colleague2@test.com")
+                .build();
+
+            final Colleague colleague3 = Colleague.builder()
+                .email("colleague3@test.com")
+                .notificationRecipient("No")
+                .build();
+
+            final Colleague colleague4 = Colleague.builder()
+                .email("colleague4@test.com")
+                .notificationRecipient("Yes")
+                .build();
+
+            final Colleague colleague5 = Colleague.builder()
+                .email("colleague5@test.com")
+                .notificationRecipient("Yes")
+                .build();
+
+            final Colleague colleague6 = Colleague.builder()
+                .notificationRecipient("Yes")
+                .build();
+
+            final Colleague colleague7 = Colleague.builder()
+                .email("")
+                .notificationRecipient("Yes")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .colleagues(wrapElements(
+                    colleague1, colleague2, colleague3, colleague4, colleague5, colleague6, colleague7))
+                .build();
+
+            assertThat(localAuthority.getContactEmails()).containsExactly(colleague4.getEmail(), colleague5.getEmail());
+        }
+    }
+
 }

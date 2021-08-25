@@ -12,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -59,6 +61,12 @@ class ApplicantLocalAuthorityServiceTest {
 
     @Mock
     private ValidateEmailService validateEmailService;
+
+    @Mock
+    private LocalAuthorityIdLookupConfiguration localAuthorityIds;
+
+    @Mock
+    private LocalAuthorityEmailLookupConfiguration localAuthorityEmails;
 
     @InjectMocks
     private ApplicantLocalAuthorityService underTest;
@@ -302,9 +310,17 @@ class ApplicantLocalAuthorityServiceTest {
                     .build()))
                 .build();
 
+            when(localAuthorityIds.getLocalAuthorityCode(userOrganisation.getOrganisationIdentifier()))
+                .thenReturn(Optional.of("LA1"));
+
+            when(localAuthorityEmails.getSharedInbox("LA1"))
+                .thenReturn(Optional.of("la@shared.com"));
+
+
             final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
                 .name("Organisation 1")
                 .id("ORG1")
+                .email("la@shared.com")
                 .address(Address.builder()
                     .addressLine1("L1")
                     .addressLine2("L2")
@@ -622,42 +638,6 @@ class ApplicantLocalAuthorityServiceTest {
     class ContactEmails {
 
         @Test
-        void shouldGetContactEmailsFromMultipleLocalAuthorities() {
-            final Colleague colleague1 = Colleague.builder()
-                .email("email1@test.com")
-                .notificationRecipient("Yes")
-                .build();
-            final Colleague colleague2 = Colleague.builder()
-                .email("email2@test.com")
-                .notificationRecipient("No")
-                .build();
-            final Colleague colleague3 = Colleague.builder()
-                .email("email3@test.com")
-                .notificationRecipient("Yes")
-                .build();
-            final Colleague colleague4 = Colleague.builder()
-                .email("email4@test.com")
-                .notificationRecipient("Yes")
-                .build();
-
-            final LocalAuthority localAuthority1 = LocalAuthority.builder()
-                .colleagues(wrapElements(colleague1, colleague2, colleague3))
-                .build();
-
-            final LocalAuthority localAuthority2 = LocalAuthority.builder()
-                .colleagues(wrapElements(colleague4))
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
-                .build();
-
-            final List<String> actualEmails = underTest.getContactsEmails(caseData);
-
-            assertThat(actualEmails).containsExactlyInAnyOrder("email1@test.com", "email3@test.com", "email4@test.com");
-        }
-
-        @Test
         void shouldGetEmptyContactEmailsWhenNoColleaguesMarkedAsNotificationRecipient() {
             final Colleague colleague1 = Colleague.builder()
                 .email("email1@test.com")
@@ -670,10 +650,12 @@ class ApplicantLocalAuthorityServiceTest {
                 .build();
 
             final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(colleague1))
                 .build();
 
             final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .designated("No")
                 .colleagues(wrapElements(colleague2))
                 .build();
 
@@ -681,7 +663,7 @@ class ApplicantLocalAuthorityServiceTest {
                 .localAuthorities(wrapElements(localAuthority1, localAuthority2))
                 .build();
 
-            final List<String> actualEmails = underTest.getContactsEmails(caseData);
+            final List<String> actualEmails = underTest.getDesignatedLocalAuthorityContactsEmails(caseData);
 
             assertThat(actualEmails).isEmpty();
         }
@@ -703,6 +685,7 @@ class ApplicantLocalAuthorityServiceTest {
                 .build();
 
             final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("Yes")
                 .colleagues(wrapElements(colleague1, colleague2, colleague3))
                 .build();
 
@@ -710,7 +693,7 @@ class ApplicantLocalAuthorityServiceTest {
                 .localAuthorities(wrapElements(localAuthority))
                 .build();
 
-            final List<String> actualEmails = underTest.getContactsEmails(caseData);
+            final List<String> actualEmails = underTest.getDesignatedLocalAuthorityContactsEmails(caseData);
 
             assertThat(actualEmails).containsExactly("email1@test.com");
         }
@@ -725,7 +708,7 @@ class ApplicantLocalAuthorityServiceTest {
                 .solicitor(solicitor)
                 .build();
 
-            final List<String> actualEmails = underTest.getContactsEmails(caseData);
+            final List<String> actualEmails = underTest.getDesignatedLocalAuthorityContactsEmails(caseData);
 
             assertThat(actualEmails).containsExactly("soliciotr@test.com");
         }
@@ -741,7 +724,7 @@ class ApplicantLocalAuthorityServiceTest {
                 .solicitor(solicitor)
                 .build();
 
-            final List<String> actualEmails = underTest.getContactsEmails(caseData);
+            final List<String> actualEmails = underTest.getDesignatedLocalAuthorityContactsEmails(caseData);
 
             assertThat(actualEmails).isEmpty();
         }
@@ -751,7 +734,7 @@ class ApplicantLocalAuthorityServiceTest {
             final CaseData caseData = CaseData.builder()
                 .build();
 
-            final List<String> actualEmails = underTest.getContactsEmails(caseData);
+            final List<String> actualEmails = underTest.getDesignatedLocalAuthorityContactsEmails(caseData);
 
             assertThat(actualEmails).isEmpty();
         }

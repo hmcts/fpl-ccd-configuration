@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,11 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -35,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -73,7 +69,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private NotificationService notificationService;
     @Mock
@@ -86,8 +82,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private CoreCaseDataService coreCaseDataService;
     @Mock
     private RepresentativesInbox representativesInbox;
-    @Mock
-    private FeatureToggleService toggleService;
     @Mock
     private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
@@ -113,8 +107,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
     @Test
     void shouldNotifyLocalAuthority() {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(CASE_DATA).build()
         )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REP_CMO_TEMPLATE_DATA);
@@ -124,7 +118,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             DIGITAL_REP_CMO_TEMPLATE_DATA,
-            String.valueOf(CASE_ID)
+            CASE_ID
         );
     }
 
@@ -144,17 +138,13 @@ class CaseManagementOrderIssuedEventHandlerTest {
         );
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
+    @Test
+    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL))
             .willReturn(newHashSet("barney@rubble.com", "andrew@rubble.com"));
-        if (toggle) {
-            given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), any(), any()))
-                .willReturn(Set.of("andrew@rubble.com"));
-        }
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), any(), any()))
+            .willReturn(newHashSet("andrew@rubble.com"));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, EMAIL))
             .willReturn(EMAIL_REP_CMO_TEMPLATE_DATA);
 
@@ -162,35 +152,21 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
-        if (!toggle) {
-            verify(notificationService).sendEmail(
-                CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
-            verify(notificationService).sendEmail(
-                CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "andrew@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
-        }
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(boolean toggle) {
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(toggle);
+    @Test
+    void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))
             .willReturn(newHashSet("fred@flinstone.com", "barney@rubble.com"));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
             .willReturn(DIGITAL_REP_CMO_TEMPLATE_DATA);
-        if (toggle) {
-            given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(CASE_DATA), any(), any()))
-                .willReturn(Set.of("barney@rubble.com"));
-        }
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(CASE_DATA), any(), any()))
+            .willReturn(newHashSet("barney@rubble.com"));
 
         underTest.notifyDigitalRepresentatives(EVENT);
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "fred@flinstone.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
-        if (!toggle) {
-            verify(notificationService).sendEmail(
-                CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
-        }
     }
 
     @Test
@@ -203,14 +179,13 @@ class CaseManagementOrderIssuedEventHandlerTest {
         Recipient otherRecipient3 = Other.builder().name("other3")
             .address(Address.builder().postcode("SW3").build()).build().toParty();
 
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(sendDocumentService.getStandardRecipients(CASE_DATA))
             .willReturn(newArrayList(otherRecipient1, otherRecipient2));
 
         List<Element<Other>> selectedOthers = wrapElements(other1);
         given(CMO.getSelectedOthers()).willReturn(selectedOthers);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(CASE_DATA), any(), any()))
-            .willReturn(Set.of(otherRecipient1));
+            .willReturn(newHashSet(otherRecipient1));
         given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers))
             .willReturn(Set.of(otherRecipient3));
 

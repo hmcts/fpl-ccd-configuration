@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -164,7 +163,6 @@ class UploadAdditionalApplicationsServiceTest {
             .otherApplicant("some other name")
             .build();
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(peopleInCaseService.getSelectedOthers(any())).willReturn(List.of());
         given(peopleInCaseService.getSelectedRespondents(any())).willReturn(List.of());
         given(peopleInCaseService.getPeopleNotified(any(), eq(List.of()), eq(List.of()))).willReturn("");
@@ -199,10 +197,8 @@ class UploadAdditionalApplicationsServiceTest {
             .hasMessage("Applicant should not be empty");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles(
-        boolean othersServedToggledOn) {
+    @Test
+    void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
 
@@ -232,15 +228,11 @@ class UploadAdditionalApplicationsServiceTest {
                 RespondentParty.builder().firstName("First").lastName("Respondent")
                     .address(Address.builder().postcode("SE1").build()).build()).build());
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(othersServedToggledOn);
-
         String othersNotified = "First Respondent, Other1, Other2";
-        if (othersServedToggledOn) {
-            given(peopleInCaseService.getSelectedOthers(any())).willReturn(selectedOthers);
-            given(peopleInCaseService.getSelectedRespondents(any())).willReturn(selectedRespondents);
-            given(peopleInCaseService.getPeopleNotified(any(), eq(selectedRespondents), eq(selectedOthers)))
-                .willReturn(othersNotified);
-        }
+        given(peopleInCaseService.getSelectedOthers(any())).willReturn(selectedOthers);
+        given(peopleInCaseService.getSelectedRespondents(any())).willReturn(selectedRespondents);
+        given(peopleInCaseService.getPeopleNotified(any(), eq(selectedRespondents), eq(selectedOthers)))
+            .willReturn(othersNotified);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
@@ -249,17 +241,10 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        if (othersServedToggledOn) {
-            assertThat(actual.getC2DocumentBundle().getOthers()).isEqualTo(selectedOthers);
-            assertThat(actual.getC2DocumentBundle().getOthersNotified()).isEqualTo(othersNotified);
-            assertThat(actual.getOtherApplicationsBundle().getOthers()).isEqualTo(selectedOthers);
-            assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEqualTo(othersNotified);
-        } else {
-            assertThat(actual.getC2DocumentBundle().getOthers()).isNull();
-            assertThat(actual.getC2DocumentBundle().getOthersNotified()).isNull();
-            assertThat(actual.getOtherApplicationsBundle().getOthers()).isNull();
-            assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isNull();
-        }
+        assertThat(actual.getC2DocumentBundle().getOthers()).isEqualTo(selectedOthers);
+        assertThat(actual.getC2DocumentBundle().getOthersNotified()).isEqualTo(othersNotified);
+        assertThat(actual.getOtherApplicationsBundle().getOthers()).isEqualTo(selectedOthers);
+        assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEqualTo(othersNotified);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
@@ -346,19 +331,19 @@ class UploadAdditionalApplicationsServiceTest {
     private static Stream<Arguments> additionalApplicationBundlesData() {
         return Stream.of(
             Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(
-                C2DocumentBundle.builder()
-                    .type(WITHOUT_NOTICE)
-                    .document(DocumentReference.builder().build()).build()).build(),
+                    C2DocumentBundle.builder()
+                        .type(WITHOUT_NOTICE)
+                        .document(DocumentReference.builder().build()).build()).build(),
                 List.of(C2_APPLICATION)),
             Arguments.of(AdditionalApplicationsBundle.builder().otherApplicationsBundle(
-                OtherApplicationsBundle.builder()
-                    .applicationType(C1_PARENTAL_RESPONSIBILITY)
-                    .document(DocumentReference.builder().build()).build()).build(),
+                    OtherApplicationsBundle.builder()
+                        .applicationType(C1_PARENTAL_RESPONSIBILITY)
+                        .document(DocumentReference.builder().build()).build()).build(),
                 List.of(ApplicationType.C1_PARENTAL_RESPONSIBILITY)),
             Arguments.of(AdditionalApplicationsBundle.builder().c2DocumentBundle(
-                C2DocumentBundle.builder()
-                    .type(WITH_NOTICE)
-                    .document(DocumentReference.builder().build()).build())
+                        C2DocumentBundle.builder()
+                            .type(WITH_NOTICE)
+                            .document(DocumentReference.builder().build()).build())
                     .otherApplicationsBundle(
                         OtherApplicationsBundle.builder()
                             .applicationType(C1_PARENTAL_RESPONSIBILITY)

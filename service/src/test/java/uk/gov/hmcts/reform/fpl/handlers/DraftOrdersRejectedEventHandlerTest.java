@@ -10,10 +10,10 @@ import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersRejectedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 
@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class DraftOrdersRejectedEventHandlerTest {
 
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @Mock
     private NotificationService notificationService;
@@ -58,9 +59,7 @@ class DraftOrdersRejectedEventHandlerTest {
 
         RejectedOrdersTemplate expectedTemplate = RejectedOrdersTemplate.builder().build();
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
-            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(localAuthorityRecipients.getRecipients(any())).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(reviewDraftOrdersEmailContentProvider.buildOrdersRejectedContent(caseData, hearing.getValue(), orders))
             .willReturn(expectedTemplate);
@@ -68,10 +67,17 @@ class DraftOrdersRejectedEventHandlerTest {
         draftOrdersRejectedEventHandler.sendNotificationToLA(
             new DraftOrdersRejected(caseData, orders));
 
+        final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
+
         verify(notificationService).sendEmail(
             JUDGE_REJECTS_DRAFT_ORDERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             expectedTemplate,
-            caseData.getId().toString());
+            caseData.getId());
+
+        verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
     }
 }

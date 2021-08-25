@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
@@ -64,7 +64,7 @@ public class EmailTemplateTest {
     private CourtService courtService;
 
     @MockBean
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @MockBean
     private CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -88,7 +88,7 @@ public class EmailTemplateTest {
     void lookupServiceSetUp() {
         when(inbox.getEmailsByPreference(any(), any()))
             .thenReturn(new LinkedHashSet<>(Set.of("representative@example.com")));
-        when(inboxLookupService.getRecipients(any())).thenReturn(Set.of("test@example.com"));
+        when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of("test@example.com"));
         when(courtService.getCourtEmail(any())).thenReturn(COURT_EMAIL_ADDRESS);
         when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
         when(courtService.getCourtCode(any())).thenReturn(COURT_CODE);
