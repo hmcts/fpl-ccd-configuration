@@ -332,7 +332,6 @@ class DraftOrdersApprovedEventHandlerTest {
             .others(Others.builder().firstOther(firstOther).build())
             .build();
 
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         Party otherParty = firstOther.toParty();
         given(sendDocumentService.getStandardRecipients(caseData))
             .willReturn(newArrayList(representative, respondent, otherParty));
