@@ -241,7 +241,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "vacateHearingDateList",
+    "ID": "toVacateHearingDateList",
     "Label": "Which hearing?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
@@ -314,10 +314,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "vacatedHearingDate",
-    "Label": "When was the hearing vacated?",
-    "HintText": "This is the date the hearing was vacated by the listings team. This date must be before the hearing date.",
-    "FieldType": "Date",
+    "ID": "vacatedHearing",
+    "Label": " ",
+    "FieldType": "HearingBooking",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

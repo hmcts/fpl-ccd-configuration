@@ -27,8 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,8 +51,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
-import static uk.gov.hmcts.reform.fpl.utils.BooleanHelper.booleanToYesNo;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_VACATE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -150,24 +147,14 @@ public class ManageHearingsController extends CallbackController {
         } else if (VACATE_HEARING == caseData.getHearingOption()) {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
-                .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
-                .collect(toList());
-
-            Collections.reverse(nonCancelledHearings);
-
-            caseDetails.getData().put(VACATE_HEARING_LIST,
-                hearingsService.asDynamicList(nonCancelledHearings, hearingBookingId));
+            caseDetails.getData().put(TO_VACATE_HEARING_LIST,
+                hearingsService.asDynamicList(caseData.getAllHearings(), hearingBookingId));
 
             HearingBooking hearingBooking = hearingsService
                 .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
                 .orElse(HearingBooking.builder().build());
 
-            caseDetails.getData().put("showVacatePastHearingWarning",
-                booleanToYesNo(hearingBooking.getEndDate().isBefore(now())));
-
-            errors.addAll(pastHearingDatesValidatorService.validateVacatedDate(hearingBooking.getEndDate(),
-                caseData.getVacatedHearingDate()));
+            caseDetails.getData().put("vacatedHearing", hearingBooking);
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
             if (isEmpty(caseData.getToBeReListedHearings())) {
                 return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
@@ -238,10 +225,8 @@ public class ManageHearingsController extends CallbackController {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
                 caseData.getHearingEndDate());
         } else {
-            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
-            if (errors.isEmpty()) {
-                errors = validateGroupService.validateGroup(caseData, HearingEndDateGroup.class);
-            }
+            errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
+                caseData.getHearingEndDate(), caseData.getVacatedHearing());
         }
 
         caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(

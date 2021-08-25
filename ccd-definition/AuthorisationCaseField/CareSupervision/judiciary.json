@@ -1150,7 +1150,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "vacateHearingDateList",
+    "CaseFieldID": "toVacateHearingDateList",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
   },
@@ -2424,7 +2424,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "vacatedHearingDate",
+    "CaseFieldID": "vacatedHearing",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },

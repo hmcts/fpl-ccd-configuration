@@ -238,7 +238,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(RE_LIST_NOW)
             .hearingDateList(dynamicList(futureHearing))
-            .vacateHearingDateList(dynamicList(
+            .toVacateHearingDateList(dynamicList(
                 futureHearingToBeVacated.getId(), futureHearing,
                 futureHearingToBeVacated))
             .hearingDetails(List.of(pastHearing, futureHearingToBeVacated, futureHearing))
@@ -270,7 +270,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
                 .caseManagementOrderId(draftCMOId)
                 .status(HearingStatus.VACATED_AND_RE_LISTED)
                 .cancellationReason(vacatedReason.getReason())
-                .vacatedDate(vacatedHearingDate)
+                .vacatedDate(now())
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
@@ -371,7 +371,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .selectedHearingId(randomUUID())
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(adjournmentOption)
-            .vacateHearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
+            .toVacateHearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
             .hearingDetails(List.of(futureHearingToBeAdjourned))
             .vacatedReason(vacatedReason)
             .vacatedHearingDate(vacatedHearingDate)
@@ -384,7 +384,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             futureHearingToBeAdjourned.getValue().toBuilder()
                 .status(adjournmentOption == RE_LIST_LATER ? VACATED_TO_BE_RE_LISTED : VACATED)
                 .cancellationReason(vacatedReason.getReason())
-                .vacatedDate(vacatedHearingDate)
+                .vacatedDate(now())
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).isNull();
