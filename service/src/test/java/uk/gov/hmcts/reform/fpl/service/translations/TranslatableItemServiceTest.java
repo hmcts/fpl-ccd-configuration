@@ -40,9 +40,11 @@ class TranslatableItemServiceTest {
     private static final UUID UUID_ID_1 = java.util.UUID.randomUUID();
     private static final UUID UUID_ID_2 = java.util.UUID.randomUUID();
     private static final UUID UUID_ID_3 = java.util.UUID.randomUUID();
+    private static final UUID UUID_ID_4 = java.util.UUID.randomUUID();
     private static final DynamicList EMTPY_DYNAMIC_LIST = dynamicListWith(Collections.emptyList());
     private static final String ITEM_1_LABEL = "Item1";
     private static final String ITEM_3_LABEL = "Item3";
+    private static final String ITEM_4_LABEL = "Item4";
     private static final byte[] DOCUMENT_BYTES = "GeneratedDocument".getBytes();
     private static final String FILENAME = "Filename";
     private static final Document TEST_DOCUMENT = testDocument();
@@ -55,6 +57,7 @@ class TranslatableItemServiceTest {
     private final TranslatableItem translatableItem1 = mock(TranslatableItem.class);
     private final TranslatableItem translatableItem2 = mock(TranslatableItem.class);
     private final TranslatableItem translatableItem3 = mock(TranslatableItem.class);
+    private final TranslatableItem translatableItem4 = mock(TranslatableItem.class);
     private final TranslatedDocumentGenerator translatedDocumentGenerator = mock(TranslatedDocumentGenerator.class);
     private final TranslatedFileNameGenerator translatedFileNameGenerator = mock(TranslatedFileNameGenerator.class);
     private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
@@ -149,7 +152,7 @@ class TranslatableItemServiceTest {
                 List.of(element(UUID_ID_1, translatableItem1), element(UUID_ID_2, translatableItem2))
             );
             when(provider2.provideListItems(CASE_DATA)).thenReturn(
-                List.of(element(UUID_ID_3, translatableItem3))
+                List.of(element(UUID_ID_3, translatableItem3), element(UUID_ID_4, translatableItem4))
             );
             when(translatableItem1.hasBeenTranslated()).thenReturn(false);
             when(translatableItem1.getTranslationRequirements()).thenReturn(NO);
@@ -157,6 +160,9 @@ class TranslatableItemServiceTest {
             when(translatableItem3.hasBeenTranslated()).thenReturn(false);
             when(translatableItem3.getTranslationRequirements()).thenReturn(ENGLISH_TO_WELSH);
             when(translatableItem3.asLabel()).thenReturn(ITEM_3_LABEL);
+            when(translatableItem4.hasBeenTranslated()).thenReturn(false);
+            when(translatableItem4.getTranslationRequirements()).thenReturn(null);
+            when(translatableItem4.asLabel()).thenReturn(ITEM_4_LABEL);
 
             DynamicList actual = underTest.generateList(CASE_DATA);
 
