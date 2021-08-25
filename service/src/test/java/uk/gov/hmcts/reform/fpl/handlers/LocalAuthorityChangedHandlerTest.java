@@ -7,25 +7,28 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
-import uk.gov.hmcts.reform.fpl.exceptions.RecipientNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.notify.CaseTransferredNotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedLocalAuthorityChangedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityChangedContentProvider;
 
 import java.util.Optional;
+import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE;
@@ -33,7 +36,11 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_SHAR
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class LocalAuthorityChangedHandlerTest {
+
+    @Mock
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @Mock
     private NotificationService notificationService;
@@ -58,6 +65,8 @@ class LocalAuthorityChangedHandlerTest {
         .email("la@test.com")
         .build();
 
+    private final Set<String> recipients = Set.of("test1@test.com", "test2@test,com");
+
     @Nested
     class SharedLocalAuthorityAdded {
 
@@ -72,6 +81,8 @@ class LocalAuthorityChangedHandlerTest {
         @Test
         void shouldNotifyAddedLocalAuthority() {
 
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(recipients);
+
             when(localAuthorityService.getSecondaryLocalAuthority(caseData))
                 .thenReturn(Optional.of(localAuthority));
 
@@ -80,17 +91,26 @@ class LocalAuthorityChangedHandlerTest {
 
             underTest.notifySecondaryLocalAuthority(event);
 
+            final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .designatedLocalAuthorityExcluded(true)
+                .legalRepresentativesExcluded(true)
+                .build();
+
             verify(notificationService).sendEmail(
                 LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE,
-                localAuthority.getEmail(),
+                recipients,
                 notifyData,
                 caseData.getId());
 
             verifyNoMoreInteractions(notificationService);
+            verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
         }
 
         @Test
         void shouldNotifyDesignatedLocalAuthority() {
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(recipients);
 
             when(localAuthorityService.getDesignatedLocalAuthority(caseData))
                 .thenReturn(localAuthority);
@@ -100,26 +120,22 @@ class LocalAuthorityChangedHandlerTest {
 
             underTest.notifyDesignatedLocalAuthority(event);
 
+            final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .secondaryLocalAuthorityExcluded(true)
+                .legalRepresentativesExcluded(true)
+                .build();
+
             verify(notificationService).sendEmail(
                 LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE,
-                localAuthority.getEmail(),
+                recipients,
                 notifyData,
                 caseData.getId());
 
             verifyNoMoreInteractions(notificationService);
+            verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
         }
 
-        @Test
-        void shouldThrowsExceptionWhenSecondaryLocalAuthorityNotPresent() {
-
-            when(localAuthorityService.getSecondaryLocalAuthority(caseData))
-                .thenReturn(Optional.empty());
-
-            assertThatThrownBy(() -> underTest.notifySecondaryLocalAuthority(event))
-                .isInstanceOf(RecipientNotFoundException.class);
-
-            verifyNoInteractions(notificationService);
-        }
     }
 
     @Nested
@@ -137,6 +153,8 @@ class LocalAuthorityChangedHandlerTest {
         @Test
         void shouldNotifyRemovedLocalAuthority() {
 
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(recipients);
+
             when(localAuthorityService.getSecondaryLocalAuthority(caseDataBefore))
                 .thenReturn(Optional.of(localAuthority));
 
@@ -145,25 +163,20 @@ class LocalAuthorityChangedHandlerTest {
 
             underTest.notifySecondaryLocalAuthority(event);
 
+            final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .designatedLocalAuthorityExcluded(true)
+                .legalRepresentativesExcluded(true)
+                .build();
+
             verify(notificationService).sendEmail(
                 LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE,
-                localAuthority.getEmail(),
+                recipients,
                 notifyData,
                 caseData.getId());
 
             verifyNoMoreInteractions(notificationService);
-        }
-
-        @Test
-        void shouldThrowsExceptionWhenSecondaryLocalAuthorityNotPresent() {
-
-            when(localAuthorityService.getSecondaryLocalAuthority(caseDataBefore))
-                .thenReturn(Optional.empty());
-
-            assertThatThrownBy(() -> underTest.notifySecondaryLocalAuthority(event))
-                .isInstanceOf(RecipientNotFoundException.class);
-
-            verifyNoInteractions(notificationService);
+            verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
         }
     }
 
@@ -182,6 +195,8 @@ class LocalAuthorityChangedHandlerTest {
         @Test
         void shouldNotifyNewDesignatedLocalAuthority() {
 
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(recipients);
+
             when(localAuthorityService.getDesignatedLocalAuthority(caseData))
                 .thenReturn(localAuthority);
 
@@ -190,17 +205,26 @@ class LocalAuthorityChangedHandlerTest {
 
             underTest.notifyNewDesignatedLocalAuthority(event);
 
+            final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .secondaryLocalAuthorityExcluded(true)
+                .legalRepresentativesExcluded(true)
+                .build();
+
             verify(notificationService).sendEmail(
                 CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE,
-                localAuthority.getEmail(),
+                recipients,
                 notifyData,
                 caseData.getId());
 
             verifyNoMoreInteractions(notificationService);
+            verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
         }
 
         @Test
         void shouldNotifyPrevDesignatedLocalAuthority() {
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(recipients);
 
             when(localAuthorityService.getDesignatedLocalAuthority(caseDataBefore))
                 .thenReturn(localAuthority);
@@ -210,13 +234,21 @@ class LocalAuthorityChangedHandlerTest {
 
             underTest.notifyPreviousDesignatedLocalAuthority(event);
 
+            final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .secondaryLocalAuthorityExcluded(true)
+                .legalRepresentativesExcluded(true)
+                .build();
+
             verify(notificationService).sendEmail(
                 CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE,
-                localAuthority.getEmail(),
+                recipients,
                 notifyData,
                 caseData.getId());
 
             verifyNoMoreInteractions(notificationService);
+
+            verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
         }
 
     }

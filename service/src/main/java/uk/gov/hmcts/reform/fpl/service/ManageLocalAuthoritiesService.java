@@ -159,7 +159,7 @@ public class ManageLocalAuthoritiesService {
 
         return ofNullable(eventData.getLocalAuthoritiesToShare())
             .map(DynamicList::getValueCode)
-            .flatMap(localAuthorityEmails::getLocalAuthority)
+            .flatMap(localAuthorityEmails::getSharedInbox)
             .orElse(null);
     }
 
@@ -270,7 +270,7 @@ public class ManageLocalAuthoritiesService {
                     .getOrganisation(localAuthorityOrgId);
                 final LocalAuthority newLocalAuthority = applicantLocalAuthorityService.getLocalAuthority(organisation);
 
-                newLocalAuthority.setEmail(localAuthorityEmails.getLocalAuthority(localAuthorityCode).orElse(null));
+                newLocalAuthority.setEmail(localAuthorityEmails.getSharedInbox(localAuthorityCode).orElse(null));
 
                 return newLocalAuthority;
             });
