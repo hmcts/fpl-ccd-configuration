@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -26,7 +27,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
@@ -49,6 +49,7 @@ class TranslatableItemServiceTest {
     private static final Document TEST_DOCUMENT = testDocument();
     private static final Map<String, Object> TRANSFORMED_DATA = Map.of("stuff", "final");
     private static final LocalDateTime TRANSLATION_TIME_1 = LocalDateTime.of(2012, 12, 12, 2, 3);
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
 
     private final TranslatableListItemProviders providers = mock(TranslatableListItemProviders.class);
     private final TranslatableListItemProvider provider1 = mock(TranslatableListItemProvider.class);
@@ -67,6 +68,7 @@ class TranslatableItemServiceTest {
         translatedFileNameGenerator,
         new DynamicListService(new ObjectMapper())
     );
+    private final TranslatableItem translatableItem = mock(TranslatableItem.class);
 
     @BeforeEach
     void setUp() {
@@ -182,7 +184,11 @@ class TranslatableItemServiceTest {
             when(provider1.accept(caseData, UUID_ID_1)).thenReturn(false);
             when(provider2.accept(caseData, UUID_ID_1)).thenReturn(true);
 
-            mockDocumentGeneration(caseData);
+            mockDocumentGeneration(caseData, TRANSLATION_REQUIREMENTS);
+
+            when(provider2.provideSelectedItem(caseData, UUID_ID_1))
+                .thenReturn(translatableItem);
+            when(translatableItem.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENTS);
 
             when(provider2.applyTranslatedOrder(caseData,
                 DocumentReference.buildFromDocument(TEST_DOCUMENT),
@@ -203,7 +209,11 @@ class TranslatableItemServiceTest {
             when(provider1.accept(caseData, UUID_ID_1)).thenReturn(true);
             when(provider2.accept(caseData, UUID_ID_1)).thenReturn(true);
 
-            mockDocumentGeneration(caseData);
+            mockDocumentGeneration(caseData, TRANSLATION_REQUIREMENTS);
+
+            when(provider1.provideSelectedItem(caseData, UUID_ID_1))
+                .thenReturn(translatableItem);
+            when(translatableItem.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENTS);
 
             when(provider1.applyTranslatedOrder(caseData,
                 DocumentReference.buildFromDocument(TEST_DOCUMENT),
@@ -239,9 +249,9 @@ class TranslatableItemServiceTest {
                 .build();
         }
 
-        private void mockDocumentGeneration(CaseData caseData) {
+        private void mockDocumentGeneration(CaseData caseData, LanguageTranslationRequirement translationRequirements) {
             when(translatedDocumentGenerator.generate(caseData)).thenReturn(DOCUMENT_BYTES);
-            when(translatedFileNameGenerator.generate(caseData, any())).thenReturn(FILENAME);
+            when(translatedFileNameGenerator.generate(caseData, translationRequirements)).thenReturn(FILENAME);
             when(uploadDocumentService.uploadDocument(DOCUMENT_BYTES,
                 FILENAME,
                 RenderFormat.PDF.getMediaType())).thenReturn(TEST_DOCUMENT);
