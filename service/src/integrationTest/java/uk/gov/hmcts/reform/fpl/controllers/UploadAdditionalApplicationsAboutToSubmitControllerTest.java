@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,7 +33,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -82,9 +79,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @MockBean
     private DocumentSealingService documentSealingService;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private Time time;
 
@@ -99,16 +93,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         given(documentSealingService.sealDocument(uploadedDocument)).willReturn(sealedDocument);
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldCreateAdditionalApplicationsBundleWithC2DocumentWhenC2OrderIsSelectedAndSupplementsIncluded(
-        boolean servingOthersToggledOn) {
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersToggledOn);
-
+    @Test
+    void shouldCreateAdditionalApplicationsBundleWithC2DocumentWhenC2OrderIsSelectedAndSupplementsIncluded() {
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representativeElement = element(Representative.builder()
             .servingPreferences(EMAIL).email("test@test.com").build());
-        CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder()
+
+        CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
             .temporaryC2Document(createTemporaryC2Document())
             .temporaryPbaPayment(temporaryPbaPayment)
@@ -118,19 +109,17 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .representedBy(wrapElements(representativeElement.getId()))
                 .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build()).build()))
             .others(Others.builder().firstOther(
-                Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
+                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
-                    .address(Address.builder().postcode("SW2").build()).build())).build());
-        if (servingOthersToggledOn) {
-            caseDataBuilder.personSelector(Selector.newSelector(3))
-                .notifyApplicationsToAllOthers(YesNo.YES.getValue());
-        }
+                    .address(Address.builder().postcode("SW2").build()).build())).build())
+            .personSelector(Selector.newSelector(3))
+            .notifyApplicationsToAllOthers(YesNo.YES.getValue()).build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDataBuilder.build());
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
+        CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         AdditionalApplicationsBundle additionalApplicationsBundle
-            = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+            = updatedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
 
         C2DocumentBundle uploadedC2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
 
@@ -138,24 +127,17 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(LOCAL_AUTHORITY_NAME);
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
 
-        if (servingOthersToggledOn) {
-            assertThat(uploadedC2DocumentBundle.getOthersNotified())
-                .contains("Margaret Jones, Tim Jones, Stephen Jones");
-            assertThat(unwrapElements(uploadedC2DocumentBundle.getOthers()))
-                .contains(caseData.getOthers().getFirstOther(),
-                    caseData.getOthers().getAdditionalOthers().get(0).getValue());
-        } else {
-            assertThat(uploadedC2DocumentBundle.getOthersNotified()).isNull();
-            assertThat(uploadedC2DocumentBundle.getOthers()).isNull();
-        }
+        assertThat(uploadedC2DocumentBundle.getOthersNotified())
+            .contains("Margaret Jones, Tim Jones, Stephen Jones");
+        assertThat(unwrapElements(uploadedC2DocumentBundle.getOthers()))
+            .contains(updatedCaseData.getOthers().getFirstOther(),
+                updatedCaseData.getOthers().getAdditionalOthers().get(0).getValue());
 
-        assertTemporaryFieldsAreRemoved(caseData);
+        assertTemporaryFieldsAreRemoved(updatedCaseData);
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected(
-        boolean servingOthersToggledOn) {
+    @Test
+    void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected() {
         PBAPayment temporaryPbaPayment = createPbaPayment();
         Element<Representative> representative = element(Representative.builder()
             .servingPreferences(EMAIL).email("rep@test.com").build());
@@ -177,14 +159,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .additionalOthers(wrapElements(Other.builder().name("Alex Smith")
                     .address(Address.builder().postcode("SE2").build()).build())).build());
 
-        if (servingOthersToggledOn) {
-            Selector personSelector = Selector.newSelector(3);
-            personSelector.setSelected(List.of(0, 2));
-            caseDataBuilder.personSelector(personSelector)
-                .notifyApplicationsToAllOthers("No");
-        }
-
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersToggledOn);
+        Selector personSelector = Selector.newSelector(3);
+        personSelector.setSelected(List.of(0, 2));
+        caseDataBuilder.personSelector(personSelector)
+            .notifyApplicationsToAllOthers("No");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDataBuilder.build());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -196,19 +174,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
             .isEqualTo(OTHER_APPLICANT_NAME);
 
-        if (servingOthersToggledOn) {
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
-                .isEqualTo("Margaret Jones, Alex Smith");
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
-                .isEqualTo(List.of(caseData.getOthers().getAdditionalOthers().get(0)));
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
-                .hasSize(1)
-                .containsExactly(respondentElement);
-        } else {
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified()).isNull();
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers()).isNull();
-            assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents()).isNull();
-        }
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
+            .isEqualTo("Margaret Jones, Alex Smith");
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
+            .isEqualTo(List.of(caseData.getOthers().getAdditionalOthers().get(0)));
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
+            .hasSize(1)
+            .containsExactly(respondentElement);
 
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
         assertTemporaryFieldsAreRemoved(caseData);
@@ -229,8 +201,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                     .address(Address.builder().postcode("SE1").build()).build()).build())
             .personSelector(Selector.newSelector(1))
             .notifyApplicationsToAllOthers("No").build();
-
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -388,14 +358,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle) {
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(documentBundle);
 
-        assertThat(supportingEvidenceBundle).first()
-            .extracting(
-                SupportingEvidenceBundle::getName,
-                SupportingEvidenceBundle::getNotes,
-                SupportingEvidenceBundle::getDateTimeUploaded,
-                SupportingEvidenceBundle::getDocument,
-                SupportingEvidenceBundle::getUploadedBy
-            ).containsExactly(
+        assertThat(supportingEvidenceBundle).first().extracting(
+            SupportingEvidenceBundle::getName,
+            SupportingEvidenceBundle::getNotes,
+            SupportingEvidenceBundle::getDateTimeUploaded,
+            SupportingEvidenceBundle::getDocument,
+            SupportingEvidenceBundle::getUploadedBy
+        ).containsExactly(
             "Supporting document",
             "Document notes",
             time.now(),
@@ -407,14 +376,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private void assertSupplementsBundle(List<Element<Supplement>> documentBundle) {
         List<Supplement> supplementsBundle = unwrapElements(documentBundle);
 
-        assertThat(supplementsBundle).first()
-            .extracting(
-                Supplement::getName,
-                Supplement::getNotes,
-                Supplement::getDateTimeUploaded,
-                Supplement::getDocument,
-                Supplement::getUploadedBy
-            ).containsExactly(
+        assertThat(supplementsBundle).first().extracting(
+            Supplement::getName,
+            Supplement::getNotes,
+            Supplement::getDateTimeUploaded,
+            Supplement::getDocument,
+            Supplement::getUploadedBy
+        ).containsExactly(
             SupplementType.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),

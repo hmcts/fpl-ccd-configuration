@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
@@ -29,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,9 +50,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     RepresentativeNotificationService.class
 })
 @MockBeans({
-    @MockBean(FeatureToggleService.class), @MockBean(IdamClient.class), @MockBean(RequestData.class),
-    @MockBean(SendDocumentService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
-    @MockBean(Time.class)
+    @MockBean(RequestData.class), @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
+    @MockBean(OtherRecipientsInbox.class), @MockBean(Time.class)
 })
 class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
@@ -96,9 +93,6 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     private RequestData requestData;
 
     @Autowired
-    private FeatureToggleService toggleService;
-
-    @Autowired
     private Time time;
 
     @BeforeEach
@@ -108,7 +102,6 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyAdmin() {
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
         underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
@@ -138,8 +131,6 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyParties() {
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
-
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
 
         assertThat(response())
