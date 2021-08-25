@@ -7,13 +7,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -23,7 +23,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageHearingsOthersGenerator {
     private final OthersService othersService;
-    private final FeatureToggleService toggleService;
 
     public Map<String, Object> generate(CaseData caseData, HearingBooking hearingBooking) {
 
@@ -31,13 +30,11 @@ public class ManageHearingsOthersGenerator {
         List<Element<Other>> selectedOthers = hearingBooking.getOthers();
 
         Map<String, Object> data = new HashMap<>();
-
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled() && !allOthers.isEmpty()) {
+        if (isNotEmpty(allOthers)) {
             data.put("hasOthers", YES.getValue());
             data.put("othersSelector",
                 othersService.buildOtherSelector(unwrapElements(allOthers), unwrapElements(selectedOthers)));
             data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-
 
             if (NEW_HEARING != caseData.getHearingOption()) {
                 data.put("sendNoticeOfHearing", sendNoticeOfHearing(hearingBooking) ? YES.getValue() : NO.getValue());
@@ -45,7 +42,6 @@ public class ManageHearingsOthersGenerator {
                     sendOrderToAllOthers(allOthers, selectedOthers) ? YES.getValue() : NO.getValue());
             }
         }
-
 
         return data;
     }
