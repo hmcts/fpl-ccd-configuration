@@ -12,13 +12,9 @@ public final class NotifyTemplates {
     public static final String OUTSOURCED_CASE_TEMPLATE = "c4d612a3-8384-468b-9b83-532e7e857c63";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "3c422258-7a6e-4aa0-8d4b-56f50f42d0eb";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
-    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
-        = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
         = "62791aee-6caf-4a22-a599-fcfc4381ba20";
-    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
-        = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
-    public static final String UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
+    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
         = "d5f41125-76d0-43f9-971b-fe1ff6a26acf";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
