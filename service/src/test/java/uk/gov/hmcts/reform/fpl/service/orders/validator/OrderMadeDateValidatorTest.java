@@ -25,7 +25,7 @@ class OrderMadeDateValidatorTest {
     }
 
     @Test
-    void validatePresent() {
+    void shouldPassValidationWhenDateIsPresent() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersOrderCreatedDate(time.now().toLocalDate())
@@ -36,7 +36,7 @@ class OrderMadeDateValidatorTest {
     }
 
     @Test
-    void validatePast() {
+    void shouldPassValidationWhenDateIsInThePast() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersOrderCreatedDate(time.now().toLocalDate().minusDays(1))
@@ -47,7 +47,7 @@ class OrderMadeDateValidatorTest {
     }
 
     @Test
-    void validateFuture() {
+    void shouldFailValidationWhenDateIsFuture() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersOrderCreatedDate(time.now().toLocalDate().plusDays(1))

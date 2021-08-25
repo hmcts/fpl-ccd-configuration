@@ -44,11 +44,10 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final String OFFICER_NAME = "Officer Barbrady";
     private static final LocalDate ORDER_CREATED_DATE = LocalDate.of(2020, 8, 20);
-    private static final String dayOrdinalSuffix = getDayOfMonthSuffix(ORDER_CREATED_DATE.getDayOfMonth());
 
-    private static final String formattedDate = formatLocalDateToString(
+    private static final String FORMAT_LOCAL_DATE_TO_STRING = formatLocalDateToString(
         ORDER_CREATED_DATE,
-        format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        format(DATE_WITH_ORDINAL_SUFFIX, getDayOfMonthSuffix(ORDER_CREATED_DATE.getDayOfMonth()))
     );
     private static final Address REMOVAL_ADDRESS = Address.builder()
         .addressLine1("12 street").postcode("SW1").country("UK").build();
@@ -248,7 +247,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         return C29RecoveryOfAChildDocmosisParameters.builder()
             .furtherDirections(FURTHER_DIRECTIONS)
             .localAuthorityName(LA_NAME)
-            .dateOfIssue(formattedDate)
+            .dateOfIssue(FORMAT_LOCAL_DATE_TO_STRING)
             .orderTitle(C29_RECOVERY_OF_A_CHILD.getTitle());
     }
 
@@ -261,7 +260,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             LA_NAME,
             childrenGrammar,
             orderGrammar + order.getLabel(),
-            formattedDate,
+            FORMAT_LOCAL_DATE_TO_STRING,
             paragraphBreak);
     }
 

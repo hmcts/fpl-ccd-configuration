@@ -228,7 +228,6 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
     others: 'John Doe',
   });
 });
-//
 
 Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
@@ -244,11 +243,9 @@ Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrd
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
-
   await manageOrdersEventPage.selectWhichOrder(manageOrdersEventPage.section4.whichOrder.options.epo);
   await manageOrdersEventPage.enterOrderMadeDate(approvalDate);
   await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.inform);
-
   await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.produce);
   await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.remove);
   await manageOrdersEventPage.enterRemovalAddress(removalAddress);
@@ -271,8 +268,6 @@ Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrd
     others: 'John Doe',
   });
 });
-
-//
 
 Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);

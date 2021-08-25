@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_CREATED;
@@ -30,10 +31,12 @@ public class OrderMadeDateValidator implements QuestionBlockOrderValidator {
         LocalDate orderMade = caseData.getManageOrdersEventData().getManageOrdersOrderCreatedDate();
         LocalDate now = time.now().toLocalDate();
 
+        List<String> errors = new ArrayList<>();
+
         if (orderMade.isAfter(now)) {
-            return List.of(MESSAGE);
+            errors.add(MESSAGE);
         }
 
-        return List.of();
+        return errors;
     }
 }
