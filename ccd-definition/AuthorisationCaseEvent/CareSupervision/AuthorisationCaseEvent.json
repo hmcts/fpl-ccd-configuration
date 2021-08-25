@@ -1339,28 +1339,5 @@
         "CRUD": "R"
       }
     ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addCaseFlag",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor"
-        ],
-        "CRUD": "R"
-      }
-    ]
   }
-
 ]
