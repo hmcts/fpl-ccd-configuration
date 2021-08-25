@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -13,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -25,10 +26,10 @@ import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
@@ -110,7 +111,7 @@ class FurtherEvidenceNotificationServiceTest {
     private static final List<String> DOCUMENTS = buildDocumentsNamesList();
 
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @Mock
     private NotificationService notificationService;
@@ -127,18 +128,55 @@ class FurtherEvidenceNotificationServiceTest {
     @InjectMocks
     private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
-    @Test
-    void shouldReturnLASolicitors() {
-        CaseData caseData = caseData();
+    @Nested
+    class LocalAuthoritiesRecipients {
 
-        when(inboxLookupService.getRecipients(LocalAuthorityInboxRecipientsRequest.builder()
-            .caseData(caseData)
-            .build()))
-            .thenReturn(LOCAL_AUTHORITY_EMAILS);
+        @Test
+        void shouldReturnAllLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
 
-        Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData);
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
 
-        assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+            Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .build());
+        }
+
+        @Test
+        void shouldReturnDesignatedLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
+
+            Set<String> actual = furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .secondaryLocalAuthorityExcluded(true)
+                .build());
+        }
+
+        @Test
+        void shouldReturnSecondaryLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
+
+            Set<String> actual = furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .designatedLocalAuthorityExcluded(true)
+                .build());
+        }
     }
 
     @Test
@@ -158,7 +196,7 @@ class FurtherEvidenceNotificationServiceTest {
             .thenReturn(newHashSet("rep@example.com", "rep2@example.com", "rep3@example.com",
                 "cafcass2@example.com"));
         Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData,
-            DocumentUploadNotificationUserType.LOCAL_AUTHORITY);
+            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             REPRESENTATIVE_WITH_SERVICE_ACCESS_1.getEmail(),
@@ -176,7 +214,7 @@ class FurtherEvidenceNotificationServiceTest {
         when(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE))
             .thenReturn(newHashSet("sol2@email.com"));
         Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData,
-            DocumentUploadNotificationUserType.SOLICITOR);
+            DocumentUploaderType.SOLICITOR);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             CHILD_1.getSolicitor().getEmail(),
@@ -188,7 +226,7 @@ class FurtherEvidenceNotificationServiceTest {
         CaseData emptyCaseData = caseData();
 
         Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData,
-            DocumentUploadNotificationUserType.LOCAL_AUTHORITY);
+            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         assertThat(actualRecipients).isEmpty();
     }
@@ -201,7 +239,7 @@ class FurtherEvidenceNotificationServiceTest {
             CAFCASS_SOLICITOR_SERVED_BY_EMAIL);
 
         Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData,
-            DocumentUploadNotificationUserType.LOCAL_AUTHORITY);
+            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         assertThat(actualRecipients).isEmpty();
     }

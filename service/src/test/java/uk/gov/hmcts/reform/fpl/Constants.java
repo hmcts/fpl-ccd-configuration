@@ -56,8 +56,7 @@ public interface Constants {
         .email("court3b@family-court.com")
         .build();
     String USER_ID = "456";
-    String TEST_CASE_ID = "1234123412341234";
+    Long TEST_CASE_ID = 1234123412341234L;
     String TEST_FORMATTED_CASE_ID = "1234-1234-1234-1234";
-    Long TEST_CASE_ID_AS_LONG = 1234123412341234L;
 
 }

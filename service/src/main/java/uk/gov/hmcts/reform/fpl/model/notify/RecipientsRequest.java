@@ -6,8 +6,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 @Value
 @Builder
-public class LocalAuthorityInboxRecipientsRequest {
+public class RecipientsRequest {
 
     CaseData caseData;
-    boolean excludeLegalRepresentatives;
+
+    boolean legalRepresentativesExcluded;
+    boolean designatedLocalAuthorityExcluded;
+    boolean secondaryLocalAuthorityExcluded;
 }

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -39,6 +40,9 @@ public class UploadTranslationsControllerTestHelper {
     public static final UUID UUID_6 = UUID.randomUUID();
 
     public static final CaseData CASE_DATA_WITH_ALL_ORDERS = CaseData.builder()
+        .c110A(C110A.builder()
+            .submittedFormTranslationRequirements(ENGLISH_TO_WELSH)
+            .build())
         .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
         .orderCollection(List.of(element(UUID_1, GeneratedOrder.builder()
                 .type("Generated order type")
@@ -70,7 +74,7 @@ public class UploadTranslationsControllerTestHelper {
                 .noticeOfHearing(DocumentReference.builder()
                     .filename("noticeOfHearing.pdf")
                     .build())
-                .startDate(LocalDateTime.of(2010,1,3,12,1,2))
+                .startDate(LocalDateTime.of(2010, 1, 3, 12, 1, 2))
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .build()
             )
@@ -99,7 +103,8 @@ public class UploadTranslationsControllerTestHelper {
             dlElement(UUID_3, "Notice of proceedings (C6)"),
             dlElement(UUID_4, "Notice of proceedings (C6A)"),
             dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),
-            dlElement(UUID_6, "Notice of hearing - 3 January 2010")
+            dlElement(UUID_6, "Notice of hearing - 3 January 2010"),
+            dlElement(C110A.COLLECTION_ID, "Application (C110A)")
         )).build();
     public static final DocumentReference TEST_DOCUMENT = DocumentReference.buildFromDocument(testDocument());
     public static final byte[] TRANSLATED_DOC_BYTES = "TranslatedDocumentContent".getBytes();
