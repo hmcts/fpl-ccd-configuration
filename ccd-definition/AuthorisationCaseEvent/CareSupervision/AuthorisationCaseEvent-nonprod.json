@@ -155,18 +155,9 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper"
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor"
-        ],
-        "CRUD": "R"
       }
     ]
   }
