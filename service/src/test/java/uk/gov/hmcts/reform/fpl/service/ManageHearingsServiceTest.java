@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -943,7 +942,7 @@ class ManageHearingsServiceTest {
                 .hearingDuration("INVALID")
                 .build();
 
-           assertThatThrownBy(() -> service.populateFieldsWhenPastHearingDateAdded(caseData))
+            assertThatThrownBy(() -> service.populateFieldsWhenPastHearingDateAdded(caseData))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid hearing duration INVALID");
         }
