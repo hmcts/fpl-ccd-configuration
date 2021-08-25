@@ -150,7 +150,7 @@ module.exports = {
   },
 
   seeInExpandedDocumentSentForTranslation(title, uploadedBy, dateTimeUploaded) {
-    this.seeElement(locate('details').withAttr({open})
+    this.waitForElement(locate('details').withAttr({open})
       .withChild(locate('summary')
         .withText(title))
       .withChild(locate('div'))
@@ -164,7 +164,7 @@ module.exports = {
   },
 
   seeInExpandedDocumentTranslated(title, uploadedBy, dateTimeUploaded) {
-    this.seeElement(locate('details').withAttr({open})
+    this.waitForElement(locate('details').withAttr({open})
       .withChild(locate('summary')
         .withText(title))
       .withChild(locate('div'))
