@@ -451,6 +451,8 @@ public class ManageHearingsService {
                 .plusMinutes(Long.parseLong(caseData.getHearingMinutes()));
             populateFields.accept(endDateTime,
                 getHearingHoursAndMins(caseData.getHearingHours(), caseData.getHearingMinutes()));
+        } else {
+            throw new IllegalArgumentException("Invalid hearing duration " + caseData.getHearingDuration());
         }
 
         return data;
