@@ -26,7 +26,7 @@ public class ManageOrderDocumentService {
         return context;
     }
 
-    private String getChildGrammar(int numOfChildren) {
+    public String getChildGrammar(int numOfChildren) {
         return (numOfChildren == 1) ? "child" : "children";
     }
 

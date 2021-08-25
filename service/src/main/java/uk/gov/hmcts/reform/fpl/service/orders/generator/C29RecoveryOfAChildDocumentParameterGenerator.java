@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C29RecoveryOfAChildDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
@@ -32,8 +33,9 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
 
     private final ChildrenService childrenService;
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
+    private final ManageOrderDocumentService manageOrderDocumentService;
 
-    private static final String paragraphBreak = "\n\n";
+    private static final String PARAGRAPH_BREAK = "\n\n";
     private static final String ORDER_HEADER = "Warning\n";
     private static final String ORDER_MESSAGE = "It is an offence intentionally to obstruct the "
         + "person from removing the child (Section 50(9) Children Act 1989).";
@@ -77,7 +79,7 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
 
     private String getOrderDetails(ManageOrdersEventData eventData, int numOfChildren,
                                    String orderMadeDate, String localAuthorityName) {
-        String childOrChildren = (numOfChildren == 1 ? "child" : "children");
+        String childOrChildren = manageOrderDocumentService.getChildGrammar(numOfChildren);
         String officerReference = getOfficerReferenceMessage(eventData);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -119,7 +121,7 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
             childOrChildren,
             getOrderGrammar(order).concat(order.getLabel()),
             orderMadeDate,
-            paragraphBreak
+            PARAGRAPH_BREAK
         );
     }
 
@@ -130,22 +132,22 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
     private String getEntryMessage(String officerReference, String address, String childOrChildren) {
         return format("The court authorises %s to enter "
                 + "the premises known as %s, and search for the %s, using reasonable force if necessary.%s",
-            officerReference, address, childOrChildren, paragraphBreak);
+            officerReference, address, childOrChildren, PARAGRAPH_BREAK);
     }
 
     private String getInformMessage(String officerReference) {
         return format("The court requires any person who has information about where the child is,"
             + " or may be, to give that information to %s or an officer of the court, if asked to do so.%s",
-        officerReference, paragraphBreak);
+        officerReference, PARAGRAPH_BREAK);
     }
 
     private String getProduceMessage(String officerReference) {
         return format("The court directs that any person who can produce the child when asked to by "
-            + "%s to do so.%s", officerReference, paragraphBreak);
+            + "%s to do so.%s", officerReference, PARAGRAPH_BREAK);
     }
 
     private String getRemoveMessage(String officerReference) {
-        return format("The Court authorises %s to remove the child.%s", officerReference, paragraphBreak);
+        return format("The Court authorises %s to remove the child.%s", officerReference, PARAGRAPH_BREAK);
     }
 
     private String getIsExparteMessage(ManageOrdersEventData eventData) {
