@@ -40,7 +40,7 @@ class ManageHearingsControllerReListHearingMidEventTest extends ManageHearingsCo
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(VACATE_HEARING)
-            .futureAndTodayHearingDateList(hearingToBeVacated.getId())
+            .toVacateHearingDateList(hearingToBeVacated.getId())
             .hearingDetails(List.of(otherHearing, hearingToBeVacated))
             .build();
 

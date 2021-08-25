@@ -17,7 +17,7 @@ module.exports = {
     preAttendanceDetails: '#preHearingAttendanceDetails',
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
-    futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
+    toVacateHearingDateList: '#toVacateHearingDateList',
     toReListHearingDateList: '#toReListHearingDateList',
     hearingType: {
       caseManagement: '#hearingType-CASE_MANAGEMENT',
@@ -66,7 +66,7 @@ module.exports = {
 
   selectVacateHearing(hearing) {
     I.click(this.fields.hearingOptions.vacateHearing);
-    I.selectOption(this.fields.futureAndTodayHearingDateList, hearing);
+    I.selectOption(this.fields.toVacateHearingDateList, hearing);
   },
 
   selectReListHearing(hearing) {

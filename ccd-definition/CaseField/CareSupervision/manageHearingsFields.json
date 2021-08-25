@@ -222,7 +222,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "futureAndTodayHearingDateList",
+    "ID": "toVacateHearingDateList",
     "Label": "Which hearing?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
@@ -271,6 +271,33 @@
     "ID": "vacatedReason",
     "Label": " ",
     "FieldType": "CancellationReason",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showVacatePastHearingWarning",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "vacatePastHearingWarning",
+    "FieldType": "Label",
+    "Label": "You've chosen to vacate a hearing that's now in the past. If the judge ruled at the hearing that it could not happen, return to the previous page and select 'Adjourn hearing'. \n\n If the hearing was stopped before it was due to take place, continue to mark it as vacated.\n\n",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "vacatedHearing",
+    "Label": " ",
+    "FieldType": "HearingBooking",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

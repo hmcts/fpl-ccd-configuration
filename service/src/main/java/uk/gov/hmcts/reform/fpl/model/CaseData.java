@@ -838,6 +838,12 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getAllNonCancelledHearings() {
+        return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()))
+            .flatMap(Collection::stream).collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
@@ -931,7 +937,7 @@ public class CaseData {
     private final String noticeOfHearingNotes;
     private final Object hearingDateList;
     private final Object pastAndTodayHearingDateList;
-    private final Object futureAndTodayHearingDateList;
+    private final Object toVacateHearingDateList;
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
@@ -951,6 +957,8 @@ public class CaseData {
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
     private final HearingCancellationReason vacatedReason;
+    @JsonProperty
+    private final HearingBooking vacatedHearing;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
 

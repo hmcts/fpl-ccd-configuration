@@ -79,7 +79,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARINGS_TO_ADJOURN;
@@ -89,6 +88,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_VACATE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -150,7 +150,8 @@ class ManageHearingsServiceTest {
 
             DynamicList expectedHearingList = dynamicList(futureHearing1, futureHearing2);
             DynamicList expectedPastHearingList = dynamicList(todayHearing, pastHearing1, pastHearing2);
-            DynamicList expectedFutureHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing);
+            DynamicList expectedFutureHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing,
+                pastHearing1, pastHearing2);
 
             CaseData initialCaseData = CaseData.builder()
                 .hearingDetails(List.of(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2))
@@ -165,7 +166,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
                 .containsEntry(HEARING_DATE_LIST, expectedHearingList)
                 .containsEntry(PAST_HEARING_LIST, expectedPastHearingList)
-                .containsEntry(FUTURE_HEARING_LIST, expectedFutureHearingList)
+                .containsEntry(TO_VACATE_HEARING_LIST, expectedFutureHearingList)
                 .containsEntry(TO_RE_LIST_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARING_TO_RE_LIST)
                 .doesNotContainKeys(TO_RE_LIST_HEARING_LABEL);
@@ -203,7 +204,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
                 .containsEntry(HEARING_DATE_LIST, emptyDynamicList)
                 .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
-                .containsEntry(FUTURE_HEARING_LIST, emptyDynamicList)
+                .containsEntry(TO_VACATE_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARINGS_TO_ADJOURN)
                 .doesNotContainKeys(HAS_FUTURE_HEARING_FLAG)
                 .doesNotContainKeys(HAS_HEARINGS_TO_VACATE);
@@ -250,7 +251,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
                 .containsEntry(HEARING_DATE_LIST, expectedHearingList)
                 .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
-                .containsEntry(FUTURE_HEARING_LIST, expectedFutureHearingList);
+                .containsEntry(TO_VACATE_HEARING_LIST, expectedFutureHearingList);
         }
 
         private Element<HearingBooking> hearingFromToday(int daysFromToday) {
@@ -1027,6 +1028,7 @@ class ManageHearingsServiceTest {
 
     @Nested
     class Vacating {
+        private final LocalDateTime vacatedDate = time.now();
 
         @Test
         void shouldVacateHearingToBeReListedLater() {
@@ -1051,6 +1053,7 @@ class ManageHearingsServiceTest {
                 hearingElement1.getValue().toBuilder()
                     .status(VACATED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             CaseData caseData = CaseData.builder()
@@ -1072,6 +1075,7 @@ class ManageHearingsServiceTest {
             Element<HearingBooking> vacatedHearing = element(hearingElement1.getId(),
                 hearingElement1.getValue().toBuilder()
                     .status(VACATED)
+                    .vacatedDate(vacatedDate)
                     .build());
 
             CaseData caseData = CaseData.builder()
@@ -1099,6 +1103,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             CaseData caseData = CaseData.builder()
@@ -1128,6 +1133,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1168,6 +1174,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1213,6 +1220,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1257,6 +1265,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1307,6 +1316,7 @@ class ManageHearingsServiceTest {
                 hearingElement1.getValue().toBuilder()
                     .status(expectedStatus)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> vacatedHearingBundle = randomDocumentBundle(hearingElement1);
@@ -1402,11 +1412,11 @@ class ManageHearingsServiceTest {
     class HearingsDynamicList {
 
         @Test
-        void shouldReturnFutureAndTodayHearingDateListWhenHearingOptionIsVacateHearing() {
+        void shouldReturnHearingsToBeVacatedDateListWhenHearingOptionIsVacateHearing() {
             CaseData caseData = caseData(VACATE_HEARING);
 
             Object dynamicList = service.getHearingsDynamicList(caseData);
-            assertThat(dynamicList).isEqualTo(caseData.getFutureAndTodayHearingDateList());
+            assertThat(dynamicList).isEqualTo(caseData.getToVacateHearingDateList());
         }
 
         @Test
@@ -1445,7 +1455,7 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList())
-                .futureAndTodayHearingDateList(randomDynamicList())
+                .toVacateHearingDateList(randomDynamicList())
                 .toReListHearingDateList(randomDynamicList())
                 .hearingDateList(randomDynamicList())
                 .build();
@@ -1516,7 +1526,7 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList(selectedPastAndTodayHearing))
-                .futureAndTodayHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
+                .toVacateHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
                 .toReListHearingDateList(randomDynamicList(selectedToReListHearing))
                 .hearingDateList(randomDynamicList(selectedHearing))
                 .build();
@@ -1560,7 +1570,8 @@ class ManageHearingsServiceTest {
             "vacatedReason",
             "hearingDateList",
             "pastAndTodayHearingDateList",
-            "futureAndTodayHearingDateList",
+            "toVacateHearingDateList",
+            "vacatedHearing",
             "hasHearingsToAdjourn",
             "hasHearingsToVacate",
             "hasExistingHearings",
