@@ -13,6 +13,8 @@ import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_SENT_FOR_TRANSLATION_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_TRANSLATED_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_NON_CONFIDENTIAL_DOCUMENT;
@@ -27,11 +29,15 @@ class FurtherEvidenceDocumentsTransformerTest {
     void shouldReturnFurtherEvidenceDocumentBundleForTheFurtherEvidenceType() {
         List<Element<SupportingEvidenceBundle>> documentsBundles = List.of(
             ADMIN_CONFIDENTIAL_DOCUMENT, ADMIN_NON_CONFIDENTIAL_DOCUMENT,
+            ADMIN_TRANSLATED_DOCUMENT, ADMIN_SENT_FOR_TRANSLATION_DOCUMENT,
             ADMIN_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT, LA_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT
         );
 
-        List<DocumentView> expectedDocumentsView = List.of(buildDocumentView(ADMIN_CONFIDENTIAL_DOCUMENT.getValue()),
-            buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue())
+        List<DocumentView> expectedDocumentsView = List.of(
+            buildDocumentView(ADMIN_CONFIDENTIAL_DOCUMENT.getValue()),
+            buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue()),
+            buildDocumentView(ADMIN_TRANSLATED_DOCUMENT.getValue()),
+            buildDocumentView(ADMIN_SENT_FOR_TRANSLATION_DOCUMENT.getValue())
         );
 
         List<DocumentView> actual = underTest.getFurtherEvidenceDocumentsView(
@@ -78,6 +84,8 @@ class FurtherEvidenceDocumentsTransformerTest {
             .uploadedDateTime(document.getDateTimeUploaded())
             .uploadedBy(document.getUploadedBy())
             .documentName(document.getName())
+            .translatedDocument(document.getTranslatedDocument())
+            .sentForTranslation(document.sentForTranslation())
             .confidential(document.isConfidentialDocument())
             .title(document.getName())
             .build();
