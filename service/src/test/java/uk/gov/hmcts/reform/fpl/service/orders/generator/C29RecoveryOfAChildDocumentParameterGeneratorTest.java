@@ -26,14 +26,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
@@ -46,16 +42,13 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     private static final String OFFICER_NAME = "Officer Barbrady";
     private static final LocalDate ORDER_CREATED_DATE = LocalDate.of(2020, 8, 20);
 
-    private static final String FORMAT_LOCAL_DATE_TO_STRING = formatLocalDateToString(
-        ORDER_CREATED_DATE,
-        format(DATE_WITH_ORDINAL_SUFFIX, getDayOfMonthSuffix(ORDER_CREATED_DATE.getDayOfMonth()))
-    );
+    private static final String FORMAT_LOCAL_DATE_TO_STRING = "20th August 2020";
     private static final Address REMOVAL_ADDRESS = Address.builder()
         .addressLine1("12 street").postcode("SW1").country("UK").build();
     private static final String ORDER_HEADER = "Warning\n";
     private static final String ORDER_MESSAGE = "It is an offence intentionally to obstruct the "
         + "person from removing the child (Section 50(9) Children Act 1989).";
-    private static final String paragraphBreak = "\n\n";
+    private static final String PARAGRAPH_BREAK = "\n\n";
 
     @Mock
     private Child child;
@@ -110,11 +103,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(
-                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
-                PlacedUnderOrder.CARE_ORDER)
-                + getEntryMessage(selectedChildren.size())
-                + getIsExparteMessage(false))
+            .orderDetails(getStandardMessage()
+                + getEntryMessage()
+                + getIsNotExparteMessage())
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
@@ -141,11 +132,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(
-                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
-                PlacedUnderOrder.CARE_ORDER)
-                + getInformMessage(caseData.getManageOrdersEventData())
-                + getIsExparteMessage(false))
+            .orderDetails(getStandardMessage()
+                + getInformMessage()
+                + getIsNotExparteMessage())
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
@@ -173,11 +162,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(
-                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
-                PlacedUnderOrder.CARE_ORDER)
+            .orderDetails(getStandardMessage()
                 + getProduceMessage()
-                + getIsExparteMessage(false))
+                + getIsNotExparteMessage())
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
@@ -206,11 +193,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(
-                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
-                PlacedUnderOrder.CARE_ORDER)
+            .orderDetails(getStandardMessage()
                 + getRemoveMessage()
-                + getIsExparteMessage(false))
+                + getIsNotExparteMessage())
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .build();
@@ -246,14 +231,12 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(
-                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
-                PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER)
-                + getEntryMessage(selectedChildren.size())
-                + getInformMessage(caseData.getManageOrdersEventData())
+            .orderDetails(getStandardMessageWithEPO()
+                + getEntryMessage()
+                + getInformMessageWithPoliceOfficer()
                 + getProduceMessage()
                 + getRemoveMessage()
-                + getIsExparteMessage(true))
+                + getIsExparteMessage())
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .build();
@@ -269,52 +252,58 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .orderTitle(C29_RECOVERY_OF_A_CHILD.getTitle());
     }
 
-    private String getStandardMessage(String childOrChildren, PlacedUnderOrder order) {
-        String orderGrammar = order.equals(PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER) ? "an " : "a ";
+    private String getStandardMessage() {
+        return format("The Court is satisfied that %s has parental responsibility for the child by virtue "
+            + "of a Care order made on %s.%s", LA_NAME, FORMAT_LOCAL_DATE_TO_STRING, PARAGRAPH_BREAK);
 
-        return format(
-            "The Court is satisfied that %s has parental responsibility for the %s by virtue of %s made on %s.%s",
-            LA_NAME,
-            childOrChildren,
-            orderGrammar + order.getLabel(),
-            FORMAT_LOCAL_DATE_TO_STRING,
-            paragraphBreak);
     }
 
-    private String getEntryMessage(int numberOfChildren) {
-        String childrenGrammar = numberOfChildren > 1 ? "children" : "child";
+    private String getStandardMessageWithEPO() {
+        return format("The Court is satisfied that %s has parental responsibility for the child by virtue "
+            + "of an Emergency protection order made on %s.%s", LA_NAME, FORMAT_LOCAL_DATE_TO_STRING, PARAGRAPH_BREAK);
+    }
+
+    private String getEntryMessage() {
         return format("The court authorises %s to enter the premises known as %s, "
-                + "and search for the %s, using reasonable force if necessary.%s",
+                + "and search for the child, using reasonable force if necessary.%s",
             OFFICER_NAME,
             REMOVAL_ADDRESS.getAddressAsString(", "),
-            childrenGrammar,
-            paragraphBreak
+            PARAGRAPH_BREAK
         );
     }
 
-    private String getInformMessage(ManageOrdersEventData eventData) {
-        String policeAssignee = isNull(eventData.getManageOrdersOfficerName())
-            ? "a police constable"
-            : eventData.getManageOrdersOfficerName();
+    private String getInformMessage() {
         return format(
             "The court requires any person who has information about where the child is, "
-            + "or may be, to give that information to %s or an officer of the court, "
-            + "if asked to do so.%s", policeAssignee, paragraphBreak
+            + "or may be, to give that information to a police constable or an officer of the court, "
+            + "if asked to do so.%s", PARAGRAPH_BREAK
+        );
+    }
+
+    private String getInformMessageWithPoliceOfficer() {
+        return format(
+            "The court requires any person who has information about where the child is, "
+                + "or may be, to give that information to " + OFFICER_NAME + " or an officer of the court, "
+                + "if asked to do so.%s", PARAGRAPH_BREAK
         );
     }
 
     private String getProduceMessage() {
         return format(
             "The court directs that any person who can produce the child when asked to by %s to do so.%s",
-            OFFICER_NAME, paragraphBreak
+            OFFICER_NAME, PARAGRAPH_BREAK
         );
     }
 
     private String getRemoveMessage() {
-        return format("The Court authorises %s to remove the child.%s", OFFICER_NAME, paragraphBreak);
+        return format("The Court authorises %s to remove the child.%s", OFFICER_NAME, PARAGRAPH_BREAK);
     }
 
-    private String getIsExparteMessage(boolean isExparte) {
-        return isExparte ? "This order has been made exparte." : "This order has not been made exparte.";
+    private String getIsExparteMessage() {
+        return "This order has been made exparte.";
+    }
+
+    private String getIsNotExparteMessage() {
+        return "This order has not been made exparte.";
     }
 }
