@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -100,8 +97,6 @@ class DraftOrdersApprovedEventHandlerTest {
     @Mock
     private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
-    private FeatureToggleService toggleService;
-    @Mock
     private TranslationRequestService translationRequestService;
 
     @InjectMocks
@@ -165,10 +160,8 @@ class DraftOrdersApprovedEventHandlerTest {
             caseData.getId().toString());
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(
-        boolean servingOthersEnabled) {
+    @Test
+    void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
         List<Representative> digitalReps = unwrapElements(createRepresentatives(DIGITAL_SERVICE));
         CaseData caseData = CaseData.builder()
             .id(12345L)
@@ -178,14 +171,11 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
 
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
         given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE))
             .willReturn(newHashSet("digital-rep1@test.com", "digital-rep2@test.com"));
 
-        if (servingOthersEnabled) {
-            given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(caseData), any(), any()))
-                .willReturn(Set.of("digital-rep1@test.com"));
-        }
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(caseData), any(), any()))
+            .willReturn(Set.of("digital-rep1@test.com"));
 
         List<HearingOrder> orders = List.of(hearingOrder());
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
@@ -193,26 +183,16 @@ class DraftOrdersApprovedEventHandlerTest {
 
         underTest.sendNotificationToDigitalRepresentatives(new DraftOrdersApproved(caseData, orders));
 
-        if (servingOthersEnabled) {
-            verify(representativeNotificationService).sendNotificationToRepresentatives(
-                12345L,
-                EXPECTED_TEMPLATE,
-                Set.of("digital-rep2@test.com"),
-                JUDGE_APPROVES_DRAFT_ORDERS
-            );
-        } else {
-            verify(representativeNotificationService).sendNotificationToRepresentatives(
-                12345L,
-                EXPECTED_TEMPLATE,
-                Set.of("digital-rep1@test.com", "digital-rep2@test.com"),
-                JUDGE_APPROVES_DRAFT_ORDERS
-            );
-        }
+        verify(representativeNotificationService).sendNotificationToRepresentatives(
+            12345L,
+            EXPECTED_TEMPLATE,
+            Set.of("digital-rep2@test.com"),
+            JUDGE_APPROVES_DRAFT_ORDERS
+        );
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(boolean othersToggle) {
+    @Test
+    void shouldNotifyEmailRepresentativesExcludingUnselectedOthers() {
         List<Representative> emailReps = unwrapElements(createRepresentatives(EMAIL));
         CaseData caseData = CaseData.builder()
             .id(12345L)
@@ -222,35 +202,23 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
 
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(othersToggle);
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL))
             .willReturn(newHashSet("rep1@test.com", "rep2@test.com"));
 
-        if (othersToggle) {
-            given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), any(), any()))
-                .willReturn(Set.of("rep2@test.com"));
-        }
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), any(), any()))
+            .willReturn(Set.of("rep2@test.com"));
 
         List<HearingOrder> orders = List.of(hearingOrder());
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, HEARING.getValue(), orders, EMAIL)).willReturn(EXPECTED_TEMPLATE);
 
         underTest.sendNotificationToEmailRepresentatives(new DraftOrdersApproved(caseData, orders));
-        if (othersToggle) {
-            verify(representativeNotificationService).sendNotificationToRepresentatives(
-                12345L,
-                EXPECTED_TEMPLATE,
-                Set.of("rep1@test.com"),
-                JUDGE_APPROVES_DRAFT_ORDERS
-            );
-        } else {
-            verify(representativeNotificationService).sendNotificationToRepresentatives(
-                12345L,
-                EXPECTED_TEMPLATE,
-                Set.of("rep1@test.com", "rep2@test.com"),
-                JUDGE_APPROVES_DRAFT_ORDERS
-            );
-        }
+        verify(representativeNotificationService).sendNotificationToRepresentatives(
+            12345L,
+            EXPECTED_TEMPLATE,
+            Set.of("rep1@test.com"),
+            JUDGE_APPROVES_DRAFT_ORDERS
+        );
     }
 
     @Test
@@ -286,43 +254,7 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderDocumentToRecipientsWhenServingOthersIsDisabled() {
-        final HearingOrder hearingOrder1 = hearingOrder();
-        final HearingOrder hearingOrder2 = hearingOrder();
-
-        final Representative representative = Representative.builder()
-            .fullName("Postal Rep")
-            .servingPreferences(POST)
-            .address(testAddress())
-            .build();
-
-        final RespondentParty respondent = RespondentParty.builder()
-            .firstName("Postal")
-            .lastName("Person")
-            .address(testAddress())
-            .build();
-
-        final List<HearingOrder> orders = List.of(hearingOrder1, hearingOrder2);
-
-        final CaseData caseData = CaseData.builder()
-            .id(RandomUtils.nextLong())
-            .representatives(wrapElements(representative))
-            .respondents1(wrapElements(Respondent.builder().party(respondent).build()))
-            .build();
-
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
-        given(sendDocumentService.getStandardRecipients(caseData)).willReturn(List.of(representative, respondent));
-
-        underTest.sendDocumentToPostRecipients(new DraftOrdersApproved(caseData, orders));
-
-        verify(sendDocumentService).getStandardRecipients(caseData);
-        verify(sendDocumentService).sendDocuments(caseData,
-            List.of(hearingOrder1.getOrder(), hearingOrder2.getOrder()), List.of(representative, respondent));
-        verifyNoMoreInteractions(sendDocumentService);
-    }
-
-    @Test
-    void shouldPostOrderDocumentToRecipientsWhenServingOthersIsEnabled() {
+    void shouldPostOrderDocumentToRecipients() {
         final Other firstOther = Other.builder().name("other1")
             .address(Address.builder().postcode("SE1").build()).build();
 
@@ -350,7 +282,6 @@ class DraftOrdersApprovedEventHandlerTest {
             .others(Others.builder().firstOther(firstOther).build())
             .build();
 
-        given(toggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         Party otherParty = firstOther.toParty();
         given(sendDocumentService.getStandardRecipients(caseData))
             .willReturn(newArrayList(representative, respondent, otherParty));
