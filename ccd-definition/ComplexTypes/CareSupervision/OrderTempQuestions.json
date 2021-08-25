@@ -322,32 +322,5 @@
     "ElementLabel": " ",
     "FieldShowCondition": "orderPlacedChildInCustody=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderTempQuestions",
-    "ListElementCode": "orderIsExParte",
-    "FieldType": "YesOrNo",
-    "ElementLabel": " ",
-    "FieldShowCondition": "orderIsExParte=\"DO_NOT_SHOW\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderTempQuestions",
-    "ListElementCode": "actionsPermitted",
-    "FieldType": "YesOrNo",
-    "ElementLabel": " ",
-    "FieldShowCondition": "actionsPermitted=\"DO_NOT_SHOW\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderTempQuestions",
-    "ListElementCode": "orderCreatedDate",
-    "FieldType": "YesOrNo",
-    "ElementLabel": " ",
-    "FieldShowCondition": "orderCreatedDate=\"DO_NOT_SHOW\"",
-    "SecurityClassification": "Public"
   }
 ]

@@ -543,7 +543,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.orderCreatedDate=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.orderPlacedChildInCustody=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -556,7 +556,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.actionsPermitted=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.orderPlacedChildInCustody=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -595,7 +595,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.orderIsExParte=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.orderPlacedChildInCustody=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

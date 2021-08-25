@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_D
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_CREATED;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,7 +71,7 @@ class OrderValidatorHolderTest {
             EPO_EXPIRY_DATE, epoEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_MONTH, manageOrderEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, manageOrderEndDateWithEndOfProceedingsValidator,
-            ORDER_CREATED, orderMadeDateValidator
+            ORDER_PLACED_CHILD_IN_CUSTODY, orderMadeDateValidator
         );
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());

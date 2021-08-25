@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_CREATED;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 
 class OrderMadeDateValidatorTest {
 
@@ -21,7 +21,7 @@ class OrderMadeDateValidatorTest {
 
     @Test
     void accept() {
-        assertThat(underTest.accept()).isEqualTo(ORDER_CREATED);
+        assertThat(underTest.accept()).isEqualTo(ORDER_PLACED_CHILD_IN_CUSTODY);
     }
 
     @Test

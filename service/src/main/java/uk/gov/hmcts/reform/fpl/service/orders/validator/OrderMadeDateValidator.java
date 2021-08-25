@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_CREATED;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -23,7 +23,7 @@ public class OrderMadeDateValidator implements QuestionBlockOrderValidator {
 
     @Override
     public OrderQuestionBlock accept() {
-        return ORDER_CREATED;
+        return ORDER_PLACED_CHILD_IN_CUSTODY;
     }
 
     @Override

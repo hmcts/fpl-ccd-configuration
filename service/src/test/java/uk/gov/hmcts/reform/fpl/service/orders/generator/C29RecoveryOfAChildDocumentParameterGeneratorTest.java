@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C29RecoveryOfAChildDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C29RecoveryOfAChildDocmosisParameters.C29RecoveryOfAChildDocmosisParametersBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
@@ -65,6 +66,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     @Mock
     private LocalAuthorityNameLookupConfiguration laNameLookup;
 
+    @Mock
+    private ManageOrderDocumentService manageOrderDocumentService;
+
     @InjectMocks
     private C29RecoveryOfAChildDocumentParameterGenerator underTest;
 
@@ -102,10 +106,13 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
+            .orderDetails(getStandardMessage(
+                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
+                PlacedUnderOrder.CARE_ORDER)
                 + getEntryMessage(selectedChildren.size())
                 + getIsExparteMessage(false))
             .build();
@@ -130,10 +137,13 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
+            .orderDetails(getStandardMessage(
+                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
+                PlacedUnderOrder.CARE_ORDER)
                 + getInformMessage(caseData.getManageOrdersEventData())
                 + getIsExparteMessage(false))
             .build();
@@ -159,10 +169,13 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
+            .orderDetails(getStandardMessage(
+                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
+                PlacedUnderOrder.CARE_ORDER)
                 + getProduceMessage()
                 + getIsExparteMessage(false))
             .build();
@@ -189,10 +202,13 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(), PlacedUnderOrder.CARE_ORDER)
+            .orderDetails(getStandardMessage(
+                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
+                PlacedUnderOrder.CARE_ORDER)
                 + getRemoveMessage()
                 + getIsExparteMessage(false))
             .orderHeader(ORDER_HEADER)
@@ -226,10 +242,12 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(child);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.getChildGrammar(selectedChildren.size())).thenReturn("child");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage(selectedChildren.size(),
+            .orderDetails(getStandardMessage(
+                manageOrderDocumentService.getChildGrammar(selectedChildren.size()),
                 PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER)
                 + getEntryMessage(selectedChildren.size())
                 + getInformMessage(caseData.getManageOrdersEventData())
@@ -251,14 +269,13 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .orderTitle(C29_RECOVERY_OF_A_CHILD.getTitle());
     }
 
-    private String getStandardMessage(int numberOfChildren, PlacedUnderOrder order) {
+    private String getStandardMessage(String childOrChildren, PlacedUnderOrder order) {
         String orderGrammar = order.equals(PlacedUnderOrder.EMERGENCY_PROTECTION_ORDER) ? "an " : "a ";
 
-        String childrenGrammar = numberOfChildren > 1 ? "children" : "child";
         return format(
             "The Court is satisfied that %s has parental responsibility for the %s by virtue of %s made on %s.%s",
             LA_NAME,
-            childrenGrammar,
+            childOrChildren,
             orderGrammar + order.getLabel(),
             FORMAT_LOCAL_DATE_TO_STRING,
             paragraphBreak);

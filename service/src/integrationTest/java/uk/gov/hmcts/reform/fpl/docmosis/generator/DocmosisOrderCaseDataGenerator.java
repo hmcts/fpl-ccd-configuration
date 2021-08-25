@@ -209,6 +209,10 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersPlacedUnderOrder(CARE_ORDER)
+                        .manageOrdersOrderCreatedDate(LocalDate.of(2021, 8, 20))
+                        .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY, C29ActionsPermitted.REMOVE))
+                        .manageOrdersIsExParte("Yes")
+                        .manageOrdersOfficerName("Officer Barbrady")
                         .build()
                 );
             case ICO_EXCLUSION:
@@ -243,24 +247,6 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersIsByConsent("Yes")
-                        .build()
-                );
-            case ORDER_EX_PARTE:
-                return builder.manageOrdersEventData(
-                    getManageOrdersEvent(builder)
-                        .manageOrdersIsExParte("Yes")
-                        .build()
-                );
-            case ACTIONS_PERMITTED:
-                return builder.manageOrdersEventData(
-                    getManageOrdersEvent(builder)
-                        .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY, C29ActionsPermitted.REMOVE))
-                        .build()
-                );
-            case ORDER_CREATED:
-                return builder.manageOrdersEventData(
-                    getManageOrdersEvent(builder)
-                        .manageOrdersOrderCreatedDate(LocalDate.of(2021, 8, 20))
                         .build()
                 );
             default:

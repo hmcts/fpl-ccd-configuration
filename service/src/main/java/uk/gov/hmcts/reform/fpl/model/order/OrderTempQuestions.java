@@ -42,7 +42,4 @@ public class OrderTempQuestions {
     String uploadAmendedOrder;
     String parentResponsible;
     String orderPlacedChildInCustody;
-    String orderIsExParte;
-    String actionsPermitted;
-    String orderCreatedDate;
 }

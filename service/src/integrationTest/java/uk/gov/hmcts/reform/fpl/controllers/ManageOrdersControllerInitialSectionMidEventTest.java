@@ -110,9 +110,6 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .orderIsByConsent(NO)
             .parentResponsible(NO)
             .orderPlacedChildInCustody(NO)
-            .orderIsExParte(NO)
-            .actionsPermitted(NO)
-            .orderCreatedDate(NO)
             .build()
         );
     }
@@ -170,9 +167,6 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .orderTitle(YES)
             .parentResponsible(NO)
             .orderPlacedChildInCustody(NO)
-            .orderIsExParte(NO)
-            .actionsPermitted(NO)
-            .orderCreatedDate(NO)
             .build()
         );
     }
