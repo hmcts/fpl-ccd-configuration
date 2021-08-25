@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -118,9 +117,6 @@ class ApproveDraftOrdersServiceTest {
     @Mock
     private OthersService othersService;
 
-    @Mock
-    private FeatureToggleService featureToggleService;
-
     @InjectMocks
     private ApproveDraftOrdersService underTest;
 
@@ -134,8 +130,7 @@ class ApproveDraftOrdersServiceTest {
             draftOrdersBundleHearingSelector,
             blankOrderGenerator,
             hearingOrderGenerator,
-            othersService,
-            featureToggleService
+            othersService
         );
     }
 
@@ -420,7 +415,6 @@ class ApproveDraftOrdersServiceTest {
             "hearingOrdersBundlesDrafts", emptyList()
         );
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
         given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(emptyList());
         given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified))
@@ -510,7 +504,6 @@ class ApproveDraftOrdersServiceTest {
             .orderCollection(newArrayList())
             .build();
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
 
         Element<HearingOrder> expectedSealedOrder = element(
@@ -618,7 +611,6 @@ class ApproveDraftOrdersServiceTest {
             .hearingDetails(emptyList())
             .build();
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
         given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq("")))
             .willReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
 
