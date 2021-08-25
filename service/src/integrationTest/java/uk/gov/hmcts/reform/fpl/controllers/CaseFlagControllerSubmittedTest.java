@@ -41,7 +41,9 @@ class CaseFlagControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     private CaseSummaryCourtGenerator caseSummaryCourtGenerator;
 
-    CaseFlagControllerSubmittedTest() { super("add-case-flag"); }
+    CaseFlagControllerSubmittedTest() {
+        super("add-case-flag");
+    }
 
     @BeforeEach
     public void setUp() {
