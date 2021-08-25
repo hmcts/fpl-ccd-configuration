@@ -39,6 +39,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .directionsNeeded("Contact with any named person\nYes")
             .hearing(expectedDocmosisHearing())
             .allocation(expectedAllocation())
+            .welshLanguageRequirement("No")
             .hearingPreferences(expectedDocmosisHearingPreferences())
             .internationalElement(expectedDocmosisInternationalElement())
             .courtSeal(null)

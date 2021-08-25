@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -43,13 +42,13 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static java.time.LocalDate.now;
@@ -74,68 +73,94 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CaseSubmissionGenerationService.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, FixedTimeConfiguration.class})
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
-    private static final String AUTH_TOKEN = "Bearer token";
     private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
 
-    @MockBean
+    @Mock
+    private Time time;
+
+    @Mock
     private UserService userService;
 
-    @MockBean
+    @Mock
     private CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
-    @MockBean
-    private RequestData requestData;
-
-    @MockBean
+    @Mock
     private CourtService courtService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private CaseSubmissionGenerationService templateDataGenerationService;
+    @InjectMocks
+    private CaseSubmissionGenerationService underTest;
 
     private CaseData givenCaseData;
 
     @BeforeEach
     void init() {
         givenCaseData = prepareCaseData();
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        given(time.now()).willReturn(LocalDateTime.of(NOW, LocalTime.NOON));
         given(userService.getUserName()).willReturn("Professor");
         given(courtService.getCourtName(any())).willReturn(COURT_NAME);
     }
 
     @Test
     void shouldReturnExpectedTemplateDataWithCourtSealWhenAllDataPresent() {
-        DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
+        DocmosisCaseSubmission returnedCaseSubmission = underTest.getTemplateData(givenCaseData);
 
         DocmosisCaseSubmission updatedCaseSubmission = expectedDocmosisCaseSubmission().toBuilder()
             .annexDocuments(null)
             .build();
 
-        assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(updatedCaseSubmission);
+        assertThat(returnedCaseSubmission).isEqualTo(updatedCaseSubmission);
     }
 
     @Test
     void shouldReturnExpectedCaseNumberInDocmosisCaseSubmissionWhenCaseNumberGiven() {
         String expectedCaseNumber = "12345";
-        DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
+        DocmosisCaseSubmission returnedCaseSubmission = underTest.getTemplateData(givenCaseData);
 
-        templateDataGenerationService.populateCaseNumber(returnedCaseSubmission, 12345L);
+        underTest.populateCaseNumber(returnedCaseSubmission, 12345L);
 
         assertThat(returnedCaseSubmission.getCaseNumber()).isEqualTo(expectedCaseNumber);
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionWelshLanguageRequirementTest {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNoForNullOrEmptyLanguageRequirements(String languageRequirement) {
+            CaseData caseData = givenCaseData.toBuilder().languageRequirement(languageRequirement).build();
+
+            DocmosisCaseSubmission data = underTest.getTemplateData(caseData);
+
+            assertThat(data.getWelshLanguageRequirement()).isEqualTo("No");
+        }
+
+        @Test
+        void shouldReturnNoForNoLanguageRequirements() {
+            CaseData caseData = givenCaseData.toBuilder().languageRequirement("No").build();
+
+            DocmosisCaseSubmission data = underTest.getTemplateData(caseData);
+
+            assertThat(data.getWelshLanguageRequirement()).isEqualTo("No");
+        }
+
+        @Test
+        void shouldReturnYesWhenLanguageRequirementsSetToYes() {
+            CaseData caseData = givenCaseData.toBuilder().languageRequirement("Yes").build();
+
+            DocmosisCaseSubmission data = underTest.getTemplateData(caseData);
+
+            assertThat(data.getWelshLanguageRequirement()).isEqualTo("Yes");
+        }
     }
 
     @Nested
@@ -158,7 +183,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+            final DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(caseData);
 
             assertThat(caseSubmission.getUserFullName()).isEqualTo("John Manager in local authority");
         }
@@ -182,7 +207,7 @@ class CaseSubmissionGenerationServiceTest {
                 .build();
 
 
-            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+            final DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(caseData);
 
             assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
         }
@@ -198,7 +223,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+            final DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(caseData);
 
             assertThat(caseSubmission.getUserFullName()).isEqualTo("legal team manager");
         }
@@ -208,7 +233,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnCurrentUserWhenNoLegacyApplicantsNorLocalAuthorities(List<Element<Applicant>> applicants) {
             final CaseData caseData = givenCaseData.toBuilder().applicants(applicants).build();
 
-            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+            final DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(caseData);
 
             assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
         }
@@ -224,7 +249,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            final DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(caseData);
+            final DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(caseData);
 
             assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
         }
@@ -241,7 +266,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo("-");
         }
 
@@ -251,7 +276,7 @@ class CaseSubmissionGenerationServiceTest {
                 .orders(Orders.builder().build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo("-");
         }
 
@@ -263,7 +288,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\nexpected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
@@ -278,7 +303,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Care order\n"
                 + "Interim care order\n"
@@ -300,7 +325,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
                 + "Remove to accommodation\n"
@@ -321,7 +346,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
                 + "Remove to accommodation\n"
@@ -346,7 +371,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
                 + "Prevent removal from an address\n"
@@ -374,7 +399,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getGroundsForEPOReason()).isEmpty();
         }
@@ -388,7 +413,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getGroundsForEPOReason()).isEmpty();
         }
@@ -403,7 +428,7 @@ class CaseSubmissionGenerationServiceTest {
                 .groundsForEPO(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("-");
         }
@@ -420,7 +445,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("-");
         }
@@ -438,7 +463,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getGroundsForEPOReason())
                 .isEqualTo("There’s reasonable cause to believe the child is likely to suffer significant "
@@ -459,7 +484,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
             assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Beyond parental control.");
         }
@@ -472,7 +497,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
             assertThat(caseSubmission.getGroundsThresholdReason())
                 .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
@@ -484,7 +509,7 @@ class CaseSubmissionGenerationServiceTest {
                 .grounds(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
             assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("-");
         }
@@ -497,7 +522,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCasData);
 
             assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("-");
         }
@@ -512,7 +537,7 @@ class CaseSubmissionGenerationServiceTest {
                 .orders(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo("-");
         }
@@ -526,7 +551,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo("-");
         }
@@ -541,7 +566,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedDirectionsNeeded = "Contact with any named person\n"
                 + "A medical or psychiatric examination, or another assessment of the child\n"
@@ -561,7 +586,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedDirectionsNeeded = "directions\ndirection  details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
@@ -577,7 +602,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedDirectionsNeeded = "John Doe excluded\ndirections\ndirection details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
@@ -593,7 +618,7 @@ class CaseSubmissionGenerationServiceTest {
                 .grounds(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
         }
@@ -607,7 +632,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
             assertThat(caseSubmission.getGroundsThresholdReason())
@@ -628,7 +653,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getChildren()).hasSize(1);
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo("-");
@@ -645,7 +670,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "In hospital and soon to be discharged\nDischarge date: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
@@ -664,7 +689,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "In hospital and soon to be discharged\nSL11GF";
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
@@ -681,7 +706,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Removed by Police, powers ending soon\nDate powers end: "
                 + FORMATTED_DATE;
@@ -698,7 +723,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Removed by Police, powers ending soon";
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
@@ -715,7 +740,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Voluntarily in section 20 care order\nDate this began: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
@@ -731,7 +756,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Voluntarily in section 20 care order";
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
@@ -748,7 +773,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Other\nDate this began: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
@@ -764,7 +789,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             String expectedLivingSituation = "Other";
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
@@ -789,9 +814,9 @@ class CaseSubmissionGenerationServiceTest {
                 .typeAndReason("-")
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
-            assertThat(caseSubmission.getHearing()).isEqualToComparingFieldByField(expectedDefaultHearing);
+            assertThat(caseSubmission.getHearing()).isEqualTo(expectedDefaultHearing);
         }
 
         @Test
@@ -800,7 +825,7 @@ class CaseSubmissionGenerationServiceTest {
                 .hearingPreferences(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisHearingPreferences expectedDefaultHearingPreference = DocmosisHearingPreferences.builder()
                 .disabilityAssistance("-")
@@ -811,8 +836,7 @@ class CaseSubmissionGenerationServiceTest {
                 .welshDetails("-")
                 .build();
 
-            assertThat(caseSubmission.getHearingPreferences())
-                .isEqualToComparingFieldByField(expectedDefaultHearingPreference);
+            assertThat(caseSubmission.getHearingPreferences()).isEqualTo(expectedDefaultHearingPreference);
         }
 
         @Test
@@ -821,7 +845,7 @@ class CaseSubmissionGenerationServiceTest {
                 .risks(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisRisks expectedDefaultRisk = DocmosisRisks.builder()
                 .emotionalHarmDetails("-")
@@ -830,7 +854,7 @@ class CaseSubmissionGenerationServiceTest {
                 .sexualAbuseDetails("-")
                 .build();
 
-            assertThat(caseSubmission.getRisks()).isEqualToComparingFieldByField(expectedDefaultRisk);
+            assertThat(caseSubmission.getRisks()).isEqualTo(expectedDefaultRisk);
         }
 
         @Test
@@ -839,7 +863,7 @@ class CaseSubmissionGenerationServiceTest {
                 .factorsParenting(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisFactorsParenting expectedFactorsParenting = DocmosisFactorsParenting.builder()
                 .alcoholDrugAbuseDetails("-")
@@ -847,7 +871,7 @@ class CaseSubmissionGenerationServiceTest {
                 .domesticViolenceDetails("-")
                 .build();
 
-            assertThat(caseSubmission.getFactorsParenting()).isEqualToComparingFieldByField(expectedFactorsParenting);
+            assertThat(caseSubmission.getFactorsParenting()).isEqualTo(expectedFactorsParenting);
         }
 
         @Test
@@ -856,7 +880,7 @@ class CaseSubmissionGenerationServiceTest {
                 .internationalElement(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisInternationalElement expectedInternationalElement = DocmosisInternationalElement.builder()
                 .internationalAuthorityInvolvement("-")
@@ -866,8 +890,7 @@ class CaseSubmissionGenerationServiceTest {
                 .significantEvents("-")
                 .build();
 
-            assertThat(caseSubmission.getInternationalElement())
-                .isEqualToComparingFieldByField(expectedInternationalElement);
+            assertThat(caseSubmission.getInternationalElement()).isEqualTo(expectedInternationalElement);
         }
     }
 
@@ -923,7 +946,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName(localAuthority.getName())
@@ -980,7 +1003,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
@@ -1026,7 +1049,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("-")
@@ -1068,7 +1091,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
                 .organisationName("Applicant organisation")
@@ -1113,7 +1136,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getRespondents()).hasSize(1);
             assertThat(caseSubmission.getRespondents().get(0).getAddress()).isEqualTo("Confidential");
@@ -1139,7 +1162,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build()))
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getRespondents()).hasSize(1);
             assertThat(caseSubmission.getRespondents().get(0).getAddress()).isEqualTo("Flat 13\nSL11GF");
@@ -1164,7 +1187,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getAddress()).isEqualTo("Confidential");
@@ -1186,7 +1209,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getAddress()).isEqualTo("Flat 13\nSL11GF");
@@ -1203,7 +1226,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("-");
@@ -1220,7 +1243,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("-");
@@ -1236,7 +1259,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
@@ -1244,8 +1267,7 @@ class CaseSubmissionGenerationServiceTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationIsullOrEmpty(
-            final String genderIdentification) {
+        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationIsNullOrEmpty(String genderIdentification) {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
@@ -1255,7 +1277,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("male");
@@ -1271,7 +1293,7 @@ class CaseSubmissionGenerationServiceTest {
                 .proceeding(null)
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getRelevantProceedings()).isEqualTo("-");
         }
@@ -1284,7 +1306,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(YES.getValue());
         }
@@ -1297,7 +1319,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(NO.getValue());
         }
@@ -1310,7 +1332,7 @@ class CaseSubmissionGenerationServiceTest {
                     .build())
                 .build();
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(DONT_KNOW.getValue());
         }
@@ -1320,7 +1342,7 @@ class CaseSubmissionGenerationServiceTest {
     void shouldBuildExpectedDocmosisAnnexDocumentsWhenApplicationDocumentsIncludeAnnexDocumentTypes() {
         when(annexGenerator.generate(givenCaseData)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
 
-        DocmosisCaseSubmission actual = templateDataGenerationService.getTemplateData(givenCaseData);
+        DocmosisCaseSubmission actual = underTest.getTemplateData(givenCaseData);
 
         assertThat(actual.getAnnexDocuments()).isEqualTo(DOCMOSIS_ANNEX_DOCUMENTS);
     }
@@ -1331,12 +1353,12 @@ class CaseSubmissionGenerationServiceTest {
 
         @BeforeEach
         void setup() {
-            caseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
+            caseSubmission = underTest.getTemplateData(givenCaseData);
         }
 
         @Test
         void shouldHaveDocmosisCaseSubmissionWithDraftWatermarkWhenApplicationIsDraft() {
-            templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, true);
+            underTest.populateDraftWaterOrCourtSeal(caseSubmission, true);
 
             assertThat(caseSubmission.getDraftWaterMark()).isEqualTo(DRAFT_WATERMARK.getValue());
             assertThat(caseSubmission.getCourtSeal()).isNull();
@@ -1344,7 +1366,7 @@ class CaseSubmissionGenerationServiceTest {
 
         @Test
         void shouldHaveDocmosisCaseSubmissionWithCourtSealWhenApplicationIsNotDraft() {
-            templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, false);
+            underTest.populateDraftWaterOrCourtSeal(caseSubmission, false);
 
             assertThat(caseSubmission.getCourtSeal()).isEqualTo(COURT_SEAL.getValue());
             assertThat(caseSubmission.getDraftWaterMark()).isNull();
@@ -1352,8 +1374,8 @@ class CaseSubmissionGenerationServiceTest {
     }
 
     private CaseData prepareCaseData() {
-        CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
-        caseData.setDateSubmitted(now());
+        CaseData caseData = populatedCaseData();
+        caseData.setDateSubmitted(NOW);
         return caseData;
     }
 }

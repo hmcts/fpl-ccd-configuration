@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -62,6 +61,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
@@ -85,14 +85,11 @@ public class CaseSubmissionGenerationService
 
     private final Time time;
     private final UserService userService;
-    private final RequestData requestData;
     private final CourtService courtService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
-        DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
-
-        applicationFormBuilder
+        return DocmosisCaseSubmission.builder()
             .applicantOrganisations(getApplicantsOrganisations(caseData))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
             .courtName(courtService.getCourtName(caseData))
@@ -101,6 +98,7 @@ public class CaseSubmissionGenerationService
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
             .hearing(buildDocmosisHearing(caseData.getHearing()))
+            .welshLanguageRequirement(getWelshLanguageRequirement(caseData))
             .hearingPreferences(buildDocmosisHearingPreferences(caseData.getHearingPreferences()))
             .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement()))
             .risks(buildDocmosisRisks(caseData.getRisks()))
@@ -118,9 +116,12 @@ public class CaseSubmissionGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData))
-            .userFullName(getSigneeName(caseData));
+            .userFullName(getSigneeName(caseData))
+            .build();
+    }
 
-        return applicationFormBuilder.build();
+    private String getWelshLanguageRequirement(CaseData caseData) {
+        return YesNo.fromString(defaultIfBlank(caseData.getLanguageRequirement(), "No")).getValue();
     }
 
     public void populateCaseNumber(final DocmosisCaseSubmission submittedCase, final long caseNumber) {
@@ -236,7 +237,7 @@ public class CaseSubmissionGenerationService
                                                                 final StringBuilder stringBuilder) {
 
         if (StringUtils.isNotBlank(orders.getExcluded())) {
-            stringBuilder.append(orders.getExcluded() + " excluded");
+            stringBuilder.append(orders.getExcluded()).append(" excluded");
             stringBuilder.append(NEW_LINE);
         }
 

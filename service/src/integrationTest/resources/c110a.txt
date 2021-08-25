@@ -1,0 +1,225 @@
+Application for a care or supervision order and other orders under Part 4 of the Children Act 1989 or an emergency protection order under section 44 of the Children Act 1989
+
+For court use
+The family court sitting at La Court
+Case number                 12345
+Date issued                 12 December 0012
+Fee charged
+Applicant                   London Borough of Southwark
+Respondents                 Paul Smith James Smith An Other
+
+Application from London Borough of Southwark submitted on 12 December 0012
+
+Orders
+Orders needed     Emergency protection order
+Direction needed  Contact with any named person Yes
+
+Hearing needed
+Hearing date requested            Same day Reason: Baby will be discharged from hospital on 21 June 2018
+Hearing type                      Contested interim care order Reason: Standard case management hearing
+Without notice                    Yes Reason: Notice without hearing needed
+Reduced notice                    Yes Reason: Baby needs to be discharged from the hospital
+Respondents aware of proceedings  Yes
+Respondents’ view on proceedings  They seek to care for baby in mother and baby unit
+
+Allocation proposal
+Proposal by applicant Section 9 circuit judge
+Reason                allocation proposal reason
+
+Attending the hearing
+Interpreter                                       Yes interpreter required
+Welsh language requirement                        Yes
+Spoken or written Welsh                           Yes welsh proceedings
+Intermediary                                      Yes intermediary hearing required
+Facilities or assistance for a disability         Yes learning disability
+Separate waiting room or other security measures  Yes security needed
+Something else                                    Yes I need this from someone
+
+Child 1
+Name                                          Tom Reeves
+Age                                           3 years old
+Date of birth                                 15 June 2018
+Gender                                        Boy
+Child’s living situation                      Living with respondents Confidential Date this began: 8 November 2018
+Key dates                                     child starting primary school or taking GCSEs
+Care and contact plan                         Place baby in local authority foster care
+Considering adoption                          Yes
+Submitting application for a placement order  Yes
+Court applying for                            Central London County Court
+Mother’s name                                 Isbella Reeves
+Father’s name                                 Rob Reeves
+Father has parental responsibility            Yes
+Social worker’s name                          Helen Green
+Social worker’s telephone number              0123456789
+Additional needs                              Yes Autism
+Litigation capacity issues                    -
+Confidential contact details                  Yes History of domestic violence with relatives
+Child 2
+Name                                          Sarah Reeves
+Age                                           19 years old
+Date of birth                                 2 February 2002
+Gender                                        Girl
+Child’s living situation                      Living with respondents Carnegie House Central Milton Keynes Milton Keynes MK London MK10 1SA BT66 7RR Date this began: 2 February 2002
+Key dates                                     test child two key date
+Care and contact plan                         test child two care and contact plan
+Considering adoption                          Yes
+Submitting application for a placement order  Yes Court applying for test child two court
+Mother’s name                                 Sarah Simpson
+Father’s name                                 Scott Simpson
+Father has parental responsibility            Yes
+Social worker’s name                          Paul Wilsdon
+Social worker’s telephone number              07749972242
+Additional needs                              Yes learning disabilities
+Litigation capacity issues                    Yes test child two ability to take part in proceedings
+Confidential contact details                  No test child two contact details hidden reason
+
+Respondent 1
+Name                                              Paul Smith
+Age                                               77 years old
+Date of birth                                     2 May 1944
+Gender                                            Male
+Place of birth                                    Crewe
+Current address                                   -
+Telephone number                                  07712345678
+Relationship to the child or children             Uncle
+Interpreter                                       -
+Spoken or written Welsh                           -
+Intermediary                                      -
+Facilities or assistance for a disability         -
+Separate waiting room or other security measures  -
+Litigation capacity issues                        Yes respondent one test litigation reason
+Anything else to help take part in proceedings    -
+Confidential contact details                      No
+Respondent 2
+Name                                              James Smith
+Age                                               88 years old
+Date of birth                                     2 April 1933
+Gender                                            Unknown
+Place of birth                                    Newry
+Current address                                   Unit 12 Transa Way Hillsborough Lurgan Down BT26 6RJ United Kingdom
+Telephone number                                  02892611016
+Relationship to the child or children             Brother
+Interpreter                                       -
+Spoken or written Welsh                           -
+Intermediary                                      -
+Facilities or assistance for a disability         -
+Separate waiting room or other security measures  -
+Litigation capacity issues                        Yes respondent two litigation capacity reason
+Anything else to help take part in proceedings    -
+Confidential contact details                      No
+Respondent 3
+Name                                              An Other
+Age                                               88 years old
+Date of birth                                     2 April 1933
+Gender                                            Male
+Place of birth                                    Reading
+Current address                                   Flat 90 Surrey street Surrey road Surrey Croydon BT22 2345 UK
+Telephone number                                  0987654321
+Relationship to the child or children             Cousin
+Interpreter                                       -
+Spoken or written Welsh                           -
+Intermediary                                      -
+Facilities or assistance for a disability         -
+Separate waiting room or other security measures  -
+Litigation capacity issues                        No
+Anything else to help take part in proceedings    -
+Confidential contact details                      -
+
+Applicant
+Name                            London Borough of Southwark
+Contact name                    Jane Smith
+Job title                       Legal adviser
+Address                         160 Tooley St Tooley road Tooley Limerick Galway SE1 2QH Ireland
+Mobile number                   2020202020
+Telephone number                02120202020
+Email address                   jane@smith.com
+Payment by account (PBA) number PBA1234567
+Solicitor’s name                Brian Banks
+Solicitor’s mobile number       7665545327
+Solicitor’s telephone number    020 2772 5772
+Solicitor’s email address       brian@banks.com
+Solicitor’s DX number           106 Southwark &
+Solicitor’s reference           12345
+
+Other 1
+Name                                              Jason Lavery
+Date of birth                                     2 February 1999
+Gender                                            Unknown
+Place of birth                                    Armagh
+Current address                                   Flat 13 Portadown street Portadown road Portadown Armagh BT43 343 N.Ire
+Telephone number                                  07749972245
+Relationship to the child or children             Cousin
+Interpreter                                       -
+Spoken or written Welsh                           -
+Intermediary                                      -
+Facilities or assistance for a disability         -
+Separate waiting room or other security measures  -
+Litigation capacity issues                        No
+Anything else to help take part in proceedings    -
+Confidential contact details                      -
+Other 2
+Name                                              Peter Lavery
+Date of birth                                     2 February 2000
+Gender                                            Male
+Place of birth                                    Lisburn
+Current address                                   Confidential
+Telephone number                                  Confidential
+Relationship to the child or children             Friend of family
+Interpreter                                       -
+Spoken or written Welsh                           -
+Intermediary                                      -
+Facilities or assistance for a disability         -
+Separate waiting room or other security measures  -
+Litigation capacity issues                        Yes Other two inability to take part in proceedings
+Anything else to help take part in proceedings    -
+Confidential contact details                      Yes Other two hide from parties
+
+Grounds for the application
+Grounds for emergency protection order                                                                There’s reasonable cause to believe the child is likely to suffer significant harm if they’re not moved to accommodation provided by you, or on your behalf There’s reasonable cause to believe the child is likely to suffer significant harm if they don’t stay in their current accommodation
+Threshold is met as the child is suffering or is likely to suffer significant harm because they are   Not receiving care that would be reasonably expected from a parent. Beyond parental control.
+
+Threshold evidence
+grounds for application criteria
+
+Risk and harm to children
+Physical harm including non-accidental injury Yes Past harm Future risk of harm
+Emotional harm                                Yes Past harm Future risk of harm
+Sexual abuse                                  Yes Past harm Future risk of harm
+Neglect                                       Yes Past harm Future risk of harm
+
+Factors affecting parenting
+Alcohol or drug abuse     Yes history of drug abuse
+Domestic violence         Yes history of domestic violence
+Anything else             No
+
+International element
+Suitable carers outside of the UK                                 Yes Aunt outside UK
+Significant events outside the UK                                 Yes Something happened in France
+Issues with jurisdiction                                          Yes Brussels 2 regulation
+Proceedings outside the UK                                        Yes Outside of the UK
+Government or central authority in another country been involved  Yes French authorities were involved
+
+Other proceedings 1
+Previous or ongoing   Ongoing
+Case number           12345
+Date started          02-02-2002
+Date ended            02-02-2006
+Orders made           Supervision order
+Judge                 William Peters
+Children involved     children subject to proceedings
+Guardian              Mark Watson
+Same guardian needed  No Some guardian not needed
+Other proceedings 2
+Previous or ongoing   Ongoing
+Case number           12345
+Date started          02-02-2008
+Date ended            02-02-2009
+Orders made           Supervision order
+Judge                 Peters Williams
+Children involved     children subject to proceedings
+Guardian              John Watson
+Same guardian needed  No Some guardian not needed
+
+Annex documents
+
+I, user name, believe that the facts stated in this application are true.

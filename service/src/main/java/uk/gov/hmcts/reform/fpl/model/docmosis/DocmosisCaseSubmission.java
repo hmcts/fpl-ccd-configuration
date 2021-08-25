@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.fpl.model.docmosis;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 
 import java.util.List;
 
 @Data
-@EqualsAndHashCode
 @Builder(builderClassName = "Builder", toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisCaseSubmission implements DocmosisData {
@@ -17,6 +15,7 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisApplicant> applicants;
     private final List<DocmosisChild> children;
     private final List<DocmosisOtherParty> others;
+    private final String welshLanguageRequirement;
     private final String courtName;
     private final String applicantOrganisations;
     private final String respondentNames;
