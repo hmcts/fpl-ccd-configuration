@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -91,8 +90,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
     @MockBean
     private OrganisationApi orgApi;
-    @MockBean
-    private CaseAccessDataStoreApi accessApi;
 
     ChildControllerSubmittedTest() {
         super("enter-children");
@@ -339,7 +336,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
             ))
             .build();
 
-        verify(accessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
+        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
 
         Map<String, Object> notifyData = Map.of(
             "caseName", CASE_NAME,

@@ -16,7 +16,7 @@
     "CaseFieldID": "localAuthority",
     "ListElementCode": "email",
     "EventElementLabel": "Group email address",
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "FieldDisplayOrder": 2
   },
   {

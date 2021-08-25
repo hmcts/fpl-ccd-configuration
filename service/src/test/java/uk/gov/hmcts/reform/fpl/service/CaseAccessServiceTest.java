@@ -244,7 +244,7 @@ class CaseAccessServiceTest {
                         .build()))
                     .build());
 
-            caseRoleService.getUserCaseRoles("123");
+            caseRoleService.getUserCaseRoles(123L);
 
             verify(caseAccessDataStoreApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 List.of("123"), List.of(USER_1_ID));
