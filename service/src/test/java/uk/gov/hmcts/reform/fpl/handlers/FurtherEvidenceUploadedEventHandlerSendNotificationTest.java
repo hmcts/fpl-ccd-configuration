@@ -16,10 +16,9 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.HMCTS;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
-
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.HMCTS_USER;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.LA_USER;
@@ -64,10 +63,10 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
             new FurtherEvidenceUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialLADocuments(),
-                LOCAL_AUTHORITY,
+                DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, LOCAL_AUTHORITY))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
 
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
@@ -91,10 +90,10 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
             new FurtherEvidenceUploadedEvent(
                 caseData,
                 caseDataBefore,
-                LOCAL_AUTHORITY,
+                DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, LOCAL_AUTHORITY))
+        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
 
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
@@ -115,7 +114,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
 
         when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, HMCTS))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-        when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
+        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -138,7 +137,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
             new FurtherEvidenceUploadedEvent(
                 caseData,
                 buildCaseDataWithNonConfidentialLADocuments(),
-                LOCAL_AUTHORITY,
+                DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
@@ -154,7 +153,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
             new FurtherEvidenceUploadedEvent(
                 caseData,
                 buildCaseDataWithNonConfidentialLADocuments(),
-                LOCAL_AUTHORITY,
+                DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
@@ -170,7 +169,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
             new FurtherEvidenceUploadedEvent(
                 caseData,
                 caseData,
-                LOCAL_AUTHORITY,
+                DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
@@ -184,7 +183,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
 
         when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, HMCTS))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-        when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
+        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -222,7 +221,7 @@ class FurtherEvidenceUploadedEventHandlerSendNotificationTest {
 
         when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, SOLICITOR))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-        when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData))
+        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrdersEventNotificationBuilder;
@@ -40,7 +39,6 @@ public class ApproveDraftOrdersController extends CallbackController {
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
     private final OthersService othersService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -79,8 +77,7 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
 
-        if (isEmpty(errors) && featureToggleService.isServeOrdersAndDocsToOthersEnabled()
-            && isNotEmpty(caseData.getAllOthers())) {
+        if (isEmpty(errors) && isNotEmpty(caseData.getAllOthers())) {
             caseDetails.getData().put("hasOthers", "Yes");
             caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
             caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));

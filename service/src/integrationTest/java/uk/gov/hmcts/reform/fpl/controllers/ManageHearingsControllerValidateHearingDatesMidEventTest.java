@@ -53,7 +53,6 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
             "Enter an end date in the future");
     }
 
-
     @Test
     void shouldNotThrowErrorsWhenPastHearingDatesEnteredOnAddHearing() {
         CaseData caseData = CaseData.builder()
@@ -138,7 +137,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     void shouldThrowOnlyInvalidTimeErrorsWhenPastHearingDatesEnteredOnAddHearing() {
         LocalDateTime dateWithInvalidTime = LocalDateTime.of(1990, 10, 2, 0, 0);
 
-        CaseData caseDetails = CaseData.builder()
+        CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
             .hearingEndDateTime(dateWithInvalidTime)
@@ -146,7 +145,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
             .hearingOption(NEW_HEARING)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
             "Enter a valid end time");
@@ -154,7 +153,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
 
     @Test
     void shouldThrowInvalidHearingEndDateTimeErrorWhenAddingAHearingWithPastDate() {
-        CaseData caseDetails = CaseData.builder()
+        CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
             .hearingEndDateTime(pastDate.minusDays(1))
@@ -162,7 +161,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
             .hearingOption(NEW_HEARING)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).containsOnly(
             "The end date and time must be after the start date and time");
@@ -171,7 +170,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     @ParameterizedTest
     @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "NEW_HEARING"})
     void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndDateIsBeforeStartDate(HearingOptions hearingOptions) {
-        CaseData caseDetails = CaseData.builder()
+        CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(LocalDateTime.now().plusDays(2))
             .hearingEndDateTime(LocalDateTime.now().plusDays(1))
@@ -179,7 +178,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
             .hearingOption(hearingOptions)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).containsOnly(
             "The end date and time must be after the start date and time");
@@ -188,7 +187,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     @ParameterizedTest
     @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "NEW_HEARING"})
     void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndTimeIsSameAsStartTime(HearingOptions hearingOptions) {
-        CaseData caseDetails = CaseData.builder()
+        CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(futureDate)
             .hearingDuration(DATE_TIME.getType())
@@ -196,7 +195,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
             .hearingOption(hearingOptions)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).containsOnly(
             "The end date and time must be after the start date and time");
