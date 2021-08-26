@@ -41,7 +41,6 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final String OFFICER_NAME = "Officer Barbrady";
     private static final LocalDate ORDER_CREATED_DATE = LocalDate.of(2020, 8, 20);
-
     private static final String FORMAT_LOCAL_DATE_TO_STRING = "20th August 2020";
     private static final Address REMOVAL_ADDRESS = Address.builder()
         .addressLine1("12 street").postcode("SW1").country("UK").build();
@@ -49,6 +48,30 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     private static final String ORDER_MESSAGE = "It is an offence intentionally to obstruct the "
         + "person from removing the child (Section 50(9) Children Act 1989).";
     private static final String PARAGRAPH_BREAK = "\n\n";
+
+    private static final String EX_PARTE_MESSAGE = "This order has been made exparte.";
+    private static final String NOT_EX_PARTE_MESSAGE = "This order has not been made exparte.";
+    private static final String REMOVE_MESSAGE = format("The Court authorises %s to remove the child.%s",
+        OFFICER_NAME, PARAGRAPH_BREAK);
+    private static final String PRODUCE_MESSAGE = format(
+            "The court directs that any person who can produce the child when asked to by %s to do so.%s",
+        OFFICER_NAME, PARAGRAPH_BREAK);
+    private static final String STANDARD_MESSAGE = format(
+        "The Court is satisfied that %s has parental responsibility for the child by virtue of"
+            + " a Care order made on %s.%s",
+        LA_NAME, FORMAT_LOCAL_DATE_TO_STRING, PARAGRAPH_BREAK);
+    private static final String ENTRY_MESSAGE = format("The court authorises %s to enter the premises known as %s, "
+            + "and search for the child, using reasonable force if necessary.%s",
+        OFFICER_NAME, REMOVAL_ADDRESS.getAddressAsString(", "), PARAGRAPH_BREAK);
+    private static final String STANDARD_MESSAGE_WITH_EPO = format("The Court is satisfied that %s has " +
+        "parental responsibility for the child by virtue of an Emergency protection order made on %s.%s",
+        LA_NAME, FORMAT_LOCAL_DATE_TO_STRING, PARAGRAPH_BREAK);
+    private static final String INFORM_MESSAGE = format("The court requires any person who has information about "
+        + "where the child is, or may be, to give that information to a police constable or an officer of "
+        + "the court, if asked to do so.%s", PARAGRAPH_BREAK);
+    private static final String INFORM_MESSAGE_WITH_OFFICER = format("The court requires any person who has information"
+        + " about where the child is, or may be, to give that information to %s or an officer of the court, "
+        + "if asked to do so.%s", OFFICER_NAME, PARAGRAPH_BREAK);
 
     @Mock
     private Child child;
@@ -103,9 +126,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage()
-                + getEntryMessage()
-                + getIsNotExparteMessage())
+            .orderDetails(STANDARD_MESSAGE
+                + ENTRY_MESSAGE
+                + NOT_EX_PARTE_MESSAGE)
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
@@ -132,9 +155,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage()
-                + getInformMessage()
-                + getIsNotExparteMessage())
+            .orderDetails(STANDARD_MESSAGE
+                + INFORM_MESSAGE
+                + NOT_EX_PARTE_MESSAGE)
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
@@ -162,14 +185,14 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage()
-                + getProduceMessage()
-                + getIsNotExparteMessage())
+            .orderDetails(
+                STANDARD_MESSAGE
+                + PRODUCE_MESSAGE
+                + NOT_EX_PARTE_MESSAGE)
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
-
 
     @Test
     void shouldGenerateDocumentWithRemoveMessage() {
@@ -193,9 +216,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessage()
-                + getRemoveMessage()
-                + getIsNotExparteMessage())
+            .orderDetails(STANDARD_MESSAGE
+                + REMOVE_MESSAGE
+                + NOT_EX_PARTE_MESSAGE)
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .build();
@@ -231,12 +254,12 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getStandardMessageWithEPO()
-                + getEntryMessage()
-                + getInformMessageWithPoliceOfficer()
-                + getProduceMessage()
-                + getRemoveMessage()
-                + getIsExparteMessage())
+            .orderDetails(STANDARD_MESSAGE_WITH_EPO
+                + ENTRY_MESSAGE
+                + INFORM_MESSAGE_WITH_OFFICER
+                + PRODUCE_MESSAGE
+                + REMOVE_MESSAGE
+                + EX_PARTE_MESSAGE)
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .build();
@@ -250,60 +273,5 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .localAuthorityName(LA_NAME)
             .dateOfIssue(FORMAT_LOCAL_DATE_TO_STRING)
             .orderTitle(C29_RECOVERY_OF_A_CHILD.getTitle());
-    }
-
-    private String getStandardMessage() {
-        return format("The Court is satisfied that %s has parental responsibility for the child by virtue "
-            + "of a Care order made on %s.%s", LA_NAME, FORMAT_LOCAL_DATE_TO_STRING, PARAGRAPH_BREAK);
-
-    }
-
-    private String getStandardMessageWithEPO() {
-        return format("The Court is satisfied that %s has parental responsibility for the child by virtue "
-            + "of an Emergency protection order made on %s.%s", LA_NAME, FORMAT_LOCAL_DATE_TO_STRING, PARAGRAPH_BREAK);
-    }
-
-    private String getEntryMessage() {
-        return format("The court authorises %s to enter the premises known as %s, "
-                + "and search for the child, using reasonable force if necessary.%s",
-            OFFICER_NAME,
-            REMOVAL_ADDRESS.getAddressAsString(", "),
-            PARAGRAPH_BREAK
-        );
-    }
-
-    private String getInformMessage() {
-        return format(
-            "The court requires any person who has information about where the child is, "
-            + "or may be, to give that information to a police constable or an officer of the court, "
-            + "if asked to do so.%s", PARAGRAPH_BREAK
-        );
-    }
-
-    private String getInformMessageWithPoliceOfficer() {
-        return format(
-            "The court requires any person who has information about where the child is, "
-                + "or may be, to give that information to " + OFFICER_NAME + " or an officer of the court, "
-                + "if asked to do so.%s", PARAGRAPH_BREAK
-        );
-    }
-
-    private String getProduceMessage() {
-        return format(
-            "The court directs that any person who can produce the child when asked to by %s to do so.%s",
-            OFFICER_NAME, PARAGRAPH_BREAK
-        );
-    }
-
-    private String getRemoveMessage() {
-        return format("The Court authorises %s to remove the child.%s", OFFICER_NAME, PARAGRAPH_BREAK);
-    }
-
-    private String getIsExparteMessage() {
-        return "This order has been made exparte.";
-    }
-
-    private String getIsNotExparteMessage() {
-        return "This order has not been made exparte.";
     }
 }
