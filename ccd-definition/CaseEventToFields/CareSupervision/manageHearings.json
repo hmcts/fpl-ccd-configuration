@@ -208,6 +208,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
+    "CaseFieldID": "vacatedHearingDate",
+    "PageFieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasHearingsToVacate=\"Yes\"",
+    "PageID": "SelectHearingOption",
+    "PageDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "adjournmentReason",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
@@ -239,17 +251,6 @@
     "PageID": "SelectReListOption",
     "PageDisplayOrder": 3,
     "FieldShowCondition": "showVacatePastHearingWarning=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
-    "CaseFieldID": "vacatedHearing",
-    "PageFieldDisplayOrder": 3,
-    "DisplayContext": "READONLY",
-    "PageID": "SelectReListOption",
-    "PageDisplayOrder": 3,
-    "FieldShowCondition": "vacatePastHearingWarning=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

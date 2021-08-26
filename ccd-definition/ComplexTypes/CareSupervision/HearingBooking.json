@@ -112,8 +112,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
     "ListElementCode": "vacatedDate",
-    "FieldType": "DateTime",
-    "ElementLabel": "Vacated date and time",
+    "FieldType": "Date",
+    "ElementLabel": "Vacated date",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

@@ -340,7 +340,7 @@ public class ManageHearingsService {
             HEARING_DATE_LIST,
             PAST_HEARING_LIST,
             TO_VACATE_HEARING_LIST,
-            "vacatedHearing",
+            "vacatedHearingDate",
             HAS_HEARINGS_TO_ADJOURN,
             HAS_HEARINGS_TO_VACATE,
             HAS_EXISTING_HEARINGS_FLAG,
@@ -510,7 +510,7 @@ public class ManageHearingsService {
         if (cancelledHearing.getValue().isVacated()) {
             cancelledHearing = element(hearingId, cancelledHearing.getValue()
                 .toBuilder()
-                .vacatedDate(time.now())
+                .vacatedDate(caseData.getVacatedHearingDate())
                 .build());
         }
 

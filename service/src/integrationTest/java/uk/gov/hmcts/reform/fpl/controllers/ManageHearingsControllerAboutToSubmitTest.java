@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -215,6 +216,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
         LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
         LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
+        LocalDate vacatedHearingDate = now().minusDays(1).toLocalDate();
 
         HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
             .reason("Test reason")
@@ -248,6 +250,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingEndDate(reListedHearingEndTime)
             .judgeAndLegalAdvisor(futureHearingToBeVacated.getValue().getJudgeAndLegalAdvisor())
             .vacatedReason(vacatedReason)
+            .vacatedHearingDate(vacatedHearingDate)
             .noticeOfHearingNotes(futureHearingToBeVacated.getValue().getAdditionalNotes())
             .children1(ElementUtils.wrapElements(Child.builder().party(ChildParty.builder().build()).build()))
             .hearingOrdersBundlesDrafts(newArrayList(hearingOrdersBundleElement))
@@ -267,7 +270,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
                 .caseManagementOrderId(draftCMOId)
                 .status(HearingStatus.VACATED_AND_RE_LISTED)
                 .cancellationReason(vacatedReason.getReason())
-                .vacatedDate(now())
+                .vacatedDate(vacatedHearingDate)
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
@@ -358,6 +361,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
     @EnumSource(value = HearingReListOption.class, names = {"RE_LIST_NOW"}, mode = EnumSource.Mode.EXCLUDE)
     void shouldVacateHearing(HearingReListOption adjournmentOption) {
         Element<HearingBooking> futureHearingToBeAdjourned = element(testHearing(LocalDateTime.now().plusDays(2)));
+        LocalDate vacatedHearingDate = now().minusDays(1).toLocalDate();
 
         HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
             .reason("Test reason")
@@ -370,6 +374,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .toVacateHearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
             .hearingDetails(List.of(futureHearingToBeAdjourned))
             .vacatedReason(vacatedReason)
+            .vacatedHearingDate(vacatedHearingDate)
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
@@ -379,7 +384,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             futureHearingToBeAdjourned.getValue().toBuilder()
                 .status(adjournmentOption == RE_LIST_LATER ? VACATED_TO_BE_RE_LISTED : VACATED)
                 .cancellationReason(vacatedReason.getReason())
-                .vacatedDate(now())
+                .vacatedDate(vacatedHearingDate)
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).isNull();

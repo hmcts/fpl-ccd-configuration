@@ -40,8 +40,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
 
         assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
             "Enter a start date in the future",
-            "Enter an end date in the future",
-            "The end date and time must be after the start date and time");
+            "Enter an end date in the future");
     }
 
 

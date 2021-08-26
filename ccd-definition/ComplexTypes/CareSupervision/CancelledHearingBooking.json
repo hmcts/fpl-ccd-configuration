@@ -30,8 +30,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "CancelledHearingBooking",
     "ListElementCode": "vacatedDate",
-    "FieldType": "DateTime",
-    "ElementLabel": "Vacated date and time",
+    "FieldType": "Date",
+    "ElementLabel": "Vacated date",
     "SecurityClassification": "Public"
   },
   {

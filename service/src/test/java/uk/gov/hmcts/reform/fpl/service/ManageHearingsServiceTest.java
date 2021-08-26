@@ -1028,7 +1028,7 @@ class ManageHearingsServiceTest {
 
     @Nested
     class Vacating {
-        private final LocalDateTime vacatedDate = time.now();
+        private final LocalDate vacatedDate = time.now().minusDays(1).toLocalDate();
 
         @Test
         void shouldVacateHearingToBeReListedLater() {
@@ -1059,6 +1059,7 @@ class ManageHearingsServiceTest {
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateHearing(caseData, hearingElement1.getId());
@@ -1080,6 +1081,7 @@ class ManageHearingsServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateHearing(caseData, hearingElement1.getId());
@@ -1109,6 +1111,7 @@ class ManageHearingsServiceTest {
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
@@ -1147,6 +1150,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
@@ -1190,6 +1194,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .draftUploadedCMOs(List.of(linkedDraftCMO))
                 .build();
 
@@ -1236,6 +1241,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .draftUploadedCMOs(List.of(linkedDraftCMO))
                 .build();
 
@@ -1283,6 +1289,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .hearingOrdersBundlesDrafts(newArrayList(
                     element(HEARING_BUNDLE_ID, HearingOrdersBundle.builder()
                         .orders(newArrayList(linkedDraftCMO))
@@ -1325,6 +1332,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .hearingReListOption(reListOption)
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .hearingFurtherEvidenceDocuments(List.of(vacatedHearingBundle))
                 .build();
 
@@ -1571,7 +1579,7 @@ class ManageHearingsServiceTest {
             "hearingDateList",
             "pastAndTodayHearingDateList",
             "toVacateHearingDateList",
-            "vacatedHearing",
+            "vacatedHearingDate",
             "hasHearingsToAdjourn",
             "hasHearingsToVacate",
             "hasExistingHearings",
