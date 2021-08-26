@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -37,6 +38,13 @@ class RespondentStatementTest {
                 UUID.fromString("dc6b2154-9e5d-480d-adca-d70b4e1f6384"),
                 SupportingEvidenceBundle.builder()
                     .name("BundleName")
+                    .translationRequirements(WELSH_TO_ENGLISH)
+                    .translatedDocument(DocumentReference.builder()
+                        .binaryUrl("translatedBinaryUrl")
+                        .filename("translatedFilename")
+                        .url("translatedUrl")
+                        .build())
+                    .translationUploadDateTime(LocalDateTime.of(2011, 10, 10, 3, 4))
                     .dateTimeReceived(LocalDateTime.of(2012, 10, 10, 3, 4))
                     .dateTimeUploaded(LocalDateTime.of(2013, 9, 10, 3, 4))
                     .document(DocumentReference.builder()
@@ -52,18 +60,26 @@ class RespondentStatementTest {
 
         List<Map<String, Object>> expectedBundles = List.of(Map.of(
             "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
-            "value", Map.of(
-                "confidential", List.of("CONFIDENTIAL"),
-                "name", "BundleName",
-                "uploadedBy", "uploadedBy",
-                "confidentialTabLabel", "Confidential",
-                "dateTimeReceived", "2012-10-10T03:04:00",
-                "dateTimeUploaded", "2013-09-10T03:04:00",
-                "document", Map.of(
+            "value", Map.ofEntries(
+                Map.entry("confidential", List.of("CONFIDENTIAL")),
+                Map.entry("name", "BundleName"),
+                Map.entry("uploadedBy", "uploadedBy"),
+                Map.entry("translationRequirements", "WELSH_TO_ENGLISH"),
+                Map.entry("needTranslation", "YES"),
+                Map.entry("translatedDocument", Map.of(
+                    "document_binary_url", "translatedBinaryUrl",
+                    "document_filename", "translatedFilename",
+                    "document_url", "translatedUrl"
+                )),
+                Map.entry("translationUploadDateTime", "2011-10-10T03:04:00"),
+                Map.entry("confidentialTabLabel", "Confidential"),
+                Map.entry("dateTimeReceived", "2012-10-10T03:04:00"),
+                Map.entry("dateTimeUploaded", "2013-09-10T03:04:00"),
+                Map.entry("document", Map.of(
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename",
                     "document_url", "url"
-                )
+                ))
             )
         ));
 

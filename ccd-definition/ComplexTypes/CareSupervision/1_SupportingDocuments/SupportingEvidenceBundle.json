@@ -51,6 +51,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "translatedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Translated document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "translationUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Welsh translation upload time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translatedDocument=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "confidentialWarningLabel",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -102,5 +119,27 @@
     "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
     "Searchable": "N",
     "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
   }
 ]
