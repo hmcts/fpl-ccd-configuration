@@ -25,7 +25,7 @@
     "ID": "HearingBooking",
     "ListElementCode": "typeReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
+    "ElementLabel": "Reason",
     "FieldShowCondition": "type=\"ACCELERATED_DISCHARGE_OF_CARE\"",
     "SecurityClassification": "Public",
     "Searchable": "N"

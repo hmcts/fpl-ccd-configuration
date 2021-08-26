@@ -69,7 +69,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
+Scenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();

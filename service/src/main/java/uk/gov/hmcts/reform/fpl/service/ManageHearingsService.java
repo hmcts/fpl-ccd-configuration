@@ -237,6 +237,7 @@ public class ManageHearingsService {
         }
 
         caseFields.put("hearingType", hearingBooking.getType());
+        caseFields.put("hearingTypeReason", hearingBooking.getTypeReason());
         caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
         caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
@@ -331,6 +332,7 @@ public class ManageHearingsService {
         return Set.of(
             "hearingType",
             "hearingTypeDetails",
+            "hearingTypeReason",
             "hearingVenue",
             "hearingVenueCustom",
             HEARING_START_DATE,
@@ -439,6 +441,7 @@ public class ManageHearingsService {
         return HearingBooking.builder()
             .type(caseData.getHearingType())
             .typeDetails(caseData.getHearingTypeDetails())
+            .typeReason(caseData.getHearingTypeReason())
             .venue(caseData.getHearingVenue())
             .venueCustomAddress(caseData.getHearingVenueCustom())
             .attendance(caseData.getHearingAttendance())
@@ -476,6 +479,7 @@ public class ManageHearingsService {
         return HearingBooking.builder()
             .type(caseData.getHearingType())
             .typeDetails(caseData.getHearingTypeDetails())
+            .typeReason(caseData.getHearingTypeReason())
             .venue(venue)
             .venueCustomAddress(caseData.getPreviousHearingVenue().getNewVenueCustomAddress())
             .customPreviousVenue(customPreviousVenue)

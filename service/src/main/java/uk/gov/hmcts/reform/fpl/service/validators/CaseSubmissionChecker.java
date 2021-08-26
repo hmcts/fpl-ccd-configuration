@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -22,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Service
 public class CaseSubmissionChecker extends CompoundEventChecker {
@@ -75,7 +75,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
         events.add(RESPONDENTS);
         events.add(ALLOCATION_PROPOSAL);
 
-        if (YesNo.YES.equals(caseData.getMultiCourts())) {
+        if (YES.equals(caseData.getMultiCourts())) {
             events.add(SELECT_COURT);
         }
 
