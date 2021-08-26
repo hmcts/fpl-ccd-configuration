@@ -615,7 +615,7 @@ class ApproveDraftOrdersServiceTest {
             .build();
 
         given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq(""),
-            SealType.ENGLISH))
+            eq(SealType.ENGLISH)))
             .willReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
