@@ -589,6 +589,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .caseSummaryNextHearingType(hearingType)
             .caseSummaryNextHearingDate(hearingDate)
             .caseSummaryCourtName(COURT_NAME)
+            .caseSummaryLanguageRequirement("No")
+            .caseSummaryLALanguageRequirement("No")
             .build());
     }
 

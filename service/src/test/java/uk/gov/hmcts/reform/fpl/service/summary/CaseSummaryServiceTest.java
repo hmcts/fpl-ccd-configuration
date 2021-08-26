@@ -40,6 +40,8 @@ class CaseSummaryServiceTest {
     private final CaseSummaryMessagesGenerator caseSummaryMessagesGenerator = mock(CaseSummaryMessagesGenerator.class);
     private final CaseSummaryNextHearingGenerator caseSummaryNextHearingGenerator =
         mock(CaseSummaryNextHearingGenerator.class);
+    private final CaseSummaryWelshFlagGenerator caseSummaryWelshFlagGenerator =
+        mock(CaseSummaryWelshFlagGenerator.class);
     private final CaseSummaryPreviousHearingGenerator caseSummaryPreviousHearingGenerator = mock(
         CaseSummaryPreviousHearingGenerator.class);
     private final CaseSummaryFinalHearingGenerator caseSummaryFinalHearingGenerator = mock(
@@ -59,9 +61,11 @@ class CaseSummaryServiceTest {
         caseSummaryNextHearingGenerator,
         caseSummaryPreviousHearingGenerator,
         caseSummaryFinalHearingGenerator,
+        caseSummaryWelshFlagGenerator,
         caseSummaryPeopleInCaseGenerator,
         caseSummaryCourtGenerator,
-        objectMapper);
+        objectMapper
+    );
 
     @BeforeEach
     void setUp() {
@@ -75,6 +79,7 @@ class CaseSummaryServiceTest {
         when(caseSummaryPeopleInCaseGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY7);
         when(caseSummaryCourtGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY8);
         when(caseSummaryCaseFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY9);
+        when(caseSummaryWelshFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY9);
 
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field0", "value0"));
@@ -115,20 +120,18 @@ class CaseSummaryServiceTest {
             "field8", "value8",
             "field9", "value9"
         ));
-
     }
 
     @Test
     void testWhenAllGeneratedFieldsWithNullValuesWillKeep() {
 
-        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0),
-            Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(
-            new HashMap<>() {
-                    {
-                        this.put("field0", "value0");
-                        this.put("fieldNull", null);
-                    }
-                });
+        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0), Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(new HashMap<>() {
+                {
+                    this.put("field0", "value0");
+                    this.put("fieldNull", null);
+                }
+            });
 
 
         Map<String, String> expected = new HashMap<>();
@@ -153,15 +156,13 @@ class CaseSummaryServiceTest {
     @Test
     void testWhenAllGeneratedFieldsWithNullValuesWillOverrideWhenOtherNonNull() {
 
-        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0),
-            Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(
-                new HashMap<>() {
-                    {
-                        this.put("field0", "value0");
-                        this.put("field1", null);
-                    }
+        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0), Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(new HashMap<>() {
+                {
+                    this.put("field0", "value0");
+                    this.put("field1", null);
                 }
-        );
+            });
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
 
@@ -183,15 +184,13 @@ class CaseSummaryServiceTest {
     @Test
     void testWhenAllGeneratedFieldsOverrides() {
 
-        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0),
-            Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(
-                new HashMap<>() {
-                    {
-                        this.put("field0", "value0");
-                        this.put("field1", "FIELD_WILL_NOT_OVERRIDE");
-                    }
+        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0), Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(new HashMap<>() {
+                {
+                    this.put("field0", "value0");
+                    this.put("field1", "FIELD_WILL_NOT_OVERRIDE");
                 }
-        );
+            });
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
 

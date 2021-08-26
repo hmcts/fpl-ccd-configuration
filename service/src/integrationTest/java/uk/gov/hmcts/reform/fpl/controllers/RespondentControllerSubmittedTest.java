@@ -93,6 +93,8 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
         .syntheticCaseSummary(SyntheticCaseSummary.builder()
             .caseSummaryCourtName(COURT_NAME)
+            .caseSummaryLanguageRequirement("No")
+            .caseSummaryLALanguageRequirement("No")
             .build())
         .respondents1(respondents)
         .build();

@@ -16,6 +16,9 @@ public class SyntheticCaseSummary {
     DocumentReference caseSummaryFlagAssessmentForm;
     String caseSummaryCaseFlagNotes;
 
+    String caseSummaryLanguageRequirement;
+    String caseSummaryLALanguageRequirement;
+
     String caseSummaryOrdersRequested;
 
     LocalDate caseSummaryDateOfIssue;

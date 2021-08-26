@@ -26,6 +26,7 @@ public class CaseSummaryService {
         CaseSummaryNextHearingGenerator caseSummaryNextHearingGenerator,
         CaseSummaryPreviousHearingGenerator caseSummaryPreviousHearingGenerator,
         CaseSummaryFinalHearingGenerator caseSummaryFinalHearingGenerator,
+        CaseSummaryWelshFlagGenerator caseSummaryWelshFlagGenerator,
         CaseSummaryPeopleInCaseGenerator caseSummaryPeopleInCaseGenerator,
         CaseSummaryCourtGenerator caseSummaryCourtGenerator,
         ObjectMapper objectMapper) {
@@ -36,6 +37,7 @@ public class CaseSummaryService {
             caseSummaryDeadlineGenerator,
             caseSummaryCourtGenerator,
             caseSummaryJudgeInformationGenerator,
+            caseSummaryWelshFlagGenerator,
             caseSummaryMessagesGenerator,
             caseSummaryNextHearingGenerator,
             caseSummaryPreviousHearingGenerator,

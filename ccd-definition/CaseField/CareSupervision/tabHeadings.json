@@ -47,6 +47,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryLATabHeading",
+    "Label": "## Case information",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryUnresolvedMessagesHeading",
     "Label": "## Unresolved messages",
     "FieldType": "Label",
