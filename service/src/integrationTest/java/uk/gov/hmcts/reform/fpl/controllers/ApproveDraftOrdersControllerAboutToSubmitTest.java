@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -137,7 +136,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
                     .address(Address.builder().postcode("SW2").build()).build())).build())
             .othersSelector(othersSelector)
-            .sendOrderToAllOthers(YesNo.YES.getValue())
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
