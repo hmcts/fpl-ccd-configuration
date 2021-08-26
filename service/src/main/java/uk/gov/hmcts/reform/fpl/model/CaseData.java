@@ -1076,6 +1076,19 @@ public class CaseData {
             .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
     }
 
+    @JsonIgnore
+    public Optional<LocalAuthority> getSecondaryLocalAuthority() {
+
+        if (isEmpty(getLocalAuthorities())) {
+            return Optional.empty();
+        }
+
+        return getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> !YesNo.YES.getValue().equals(la.getDesignated()))
+            .findFirst();
+    }
+
     @JsonUnwrapped
     @Builder.Default
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();

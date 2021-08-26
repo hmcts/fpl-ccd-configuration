@@ -16,9 +16,9 @@ public class DocumentWordCounter {
     private final DocumentConversionService documentConversionService;
     private final DocmosisHelper docmosisHelper;
 
-    public long count(byte[] originalDocumentContent) {
+    public long count(byte[] originalDocumentContent, String filename) {
 
-        byte[] pdfFile = documentConversionService.convertToPdf(originalDocumentContent, "toCalculate.pdf");
+        byte[] pdfFile = documentConversionService.convertToPdf(originalDocumentContent, filename);
 
         String rawContent = docmosisHelper.extractPdfContent(pdfFile);
 

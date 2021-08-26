@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
@@ -21,11 +21,11 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -67,16 +67,18 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DraftOrdersApprovedEventHandlerTest {
+    private static final Long CASE_ID = 12345L;
     private static final UUID HEARING_ID = randomUUID();
     private static final Element<HearingBooking> HEARING = element(HEARING_ID, HearingBooking.builder().build());
     private static final ApprovedOrdersTemplate EXPECTED_TEMPLATE = ApprovedOrdersTemplate.builder().build();
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
-    private static final DocumentReference ORDER = mock(DocumentReference.class);
-    private static final DocumentReference ORDER_2 = mock(DocumentReference.class);
+    private static final DocumentReference ORDER = testDocumentReference();
+    private static final DocumentReference ORDER_2 = testDocumentReference();
 
     @Mock
     private SendDocumentService sendDocumentService;
@@ -87,7 +89,7 @@ class DraftOrdersApprovedEventHandlerTest {
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private NotificationService notificationService;
     @Mock
@@ -105,15 +107,16 @@ class DraftOrdersApprovedEventHandlerTest {
     @Test
     void shouldNotifyAdminAndLAOfApprovedOrders() {
         CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
+
         List<HearingOrder> orders = List.of();
 
         given(courtService.getCourtEmail(caseData)).willReturn(CTSC_INBOX);
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
@@ -125,19 +128,19 @@ class DraftOrdersApprovedEventHandlerTest {
             JUDGE_APPROVES_DRAFT_ORDERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             EXPECTED_TEMPLATE,
-            caseData.getId().toString());
+            caseData.getId());
 
         verify(notificationService).sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
             CTSC_INBOX,
             EXPECTED_TEMPLATE,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Test
     void shouldNotifyCafcass() {
         CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(HEARING))
             .lastHearingOrderDraftsHearingId(HEARING_ID)
@@ -157,14 +160,14 @@ class DraftOrdersApprovedEventHandlerTest {
             JUDGE_APPROVES_DRAFT_ORDERS,
             CAFCASS_EMAIL_ADDRESS,
             EXPECTED_TEMPLATE,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Test
     void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
         List<Representative> digitalReps = unwrapElements(createRepresentatives(DIGITAL_SERVICE));
         CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(HEARING))
             .representatives(wrapElements(digitalReps))
@@ -184,7 +187,7 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToDigitalRepresentatives(new DraftOrdersApproved(caseData, orders));
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
-            12345L,
+            CASE_ID,
             EXPECTED_TEMPLATE,
             Set.of("digital-rep2@test.com"),
             JUDGE_APPROVES_DRAFT_ORDERS
@@ -195,7 +198,7 @@ class DraftOrdersApprovedEventHandlerTest {
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthers() {
         List<Representative> emailReps = unwrapElements(createRepresentatives(EMAIL));
         CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(HEARING))
             .representatives(wrapElements(emailReps))
@@ -214,7 +217,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
         underTest.sendNotificationToEmailRepresentatives(new DraftOrdersApproved(caseData, orders));
         verify(representativeNotificationService).sendNotificationToRepresentatives(
-            12345L,
+            CASE_ID,
             EXPECTED_TEMPLATE,
             Set.of("rep1@test.com"),
             JUDGE_APPROVES_DRAFT_ORDERS
@@ -224,7 +227,7 @@ class DraftOrdersApprovedEventHandlerTest {
     @Test
     void shouldNotNotifyDigitalRepresentativesWhenNotPresent() {
         final CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .representatives(emptyList())
             .build();
@@ -240,7 +243,7 @@ class DraftOrdersApprovedEventHandlerTest {
     @Test
     void shouldNotNotifyEmailRepresentativesWhenNotPresent() {
         final CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .representatives(emptyList())
             .build();
