@@ -17,12 +17,8 @@ module.exports = {
     I.click(`#reviewDecision${index}_decision-SEND_TO_ALL_PARTIES`);
   },
 
-  selectAllOthers() {
-    I.click('#sendOrderToAllOthers_Yes');
-  },
-
-  selectNotifyAllOthersNo() {
-    I.click('#sendOrderToAllOthers_No');
+  selectOtherPerson(index) {
+    I.checkOption(`#othersSelector_option${index}-SELECTED`);
   },
 
   async selectMakeChangesToCmo() {

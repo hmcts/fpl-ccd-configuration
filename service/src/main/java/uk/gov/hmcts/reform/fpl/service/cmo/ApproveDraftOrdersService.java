@@ -32,6 +32,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -177,7 +178,7 @@ public class ApproveDraftOrdersService {
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
                     List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                        caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
+                        caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers));
@@ -244,7 +245,7 @@ public class ApproveDraftOrdersService {
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
                     List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                        caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
+                        caseData.getOthersSelector(), NO.getValue());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers));
