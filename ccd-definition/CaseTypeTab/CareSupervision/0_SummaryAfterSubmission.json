@@ -17,7 +17,7 @@
     "TabID": "Summary",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "languageRequirement",
+    "CaseFieldID": "caseSummaryLanguageRequirement",
     "FieldShowCondition": "caseSummaryTabHeading = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 4
   },
@@ -29,7 +29,7 @@
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryWelshFlag",
-    "FieldShowCondition": "languageRequirement = \"Yes\"",
+    "FieldShowCondition": "caseSummaryLanguageRequirement = \"Yes\"",
     "TabFieldDisplayOrder": 5
   },
   {
