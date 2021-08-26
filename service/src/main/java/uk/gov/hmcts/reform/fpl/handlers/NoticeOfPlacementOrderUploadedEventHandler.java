@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfPlacementOrderUploadedEventHandler {
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final NotificationService notificationService;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final RepresentativeNotificationService representativeNotificationService;
@@ -39,15 +39,18 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
         CaseData caseData = noticeOfPlacementEvent.getCaseData();
         DocumentReference orderDocument = noticeOfPlacementEvent.getOrderDocument();
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
-        );
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
+
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         NotifyData notifyData =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData);
 
         notificationService.sendEmail(
-            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, emails, notifyData, caseData.getId().toString());
+            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipients, notifyData, caseData.getId());
 
         issuedOrderAdminNotificationHandler.notifyAdmin(
             caseData, orderDocument, NOTICE_OF_PLACEMENT_ORDER);

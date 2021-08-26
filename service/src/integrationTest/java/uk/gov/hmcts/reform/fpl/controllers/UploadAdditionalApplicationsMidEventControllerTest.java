@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -57,16 +54,13 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @MockBean
     private FeeService feeService;
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     UploadAdditionalApplicationsMidEventControllerTest() {
         super("upload-additional-applications");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField(boolean servingOthersToggledOn) {
+    @Test
+    void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
         C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
             .supplementsBundle(wrapElements(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()))
             .build();
@@ -102,7 +96,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.SPECIAL_GUARDIANSHIP,
             FeeType.PARENTAL_RESPONSIBILITY_FATHER, FeeType.SECURE_ACCOMMODATION_WALES);
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersToggledOn);
         given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
 
@@ -114,21 +107,14 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
 
-        if (servingOthersToggledOn) {
-            assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
-            assertThat(String.valueOf(response.getData().get("people_label"))).contains(
-                "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - test1\nPerson 3: Other 2 - test2\n");
-            assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(3));
-        } else {
-            assertThat(response.getData())
-                .doesNotContainKeys("hasRespondentsOrOthers", "people_label")
-                .containsEntry("personSelector", null);
-        }
+        assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
+        assertThat(String.valueOf(response.getData().get("people_label"))).contains(
+            "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - test1\nPerson 3: Other 2 - test2\n");
+        assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(3));
     }
 
     @Test
     void shouldNotSetC2DocumentBundleWhenOnlyOtherApplicationIsSelected() {
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
         OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
             .document(DocumentReference.builder().build())
@@ -150,9 +136,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData())
             .containsEntry("temporaryC2Document", null)
             .containsEntry("amountToPay", "100")
-            .containsEntry("displayAmountToPay", YES.getValue())
-            .containsEntry("personSelector", null)
-            .doesNotContainKeys("hasRespondentsOrOthers", "people_label");
+            .containsEntry("displayAmountToPay", YES.getValue());
     }
 
     @Test

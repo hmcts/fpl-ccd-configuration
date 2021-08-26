@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,7 +33,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,8 +72,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
     @MockBean
     private DocumentSealingService documentSealingService;
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     private final HearingOrder cmo = buildDraftOrder(AGREED_CMO);
     private final HearingOrder draftOrder = buildDraftOrder(C21);
@@ -120,9 +116,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         );
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldSealPDFAndAddToSealedCMOsListAndSaveUnsealedCMOWhenJudgeApprovesOrders(boolean servingOthersEnabled) {
+    @Test
+    void shouldSealPDFAndAddToSealedCMOsListAndSaveUnsealedCMOWhenJudgeApprovesOrders() {
         DocumentReference order = cmo.getOrder();
         UUID cmoId = UUID.randomUUID();
 
@@ -136,7 +131,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .state(State.CASE_MANAGEMENT)
             .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
             .others(Others.builder().firstOther(
-                Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
+                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
                     .address(Address.builder().postcode("SW2").build()).build())).build())
             .othersSelector(Selector.newSelector(2)).notifyApplicationsToAllOthers(YesNo.YES.getValue())
@@ -148,7 +143,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .ordersToBeSent(List.of(element(HearingOrder.builder().build()))) // should be reset
             .build();
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         CaseData responseData = extractCaseData(response);
 
@@ -168,22 +162,15 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .extracting("order", "lastUploadedOrder", "dateIssued", "status")
             .contains(sealedDocument, order, LocalDate.now(), APPROVED);
 
-        if (servingOthersEnabled) {
-            assertThat(sealedCMO.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
-            assertThat(unwrapElements(sealedCMO.getValue().getOthers()))
-                .contains(caseData.getOthers().getFirstOther(),
-                    caseData.getOthers().getAdditionalOthers().get(0).getValue());
+        assertThat(sealedCMO.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
+        assertThat(unwrapElements(sealedCMO.getValue().getOthers()))
+            .contains(caseData.getOthers().getFirstOther(),
+                caseData.getOthers().getAdditionalOthers().get(0).getValue());
 
-            assertThat(orderToBeSent.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
-            assertThat(unwrapElements(orderToBeSent.getValue().getOthers()))
-                .contains(caseData.getOthers().getFirstOther(),
-                    caseData.getOthers().getAdditionalOthers().get(0).getValue());
-        } else {
-            assertThat(sealedCMO.getValue().getOthersNotified()).isEmpty();
-            assertThat(sealedCMO.getValue().getOthers()).isEmpty();
-            assertThat(orderToBeSent.getValue().getOthersNotified()).isEmpty();
-            assertThat(orderToBeSent.getValue().getOthers()).isEmpty();
-        }
+        assertThat(orderToBeSent.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
+        assertThat(unwrapElements(orderToBeSent.getValue().getOthers()))
+            .contains(caseData.getOthers().getFirstOther(),
+                caseData.getOthers().getAdditionalOthers().get(0).getValue());
         assertTemporaryFieldsAreRemovedFromCaseData(response.getData());
     }
 
@@ -291,7 +278,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     void shouldRemoveRejectedBlankOrderAndSealApprovedOrderWhenJudgeRejectsOneOrderAndApprovesTheOther() {
         DocumentReference order = cmo.getOrder();
         given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(false);
 
         UUID cmoId = UUID.randomUUID();
         UUID draftOrderId = UUID.randomUUID();

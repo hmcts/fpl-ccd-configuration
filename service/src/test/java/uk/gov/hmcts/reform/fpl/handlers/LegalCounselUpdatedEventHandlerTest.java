@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LegalCounsellorEmailContent
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
+import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +53,7 @@ class LegalCounselUpdatedEventHandlerTest {
 
     @BeforeEach
     void setUp() {
-        caseData = CaseData.builder().id(TEST_CASE_ID_AS_LONG).build();
+        caseData = CaseData.builder().id(TEST_CASE_ID).build();
     }
 
     @Test
@@ -64,10 +64,10 @@ class LegalCounselUpdatedEventHandlerTest {
 
         underTest.handleLegalCounsellorAddedEvent(new LegalCounsellorAdded(caseData, TEST_LEGAL_COUNCILLOR));
 
-        verify(caseAccessService).grantCaseRoleToUser(TEST_CASE_ID_AS_LONG, TEST_COUNCILLOR_USER_ID, BARRISTER);
+        verify(caseAccessService).grantCaseRoleToUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
         verify(notificationService).sendEmail(
             LEGAL_COUNSELLOR_ADDED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
-            expectedTemplate, TEST_CASE_ID_AS_LONG
+            expectedTemplate, TEST_CASE_ID
         );
     }
 
@@ -81,10 +81,10 @@ class LegalCounselUpdatedEventHandlerTest {
 
         underTest.handleLegalCounsellorRemovedEvent(event);
 
-        verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID_AS_LONG, TEST_COUNCILLOR_USER_ID, BARRISTER);
+        verify(caseAccessService).revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
         verify(notificationService).sendEmail(
             LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
-            expectedTemplate, TEST_CASE_ID_AS_LONG
+            expectedTemplate, TEST_CASE_ID
         );
     }
 

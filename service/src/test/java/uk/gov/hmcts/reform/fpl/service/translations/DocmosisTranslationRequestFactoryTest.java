@@ -26,6 +26,7 @@ class DocmosisTranslationRequestFactoryTest {
     private static final String CONTACT_INFORMATION = "contactfpl@justice.gov.uk";
     private static final long CASE_ID = 123456L;
     private static final String FAMILY_MAN_NUMBER = "familyManNumber";
+    private static final String FILENAME = "file.pdf";
     private static final long WORD_COUNT = 234L;
     private static final LocalDateTime NOW = LocalDateTime.of(2012, 12, 3, 3, 4, 5);
 
@@ -38,7 +39,7 @@ class DocmosisTranslationRequestFactoryTest {
     @Test
     void testEnglishToWelsh() {
         when(time.now()).thenReturn(NOW);
-        when(documentWordCounter.count(DOCUMENT_CONTENT)).thenReturn(WORD_COUNT);
+        when(documentWordCounter.count(DOCUMENT_CONTENT, FILENAME)).thenReturn(WORD_COUNT);
 
         DocmosisTranslationRequest actual = underTest.create(CaseData.builder()
                 .id(CASE_ID)
@@ -46,7 +47,8 @@ class DocmosisTranslationRequestFactoryTest {
                 .build(),
             ENGLISH_TO_WELSH,
             DOCUMENT_DESCRIPTION,
-            DOCUMENT_CONTENT);
+            DOCUMENT_CONTENT,
+            FILENAME);
 
         assertThat(actual).isEqualTo(defaultExpectedRequest().toBuilder()
             .translate(DocmosisTranslateLanguages.builder().englishToWelsh(true).build())
@@ -56,7 +58,7 @@ class DocmosisTranslationRequestFactoryTest {
     @Test
     void testWelshToEnglish() {
         when(time.now()).thenReturn(NOW);
-        when(documentWordCounter.count(DOCUMENT_CONTENT)).thenReturn(WORD_COUNT);
+        when(documentWordCounter.count(DOCUMENT_CONTENT, FILENAME)).thenReturn(WORD_COUNT);
 
         DocmosisTranslationRequest actual = underTest.create(CaseData.builder()
                 .id(CASE_ID)
@@ -64,9 +66,30 @@ class DocmosisTranslationRequestFactoryTest {
                 .build(),
             WELSH_TO_ENGLISH,
             DOCUMENT_DESCRIPTION,
-            DOCUMENT_CONTENT);
+            DOCUMENT_CONTENT,
+            FILENAME);
 
         assertThat(actual).isEqualTo(defaultExpectedRequest().toBuilder()
+            .translate(DocmosisTranslateLanguages.builder().welshToEnglish(true).build())
+            .build());
+    }
+
+    @Test
+    void tesIfCounterFails() {
+        when(time.now()).thenReturn(NOW);
+        when(documentWordCounter.count(DOCUMENT_CONTENT, FILENAME)).thenThrow(new RuntimeException("Boom!"));
+
+        DocmosisTranslationRequest actual = underTest.create(CaseData.builder()
+                .id(CASE_ID)
+                .familyManCaseNumber(FAMILY_MAN_NUMBER)
+                .build(),
+            WELSH_TO_ENGLISH,
+            DOCUMENT_DESCRIPTION,
+            DOCUMENT_CONTENT,
+            FILENAME);
+
+        assertThat(actual).isEqualTo(defaultExpectedRequest().toBuilder()
+            .wordCount(0)
             .translate(DocmosisTranslateLanguages.builder().welshToEnglish(true).build())
             .build());
     }

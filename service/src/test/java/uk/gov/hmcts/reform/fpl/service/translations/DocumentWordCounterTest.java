@@ -16,6 +16,7 @@ class DocumentWordCounterTest {
 
     private static final byte[] ORIGINAL_DOCUMENT_CONTENT = "Document".getBytes();
     private static final byte[] CONVERTED_DOCUMENT = "ConvertedDocument".getBytes();
+    private static final String FILE_PDF = "file.pdf";
 
     private final DocumentConversionService documentConversionService = mock(DocumentConversionService.class);
     private final DocmosisHelper docmosisHelper = mock(DocmosisHelper.class);
@@ -30,7 +31,7 @@ class DocumentWordCounterTest {
     void testCount(String content, long expectedCount) {
         mockConversionToContent(content);
 
-        long actual = underTest.count(ORIGINAL_DOCUMENT_CONTENT);
+        long actual = underTest.count(ORIGINAL_DOCUMENT_CONTENT, FILE_PDF);
 
         assertThat(actual).isEqualTo(expectedCount);
     }
@@ -53,7 +54,7 @@ class DocumentWordCounterTest {
     }
 
     private void mockConversionToContent(String content) {
-        when(documentConversionService.convertToPdf(ORIGINAL_DOCUMENT_CONTENT, "toCalculate.pdf"))
+        when(documentConversionService.convertToPdf(ORIGINAL_DOCUMENT_CONTENT, FILE_PDF))
             .thenReturn(CONVERTED_DOCUMENT);
         when(docmosisHelper.extractPdfContent(CONVERTED_DOCUMENT)).thenReturn(content);
     }

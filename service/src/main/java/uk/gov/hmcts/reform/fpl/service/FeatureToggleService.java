@@ -46,9 +46,9 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
+    public boolean emailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), true);
     }
 
     public boolean isSummaryTabFirstCronRunEnabled() {
@@ -76,10 +76,6 @@ public class FeatureToggleService {
 
     public boolean isLanguageRequirementsEnabled() {
         return ldClient.boolVariation("language-requirements", createLDUser(), false);
-    }
-
-    public boolean isServeOrdersAndDocsToOthersEnabled() {
-        return ldClient.boolVariation("serve-others-orders-docs", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

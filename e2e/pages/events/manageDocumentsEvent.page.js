@@ -23,6 +23,9 @@ module.exports = {
     supportingDocuments: function(index) {
       return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp');
     },
+    translationRequirement: function(index, requirement) {
+      return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp').translationRequirement(requirement);
+    },
   },
 
   selectFurtherEvidence() {
@@ -53,6 +56,11 @@ module.exports = {
   selectFurtherEvidenceIsRelatedToHearing() {
     I.waitForElement(this.fields.relatedToHearing.yes);
     I.click(this.fields.relatedToHearing.yes);
+  },
+
+  selectFurtherEvidenceIsNotRelatedToHearing() {
+    I.waitForElement(this.fields.relatedToHearing.no);
+    I.click(this.fields.relatedToHearing.no);
   },
 
   selectHearing(hearingDate) {
@@ -113,5 +121,10 @@ module.exports = {
     const index = await I.getActiveElementIndex();
     await this.uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType);
     this.selectConfidential(index);
+  },
+
+  selectTranslationRequirement(index, requirement) {
+    I.waitForElement(this.fields.translationRequirement(index, requirement));
+    I.click(this.fields.translationRequirement(index, requirement));
   },
 };
