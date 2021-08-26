@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
@@ -47,5 +49,14 @@ public class ManageOrdersCaseDataFixer {
         }
 
         return caseData;
+    }
+
+    public CaseDetails fixAndRetriveCaseDetails(CaseDetails caseDetails) {
+        Object operation = caseDetails.getData().get("manageOrdersOperation");
+        if (!isNull((operation)) && !AMEND.name().equals(operation.toString())) {
+            caseDetails.getData().remove("manageOrdersAmendmentList");
+        }
+
+        return caseDetails;
     }
 }
