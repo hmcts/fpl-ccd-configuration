@@ -12,6 +12,7 @@ module.exports = {
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
+    vacatedDate: '#vacatedHearingDate',
     attendance: '#hearingAttendance',
     attendanceDetails: '#hearingAttendanceDetails',
     preAttendanceDetails: '#preHearingAttendanceDetails',
@@ -73,6 +74,10 @@ module.exports = {
   selectReListHearing(hearing) {
     I.click(this.fields.hearingOptions.reListHearing);
     I.selectOption(this.fields.toReListHearingDateList, hearing);
+  },
+
+  enterVacatedDate(date) {
+    I.fillDate(date, this.fields.vacatedDate);
   },
 
   selectCancellationReasonType(type) {

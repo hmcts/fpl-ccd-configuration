@@ -212,6 +212,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.enterVacatedDate({day: 1, month: 12, year: 2059});
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('Yes - and I can add the new date now');
   await I.goToNextPage();
@@ -236,6 +237,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
 
   I.seeInTab(['Adjourned or vacated hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
   I.seeInTab(['Adjourned or vacated hearing 2', 'Start date and time'], '1 Jan 2060, 11:00:00 AM');
+  I.seeInTab(['Adjourned or vacated hearing 2', 'Vacated date'], '1 Dec 2059');
   I.seeInTab(['Adjourned or vacated hearing 2', 'Status'], 'Vacated');
 
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);

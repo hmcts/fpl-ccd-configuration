@@ -59,6 +59,27 @@ class PastHearingDatesValidatorServiceTest {
             .containsOnly("The end date and time must be after the start date and time");
     }
 
+    @Test
+    void shouldReturnEmptyValidationErrorsWhenValidationDateIsValid() {
+        LocalDateTime hearingEndDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
+        LocalDate vacatedDate = LocalDate.now().minusDays(1);
+
+        final List<String> validationErrors = service.validateVacatedDate(hearingEndDate, vacatedDate);
+
+        assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    void shouldReturnValidationErrorWhenVacatedDateIsNotAfterTheEndDate() {
+        LocalDateTime hearingEndDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
+        LocalDate vacatedDate = LocalDate.now().plusDays(1);
+
+        final List<String> validationErrors = service.validateVacatedDate(hearingEndDate, vacatedDate);
+
+        assertThat(validationErrors)
+            .containsOnly("The vacated date must be before, or the same as the hearing date.");
+    }
+
     private static Stream<Arguments> validateHearingDatesSource() {
         LocalDateTime startTime = LocalDateTime.of(2020, 12, 10, 10, 10, 10);
         return Stream.of(
