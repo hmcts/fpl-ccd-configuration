@@ -939,7 +939,7 @@ class ManageHearingsServiceTest {
                 "showConfirmPastHearingDatesPage", "Yes",
                 "endDateFlag", "Yes",
                 "hearingDurationLabel", "15 March 2010, 8:20pm",
-                "hearingEndDate", LocalDateTime.parse("2010-03-15T20:20:00"));
+                "hearingEndDate", hearingEndDate);
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
 
@@ -962,7 +962,7 @@ class ManageHearingsServiceTest {
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
                 "hearingDurationLabel", "15 March 2010, 8:20pm",
-                "hearingEndDate", LocalDateTime.parse("2010-03-15T20:20:00"));
+                "hearingEndDate", hearingEndDate);
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
