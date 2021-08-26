@@ -63,8 +63,8 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     private static final String ENTRY_MESSAGE = format("The court authorises %s to enter the premises known as %s, "
             + "and search for the child, using reasonable force if necessary.%s",
         OFFICER_NAME, REMOVAL_ADDRESS.getAddressAsString(", "), PARAGRAPH_BREAK);
-    private static final String STANDARD_MESSAGE_WITH_EPO = format("The Court is satisfied that %s has " +
-        "parental responsibility for the child by virtue of an Emergency protection order made on %s.%s",
+    private static final String STANDARD_MESSAGE_WITH_EPO = format("The Court is satisfied that %s has "
+            + "parental responsibility for the child by virtue of an Emergency protection order made on %s.%s",
         LA_NAME, FORMAT_LOCAL_DATE_TO_STRING, PARAGRAPH_BREAK);
     private static final String INFORM_MESSAGE = format("The court requires any person who has information about "
         + "where the child is, or may be, to give that information to a police constable or an officer of "
