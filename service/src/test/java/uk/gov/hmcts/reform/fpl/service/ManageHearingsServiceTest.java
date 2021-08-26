@@ -700,6 +700,88 @@ class ManageHearingsServiceTest {
     }
 
     @Test
+    void shouldSetHearingDurationInDaysWhenHearingInDaysIsSet() {
+        LocalDateTime startDate = time.now();
+        String hearingDays = "9";
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .usePreviousVenue("Yes")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .previousVenueId("OTHER")
+            .hearingType(CASE_MANAGEMENT)
+            .hearingStartDate(startDate)
+            .hearingDays(hearingDays)
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .noticeOfHearingNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
+        HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
+
+        HearingBooking expectedHearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .venue("OTHER")
+            .customPreviousVenue("Custom House, Custom Street")
+            .startDate(startDate)
+            .hearingDuration("9 days")
+            .endDateDerived(YES.getValue())
+            .hearingJudgeLabel("Her Honour Judge Judy")
+            .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
+            .additionalNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
+    }
+
+    @Test
+    void shouldSetHearingDurationInHoursAndMinutesWhenHearingInHoursAndMinutesIsSet() {
+        LocalDateTime startDate = time.now();
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .usePreviousVenue("Yes")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .previousVenueId("OTHER")
+            .hearingType(CASE_MANAGEMENT)
+            .hearingStartDate(startDate)
+            .hearingHours("9")
+            .hearingMinutes("45")
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .noticeOfHearingNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
+        HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
+
+        HearingBooking expectedHearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .venue("OTHER")
+            .customPreviousVenue("Custom House, Custom Street")
+            .startDate(startDate)
+            .hearingDuration("9 hours 45 minutes")
+            .endDateDerived(YES.getValue())
+            .hearingJudgeLabel("Her Honour Judge Judy")
+            .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
+            .additionalNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
+    }
+
+    @Test
     void shouldFindAndSetPreviousVenueIdWhenFlagSet() {
         PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
             .previousVenue("Custom House, Custom Street")
