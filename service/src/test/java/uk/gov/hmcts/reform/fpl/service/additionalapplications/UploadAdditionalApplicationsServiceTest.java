@@ -117,7 +117,8 @@ class UploadAdditionalApplicationsServiceTest {
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(documentSealingService.sealDocument(DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_CONVERTED_DOCUMENT);
-        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_SUPPLEMENT_DOCUMENT);
+        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, SealType.ENGLISH)).willReturn(
+            SEALED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test
