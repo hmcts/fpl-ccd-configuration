@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
@@ -55,6 +52,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
@@ -85,7 +83,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12345L;
-    private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
@@ -106,9 +103,6 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @MockBean
     private SendLetterService sendLetters;
@@ -166,43 +160,36 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("robert@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("charlie@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(ADMIN_EMAIL),
+                eq(COURT_1.getEmail()),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
-
-            verify(coreCaseDataService).triggerEvent(JURISDICTION,
-                CASE_TYPE,
-                CASE_ID,
-                SEND_DOCUMENT_EVENT,
-                Map.of("documentToBeSent", caseManagementOrder.getOrder()));
-
         });
         verifyNoMoreNotificationsSent();
     }
@@ -225,9 +212,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoMoreNotificationsSentToTraslation();
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders(boolean servingOthersEnabled) {
+    @Test
+    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders() {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
         given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
@@ -236,10 +222,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
 
-        final List<Recipient> recipients = List.of(createRespondentParty());
         final List<Recipient> recipientsWithOthers = List.of(createRespondentParty(), createOther().toParty());
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         postSubmittedEvent(callbackRequest);
@@ -249,54 +233,47 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("robert@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("charlie@example.com"),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                eq(ADMIN_EMAIL),
+                eq(COURT_1.getEmail()),
                 anyMap(),
-                eq(NOTIFICATION_REFERENCE)
-            );
-
-            verify(coreCaseDataService).triggerEvent(eq(JURISDICTION),
-                eq(CASE_TYPE),
-                eq(CASE_ID),
-                eq(UPDATE_CASE_SUMMARY_EVENT),
-                anyMap()
+                eq(notificationReference(CASE_ID))
             );
 
             verify(sendLetters).send(
                 cmo.getOrder(),
-                servingOthersEnabled ? recipientsWithOthers : recipients,
+                recipientsWithOthers,
                 CASE_ID,
                 FAMILY_MAN_CASE_NUMBER
             );
 
             verify(sendLetters).send(
                 c21.getOrder(),
-                servingOthersEnabled ? recipientsWithOthers : recipients,
+                recipientsWithOthers,
                 CASE_ID,
                 FAMILY_MAN_CASE_NUMBER
             );
@@ -307,10 +284,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoMoreNotificationsSentToTraslation();
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrdersWithTranslation(
-        boolean servingOthersEnabled) {
+    @Test
+    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrdersWithTranslation() {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
         given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
@@ -323,10 +298,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
 
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(servingOthersEnabled);
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
-
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(CallbackRequest.builder().caseDetails(caseDetails).build());
 
         verifyEmailSentToTranslation(2);
         verifyNoMoreNotificationsSentToTraslation();
@@ -345,7 +317,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)
+            eq(notificationReference(CASE_ID))
         ));
 
         verifyNoMoreInteractions(notificationClient);
@@ -365,7 +337,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             eq(JUDGE_REJECTS_DRAFT_ORDERS),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
-            eq(NOTIFICATION_REFERENCE)
+            eq(notificationReference(CASE_ID))
         ));
 
         verifyNoMoreInteractions(notificationClient);

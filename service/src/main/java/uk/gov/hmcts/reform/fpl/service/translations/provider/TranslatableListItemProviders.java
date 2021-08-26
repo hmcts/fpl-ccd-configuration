@@ -15,6 +15,11 @@ public class TranslatableListItemProviders {
     private final TranslatableStandardDirectionOrderProvider translatableStandardDirectionOrderProvider;
     private final TranslatableNoticeOfProceedingsProvider translatableNoticeOfProceedingsProvider;
     private final TranslatableUrgentHearingOrderProvider translatableUrgentHearingOrderProvider;
+    private final TranslatableNoticeOfHearingProvider translatableNoticeOfHearingProvider;
+    private final TranslatableC110AProvider translatableC110AProvider;
+    private final TranslatableFurtherEvidenceProvider translatableFurtherEvidenceProvider;
+    private final TranslatableHearingFurtherEvidenceProvider translatableHearingFurtherEvidenceProvider;
+    private final TranslatableRespondentStatementsProvider translatableRespondentStatementsProvider;
 
     public List<TranslatableListItemProvider> getAll() {
         return List.of(
@@ -22,7 +27,12 @@ public class TranslatableListItemProviders {
             translatableCaseManagementOrderProvider,
             translatableStandardDirectionOrderProvider,
             translatableNoticeOfProceedingsProvider,
-            translatableUrgentHearingOrderProvider
+            translatableUrgentHearingOrderProvider,
+            translatableNoticeOfHearingProvider,
+            translatableC110AProvider,
+            translatableFurtherEvidenceProvider,
+            translatableHearingFurtherEvidenceProvider,
+            translatableRespondentStatementsProvider
         );
     }
 

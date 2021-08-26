@@ -46,9 +46,9 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
+    public boolean emailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), true);
     }
 
     public boolean isSummaryTabFirstCronRunEnabled() {
@@ -59,13 +59,15 @@ public class FeatureToggleService {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }
 
+    public boolean isNewDocumentUploadNotificationEnabled() {
+        return ldClient.boolVariation("document-upload-new-notification",
+            createLDUser(), false);
+
+    }
+
     public boolean isFurtherEvidenceDocumentTabEnabled() {
         return ldClient.boolVariation("further-evidence-document-tab",
             createLDUser(), false);
-    }
-
-    public boolean isChildRepresentativeSolicitorEnabled() {
-        return ldClient.boolVariation("child-representative-solicitor", createLDUser(), false);
     }
 
     public boolean isApplicantAdditionalContactsEnabled() {
@@ -74,10 +76,6 @@ public class FeatureToggleService {
 
     public boolean isLanguageRequirementsEnabled() {
         return ldClient.boolVariation("language-requirements", createLDUser(), false);
-    }
-
-    public boolean isServeOrdersAndDocsToOthersEnabled() {
-        return ldClient.boolVariation("serve-others-orders-docs", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

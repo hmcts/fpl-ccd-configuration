@@ -32,6 +32,7 @@ module.exports = {
     sendNotice: '#sendNoticeOfHearing_Yes',
     dontSendNotice: '#sendNoticeOfHearing_No',
     noticeNotes: '#noticeOfHearingNotes',
+    translationRequirement: request =>  `#sendNoticeOfHearingTranslationRequirements-${request}`,
     allOthers: {
       group: '#sendOrderToAllOthers',
       options: {
@@ -150,6 +151,10 @@ module.exports = {
     I.fillField(this.fields.noticeNotes, notes);
   },
 
+  requestTranslationForNoticeOfHearing(value) {
+    I.click(this.fields.translationRequirement(value));
+  },
+
   dontSendNoticeOfHearing() {
     I.click(this.fields.dontSendNotice);
   },
@@ -165,6 +170,10 @@ module.exports = {
 
   selectHearingDateIncorrect() {
     I.click(this.fields.confirmHearingDate.hearingDateIncorrect);
+  },
+
+  selectHearingDateCorrect() {
+    I.click(this.fields.confirmHearingDate.hearingDateCorrect);
   },
 
   async enterCorrectedHearingDate(hearingDetails) {

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 @Api
@@ -19,15 +18,12 @@ import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RenderDocumentsController extends CallbackController {
     private final DocumentListService documentListService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
-        }
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         return respond(caseDetails);
     }
 }

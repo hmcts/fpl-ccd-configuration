@@ -15,18 +15,20 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
@@ -45,26 +47,26 @@ public class SendNoticeOfHearingHandler {
     private final NoticeOfHearingNoOtherAddressEmailContentProvider noticeOfHearingNoOtherAddressEmailContentProvider;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final SendDocumentService sendDocumentService;
+    private final TranslationRequestService translationRequestService;
 
     @Async
     @EventListener
     public void notifyLocalAuthority(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
+
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            caseData, event.getSelectedHearing(), DIGITAL_SERVICE
-        );
+            caseData, event.getSelectedHearing(), DIGITAL_SERVICE);
 
-        notificationService.sendEmail(
-            NOTICE_OF_NEW_HEARING, emails, notifyData, caseData.getId().toString()
-        );
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipients, notifyData, caseData.getId());
     }
 
     @Async
@@ -135,5 +137,15 @@ public class SendNoticeOfHearingHandler {
                     caseData.getId());
             }
         });
+    }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(SendNoticeOfHearing event) {
+        HearingBooking selectedHearing = event.getSelectedHearing();
+        translationRequestService.sendRequest(event.getCaseData(),
+            Optional.ofNullable(selectedHearing.getTranslationRequirements()),
+            selectedHearing.getNoticeOfHearing(), selectedHearing.asLabel()
+        );
     }
 }

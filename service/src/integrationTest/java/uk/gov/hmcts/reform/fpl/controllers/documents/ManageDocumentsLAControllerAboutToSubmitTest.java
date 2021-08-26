@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -39,6 +38,7 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
@@ -60,8 +60,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
     private static final String USER = "LA";
     private static final String USER_ROLES = "caseworker-publiclaw-solicitor";
-    public static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
-        .binaryUrl("binary-url").url("fake-url").filename("file1").build();
+    private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
     private static final SupportingEvidenceBundle NON_CONFIDENTIAL_BUNDLE = SupportingEvidenceBundle.builder()
         .dateTimeUploaded(LocalDateTime.now())
         .uploadedBy(USER)
@@ -73,9 +72,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         .name("confidential test")
         .confidential(List.of("CONFIDENTIAL"))
         .build();
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @MockBean
     private UserService userService;
@@ -108,8 +104,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentSubtypeListLA(OTHER)
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData responseData = extractCaseData(response);
 
@@ -135,18 +129,11 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentSubtypeListLA(OTHER)
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(false);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData responseData = extractCaseData(response);
 
         assertThat(responseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(responseData);
-
-        assertThat(response.getData().get("documentViewLA")).isNull();
-        assertThat(response.getData().get("documentViewHMCTS")).isNull();
-        assertThat(response.getData().get("documentViewNC")).isNull();
-        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();
     }
 
     @Test
@@ -284,7 +271,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .value(DynamicListElement.builder().code(selectedC2DocumentId).build()).build();
 
         CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(TEST_CASE_ID)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(c2DocumentsDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder().c2DocumentBundle(
@@ -293,7 +280,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
 
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), TEST_CASE_ID)).willReturn(false);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
@@ -321,7 +308,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .value(DynamicListElement.builder().code(selectedBundleId).build()).build();
 
         CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(TEST_CASE_ID)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(c2DocumentsDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -330,7 +317,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
 
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), TEST_CASE_ID)).willReturn(false);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
@@ -355,7 +342,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .value(DynamicListElement.builder().code(selectedBundleId).build()).build();
 
         CaseData caseData = CaseData.builder()
-            .id(12345L)
+            .id(TEST_CASE_ID)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(c2DocumentsDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -364,7 +351,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
 
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(false);
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), TEST_CASE_ID)).willReturn(false);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
@@ -474,14 +461,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .dateTimeUploaded(localDateTime)
             .uploadedBy(USER)
             .build());
-    }
-
-    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(UUID elementId) {
-        return List.of(element(elementId,
-            SupportingEvidenceBundle.builder()
-                .name("Test name")
-                .uploadedBy("Test uploaded by")
-                .build()));
     }
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {

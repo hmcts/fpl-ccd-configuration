@@ -87,7 +87,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         CallbackResponse response = callback(caseData, LA_SWANSEA_USER_1, "case-submission/about-to-submit");
 
         final String actualApplication = documentService
-            .getPdfContent(response.getCaseData().getSubmittedForm(), LA_SWANSEA_USER_1, "C110A");
+            .getPdfContent(response.getCaseData().getC110A().getSubmittedForm(), LA_SWANSEA_USER_1, "C110A");
 
         final String expectedApplication = readString("case-submission/application.txt",
             Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE)));

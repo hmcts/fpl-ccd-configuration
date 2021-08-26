@@ -19,6 +19,7 @@ import java.net.URLConnection;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
 
 @Service
@@ -47,13 +48,17 @@ public class TranslationRequestService {
         byte[] originalDocumentContent = documentDownloadService.downloadDocument(document.getBinaryUrl());
 
         EmailAttachment originalDocument = document(
-            URLConnection.guessContentTypeFromName(document.getFilename()),
+            defaultIfNull(URLConnection.guessContentTypeFromName(document.getFilename()), "application/octet-stream"),
             originalDocumentContent,
             document.getFilename());
 
         EmailAttachment translationRequest = document(RenderFormat.WORD.getMediaType(),
             translationRequestFormCreationService.buildTranslationRequestDocuments(
-                    translationRequestFactory.create(caseData, language, documentDescription, originalDocumentContent))
+                    translationRequestFactory.create(caseData,
+                        language,
+                        documentDescription,
+                        originalDocumentContent,
+                        document.getFilename()))
                 .getBytes(),
             "translationRequestForm.doc"
         );

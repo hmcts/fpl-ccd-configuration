@@ -1,28 +1,43 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -80,8 +95,23 @@ class FurtherEvidenceNotificationServiceTest {
         .servingPreferences(DIGITAL_SERVICE)
         .build();
 
+    private static final Respondent RESPONDENT_1 = Respondent
+        .builder()
+        .party(RespondentParty.builder().lastName("Lastname").build())
+        .representedBy(wrapElements(List.of(UUID.randomUUID())))
+        .solicitor(RespondentSolicitor.builder().email("sol1@email.com").build())
+        .build();
+
+    private static final Child CHILD_1 = Child
+        .builder()
+        .party(ChildParty.builder().lastName("Lastname").build())
+        .solicitor(RespondentSolicitor.builder().email("sol2@email.com").build())
+        .build();
+
+    private static final List<String> DOCUMENTS = buildDocumentsNamesList();
+
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @Mock
     private NotificationService notificationService;
@@ -89,21 +119,64 @@ class FurtherEvidenceNotificationServiceTest {
     @Mock
     private FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
+    @Mock
+    private RepresentativesInbox representativesInbox;
+
     @InjectMocks
     private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
-    @Test
-    void shouldReturnLASolicitors() {
-        CaseData caseData = caseData();
+    @Nested
+    class LocalAuthoritiesRecipients {
 
-        when(inboxLookupService.getRecipients(LocalAuthorityInboxRecipientsRequest.builder()
-            .caseData(caseData)
-            .build()))
-            .thenReturn(LOCAL_AUTHORITY_EMAILS);
+        @Test
+        void shouldReturnAllLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
 
-        Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData);
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
 
-        assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+            Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .build());
+        }
+
+        @Test
+        void shouldReturnDesignatedLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
+
+            Set<String> actual = furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .secondaryLocalAuthorityExcluded(true)
+                .build());
+        }
+
+        @Test
+        void shouldReturnSecondaryLocalAuthoritiesContacts() {
+            final CaseData caseData = caseData();
+
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
+
+            Set<String> actual = furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipients(caseData);
+
+            assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+
+            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
+                .caseData(caseData)
+                .designatedLocalAuthorityExcluded(true)
+                .build());
+        }
     }
 
     @Test
@@ -117,7 +190,13 @@ class FurtherEvidenceNotificationServiceTest {
             CAFCASS_SOLICITOR_SERVED_BY_EMAIL,
             CAFCASS_SOLICITOR_WITH_SERVICE_ACCESS);
 
-        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData);
+        when(representativesInbox.getRepresentativeEmailsFilteredByRole(caseData, DIGITAL_SERVICE,
+            List.of(CAFCASS, RESPONDENT)
+        ))
+            .thenReturn(newHashSet("rep@example.com", "rep2@example.com", "rep3@example.com",
+                "cafcass2@example.com"));
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData,
+            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             REPRESENTATIVE_WITH_SERVICE_ACCESS_1.getEmail(),
@@ -127,10 +206,27 @@ class FurtherEvidenceNotificationServiceTest {
     }
 
     @Test
+    void shouldReturnRespondentAndChildrenRepresentativesWhenSolicitorUser() {
+        CaseData caseData = caseData(CHILD_1, RESPONDENT_1);
+
+        when(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE))
+            .thenReturn(newHashSet("sol1@email.com"));
+        when(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE))
+            .thenReturn(newHashSet("sol2@email.com"));
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData,
+            DocumentUploaderType.SOLICITOR);
+
+        assertThat(actualRecipients).containsExactlyInAnyOrder(
+            CHILD_1.getSolicitor().getEmail(),
+            RESPONDENT_1.getSolicitor().getEmail());
+    }
+
+    @Test
     void shouldReturnEmptyRecipientsWhenCaseHasNotRepresentatives() {
         CaseData emptyCaseData = caseData();
 
-        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData,
+            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         assertThat(actualRecipients).isEmpty();
     }
@@ -142,13 +238,14 @@ class FurtherEvidenceNotificationServiceTest {
             REPRESENTATIVE_SERVED_BY_EMAIL,
             CAFCASS_SOLICITOR_SERVED_BY_EMAIL);
 
-        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData,
+            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         assertThat(actualRecipients).isEmpty();
     }
 
     @Test
-    void shouldSendCorrectNotification() {
+    void shouldSendOldNotificationWhenFeatureToggleOff() {
         CaseData caseData = caseData();
 
         Set<String> recipients = Set.of("test@example.com");
@@ -156,14 +253,34 @@ class FurtherEvidenceNotificationServiceTest {
         FurtherEvidenceDocumentUploadedData furtherEvidenceDocumentUploadedData =
             FurtherEvidenceDocumentUploadedData.builder().build();
 
-        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender")).thenReturn(
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
+        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender",
+            DOCUMENTS)).thenReturn(
             furtherEvidenceDocumentUploadedData);
 
-        furtherEvidenceNotificationService.sendNotification(caseData,
-            recipients,
-            "Sender");
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verify(notificationService).sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
+            furtherEvidenceDocumentUploadedData, CASE_ID.toString());
+    }
+
+    @Test
+    void shouldSendCorrectNotificationWhenFeatureToggleON() {
+        CaseData caseData = caseData();
+
+        Set<String> recipients = Set.of("test@example.com");
+
+        FurtherEvidenceDocumentUploadedData furtherEvidenceDocumentUploadedData =
+            FurtherEvidenceDocumentUploadedData.builder().build();
+
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender",
+            DOCUMENTS)).thenReturn(
+            furtherEvidenceDocumentUploadedData);
+
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
+
+        verify(notificationService).sendEmail(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
     }
 
@@ -173,11 +290,17 @@ class FurtherEvidenceNotificationServiceTest {
 
         Set<String> recipients = Set.of();
 
-        furtherEvidenceNotificationService.sendNotification(caseData,
-            recipients,
-            "Sender");
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verifyNoInteractions(notificationService);
+    }
+
+    private CaseData caseData() {
+        return CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY)
+            .representatives(wrapElements())
+            .build();
     }
 
     private CaseData caseData(Representative... representatives) {
@@ -186,5 +309,18 @@ class FurtherEvidenceNotificationServiceTest {
             .caseLocalAuthority(LOCAL_AUTHORITY)
             .representatives(wrapElements(representatives))
             .build();
+    }
+
+    private CaseData caseData(Child children, Respondent respondents) {
+        return CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY)
+            .respondents1(wrapElements(respondents))
+            .children1(wrapElements(children))
+            .build();
+    }
+
+    private static List<String> buildDocumentsNamesList() {
+        return List.of("DOCUMENT 1", "DOCUMENT 2");
     }
 }

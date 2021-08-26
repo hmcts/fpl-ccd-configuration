@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -57,6 +58,7 @@ import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
@@ -106,7 +108,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -153,8 +154,8 @@ public class CaseData {
     private final State state;
     @NotBlank(message = "Enter a case name")
     private final String caseName;
-    private final String caseLocalAuthority;
-    private final String caseLocalAuthorityName;
+    private String caseLocalAuthority;
+    private String caseLocalAuthorityName;
     private OrganisationPolicy localAuthorityPolicy;
     private OrganisationPolicy outsourcingPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
@@ -781,7 +782,9 @@ public class CaseData {
             .anyMatch(hearingBooking -> hearingBooking.getValue().startsAfterToday());
     }
 
-    private final DocumentReference submittedForm;
+    @JsonUnwrapped
+    @Builder.Default
+    private final C110A c110A = C110A.builder().build();
     private final DocumentReference draftApplicationDocument;
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
@@ -833,7 +836,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
-            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+                defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
             .flatMap(Collection::stream).collect(toList());
     }
 
@@ -953,6 +956,7 @@ public class CaseData {
     @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
+    private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
     private final HearingOptions hearingOption;
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
@@ -1070,6 +1074,19 @@ public class CaseData {
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
             .findFirst()
             .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+    }
+
+    @JsonIgnore
+    public Optional<LocalAuthority> getSecondaryLocalAuthority() {
+
+        if (isEmpty(getLocalAuthorities())) {
+            return Optional.empty();
+        }
+
+        return getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .filter(la -> !YesNo.YES.getValue().equals(la.getDesignated()))
+            .findFirst();
     }
 
     @JsonUnwrapped

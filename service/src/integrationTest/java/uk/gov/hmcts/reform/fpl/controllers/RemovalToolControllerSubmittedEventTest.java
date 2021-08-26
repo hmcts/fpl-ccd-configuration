@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.service.notify.NotificationClient;
@@ -56,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_REMOVED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_REMOVAL_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.ASYNC_MAX_TIMEOUT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -66,11 +66,8 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @WebMvcTest(RemovalToolController.class)
 @OverrideAutoConfiguration(enabled = true)
 class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
-    private static final String CASE_ID = "12345";
+    private static final Long CASE_ID = 12345L;
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-
     private static final String REMOVAL_REASON = "The order was removed because incorrect data was entered";
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final Respondent RESPONDENT = Respondent.builder()
@@ -90,9 +87,6 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
     @MockBean
     private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
-
-    @MockBean
-    private FeatureToggleService toggleService;
 
     @MockBean
     private Time time;
@@ -122,10 +116,10 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
-            eq(12345L),
+            eq(CASE_ID),
             eq("populateSDO"),
             anyMap());
 
@@ -133,7 +127,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             eq(SDO_REMOVAL_NOTIFICATION_TEMPLATE),
             eq(GATEKEEPER_EMAIL_ADDRESS),
             eqJson(expectedOrderRemovalTemplateParameters()),
-            eq(NOTIFICATION_REFERENCE));
+            eq(notificationReference(CASE_ID)));
     }
 
     @Test
@@ -158,7 +152,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
             eq(12345L),
@@ -169,7 +163,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             SDO_REMOVAL_NOTIFICATION_TEMPLATE,
             GATEKEEPER_EMAIL_ADDRESS,
             expectedOrderRemovalTemplateParameters(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
     }
 
@@ -247,7 +241,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             CMO_REMOVAL_NOTIFICATION_TEMPLATE,
             LOCAL_AUTHORITY_1_INBOX,
             expectedOrderRemovalTemplateParameters(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
     }
 
@@ -276,7 +270,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             CMO_REMOVAL_NOTIFICATION_TEMPLATE,
             LOCAL_AUTHORITY_1_INBOX,
             expectedOrderRemovalTemplateParameters(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
 
         verifyNoMoreInteractions(coreCaseDataService);
@@ -312,23 +306,23 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             APPLICATION_REMOVED_NOTIFICATION_TEMPLATE,
             CTSC_TEAM_LEAD_EMAIL,
             expectedApplicationRemovalTemplateParameters(),
-            NOTIFICATION_REFERENCE
+            notificationReference(CASE_ID)
         );
     }
 
     private Map<String, Object> expectedOrderRemovalTemplateParameters() {
         OrderRemovalTemplate orderRemovalTemplate = OrderRemovalTemplate.builder()
-            .caseReference(CASE_ID)
-            .caseUrl("http://fake-url/cases/case-details/12345")
+            .caseReference(CASE_ID.toString())
+            .caseUrl(caseUrl(CASE_ID))
             .lastName(CHILD_LAST_NAME)
             .removalReason(REMOVAL_REASON)
             .build();
-        return mapper.convertValue(orderRemovalTemplate, new TypeReference<>() {});
+        return caseConverter.toMap(orderRemovalTemplate);
     }
 
     private Map<String, Object> expectedApplicationRemovalTemplateParameters() {
         ApplicationRemovedNotifyData data = ApplicationRemovedNotifyData.builder()
-            .caseId("12345")
+            .caseId(CASE_ID.toString())
             .applicantName("Jim Byrne")
             .c2Filename("Filename")
             .caseUrl("http://fake-url/cases/case-details/12345")
@@ -337,7 +331,8 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             .applicationFeeText("An application fee needs to be refunded.")
             .childLastName("Jones").build();
 
-        return mapper.convertValue(data, new TypeReference<>() {});
+        return mapper.convertValue(data, new TypeReference<>() {
+        });
     }
 
     private GeneratedOrder buildOrder(GeneratedOrderType type) {
@@ -360,7 +355,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
                                                        List<Element<GeneratedOrder>> hiddenOrders,
                                                        List<Element<AdditionalApplicationsBundle>> hiddenApplications) {
         CaseData caseData = CaseData.builder()
-            .id(Long.valueOf(CASE_ID))
+            .id(CASE_ID)
             .hiddenOrders(hiddenOrders)
             .hiddenStandardDirectionOrders(hiddenSDOs)
             .hiddenCaseManagementOrders(hiddenCMOs)
@@ -375,6 +370,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
             .id(caseData.getId())
-            .data(mapper.convertValue(caseData, new TypeReference<>() {})).build();
+            .data(caseConverter.toMap(caseData))
+            .build();
     }
 }

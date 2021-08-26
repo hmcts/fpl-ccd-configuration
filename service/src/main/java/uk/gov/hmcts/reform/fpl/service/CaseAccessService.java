@@ -64,12 +64,14 @@ public class CaseAccessService {
             .build();
 
         caseAccessDataStoreApi.removeCaseUserRoles(userToken, serviceToken, caseAssignedUserRolesRequest);
+
+        log.info("User {} revoked {} to case {}", userId, caseRole, caseId);
     }
 
-    public Set<CaseRole> getUserCaseRoles(String caseId) {
+    public Set<CaseRole> getUserCaseRoles(Long caseId) {
         CaseAssignedUserRolesResource userRolesResource = caseAccessDataStoreApi.getUserRoles(
             requestData.authorisation(), authTokenGenerator.generate(),
-            List.of(caseId), List.of(requestData.userId()));
+            List.of(caseId.toString()), List.of(requestData.userId()));
 
         return userRolesResource.getCaseAssignedUserRoles().stream()
             .map(CaseAssignedUserRole::getCaseRole)
