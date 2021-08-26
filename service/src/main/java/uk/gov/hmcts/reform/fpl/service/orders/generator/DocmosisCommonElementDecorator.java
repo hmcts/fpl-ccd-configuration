@@ -66,7 +66,7 @@ public class DocmosisCommonElementDecorator {
             .children(children)
             .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
-            .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue() : null)
+            .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue(caseData.getImageLanguage()) : null)
             .build();
     }
 }

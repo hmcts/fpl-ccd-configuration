@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -1358,7 +1359,7 @@ class CaseSubmissionGenerationServiceTest {
 
         @Test
         void shouldHaveDocmosisCaseSubmissionWithDraftWatermarkWhenApplicationIsDraft() {
-            underTest.populateDraftWaterOrCourtSeal(caseSubmission, true);
+            underTest.populateDraftWaterOrCourtSeal(caseSubmission, true, Language.ENGLISH);
 
             assertThat(caseSubmission.getDraftWaterMark()).isEqualTo(DRAFT_WATERMARK.getValue());
             assertThat(caseSubmission.getCourtSeal()).isNull();
@@ -1366,7 +1367,7 @@ class CaseSubmissionGenerationServiceTest {
 
         @Test
         void shouldHaveDocmosisCaseSubmissionWithCourtSealWhenApplicationIsNotDraft() {
-            underTest.populateDraftWaterOrCourtSeal(caseSubmission, false);
+            underTest.populateDraftWaterOrCourtSeal(caseSubmission, false, Language.ENGLISH);
 
             assertThat(caseSubmission.getCourtSeal()).isEqualTo(COURT_SEAL.getValue());
             assertThat(caseSubmission.getDraftWaterMark()).isNull();

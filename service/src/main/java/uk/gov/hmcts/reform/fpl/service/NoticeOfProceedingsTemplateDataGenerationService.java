@@ -48,7 +48,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
             .hearingBooking(getHearingBooking(hearing))
             .crest(getCrestData())
-            .courtseal(getCourtSealData())
+            .courtseal(getCourtSealData(caseData.getImageLanguage()))
             .build();
     }
 

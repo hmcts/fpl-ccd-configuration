@@ -41,7 +41,7 @@ public class NoticeOfHearingGenerationService {
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor))
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .additionalNotes(hearingBooking.getAdditionalNotes())
-            .courtseal(COURT_SEAL.getValue())
+            .courtseal(COURT_SEAL.getValue(caseData.getImageLanguage()))
             .crest(CREST.getValue())
             .build();
     }

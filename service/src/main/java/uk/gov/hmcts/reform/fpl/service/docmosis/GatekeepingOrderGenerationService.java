@@ -73,7 +73,7 @@ public class GatekeepingOrderGenerationService extends
                 .crest(getCrestData());
 
         if (SEALED.equals(gatekeepingOrderSealDecision.getOrderStatus())) {
-            orderBuilder.courtseal(getCourtSealData());
+            orderBuilder.courtseal(getCourtSealData(caseData.getImageLanguage()));
             orderBuilder.dateOfIssue(formatLocalDateToString(gatekeepingOrderSealDecision.getDateOfIssue(), DATE));
         } else {
             orderBuilder.draftbackground(getDraftWaterMarkData());

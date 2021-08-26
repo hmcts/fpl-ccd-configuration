@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -128,11 +129,12 @@ public class CaseSubmissionGenerationService
         submittedCase.setCaseNumber(String.valueOf(caseNumber));
     }
 
-    public void populateDraftWaterOrCourtSeal(final DocmosisCaseSubmission caseSubmission, final boolean isDraft) {
+    public void populateDraftWaterOrCourtSeal(final DocmosisCaseSubmission caseSubmission, final boolean isDraft,
+                                              Language imageLanguage) {
         if (isDraft) {
             caseSubmission.setDraftWaterMark(getDraftWaterMarkData());
         } else {
-            caseSubmission.setCourtSeal(getCourtSealData());
+            caseSubmission.setCourtSeal(getCourtSealData(imageLanguage));
         }
     }
 
