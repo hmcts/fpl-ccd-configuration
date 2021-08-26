@@ -21,7 +21,6 @@ module.exports = {
         no: '#judicialMessageReply_isReplying_No',
       },
     },
-    closeMessageLabel: '#judicialMessageReply_closeMessageLabel',
     subject: '#judicialMessageMetaData_requestedBy',
     urgency: '#judicialMessageMetaData_urgency',
     latestMessage: '#judicialMessageNote',
