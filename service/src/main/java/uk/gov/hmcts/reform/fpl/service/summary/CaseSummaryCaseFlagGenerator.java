@@ -3,17 +3,17 @@ package uk.gov.hmcts.reform.fpl.service.summary;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
-import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Component
 public class CaseSummaryCaseFlagGenerator implements CaseSummaryFieldsGenerator {
 
-    private final DocumentUploadHelper documentUploadHelper;
+    private final UserService userService;
 
-    public CaseSummaryCaseFlagGenerator(DocumentUploadHelper documentUploadHelper) {
-        this.documentUploadHelper = documentUploadHelper;
+    public CaseSummaryCaseFlagGenerator(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -27,14 +27,16 @@ public class CaseSummaryCaseFlagGenerator implements CaseSummaryFieldsGenerator 
     }
 
     private String generateUploadedByEmail(CaseData caseData) {
-        return caseData.getCaseFlagValueUpdated() != null && caseData.getCaseFlagValueUpdated().equals(YES)
-            ? documentUploadHelper.getUploadedDocumentUserDetails()
-            : caseData.getCaseSummaryFlagAddedByEmail();
+        return caseData.getCaseFlagValueUpdated() != null
+            && caseData.getCaseFlagValueUpdated().equals(YES)
+            ? userService.getUserEmail()
+            : caseData.getSyntheticCaseSummary().getCaseSummaryFlagAddedByEmail();
     }
 
     private String generateUploadedFullName(CaseData caseData) {
-        return caseData.getCaseFlagValueUpdated() != null && caseData.getCaseFlagValueUpdated().equals(YES)
-            ? documentUploadHelper.getUploadedDocumentName()
-            : caseData.getCaseSummaryFlagAddedByFullName();
+        return caseData.getCaseFlagValueUpdated() != null
+            && caseData.getCaseFlagValueUpdated().equals(YES)
+            ? userService.getUserName()
+            : caseData.getSyntheticCaseSummary().getCaseSummaryFlagAddedByFullName();
     }
 }

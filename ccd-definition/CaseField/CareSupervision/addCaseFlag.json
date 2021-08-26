@@ -9,13 +9,13 @@
     "Searchable": "N"
   },
   {
-  "LiveFrom": "01/01/2017",
-  "CaseTypeID": "CARE_SUPERVISION_EPO",
-  "ID": "onlyHMCTSStaffLabel",
-  "FieldType": "Label",
-  "Label": "Only HMCTS staff can see this information.",
-  "SecurityClassification": "PUBLIC",
-  "Searchable": "N"
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "onlyHMCTSStaffLabel",
+    "FieldType": "Label",
+    "Label": "Only HMCTS staff can see this information.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",

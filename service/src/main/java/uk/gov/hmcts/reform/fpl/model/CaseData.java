@@ -340,8 +340,6 @@ public class CaseData {
     private final String caseFlagNotes;
     private final String caseFlagAdded;
     private YesNo caseFlagValueUpdated;
-    private final String caseSummaryFlagAddedByFullName;
-    private final String caseSummaryFlagAddedByEmail;
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());

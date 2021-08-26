@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
-import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -25,7 +25,7 @@ class CaseSummaryCaseFlagGeneratorTest {
     private static final DocumentReference RED_DOT_ASSESSMENT_FORM = DocumentReference.builder().build();
 
     @Mock
-    DocumentUploadHelper documentUploadHelper;
+    UserService userService;
 
     @InjectMocks
     CaseSummaryCaseFlagGenerator underTest;
@@ -38,8 +38,8 @@ class CaseSummaryCaseFlagGeneratorTest {
             .caseFlagValueUpdated(YES)
             .build();
 
-        when(documentUploadHelper.getUploadedDocumentName()).thenReturn(FULLNAME);
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER_EMAIL);
+        when(userService.getUserName()).thenReturn(FULLNAME);
+        when(userService.getUserEmail()).thenReturn(USER_EMAIL);
 
         SyntheticCaseSummary actual = underTest.generate(caseData);
         SyntheticCaseSummary expected = SyntheticCaseSummary.builder()
@@ -69,7 +69,7 @@ class CaseSummaryCaseFlagGeneratorTest {
             .build();
 
         assertThat(actual).isEqualTo(expected);
-        verifyNoInteractions(documentUploadHelper);
+        verifyNoInteractions(userService);
     }
 
 

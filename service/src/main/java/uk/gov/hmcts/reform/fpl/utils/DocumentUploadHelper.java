@@ -16,19 +16,10 @@ public class DocumentUploadHelper {
     private final RequestData requestData;
 
     public String getUploadedDocumentUserDetails() {
-        UserDetails userDetails = getUserDetails();
+        UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
 
         boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
 
         return isHmctsUser ? "HMCTS" : userDetails.getEmail();
-    }
-
-    public String getUploadedDocumentName() {
-        UserDetails userDetails = getUserDetails();
-        return userDetails.getFullName();
-    }
-
-    private UserDetails getUserDetails() {
-        return idamClient.getUserDetails(requestData.authorisation());
     }
 }
