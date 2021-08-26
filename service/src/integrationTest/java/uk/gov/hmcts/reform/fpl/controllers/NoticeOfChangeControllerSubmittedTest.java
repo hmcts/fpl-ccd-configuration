@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
@@ -44,8 +43,6 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
     private static final String NEW_EMAIL = "new@test.com";
     private static final String OLD_EMAIL = "old@test.com";
     private static final String ORG_NAME = "org name";
-
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     private static final RespondentParty RESPONDENT_PARTY = RespondentParty.builder()
         .firstName("John").lastName("Smith").build();
@@ -87,8 +84,6 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
     @MockBean
     private OrganisationApi orgApi;
-    @MockBean
-    private CaseAccessDataStoreApi accessApi;
 
     NoticeOfChangeControllerSubmittedTest() {
         super("noc-decision");
@@ -140,7 +135,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             ))
             .build();
 
-        verify(accessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
+        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
 
         Map<String, Object> notifyData = Map.of(
             "caseName", CASE_NAME,
@@ -194,13 +189,13 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                     NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
                     NEW_EMAIL,
                     newSolicitorParameters,
-                    NOTIFICATION_REFERENCE);
+                    notificationReference(CASE_ID));
 
                 verify(notificationClient, times(1)).sendEmail(
                     NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
                     OLD_EMAIL,
                     oldSolicitorParameters,
-                    NOTIFICATION_REFERENCE);
+                    notificationReference(CASE_ID));
             }
         );
     }
@@ -239,7 +234,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
             NEW_EMAIL,
             newSolicitorParameters,
-            NOTIFICATION_REFERENCE)
+            notificationReference(CASE_ID))
         );
     }
 

@@ -12,6 +12,7 @@ module.exports = {
         expert: `#${document}_${index}_type-EXPERT_REPORTS`,
         other: `#${document}_${index}_type-OTHER_REPORTS`,
       },
+      translationRequirement: request =>  `#${document}_${index}_translationRequirements-${request}`,
     };
   },
 };

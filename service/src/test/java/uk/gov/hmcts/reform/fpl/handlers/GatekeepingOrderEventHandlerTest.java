@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
@@ -61,7 +61,7 @@ class GatekeepingOrderEventHandlerTest {
     @Mock
     private NotificationService notificationService;
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private CafcassLookupConfiguration cafcassLookup;
     @Mock
@@ -108,11 +108,11 @@ class GatekeepingOrderEventHandlerTest {
 
         given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(NOTIFY_DATA);
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder()
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder()
                 .caseData(caseData)
-                .build())
-        ).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+                .build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         underTest.notifyLocalAuthority(event);
 
@@ -120,8 +120,7 @@ class GatekeepingOrderEventHandlerTest {
             SDO_AND_NOP_ISSUED_LA,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             NOTIFY_DATA,
-            CASE_ID.toString()
-        );
+            CASE_ID);
     }
 
     @Test
