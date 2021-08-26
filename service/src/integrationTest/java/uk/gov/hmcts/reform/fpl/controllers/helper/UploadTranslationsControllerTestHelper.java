@@ -5,6 +5,8 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -49,8 +51,12 @@ public class UploadTranslationsControllerTestHelper {
     public static final UUID UUID_9 = UUID.randomUUID();
     public static final UUID UUID_10 = UUID.randomUUID();
     public static final UUID UUID_11 = UUID.randomUUID();
+    public static final UUID UUID_RESPONDENT = UUID.randomUUID();
 
     public static final CaseData CASE_DATA_WITH_ALL_ORDERS = CaseData.builder()
+        .respondents1(List.of(element(UUID_RESPONDENT, Respondent.builder()
+            .party(RespondentParty.builder().lastName("Respondent 1").build())
+            .build())))
         .c110A(C110A.builder()
             .submittedFormTranslationRequirements(ENGLISH_TO_WELSH)
             .build())
@@ -117,6 +123,8 @@ public class UploadTranslationsControllerTestHelper {
         ))
         .respondentStatements(List.of(
             element(UUID_9, RespondentStatement.builder()
+                .respondentId(UUID_RESPONDENT)
+                .respondentName("Respondent 1")
                 .supportingEvidenceBundle(List.of(
                     element(UUID_10, SupportingEvidenceBundle.builder()
                         .name("Document 2")

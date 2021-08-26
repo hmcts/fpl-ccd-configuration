@@ -12,11 +12,4 @@ public class SendDocumentRequest {
     CaseData caseData;
     List<DocumentReferenceWithLanguage> documentToBeSent;
     List<Recipient> parties;
-
-    public SendDocumentRequest(CaseData caseData, List<DocumentReferenceWithLanguage> documentToBeSent,
-                               List<Recipient> parties) {
-        this.caseData = caseData;
-        this.documentToBeSent = documentToBeSent;
-        this.parties = parties;
-    }
 }

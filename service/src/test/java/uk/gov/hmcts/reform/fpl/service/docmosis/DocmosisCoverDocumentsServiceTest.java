@@ -44,7 +44,7 @@ class DocmosisCoverDocumentsServiceTest {
     @Test
     void shouldGenerateExpectedDocumentWhenAllDataProvided() {
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), eq(COVER_DOCS),
-            eq(RenderFormat.PDF), eq(Language.ENGLISH))).willReturn(docmosisDocument);
+            eq(RenderFormat.PDF), eq(LANGUAGE))).willReturn(docmosisDocument);
 
         DocmosisDocument pdfDocument = underTest.createCoverDocuments(
             FAMILY_MAN_NUMBER,

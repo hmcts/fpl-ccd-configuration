@@ -37,7 +37,6 @@ class LocalAuthorityDetailsCheckerTest {
 
         assertThat(underTest.validate(caseData)).containsExactly(
             "Enter local authority's name",
-            "Enter local authority's group email address",
             "Enter local authority's pba number",
             "Enter local authority's address",
             "Enter local authority's phone number",

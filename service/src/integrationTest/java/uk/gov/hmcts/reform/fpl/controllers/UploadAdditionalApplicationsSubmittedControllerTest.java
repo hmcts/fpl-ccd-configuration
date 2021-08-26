@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -72,7 +71,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -129,8 +127,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private SendLetterApi sendLetterApi;
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -194,8 +190,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
-        given(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).willReturn(true);
-
         List<Element<Respondent>> respondents = List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
             RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT);
         CaseData caseData = CaseData.builder().id(CASE_ID)
@@ -222,7 +216,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         postSubmittedEvent(caseData);
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq(COURT_1.getEmail()),
             anyMap(),
             eq(notificationReference(CASE_ID))
@@ -272,12 +266,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWithUpdatedTemplateWhenOthersToggleIsEnabled() {
-        when(featureToggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
+    void submittedEventShouldNotifyCtscAdminWithUpdatedTemplate() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(notificationReference(CASE_ID))
@@ -287,21 +280,12 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
-        checkUntil(() -> {
-            verify(notificationClient).sendEmail(
-                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-                eq("FamilyPublicLaw+ctsc@gmail.com"),
-                anyMap(),
-                eq(notificationReference(CASE_ID))
-            );
-
-            verify(notificationClient, never()).sendEmail(
-                eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-                eq(COURT_1.getEmail()),
-                anyMap(),
-                eq(notificationReference(CASE_ID))
-            );
-        });
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(notificationReference(CASE_ID))
+        ));
     }
 
     @Test

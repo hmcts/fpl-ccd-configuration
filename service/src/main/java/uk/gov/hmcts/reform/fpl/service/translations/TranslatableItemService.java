@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -45,7 +47,7 @@ public class TranslatableItemService {
             .map(provider -> provider.provideListItems(caseData))
             .flatMap(Collection::stream)
             .filter(item -> !item.getValue().hasBeenTranslated())
-            .filter(item -> item.getValue().getTranslationRequirements().isNeedAction())
+            .filter(item -> defaultIfNull(item.getValue().getTranslationRequirements(), NO).isNeedAction())
             .collect(Collectors.toList());
 
         return listService.asDynamicList(

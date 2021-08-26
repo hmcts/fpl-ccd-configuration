@@ -15,13 +15,12 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -31,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,14 +52,13 @@ public class DraftOrdersApprovedEventHandler {
     private final CourtService courtService;
     private final NotificationService notificationService;
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final RepresentativeNotificationService representativeNotificationService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final SendDocumentService sendDocumentService;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final TranslationRequestService translationRequestService;
-    private final FeatureToggleService toggleService;
 
     @Async
     @EventListener
@@ -77,21 +76,24 @@ public class DraftOrdersApprovedEventHandler {
 
         String adminEmail = courtService.getCourtEmail(caseData);
 
-        Collection<String> localAuthorityEmails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
+
+        final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
             adminEmail,
             content,
-            caseData.getId().toString()
+            caseData.getId()
         );
 
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
             localAuthorityEmails,
             content,
-            caseData.getId().toString()
+            caseData.getId()
         );
     }
 
@@ -114,7 +116,7 @@ public class DraftOrdersApprovedEventHandler {
             JUDGE_APPROVES_DRAFT_ORDERS,
             cafcassEmail,
             content,
-            caseData.getId().toString()
+            caseData.getId()
         );
     }
 
@@ -129,14 +131,13 @@ public class DraftOrdersApprovedEventHandler {
             .map(Element::getValue)
             .orElse(null);
 
-        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
-                DIGITAL_SERVICE, caseData, approvedOrders.get(0).getSelectedOthers(),
-                element -> element.getValue().getEmail()
-            );
-            digitalRepresentatives.removeAll(otherRecipientsNotNotified);
-        }
+        Set<String> digitalRepresentatives = new LinkedHashSet<>(
+            representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE));
+        Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+            DIGITAL_SERVICE, caseData, approvedOrders.get(0).getSelectedOthers(),
+            element -> element.getValue().getEmail()
+        );
+        digitalRepresentatives.removeAll(otherRecipientsNotNotified);
 
         if (!digitalRepresentatives.isEmpty()) {
             NotifyData content = contentProvider.buildOrdersApprovedContent(
@@ -164,13 +165,12 @@ public class DraftOrdersApprovedEventHandler {
 
         NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
 
-        Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
-                EMAIL, caseData, approvedOrders.get(0).getSelectedOthers(), element -> element.getValue().getEmail()
-            );
-            emailRepresentatives.removeAll(otherRecipientsNotNotified);
-        }
+        Set<String> emailRepresentatives = new LinkedHashSet<>(
+            representativesInbox.getEmailsByPreference(caseData, EMAIL));
+        Set<String> otherRecipientsNotNotified = otherRecipientsInbox.getNonSelectedRecipients(
+            EMAIL, caseData, approvedOrders.get(0).getSelectedOthers(), element -> element.getValue().getEmail()
+        );
+        emailRepresentatives.removeAll(otherRecipientsNotNotified);
 
         if (!emailRepresentatives.isEmpty()) {
             representativeNotificationService.sendNotificationToRepresentatives(
@@ -195,15 +195,13 @@ public class DraftOrdersApprovedEventHandler {
 
         final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
 
-        if (toggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            List<Element<Other>> othersSelected = event.getApprovedOrders().get(0).getSelectedOthers();
-            Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
-                POST, caseData, othersSelected, Element::getValue
-            );
-            recipients.removeAll(nonSelectedRecipients);
+        List<Element<Other>> othersSelected = event.getApprovedOrders().get(0).getSelectedOthers();
+        Set<Recipient> nonSelectedRecipients = otherRecipientsInbox.getNonSelectedRecipients(
+            POST, caseData, othersSelected, Element::getValue
+        );
+        recipients.removeAll(nonSelectedRecipients);
 
-            recipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
-        }
+        recipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(othersSelected));
         sendDocumentService.sendDocuments(caseData, documents, recipients);
     }
 

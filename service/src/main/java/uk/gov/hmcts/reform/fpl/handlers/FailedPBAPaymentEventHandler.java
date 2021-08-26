@@ -10,9 +10,9 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 
@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FailedPBAPaymentEventHandler {
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final NotificationService notificationService;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final FailedPBAPaymentContentProvider notificationContent;
@@ -40,11 +40,13 @@ public class FailedPBAPaymentEventHandler {
     public void notifyApplicant(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
         if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
-            notifyLocalAuthority(event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
+            notifyDesignatedLocalAuthority(event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
         } else {
             OrderApplicant applicant = event.getApplicant();
             if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
-                notifyLocalAuthority(event, INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT);
+                notifyDesignatedLocalAuthority(event, INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT);
+            } else if (applicant.getType() == ApplicantType.SECONDARY_LOCAL_AUTHORITY) {
+                notifySecondaryLocalAuthority(event, INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT);
             } else {
                 Map<String, String> emails = getRespondentsEmails(caseData);
                 if (isNotEmpty(emails.get(applicant.getName()))) {
@@ -54,19 +56,35 @@ public class FailedPBAPaymentEventHandler {
         }
     }
 
-    private void notifyLocalAuthority(FailedPBAPaymentEvent event, String template) {
-        CaseData caseData = event.getCaseData();
+    private void notifyDesignatedLocalAuthority(FailedPBAPaymentEvent event, String template) {
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .legalRepresentativesExcluded(true)
+            .secondaryLocalAuthorityExcluded(true)
+            .caseData(event.getCaseData())
+            .build();
 
-        FailedPBANotificationData parameters = notificationContent
+        notifyLocalAuthority(event, template, recipientsRequest);
+    }
+
+    private void notifySecondaryLocalAuthority(FailedPBAPaymentEvent event, String template) {
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .legalRepresentativesExcluded(true)
+            .designatedLocalAuthorityExcluded(true)
+            .caseData(event.getCaseData())
+            .build();
+
+        notifyLocalAuthority(event, template, recipientsRequest);
+    }
+
+    private void notifyLocalAuthority(FailedPBAPaymentEvent event, String template, RecipientsRequest request) {
+        final CaseData caseData = event.getCaseData();
+
+        final FailedPBANotificationData parameters = notificationContent
             .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder()
-                .excludeLegalRepresentatives(true)
-                .caseData(caseData)
-                .build());
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(request);
 
-        notificationService.sendEmail(template, emails, parameters, caseData.getId().toString());
+        notificationService.sendEmail(template, recipients, parameters, caseData.getId().toString());
     }
 
     private void notifyRespondent(FailedPBAPaymentEvent event, String email) {

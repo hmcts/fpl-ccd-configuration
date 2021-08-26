@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -89,7 +89,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .thenReturn(newHashSet("resp@example.com"));
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
+            CASE_DATA, CASE_DATA_BEFORE, DESIGNATED_LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
@@ -119,7 +119,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .thenReturn(newHashSet("resp@example.com"));
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
-            CASE_DATA, CASE_DATA_BEFORE, LOCAL_AUTHORITY,
+            CASE_DATA, CASE_DATA_BEFORE, DESIGNATED_LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
 
