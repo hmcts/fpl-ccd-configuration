@@ -27,11 +27,11 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -104,7 +104,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Mock
     private AdditionalApplicationsUploadedEmailContentProvider contentProvider;
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private RepresentativesInbox representativesInbox;
     @Mock
@@ -195,16 +195,16 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .build()
         ));
         given(caseData.getCaseLocalAuthorityName()).willReturn(LOCAL_AUTHORITY_NAME);
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
-        )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(localAuthorityRecipients.getRecipients(any())).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
 
-        verify(notificationService).sendEmail(
-            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            notifyData, CASE_ID.toString()
-        );
+        final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
+
+        verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
     }
 
     @Test
@@ -364,9 +364,9 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
         given(courtService.getCourtEmail(caseData)).willReturn("Ctsc+test@gmail.com");
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
-        )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
 

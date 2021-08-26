@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -65,7 +66,7 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
             RenderFormat.PDF.getMediaType()))
             .thenReturn(UPLOADED_TRANSFORMED_DOCUMENT);
 
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
             CASE_DATA_WITH_ALL_ORDERS.toBuilder()
                 .uploadTranslationsEventData(UploadTranslationsEventData.builder()
                     .uploadTranslationsRelatedToDocument(RENDERED_DYNAMIC_LIST.toBuilder()
@@ -77,7 +78,9 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
                     .uploadTranslationsTranslatedDoc(TEST_DOCUMENT)
                     .build())
                 .build()
-        ));
+        );
+
+        CaseData updatedCaseData = extractCaseData(response);
 
         assertThat(updatedCaseData).isEqualTo(CASE_DATA_WITH_ALL_ORDERS.toBuilder()
             .noticeOfProceedingsBundle(List.of(element(UUID_3, DocumentBundle.builder()
@@ -95,6 +98,11 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .build()
             ))).build());
+
+        assertThat(response.getData().get("documentViewLA")).isNotNull();
+        assertThat(response.getData().get("documentViewHMCTS")).isNotNull();
+        assertThat(response.getData().get("documentViewNC")).isNotNull();
+        assertThat(response.getData().get("showFurtherEvidenceTab")).isNotNull();
 
     }
 

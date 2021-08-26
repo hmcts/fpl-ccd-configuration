@@ -21,7 +21,7 @@ public class LocalAuthorityEmailLookupConfiguration {
             checkNotNull(emptyToNull(value), "Local Authority name cannot be empty"));
     }
 
-    public Optional<String> getLocalAuthority(String localAuthorityCode) {
+    public Optional<String> getSharedInbox(String localAuthorityCode) {
         checkNotNull(localAuthorityCode, "Local authority code cannot be null");
         return Optional.ofNullable(mapping.get(localAuthorityCode));
     }
