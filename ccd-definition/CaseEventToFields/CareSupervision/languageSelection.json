@@ -34,7 +34,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "languageRequirementApplication=\"ENGLISH\"",
+    "FieldShowCondition": "languageRequirement=\"Yes\" AND languageRequirementApplication=\"ENGLISH\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -47,7 +47,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "languageRequirementApplication=\"WELSH\"",
+    "FieldShowCondition": "languageRequirement=\"Yes\" AND languageRequirementApplication=\"WELSH\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
