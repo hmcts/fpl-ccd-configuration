@@ -7,6 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -188,6 +189,7 @@ public class DraftOrdersApprovedEventHandler {
 
         final List<DocumentReference> documents = event.getApprovedOrders()
             .stream()
+            .filter(order -> order.getNeedTranslation() == YesNo.NO)
             .map(HearingOrder::getOrder)
             .collect(Collectors.toList());
 
