@@ -5,10 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -23,8 +21,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.LegalCounsellorTestHelper.buildLegalCounsellor;
@@ -34,8 +30,6 @@ import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondents;
 @OverrideAutoConfiguration(enabled = true)
 class ManageLegalCounselControllerTest extends AbstractCallbackTest {
 
-    @MockBean
-    private CaseAccessDataStoreApi caseDataAccessApi;
 
     @MockBean
     private OrganisationService organisationService;
@@ -43,26 +37,18 @@ class ManageLegalCounselControllerTest extends AbstractCallbackTest {
     private CaseData caseData;
     private LegalCounsellor legalCounsellor;
 
-    protected ManageLegalCounselControllerTest() {
+    ManageLegalCounselControllerTest() {
         super("manage-legal-counsel");
     }
 
     @BeforeEach
     void setUp() {
-        caseData = CaseData.builder().id(TEST_CASE_ID_AS_LONG).respondents1(respondents()).build();
+        caseData = CaseData.builder().id(TEST_CASE_ID).respondents1(respondents()).build();
         legalCounsellor = buildLegalCounsellor("1");
 
         givenFplService();
 
-        when(caseDataAccessApi.getUserRoles(
-            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, List.of(TEST_CASE_ID), List.of(USER_ID)
-        )).thenReturn(
-            CaseAssignedUserRolesResource.builder()
-                .caseAssignedUserRoles(List.of(
-                    CaseAssignedUserRole.builder().caseRole(SOLICITORA.getCaseRoleLabel()).build()
-                ))
-                .build()
-        );
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
 
         when(organisationService.findUserByEmail(legalCounsellor.getEmail())).thenReturn(Optional.of(USER_ID));
     }

@@ -42,10 +42,14 @@ public class UserService {
         return roles != null && roles.contains(HMCTS_ADMIN.getRoleName());
     }
 
-    public boolean hasAnyCaseRoleFrom(List<CaseRole> caseRoles, String caseId) {
-        Set<CaseRole> userRoles = caseAccessService.getUserCaseRoles(caseId);
+    public boolean hasAnyCaseRoleFrom(List<CaseRole> caseRoles, Long caseId) {
+        final Set<CaseRole> userCaseRoles = getCaseRoles(caseId);
 
-        return caseRoles.stream().anyMatch(userRoles::contains);
+        return getCaseRoles(caseId).stream().anyMatch(caseRoles::contains);
+    }
+
+    public Set<CaseRole> getCaseRoles(Long caseId) {
+        return caseAccessService.getUserCaseRoles(caseId);
     }
 
     public UserDetails getUserDetailsById(String userId) {

@@ -18,7 +18,7 @@ class LocalAuthorityEmailLookupConfigurationTest {
     @Test
     void shouldReturnLocalAuthorityDetailsWhenLocalAuthorityCodeExists() {
         Optional<String> localAuthority =
-            configuration.getLocalAuthority(LOCAL_AUTHORITY_CODE);
+            configuration.getSharedInbox(LOCAL_AUTHORITY_CODE);
 
         assertThat(localAuthority).contains(LOCAL_AUTHORITY_EMAIL);
     }
