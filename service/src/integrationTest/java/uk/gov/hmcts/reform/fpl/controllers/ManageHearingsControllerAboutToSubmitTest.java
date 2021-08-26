@@ -270,7 +270,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
                 .caseManagementOrderId(draftCMOId)
                 .status(HearingStatus.VACATED_AND_RE_LISTED)
                 .cancellationReason(vacatedReason.getReason())
-                .vacatedDate(now())
+                .vacatedDate(vacatedHearingDate)
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
@@ -384,7 +384,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             futureHearingToBeAdjourned.getValue().toBuilder()
                 .status(adjournmentOption == RE_LIST_LATER ? VACATED_TO_BE_RE_LISTED : VACATED)
                 .cancellationReason(vacatedReason.getReason())
-                .vacatedDate(now())
+                .vacatedDate(vacatedHearingDate)
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).isNull();

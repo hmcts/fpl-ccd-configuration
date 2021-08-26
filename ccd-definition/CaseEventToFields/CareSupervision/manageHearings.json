@@ -256,17 +256,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "vacatedHearing",
-    "PageFieldDisplayOrder": 3,
-    "DisplayContext": "READONLY",
-    "PageID": "SelectReListOption",
-    "PageDisplayOrder": 3,
-    "FieldShowCondition": "vacatePastHearingWarning=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingReListOption",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",

@@ -27,6 +27,8 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -112,10 +114,6 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors = validateGroupService.validateGroup(caseData, HearingBookingGroup.class);
 
-        if (!errors.isEmpty()) {
-            return respond(caseDetails, errors);
-        }
-
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
             caseDetails.getData()
@@ -154,7 +152,8 @@ public class ManageHearingsController extends CallbackController {
                 .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
                 .orElse(HearingBooking.builder().build());
 
-            caseDetails.getData().put("vacatedHearing", hearingBooking);
+            errors.addAll(pastHearingDatesValidatorService.validateVacatedDate(hearingBooking.getEndDate(),
+                caseData.getVacatedHearingDate()));
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
             if (isEmpty(caseData.getToBeReListedHearings())) {
                 return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
@@ -225,8 +224,10 @@ public class ManageHearingsController extends CallbackController {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
                 caseData.getHearingEndDate());
         } else {
-            errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
-                caseData.getHearingEndDate(), caseData.getVacatedHearing());
+            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+            if (errors.isEmpty()) {
+                errors = validateGroupService.validateGroup(caseData, HearingEndDateGroup.class);
+            }
         }
 
         caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(

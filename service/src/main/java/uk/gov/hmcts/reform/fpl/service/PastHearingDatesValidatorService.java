@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,26 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PastHearingDatesValidatorService {
     private static final LocalTime MIDNIGHT = LocalTime.of(0, 0, 0);
-
-    public List<String> validateHearingDates(LocalDateTime hearingStartDate, LocalDateTime hearingEndDate,
-                                             HearingBooking vacatedHearing) {
-
-        List<String> errors = validateHearingDates(hearingStartDate, hearingEndDate);
-
-        if (hearingStartDate.isBefore(LocalDateTime.now())) {
-            errors.add("Enter a start date in the future");
-        }
-
-        if (hearingEndDate.isBefore(LocalDateTime.now())) {
-            errors.add("Enter an end date in the future");
-        }
-
-        if (vacatedHearing != null && hearingEndDate.isBefore(vacatedHearing.getEndDate())) {
-            errors.add("The end date must be after the vacated hearing");
-        }
-
-        return errors;
-    }
 
     public List<String> validateHearingDates(LocalDateTime hearingStartDate, LocalDateTime hearingEndDate) {
         List<String> errors = new ArrayList<>();

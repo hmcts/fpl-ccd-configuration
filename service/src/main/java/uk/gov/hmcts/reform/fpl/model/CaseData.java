@@ -975,7 +975,7 @@ public class CaseData {
     private final HearingCancellationReason adjournmentReason;
     private final HearingCancellationReason vacatedReason;
     @JsonProperty
-    private final HearingBooking vacatedHearing;
+    private final LocalDate vacatedHearingDate;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
 

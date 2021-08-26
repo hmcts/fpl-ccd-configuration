@@ -1067,7 +1067,7 @@ class ManageHearingsServiceTest {
 
     @Nested
     class Vacating {
-        private final LocalDateTime vacatedDate = time.now();
+        private final LocalDate vacatedDate = time.now().minusDays(1).toLocalDate();
 
         @Test
         void shouldVacateHearingToBeReListedLater() {
@@ -1620,7 +1620,7 @@ class ManageHearingsServiceTest {
             "hearingDateList",
             "pastAndTodayHearingDateList",
             "toVacateHearingDateList",
-            "vacatedHearing",
+            "vacatedHearingDate",
             "hasHearingsToAdjourn",
             "hasHearingsToVacate",
             "hasExistingHearings",
