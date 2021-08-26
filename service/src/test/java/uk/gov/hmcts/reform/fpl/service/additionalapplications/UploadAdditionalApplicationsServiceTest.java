@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -115,8 +116,8 @@ class UploadAdditionalApplicationsServiceTest {
     void init() {
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
-        given(documentSealingService.sealDocument(DOCUMENT)).willReturn(SEALED_CONVERTED_DOCUMENT);
-        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT)).willReturn(SEALED_SUPPLEMENT_DOCUMENT);
+        given(documentSealingService.sealDocument(DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_CONVERTED_DOCUMENT);
+        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test

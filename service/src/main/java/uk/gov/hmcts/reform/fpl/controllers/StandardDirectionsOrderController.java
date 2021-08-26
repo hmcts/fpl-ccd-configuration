@@ -295,7 +295,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                 caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
                 break;
             case UPLOAD:
-                order = sdoService.buildOrderFromUpload(caseData.getStandardDirectionOrder());
+                order = sdoService.buildOrderFromUpload(caseData.getStandardDirectionOrder(), caseData.getSealType());
                 caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
                 break;
         }

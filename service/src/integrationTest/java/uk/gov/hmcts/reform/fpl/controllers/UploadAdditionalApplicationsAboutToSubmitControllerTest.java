@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -90,7 +91,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void before() {
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(documentSealingService.sealDocument(uploadedDocument)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument(uploadedDocument, SealType.ENGLISH)).willReturn(sealedDocument);
     }
 
     @Test

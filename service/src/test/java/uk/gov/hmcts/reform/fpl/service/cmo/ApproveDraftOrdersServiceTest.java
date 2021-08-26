@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -417,7 +418,8 @@ class ApproveDraftOrdersServiceTest {
 
         given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
         given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(emptyList());
-        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified))
+        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified,
+            SealType.ENGLISH))
             .willReturn(element(agreedCMO.getId(), expectedCmo));
 
         Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
@@ -512,7 +514,8 @@ class ApproveDraftOrdersServiceTest {
         Element<GeneratedOrder> expectedBlankOrder = element(UUID.randomUUID(),
             GeneratedOrder.builder().type(String.valueOf(C21)).build());
 
-        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), ""))
+        given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), "",
+            SealType.ENGLISH))
             .willReturn(expectedSealedOrder);
         given(blankOrderGenerator.buildBlankOrder(
             caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))
@@ -611,7 +614,8 @@ class ApproveDraftOrdersServiceTest {
             .hearingDetails(emptyList())
             .build();
 
-        given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq("")))
+        given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq(""),
+            SealType.ENGLISH))
             .willReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,

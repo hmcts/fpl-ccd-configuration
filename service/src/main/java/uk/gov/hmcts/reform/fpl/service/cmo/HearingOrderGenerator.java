@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -27,7 +28,8 @@ public class HearingOrderGenerator {
     public Element<HearingOrder> buildSealedHearingOrder(ReviewDecision reviewDecision,
                                                          Element<HearingOrder> hearingOrderElement,
                                                          List<Element<Other>> selectedOthers,
-                                                         String othersNotified) {
+                                                         String othersNotified,
+                                                         SealType sealType) {
         DocumentReference order;
 
         if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
@@ -39,7 +41,7 @@ public class HearingOrderGenerator {
         return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
-            .order(documentSealingService.sealDocument(order))
+            .order(documentSealingService.sealDocument(order, sealType))
             .lastUploadedOrder(order)
             .others(selectedOthers)
             .othersNotified(othersNotified)

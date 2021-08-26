@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -70,14 +71,14 @@ public class StandardDirectionsOrderService {
         return builder.build();
     }
 
-    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) {
+    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder, SealType sealType) {
         UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
 
         return StandardDirectionOrder.builder()
             .orderStatus(currentOrder.getOrderStatus())
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userInfo.getName())
-            .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus()))
+            .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus(), sealType))
             .lastUploadedOrder(currentOrder.isSealed() ? currentOrder.getOrderDoc() : null)
             .judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor()).build();
     }
@@ -112,10 +113,10 @@ public class StandardDirectionsOrderService {
         return judgeAndLegalAdvisor;
     }
 
-    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status) {
+    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status, SealType sealType) {
         if (status != OrderStatus.SEALED) {
             return document;
         }
-        return sealingService.sealDocument(document);
+        return sealingService.sealDocument(document, sealType);
     }
 }

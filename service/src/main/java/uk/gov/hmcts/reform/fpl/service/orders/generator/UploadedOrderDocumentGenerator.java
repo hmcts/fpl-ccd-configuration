@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -30,7 +29,7 @@ public class UploadedOrderDocumentGenerator {
             bytes = documentConversionService.convertToPdf(bytes, documentReference.getFilename());
 
             if (needSealing(caseData, status)) {
-                bytes = documentSealingService.sealDocument(bytes, SealType.ENGLISH);
+                bytes = documentSealingService.sealDocument(bytes, caseData.getSealType());
             }
 
             return new OrderDocumentGeneratorResult(bytes, RenderFormat.PDF);

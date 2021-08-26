@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -132,14 +133,15 @@ public class UploadAdditionalApplicationsService {
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
 
-        DocumentReference sealedDocument = documentSealingService.sealDocument(temporaryC2Document.getDocument());
+        DocumentReference sealedDocument = documentSealingService.sealDocument(temporaryC2Document.getDocument(),
+            caseData.getSealType());
 
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime);
 
         List<Element<Supplement>> updatedSupplementsBundle =
             getSupplementsBundle(defaultIfNull(temporaryC2Document.getSupplementsBundle(), emptyList()),
-                uploadedBy, uploadedTime);
+                uploadedBy, uploadedTime, SealType.ENGLISH);
 
         return temporaryC2Document.toBuilder()
             .id(UUID.randomUUID())
@@ -167,13 +169,13 @@ public class UploadAdditionalApplicationsService {
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
 
         DocumentReference sealedDocument =
-            documentSealingService.sealDocument(temporaryOtherApplicationsBundle.getDocument());
+            documentSealingService.sealDocument(temporaryOtherApplicationsBundle.getDocument(), caseData.getSealType());
 
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
             temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy, uploadedTime);
 
         List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
-            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime);
+            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime, SealType.ENGLISH);
 
         return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
@@ -209,12 +211,13 @@ public class UploadAdditionalApplicationsService {
     }
 
     private List<Element<Supplement>> getSupplementsBundle(
-        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime) {
+        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime, SealType sealType) {
 
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
-            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument());
+            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
+                sealType);
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
                 .document(sealedDocument)
                 .dateTimeUploaded(dateTime)

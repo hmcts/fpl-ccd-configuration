@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -176,7 +177,7 @@ class StandardDirectionsOrderServiceTest {
         mockIdamAndRequestData();
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, DRAFT, judgeAndLegalAdvisor);
 
-        StandardDirectionOrder builtOrder = service.buildOrderFromUpload(order);
+        StandardDirectionOrder builtOrder = service.buildOrderFromUpload(order, SealType.ENGLISH);
 
         StandardDirectionOrder expectedOrder = buildStandardDirectionOrder(
             WORD_DOC, null, DRAFT, TIME.now().toLocalDate(), USER_NAME, judgeAndLegalAdvisor
@@ -192,7 +193,7 @@ class StandardDirectionsOrderServiceTest {
         mockIdamAndRequestData();
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED, judgeAndLegalAdvisor);
 
-        StandardDirectionOrder builtOrder = service.buildOrderFromUpload(order);
+        StandardDirectionOrder builtOrder = service.buildOrderFromUpload(order, SealType.ENGLISH);
 
         StandardDirectionOrder expectedOrder = buildStandardDirectionOrder(
             SEALED_DOC, WORD_DOC, SEALED, TIME.now().toLocalDate(), USER_NAME, judgeAndLegalAdvisor
@@ -200,27 +201,27 @@ class StandardDirectionsOrderServiceTest {
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
 
-        verify(sealingService).sealDocument(WORD_DOC);
+        verify(sealingService).sealDocument(WORD_DOC, SealType.ENGLISH);
     }
 
     @Test
     void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() {
-        given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
+        given(sealingService.sealDocument(WORD_DOC, SealType.ENGLISH)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED, judgeAndLegalAdvisor);
-        StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
+        StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order, SealType.ENGLISH);
 
         assertThat(standardDirectionOrder.getOrderDoc()).isEqualTo(SEALED_DOC);
     }
 
     @Test
     void shouldPersistJudgeAndLegalAdvisorWhenSendingNoticeOfProceedings() {
-        given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
+        given(sealingService.sealDocument(WORD_DOC, SealType.ENGLISH)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED, judgeAndLegalAdvisor);
-        StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
+        StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order, SealType.ENGLISH);
 
         assertThat(standardDirectionOrder.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
     }
@@ -338,7 +339,7 @@ class StandardDirectionsOrderServiceTest {
     }
 
     private void mockSealingService() {
-        given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
+        given(sealingService.sealDocument(WORD_DOC, SealType.ENGLISH)).willReturn(SEALED_DOC);
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {

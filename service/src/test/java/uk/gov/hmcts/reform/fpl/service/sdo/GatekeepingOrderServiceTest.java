@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -870,7 +871,7 @@ class GatekeepingOrderServiceTest {
         @BeforeEach
         void init() {
             when(userService.getUserName()).thenReturn(userName);
-            when(sealingService.sealDocument(uploadedOrder)).thenReturn(sealedOrder);
+            when(sealingService.sealDocument(uploadedOrder, SealType.ENGLISH)).thenReturn(sealedOrder);
         }
 
         @Test
@@ -929,7 +930,7 @@ class GatekeepingOrderServiceTest {
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
-            verify(sealingService).sealDocument(uploadedOrder);
+            verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
         }
 
         @Test
@@ -961,7 +962,7 @@ class GatekeepingOrderServiceTest {
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
-            verify(sealingService).sealDocument(uploadedOrder);
+            verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
         }
     }
 
