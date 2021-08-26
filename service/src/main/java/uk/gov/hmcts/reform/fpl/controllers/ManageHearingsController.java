@@ -114,6 +114,10 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors = validateGroupService.validateGroup(caseData, HearingBookingGroup.class);
 
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
+
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
             caseDetails.getData()
