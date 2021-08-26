@@ -63,39 +63,39 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ContextConfiguration(classes = {
-    OrderCreationService.class,
-    OrderDocumentGenerator.class,
-    DocmosisDocumentGeneratorService.class,
-    OrderDocumentGeneratorHolder.class,
-    DocmosisCommonElementDecorator.class,
-    CaseDataExtractionService.class,
     AppointedGuardianFormatter.class,
     C21BlankOrderDocumentParameterGenerator.class,
+    C23EPOAdditionalDocumentsCollector.class,
     C23EPODocumentParameterGenerator.class,
     C26SecureAccommodationOrderDocumentParameterGenerator.class,
     C29RecoveryOfAChildDocumentParameterGenerator.class,
-    C32CareOrderDocumentParameterGenerator.class,
     C32bDischargeOfCareOrderDocumentParameterGenerator.class,
+    C32CareOrderDocumentParameterGenerator.class,
     C33InterimCareOrderDocumentParameterGenerator.class,
     C35aSupervisionOrderDocumentParameterGenerator.class,
     C35bISODocumentParameterGenerator.class,
-    C43ChildArrangementOrderDocumentParameterGenerator.class,
     C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
+    C43ChildArrangementOrderDocumentParameterGenerator.class,
+    C43ChildArrangementOrderTitleGenerator.class,
     C45aParentalResponsibilityOrderDocumentParameterGenerator.class,
     C47AAppointmentOfAChildrensGuardianParameterGenerator.class,
-    C23EPOAdditionalDocumentsCollector.class,
-    ManageOrderDocumentService.class,
-    OrderMessageGenerator.class,
-    ManageOrderDocumentService.class,
-    OrderMessageGenerator.class,
-    C43ChildArrangementOrderTitleGenerator.class,
-    OrderDetailsWithEndTypeGenerator.class,
-    UploadedOrderDocumentGenerator.class,
-    DocumentSealingService.class,
+    CaseDataExtractionService.class,
     ChildrenSmartSelector.class,
     ChildSelectionUtils.class,
+    DocmosisCommonElementDecorator.class,
+    DocmosisDocumentGeneratorService.class,
     DocmosisHelper.class,
-    ChildSelectionUtils.class
+    DocumentSealingService.class,
+    ManageOrderDocumentService.class,
+    ManageOrderDocumentService.class,
+    OrderCreationService.class,
+    OrderDetailsWithEndTypeGenerator.class,
+    OrderDocumentGenerator.class,
+    OrderDocumentGeneratorHolder.class,
+    OrderMessageGenerator.class,
+    OrderMessageGenerator.class,
+    UploadedOrderDocumentGenerator.class
+
 })
 @MockBeans({@MockBean(DocumentDownloadService.class)})
 class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
@@ -170,5 +170,4 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
         String text = docmosisHelper.extractPdfContent(bytes);
         return docmosisHelper.remove(text, ignores);
     }
-
 }
