@@ -9,10 +9,10 @@ import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRejected;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 
@@ -28,7 +28,7 @@ public class DraftOrdersRejectedEventHandler {
 
     private final NotificationService notificationService;
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @Async
     @EventListener
@@ -41,13 +41,17 @@ public class DraftOrdersRejectedEventHandler {
             .map(Element::getValue)
             .orElse(null);
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
+
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         final RejectedOrdersTemplate content = contentProvider.buildOrdersRejectedContent(
             caseData, hearing, rejectedOrders
         );
 
-        notificationService.sendEmail(JUDGE_REJECTS_DRAFT_ORDERS, emails, content, caseData.getId().toString());
+        notificationService.sendEmail(JUDGE_REJECTS_DRAFT_ORDERS, recipients, content, caseData.getId());
     }
 }

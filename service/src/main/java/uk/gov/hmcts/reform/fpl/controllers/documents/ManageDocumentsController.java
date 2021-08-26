@@ -11,7 +11,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
@@ -35,8 +38,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.HMCTS;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
@@ -83,7 +84,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentType type = caseData.getManageDocument().getType();
-        boolean isSolicitor = isSolicitor(caseData.getId());
+        boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData.getId()));
 
         if (isSolicitor && userService.isHmctsUser()) {
             throw new IllegalStateException(
@@ -115,7 +116,8 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        boolean isSolicitor = isSolicitor(caseData.getId());
+        boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData.getId()));
+        ;
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
@@ -154,7 +156,8 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        boolean isSolicitor = isSolicitor(caseData.getId());
+        boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData.getId()));
+        ;
 
         ManageDocumentType manageDocumentType = caseData.getManageDocument().getType();
         List<Element<SupportingEvidenceBundle>> currentBundle;
@@ -224,19 +227,26 @@ public class ManageDocumentsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         CaseData caseData = getCaseData(request);
-        boolean isSolicitor = isSolicitor(caseData.getId());
-        boolean featureToggleValue = !isSolicitor || this.featureToggleService.isNewDocumentUploadNotificationEnabled();
 
-        if (featureToggleValue) {
+        DocumentUploaderType userType = getUploaderType(caseData.getId());
+
+        if (!DocumentUploaderType.SOLICITOR.equals(userType)
+            || this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
             UserDetails userDetails = userService.getUserDetails();
 
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), isSolicitor ? SOLICITOR : HMCTS,
-                userDetails));
+                getCaseDataBefore(request), userType, userDetails));
         }
     }
 
-    private boolean isSolicitor(Long id) {
-        return userService.hasAnyCaseRoleFrom(representativeSolicitors(), id.toString());
+    private DocumentUploaderType getUploaderType(Long id) {
+
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(id);
+
+        if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
+            return DocumentUploaderType.SOLICITOR;
+        }
+
+        return DocumentUploaderType.HMCTS;
     }
 }

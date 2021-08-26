@@ -1164,7 +1164,7 @@ class ManageDocumentServiceTest {
 
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("NOT HMCTS");
         given(userService.isHmctsUser()).willReturn(false);
-        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), "12345")).willReturn(IS_SOLICITOR);
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), 12345L)).willReturn(IS_SOLICITOR);
 
         Map<String, Object> actualData = underTest.buildFinalApplicationBundleSupportingDocuments(caseData,
             IS_SOLICITOR);
