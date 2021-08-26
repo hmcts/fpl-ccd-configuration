@@ -114,7 +114,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   await reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
   reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
   await I.goToNextPage();
-  reviewAgreedCaseManagementOrderEventPage.selectOtherPerson(0);
+  reviewAgreedCaseManagementOrderEventPage.selectOthers(0);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 
@@ -211,7 +211,7 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(2);
 
   await I.goToNextPage();
-  reviewAgreedCaseManagementOrderEventPage.selectOtherPerson(0);
+  reviewAgreedCaseManagementOrderEventPage.selectOthers(0);
   await I.completeEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);

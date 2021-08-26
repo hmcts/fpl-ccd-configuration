@@ -17,7 +17,7 @@ module.exports = {
     I.click(`#reviewDecision${index}_decision-SEND_TO_ALL_PARTIES`);
   },
 
-  selectOtherPerson(index) {
+  selectOthers(index) {
     I.checkOption(`#othersSelector_option${index}-SELECTED`);
   },
 
