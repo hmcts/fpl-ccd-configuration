@@ -10,7 +10,10 @@
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-superuser"
+          "caseworker-publiclaw-superuser",
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "R"
       }
@@ -27,7 +30,10 @@
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-superuser"
+          "caseworker-publiclaw-superuser",
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "R"
       }
