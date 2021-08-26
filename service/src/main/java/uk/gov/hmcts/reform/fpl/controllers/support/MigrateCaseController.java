@@ -14,9 +14,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -25,8 +27,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -35,10 +37,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
@@ -157,15 +157,70 @@ public class MigrateCaseController extends CallbackController {
                 .customerReference(party.getCustomerReference())
                 .clientCode(party.getClientCode())
                 .legalTeamManager(party.getLegalTeamManager())
-                .phone(ofNullable(firstNonNull(party.getTelephoneNumber(), party.getMobileNumber()))
+                .phone(ofNullable(party.getTelephoneNumber())
                     .map(Telephone::getTelephoneNumber)
-                    .orElse(null))
+                    .orElse(ofNullable(party.getMobileNumber())
+                        .map((Telephone::getTelephoneNumber))
+                        .orElse(null)))
                 .address(party.getAddress())
-                .colleagues(legacySolicitor.map(this::migrateFromLegacySolicitor).orElse(emptyList()))
+                .colleagues(migrateColleagues(party, legacySolicitor.orElse(null)))
                 .build());
     }
 
-    private List<Element<Colleague>> migrateFromLegacySolicitor(Solicitor solicitor) {
+    private List<Element<Colleague>> migrateColleagues(ApplicantParty applicantParty, Solicitor solicitor) {
+        final Optional<Colleague> solicitorColleague = migrateFromLegacySolicitor(solicitor);
+        final Optional<Colleague> contactColleague = migrateFromApplicant(applicantParty);
+
+        if (contactColleague.isEmpty() && solicitorColleague.isPresent()) {
+            solicitorColleague.get().setMainContact("Yes");
+        }
+
+        final List<Colleague> colleagues = new ArrayList<>();
+
+        contactColleague.ifPresent(colleagues::add);
+        solicitorColleague.ifPresent(colleagues::add);
+
+        return wrapElements(colleagues);
+    }
+
+    private Optional<Colleague> migrateFromApplicant(ApplicantParty applicantParty) {
+        final Optional<String> mobile = ofNullable(applicantParty.getMobileNumber())
+            .map(Telephone::getTelephoneNumber)
+            .filter(StringUtils::isNotBlank);
+
+        final Optional<String> phone = ofNullable(applicantParty.getTelephoneNumber())
+            .map(Telephone::getTelephoneNumber)
+            .filter(StringUtils::isNotBlank);
+
+        final Optional<String> colleagueName = ofNullable(applicantParty.getTelephoneNumber())
+            .map(Telephone::getContactDirection)
+            .filter(StringUtils::isNotBlank);
+
+        final Optional<String> colleagueTitle = ofNullable(applicantParty.getJobTitle())
+            .filter(StringUtils::isNotBlank);
+
+        final Optional<String> colleagueEmail = ofNullable(applicantParty.getEmail())
+            .map(EmailAddress::getEmail)
+            .filter(StringUtils::isNotBlank);
+
+
+        if (mobile.isPresent() || phone.isPresent() || colleagueName.isPresent() || colleagueTitle.isPresent()
+            || colleagueEmail.isPresent()) {
+            return Optional.of(Colleague.builder()
+                .role(ColleagueRole.OTHER)
+                .title(colleagueTitle.orElse(null))
+                .fullName(colleagueName.orElse(null))
+                .email(colleagueEmail.orElse(null))
+                .phone(phone.orElse(mobile.orElse(null)))
+                .notificationRecipient("Yes")
+                .mainContact("Yes")
+                .build());
+        }
+
+        return Optional.empty();
+    }
+
+    private Optional<Colleague> migrateFromLegacySolicitor(Solicitor solicitor) {
 
         return ofNullable(solicitor).map(sol -> Colleague.builder()
             .role(SOLICITOR)
@@ -178,9 +233,7 @@ public class MigrateCaseController extends CallbackController {
             .dx(sol.getDx())
             .reference(sol.getReference())
             .notificationRecipient(YesNo.YES.getValue())
-            .mainContact(YesNo.YES.getValue())
-            .build())
-            .map(ElementUtils::wrapElements)
-            .orElse(null);
+            .mainContact("No")
+            .build());
     }
 }
