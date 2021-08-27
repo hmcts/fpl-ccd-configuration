@@ -190,12 +190,13 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
             .thenReturn(ORDER_DOCUMENT);
 
-        when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue())))
+        when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
             .thenReturn(COVERSHEET_REPRESENTATIVE);
 
-        when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty())))
+        when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty()),
+            any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
             .thenReturn(COVERSHEET_RESPONDENT);

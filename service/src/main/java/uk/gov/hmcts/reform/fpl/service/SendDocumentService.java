@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -36,7 +37,20 @@ public class SendDocumentService {
     private final SentDocumentHistoryService sentDocuments;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
+        sendDocuments(new SendDocumentRequest(caseData,
+            defaultIfNull(documentToBeSent, new ArrayList<DocumentReference>()).stream()
+                .map(doc -> DocumentReferenceWithLanguage.builder()
+                    .documentReference(doc)
+                    .build())
+                .collect(toList()),
+            parties));
+    }
 
+    public void sendDocuments(SendDocumentRequest sendDocumentRequest) {
+
+        List<Recipient> parties = sendDocumentRequest.getParties();
+        CaseData caseData = sendDocumentRequest.getCaseData();
+        List<DocumentReferenceWithLanguage> documentToBeSent = sendDocumentRequest.getDocumentToBeSent();
         List<Recipient> recipients = defaultIfNull(parties, emptyList());
 
         List<Recipient> deliverableRecipients = recipients.stream()
@@ -51,10 +65,11 @@ public class SendDocumentService {
         if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
 
             List<SentDocument> docs = documentToBeSent.stream()
-                .flatMap(document -> sendLetters.send(document,
+                .flatMap(document -> sendLetters.send(document.getDocumentReference(),
                     deliverableRecipients,
                     caseData.getId(),
-                    caseData.getFamilyManCaseNumber()).stream())
+                    caseData.getFamilyManCaseNumber(),
+                    document.getLanguage()).stream())
                 .collect(toList());
 
             List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
