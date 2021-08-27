@@ -243,6 +243,7 @@ public class ManageHearingsService {
         caseFields.put("hearingAttendance", hearingBooking.getAttendance());
         caseFields.put("hearingAttendanceDetails", hearingBooking.getAttendanceDetails());
         caseFields.put("preHearingAttendanceDetails", hearingBooking.getPreAttendanceDetails());
+        caseFields.put("sendNoticeOfHearingTranslationRequirements", hearingBooking.getTranslationRequirements());
 
         if (hearingBooking.getPreviousHearingVenue() == null
             || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
@@ -284,6 +285,10 @@ public class ManageHearingsService {
                 NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
 
             hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+
+            Optional.ofNullable(caseData.getSendNoticeOfHearingTranslationRequirements()).ifPresent(
+                hearingBooking::setTranslationRequirements
+            );
         }
     }
 
@@ -331,6 +336,7 @@ public class ManageHearingsService {
             HEARING_START_DATE,
             HEARING_END_DATE,
             "sendNoticeOfHearing",
+            "sendNoticeOfHearingTranslationRequirements",
             "judgeAndLegalAdvisor",
             "noticeOfHearingNotes",
             "previousHearingVenue",

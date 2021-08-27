@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -14,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -21,14 +24,17 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -37,6 +43,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FurtherEvidenceUploadedEventHandler {
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
+    private final FurtherEvidenceUploadDifferenceCalculator furtherEvidenceDifferenceCalculator;
+    private final TranslationRequestService translationRequestService;
     private final SendDocumentService sendDocumentService;
     private static final String PDF = "pdf";
 
@@ -46,7 +54,7 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
 
-        DocumentUploadNotificationUserType userType = event.getUserType();
+        DocumentUploaderType userType = event.getUserType();
         var newNonConfidentialDocuments = getNewNonConfidentialDocuments(caseData, caseDataBefore, userType);
 
         final Set<String> recipients = new HashSet<>();
@@ -54,23 +62,30 @@ public class FurtherEvidenceUploadedEventHandler {
         if (!newNonConfidentialDocuments.isEmpty()) {
             recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, userType));
 
-            if (userType != LOCAL_AUTHORITY) {
-                recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData));
+            if (userType == SECONDARY_LOCAL_AUTHORITY) {
+                recipients.addAll(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
+            }
+
+            if (userType == SOLICITOR || userType == HMCTS) {
+                recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
             }
         }
 
         recipients.removeIf(email -> Objects.equals(email, uploader.getEmail()));
 
         if (isNotEmpty(recipients)) {
+
             List<String> newDocumentNames = getDocumentNames(newNonConfidentialDocuments);
+
             furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
                 newDocumentNames);
         }
+
     }
 
     @EventListener
     public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
-        DocumentUploadNotificationUserType userType = event.getUserType();
+        DocumentUploaderType userType = event.getUserType();
 
         if (userType == SOLICITOR) {
             final CaseData caseData = event.getCaseData();
@@ -86,7 +101,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private List<SupportingEvidenceBundle> getNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore,
-            DocumentUploadNotificationUserType userType) {
+                                                                          DocumentUploaderType userType) {
 
         var newBundle = getEvidenceBundle(caseData, userType);
         var oldBundle = getEvidenceBundle(caseDataBefore, userType);
@@ -119,10 +134,10 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundle(CaseData caseData,
-                                                                      DocumentUploadNotificationUserType userType) {
-        if (userType == LOCAL_AUTHORITY) {
+                                                                      DocumentUploaderType uploaderType) {
+        if (uploaderType == DESIGNATED_LOCAL_AUTHORITY || uploaderType == SECONDARY_LOCAL_AUTHORITY) {
             return caseData.getFurtherEvidenceDocumentsLA();
-        } else if (userType == SOLICITOR) {
+        }  else if (uploaderType == SOLICITOR) {
             List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle =
                 defaultIfNull(caseData.getFurtherEvidenceDocumentsSolicitor(), List.of());
             List<Element<SupportingEvidenceBundle>> respondentStatementsBundle =
@@ -145,5 +160,15 @@ public class FurtherEvidenceUploadedEventHandler {
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
                                                                           List<Element<SupportingEvidenceBundle>> b2) {
         return Stream.concat(b1.stream(), b2.stream()).collect(Collectors.toList());
+    }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(FurtherEvidenceUploadedEvent event) {
+        furtherEvidenceDifferenceCalculator.calculate(event.getCaseData(), event.getCaseDataBefore())
+            .forEach(bundle -> translationRequestService.sendRequest(event.getCaseData(),
+                Optional.ofNullable(bundle.getValue().getTranslationRequirements()),
+                bundle.getValue().getDocument(), bundle.getValue().asLabel())
+            );
     }
 }

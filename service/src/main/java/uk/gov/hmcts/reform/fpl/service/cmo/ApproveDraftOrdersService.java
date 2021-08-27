@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ public class ApproveDraftOrdersService {
     private final BlankOrderGenerator blankOrderGenerator;
     private final HearingOrderGenerator hearingOrderGenerator;
     private final OthersService othersService;
-    private final FeatureToggleService featureToggleService;
 
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
@@ -178,11 +176,8 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                    List<Element<Other>> selectedOthers = new ArrayList<>();
-                    if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-                        selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                            caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
-                    }
+                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                        caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         cmoReviewDecision, cmo, selectedOthers, getOthersNotified(selectedOthers));
@@ -248,11 +243,8 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    List<Element<Other>> selectedOthers = new ArrayList<>();
-                    if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-                        selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
-                            caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
-                    }
+                    List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData.getAllOthers(),
+                        caseData.getOthersSelector(), caseData.getSendOrderToAllOthers());
 
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(
                         reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers));

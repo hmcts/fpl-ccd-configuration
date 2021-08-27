@@ -14,13 +14,13 @@ import static java.util.Optional.ofNullable;
 public class Colleague {
 
     private final ColleagueRole role;
-    private final String title;
-    private final String fullName;
-    private final String email;
-    private final String phone;
-    private final String dx;
-    private final String reference;
-    private final String notificationRecipient;
+    private String title;
+    private String fullName;
+    private String email;
+    private String phone;
+    private String dx;
+    private String reference;
+    private String notificationRecipient;
     private String mainContact;
 
     @JsonIgnore

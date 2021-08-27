@@ -21,8 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.REP_USER;
@@ -47,8 +47,9 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
+
     @Test
-    void shouldSendDocumentByPostWhenEvidenceBundlePDFUploadedByRespondentSolicitor() {
+    void shouldSendDocumentByPostWhenPDFUploadedByRespSolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
@@ -65,8 +66,24 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(sendDocumentService).sendDocuments(caseData, documents, RECIPIENTS_LIST);
     }
 
+
     @Test
-    void shouldRemoveNonPdfEvidenceBundles() {
+    void shouldNotSendDocumentByPostWhenPDFUploadedByLA() {
+        final CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                buildCaseDataWithConfidentialLADocuments(),
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsRespondentSolicitor());
+        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+
+        verify(sendDocumentService, never()).sendDocuments(any(), any(), any());
+    }
+
+    @Test
+    void shouldNotSendDocumentByPostWhenPDFUploadedBySolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(REP_USER);
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
@@ -80,21 +97,6 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
 
         verify(sendDocumentService).sendDocuments(caseData, new ArrayList<>(), RECIPIENTS_LIST);
-    }
-
-    @Test
-    void shouldNotSendDocumentByPostWhenEvidenceBundleIsUploadedByLA() {
-        final CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                LOCAL_AUTHORITY,
-                userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
-
-        verify(sendDocumentService, never()).sendDocuments(any(), any(), any());
     }
 
     @Test

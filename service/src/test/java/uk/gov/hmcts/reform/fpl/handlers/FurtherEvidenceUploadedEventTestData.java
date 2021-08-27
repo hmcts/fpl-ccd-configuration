@@ -106,7 +106,7 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
-    public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
+        public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
         return wrapElements(
             createDummyEvidenceBundle("confidential-1", uploadedBy, true, PDF_DOCUMENT_1),
             createDummyEvidenceBundle("confidential-2", uploadedBy, true, PDF_DOCUMENT_2));
@@ -124,16 +124,6 @@ public class FurtherEvidenceUploadedEventTestData {
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, NON_PDF_DOCUMENT_1));
     }
 
-    private static List<Element<RespondentStatement>> buildRespondentStatementsList(
-        List<Element<SupportingEvidenceBundle>> bundle
-    ) {
-        return wrapElements(RespondentStatement.builder()
-            .respondentId(UUID.randomUUID())
-            .respondentName("name")
-            .supportingEvidenceBundle(bundle)
-            .build());
-    }
-
     public static SupportingEvidenceBundle createDummyEvidenceBundle(final String name, final String uploadedBy,
                                                                       boolean confidential, DocumentReference docRef) {
         SupportingEvidenceBundle.SupportingEvidenceBundleBuilder document
@@ -148,6 +138,16 @@ public class FurtherEvidenceUploadedEventTestData {
         }
 
         return document.build();
+    }
+
+    private static List<Element<RespondentStatement>> buildRespondentStatementsList(
+        List<Element<SupportingEvidenceBundle>> bundle
+    ) {
+        return wrapElements(RespondentStatement.builder()
+            .respondentId(UUID.randomUUID())
+            .respondentName("name")
+            .supportingEvidenceBundle(bundle)
+            .build());
     }
 
     public static CaseData.CaseDataBuilder commonCaseBuilder() {

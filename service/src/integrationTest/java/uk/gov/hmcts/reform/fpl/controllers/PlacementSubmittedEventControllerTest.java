@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.lang.Long.parseLong;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,6 +37,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
@@ -67,8 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    private static final String CASE_ID = "12345";
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final Long CASE_ID = 12345L;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -108,7 +107,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
         void shouldNotifyHmctsAdminWhenAddingNewChildPlacementAndCtscIsDisabled() throws Exception {
             CallbackRequest callbackRequest = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
-                    .id(parseLong(CASE_ID))
+                    .id(CASE_ID)
                     .data(ImmutableMap.<String, Object>builder()
                         .putAll(buildNotificationData())
                         .putAll(buildPlacementData(List.of(child1, child2), List.of(child2Placement, child1Placement),
@@ -122,22 +121,22 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
             verify(notificationClient).sendEmail(
                 PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-                "admin@family-court.com",
+                COURT_1.getEmail(),
                 expectedTemplateParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient, never()).sendEmail(
                 PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         }
 
         @Test
         void shouldNotifyCtscAdminWhenAddingNewChildPlacementAndCtscIsEnabled() throws Exception {
             CallbackRequest callbackRequest = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
-                    .id(parseLong(CASE_ID))
+                    .id(CASE_ID)
                     .data(ImmutableMap.<String, Object>builder()
                         .putAll(buildNotificationData())
                         .putAll(buildPlacementData(List.of(child1, child2), List.of(child2Placement, child1Placement),
@@ -152,15 +151,15 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
             verify(notificationClient, never()).sendEmail(
                 PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-                "admin@family-court.com",
+                COURT_1.getEmail(),
                 expectedTemplateParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         }
 
         @Test
@@ -182,21 +181,20 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
             verify(notificationClient, never()).sendEmail(
                 PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-                "admin@family-court.com",
+                COURT_1.getEmail(),
                 expectedTemplateParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
         }
 
         private Map<String, Object> expectedTemplateParameters() {
             return Map.of(
                 "respondentLastName", "Watson",
-                "caseUrl", "http://fake-url/cases/case-details/12345#Placement");
+                "caseUrl", caseUrl(CASE_ID, "Placement"));
         }
     }
 
     @Nested
     class NoticeOfPlacementOrderNotification {
-        private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
         private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
         private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
         private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
@@ -212,34 +210,34 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
             verify(notificationClient).sendEmail(
                 eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
-                eq(ADMIN_EMAIL_ADDRESS),
+                eq(COURT_1.getEmail()),
                 eqJson(expectedParameters()),
-                eq(NOTIFICATION_REFERENCE));
+                eq(notificationReference(CASE_ID)));
 
             verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 eqJson(expectedParameters()),
-                eq(NOTIFICATION_REFERENCE));
+                eq(notificationReference(CASE_ID)));
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
                 DIGITAL_SERVED_REPRESENTATIVE_ADDRESS,
                 expectedParameters(),
-                NOTIFICATION_REFERENCE);
+                notificationReference(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
                 eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
                 eqJson(getExpectedParametersMapForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(),
                     false)),
-                eq(NOTIFICATION_REFERENCE));
+                eq(notificationReference(CASE_ID)));
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(ADMIN_EMAIL_ADDRESS),
+                eq(COURT_1.getEmail()),
                 eqJson(getExpectedParametersMap(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
-                eq(NOTIFICATION_REFERENCE));
+                eq(notificationReference(CASE_ID)));
 
             verify(notificationClient, never()).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -274,7 +272,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
             verify(notificationClient, never()).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(ADMIN_EMAIL_ADDRESS),
+                eq(COURT_1.getEmail()),
                 any(),
                 any());
 
@@ -282,7 +280,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(CTSC_EMAIL_ADDRESS),
                 eqJson(getExpectedParametersMap(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
-                eq(NOTIFICATION_REFERENCE));
+                eq(notificationReference(CASE_ID)));
         }
 
         @Test
@@ -303,7 +301,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
             verify(notificationClient, never()).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(ADMIN_EMAIL_ADDRESS),
+                eq(COURT_1.getEmail()),
                 any(),
                 any());
 
@@ -317,8 +315,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
         private Map<String, Object> expectedParameters() {
             return Map.of(
                 "respondentLastName", childLastName,
-                "caseUrl", "http://fake-url/cases/case-details/12345#Placement"
-            );
+                "caseUrl", caseUrl(CASE_ID, "Placement"));
         }
 
         private Respondent respondent() {
@@ -354,7 +351,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
         private CaseDetails populatedCaseDetails(UUID representativeId, Respondent respondent) {
             return CaseDetails.builder()
-                .id(parseLong(CASE_ID))
+                .id(CASE_ID)
                 .data(Map.of(
                     "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
                     "confidentialPlacements", List.of(element(Placement.builder()
@@ -423,7 +420,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
             verify(coreCaseDataService).triggerEvent("PUBLICLAW",
                 "CARE_SUPERVISION_EPO",
-                parseLong(CASE_ID),
+                CASE_ID,
                 SEND_DOCUMENT_EVENT,
                 Map.of("documentToBeSent", updatedDocumentReference));
         }
@@ -439,7 +436,7 @@ class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
         private CaseDetails buildCaseDetails(Map<String, Object> data) {
             return CaseDetails.builder()
-                .id(parseLong(CASE_ID))
+                .id(CASE_ID)
                 .jurisdiction("PUBLICLAW")
                 .caseTypeId("CARE_SUPERVISION_EPO")
                 .data(ImmutableMap.<String, Object>builder().putAll(buildNotificationData())

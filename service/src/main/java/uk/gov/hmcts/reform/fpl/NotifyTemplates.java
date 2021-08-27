@@ -12,13 +12,9 @@ public final class NotifyTemplates {
     public static final String OUTSOURCED_CASE_TEMPLATE = "c4d612a3-8384-468b-9b83-532e7e857c63";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "3c422258-7a6e-4aa0-8d4b-56f50f42d0eb";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
-    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
-        = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
         = "62791aee-6caf-4a22-a599-fcfc4381ba20";
-    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
-        = "7973c7f9-c8e4-486e-8e50-8923bde9584e";
-    public static final String UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
+    public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
         = "d5f41125-76d0-43f9-971b-fe1ff6a26acf";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
@@ -87,4 +83,6 @@ public final class NotifyTemplates {
     public static final String LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE = "0ee6157a-a11a-4a0c-be75-508d66857d67";
     public static final String LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE = "db77b13c-3f17-48ee-a7c0-90ba5adf73b6";
     public static final String LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE = "c02ac29c-2d84-4d1a-80f6-888b3fc31e19";
+    public static final String CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE = "47f8e012-363e-4e0a-b0ab-2746a5392ab5";
+    public static final String CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE = "c454c247-e9c7-429c-af8e-7939f1816581";
 }

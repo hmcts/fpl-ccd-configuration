@@ -560,7 +560,7 @@ class CaseInitiationServiceTest {
     }
 
     private void givenLocalAuthorityCourts(Court... courts) {
-        given(courtLookup.getCourt(any())).willReturn(Arrays.asList(courts));
+        given(courtLookup.getCourts(any())).willReturn(Arrays.asList(courts));
     }
 
     private void givenUserInOrganisation(String organisationId) {

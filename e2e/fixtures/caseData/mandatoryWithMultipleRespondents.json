@@ -122,7 +122,8 @@
                 "role": "SOLICITOR",
                 "email": "test@test.com",
                 "fullName": "Solicitor 1",
-                "notificationRecipient": "Yes"
+                "notificationRecipient": "Yes",
+                "mainContact": "Yes"
               }
             }
           ],

@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
@@ -41,11 +43,18 @@ public class HmctsCourtLookupConfiguration {
         );
     }
 
-    public List<Court> getCourt(String localAuthorityCode) {
+    public List<Court> getCourts(String localAuthorityCode) {
         checkNotNull(localAuthorityCode, "Local authority code cannot be null");
 
         return checkNotNull(mapping.get(localAuthorityCode),
             "Local authority '" + localAuthorityCode + "' not found");
+    }
+
+    public Optional<Court> getCourtByCode(String courtCode) {
+        return mapping.entrySet().stream()
+            .flatMap(courtsByLocalAuthorityCode -> courtsByLocalAuthorityCode.getValue().stream())
+            .filter(court -> Objects.equals(court.getCode(), courtCode))
+            .findFirst();
     }
 
 }

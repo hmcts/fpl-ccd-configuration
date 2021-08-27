@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
@@ -19,12 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -34,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +44,10 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -60,24 +60,21 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final NotificationService notificationService;
     private final CourtService courtService;
     private final AdditionalApplicationsUploadedEmailContentProvider contentProvider;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final RepresentativeNotificationService representativeNotificationService;
     private final SendDocumentService sendDocumentService;
-    private final FeatureToggleService featureToggleService;
 
     @EventListener
     @Async
     public void sendAdditionalApplicationsByPost(final AdditionalApplicationsUploadedEvent event) {
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            final CaseData caseData = event.getCaseData();
-            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-            final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
+        final CaseData caseData = event.getCaseData();
+        AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
-            Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
-            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
-        }
+        Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
+        sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
     }
 
     private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
@@ -108,31 +105,47 @@ public class AdditionalApplicationsUploadedEventHandler {
 
             NotifyData notifyData = contentProvider.getNotifyData(caseData);
             String recipient = courtService.getCourtEmail(caseData);
-            String template = featureToggleService.isServeOrdersAndDocsToOthersEnabled()
-                              ? UPDATED_INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
-                              : INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
-
-            notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
+            notificationService.sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
         }
     }
 
     @EventListener
     @Async
     public void notifyApplicant(final AdditionalApplicationsUploadedEvent event) {
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            final CaseData caseData = event.getCaseData();
-            final OrderApplicant applicant = event.getApplicant();
+        final CaseData caseData = event.getCaseData();
+        final OrderApplicant applicant = event.getApplicant();
 
-            if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
-                Collection<String> emails = inboxLookupService.getRecipients(
-                    LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
-                sendNotification(caseData, emails);
-            } else {
-                Map<String, String> emails = getRespondentsEmails(caseData);
-                if (isNotEmpty(emails.get(applicant.getName()))) {
-                    sendNotification(caseData, Set.of(emails.get(applicant.getName())));
-                }
+        final Set<String> recipients = new HashSet<>();
+
+        if (applicant.getType() == LOCAL_AUTHORITY) {
+
+            final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .secondaryLocalAuthorityExcluded(true)
+                .build();
+
+            recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
+
+        } else if (applicant.getType() == SECONDARY_LOCAL_AUTHORITY) {
+
+            final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .designatedLocalAuthorityExcluded(true)
+                .build();
+
+            recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
+        } else {
+
+            final Map<String, String> respondentsEmails = getRespondentsEmails(caseData);
+
+            if (isNotEmpty(respondentsEmails.get(applicant.getName()))) {
+                recipients.add(respondentsEmails.get(applicant.getName()));
             }
+        }
+
+        if (isNotEmpty(recipients)) {
+            sendNotification(caseData, recipients);
         }
     }
 
@@ -141,7 +154,7 @@ public class AdditionalApplicationsUploadedEventHandler {
             .collect(Collectors.toMap(
                 respondent -> respondent.getValue().getParty().getFullName(),
                 respondent -> hasNoSolicitorEmail(respondent) ? EMPTY
-                                                              : respondent.getValue().getSolicitor().getEmail()
+                    : respondent.getValue().getSolicitor().getEmail()
             ));
     }
 
@@ -161,19 +174,17 @@ public class AdditionalApplicationsUploadedEventHandler {
     @EventListener
     @Async
     public void notifyDigitalRepresentatives(final AdditionalApplicationsUploadedEvent event) {
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            final CaseData caseData = event.getCaseData();
-            NotifyData notifyData = contentProvider.getNotifyData(caseData);
+        final CaseData caseData = event.getCaseData();
+        NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
-            Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
+        Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
 
-            representativeNotificationService.sendNotificationToRepresentatives(
-                caseData.getId(),
-                notifyData,
-                digitalRepresentativesEmails,
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
-            );
-        }
+        representativeNotificationService.sendNotificationToRepresentatives(
+            caseData.getId(),
+            notifyData,
+            digitalRepresentativesEmails,
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
+        );
     }
 
     private Set<String> getRepresentativesEmails(CaseData caseData,
@@ -201,20 +212,18 @@ public class AdditionalApplicationsUploadedEventHandler {
     @EventListener
     @Async
     public void notifyEmailServedRepresentatives(final AdditionalApplicationsUploadedEvent event) {
-        if (featureToggleService.isServeOrdersAndDocsToOthersEnabled()) {
-            final CaseData caseData = event.getCaseData();
-            NotifyData notifyData = contentProvider.getNotifyData(caseData);
+        final CaseData caseData = event.getCaseData();
+        NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
-            Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
+        Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
 
-            if (!emailRepresentatives.isEmpty()) {
-                representativeNotificationService.sendNotificationToRepresentatives(
-                    caseData.getId(),
-                    notifyData,
-                    emailRepresentatives,
-                    INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
-                );
-            }
+        if (!emailRepresentatives.isEmpty()) {
+            representativeNotificationService.sendNotificationToRepresentatives(
+                caseData.getId(),
+                notifyData,
+                emailRepresentatives,
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
+            );
         }
     }
 

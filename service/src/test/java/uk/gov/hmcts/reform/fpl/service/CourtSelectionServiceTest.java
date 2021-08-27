@@ -59,7 +59,7 @@ class CourtSelectionServiceTest {
                 .listItems(List.of(DynamicListElement.defaultListItem("Court 1")))
                 .build();
 
-            when(courtLookup.getCourt(caseData.getCaseLocalAuthority())).thenReturn(courts);
+            when(courtLookup.getCourts(caseData.getCaseLocalAuthority())).thenReturn(courts);
             when(dynamicListService.asDynamicList(eq(courts), eq(null), any(), any()))
                 .thenReturn(dynamicList);
 
@@ -78,7 +78,7 @@ class CourtSelectionServiceTest {
                 .listItems(List.of(DynamicListElement.defaultListItem("Court 1")))
                 .build();
 
-            when(courtLookup.getCourt(caseData.getCaseLocalAuthority())).thenReturn(courts);
+            when(courtLookup.getCourts(caseData.getCaseLocalAuthority())).thenReturn(courts);
             when(dynamicListService.asDynamicList(eq(courts), eq(court2.getCode()), any(), any()))
                 .thenReturn(dynamicList);
 
@@ -103,7 +103,7 @@ class CourtSelectionServiceTest {
                 .courtsList(dynamicList)
                 .build();
 
-            when(courtLookup.getCourt(caseData.getCaseLocalAuthority())).thenReturn(courts);
+            when(courtLookup.getCourts(caseData.getCaseLocalAuthority())).thenReturn(courts);
 
             assertThat(underTest.getSelectedCourt(caseData)).isEqualTo(court2);
         }
@@ -121,7 +121,7 @@ class CourtSelectionServiceTest {
                 .courtsList(dynamicList)
                 .build();
 
-            when(courtLookup.getCourt(caseData.getCaseLocalAuthority())).thenReturn(courts);
+            when(courtLookup.getCourts(caseData.getCaseLocalAuthority())).thenReturn(courts);
 
             assertThat(underTest.getSelectedCourt(caseData)).isNull();
         }

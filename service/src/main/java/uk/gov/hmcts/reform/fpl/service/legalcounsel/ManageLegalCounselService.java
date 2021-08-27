@@ -50,7 +50,7 @@ public class ManageLegalCounselService {
     private final OrganisationService organisationService;
 
     public List<Element<LegalCounsellor>> retrieveLegalCounselForLoggedInSolicitor(CaseData caseData) {
-        String caseId = caseData.getId().toString();
+        Long caseId = caseData.getId();
         List<SolicitorRole> caseSolicitorRoles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseId);
         return retrieveLegalCounselForRoles(caseData, caseSolicitorRoles);
     }
@@ -72,7 +72,7 @@ public class ManageLegalCounselService {
 
     public void updateLegalCounsel(CaseDetails caseDetails) {
         CaseData caseData = caseConverter.convert(caseDetails);
-        String caseId = caseData.getId().toString();
+        Long caseId = caseData.getId();
         List<SolicitorRole> caseSolicitorRoles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseId);
 
         List<Element<LegalCounsellor>> legalCounsellors = populateWithUserIds(

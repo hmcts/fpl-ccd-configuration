@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -31,8 +32,8 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantsListGenerator {
 
-    public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
-    public static final String SEPARATOR = ", ";
+    private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
+    private static final String SEPARATOR = ", ";
     private final DynamicListService dynamicLists;
 
     public OrderApplicant getApplicant(CaseData caseData, AdditionalApplicationsBundle bundle) {
@@ -69,6 +70,13 @@ public class ApplicantsListGenerator {
                 .code("applicant")
                 .name(caseData.getCaseLocalAuthorityName() + ", Applicant").build());
         }
+
+        caseData.getSecondaryLocalAuthority()
+            .map(LocalAuthority::getName)
+            .map(localAuthorityName -> InterlocutoryApplicant.builder()
+                .code("secondaryLocalAuthority")
+                .name(localAuthorityName + ", Secondary LA").build())
+            .ifPresent(applicantsFullNames::add);
 
         applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
         applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers())); // Others to give notice

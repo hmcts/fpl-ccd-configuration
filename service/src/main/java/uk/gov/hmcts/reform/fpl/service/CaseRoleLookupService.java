@@ -15,7 +15,7 @@ public class CaseRoleLookupService {
 
     private final CaseAccessService caseAccessService;
 
-    public List<SolicitorRole> getCaseSolicitorRolesForCurrentUser(String caseId) {
+    public List<SolicitorRole> getCaseSolicitorRolesForCurrentUser(Long caseId) {
         return caseAccessService.getUserCaseRoles(caseId).stream()
             .map(CaseRole::formattedName)
             .map(SolicitorRole::from)

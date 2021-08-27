@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -103,9 +104,9 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @BeforeEach
     void mocks() {
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(PDF), eq(ENGLISH)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF), eq(ENGLISH)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(downloadService.downloadDocument(UPLOADED_POWER_OF_ARREST.getBinaryUrl()))
             .thenReturn(POWER_OF_ARREST_BINARIES);
@@ -115,9 +116,9 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         when(uploadService.uploadDocument(eq(DOCUMENT_PDF_BINARIES), anyString(), eq("application/pdf")))
             .thenReturn(UPLOADED_PDF_DOCUMENT);
 
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(WORD)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER_V2), eq(WORD), eq(ENGLISH)))
             .thenReturn(DOCMOSIS_WORD_DOCUMENT);
-        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(WORD)))
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(WORD), eq(ENGLISH)))
             .thenReturn(DOCMOSIS_WORD_DOCUMENT);
         when(uploadService.uploadDocument(eq(DOCUMENT_WORD_BINARIES), anyString(), eq("application/msword")))
             .thenReturn(UPLOADED_WORD_DOCUMENT);

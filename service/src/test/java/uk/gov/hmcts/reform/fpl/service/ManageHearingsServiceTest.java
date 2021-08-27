@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -75,6 +76,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
@@ -116,6 +118,7 @@ class ManageHearingsServiceTest {
     private static final UUID RE_LISTED_HEARING_ID = randomUUID();
     private static final UUID LINKED_CMO_ID = randomUUID();
     private static final UUID HEARING_BUNDLE_ID = randomUUID();
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final HearingVenueLookUpService hearingVenueLookUpService = mock(HearingVenueLookUpService.class);
@@ -420,6 +423,7 @@ class ManageHearingsServiceTest {
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .previousHearingVenue(previousHearingVenue)
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .build();
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, null);
@@ -432,7 +436,8 @@ class ManageHearingsServiceTest {
             "previousHearingVenue", previousHearingVenue,
             "hearingAttendance", List.of(IN_PERSON, VIDEO),
             "hearingAttendanceDetails", "Test attendance details",
-            "preHearingAttendanceDetails", "Test pre attendance details"
+            "preHearingAttendanceDetails", "Test pre attendance details",
+            "sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -457,24 +462,24 @@ class ManageHearingsServiceTest {
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .previousHearingVenue(PreviousHearingVenue.builder().build())
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .build();
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
-        Map<String, Object> expectedCaseFields = Map.of(
-            "hearingType", OTHER,
-            "hearingTypeDetails", "Fact finding",
-            "hearingStartDate", startDate,
-            "hearingEndDate", endDate,
-            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
-            "hearingVenue", "OTHER",
-            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS,
-            "hearingAttendance", List.of(IN_PERSON),
-            "hearingAttendanceDetails", "Attendance details",
-            "preHearingAttendanceDetails", "Pre attendance details"
-        );
-
-        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("hearingType", OTHER),
+            Map.entry("hearingTypeDetails", "Fact finding"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS),
+            Map.entry("hearingAttendance", List.of(IN_PERSON)),
+            Map.entry("hearingAttendanceDetails", "Attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS)
+        ));
     }
 
     @Test
@@ -677,6 +682,36 @@ class ManageHearingsServiceTest {
             TestDataHelper.DOCUMENT_CONTENT,
             NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
     }
+
+    @Test
+    void shouldSendNoticeOfHearingIfRequestedWithTranslation() {
+        final DocmosisNoticeOfHearing docmosisData = DocmosisNoticeOfHearing.builder().build();
+        final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
+
+        final HearingBooking hearingToUpdate = randomHearing();
+        final CaseData caseData = CaseData.builder()
+            .sendNoticeOfHearing(YES.getValue())
+            .sendNoticeOfHearingTranslationRequirements(TRANSLATION_REQUIREMENTS)
+            .build();
+
+        given(noticeOfHearingGenerationService.getTemplateData(caseData, hearingToUpdate))
+            .willReturn(docmosisData);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING))
+            .willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(eq(docmosisDocument.getBytes()), anyString())).willReturn(DOCUMENT);
+
+        service.sendNoticeOfHearing(caseData, hearingToUpdate);
+
+        assertThat(hearingToUpdate.getNoticeOfHearing()).isEqualTo(DocumentReference.buildFromDocument(DOCUMENT));
+        assertThat(hearingToUpdate.getTranslationRequirements()).isEqualTo(TRANSLATION_REQUIREMENTS);
+
+        verify(noticeOfHearingGenerationService).getTemplateData(caseData, hearingToUpdate);
+        verify(docmosisDocumentGeneratorService).generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING);
+        verify(uploadDocumentService).uploadPDF(
+            TestDataHelper.DOCUMENT_CONTENT,
+            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
+    }
+
 
     @Nested
     class PastHearings {
@@ -1552,6 +1587,7 @@ class ManageHearingsServiceTest {
             "hearingStartDate",
             "hearingEndDate",
             "sendNoticeOfHearing",
+            "sendNoticeOfHearingTranslationRequirements",
             "judgeAndLegalAdvisor",
             "noticeOfHearingNotes",
             "previousHearingVenue",

@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -168,5 +170,74 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
+    }
+
+    @Nested
+    class CaseTransfer {
+
+        final CaseData caseDataBefore = CaseData.builder()
+            .id(10L)
+            .caseName("Test case")
+            .localAuthorityPolicy(designatedPolicy)
+            .sharedLocalAuthorityPolicy(secondaryPolicy)
+            .localAuthorities(wrapElements(designatedLocalAuthority, secondaryLocalAuthority))
+            .children1(List.of(testChild("Alex", "White", BOY, now())))
+            .build();
+
+        final CaseData caseData = caseDataBefore.toBuilder()
+            .localAuthorityPolicy(secondaryPolicy)
+            .localAuthorities(wrapElements(secondaryLocalAuthority.toBuilder().designated("Yes").build()))
+            .build();
+
+        @Test
+        void notifyPreviousDesignatedLocalAuthorityAboutCaseTransfer() {
+
+            underTest.notifyPreviousDesignatedLocalAuthority(new CaseTransferred(caseData, caseDataBefore));
+
+            assertThat(response())
+                .hasSubject("Family public law case transfer, White")
+                .hasBody(emailContent()
+                    .line("Dear Designated LA")
+                    .line()
+                    .callout("Test case 10")
+                    .line()
+                    .line("This case has now been transferred to Secondary LA.")
+                    .line()
+                    .line("Your organisation will no longer have access to the case.")
+                    .line()
+                    .line("HM Courts & Tribunals Service")
+                    .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                        + "contactfpl@justice.gov.uk")
+                );
+        }
+
+        @Test
+        void notifyNewDesignatedLocalAuthorityAboutCaseTransfer() {
+
+            underTest.notifyNewDesignatedLocalAuthority(new CaseTransferred(caseData, caseDataBefore));
+
+            assertThat(response())
+                .hasSubject("Family public law case transfer, White")
+                .hasBody(emailContent()
+                    .line("Dear Secondary LA")
+                    .line()
+                    .callout("Test case 10")
+                    .line()
+                    .line("This case has transferred to you from Designated LA.")
+                    .line()
+                    .line("This means your local authority is now the designated applicant.")
+                    .line()
+                    .line("If you don't already have access to the case,"
+                        + " your organisation’s case access administrator should assign the case to you."
+                        + " They can do this at https://manage-org.platform.hmcts.net")
+                    .line()
+                    .line("When the case is assigned to you,"
+                        + " you can view case details by signing into http://fake-url/cases/case-details/10")
+                    .line()
+                    .line("HM Courts & Tribunals Service")
+                    .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                        + "contactfpl@justice.gov.uk")
+                );
+        }
     }
 }

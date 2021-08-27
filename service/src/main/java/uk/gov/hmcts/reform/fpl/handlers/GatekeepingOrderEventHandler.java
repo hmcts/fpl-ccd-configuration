@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderEventHandler {
     private final NotificationService notificationService;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final SDOIssuedCafcassContentProvider cafcassContentProvider;
@@ -43,9 +43,8 @@ public class GatekeepingOrderEventHandler {
         NotifyData parameters = cafcassContentProvider.getNotifyData(caseData, event.getOrder());
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService.sendEmail(
-            event.getNotificationGroup().getCafcassTemplate(), recipient, parameters, caseData.getId()
-        );
+        notificationService
+            .sendEmail(event.getNotificationGroup().getCafcassTemplate(), recipient, parameters, caseData.getId());
     }
 
     @Async
@@ -55,13 +54,14 @@ public class GatekeepingOrderEventHandler {
 
         NotifyData notifyData = standardContentProvider.buildNotificationParameters(caseData);
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
-        );
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
 
-        notificationService.sendEmail(
-            event.getNotificationGroup().getLaTemplate(), emails, notifyData, caseData.getId().toString()
-        );
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+        notificationService
+            .sendEmail(event.getNotificationGroup().getLaTemplate(), recipients, notifyData, caseData.getId());
     }
 
     @Async
@@ -72,9 +72,8 @@ public class GatekeepingOrderEventHandler {
         NotifyData notifyData = standardContentProvider.buildNotificationParameters(caseData);
         String recipient = ctscEmailLookupConfiguration.getEmail();
 
-        notificationService.sendEmail(
-            event.getNotificationGroup().getCtscTemplate(), recipient, notifyData, caseData.getId()
-        );
+        notificationService
+            .sendEmail(event.getNotificationGroup().getCtscTemplate(), recipient, notifyData, caseData.getId());
     }
 
     @Async
@@ -85,7 +84,7 @@ public class GatekeepingOrderEventHandler {
             event.getOrder(), event.getOrderTitle());
 
         ObjectUtils.<List<Element<DocumentBundle>>>defaultIfNull(event.getCaseData()
-                .getNoticeOfProceedingsBundle(), Collections.emptyList())
+            .getNoticeOfProceedingsBundle(), Collections.emptyList())
             .forEach(nop -> translationRequestService.sendRequest(event.getCaseData(),
                 event.getLanguageTranslationRequirement(),
                 nop.getValue().getDocument(), nop.getValue().asLabel())

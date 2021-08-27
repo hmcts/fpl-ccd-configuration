@@ -67,7 +67,7 @@ class CourtServiceTest {
                 .caseLocalAuthority("LA1")
                 .build();
 
-            when(courtLookup.getCourt("LA1")).thenReturn(List.of(court1, court2));
+            when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
 
             final Court actualCourt = underTest.getCourt(caseData);
 
@@ -130,7 +130,7 @@ class CourtServiceTest {
                 .caseLocalAuthority("LA1")
                 .build();
 
-            when(courtLookup.getCourt("LA1")).thenReturn(List.of(court1, court2));
+            when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
 
             final String actualEmail = underTest.getCourtEmail(caseData);
 
@@ -171,7 +171,7 @@ class CourtServiceTest {
                 .caseLocalAuthority("LA1")
                 .build();
 
-            when(courtLookup.getCourt("LA1")).thenReturn(List.of(court1, court2));
+            when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
 
             final String actualEmail = underTest.getCourtName(caseData);
 
@@ -212,7 +212,7 @@ class CourtServiceTest {
                 .caseLocalAuthority("LA1")
                 .build();
 
-            when(courtLookup.getCourt("LA1")).thenReturn(List.of(court1, court2));
+            when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
 
             final String actualEmail = underTest.getCourtCode(caseData);
 

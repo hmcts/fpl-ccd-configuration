@@ -49,6 +49,8 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         .caseSummaryFirstRespondentLastName(RESPONDENT_SURNAME)
         .caseSummaryCourtName(COURT_NAME)
         .caseSummaryNumberOfChildren(1)
+        .caseSummaryLanguageRequirement("No")
+        .caseSummaryLALanguageRequirement("No")
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String CHILD_LAST_NAME = "something";
@@ -129,7 +131,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         return Map.of(
             "familyManCaseNumber", "",
             "firstRespondentLastName", RESPONDENT_SURNAME,
-            "caseUrl", "http://fake-url/cases/case-details/12345",
+            "caseUrl", caseUrl(CASE_ID),
             "childLastName", CHILD_LAST_NAME
         );
     }

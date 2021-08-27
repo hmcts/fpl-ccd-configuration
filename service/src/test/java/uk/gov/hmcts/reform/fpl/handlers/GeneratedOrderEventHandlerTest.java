@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -18,10 +19,10 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -82,7 +83,7 @@ class GeneratedOrderEventHandlerTest {
     @Mock
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private RepresentativeNotificationService representativeNotificationService;
     @Mock
@@ -107,8 +108,8 @@ class GeneratedOrderEventHandlerTest {
     void before() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(CASE_DATA).build()
         )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(CASE_DATA, TEST_DOCUMENT, GENERATED_ORDER))
@@ -143,7 +144,7 @@ class GeneratedOrderEventHandlerTest {
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             NOTIFY_DATA_WITH_CASE_URL,
-            CASE_ID.toString()
+            CASE_ID
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -187,7 +188,7 @@ class GeneratedOrderEventHandlerTest {
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             NOTIFY_DATA_WITH_CASE_URL,
-            CASE_ID.toString()
+            CASE_ID
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -240,8 +241,8 @@ class GeneratedOrderEventHandlerTest {
         final Representative representative2 = mock(Representative.class);
         final RespondentParty otherRespondent = mock(RespondentParty.class);
 
-        given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(List.of(representative,
-            representative2));
+        given(sendDocumentService.getStandardRecipients(CASE_DATA))
+            .willReturn(List.of(representative, representative2));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST),
             eq(CASE_DATA), eq(LAST_GENERATED_ORDER_OTHERS), any()))
             .willReturn(Set.of(representative));
@@ -273,5 +274,15 @@ class GeneratedOrderEventHandlerTest {
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendOrderDoNotSentIfNeedTranslation() {
+        given(lastGeneratedOrder.isNewVersion()).willReturn(false);
+        given(lastGeneratedOrder.getNeedTranslation()).willReturn(YesNo.YES);
+
+        underTest.sendOrderByPost(EVENT);
+
+        verifyNoInteractions(sendDocumentService,notificationService);
     }
 }

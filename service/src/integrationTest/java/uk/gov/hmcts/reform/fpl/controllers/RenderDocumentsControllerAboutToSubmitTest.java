@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -30,19 +28,12 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     @MockBean
     private DocumentUploadHelper documentUploadHelper;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     RenderDocumentsControllerAboutToSubmitTest() {
         super("render-documents");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shoudlRenderIfSomeDocument(boolean isFurtherEvidenceTabEnabled) {
-
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(isFurtherEvidenceTabEnabled);
-
+    @Test
+    void shouldRenderIfDocumentsAreUpdatedInTheCase() {
         when(identityService.generateId()).thenReturn(UUID.randomUUID()).thenReturn(UUID.randomUUID());
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("siva@swansea.gov.uk");
 
@@ -54,25 +45,14 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        if (isFurtherEvidenceTabEnabled) {
-            assertThat((String) callbackResponse.getData().get("documentViewLA")).isNotEmpty();
-            assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
-            assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
-            assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
-        } else {
-            assertThat(callbackResponse.getData().get("documentViewLA")).isNull();
-            assertThat(callbackResponse.getData().get("documentViewHMCTS")).isNull();
-            assertThat(callbackResponse.getData().get("documentViewNC")).isNull();
-            assertThat((String) callbackResponse.getData().get("showFurtherEvidenceTab")).isNull();
-        }
+        assertThat((String) callbackResponse.getData().get("documentViewLA")).isNotEmpty();
+        assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
+        assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
+        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldRenderIfNoDocuments(boolean isFurtherEvidenceTabEnabled) {
-
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(isFurtherEvidenceTabEnabled);
-
+    @Test
+    void shouldRenderIfNoDocuments() {
         when(identityService.generateId()).thenReturn(UUID.randomUUID()).thenReturn(UUID.randomUUID());
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("siva@swansea.gov.uk");
 
@@ -84,17 +64,10 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        if (isFurtherEvidenceTabEnabled) {
-            assertThat((String) callbackResponse.getData().get("documentViewLA")).isNull();
-            assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNull();
-            assertThat((String) callbackResponse.getData().get("documentViewNC")).isNull();
-            assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("NO");
-        } else {
-            assertThat(callbackResponse.getData().get("documentViewLA")).isNull();
-            assertThat(callbackResponse.getData().get("documentViewHMCTS")).isNull();
-            assertThat(callbackResponse.getData().get("documentViewNC")).isNull();
-            assertThat((String) callbackResponse.getData().get("showFurtherEvidenceTab")).isNull();
-        }
+        assertThat((String) callbackResponse.getData().get("documentViewLA")).isNull();
+        assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNull();
+        assertThat((String) callbackResponse.getData().get("documentViewNC")).isNull();
+        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("NO");
     }
 
     private Map<String, Object> someCaseDataWithDocuments() {

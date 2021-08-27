@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContent
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -45,7 +47,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     CtscEmailLookupConfiguration.class, CaseDataExtractionService.class, EmailNotificationHelper.class,
     OtherRecipientsInbox.class
 })
-@MockBean(SendDocumentService.class)
+@MockBeans(value = {
+    @MockBean(SendDocumentService.class),
+    @MockBean(TranslationRequestService.class)
+})
 class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Mortarion";
     private static final String RESPONDENT_LAST_NAME = "Lorgar";

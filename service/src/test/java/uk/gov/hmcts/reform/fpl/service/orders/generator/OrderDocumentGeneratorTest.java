@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
@@ -64,7 +65,7 @@ class OrderDocumentGeneratorTest {
         when(objectMapper.convertValue(
             eq(DOCMOSIS_PARAMETERS),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(TEMPLATE_DATA);
-        when(docmosisRenderer.generateDocmosisDocument(TEMPLATE_DATA, DOCMOSIS_TEMPLATE, FORMAT))
+        when(docmosisRenderer.generateDocmosisDocument(TEMPLATE_DATA, DOCMOSIS_TEMPLATE, FORMAT, Language.ENGLISH))
             .thenReturn(DOCMOSIS_DOCUMENT);
 
         assertThat(underTest.generate(ORDER, CASE_DATA, STATUS, FORMAT)).isEqualTo(DOCMOSIS_DOCUMENT);

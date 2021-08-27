@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.CHILDSOLICITORC;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
@@ -71,7 +70,7 @@ class ManageLegalCounselServiceTest {
             .thenReturn(asList(SOLICITORB, SOLICITORC, CHILDSOLICITORA, CHILDSOLICITORC));
 
         caseData = CaseData.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .children1(testChildren())
             .respondents1(respondents())
             .build();
@@ -109,7 +108,7 @@ class ManageLegalCounselServiceTest {
             )
             .build();
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .data(caseConverter.toMap(caseData))
             .build();
 
@@ -214,7 +213,7 @@ class ManageLegalCounselServiceTest {
         LegalCounsellor legalCounsellor3 = buildLegalCounsellor("3");
 
         CaseData previousCaseData = CaseData.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .respondents1(wrapElements(
                 respondent("First", "Respondent"),
                 Respondent.builder()
@@ -226,7 +225,7 @@ class ManageLegalCounselServiceTest {
             ))
             .build();
         CaseData currentCaseData = CaseData.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .respondents1(wrapElements(
                 respondent("First", "Respondent"),
                 Respondent.builder()

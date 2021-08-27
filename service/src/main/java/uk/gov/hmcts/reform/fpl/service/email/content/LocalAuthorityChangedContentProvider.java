@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.CaseTransferredNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedLocalAuthorityChangedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -24,8 +25,8 @@ public class LocalAuthorityChangedContentProvider extends AbstractEmailContentPr
         return SharedLocalAuthorityChangedNotifyData.builder()
             .caseName(caseData.getCaseName())
             .ccdNumber(caseData.getId().toString())
-            .secondaryLocalAuthority(getSharedLocalAuthorityName(caseData))
-            .designatedLocalAuthority(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationName())
+            .secondaryLocalAuthority(getSecondaryLocalAuthorityName(caseData))
+            .designatedLocalAuthority(getDesignatedLocalAuthorityName(caseData))
             .build();
     }
 
@@ -35,8 +36,8 @@ public class LocalAuthorityChangedContentProvider extends AbstractEmailContentPr
             .caseName(caseData.getCaseName())
             .ccdNumber(caseData.getId().toString())
             .childLastName(helper.getEldestChildLastName(caseData))
-            .secondaryLocalAuthority(getSharedLocalAuthorityName(caseData))
-            .designatedLocalAuthority(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationName())
+            .secondaryLocalAuthority(getSecondaryLocalAuthorityName(caseData))
+            .designatedLocalAuthority(getDesignatedLocalAuthorityName(caseData))
             .build();
     }
 
@@ -46,16 +47,37 @@ public class LocalAuthorityChangedContentProvider extends AbstractEmailContentPr
         return SharedLocalAuthorityChangedNotifyData.builder()
             .caseName(caseData.getCaseName())
             .ccdNumber(caseData.getId().toString())
-            .secondaryLocalAuthority(getSharedLocalAuthorityName(caseDataBefore))
-            .designatedLocalAuthority(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationName())
+            .secondaryLocalAuthority(getSecondaryLocalAuthorityName(caseDataBefore))
+            .designatedLocalAuthority(getDesignatedLocalAuthorityName(caseData))
             .build();
     }
 
-    private String getSharedLocalAuthorityName(CaseData caseData) {
-        return Optional.ofNullable(caseData.getSharedLocalAuthorityPolicy())
+    public CaseTransferredNotifyData getCaseTransferredNotifyData(CaseData caseData, CaseData caseDataBefore) {
+
+        return CaseTransferredNotifyData.builder()
+            .caseName(caseData.getCaseName())
+            .ccdNumber(caseData.getId().toString())
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .childLastName(helper.getEldestChildLastName(caseData))
+            .newDesignatedLocalAuthority(getDesignatedLocalAuthorityName(caseData))
+            .prevDesignatedLocalAuthority(getDesignatedLocalAuthorityName(caseDataBefore))
+            .build();
+    }
+
+    private String getDesignatedLocalAuthorityName(CaseData caseData) {
+        return getOrganisationName(caseData.getLocalAuthorityPolicy()).orElseThrow(() ->
+            new LocalAuthorityNotFound("Designated local authority name not found for case " + caseData.getId()));
+    }
+
+    private String getSecondaryLocalAuthorityName(CaseData caseData) {
+        return getOrganisationName(caseData.getSharedLocalAuthorityPolicy()).orElseThrow(() ->
+            new LocalAuthorityNotFound("Secondary local authority name not found for case " + caseData.getId()));
+    }
+
+    private Optional<String> getOrganisationName(OrganisationPolicy organisationPolicy) {
+        return Optional.ofNullable(organisationPolicy)
             .map(OrganisationPolicy::getOrganisation)
-            .map(Organisation::getOrganisationName)
-            .orElseThrow(() -> new LocalAuthorityNotFound("Secondary local authority for case " + caseData.getId()));
+            .map(Organisation::getOrganisationName);
     }
 
 }

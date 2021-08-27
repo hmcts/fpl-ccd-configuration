@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -27,7 +30,8 @@ public class LocalAuthority {
     private String pbaNumber;
     private String clientCode;
     private String customerReference;
-    private List<Element<Colleague>> colleagues;
+    @Builder.Default
+    private List<Element<Colleague>> colleagues = new ArrayList<>();
     private String designated;
 
     @JsonIgnore
@@ -40,7 +44,16 @@ public class LocalAuthority {
     @JsonIgnore
     public Optional<Colleague> getMainContact() {
         return unwrapElements(colleagues).stream()
-            .filter(colleague -> YesNo.YES.getValue().equals(colleague.getMainContact()))
+            .filter(colleague -> YES.getValue().equals(colleague.getMainContact()))
             .findFirst();
+    }
+
+    @JsonIgnore
+    public List<String> getContactEmails() {
+        return unwrapElements(colleagues).stream()
+            .filter(colleague -> YES.getValue().equals(colleague.getNotificationRecipient()))
+            .map(Colleague::getEmail)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
     }
 }
