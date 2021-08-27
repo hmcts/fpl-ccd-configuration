@@ -32,8 +32,8 @@ public class CaseFlagController extends CallbackController {
 
         YesNo currentCaseFlag = YesNo.fromString(caseData.getCaseFlagAdded());
         YesNo oldCaseFlag = YesNo.fromString(caseDataBefore.getCaseFlagAdded());
-        caseData.setCaseFlagValueUpdated(YesNo.from(YES == currentCaseFlag && List.of(NOT_SPECIFIED, NO).contains(oldCaseFlag)));
-
+        caseData.setCaseFlagValueUpdated(YesNo.from(YES == currentCaseFlag
+            && List.of(NOT_SPECIFIED, NO).contains(oldCaseFlag)));
 
         publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
     }
