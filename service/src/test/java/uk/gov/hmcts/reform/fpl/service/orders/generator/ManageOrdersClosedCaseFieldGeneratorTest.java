@@ -19,9 +19,11 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 
 @ExtendWith({MockitoExtension.class})
 public class ManageOrdersClosedCaseFieldGeneratorTest {
@@ -38,8 +40,8 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     private ManageOrdersClosedCaseFieldGenerator underTest;
 
     @Test
-    void shouldCloseCase() {
-        CaseData caseData = buildCaseData("Yes", "No", C32A_CARE_ORDER);
+    void shouldCloseCaseWhenFinalOrder() {
+        CaseData caseData = buildCaseData("Yes", "Yes", C32A_CARE_ORDER);
 
         when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
@@ -53,6 +55,15 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
         assertThat(generatedData).containsAllEntriesOf(expectedData);
         assertThat(generatedData).containsKey("children1");
+    }
+
+    @Test
+    void shouldNotCloseCaseAndReturnEmptyMapWhenNotFinalOrder() {
+        CaseData caseData = buildCaseData("Yes", "No", C32B_DISCHARGE_OF_CARE_ORDER);
+
+        Map<String, Object> generatedData = underTest.generate(caseData);
+
+        assertThat(generatedData).isEmpty();
     }
 
     @Test
