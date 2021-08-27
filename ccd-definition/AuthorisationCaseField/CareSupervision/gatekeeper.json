@@ -1285,7 +1285,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingDurationLabel",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
