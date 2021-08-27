@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
@@ -151,6 +153,9 @@ public class ManageHearingsController extends CallbackController {
             HearingBooking hearingBooking = hearingsService
                 .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
                 .orElse(HearingBooking.builder().build());
+
+            caseDetails.getData().put("showVacatePastHearingWarning",
+                BooleanUtils.toString(hearingBooking.getEndDate().isBefore(now()), "Yes", "No"));
 
             errors.addAll(pastHearingDatesValidatorService.validateVacatedDate(hearingBooking.getEndDate(),
                 caseData.getVacatedHearingDate()));
