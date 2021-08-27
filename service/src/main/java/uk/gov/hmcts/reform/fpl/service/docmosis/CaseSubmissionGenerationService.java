@@ -49,7 +49,6 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.service.translations.utils.TranslationContext;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -92,8 +91,6 @@ public class CaseSubmissionGenerationService
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
             .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
-
-        TranslationContext.setApplicationLanguage(applicationLanguage);
 
         return DocmosisCaseSubmission.builder()
             .applicantOrganisations(getApplicantsOrganisations(caseData))
