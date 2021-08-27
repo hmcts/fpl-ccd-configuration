@@ -4,10 +4,10 @@ module.exports = {
   fields: {
     addFlag: {
       yes: '#caseFlagAdded_Yes',
-      no: '#caseFlagAdded_No'
+      no: '#caseFlagAdded_No',
     },
     redDotAssessmentForm: '#redDotAssessmentForm',
-    notes: '#caseFlagNotes'
+    notes: '#caseFlagNotes',
   },
 
   addCaseFlag() {
@@ -15,7 +15,7 @@ module.exports = {
   },
 
   removeCaseFlag() {
-      I.click(this.fields.addFlag.no);
+    I.click(this.fields.addFlag.no);
   },
 
   async uploadRedDotAssessmentForm(document) {
@@ -24,5 +24,5 @@ module.exports = {
 
   addAdditionalNotes(){
     I.fillField(this.fields.notes, 'Additional case flag notes');
-  }
+  },
 };
