@@ -155,7 +155,10 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "CR"
       }
