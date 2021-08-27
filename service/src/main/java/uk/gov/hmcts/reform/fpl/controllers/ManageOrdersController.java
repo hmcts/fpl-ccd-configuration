@@ -106,8 +106,10 @@ public class ManageOrdersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = fixAndRetrieveCaseData(caseDetails);
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
+
+        Map<String, Object> data = updatedDetails.getData();
+        CaseData caseData = fixAndRetrieveCaseData(updatedDetails);
 
         data.putAll(orderProcessing.process(caseData));
 

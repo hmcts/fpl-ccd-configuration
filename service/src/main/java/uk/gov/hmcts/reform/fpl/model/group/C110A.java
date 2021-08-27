@@ -77,6 +77,12 @@ public class C110A implements TranslatableItem {
 
     @Override
     @JsonIgnore
+    public DocumentReference getDocument() {
+        return submittedForm;
+    }
+
+    @Override
+    @JsonIgnore
     public LanguageTranslationRequirement getTranslationRequirements() {
         return defaultIfNull(submittedFormTranslationRequirements, NO);
     }
