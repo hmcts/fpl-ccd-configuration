@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -242,16 +243,126 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .pbaNumber(legacyApplicant.getPbaNumber())
                 .customerReference(legacyApplicant.getCustomerReference())
                 .clientCode(legacyApplicant.getClientCode())
-                .colleagues(ElementUtils.wrapElements(Colleague.builder()
-                    .role(SOLICITOR)
-                    .email(legacySolicitor.getEmail())
-                    .dx(legacySolicitor.getDx())
-                    .reference(legacySolicitor.getReference())
-                    .fullName(legacySolicitor.getName())
-                    .phone(legacySolicitor.getTelephone())
-                    .notificationRecipient("Yes")
-                    .mainContact("Yes")
-                    .build()))
+                .colleagues(ElementUtils.wrapElements(
+                    Colleague.builder()
+                        .role(OTHER)
+                        .email(legacyApplicant.getEmail().getEmail())
+                        .title(legacyApplicant.getJobTitle())
+                        .phone("0777777777")
+                        .mainContact("Yes")
+                        .notificationRecipient("Yes")
+                        .build(),
+                    Colleague.builder()
+                        .role(SOLICITOR)
+                        .email(legacySolicitor.getEmail())
+                        .dx(legacySolicitor.getDx())
+                        .reference(legacySolicitor.getReference())
+                        .fullName(legacySolicitor.getName())
+                        .phone(legacySolicitor.getTelephone())
+                        .notificationRecipient("Yes")
+                        .mainContact("No")
+                        .build()))
+                .build();
+
+            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
+
+            assertThat(responseData.getLocalAuthorities())
+                .extracting(Element::getValue)
+                .containsExactly(expectedLocalAuthority);
+        }
+
+        @Test
+        void shouldUseMobileNumberWhenNoTelephoneNumber() {
+
+            final ApplicantParty applicant = legacyApplicant.toBuilder()
+                .telephoneNumber(Telephone.builder()
+                    .telephoneNumber(null)
+                    .build())
+                .build();
+
+            final Solicitor solicitor = legacySolicitor.toBuilder()
+                .telephone("")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .applicants(wrapElements(Applicant.builder().party(applicant).build()))
+                .solicitor(solicitor)
+                .localAuthorityPolicy(designatedOrg)
+                .build();
+
+            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .id(designatedOrg.getOrganisation().getOrganisationID())
+                .name(applicant.getOrganisationName())
+                .designated("Yes")
+                .address(applicant.getAddress())
+                .email(applicant.getEmail().getEmail())
+                .phone(applicant.getMobileNumber().getTelephoneNumber())
+                .pbaNumber(applicant.getPbaNumber())
+                .customerReference(applicant.getCustomerReference())
+                .clientCode(applicant.getClientCode())
+                .colleagues(ElementUtils.wrapElements(
+                    Colleague.builder()
+                        .role(OTHER)
+                        .email(applicant.getEmail().getEmail())
+                        .title(applicant.getJobTitle())
+                        .phone(applicant.getMobileNumber().getTelephoneNumber())
+                        .mainContact("Yes")
+                        .notificationRecipient("Yes")
+                        .build(),
+                    Colleague.builder()
+                        .role(SOLICITOR)
+                        .email(solicitor.getEmail())
+                        .dx(solicitor.getDx())
+                        .reference(solicitor.getReference())
+                        .fullName(solicitor.getName())
+                        .phone(solicitor.getMobile())
+                        .notificationRecipient("Yes")
+                        .mainContact("No")
+                        .build()))
+                .build();
+
+            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
+
+            assertThat(responseData.getLocalAuthorities())
+                .extracting(Element::getValue)
+                .containsExactly(expectedLocalAuthority);
+        }
+
+        @Test
+        void shouldMarkSolicitorAsMainContactWhenNoDataForOtherColleague() {
+
+            final ApplicantParty applicant = legacyApplicant.toBuilder()
+                .email(null)
+                .jobTitle(null)
+                .mobileNumber(null)
+                .telephoneNumber(null)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .applicants(wrapElements(Applicant.builder().party(applicant).build()))
+                .solicitor(legacySolicitor)
+                .localAuthorityPolicy(designatedOrg)
+                .build();
+
+            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .id(designatedOrg.getOrganisation().getOrganisationID())
+                .name(applicant.getOrganisationName())
+                .designated("Yes")
+                .address(applicant.getAddress())
+                .pbaNumber(applicant.getPbaNumber())
+                .customerReference(applicant.getCustomerReference())
+                .clientCode(applicant.getClientCode())
+                .colleagues(ElementUtils.wrapElements(
+                    Colleague.builder()
+                        .role(SOLICITOR)
+                        .email(legacySolicitor.getEmail())
+                        .dx(legacySolicitor.getDx())
+                        .reference(legacySolicitor.getReference())
+                        .fullName(legacySolicitor.getName())
+                        .phone(legacySolicitor.getTelephone())
+                        .notificationRecipient("Yes")
+                        .mainContact("Yes")
+                        .build()))
                 .build();
 
             CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
@@ -279,6 +390,47 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .pbaNumber(legacyApplicant.getPbaNumber())
                 .customerReference(legacyApplicant.getCustomerReference())
                 .clientCode(legacyApplicant.getClientCode())
+                .colleagues(ElementUtils.wrapElements(
+                    Colleague.builder()
+                        .role(OTHER)
+                        .email(legacyApplicant.getEmail().getEmail())
+                        .title(legacyApplicant.getJobTitle())
+                        .phone("0777777777")
+                        .mainContact("Yes")
+                        .notificationRecipient("Yes")
+                        .build()))
+                .build();
+
+            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
+
+            assertThat(responseData.getLocalAuthorities())
+                .extracting(Element::getValue)
+                .containsExactly(expectedLocalAuthority);
+        }
+
+        @Test
+        void shouldMigrateLegacyApplicantWithoutColleagues() {
+
+            final ApplicantParty applicant = legacyApplicant.toBuilder()
+                .email(null)
+                .jobTitle(null)
+                .mobileNumber(null)
+                .telephoneNumber(null)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .applicants(wrapElements(Applicant.builder().party(applicant).build()))
+                .localAuthorityPolicy(designatedOrg)
+                .build();
+
+            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .id(designatedOrg.getOrganisation().getOrganisationID())
+                .name(applicant.getOrganisationName())
+                .designated("Yes")
+                .address(applicant.getAddress())
+                .pbaNumber(applicant.getPbaNumber())
+                .customerReference(applicant.getCustomerReference())
+                .clientCode(applicant.getClientCode())
                 .colleagues(emptyList())
                 .build();
 

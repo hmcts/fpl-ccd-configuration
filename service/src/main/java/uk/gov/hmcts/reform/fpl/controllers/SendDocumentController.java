@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
 
@@ -59,7 +60,7 @@ public class SendDocumentController extends CallbackController {
             List<SentDocument> sentDocuments = sendLetterService.send(documentToBeSent,
                 representativesServedByPost,
                 caseDetails.getId(),
-                caseData.getFamilyManCaseNumber());
+                caseData.getFamilyManCaseNumber(), Language.ENGLISH);
 
             updateSentDocumentsHistory(caseDetails, sentDocuments);
         } else {
