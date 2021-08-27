@@ -953,7 +953,7 @@ public class CaseData {
     private final String noticeOfHearingNotes;
     private final Object hearingDateList;
     private final Object pastAndTodayHearingDateList;
-    private final Object toVacateHearingDateList;
+    private final Object vacateHearingDateList;
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
