@@ -47,19 +47,19 @@ class FurtherEvidenceDocumentsBundlesTransformerTest {
 
     public static final Element<SupportingEvidenceBundle> ADMIN_HEARING_CONFIDENTIAL_DOCUMENT =
         buildFurtherEvidenceBundle(
-            "Admin hearing evidence1", "HMCTS", true, EXPERT_REPORTS, now());
+            "Admin hearing evidence1", "HMCTS", true, EXPERT_REPORTS, now(), null, null);
 
     public static final Element<SupportingEvidenceBundle> ADMIN_HEARING_NON_CONFIDENTIAL_DOCUMENT =
         buildFurtherEvidenceBundle(
-            "Admin hearing evidence2", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1));
+            "Admin hearing evidence2", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1), null, null);
 
     public static final Element<SupportingEvidenceBundle> LA_HEARING_CONFIDENTIAL_DOCUMENT =
         buildFurtherEvidenceBundle(
-            "LA uploaded evidence1", "Kurt LA", true, GUARDIAN_REPORTS, now().minusMinutes(2));
+            "LA uploaded evidence1", "Kurt LA", true, GUARDIAN_REPORTS, now().minusMinutes(2), null, null);
 
     public static final Element<SupportingEvidenceBundle> LA_HEARING_NON_CONFIDENTIAL_DOCUMENT =
         buildFurtherEvidenceBundle(
-            "LA uploaded evidence2", "Kurt LA", false, GUARDIAN_REPORTS, now().minusMinutes(3));
+            "LA uploaded evidence2", "Kurt LA", false, GUARDIAN_REPORTS, now().minusMinutes(3), null, null);
 
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments
         = buildFurtherEvidenceDocuments();

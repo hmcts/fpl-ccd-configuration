@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
@@ -14,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FurtherEvidenceUploadedEventHandler {
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
+    private final FurtherEvidenceUploadDifferenceCalculator furtherEvidenceDifferenceCalculator;
+    private final TranslationRequestService translationRequestService;
     private final SendDocumentService sendDocumentService;
     private static final String PDF = "pdf";
 
@@ -134,5 +140,16 @@ public class FurtherEvidenceUploadedEventHandler {
         } else {
             return caseData.getFurtherEvidenceDocuments();
         }
+    }
+
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(FurtherEvidenceUploadedEvent event) {
+        furtherEvidenceDifferenceCalculator.calculate(event.getCaseData(), event.getCaseDataBefore())
+            .forEach(bundle -> translationRequestService.sendRequest(event.getCaseData(),
+                Optional.ofNullable(bundle.getValue().getTranslationRequirements()),
+                bundle.getValue().getDocument(), bundle.getValue().asLabel())
+            );
     }
 }

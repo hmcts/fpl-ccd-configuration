@@ -85,7 +85,6 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     private OrganisationApi orgApi;
 
-
     NoticeOfChangeControllerSubmittedTest() {
         super("noc-decision");
     }
@@ -176,7 +175,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseData caseData = caseDataBefore.toBuilder()
             .respondents1(List.of(OTHER_RESPONDENT, element(
-                Respondent.builder()
+                OLD_RESPONDENT.getId(), Respondent.builder()
                     .legalRepresentation("Yes")
                     .party(RESPONDENT_PARTY)
                     .solicitor(NEW_REGISTERED_SOLICITOR)

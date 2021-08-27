@@ -211,6 +211,12 @@ public class HearingBooking implements TranslatableItem {
 
     @Override
     @JsonIgnore
+    public DocumentReference getDocument() {
+        return noticeOfHearing;
+    }
+
+    @Override
+    @JsonIgnore
     public String asLabel() {
         return String.format("Notice of hearing - %s", formatLocalDateTimeBaseUsingFormat(startDate, DATE));
     }
