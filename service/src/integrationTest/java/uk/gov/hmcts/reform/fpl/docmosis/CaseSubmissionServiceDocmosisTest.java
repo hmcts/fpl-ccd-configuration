@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.docmosis;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -96,7 +95,6 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
     }
 
     @Test
-    @Disabled
     void testC110aWelsh() throws IOException {
 
         caseData = populatedCaseData().toBuilder()
