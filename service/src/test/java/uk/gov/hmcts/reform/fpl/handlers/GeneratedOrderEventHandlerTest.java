@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -273,5 +274,15 @@ class GeneratedOrderEventHandlerTest {
 
         verifyNoMoreInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendOrderDoNotSentIfNeedTranslation() {
+        given(lastGeneratedOrder.isNewVersion()).willReturn(false);
+        given(lastGeneratedOrder.getNeedTranslation()).willReturn(YesNo.YES);
+
+        underTest.sendOrderByPost(EVENT);
+
+        verifyNoInteractions(sendDocumentService,notificationService);
     }
 }
