@@ -415,7 +415,7 @@ public class ManageDocumentService {
         Predicate<Element<SupportingEvidenceBundle>> selectedFilter;
 
         if (!user.isHmctsUser()) {
-            if (user.hasAnyCaseRoleFrom(representativeSolicitors(), caseId.toString())) {
+            if (user.hasAnyCaseRoleFrom(representativeSolicitors(), caseId)) {
                 selectedFilter = SOLICITOR_FILTER;
             } else {
                 //local authority

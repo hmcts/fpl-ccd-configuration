@@ -6,15 +6,16 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -38,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CaseManagementOrderIssuedEventHandler {
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final NotificationService notificationService;
     private final CaseManagementOrderEmailContentProvider contentProvider;
@@ -63,11 +64,13 @@ public class CaseManagementOrderIssuedEventHandler {
         final IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(
             caseData, issuedCmo, DIGITAL_SERVICE);
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
-        notificationService.sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, emails, notifyData, caseData.getId().toString()
-        );
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
+
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+        notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, recipients, notifyData, caseData.getId());
     }
 
     @EventListener
@@ -125,6 +128,11 @@ public class CaseManagementOrderIssuedEventHandler {
     @Async
     @EventListener
     public void sendDocumentToPostRepresentatives(final CaseManagementOrderIssuedEvent event) {
+
+        if (event.getCmo().getNeedTranslation() == YesNo.YES) {
+            return;
+        }
+
         CaseData caseData = event.getCaseData();
         HearingOrder issuedCmo = event.getCmo();
 

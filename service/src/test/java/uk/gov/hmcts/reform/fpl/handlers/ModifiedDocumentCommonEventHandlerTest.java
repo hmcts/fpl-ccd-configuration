@@ -15,10 +15,10 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.ModifiedItemEmailContentProviderResponse;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderAmendedNotifyData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -69,7 +69,7 @@ class ModifiedDocumentCommonEventHandlerTest {
     @Mock
     private ModifiedItemEmailContentProviderStrategy emailContentProviderStrategy;
     @Mock
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private RepresentativeNotificationService representativeNotificationService;
     @Mock
@@ -88,9 +88,7 @@ class ModifiedDocumentCommonEventHandlerTest {
     void before() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(CASE_DATA).build()
-        )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(localAuthorityRecipients.getRecipients(any())).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(amendedOrderEmailContentProvider.getNotifyData(CASE_DATA, TEST_DOCUMENT, "Case management order"))
             .willReturn(NOTIFY_DATA);
@@ -109,12 +107,19 @@ class ModifiedDocumentCommonEventHandlerTest {
     void shouldNotifyLocalAuthorityWhenOrderAmended() {
         underTest.notifyLocalAuthority(EVENT);
 
+        final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
+            .caseData(CASE_DATA)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
+
         verify(notificationService).sendEmail(
             ORDER_AMENDED_NOTIFICATION_TEMPLATE,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             NOTIFY_DATA,
-            CASE_ID.toString()
+            CASE_ID
         );
+
+        verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
     }
 
     @Test
@@ -195,7 +200,7 @@ class ModifiedDocumentCommonEventHandlerTest {
             ORDER_AMENDED_NOTIFICATION_TEMPLATE,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             NOTIFY_DATA,
-            CASE_ID.toString()
+            CASE_ID
         );
 
         verify(representativeNotificationService, never()).sendNotificationToRepresentatives(

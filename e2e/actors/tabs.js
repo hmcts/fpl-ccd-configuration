@@ -149,6 +149,35 @@ module.exports = {
       .withText('mockFile.txt'));
   },
 
+  seeInExpandedDocumentSentForTranslation(title, uploadedBy, dateTimeUploaded) {
+    this.waitForElement(locate('details').withAttr({open})
+      .withChild(locate('summary')
+        .withText(title))
+      .withChild(locate('div'))
+      .withText('Uploaded by')
+      .withText(uploadedBy)
+      .withText('Date and time uploaded')
+      .withText(dateTimeUploaded)
+      .withText('Document')
+      .withText('mockFile.pdf')
+      .withText('Sent for translation'));
+  },
+
+  seeInExpandedDocumentTranslated(title, uploadedBy, dateTimeUploaded) {
+    this.waitForElement(locate('details').withAttr({open})
+      .withChild(locate('summary')
+        .withText(title))
+      .withChild(locate('div'))
+      .withText('Uploaded by')
+      .withText(uploadedBy)
+      .withText('Date and time uploaded')
+      .withText(dateTimeUploaded)
+      .withText('Document')
+      .withText('mockFile.pdf')
+      .withText('Translated document')
+      .withText('mockFile-Welsh.pdf'));
+  },
+
   dontSeeDocumentSection(documentSection, documentTitle) {
     this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
       .inside(locate('details').withChild(locate('summary').withText(documentSection))));

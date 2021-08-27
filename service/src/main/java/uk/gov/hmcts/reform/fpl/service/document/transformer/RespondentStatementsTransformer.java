@@ -98,6 +98,8 @@ public class RespondentStatementsTransformer {
             .sorted(comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
+                .translatedDocument(doc.getTranslatedDocument())
+                .sentForTranslation(doc.sentForTranslation())
                 .fileName(doc.getName())
                 .type(RESPONDENT_STATEMENT_DOCUMENT)
                 .uploadedAt(isNotEmpty(doc.getDateTimeUploaded())

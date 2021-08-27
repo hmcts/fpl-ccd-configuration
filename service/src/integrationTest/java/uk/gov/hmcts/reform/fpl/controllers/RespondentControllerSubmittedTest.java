@@ -8,7 +8,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
@@ -94,6 +93,8 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
         .syntheticCaseSummary(SyntheticCaseSummary.builder()
             .caseSummaryCourtName(COURT_NAME)
+            .caseSummaryLanguageRequirement("No")
+            .caseSummaryLALanguageRequirement("No")
             .build())
         .respondents1(respondents)
         .build();
@@ -103,8 +104,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private OrganisationApi orgApi;
-    @MockBean
-    private CaseAccessDataStoreApi accessApi;
+
     @MockBean
     private NotificationClient notificationClient;
 
@@ -265,7 +265,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             ))
             .build();
 
-        verify(accessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
+        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, revokeRequestPayload);
 
         Map<String, Object> notifyData = Map.of(
             "caseName", CASE_NAME,

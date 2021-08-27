@@ -6,6 +6,7 @@ public enum ModifiedOrderType {
     STANDARD_DIRECTION_ORDER("Standard direction order"),
     CASE_MANAGEMENT_ORDER("Case management order"),
     NOTICE_OF_PROCEEDINGS("Notice of Proceedings"),
+    ANY_DOCUMENT("Document"),
     NOTICE_OF_HEARING("Notice of Hearing");
 
     private final String label;

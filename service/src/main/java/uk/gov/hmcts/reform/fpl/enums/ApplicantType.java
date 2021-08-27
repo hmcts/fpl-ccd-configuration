@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public enum ApplicantType {
     LOCAL_AUTHORITY("Applicant"),
+    SECONDARY_LOCAL_AUTHORITY("Secondary"),
     RESPONDENT("Respondent"),
     OTHER("");
 

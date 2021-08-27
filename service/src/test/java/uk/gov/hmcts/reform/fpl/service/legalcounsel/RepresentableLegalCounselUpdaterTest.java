@@ -22,20 +22,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondentWithSolicitor;
 
 class RepresentableLegalCounselUpdaterTest {
-    private static final Representing REPRESENTING = Representing.RESPONDENT;
+    private static final Representing RESPONDENT = Representing.RESPONDENT;
     private static final String ORG_1_ID = "123";
     private static final String ORG_2_ID = "456";
     private static final String ORG_1_NAME = "Org name";
     private static final String ORG_2_NAME = "Org name2";
+    private static final UUID UUID_1 = UUID.randomUUID();
+    private static final UUID UUID_2 = UUID.randomUUID();
 
     private final UnregisteredOrganisation unregisteredOrganisation = mock(UnregisteredOrganisation.class);
     private final uk.gov.hmcts.reform.rd.model.Organisation prdOrg1 = mock(
@@ -79,10 +83,12 @@ class RepresentableLegalCounselUpdaterTest {
             .legalCounsellors(legalCounsel)
             .build();
 
-        List<Element<Respondent>> previousRespondents = wrapElements(respondent1, respondent2);
-        List<Element<Respondent>> currentRespondents = wrapElements(
-            respondent1.toBuilder().solicitor(null).build(),
-            respondent2
+        List<Element<Respondent>> previousRespondents = List.of(
+            element(UUID_1, respondent1), element(UUID_2, respondent2)
+        );
+        List<Element<Respondent>> currentRespondents = List.of(
+            element(UUID_1, respondent1.toBuilder().solicitor(null).build()),
+            element(UUID_2, respondent2)
         );
 
         List<Element<Respondent>> updated = underTest.updateLegalCounsel(
@@ -113,7 +119,7 @@ class RepresentableLegalCounselUpdaterTest {
             .build();
 
         List<Element<Respondent>> updated = underTest.updateLegalCounsel(
-            wrapElements(respondentBefore), wrapElements(respondentAfter), List.of()
+            List.of(element(UUID_1, respondentBefore)), List.of(element(UUID_1, respondentAfter)), List.of()
         );
 
         assertThat(updated).hasSize(1);
@@ -139,7 +145,9 @@ class RepresentableLegalCounselUpdaterTest {
             .build();
 
         List<Element<Respondent>> updated = underTest.updateLegalCounsel(
-            wrapElements(respondentBefore), wrapElements(respondentAfter), List.of()
+            List.of(element(UUID_1, respondentBefore)),
+            List.of(element(UUID_1, respondentAfter)),
+            List.of()
         );
 
         assertThat(updated).hasSize(1);
@@ -167,16 +175,16 @@ class RepresentableLegalCounselUpdaterTest {
             .build();
 
         List<Element<Respondent>> updated = underTest.updateLegalCounsel(
-            wrapElements(respondent1Before, respondent2Before),
-            wrapElements(respondent1After, respondent2After),
+            List.of(element(UUID_1, respondent1Before), element(UUID_2, respondent2Before)),
+            List.of(element(UUID_1, respondent1After), element(UUID_2, respondent2After)),
             List.of()
         );
 
         assertThat(updated).hasSize(2);
-        assertThat(updated.get(0)
-            .getValue()
-            .getLegalCounsellors()).isEqualTo(legalCounsel1);//Legal counsel from the other organisation was copied over
-        assertThat(updated.get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounsel1);//Legal counsel kept intact
+        //Legal counsel from the other organisation was copied over
+        assertThat(updated.get(0).getValue().getLegalCounsellors()).isEqualTo(legalCounsel1);
+        //Legal counsel kept intact
+        assertThat(updated.get(1).getValue().getLegalCounsellors()).isEqualTo(legalCounsel1);
     }
 
     @Test
@@ -217,8 +225,8 @@ class RepresentableLegalCounselUpdaterTest {
             .build();
 
         List<Element<Respondent>> updated = underTest.updateLegalCounsel(
-            wrapElements(respondent1Before, respondent2Before),
-            wrapElements(respondent1After, respondent2After),
+            List.of(element(UUID_1, respondent1Before), element(UUID_2, respondent2Before)),
+            List.of(element(UUID_1, respondent1After), element(UUID_2, respondent2After)),
             List.of()
         );
 
@@ -258,12 +266,36 @@ class RepresentableLegalCounselUpdaterTest {
             .build();
 
         List<Element<Child>> updated = underTest.updateLegalCounsel(
-            wrapElements(childBefore), wrapElements(childAfter), wrapElements(respondentBefore)
+            List.of(element(UUID_1, childBefore)), List.of(element(UUID_1, childAfter)), wrapElements(respondentBefore)
         );
 
         assertThat(updated).hasSize(1);
         //Legal counsel from the other organisation was copied over
         assertThat(updated.get(0).getValue().getLegalCounsellors()).isEqualTo(legalCounsel2);
+    }
+
+    @Test
+    void shouldUpdatedWhenRepresentableIsRemoved() {
+        List<Element<LegalCounsellor>> legalCounsel = wrapElements(legalCounsellor1);
+        Respondent respondent1 = respondentWithSolicitor().toBuilder()
+            .legalCounsellors(legalCounsel)
+            .build();
+        Respondent respondent2 = respondentWithSolicitor().toBuilder()
+            .legalCounsellors(legalCounsel)
+            .build();
+
+        List<Element<Respondent>> previousRespondents = List.of(
+            element(UUID_1, respondent1), element(UUID_2, respondent2)
+        );
+        List<Element<Respondent>> currentRespondents = List.of(
+            element(UUID_1, respondent1)
+        );
+
+        List<Element<Respondent>> updated = underTest.updateLegalCounsel(
+            previousRespondents, currentRespondents, List.of()
+        );
+
+        assertThat(updated).hasSize(1).containsOnly(element(UUID_1, respondent1));
     }
 
     @Test
@@ -283,8 +315,8 @@ class RepresentableLegalCounselUpdaterTest {
             .legalCounsellors(wrapElements(legalCounsellor2))
             .build();
 
-        when(caseData.getAllChildren()).thenReturn(wrapElements(childAfter));
-        when(caseDataBefore.getAllChildren()).thenReturn(wrapElements(childBefore));
+        when(caseData.getAllChildren()).thenReturn(List.of(element(UUID_1, childAfter)));
+        when(caseDataBefore.getAllChildren()).thenReturn(List.of(element(UUID_1, childBefore)));
         when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent));
 
         when(caseData.getChangeOrganisationRequestField()).thenReturn(
@@ -292,7 +324,7 @@ class RepresentableLegalCounselUpdaterTest {
                 .caseRoleId(DynamicList.builder()
                     .value(DynamicListElement.builder().code("[CHILDSOLICITORA]").build())
                     .build())
-            .build()
+                .build()
         );
 
         when(solicitor1.getOrganisation()).thenReturn(organisation1);
@@ -302,7 +334,7 @@ class RepresentableLegalCounselUpdaterTest {
 
         Child expectedChild = Child.builder().solicitor(solicitor2).legalCounsellors(List.of()).build();
         assertThat(updated).isEqualTo(Map.of(
-            "children1", wrapElements(expectedChild)
+            "children1", List.of(element(UUID_1, expectedChild))
         ));
     }
 
@@ -324,8 +356,8 @@ class RepresentableLegalCounselUpdaterTest {
             .build();
 
         when(caseData.getAllChildren()).thenReturn(wrapElements(child));
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondentAfter));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondentBefore));
+        when(caseData.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondentAfter)));
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondentBefore)));
 
         when(solicitor1.getOrganisation()).thenReturn(organisation1);
         when(solicitor2.getOrganisation()).thenReturn(organisation2);
@@ -342,7 +374,7 @@ class RepresentableLegalCounselUpdaterTest {
 
         Respondent expectedRespondent = Respondent.builder().solicitor(solicitor2).legalCounsellors(List.of()).build();
         assertThat(updated).isEqualTo(Map.of(
-            "respondents1", wrapElements(expectedRespondent)
+            "respondents1", List.of(element(UUID_1, expectedRespondent))
         ));
     }
 
@@ -352,7 +384,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(caseDataBefore.getAllChildren()).thenReturn(List.of());
 
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
-            caseData, caseDataBefore, REPRESENTING
+            caseData, caseDataBefore, RESPONDENT
         );
 
         assertThat(events).isEmpty();
@@ -360,8 +392,8 @@ class RepresentableLegalCounselUpdaterTest {
 
     @Test
     void shouldNotBuildAnyEventsWhenSolicitorHasChangedButNoLegalCounsellorsEverPresent() {
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent1));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondent2));
+        when(caseData.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent1)));
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent2)));
 
         when(respondent1.getSolicitor()).thenReturn(solicitor1);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
@@ -374,7 +406,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(prdOrg1.getName()).thenReturn(ORG_1_NAME);
 
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
-            caseData, caseDataBefore, REPRESENTING
+            caseData, caseDataBefore, RESPONDENT
         );
 
         assertThat(events).isEmpty();
@@ -382,8 +414,8 @@ class RepresentableLegalCounselUpdaterTest {
 
     @Test
     void shouldBuildEventsWhenSolicitorHasChangedAndLegalCounsellorsRemoved() {
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent1));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondent2));
+        when(caseData.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent1)));
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent2)));
 
         when(respondent1.getSolicitor()).thenReturn(solicitor1);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
@@ -396,7 +428,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(prdOrg1.getName()).thenReturn(ORG_1_NAME);
 
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
-            caseData, caseDataBefore, REPRESENTING
+            caseData, caseDataBefore, RESPONDENT
         );
 
         assertThat(events).isEqualTo(Set.of(
@@ -406,8 +438,8 @@ class RepresentableLegalCounselUpdaterTest {
 
     @Test
     void shouldBuildEventsWhenSolicitorHasBeenRemovedByHMCTS() {
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent1));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondent2));
+        when(caseData.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent1)));
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent2)));
 
         when(respondent1.getSolicitor()).thenReturn(null);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
@@ -417,7 +449,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(user.isHmctsUser()).thenReturn(true);
 
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
-            caseData, caseDataBefore, REPRESENTING
+            caseData, caseDataBefore, RESPONDENT
         );
 
         assertThat(events).isEqualTo(Set.of(
@@ -427,8 +459,8 @@ class RepresentableLegalCounselUpdaterTest {
 
     @Test
     void shouldBuildEventsWhenSolicitorHasBeenRemovedByLA() {
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent1));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondent2));
+        when(caseData.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent1)));
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent2)));
 
         when(respondent1.getSolicitor()).thenReturn(null);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
@@ -440,7 +472,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(prdOrg1.getName()).thenReturn(ORG_1_NAME);
 
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
-            caseData, caseDataBefore, REPRESENTING
+            caseData, caseDataBefore, RESPONDENT
         );
 
         assertThat(events).isEqualTo(Set.of(
@@ -450,8 +482,8 @@ class RepresentableLegalCounselUpdaterTest {
 
     @Test
     void shouldBuildEventsWhenSolicitorHasBeenReplacedWithUnregisteredSolicitor() {
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent1));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondent2));
+        when(caseData.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent1)));
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent2)));
 
         when(respondent1.getSolicitor()).thenReturn(solicitor1);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
@@ -462,7 +494,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(unregisteredOrganisation.getName()).thenReturn(ORG_1_NAME);
 
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
-            caseData, caseDataBefore, REPRESENTING
+            caseData, caseDataBefore, RESPONDENT
         );
 
         assertThat(events).isEqualTo(Set.of(
@@ -478,8 +510,10 @@ class RepresentableLegalCounselUpdaterTest {
         RespondentSolicitor solicitor4 = mock(RespondentSolicitor.class);
         LegalCounsellor legalCounsellor2 = mock(LegalCounsellor.class);
 
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent1, respondent2));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondent3, respondent4));
+        when(caseData.getAllRespondents())
+            .thenReturn(List.of(element(UUID_1, respondent1), element(UUID_2, respondent2)));
+        when(caseDataBefore.getAllRespondents())
+            .thenReturn(List.of(element(UUID_1, respondent3), element(UUID_2, respondent4)));
 
         when(respondent1.getSolicitor()).thenReturn(solicitor1);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
@@ -498,7 +532,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(prdOrg2.getName()).thenReturn(ORG_2_NAME);
 
         Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
-            caseData, caseDataBefore, REPRESENTING
+            caseData, caseDataBefore, RESPONDENT
         );
 
         assertThat(events).isEqualTo(Set.of(
@@ -508,9 +542,28 @@ class RepresentableLegalCounselUpdaterTest {
     }
 
     @Test
+    void shouldBuildEventsWhenRepresentableHasBeenRemoved() {
+        when(caseData.getAllRespondents()).thenReturn(List.of());
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent1)));
+
+        when(respondent1.getSolicitor()).thenReturn(solicitor1);
+        when(respondent1.getLegalCounsellors()).thenReturn(wrapElements(legalCounsellor1));
+
+        when(user.isHmctsUser()).thenReturn(true);
+
+        Set<LegalCounsellorRemoved> events = underTest.buildEventsForAccessRemoval(
+            caseData, caseDataBefore, RESPONDENT
+        );
+
+        assertThat(events).isEqualTo(Set.of(
+            new LegalCounsellorRemoved(caseData, "HMCTS", legalCounsellor1)
+        ));
+    }
+
+    @Test
     void shouldThrowExceptionWhenSolicitorHasBeenRemovedByUnexpectedUser() {
-        when(caseData.getAllRespondents()).thenReturn(wrapElements(respondent1));
-        when(caseDataBefore.getAllRespondents()).thenReturn(wrapElements(respondent2));
+        when(caseData.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent1)));
+        when(caseDataBefore.getAllRespondents()).thenReturn(List.of(element(UUID_1, respondent2)));
 
         when(respondent1.getSolicitor()).thenReturn(null);
         when(respondent2.getSolicitor()).thenReturn(solicitor2);
@@ -520,7 +573,7 @@ class RepresentableLegalCounselUpdaterTest {
         when(user.isHmctsUser()).thenReturn(false);
         when(orgService.findOrganisation()).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> underTest.buildEventsForAccessRemoval(caseData, caseDataBefore, REPRESENTING))
+        assertThatThrownBy(() -> underTest.buildEventsForAccessRemoval(caseData, caseDataBefore, RESPONDENT))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Solicitor was changed to null, the user was not HMCTS, the user does not have a organisation"
                         + " associated to them"

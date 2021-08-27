@@ -27,8 +27,7 @@ class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHeari
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData),
-            "validate-judge-email");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-judge-email");
 
         assertThat(callbackResponse.getErrors()).isNull();
     }
@@ -42,10 +41,9 @@ class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHeari
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData),
-            "validate-judge-email");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-judge-email");
 
-        assertThat(callbackResponse.getErrors()).contains(
+        assertThat(callbackResponse.getErrors()).containsExactly(
             "Enter an email address in the correct format, for example name@example.com");
     }
 
@@ -59,8 +57,7 @@ class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHeari
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData),
-            "validate-judge-email");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-judge-email");
 
         assertThat(callbackResponse.getErrors()).isNull();
     }

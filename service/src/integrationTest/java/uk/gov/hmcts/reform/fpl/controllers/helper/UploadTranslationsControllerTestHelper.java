@@ -4,7 +4,12 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -21,6 +26,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
@@ -38,8 +46,17 @@ public class UploadTranslationsControllerTestHelper {
     public static final UUID UUID_4 = UUID.randomUUID();
     public static final UUID UUID_5 = UUID.randomUUID();
     public static final UUID UUID_6 = UUID.randomUUID();
+    public static final UUID UUID_7 = UUID.randomUUID();
+    public static final UUID UUID_8 = UUID.randomUUID();
+    public static final UUID UUID_9 = UUID.randomUUID();
+    public static final UUID UUID_10 = UUID.randomUUID();
+    public static final UUID UUID_11 = UUID.randomUUID();
+    public static final UUID UUID_RESPONDENT = UUID.randomUUID();
 
     public static final CaseData CASE_DATA_WITH_ALL_ORDERS = CaseData.builder()
+        .respondents1(List.of(element(UUID_RESPONDENT, Respondent.builder()
+            .party(RespondentParty.builder().lastName("Respondent 1").build())
+            .build())))
         .c110A(C110A.builder()
             .submittedFormTranslationRequirements(ENGLISH_TO_WELSH)
             .build())
@@ -93,6 +110,38 @@ public class UploadTranslationsControllerTestHelper {
                 .build()
             )
         ))
+        .hearingFurtherEvidenceDocuments(List.of(
+            element(UUID_7, HearingFurtherEvidenceBundle.builder()
+                .supportingEvidenceBundle(List.of(
+                    element(UUID_8, SupportingEvidenceBundle.builder()
+                        .name("Document 1")
+                        .type(EXPERT_REPORTS)
+                        .translationRequirements(ENGLISH_TO_WELSH)
+                        .dateTimeUploaded(LocalDateTime.of(2009, 1, 3, 12, 1, 2))
+                        .build())
+                )).build())
+        ))
+        .respondentStatements(List.of(
+            element(UUID_9, RespondentStatement.builder()
+                .respondentId(UUID_RESPONDENT)
+                .respondentName("Respondent 1")
+                .supportingEvidenceBundle(List.of(
+                    element(UUID_10, SupportingEvidenceBundle.builder()
+                        .name("Document 2")
+                        .type(GUARDIAN_REPORTS)
+                        .translationRequirements(ENGLISH_TO_WELSH)
+                        .dateTimeUploaded(LocalDateTime.of(2008, 1, 3, 12, 1, 2))
+                        .build())
+                )).build())
+        ))
+        .furtherEvidenceDocuments(List.of(
+            element(UUID_11, SupportingEvidenceBundle.builder()
+                .name("Document 3")
+                .type(OTHER_REPORTS)
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .dateTimeUploaded(LocalDateTime.of(2007, 1, 3, 12, 1, 2))
+                .build())
+        ))
         .build();
     public static final DynamicList RENDERED_DYNAMIC_LIST = DynamicList.builder()
         .value(DynamicListElement.EMPTY)
@@ -104,7 +153,10 @@ public class UploadTranslationsControllerTestHelper {
             dlElement(UUID_4, "Notice of proceedings (C6A)"),
             dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),
             dlElement(UUID_6, "Notice of hearing - 3 January 2010"),
-            dlElement(C110A.COLLECTION_ID, "Application (C110A)")
+            dlElement(C110A.COLLECTION_ID, "Application (C110A)"),
+            dlElement(UUID_11, "Other reports - Document 3 - 3 January 2007"),
+            dlElement(UUID_8, "Expert reports - Document 1 - 3 January 2009"),
+            dlElement(UUID_10, "Child's guardian reports - Document 2 - 3 January 2008")
         )).build();
     public static final DocumentReference TEST_DOCUMENT = DocumentReference.buildFromDocument(testDocument());
     public static final byte[] TRANSLATED_DOC_BYTES = "TranslatedDocumentContent".getBytes();

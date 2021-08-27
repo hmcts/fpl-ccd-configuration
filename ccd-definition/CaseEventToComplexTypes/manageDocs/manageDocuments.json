@@ -3,6 +3,16 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
+    "CaseFieldID": "languageRequirement",
+    "FieldDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "manageDocument.type=\"DO NOT SHOW\"",
+    "Comment": "Hidden field, must be READONLY to workaround hidden fields deletion"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocument",
     "ListElementCode": "type",
     "EventElementLabel": "Choose a document category",
@@ -134,5 +144,15 @@
     "FieldDisplayOrder": 10,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "translationRequirements",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "languageRequirement=\"Yes\" AND manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\""
   }
 ]

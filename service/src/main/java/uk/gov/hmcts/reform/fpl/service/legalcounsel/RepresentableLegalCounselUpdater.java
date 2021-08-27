@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
@@ -30,6 +31,7 @@ import java.util.stream.Stream;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
@@ -42,8 +44,8 @@ public class RepresentableLegalCounselUpdater {
     public Set<LegalCounsellorRemoved> buildEventsForAccessRemoval(CaseData caseData, CaseData caseDataBefore,
                                                                    final Representing representing) {
         // need to find the representables that have been updated
-        List<WithSolicitor> current = unwrapElements(representing.getTarget().apply(caseData));
-        List<WithSolicitor> old = unwrapElements(representing.getTarget().apply(caseDataBefore));
+        List<Element<WithSolicitor>> currentRepresentables = representing.getTarget().apply(caseData);
+        List<Element<WithSolicitor>> oldRepresentables = representing.getTarget().apply(caseDataBefore);
 
         Set<LegalCounsellor> allCurrentLegalCounsellors = Arrays.stream(Representing.values())
             .flatMap(representingType -> unwrapElements(representingType.getTarget().apply(caseData)).stream())
@@ -52,16 +54,25 @@ public class RepresentableLegalCounselUpdater {
 
         Set<LegalCounsellorRemoved> events = new HashSet<>();
 
-        for (int i = 0; i < old.size(); i++) {
-            WithSolicitor currentRepresentable = current.get(i);
-            WithSolicitor oldRepresentable = old.get(i);
-            if (!Objects.equals(currentRepresentable.getSolicitor(), oldRepresentable.getSolicitor())) {
-                String orgName = getOrgName(currentRepresentable);
-                events.addAll(unwrapElements(oldRepresentable.getLegalCounsellors()).stream()
+        for (Element<WithSolicitor> oldRepresentable : oldRepresentables) {
+            WithSolicitor representable = oldRepresentable.getValue();
+            // if removed then this will be empty
+            Optional<WithSolicitor> currentRepresentable = findElement(oldRepresentable.getId(), currentRepresentables)
+                .map(Element::getValue);
+
+            // if nothing has changed skip
+            if (currentRepresentable.isPresent()
+                && Objects.equals(currentRepresentable.get().getSolicitor(), representable.getSolicitor())) {
+                continue;
+            }
+
+            String orgName = getOrgName(currentRepresentable.orElse(null));
+            events.addAll(
+                unwrapElements(representable.getLegalCounsellors()).stream()
                     .filter(not(allCurrentLegalCounsellors::contains))
                     .map(counsellor -> new LegalCounsellorRemoved(caseData, orgName, counsellor))
-                    .collect(Collectors.toSet()));
-            }
+                    .collect(Collectors.toSet())
+            );
         }
 
         return events;
@@ -93,12 +104,11 @@ public class RepresentableLegalCounselUpdater {
             oldRepresentables.stream(), otherRepresentablesToQuery.stream()
         ).collect(toUnmodifiableList());
 
-        for (int i = 0; i < oldRepresentables.size(); i++) {
-            Optional<String> oldOrgId = Optional.ofNullable(oldRepresentables.get(i))
-                .map(Element::getValue)
-                .flatMap(this::getOrgId);
+        for (Element<R> oldRepresentable : oldRepresentables) {
+            Optional<String> oldOrgId = getOrgId(oldRepresentable.getValue());
 
-            Optional<WithSolicitor> currentRepresentable = Optional.ofNullable(currentRepresentables.get(i))
+            // need to map to element with the same id
+            Optional<WithSolicitor> currentRepresentable = findElement(oldRepresentable.getId(), currentRepresentables)
                 .map(Element::getValue);
 
             Optional<String> currentOrgId = currentRepresentable.flatMap(this::getOrgId);
@@ -143,9 +153,13 @@ public class RepresentableLegalCounselUpdater {
             .flatMap(orgService::findOrganisation)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
             .orElseGet(() -> {
-                RespondentSolicitor solicitor = changed.getSolicitor();
-                if (null != solicitor && null != solicitor.getUnregisteredOrganisation()) {
-                    return solicitor.getUnregisteredOrganisation().getName();
+                Optional<String> unregisteredOrgName = Optional.ofNullable(changed)
+                    .map(WithSolicitor::getSolicitor)
+                    .map(RespondentSolicitor::getUnregisteredOrganisation)
+                    .map(UnregisteredOrganisation::getName);
+
+                if (unregisteredOrgName.isPresent()) {
+                    return unregisteredOrgName.get();
                 }
                 // in the scenario that a user has removed the current solicitor (possible in respondent flow)
                 // Refer to all HMCTS staff as just HMCTS to cover the scenario that it is an admin performing the

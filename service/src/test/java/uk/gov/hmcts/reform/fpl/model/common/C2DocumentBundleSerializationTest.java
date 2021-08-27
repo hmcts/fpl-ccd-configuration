@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -56,6 +57,13 @@ class C2DocumentBundleSerializationTest {
                         .filename("filename")
                         .url("url")
                         .build())
+                    .translationRequirements(ENGLISH_TO_WELSH)
+                    .translatedDocument(DocumentReference.builder()
+                        .binaryUrl("translatedBinaryUrl")
+                        .filename("translatedFilename")
+                        .url("translatedUrl")
+                        .build())
+                    .translationUploadDateTime(LocalDateTime.of(2011, 10, 10, 3, 4))
                     .confidential(List.of("CONFIDENTIAL"))
                     .uploadedBy("uploadedBy")
                     .build())))
@@ -74,17 +82,25 @@ class C2DocumentBundleSerializationTest {
 
         List<Map<String, Object>> expectedBundles = List.of(Map.of(
             "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
-            "value", Map.of(
-                "confidential", List.of("CONFIDENTIAL"),
-                "name", "BundleName",
-                "uploadedBy", "uploadedBy",
-                "confidentialTabLabel", "Confidential",
-                "dateTimeReceived", "2012-10-10T03:04:00",
-                "dateTimeUploaded", "2013-09-10T03:04:00",
-                "document", Map.of(
+            "value", Map.ofEntries(
+                Map.entry("confidential", List.of("CONFIDENTIAL")),
+                Map.entry("name", "BundleName"),
+                Map.entry("uploadedBy", "uploadedBy"),
+                Map.entry("confidentialTabLabel", "Confidential"),
+                Map.entry("dateTimeReceived", "2012-10-10T03:04:00"),
+                Map.entry("dateTimeUploaded", "2013-09-10T03:04:00"),
+                Map.entry("document", Map.of(
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename", "document_url", "url"
-                )
+                )),
+                Map.entry("translationRequirements", "ENGLISH_TO_WELSH"),
+                Map.entry("needTranslation", "YES"),
+                Map.entry("translatedDocument", Map.of(
+                    "document_binary_url", "translatedBinaryUrl",
+                    "document_filename", "translatedFilename",
+                    "document_url", "translatedUrl"
+                )),
+                Map.entry("translationUploadDateTime", "2011-10-10T03:04:00")
             )
         ));
 
@@ -110,9 +126,9 @@ class C2DocumentBundleSerializationTest {
             entry("clientCode", "clientCode"),
             entry("fileReference", "fileReference"),
             entry("document", Map.of(
-                "document_binary_url", "binaryUrl",
-                "document_filename", "filename",
-                "document_url", "url"
+                    "document_binary_url", "binaryUrl",
+                    "document_filename", "filename",
+                    "document_url", "url"
                 )
             ),
             entry("description", "description"),

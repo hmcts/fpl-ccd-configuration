@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationNotFound;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -50,6 +52,8 @@ public class ApplicantLocalAuthorityService {
     private final PbaNumberService pbaNumberService;
     private final OrganisationService organisationService;
     private final ValidateEmailService validateEmailService;
+    private final LocalAuthorityIdLookupConfiguration localAuthorityIds;
+    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmails;
 
     public LocalAuthority getUserLocalAuthority(CaseData caseData) {
 
@@ -59,7 +63,7 @@ public class ApplicantLocalAuthorityService {
         return findLocalAuthority(caseData, userOrganisation.getOrganisationIdentifier())
             .map(Element::getValue)
             .orElseGet(() -> migrateFromLegacyApplicant(caseData, userOrganisation.getOrganisationIdentifier())
-                .orElse(getLocalAuthority(userOrganisation)));
+                .orElseGet(() -> getLocalAuthority(userOrganisation)));
     }
 
     public void normalisePba(LocalAuthority localAuthority) {
@@ -111,17 +115,10 @@ public class ApplicantLocalAuthorityService {
         return asDynamicList(addMissingIds(colleagues), mainContact, Colleague::getFullName);
     }
 
-    public List<String> getContactsEmails(CaseData caseData) {
+    public List<String> getDesignatedLocalAuthorityContactsEmails(CaseData caseData) {
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getLocalAuthorities().stream()
-                .map(Element::getValue)
-                .flatMap(localAuthority -> localAuthority.getColleagues().stream())
-                .map(Element::getValue)
-                .filter(colleague -> colleague.getNotificationRecipient().equals("Yes"))
-                .map(Colleague::getEmail)
-                .filter(StringUtils::isNotBlank)
-                .collect(toList());
+            return getDesignatedLocalAuthority(caseData).getContactEmails();
         }
 
         return ofNullable(caseData.getSolicitor())
@@ -237,9 +234,14 @@ public class ApplicantLocalAuthorityService {
 
     public LocalAuthority getLocalAuthority(Organisation organisation) {
 
+        final String sharedInbox = localAuthorityIds.getLocalAuthorityCode(organisation.getOrganisationIdentifier())
+            .flatMap(localAuthorityEmails::getSharedInbox)
+            .orElse(null);
+
         return LocalAuthority.builder()
             .id(organisation.getOrganisationIdentifier())
             .name(organisation.getName())
+            .email(sharedInbox)
             .address(getOrganisationAddress(organisation))
             .build();
     }

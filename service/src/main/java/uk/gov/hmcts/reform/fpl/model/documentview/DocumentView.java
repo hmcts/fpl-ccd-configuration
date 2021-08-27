@@ -23,5 +23,7 @@ public class DocumentView {
     private boolean includeSWETField;
     private boolean includeDocumentName;
     private LocalDateTime uploadedDateTime;
+    private boolean sentForTranslation;
+    private DocumentReference translatedDocument;
 
 }

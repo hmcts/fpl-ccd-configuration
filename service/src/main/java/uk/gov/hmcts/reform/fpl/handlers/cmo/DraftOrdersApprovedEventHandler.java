@@ -7,6 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -14,12 +15,12 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -51,7 +52,7 @@ public class DraftOrdersApprovedEventHandler {
     private final CourtService courtService;
     private final NotificationService notificationService;
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final RepresentativeNotificationService representativeNotificationService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -75,21 +76,24 @@ public class DraftOrdersApprovedEventHandler {
 
         String adminEmail = courtService.getCourtEmail(caseData);
 
-        Collection<String> localAuthorityEmails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
+
+        final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
             adminEmail,
             content,
-            caseData.getId().toString()
+            caseData.getId()
         );
 
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
             localAuthorityEmails,
             content,
-            caseData.getId().toString()
+            caseData.getId()
         );
     }
 
@@ -112,7 +116,7 @@ public class DraftOrdersApprovedEventHandler {
             JUDGE_APPROVES_DRAFT_ORDERS,
             cafcassEmail,
             content,
-            caseData.getId().toString()
+            caseData.getId()
         );
     }
 
@@ -185,6 +189,7 @@ public class DraftOrdersApprovedEventHandler {
 
         final List<DocumentReference> documents = event.getApprovedOrders()
             .stream()
+            .filter(order -> order.getNeedTranslation() == YesNo.NO)
             .map(HearingOrder::getOrder)
             .collect(Collectors.toList());
 

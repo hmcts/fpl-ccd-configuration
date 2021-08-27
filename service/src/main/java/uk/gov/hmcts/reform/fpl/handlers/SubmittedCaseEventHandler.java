@@ -18,11 +18,11 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -50,7 +50,7 @@ public class SubmittedCaseEventHandler {
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final OutsourcedCaseContentProvider outsourcedCaseContentProvider;
     private final PaymentService paymentService;
     private final EventService eventService;
@@ -88,14 +88,13 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
+
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         NotifyData templateData = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
-        notificationService.sendEmail(
-            OUTSOURCED_CASE_TEMPLATE, emails, templateData, caseData.getId().toString()
-        );
+        notificationService.sendEmail(OUTSOURCED_CASE_TEMPLATE, recipients, templateData, caseData.getId());
     }
 
     @Async

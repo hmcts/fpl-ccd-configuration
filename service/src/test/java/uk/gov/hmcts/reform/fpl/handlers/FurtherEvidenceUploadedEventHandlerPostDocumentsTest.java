@@ -21,8 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.REP_USER;
@@ -70,7 +70,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             new FurtherEvidenceUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialLADocuments(),
-                LOCAL_AUTHORITY,
+                DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsRespondentSolicitor());
         furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
 

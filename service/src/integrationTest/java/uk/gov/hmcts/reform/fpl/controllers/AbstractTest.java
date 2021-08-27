@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -17,11 +21,15 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.List.of;
+import static java.util.stream.Collectors.toList;
 import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("integration-test")
@@ -49,6 +57,9 @@ public abstract class AbstractTest {
 
     @MockBean
     protected IdamClient idamClient;
+
+    @MockBean
+    protected CaseAccessDataStoreApi caseAccessApi;
 
     @Autowired
     protected DynamicListHelper dynamicLists;
@@ -83,6 +94,19 @@ public abstract class AbstractTest {
         given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder()
             .uid(SYS_USER_ID)
             .build());
+    }
+
+    protected void givenCaseRoles(Long caseId, String userId, CaseRole... caseRoles) {
+        final List<CaseAssignedUserRole> assignedRoles = Stream.of(caseRoles)
+            .map(CaseRole::formattedName)
+            .map(caseRoleName -> CaseAssignedUserRole.builder()
+                .caseRole(caseRoleName)
+                .caseDataId(caseId.toString())
+                .build())
+            .collect(toList());
+
+        given(caseAccessApi.getUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, of(caseId.toString()), of(userId)))
+            .willReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(assignedRoles).build());
     }
 
     protected void givenFplService() {
