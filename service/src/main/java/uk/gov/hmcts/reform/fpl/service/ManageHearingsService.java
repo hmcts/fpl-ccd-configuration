@@ -81,7 +81,7 @@ public class ManageHearingsService {
     public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
     public static final String HEARING_DATE_LIST = "hearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
-    public static final String TO_VACATE_HEARING_LIST = "toVacateHearingDateList";
+    public static final String TO_VACATE_HEARING_LIST = "vacateHearingDateList";
     public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
     public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
     private static final String HEARING_START_DATE = "hearingStartDate";
@@ -108,13 +108,13 @@ public class ManageHearingsService {
 
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
-        List<Element<HearingBooking>> toBeVacatedHearings = caseData.getAllNonCancelledHearings();
+        List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
         List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
             HEARING_DATE_LIST, asDynamicList(futureHearings),
             PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
-            TO_VACATE_HEARING_LIST, asDynamicList(toBeVacatedHearings),
+            TO_VACATE_HEARING_LIST, asDynamicList(nonCancelledHearings),
             TO_RE_LIST_HEARING_LIST, asDynamicList(toBeReListedHearings)
         ));
 
@@ -130,7 +130,7 @@ public class ManageHearingsService {
             listAndLabel.put(HAS_HEARINGS_TO_ADJOURN, YES.getValue());
         }
 
-        if (isNotEmpty(toBeVacatedHearings)) {
+        if (isNotEmpty(nonCancelledHearings)) {
             listAndLabel.put(HAS_HEARINGS_TO_VACATE, YES.getValue());
         }
 
@@ -309,7 +309,7 @@ public class ManageHearingsService {
     public Object getHearingsDynamicList(CaseData caseData) {
         switch (caseData.getHearingOption()) {
             case VACATE_HEARING:
-                return caseData.getToVacateHearingDateList();
+                return caseData.getVacateHearingDateList();
             case ADJOURN_HEARING:
                 return caseData.getPastAndTodayHearingDateList();
             case RE_LIST_HEARING:
@@ -511,14 +511,8 @@ public class ManageHearingsService {
             .toBuilder()
             .status(hearingStatus)
             .cancellationReason(getCancellationReason(caseData, hearingStatus))
+            .vacatedDate(caseData.getVacatedHearingDate())
             .build());
-
-        if (cancelledHearing.getValue().isVacated()) {
-            cancelledHearing = element(hearingId, cancelledHearing.getValue()
-                .toBuilder()
-                .vacatedDate(caseData.getVacatedHearingDate())
-                .build());
-        }
 
         caseData.addCancelledHearingBooking(cancelledHearing);
         caseData.removeHearingDetails(originalHearingBooking);

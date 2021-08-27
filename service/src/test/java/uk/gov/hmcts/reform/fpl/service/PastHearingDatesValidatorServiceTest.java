@@ -60,7 +60,7 @@ class PastHearingDatesValidatorServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyValidationErrorsWhenValidationDateIsValid() {
+    void shouldReturnEmptyValidationErrorsWhenVacatedDateIsValid() {
         LocalDateTime hearingEndDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
         LocalDate vacatedDate = LocalDate.now().minusDays(1);
 

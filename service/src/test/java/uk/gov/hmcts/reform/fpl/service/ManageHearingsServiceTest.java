@@ -153,7 +153,7 @@ class ManageHearingsServiceTest {
 
             DynamicList expectedHearingList = dynamicList(futureHearing1, futureHearing2);
             DynamicList expectedPastHearingList = dynamicList(todayHearing, pastHearing1, pastHearing2);
-            DynamicList expectedFutureHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing,
+            DynamicList expectedVacateHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing,
                 pastHearing1, pastHearing2);
 
             CaseData initialCaseData = CaseData.builder()
@@ -169,7 +169,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
                 .containsEntry(HEARING_DATE_LIST, expectedHearingList)
                 .containsEntry(PAST_HEARING_LIST, expectedPastHearingList)
-                .containsEntry(TO_VACATE_HEARING_LIST, expectedFutureHearingList)
+                .containsEntry(TO_VACATE_HEARING_LIST, expectedVacateHearingList)
                 .containsEntry(TO_RE_LIST_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARING_TO_RE_LIST)
                 .doesNotContainKeys(TO_RE_LIST_HEARING_LABEL);
@@ -1455,11 +1455,11 @@ class ManageHearingsServiceTest {
     class HearingsDynamicList {
 
         @Test
-        void shouldReturnHearingsToBeVacatedDateListWhenHearingOptionIsVacateHearing() {
+        void shouldReturnVacateDateListWhenHearingOptionIsVacateHearing() {
             CaseData caseData = caseData(VACATE_HEARING);
 
             Object dynamicList = service.getHearingsDynamicList(caseData);
-            assertThat(dynamicList).isEqualTo(caseData.getToVacateHearingDateList());
+            assertThat(dynamicList).isEqualTo(caseData.getVacateHearingDateList());
         }
 
         @Test
@@ -1498,7 +1498,7 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList())
-                .toVacateHearingDateList(randomDynamicList())
+                .vacateHearingDateList(randomDynamicList())
                 .toReListHearingDateList(randomDynamicList())
                 .hearingDateList(randomDynamicList())
                 .build();
@@ -1569,7 +1569,7 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList(selectedPastAndTodayHearing))
-                .toVacateHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
+                .vacateHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
                 .toReListHearingDateList(randomDynamicList(selectedToReListHearing))
                 .hearingDateList(randomDynamicList(selectedHearing))
                 .build();
@@ -1614,7 +1614,7 @@ class ManageHearingsServiceTest {
             "vacatedReason",
             "hearingDateList",
             "pastAndTodayHearingDateList",
-            "toVacateHearingDateList",
+            "vacateHearingDateList",
             "vacatedHearingDate",
             "hasHearingsToAdjourn",
             "hasHearingsToVacate",

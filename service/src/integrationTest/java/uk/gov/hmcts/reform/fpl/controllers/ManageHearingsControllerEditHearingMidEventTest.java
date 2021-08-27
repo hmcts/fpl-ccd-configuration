@@ -15,7 +15,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -120,7 +119,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
     }
 
     @Test
-    void shouldBuildHearingDateListWhenHearingIsVacated() {
+    void shouldBuildVacateHearingDateListWhenHearingIsVacated() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));
@@ -129,12 +128,12 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(HearingOptions.VACATE_HEARING)
             .hearingDetails(List.of(futureHearing1, pastHearing1, pastHearing2, futureHearing2))
-            .toVacateHearingDateList(futureHearing1.getId())
+            .vacateHearingDateList(futureHearing1.getId())
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
-        assertThat(updatedCaseData.getToVacateHearingDateList())
+        assertThat(updatedCaseData.getVacateHearingDateList())
             .isEqualTo(dynamicList(futureHearing1.getId(), futureHearing1, pastHearing1, pastHearing2, futureHearing2));
     }
 
@@ -161,21 +160,6 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(ADJOURN_HEARING)
             .hearingDetails(List.of(futureHearing1, futureHearing2))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
-
-        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnErrorsWhenVacatingAHearingButNoFutureOrCurrentHearingsExist() {
-        Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
-        Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));
-
-        CaseData initialCaseData = CaseData.builder()
-            .hearingOption(VACATE_HEARING)
-            .hearingDetails(List.of(pastHearing1, pastHearing2))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
