@@ -90,7 +90,7 @@ public class CaseSubmissionGenerationService
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
-        Language applicationLanguage = Optional.of(caseData.getC110A()
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
             .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
 
         TranslationContext.setApplicationLanguage(applicationLanguage);

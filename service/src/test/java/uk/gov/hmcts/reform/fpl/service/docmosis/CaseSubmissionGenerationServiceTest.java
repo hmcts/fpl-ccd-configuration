@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -583,14 +584,14 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnDirectionsNeededWithAppendedDirectionsAndDirectionDetailsWhenGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(Orders.builder()
-                    .directions("directions")
+                    .directions("Yes")
                     .directionDetails("direction  details")
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
-            String expectedDirectionsNeeded = "directions\ndirection  details";
+            String expectedDirectionsNeeded = "Yes\ndirection  details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
         }
 
@@ -598,7 +599,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldIncludeEPOExcludedWhenEntered() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(Orders.builder()
-                    .directions("directions")
+                    .directions("Yes")
                     .directionDetails("direction details")
                     .excluded("John Doe")
                     .build())
@@ -606,7 +607,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
-            String expectedDirectionsNeeded = "John Doe excluded\ndirections\ndirection details";
+            String expectedDirectionsNeeded = "John Doe excluded\nYes\ndirection details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
         }
     }
@@ -1273,7 +1274,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
-                        .gender("male")
+                        .gender("Male")
                         .genderIdentification(genderIdentification)
                         .build())
                     .build())
@@ -1282,7 +1283,7 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getOthers()).hasSize(1);
-            assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("male");
+            assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("Male");
         }
     }
 
@@ -1376,8 +1377,8 @@ class CaseSubmissionGenerationServiceTest {
     }
 
     private CaseData prepareCaseData() {
-        CaseData caseData = populatedCaseData();
-        caseData.setDateSubmitted(NOW);
-        return caseData;
+        return populatedCaseData()
+            .toBuilder().c110A(C110A.builder().build())
+            .dateSubmitted(NOW).build();
     }
 }
