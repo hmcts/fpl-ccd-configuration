@@ -339,6 +339,7 @@ public class CaseData {
     private final DocumentReference redDotAssessmentForm;
     private final String caseFlagNotes;
     private final String caseFlagAdded;
+    // Transient field
     private YesNo caseFlagValueUpdated;
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {

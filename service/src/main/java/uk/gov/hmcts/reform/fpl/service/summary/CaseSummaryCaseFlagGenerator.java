@@ -27,16 +27,16 @@ public class CaseSummaryCaseFlagGenerator implements CaseSummaryFieldsGenerator 
     }
 
     private String generateUploadedByEmail(CaseData caseData) {
-        return caseData.getCaseFlagValueUpdated() != null
-            && caseData.getCaseFlagValueUpdated().equals(YES)
-            ? userService.getUserEmail()
+        return shouldUpdate(caseData) ? userService.getUserEmail()
             : caseData.getSyntheticCaseSummary().getCaseSummaryFlagAddedByEmail();
     }
 
     private String generateUploadedFullName(CaseData caseData) {
-        return caseData.getCaseFlagValueUpdated() != null
-            && caseData.getCaseFlagValueUpdated().equals(YES)
-            ? userService.getUserName()
+        return  shouldUpdate(caseData) ? userService.getUserName()
             : caseData.getSyntheticCaseSummary().getCaseSummaryFlagAddedByFullName();
+    }
+
+    private boolean shouldUpdate(CaseData caseData) {
+        return caseData.getCaseFlagValueUpdated() == YES;
     }
 }
