@@ -102,6 +102,23 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     }
 
     @Test
+    void testIfMultiplePopulatedWelsh() {
+        DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
+                .applicationDocuments(List.of(
+                    documentWithType(DOCUMENT_TYPE),
+                    documentWithType(ANOTHER_DOCUMENT_TYPE)
+                )).build(),
+            Language.WELSH);
+
+        assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
+            .documents(List.of(
+                annexWith(DOCUMENT_TYPE.getLabel(), "Ynghlwm"),
+                annexWith(ANOTHER_DOCUMENT_TYPE.getLabel(), "Ynghlwm")
+            ))
+            .build());
+    }
+
+    @Test
     void testIfMultipleOfSamePopulated() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
             .applicationDocuments(List.of(
@@ -113,6 +130,22 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
         assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
             .documents(List.of(
                 annexWith(DOCUMENT_TYPE.getLabel(), "2 attached")
+            ))
+            .build());
+    }
+
+    @Test
+    void testIfMultipleOfSamePopulatedWelsh() {
+        DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
+                .applicationDocuments(List.of(
+                    documentWithType(DOCUMENT_TYPE),
+                    documentWithType(DOCUMENT_TYPE)
+                )).build(),
+            Language.WELSH);
+
+        assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
+            .documents(List.of(
+                annexWith(DOCUMENT_TYPE.getLabel(), "2 ynghlwm")
             ))
             .build());
     }
