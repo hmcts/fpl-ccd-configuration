@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.SpyBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -30,6 +31,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
@@ -37,8 +40,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
     CaseSubmissionService.class, DocmosisDocumentGeneratorService.class, CaseSubmissionGenerationService.class,
     DocmosisHelper.class, FixedTimeConfiguration.class, CaseSubmissionDocumentAnnexGenerator.class
 })
-@SpyBeans({@SpyBean(DocmosisDocumentGeneratorService.class)})
-@MockBeans({
+@SpyBeans(value = {@SpyBean(DocmosisDocumentGeneratorService.class)})
+@MockBeans(value = {
     @MockBean(UploadDocumentService.class), @MockBean(CourtService.class), @MockBean(UserService.class),
     @MockBean(Time.class)
 })
@@ -46,7 +49,6 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
     private static final String LA_COURT = "La Court";
     private static final String USER_NAME = "user name";
     private static final LocalDate NOW = LocalDate.of(12, 12, 12);
-    private static final String EXPECTED_TEXT_PATH = "c110a.txt";
 
     @Autowired
     private Time time;
@@ -65,7 +67,6 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
 
     @BeforeEach
     void setUp() {
-        caseData = populatedCaseData().toBuilder().languageRequirement("Yes").build();
 
         when(user.getUserName()).thenReturn(USER_NAME);
         when(courtService.getCourtName(any())).thenReturn(LA_COURT);
@@ -74,29 +75,56 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
 
     @Test
     void testC110a() throws IOException {
+
+        caseData = populatedCaseData().toBuilder()
+            .languageRequirement("Yes")
+            .c110A(C110A.builder()
+                .languageRequirementApplication(ENGLISH)
+                .build())
+            .build();
+
         doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any(), any());
 
         underTest.generateSubmittedFormPDF(caseData, false);
 
-        String c110aContent = getPdfContent();
+        String c110aContent = getPdfContent("c110a.pdf");
 
-        String expectedText = getExpectedText();
+        String expectedText = readString("c110a.txt");
 
         assertThat(c110aContent).isEqualToNormalizingWhitespace(expectedText);
     }
 
-    private String getPdfContent() throws IOException {
+    @Test
+    void testC110aWelsh() throws IOException {
+
+        caseData = populatedCaseData().toBuilder()
+            .languageRequirement("Yes")
+            .c110A(C110A.builder()
+                .languageRequirementApplication(WELSH)
+                .build())
+            .build();
+
+
+        doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any(), any());
+
+        underTest.generateSubmittedFormPDF(caseData, false);
+
+        String c110aContent = getPdfContent("c110a-Welsh.pdf");
+
+        String expectedText = readString("c110a-Welsh.txt");
+
+        assertThat(c110aContent).isEqualToNormalizingWhitespace(expectedText);
+    }
+
+    private String getPdfContent(String fileName) throws IOException {
         DocmosisDocument docmosisDocument = resultsCaptor.getResult();
 
         byte[] bytes = docmosisDocument.getBytes();
 
-        storeToOuputFolder("c110a.pdf", bytes);
+        storeToOuputFolder(fileName, bytes);
 
         String text = docmosisHelper.extractPdfContent(bytes);
         return docmosisHelper.remove(text, "C110A");
     }
 
-    private String getExpectedText() {
-        return readString(EXPECTED_TEXT_PATH);
-    }
 }

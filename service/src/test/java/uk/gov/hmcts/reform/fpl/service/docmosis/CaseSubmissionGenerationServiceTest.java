@@ -83,6 +83,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
+    private static final Language LANGUAGE = Language.ENGLISH;
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
     private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
@@ -1341,7 +1342,7 @@ class CaseSubmissionGenerationServiceTest {
 
     @Test
     void shouldBuildExpectedDocmosisAnnexDocumentsWhenApplicationDocumentsIncludeAnnexDocumentTypes() {
-        when(annexGenerator.generate(givenCaseData)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
+        when(annexGenerator.generate(givenCaseData, LANGUAGE)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
 
         DocmosisCaseSubmission actual = underTest.getTemplateData(givenCaseData);
 

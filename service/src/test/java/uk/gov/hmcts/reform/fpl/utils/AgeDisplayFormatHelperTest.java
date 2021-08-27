@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
 import java.time.LocalDate;
 
@@ -13,71 +14,72 @@ import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisp
  */
 class AgeDisplayFormatHelperTest {
     private static final LocalDate NOW = LocalDate.now();
+    private static final Language LANGUAGE = Language.ENGLISH;
 
     @Test
     void shouldThrowExceptionWhenInputIsNotProvided() {
-        assertThatThrownBy(() -> formatAgeDisplay(null))
+        assertThatThrownBy(() -> formatAgeDisplay(null, LANGUAGE))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Date of birth value is required");
     }
 
     @Test
     void shouldThrowExceptionWhenInputIsInFuture() {
-        String age = formatAgeDisplay(NOW.plusDays(1));
+        String age = formatAgeDisplay(NOW.plusDays(1), LANGUAGE);
         assertThat(age).isEqualTo("0 years old");
     }
 
     @Test
     void shouldReturn0DaysWhenBornToday() {
-        String age = formatAgeDisplay(NOW);
+        String age = formatAgeDisplay(NOW, LANGUAGE);
         assertThat(age).isEqualTo("0 days old");
     }
 
     @Test
     void shouldReturn1DayWhenBornYesterday() {
-        String age = formatAgeDisplay(NOW.minusDays(1));
+        String age = formatAgeDisplay(NOW.minusDays(1), LANGUAGE);
         assertThat(age).isEqualTo("1 day old");
     }
 
     @Test
     void shouldReturn2DaysWhenBornDateBeforeYesterday() {
-        String age = formatAgeDisplay(NOW.minusDays(2));
+        String age = formatAgeDisplay(NOW.minusDays(2), LANGUAGE);
         assertThat(age).isEqualTo("2 days old");
     }
 
     @Test
     void shouldReturn1MonthWhenBorn1MonthAgo() {
-        String age = formatAgeDisplay(NOW.minusMonths(1));
+        String age = formatAgeDisplay(NOW.minusMonths(1), LANGUAGE);
         assertThat(age).isEqualTo("1 month old");
     }
 
     @Test
     void shouldReturn1MonthWhenBorn1MonthAnd1DayAgo() {
-        String age = formatAgeDisplay(NOW.minusMonths(1).minusDays(1));
+        String age = formatAgeDisplay(NOW.minusMonths(1).minusDays(1), LANGUAGE);
         assertThat(age).isEqualTo("1 month old");
     }
 
     @Test
     void shouldReturn2MonthsWhenBorn2MonthsAgo() {
-        String age = formatAgeDisplay(NOW.minusMonths(2));
+        String age = formatAgeDisplay(NOW.minusMonths(2), LANGUAGE);
         assertThat(age).isEqualTo("2 months old");
     }
 
     @Test
     void shouldReturn1YearWhenBorn1YearAgo() {
-        String age = formatAgeDisplay(NOW.minusYears(1));
+        String age = formatAgeDisplay(NOW.minusYears(1), LANGUAGE);
         assertThat(age).isEqualTo("1 year old");
     }
 
     @Test
     void shouldReturn1YearWhenBorn1YearAnd1MonthAgo() {
-        String age = formatAgeDisplay(NOW.minusYears(1).minusMonths(1));
+        String age = formatAgeDisplay(NOW.minusYears(1).minusMonths(1), LANGUAGE);
         assertThat(age).isEqualTo("1 year old");
     }
 
     @Test
     void shouldReturn2YearsWhenBorn2YearsAgo() {
-        String age = formatAgeDisplay(NOW.minusYears(2));
+        String age = formatAgeDisplay(NOW.minusYears(2), LANGUAGE);
         assertThat(age).isEqualTo("2 years old");
     }
 }

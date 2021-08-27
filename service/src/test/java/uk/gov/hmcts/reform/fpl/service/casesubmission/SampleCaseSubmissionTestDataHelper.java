@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
 import uk.gov.hmcts.reform.fpl.model.Allocation;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -25,6 +26,8 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private SampleCaseSubmissionTestDataHelper() {
     }
+
+    private static final Language LANGUAGE = Language.ENGLISH;
 
     public static DocmosisCaseSubmission expectedDocmosisCaseSubmission() {
         return DocmosisCaseSubmission.builder()
@@ -63,7 +66,7 @@ public class SampleCaseSubmissionTestDataHelper {
     private static List<DocmosisRespondent> expectedDocmosisRespondents() {
         return of(DocmosisRespondent.builder()
                 .name("Paul Smith")
-                .age(formatAgeDisplay(parse("1944-05-02")))
+                .age(formatAgeDisplay(parse("1944-05-02"), LANGUAGE))
                 .gender("Male")
                 .dateOfBirth("2 May 1944")
                 .placeOfBirth("Crewe")
@@ -76,7 +79,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build(),
             DocmosisRespondent.builder()
                 .name("James Smith")
-                .age(formatAgeDisplay(parse("1933-04-02")))
+                .age(formatAgeDisplay(parse("1933-04-02"), LANGUAGE))
                 .gender("Unknown")
                 .dateOfBirth("2 April 1933")
                 .placeOfBirth("Newry")
@@ -89,7 +92,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build(),
             DocmosisRespondent.builder()
                 .name("An Other")
-                .age(formatAgeDisplay(parse("1933-04-02")))
+                .age(formatAgeDisplay(parse("1933-04-02"), LANGUAGE))
                 .gender("Male")
                 .dateOfBirth("2 April 1933")
                 .placeOfBirth("Reading")
@@ -124,7 +127,7 @@ public class SampleCaseSubmissionTestDataHelper {
     private static List<DocmosisChild> expectedDocmosisChildren() {
         return of(DocmosisChild.builder()
                 .name("Tom Reeves")
-                .age(formatAgeDisplay(parse("2018-06-15")))
+                .age(formatAgeDisplay(parse("2018-06-15"), LANGUAGE))
                 .gender("Boy")
                 .dateOfBirth("15 June 2018")
                 .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
@@ -144,7 +147,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build(),
             DocmosisChild.builder()
                 .name("Sarah Reeves")
-                .age(formatAgeDisplay(parse("2002-02-02")))
+                .age(formatAgeDisplay(parse("2002-02-02"), LANGUAGE))
                 .gender("Girl")
                 .dateOfBirth("2 February 2002")
                 .livingSituation("Living with respondents\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
