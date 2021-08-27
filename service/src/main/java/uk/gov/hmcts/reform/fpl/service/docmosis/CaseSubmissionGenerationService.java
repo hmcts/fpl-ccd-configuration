@@ -317,13 +317,13 @@ public class CaseSubmissionGenerationService
 
     private String getThreasoldReasonBeyondControl(
         Language applicationLanguage) {
-        return applicationLanguage == Language.ENGLISH ? "Beyond parental control." : "Beyond parental control.";
+        return applicationLanguage == Language.ENGLISH ? "Beyond parental control." : "Beyond parental control. ";
     }
 
     private String getThreasoldReasonNoCare(Language applicationLanguage) {
         return applicationLanguage == Language.ENGLISH
             ? "Not receiving care that would be reasonably expected from a parent."
-            : "Not receiving care that would be reasonably expected from a parent.";
+            : "Not receiving care that would be reasonably expected from a parent. ";
     }
 
     public String getSigneeName(CaseData caseData) {
