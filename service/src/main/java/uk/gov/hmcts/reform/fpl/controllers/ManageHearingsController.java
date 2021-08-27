@@ -150,7 +150,7 @@ public class ManageHearingsController extends CallbackController {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
             caseDetails.getData().put(VACATE_HEARING_LIST,
-                hearingsService.asDynamicList(caseData.getAllHearings(), hearingBookingId));
+                hearingsService.asDynamicList(caseData.getAllNonCancelledHearings(), hearingBookingId));
 
             HearingBooking hearingBooking = hearingsService
                 .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
