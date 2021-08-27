@@ -106,7 +106,7 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
-        public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
+    public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
         return wrapElements(
             createDummyEvidenceBundle("confidential-1", uploadedBy, true, PDF_DOCUMENT_1),
             createDummyEvidenceBundle("confidential-2", uploadedBy, true, PDF_DOCUMENT_2));
