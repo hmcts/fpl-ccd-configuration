@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
@@ -268,14 +269,14 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 cmo.getOrder(),
                 recipientsWithOthers,
                 CASE_ID,
-                FAMILY_MAN_CASE_NUMBER
+                FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
 
             verify(sendLetters).send(
                 c21.getOrder(),
                 recipientsWithOthers,
                 CASE_ID,
-                FAMILY_MAN_CASE_NUMBER
+                FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
 
             verifyNoMoreInteractions(notificationClient);

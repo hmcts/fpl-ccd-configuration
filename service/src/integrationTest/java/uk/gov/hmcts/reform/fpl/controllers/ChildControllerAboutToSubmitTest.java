@@ -202,13 +202,15 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIfBeforeNotSelected() {
         CaseData caseDataBefore = CaseData.builder()
             .localAuthorities(LOCAL_AUTHORITIES)
-            .children1(wrapElements(
-                Child.builder()
+            .children1(List.of(
+                element(Child.builder()
                     .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
-                    .build(),
-                Child.builder()
+                    .build()
+                ),
+                element(Child.builder()
                     .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
                     .build()
+                )
             )).childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("No")
                 .build())
@@ -261,15 +263,17 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData caseDataBefore = CaseData.builder()
             .localAuthorities(LOCAL_AUTHORITIES)
-            .children1(wrapElements(
-                Child.builder()
+            .children1(List.of(
+                element(Child.builder()
                     .party(ChildParty.builder().firstName(CHILD_NAME_1).lastName(CHILD_SURNAME_1).build())
                     .solicitor(MAIN_REPRESENTATIVE)
-                    .build(),
-                Child.builder()
+                    .build()
+                ),
+                element(Child.builder()
                     .party(ChildParty.builder().firstName(CHILD_NAME_2).lastName(CHILD_SURNAME_2).build())
                     .solicitor(MAIN_REPRESENTATIVE)
                     .build()
+                )
             )).childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("Yes")
                 .childrenMainRepresentative(MAIN_REPRESENTATIVE)
