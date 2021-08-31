@@ -27,6 +27,16 @@ Scenario('HMCTS admin enters FamilyMan reference number', async ({I, caseViewPag
   I.seeFamilyManNumber('mockCaseID');
 });
 
+Scenario('HMCTS admin updates language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
+  await setupScenario(I);
+  await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
+  await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
+  caseViewPage.selectTab(caseViewPage.tabs.summary);
+  I.seeTagInTab('WELSH CASE');
+});
+
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async ({I, caseViewPage, enterOtherProceedingsEventPage, enterChildrenEventPage}) => {
   await setupScenario(I);
   const I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible = async (event, summary, description, I_doActionsOnEditPage = () => {}) => {
@@ -36,14 +46,6 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     I.seeEventSubmissionConfirmation(event);
     I.see('Case information');
   };
-
-  Scenario('HMCTS admin updates language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
-    await setupScenario(I);
-    await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
-    await enterLanguageRequirementsEventPage.enterLanguageRequirement();
-    await I.completeEvent('Save and continue');
-    I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
-  });
 
   const summaryText = 'Summary of change';
   const descriptionText = 'Description of change';
