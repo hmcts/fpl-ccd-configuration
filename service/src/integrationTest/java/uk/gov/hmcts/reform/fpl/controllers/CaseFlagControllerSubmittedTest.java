@@ -50,7 +50,6 @@ class CaseFlagControllerSubmittedTest extends AbstractCallbackTest {
         when(caseSummaryCourtGenerator.generate(any())).thenReturn(SyntheticCaseSummary.builder().build());
     }
 
-
     @Test
     public void shouldUpdateSummaryCaseFields() {
         CaseData caseDataBefore = CaseData.builder()

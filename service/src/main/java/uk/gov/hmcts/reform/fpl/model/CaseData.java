@@ -335,7 +335,6 @@ public class CaseData {
     private final DynamicList applicantsList;
     private final String otherApplicant;
 
-    // addCaseFlag event fields
     private final DocumentReference redDotAssessmentForm;
     private final String caseFlagNotes;
     private final String caseFlagAdded;

@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseFlagController extends CallbackController {
 
-
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);

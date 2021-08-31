@@ -72,5 +72,4 @@ class CaseSummaryCaseFlagGeneratorTest {
         verifyNoInteractions(userService);
     }
 
-
 }
