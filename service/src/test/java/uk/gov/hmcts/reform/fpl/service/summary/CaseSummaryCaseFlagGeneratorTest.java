@@ -71,5 +71,4 @@ class CaseSummaryCaseFlagGeneratorTest {
         assertThat(actual).isEqualTo(expected);
         verifyNoInteractions(userService);
     }
-
 }
