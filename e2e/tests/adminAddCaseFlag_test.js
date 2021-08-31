@@ -1,8 +1,5 @@
 const config = require('../config.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
-const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
-const manageDocumentsForLAHelper = require('../helpers/manage_documents_for_LA_helper.js');
-const api = require('../helpers/api_helper');
 
 let caseId;
 
