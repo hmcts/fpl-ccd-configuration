@@ -26,7 +26,12 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
+import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
+import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
+import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +47,7 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -54,6 +60,10 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private static final List<State> IGNORED_STATES = List.of(State.OPEN, State.RETURNED, State.CLOSED, State.DELETED);
     private static final int MAX_CHILDREN = 15;
+
+    private final TaskListService taskListService;
+    private final TaskListRenderer taskListRenderer;
+    private final CaseSubmissionChecker caseSubmissionChecker;
 
     private final NoticeOfChangeFieldPopulator populator;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
@@ -109,13 +119,37 @@ public class MigrateCaseController extends CallbackController {
 
             if (designatedLocalAuthority.isPresent()) {
                 caseDetails.getData().put("localAuthorities", wrapElements(designatedLocalAuthority.get()));
-                log.info("Migration 3238. Case {} migrated", caseDetails.getId());
+                log.info("Migration 3238. LocalAuthorities migrated for case {}", caseDetails.getId());
             } else {
                 log.warn("Migration 3238. Could not find designated local authority for case {}", caseDetails.getId());
             }
+
+            final Optional<String> taskList = migrateTaskList(caseDetails);
+            if (taskList.isPresent()) {
+                caseDetails.getData().put("taskList", taskList.get());
+                log.info("Migration 3238. Task list migrated for case {}", caseDetails.getId());
+            }
+
         } else {
             log.warn("Migration 3238. Case {} already have local authority. Migration skipped", caseDetails.getId());
         }
+    }
+
+
+    private Optional<String> migrateTaskList(CaseDetails caseDetails) {
+
+        final CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getState() == OPEN) {
+
+            final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+            final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
+            final String taskList = taskListRenderer.render(tasks, eventErrors);
+
+            return Optional.of(taskList);
+        }
+
+        return Optional.empty();
     }
 
     private Optional<LocalAuthority> migrateFromLegacyApplicant(CaseData caseData) {
