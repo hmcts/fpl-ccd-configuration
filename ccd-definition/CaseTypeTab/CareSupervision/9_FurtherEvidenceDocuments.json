@@ -8,7 +8,39 @@
     "TabDisplayOrder": 0,
     "CaseFieldID": "submittedForm",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\" AND showFurtherEvidenceTab=\"YES\"",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "translatedSubmittedForm",
+    "TabFieldDisplayOrder": 20
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "submittedFormNeedTranslation",
+    "FieldShowCondition": "submittedForm=\"DO_NOT_SHOW\"",
+    "TabFieldDisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "submittedFormSentForTranslationLabel",
+    "FieldShowCondition": "submittedFormNeedTranslation=\"YES\" AND translatedSubmittedForm!=\"*\"",
+    "TabFieldDisplayOrder": 40
   },
   {
     "LiveFrom": "01/01/2017",
@@ -18,7 +50,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "manageDocumentsLink",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 50
   },
   {
     "LiveFrom": "01/01/2017",
@@ -28,7 +60,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "standardDirectionsDocument",
-    "TabFieldDisplayOrder": 3,
+    "TabFieldDisplayOrder": 60,
     "Comment": "This is deprecated - field for old SDO documents that were uploaded in uploadStandardDirections event"
   },
   {
@@ -39,7 +71,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "manageDocumentsLALink",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 70
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,7 +81,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "manageDocumentsSolicitorLink",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 80
   },
   {
     "LiveFrom": "01/01/2017",
@@ -59,7 +91,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentViewLA",
-    "TabFieldDisplayOrder": 5,
+    "TabFieldDisplayOrder": 90,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   },
   {
@@ -70,7 +102,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentViewHMCTS",
-    "TabFieldDisplayOrder": 6,
+    "TabFieldDisplayOrder": 100,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   },
   {
@@ -81,7 +113,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentViewNC",
-    "TabFieldDisplayOrder": 7,
+    "TabFieldDisplayOrder": 110,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   },
   {
@@ -92,7 +124,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentListPageLA",
-    "TabFieldDisplayOrder": 8
+    "TabFieldDisplayOrder": 120
   },
   {
     "LiveFrom": "01/01/2017",
@@ -102,7 +134,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentListPageHMCTS",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 130
   },
   {
     "LiveFrom": "01/01/2017",
@@ -112,7 +144,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentListPageNC",
-    "TabFieldDisplayOrder": 10
+    "TabFieldDisplayOrder": 140
   },
   {
     "LiveFrom": "01/01/2017",
@@ -122,7 +154,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "showFurtherEvidenceTab",
-    "TabFieldDisplayOrder": 11,
+    "TabFieldDisplayOrder": 150,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   }
 ]

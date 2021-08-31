@@ -35,6 +35,8 @@ public class FurtherEvidenceDocumentsTransformer {
             .sorted(comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
+                .translatedDocument(doc.getTranslatedDocument())
+                .sentForTranslation(doc.sentForTranslation())
                 .type(doc.getType().getLabel())
                 .fileName(doc.getName())
                 .uploadedDateTime(doc.getDateTimeUploaded())

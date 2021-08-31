@@ -65,6 +65,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BFO",
+    "ListElement": "Bracknell Forest Council",
+    "DisplayOrder": 23
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BRD",
     "ListElement": "Bridgend County Borough Council",
     "DisplayOrder": 25
@@ -695,6 +702,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WIM",
+    "ListElement": "Royal Borough of Windsor & Maidenhead",
+    "DisplayOrder": 318
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SAL",
     "ListElement": "Salford City Council",
     "DisplayOrder": 320
@@ -726,6 +740,13 @@
     "ListElementCode": "SHR",
     "ListElement": "Shropshire Borough Council",
     "DisplayOrder": 330
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SCF",
+    "ListElement": "Slough Children First",
+    "DisplayOrder": 333
   },
   {
     "LiveFrom": "01/01/2017",
@@ -884,6 +905,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WBC",
+    "ListElement": "West Berkshire Council",
+    "DisplayOrder": 426
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WMS",
     "ListElement": "Westminster City Council",
     "DisplayOrder": 427
@@ -908,6 +936,13 @@
     "ListElementCode": "WIR",
     "ListElement": "Wirral Borough Council",
     "DisplayOrder": 440
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WOK",
+    "ListElement": "Wokingham Borough Council",
+    "DisplayOrder": 443
   },
   {
     "LiveFrom": "01/01/2017",

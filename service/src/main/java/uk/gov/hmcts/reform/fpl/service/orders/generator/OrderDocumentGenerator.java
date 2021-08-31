@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
@@ -40,7 +41,7 @@ public class OrderDocumentGenerator {
         Map<String, Object> templateData = objectMapper.convertValue(docmosisParameters, new TypeReference<>() {});
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            templateData, documentGenerator.template(), format
+            templateData, documentGenerator.template(), format, Language.ENGLISH
         );
 
         if (documentsHolder != null && OrderStatus.SEALED == orderStatus) {

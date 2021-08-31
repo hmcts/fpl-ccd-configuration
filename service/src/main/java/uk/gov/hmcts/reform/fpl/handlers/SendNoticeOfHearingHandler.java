@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -15,9 +16,9 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
@@ -47,7 +48,7 @@ public class SendNoticeOfHearingHandler {
     private final NoticeOfHearingNoOtherAddressEmailContentProvider noticeOfHearingNoOtherAddressEmailContentProvider;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
@@ -58,16 +59,15 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void notifyLocalAuthority(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
+
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            caseData, event.getSelectedHearing(), DIGITAL_SERVICE
-        );
+            caseData, event.getSelectedHearing(), DIGITAL_SERVICE);
 
-        notificationService.sendEmail(
-            NOTICE_OF_NEW_HEARING, emails, notifyData, caseData.getId().toString()
-        );
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipients, notifyData, caseData.getId());
     }
 
     @Async
@@ -106,6 +106,11 @@ public class SendNoticeOfHearingHandler {
     @Async
     @EventListener
     public void sendNoticeOfHearingByPost(final SendNoticeOfHearing event) {
+
+        if (event.getSelectedHearing().getNeedTranslation() == YesNo.YES) {
+            return;
+        }
+
         final CaseData caseData = event.getCaseData();
         final DocumentReference noticeOfHearing = event.getSelectedHearing().getNoticeOfHearing();
         final List<Element<Other>> others = event.getSelectedHearing().getOthers();

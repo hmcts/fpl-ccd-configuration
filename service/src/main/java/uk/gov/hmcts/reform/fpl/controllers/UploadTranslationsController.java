@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.events.TranslationUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
 
 @Api
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
 public class UploadTranslationsController extends CallbackController {
 
     private final TranslatableItemService translatableItemService;
+    private final DocumentListService documentListService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -54,6 +56,7 @@ public class UploadTranslationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(translatableItemService.finalise(caseData));
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
 
         caseData.getUploadTranslationsEventData()
             .getTransientFields()
@@ -69,12 +72,15 @@ public class UploadTranslationsController extends CallbackController {
 
         TranslatableItem translatableItem = lastTranslatedItem.getValue();
 
-        publishEvent(new TranslationUploadedEvent(
-            getCaseData(callbackRequest),
-            translatableItem.getTranslatedDocument(),
-            translatableItem.getModifiedItemType(),
-            translatableItem.getSelectedOthers()
-        ));
+        publishEvent(TranslationUploadedEvent.builder()
+            .caseData(getCaseData(callbackRequest))
+            .originalDocument(translatableItem.getDocument())
+            .amendedDocument(translatableItem.getTranslatedDocument())
+            .amendedOrderType(translatableItem.getModifiedItemType())
+            .selectedOthers(translatableItem.getSelectedOthers())
+            .translationRequirements(translatableItem.getTranslationRequirements())
+            .build()
+        );
     }
 
 }

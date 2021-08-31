@@ -372,7 +372,7 @@ class ManageLocalAuthoritiesServiceTest {
             when(localAuthorityService.getLocalAuthority(localAuthorityOrganisation))
                 .thenReturn(localAuthorityFromOrganisation);
 
-            when(localAuthorityEmails.getLocalAuthority(localAuthorityCode))
+            when(localAuthorityEmails.getSharedInbox(localAuthorityCode))
                 .thenReturn(Optional.of(localAuthorityEmail));
 
             final LocalAuthority actualLocalAuthority = underTest.getLocalAuthorityToTransferDetails(caseData);
@@ -889,7 +889,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .localAuthoritiesToShare(dynamicList)
                 .build();
 
-            when(localAuthorityEmails.getLocalAuthority("LA2")).thenReturn(Optional.of("test@test.com"));
+            when(localAuthorityEmails.getSharedInbox("LA2")).thenReturn(Optional.of("test@test.com"));
 
             final String actualEmail = underTest.getSelectedLocalAuthorityEmail(eventData);
 
@@ -908,7 +908,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .localAuthoritiesToShare(dynamicList)
                 .build();
 
-            when(localAuthorityEmails.getLocalAuthority("LA2")).thenReturn(Optional.empty());
+            when(localAuthorityEmails.getSharedInbox("LA2")).thenReturn(Optional.empty());
 
             final String actualEmail = underTest.getSelectedLocalAuthorityEmail(eventData);
 

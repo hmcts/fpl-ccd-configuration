@@ -15,11 +15,50 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "languageSelection",
     "CaseFieldID": "languageRequirement",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "languageSelection",
+    "CaseFieldID": "languageRequirementApplication",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "languageRequirement=\"Yes\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "languageSelection",
+    "CaseFieldID": "languageRequirementApplicationNeedWelsh",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
+    "FieldShowCondition": "languageRequirementApplication=\"ENGLISH\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "languageSelection",
+    "CaseFieldID": "languageRequirementApplicationNeedEnglish",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "languageRequirementApplication=\"WELSH\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]

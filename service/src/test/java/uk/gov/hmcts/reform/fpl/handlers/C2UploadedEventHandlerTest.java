@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -49,7 +47,7 @@ class C2UploadedEventHandlerTest {
     private NotificationService notificationService;
 
     @MockBean
-    private InboxLookupService inboxLookupService;
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
 
     @MockBean
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
@@ -67,13 +65,6 @@ class C2UploadedEventHandlerTest {
     @BeforeEach
     void before() {
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-    }
-
-    @AfterEach
-    void resetInvocations() {
-        reset(notificationService);
-        reset(inboxLookupService);
-        reset(c2UploadedEmailContentProvider);
     }
 
     @Test

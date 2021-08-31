@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
 class UserServiceTest {
 
+    private static final Long CASE_ID = 12345L;
     private static final String USER_EMAIL = "user@email.com";
     private static final String USER_AUTHORISATION = "USER_AUTH";
 
@@ -133,14 +134,14 @@ class UserServiceTest {
     class HasAnyCaseRoleFromTests {
         @Test
         void shouldReturnTrueWhenCaseRolePresent() {
-            when(accessService.getUserCaseRoles("123")).thenReturn(Set.of(SOLICITORA));
-            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORA), "123")).isTrue();
+            when(accessService.getUserCaseRoles(CASE_ID)).thenReturn(Set.of(SOLICITORA));
+            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORA), CASE_ID)).isTrue();
         }
 
         @Test
         void shouldReturnFalseWhenCaseRoleNotPresent() {
-            when(accessService.getUserCaseRoles("123")).thenReturn(Set.of(SOLICITORA));
-            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORB), "123")).isFalse();
+            when(accessService.getUserCaseRoles(CASE_ID)).thenReturn(Set.of(SOLICITORA));
+            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORB), CASE_ID)).isFalse();
         }
     }
 

@@ -20,7 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID_AS_LONG;
+import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_FORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.GIRL;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -48,7 +48,7 @@ class LegalCounsellorEmailContentProviderTest {
     @BeforeEach
     void setUp() {
         caseData = CaseData.builder()
-            .id(TEST_CASE_ID_AS_LONG)
+            .id(TEST_CASE_ID)
             .children1(List.of(testChild("Beatrice", "Langley", GIRL, LocalDate.now())))
             .caseName("testCaseName")
             .build();
@@ -58,7 +58,7 @@ class LegalCounsellorEmailContentProviderTest {
 
     @Test
     void buildLegalCounsellorAddedNotificationTemplate() {
-        when(caseUrlService.getCaseUrl(TEST_CASE_ID_AS_LONG)).thenReturn("myUrl");
+        when(caseUrlService.getCaseUrl(TEST_CASE_ID)).thenReturn("myUrl");
 
         LegalCounsellorAddedNotifyTemplate returnedTemplate =
             underTest.buildLegalCounsellorAddedNotificationTemplate(caseData);

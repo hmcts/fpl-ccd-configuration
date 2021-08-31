@@ -103,6 +103,19 @@ class DocumentsListRenderer {
                     + documentView.getDocument().getFilename() + "</a>"));
 
         }
+
+        if (documentView.isSentForTranslation()) {
+            documentFields.add(Pair.of("Sent for translation", ""));
+        }
+
+        if (isNotEmpty(documentView.getTranslatedDocument())) {
+            documentFields.add(Pair.of("Translated document",
+                "<a href='"
+                    + getDocumentUrl(documentView.getTranslatedDocument())
+                    + "'>"
+                    + documentView.getTranslatedDocument().getFilename() + "</a>"));
+        }
+
         return documentFields;
     }
 

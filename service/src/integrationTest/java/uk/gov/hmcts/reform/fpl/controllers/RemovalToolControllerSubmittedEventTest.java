@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.service.notify.NotificationClient;
@@ -88,9 +87,6 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
     @MockBean
     private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
-
-    @MockBean
-    private FeatureToggleService toggleService;
 
     @MockBean
     private Time time;

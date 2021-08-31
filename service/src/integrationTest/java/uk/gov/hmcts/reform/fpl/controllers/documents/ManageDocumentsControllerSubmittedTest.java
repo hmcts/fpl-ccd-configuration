@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 
 @ActiveProfiles("integration-test")
@@ -36,19 +37,22 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     private NotificationClient notificationClient;
 
     @MockBean
-    private CaseAccessDataStoreApi caseAccessDataStoreApi;
-
-    @MockBean
     private FeatureToggleService featureToggleService;
 
     ManageDocumentsControllerSubmittedTest() {
         super("manage-documents");
     }
 
+    @BeforeEach
+    void init() {
+        givenFplService();
+    }
+
     @Test
     void shouldNotPublishEventLAWhenUploadNotificationFeatureIsDisabled() {
-        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(buildCaseAssignedUserRole("[SOLICITORA]"));
+
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
+
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
         postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
@@ -60,8 +64,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     void shouldNotPublishEventWhenConfidentialDocumentsAreUploadedBySolicitor() {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
-        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(buildCaseAssignedUserRole("[SOLICITORA]"));
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
 
         postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, true));
         verifyNoInteractions(notificationClient);
@@ -71,8 +74,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     void shouldPublishEventWithOtherUserWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
-        when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
-            .thenReturn(buildCaseAssignedUserRole("[SOLICITORA]"));
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
 
         postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
 
@@ -80,13 +82,13 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
             eq(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
-            eq(EMAIL_REFERENCE));
+            eq(notificationReference(TEST_CASE_ID)));
 
         verify(notificationClient).sendEmail(
             eq(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE),
             eq(REP_1_EMAIL),
             anyMap(),
-            eq(EMAIL_REFERENCE));
+            eq(notificationReference(TEST_CASE_ID)));
     }
 
     private CaseAssignedUserRolesResource buildCaseAssignedUserRole(String role) {

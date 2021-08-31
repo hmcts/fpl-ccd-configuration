@@ -627,7 +627,7 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
 Scenario('local authority enters language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.languageRequirement);
-  await enterLanguageRequirementsEventPage.enterLanguageRequirement();
+  await enterLanguageRequirementsEventPage.disableLanguageRequirement();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.languageRequirement);
 

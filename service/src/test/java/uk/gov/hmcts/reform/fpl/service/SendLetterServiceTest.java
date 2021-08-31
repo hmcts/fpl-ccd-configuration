@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
@@ -99,9 +100,11 @@ class SendLetterServiceTest {
             .willReturn(new SendLetterResponse(LETTERS_IDS.get(1)));
         given(documentDownloadService.downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl()))
             .willReturn(MAIN_DOCUMENT_BYTES);
-        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, RECIPIENTS.get(0)))
+        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, RECIPIENTS.get(0),
+            Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(0)));
-        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, RECIPIENTS.get(1)))
+        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, RECIPIENTS.get(1),
+            Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(1)));
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
@@ -110,12 +113,14 @@ class SendLetterServiceTest {
     void shouldMakeCorrectCallsToCreateAndSendDocuments() {
         String familyCaseNumber = "familyCaseNumber";
 
-        underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID, familyCaseNumber);
+        underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID, familyCaseNumber, Language.ENGLISH);
 
         verify(documentDownloadService).downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl());
         verify(uploadDocumentService).uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename());
-        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(0));
-        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(1));
+        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(0),
+            Language.ENGLISH);
+        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(1),
+            Language.ENGLISH);
         verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME);
         verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME);
         verify(sendLetterApi, times(2))
@@ -135,7 +140,7 @@ class SendLetterServiceTest {
     @Test
     void shouldReturnSentDocumentsData() {
         List<SentDocument> sentDocuments = underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID,
-            FAMILY_CASE_NUMBER);
+            FAMILY_CASE_NUMBER, Language.ENGLISH);
 
         String formattedDate = DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy");
 

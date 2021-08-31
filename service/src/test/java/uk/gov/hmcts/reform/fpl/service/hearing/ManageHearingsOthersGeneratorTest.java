@@ -48,7 +48,6 @@ class ManageHearingsOthersGeneratorTest {
         when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
@@ -70,7 +69,6 @@ class ManageHearingsOthersGeneratorTest {
         when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
@@ -92,7 +90,6 @@ class ManageHearingsOthersGeneratorTest {
         when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
         Map<String, Object> expectedData = Map.of(
@@ -117,7 +114,6 @@ class ManageHearingsOthersGeneratorTest {
         when(othersService.buildOtherSelector(unwrapElements(caseData.getAllOthers()),
             unwrapElements(hearingBooking.getOthers()))).thenReturn(OTHER_SELECTOR);
         when(othersService.getOthersLabel(any())).thenReturn(OTHER_LABEL);
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
 
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
 
@@ -129,22 +125,9 @@ class ManageHearingsOthersGeneratorTest {
         CaseData caseData = CaseData.builder().build();
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(true);
-
         Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
 
         assertThat(generatedData).isEmpty();
     }
 
-    @Test
-    void shouldNotGenerateFieldsWhenToggledOff() {
-        CaseData caseData = CaseData.builder().build();
-        HearingBooking hearingBooking = HearingBooking.builder().build();
-
-        when(toggleService.isServeOrdersAndDocsToOthersEnabled()).thenReturn(false);
-
-        Map<String, Object> generatedData = underTest.generate(caseData, hearingBooking);
-
-        assertThat(generatedData).isEmpty();
-    }
 }

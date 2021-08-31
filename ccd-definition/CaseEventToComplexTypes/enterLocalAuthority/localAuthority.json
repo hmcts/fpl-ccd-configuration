@@ -15,7 +15,7 @@
     "CaseEventID": "enterLocalAuthority",
     "CaseFieldID": "localAuthority",
     "ListElementCode": "email",
-    "EventElementLabel": "*Group email address",
+    "EventElementLabel": "Group email address",
     "DisplayContext": "OPTIONAL",
     "FieldDisplayOrder": 2
   },
