@@ -81,12 +81,12 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.EDIT_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARINGS_TO_ADJOURN;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARING_TO_RE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_PAST_OR_FUTURE_HEARINGS;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
@@ -166,7 +166,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_FUTURE_HEARING_FLAG, "Yes")
                 .containsEntry(HAS_PAST_OR_FUTURE_HEARINGS, "Yes")
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(EDIT_HEARING_LIST, expectedPastAndFutureHearingList)
+                .containsEntry(HEARING_LIST, expectedPastAndFutureHearingList)
                 .containsEntry(PAST_HEARING_LIST, expectedPastHearingList)
                 .containsEntry(VACATE_HEARING_LIST, expectedPastAndFutureHearingList)
                 .containsEntry(TO_RE_LIST_HEARING_LIST, emptyDynamicList)
@@ -204,7 +204,7 @@ class ManageHearingsServiceTest {
                         + "Case management hearing, 12 September 2020 - vacated")
                 .containsEntry(TO_RE_LIST_HEARING_LIST, expectedHearingList)
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(EDIT_HEARING_LIST, emptyDynamicList)
+                .containsEntry(HEARING_LIST, emptyDynamicList)
                 .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
                 .containsEntry(VACATE_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARINGS_TO_ADJOURN)
@@ -228,7 +228,7 @@ class ManageHearingsServiceTest {
             assertThat(data)
                 .containsEntry(HAS_HEARINGS_TO_ADJOURN, "Yes")
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(EDIT_HEARING_LIST, expectedPastHearingList)
+                .containsEntry(HEARING_LIST, expectedPastHearingList)
                 .containsEntry(PAST_HEARING_LIST, expectedPastHearingList);
         }
 
@@ -251,7 +251,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_FUTURE_HEARING_FLAG, "Yes")
                 .containsEntry(HAS_PAST_OR_FUTURE_HEARINGS, "Yes")
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(EDIT_HEARING_LIST, expectedHearingList)
+                .containsEntry(HEARING_LIST, expectedHearingList)
                 .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
                 .containsEntry(VACATE_HEARING_LIST, expectedFutureHearingList);
         }

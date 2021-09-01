@@ -81,7 +81,7 @@ public class ManageHearingsService {
     public static final String HAS_PAST_OR_FUTURE_HEARINGS = "hasPastOrFutureHearings";
     public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureHearingDateFlag";
     public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
-    public static final String EDIT_HEARING_LIST = "hearingDateList";
+    public static final String HEARING_LIST = "hearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     public static final String VACATE_HEARING_LIST = "vacateHearingDateList";
     public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
@@ -119,7 +119,7 @@ public class ManageHearingsService {
         Collections.reverse(nonCancelledHearings);
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
-            EDIT_HEARING_LIST, asDynamicList(nonCancelledHearings),
+            HEARING_LIST, asDynamicList(nonCancelledHearings),
             PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
             VACATE_HEARING_LIST, asDynamicList(nonCancelledHearings),
             TO_RE_LIST_HEARING_LIST, asDynamicList(toBeReListedHearings)
@@ -351,7 +351,7 @@ public class ManageHearingsService {
             "firstHearingFlag",
             "adjournmentReason",
             "vacatedReason",
-            EDIT_HEARING_LIST,
+            HEARING_LIST,
             PAST_HEARING_LIST,
             VACATE_HEARING_LIST,
             "vacatedHearingDate",

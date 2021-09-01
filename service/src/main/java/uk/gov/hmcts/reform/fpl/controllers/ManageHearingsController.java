@@ -49,8 +49,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.EDIT_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
@@ -125,7 +125,7 @@ public class ManageHearingsController extends CallbackController {
         } else if (EDIT_HEARING == caseData.getHearingOption()) {
             final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            caseDetails.getData().put(EDIT_HEARING_LIST,
+            caseDetails.getData().put(HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getAllNonCancelledHearings(), hearingBookingId));
 
             HearingBooking hearingBooking = hearingsService
