@@ -78,10 +78,10 @@ public class ManageHearingsService {
 
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
     public static final String HAS_HEARINGS_TO_ADJOURN = "hasHearingsToAdjourn";
-    public static final String HAS_HEARINGS_TO_VACATE = "hasHearingsToVacate";
+    public static final String HAS_PAST_OR_FUTURE_HEARINGS = "hasPastOrFutureHearings";
     public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureHearingDateFlag";
     public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
-    public static final String HEARING_DATE_LIST = "hearingDateList";
+    public static final String EDIT_HEARING_LIST = "hearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     public static final String VACATE_HEARING_LIST = "vacateHearingDateList";
     public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
@@ -119,7 +119,7 @@ public class ManageHearingsService {
         Collections.reverse(nonCancelledHearings);
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
-            HEARING_DATE_LIST, asDynamicList(futureHearings),
+            EDIT_HEARING_LIST, asDynamicList(nonCancelledHearings),
             PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
             VACATE_HEARING_LIST, asDynamicList(nonCancelledHearings),
             TO_RE_LIST_HEARING_LIST, asDynamicList(toBeReListedHearings)
@@ -138,7 +138,7 @@ public class ManageHearingsService {
         }
 
         if (isNotEmpty(nonCancelledHearings)) {
-            listAndLabel.put(HAS_HEARINGS_TO_VACATE, YES.getValue());
+            listAndLabel.put(HAS_PAST_OR_FUTURE_HEARINGS, YES.getValue());
         }
 
         if (isNotEmpty(toBeReListedHearings)) {
@@ -317,13 +317,12 @@ public class ManageHearingsService {
     public Object getHearingsDynamicList(CaseData caseData) {
         switch (caseData.getHearingOption()) {
             case VACATE_HEARING:
-                return caseData.getVacateHearingDateList();
+            case EDIT_HEARING:
+                return caseData.getHearingDateList();
             case ADJOURN_HEARING:
                 return caseData.getPastAndTodayHearingDateList();
             case RE_LIST_HEARING:
                 return caseData.getToReListHearingDateList();
-            case EDIT_HEARING:
-                return caseData.getHearingDateList();
             default:
                 return null;
         }
@@ -352,12 +351,12 @@ public class ManageHearingsService {
             "firstHearingFlag",
             "adjournmentReason",
             "vacatedReason",
-            HEARING_DATE_LIST,
+            EDIT_HEARING_LIST,
             PAST_HEARING_LIST,
             VACATE_HEARING_LIST,
             "vacatedHearingDate",
             HAS_HEARINGS_TO_ADJOURN,
-            HAS_HEARINGS_TO_VACATE,
+            HAS_PAST_OR_FUTURE_HEARINGS,
             HAS_EXISTING_HEARINGS_FLAG,
             HAS_FUTURE_HEARING_FLAG,
             "hearingReListOption",

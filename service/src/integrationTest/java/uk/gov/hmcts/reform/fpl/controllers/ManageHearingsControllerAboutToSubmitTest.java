@@ -125,7 +125,9 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
     @Test
     void shouldUpdateExistingHearingInHearingDetailsListWhenEditHearingSelected() {
-        HearingBooking existingHearing = testHearing(now().plusDays(2));
+        HearingBooking existingHearing = testHearing(now().plusDays(2)).toBuilder()
+            .type(ISSUE_RESOLUTION)
+            .build();
 
         Element<HearingBooking> hearingElement = element(existingHearing);
 
@@ -133,7 +135,6 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingOption(EDIT_HEARING)
             .hearingDateList(dynamicList(hearingElement.getId(), hearingElement))
             .hearingDetails(List.of(hearingElement))
-            .hearingType(ISSUE_RESOLUTION)
             .hearingVenue(existingHearing.getVenue())
             .hearingVenueCustom(existingHearing.getVenueCustomAddress())
             .hearingStartDate(existingHearing.getStartDate())
@@ -237,10 +238,8 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(RE_LIST_NOW)
-            .hearingDateList(dynamicList(futureHearing))
-            .vacateHearingDateList(dynamicList(
-                futureHearingToBeVacated.getId(), futureHearing,
-                futureHearingToBeVacated))
+            .hearingDateList(dynamicList(
+                futureHearingToBeVacated.getId(), pastHearing, futureHearingToBeVacated, futureHearing))
             .hearingDetails(List.of(pastHearing, futureHearingToBeVacated, futureHearing))
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(futureHearingToBeVacated.getValue().getVenue())
@@ -371,7 +370,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .selectedHearingId(randomUUID())
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(adjournmentOption)
-            .vacateHearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
+            .hearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
             .hearingDetails(List.of(futureHearingToBeAdjourned))
             .vacatedReason(vacatedReason)
             .vacatedHearingDate(vacatedHearingDate)
