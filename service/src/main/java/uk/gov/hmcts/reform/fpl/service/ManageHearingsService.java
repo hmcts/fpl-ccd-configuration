@@ -79,7 +79,6 @@ public class ManageHearingsService {
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
     public static final String HAS_HEARINGS_TO_ADJOURN = "hasHearingsToAdjourn";
     public static final String HAS_PAST_OR_FUTURE_HEARINGS = "hasPastOrFutureHearings";
-    public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureHearingDateFlag";
     public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
     public static final String HEARING_LIST = "hearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
@@ -108,7 +107,6 @@ public class ManageHearingsService {
 
     public Map<String, Object> populateHearingLists(CaseData caseData) {
 
-        List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
         List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
         List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
@@ -127,10 +125,6 @@ public class ManageHearingsService {
 
         if (isNotEmpty(caseData.getHearingDetails()) || isNotEmpty(caseData.getToBeReListedHearings())) {
             listAndLabel.put(HAS_EXISTING_HEARINGS_FLAG, YES.getValue());
-        }
-
-        if (isNotEmpty(futureHearings)) {
-            listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YES.getValue());
         }
 
         if (isNotEmpty(pastAndTodayHearings)) {
@@ -358,7 +352,6 @@ public class ManageHearingsService {
             HAS_HEARINGS_TO_ADJOURN,
             HAS_PAST_OR_FUTURE_HEARINGS,
             HAS_EXISTING_HEARINGS_FLAG,
-            HAS_FUTURE_HEARING_FLAG,
             "hearingReListOption",
             HEARING_START_DATE_LABEL,
             "showConfirmPastHearingDatesPage",
