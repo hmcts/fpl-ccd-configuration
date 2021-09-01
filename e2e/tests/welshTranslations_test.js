@@ -102,8 +102,8 @@ const orders = {
   },
   noticeOfHearing: {
     name: 'Notice of hearing - 9 April 2012',
-    originalFile: `Notice_of_hearing_${dateFormat('dmmmm')}.pdf`,
-    translationFile: `Notice_of_hearing_${dateFormat('dmmmm')}-Welsh.pdf`,
+    originalFile: `Notice_of_hearing_${dateFormat('ddmmmm')}.pdf`,
+    translationFile: `Notice_of_hearing_${dateFormat('ddmmmm')}-Welsh.pdf`,
     tabName: caseView.tabs.hearings,
     tabObjectName: 'Hearing 4',
   },
