@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETA
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.utils.BooleanHelper.booleanToYesNo;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -155,7 +155,7 @@ public class ManageHearingsController extends CallbackController {
                 .orElse(HearingBooking.builder().build());
 
             caseDetails.getData().put("showVacatePastHearingWarning",
-                BooleanUtils.toString(hearingBooking.getEndDate().isBefore(now()), "Yes", "No"));
+                booleanToYesNo(hearingBooking.getEndDate().isBefore(now())));
 
             errors.addAll(pastHearingDatesValidatorService.validateVacatedDate(hearingBooking.getEndDate(),
                 caseData.getVacatedHearingDate()));
