@@ -128,7 +128,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(HearingOptions.VACATE_HEARING)
             .hearingDetails(List.of(futureHearing1, pastHearing1, pastHearing2, futureHearing2))
-            .hearingDateList(futureHearing1.getId())
+            .vacateHearingDateList(futureHearing1.getId())
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));

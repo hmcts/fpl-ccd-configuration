@@ -311,12 +311,13 @@ public class ManageHearingsService {
     public Object getHearingsDynamicList(CaseData caseData) {
         switch (caseData.getHearingOption()) {
             case VACATE_HEARING:
-            case EDIT_HEARING:
-                return caseData.getHearingDateList();
+                return caseData.getVacateHearingDateList();
             case ADJOURN_HEARING:
                 return caseData.getPastAndTodayHearingDateList();
             case RE_LIST_HEARING:
                 return caseData.getToReListHearingDateList();
+            case EDIT_HEARING:
+                return caseData.getHearingDateList();
             default:
                 return null;
         }

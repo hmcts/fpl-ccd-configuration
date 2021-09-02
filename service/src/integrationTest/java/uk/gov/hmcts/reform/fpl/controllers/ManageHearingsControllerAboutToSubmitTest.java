@@ -238,7 +238,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(RE_LIST_NOW)
-            .hearingDateList(dynamicList(
+            .vacateHearingDateList(dynamicList(
                 futureHearingToBeVacated.getId(), pastHearing, futureHearingToBeVacated, futureHearing))
             .hearingDetails(List.of(pastHearing, futureHearingToBeVacated, futureHearing))
             .hearingType(CASE_MANAGEMENT)
@@ -370,7 +370,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .selectedHearingId(randomUUID())
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(adjournmentOption)
-            .hearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
+            .vacateHearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
             .hearingDetails(List.of(futureHearingToBeAdjourned))
             .vacatedReason(vacatedReason)
             .vacatedHearingDate(vacatedHearingDate)
