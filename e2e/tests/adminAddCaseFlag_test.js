@@ -27,7 +27,7 @@ Scenario('HMCTS Admin adds case flag and then removes case flag', async ({I, cas
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeTagInTab('Potentially violent person');
   I.seeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
-  I.seeInTab('Email', 'HMCTS');
+  I.seeInTab('Email', 'hmcts-admin@example.com');
   I.seeInTab('Assessment Form', 'mockFile.docx');
   I.seeInTab('Additional notes', 'Additional case flag notes');
 
