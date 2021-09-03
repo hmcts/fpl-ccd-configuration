@@ -105,7 +105,7 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 
 ## Running E2E against remote environment
 ```$bash
-URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" yarn test
+DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" SHOW_BROWSER_WINDOW=true yarn test -g "Feature name"
 ```
 If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD
 
