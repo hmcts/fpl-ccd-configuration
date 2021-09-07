@@ -1,112 +1,132 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.toCCDMoneyGBP;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PlacementService {
 
-    public boolean hasSingleChild(CaseData caseData) {
-        return caseData.getAllChildren().size() == 1;
-    }
+    private final Time time;
+    private final FeeService feeService;
+    private final DocumentSealingService sealingService;
 
-    public Element<Child> getChild(CaseData caseData, UUID childId) {
-        return findElement(childId, caseData.getAllChildren()).orElse(null);
-    }
+    public PlacementEventData init(CaseData caseData) {
 
-    public DynamicList getChildrenList(CaseData caseData, Element<Child> selectedChild) {
-        List<Element<Child>> children = caseData.getAllChildren();
-        UUID selectedChildId = ofNullable(selectedChild).map(Element::getId).orElse(null);
-        Function<Child, String> labelProducer = child -> child.getParty().getFullName();
+        final PlacementEventData placementData = caseData.getPlacementEventData();
 
-        return ElementUtils.asDynamicList(children, selectedChildId, labelProducer);
-    }
+        final List<Element<Child>> childrenWithoutPlacement = getChildrenWithoutPlacement(caseData);
 
-    public Placement getPlacement(CaseData caseData, Element<Child> child) {
-        return findPlacement(caseData.getPlacements(), child.getId())
-            .map(Element::getValue)
-            .orElse(Placement.builder()
+        if (childrenWithoutPlacement.size() == 1) {
+            final Element<Child> child = childrenWithoutPlacement.get(0);
+
+            final Placement placement = Placement.builder()
+                .childName(child.getValue().asLabel())
                 .childId(child.getId())
-                .childName(child.getValue().getParty().getFullName())
-                .build());
+                .build();
+
+            placementData.setPlacement(placement);
+            placementData.setPlacementSingleChild(YES);
+            placementData.setPlacementChildName(placement.getChildName());
+
+        } else {
+            placementData.setPlacementChildrenList(asDynamicList(childrenWithoutPlacement, Child::asLabel));
+        }
+
+        return placementData;
     }
 
-    public List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {
-        List<Element<Placement>> placements = new ArrayList<>(caseData.getPlacements());
 
-        findPlacement(placements, placement.getChildId())
-            .ifPresentOrElse(existingPlacement -> {
-                Element<Placement> newPlacement = element(existingPlacement.getId(), placement);
-                placements.remove(existingPlacement);
-                placements.add(newPlacement);
-            }, () -> placements.add(element(placement)));
+    public PlacementEventData preparePlacement(CaseData caseData) {
 
-        return placements;
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+
+        final DynamicList childrenList = placementData.getPlacementChildrenList();
+
+        final Placement placement = Placement.builder()
+            .childName(childrenList.getValueLabel())
+            .childId(childrenList.getValueCodeAsUUID())
+            .build();
+
+        placementData.setPlacement(placement);
+        placementData.setPlacementChildName(childrenList.getValueLabel());
+
+        return placementData;
     }
 
-    public List<Element<Placement>> withoutPlacementOrder(List<Element<Placement>> placements) {
-        return placements.stream()
-            .map(placement -> element(placement.getId(), placement.getValue().removePlacementOrder()))
+    public PlacementEventData preparePayment(CaseData caseData) {
+
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+
+        final boolean isPaymentRequired = isPaymentRequired(placementData);
+
+        placementData.setPlacementPaymentRequired(YesNo.from(isPaymentRequired));
+
+        if (isPaymentRequired) {
+            final FeesData feesData = feeService.getFeesDataForPlacement();
+            placementData.setPlacementFee(toCCDMoneyGBP(feesData.getTotalAmount()));
+        }
+
+        return placementData;
+    }
+
+    public PlacementEventData savePlacement(CaseData caseData) {
+
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+
+        final Placement placement = placementData.getPlacement();
+
+        final DocumentReference sealedApplication = sealingService.sealDocument(placement.getApplication());
+
+        placement.setApplication(sealedApplication);
+
+        placementData.getPlacements().add(element(placement));
+
+        return placementData;
+    }
+
+    private boolean isPaymentRequired(PlacementEventData eventData) {
+
+        return ofNullable(eventData)
+            .map(PlacementEventData::getPlacementLastPaymentTime)
+            .map(LocalDateTime::toLocalDate)
+            .map(lastPayment -> !lastPayment.isEqual(time.now().toLocalDate()))
+            .orElse(true);
+    }
+
+    private List<Element<Child>> getChildrenWithoutPlacement(CaseData caseData) {
+        final PlacementEventData eventData = caseData.getPlacementEventData();
+
+        final List<UUID> childrenWithPlacement = eventData.getPlacements()
+            .stream()
+            .map(placement -> placement.getValue().getChildId())
             .collect(toList());
-    }
 
-    public List<Element<Placement>> withoutConfidentialData(List<Element<Placement>> placements) {
-        return placements.stream()
-            .map(placement -> element(placement.getId(), removeConfidentialDocuments(placement)))
+        return caseData.getAllChildren().stream()
+            .filter(child -> !childrenWithPlacement.contains(child.getId()))
             .collect(toList());
-    }
-
-    private Placement removeConfidentialDocuments(Element<Placement> placement) {
-        return placement.getValue().removePlacementOrder().removeConfidentialDocuments();
-    }
-
-    private static Optional<Element<Placement>> findPlacement(List<Element<Placement>> placements, UUID childId) {
-        return placements.stream()
-            .filter(placement -> placement.getValue().getChildId().equals(childId))
-            .findFirst();
-    }
-
-    public List<DocumentReference> getUpdatedDocuments(CaseData caseData, CaseData caseDataBefore,
-                                                       PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
-        List<DocumentReference> documents = getDocumentsForOrderAndNotices(caseData.getPlacements(), type);
-        List<DocumentReference> previousDocuments = getDocumentsForOrderAndNotices(caseDataBefore.getPlacements(),
-            type);
-        documents.removeAll(previousDocuments);
-
-        return documents;
-    }
-
-    private List<DocumentReference> getDocumentsForOrderAndNotices(List<Element<Placement>> placements,
-                                                        PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
-        return placements.stream()
-            .filter(element -> element.getValue().getOrderAndNotices() != null)
-            .map(element -> element.getValue().getOrderAndNotices())
-            .flatMap(Collection::stream)
-            .filter(element -> element.getValue().getType() == type)
-            .map(this::getDocumentReference)
-            .collect(toList());
-    }
-
-    private DocumentReference getDocumentReference(Element<PlacementOrderAndNotices> element) {
-        return ofNullable(element.getValue().getDocument()).orElse(DocumentReference.builder().build());
     }
 }

@@ -6,6 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 @Getter
 @RequiredArgsConstructor
-public class PlacementApplicationEvent {
+public class PlacementApplicationAdded {
     private final CaseData caseData;
 }

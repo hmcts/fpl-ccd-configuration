@@ -67,6 +67,15 @@ public class FeeService {
             .build();
     }
 
+    public FeesData getFeesDataForPlacement() {
+        FeeResponse feeResponse = makeRequest(FeeType.PLACEMENT);
+
+        return FeesData.builder()
+            .totalAmount(feeResponse.getAmount())
+            .fees(List.of(FeeDto.fromFeeResponse(feeResponse)))
+            .build();
+    }
+
     public FeesData getFeesDataForAdditionalApplications(List<FeeType> applicationsFeeTypes) {
         return Optional.of(applicationsFeeTypes)
             .map(this::getFees)

@@ -115,6 +115,19 @@ public class PaymentService {
         paymentClient.callPaymentsApi(paymentRequest);
     }
 
+    public void makePaymentForPlacement(CaseData caseData, PBAPayment payment) {
+        final FeesData feesData = feeService.getFeesDataForPlacement();
+
+        final CreditAccountPaymentRequest paymentRequest  = getCreditAccountPaymentRequest(caseData.getId(),
+            payment.getPbaNumber(),
+            defaultIfBlank(payment.getClientCode(), BLANK_PARAMETER_VALUE),
+            defaultIfBlank(payment.getFileReference(), BLANK_PARAMETER_VALUE),
+            caseData.getCaseLocalAuthorityName(),
+            feesData);
+
+        paymentClient.callPaymentsApi(paymentRequest);
+    }
+
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
                                                                        String caseReference,
                                                                        String customerReference,

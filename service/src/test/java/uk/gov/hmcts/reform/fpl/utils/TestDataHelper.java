@@ -215,10 +215,6 @@ public class TestDataHelper {
             .childId(child.getId())
             .childName(child.getValue().getParty().getFullName())
             .application(testDocumentReference())
-            .orderAndNotices(placementOrderAndNotices
-                .stream()
-                .map(ElementUtils::element)
-                .collect(toList()))
             .build();
     }
 

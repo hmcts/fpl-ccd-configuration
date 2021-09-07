@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.events;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import java.util.List;
 
 @Getter
+@Builder
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class FailedPBAPaymentEvent {
