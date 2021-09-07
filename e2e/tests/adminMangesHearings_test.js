@@ -96,34 +96,22 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
-  await manageHearingsEventPage.enterNewVenue(hearingDetails[1]);
-  await I.goToNextPage();
-  manageHearingsEventPage.selectedAllocatedJudge();
-  await I.goToNextPage();
-  manageHearingsEventPage.sendNoticeOfHearingWithNotes('The venue has changed');
-  await I.goToNextPage();
-  await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
   I.seeInTab(['Hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
-  I.seeInTab(['Hearing 2', 'Court'], hearingDetails[1].venue);
-  I.seeInTab(['Hearing 2', 'Court address', 'Building and Street'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineOne);
-  I.seeInTab(['Hearing 2', 'Court address', 'Address Line 2'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineTwo);
-  I.seeInTab(['Hearing 2', 'Court address', 'Address Line 3'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineThree);
-  I.seeInTab(['Hearing 2', 'Court address', 'Town or City'], hearingDetails[1].venueCustomAddress.town);
-  I.seeInTab(['Hearing 2', 'Court address', 'Postcode/Zipcode'], hearingDetails[1].venueCustomAddress.postcode);
-  I.seeInTab(['Hearing 2', 'Court address', 'Country'], hearingDetails[1].venueCustomAddress.country);
-
+  I.seeInTab(['Hearing 2', 'Court'], hearingDetails[0].venue);
   I.seeInTab(['Hearing 2', 'In person or remote'], hearingDetails[1].presence);
   I.seeInTab(['Hearing 2', 'Start date and time'], formatHearingTime(hearingDetails[1].startDate));
   I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[1].endDate));
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
-  I.seeInTab(['Hearing 2', 'Additional notes'], 'The venue has changed');
-  I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
-  I.seeInTab(['Hearing 2', 'Others notified'], 'Noah King');
-
+  I.seeInTab(['Hearing 2', 'Hearing judge or magistrate'], 'Her Honour Judge Reed');
+  I.seeInTab(['Hearing 2', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 2', 'Hearing attendance'], hearingDetails[1].attendance);
+  I.seeInTab(['Hearing 2', 'Pre-hearing attendance'], defaultPreHearing);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 

@@ -299,6 +299,7 @@ public class ManageHearingsController extends CallbackController {
                 .judgeAndLegalAdvisor(editedHearingBooking.getJudgeAndLegalAdvisor())
                 .allocatedJudgeLabel(editedHearingBooking.getAllocatedJudgeLabel())
                 .hearingJudgeLabel(editedHearingBooking.getHearingJudgeLabel())
+                .legalAdvisorLabel(editedHearingBooking.getLegalAdvisorLabel())
                 .build();
 
             final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
