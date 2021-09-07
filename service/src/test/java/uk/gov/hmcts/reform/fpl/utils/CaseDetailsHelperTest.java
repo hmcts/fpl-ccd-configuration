@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Temp;
+import uk.gov.hmcts.reform.fpl.model.TempNullify;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 class CaseDetailsHelperTest {
@@ -91,6 +93,7 @@ class CaseDetailsHelperTest {
             data.put("key1", "some value 1");
             data.put("key2", "some value 2");
             data.put("key3", 3);
+            data.put("key4", "4");
         }
 
         @AfterEach
@@ -100,14 +103,14 @@ class CaseDetailsHelperTest {
 
         @Test
         void shouldRemoveFieldsFromCaseDataMapWhenPresent() {
-            removeTemporaryFields(caseDetails, "key1", "key2", "key3");
+            removeTemporaryFields(caseDetails, "key1", "key2", "key3", "key4");
 
             assertThat(caseDetails.getData()).isEmpty();
         }
 
         @Test
         void shouldNotRemoveFieldsThatArePresentInMapWhenNotPassed() {
-            removeTemporaryFields(caseDetails, "key1", "key3");
+            removeTemporaryFields(caseDetails, "key1", "key3", "key4");
 
             assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"));
         }
@@ -115,7 +118,21 @@ class CaseDetailsHelperTest {
         @Test
         void shouldRemoveTempFieldsBasedOfGivenClass() {
             removeTemporaryFields(caseDetails, TestClass.class);
-            assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"));
+            assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"), Map.entry("key4", "4"));
+        }
+
+        @Test
+        void shouldRemoveTempFieldsBasedOfGivenClass2() {
+
+            final Map<String, Object> actualMap = nullifyTemporaryFields(data, TestClass.class);
+
+            final Map<String, Object> expectedMap = new HashMap<>();
+            expectedMap.put("key1", "some value 1");
+            expectedMap.put("key2", "some value 2");
+            expectedMap.put("key3", 3);
+            expectedMap.put("key4", null);
+
+            assertThat(actualMap).isEqualTo(expectedMap);
         }
     }
 
@@ -175,6 +192,9 @@ class CaseDetailsHelperTest {
 
         @Temp
         private String key3;
+
+        @TempNullify
+        private String key4;
     }
 
 }

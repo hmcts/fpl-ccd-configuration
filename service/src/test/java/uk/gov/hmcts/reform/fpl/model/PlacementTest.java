@@ -2,37 +2,57 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_HEARING;
-import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.PlacementDocumentType.ANNEX_B;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.PlacementDocumentType.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class PlacementTest {
 
     @Test
-    void shouldReturnEmptyListWhenOnlyPlacementOrderIsPresentInListOfOrderAndNotices() {
-        Placement placement = Placement.builder()
-                .orderAndNotices(wrapElements(placementOrderAndNoticeOfType(PLACEMENT_ORDER)))
-                .build();
+    void shouldReturnNonConfidentialCopy() {
 
-        assertThat(unwrapElements(placement.removePlacementOrder().getOrderAndNotices())).isEmpty();
+        final PlacementSupportingDocument supportingDocument = PlacementSupportingDocument.builder()
+            .type(BIRTH_ADOPTION_CERTIFICATE)
+            .document(testDocumentReference())
+            .build();
+
+        final PlacementConfidentialDocument confidentialDocument = PlacementConfidentialDocument.builder()
+            .type(ANNEX_B)
+            .document(testDocumentReference())
+            .build();
+
+        final Placement underTest = Placement.builder()
+            .childName("Alex White")
+            .childId(randomUUID())
+            .application(testDocumentReference())
+            .supportingDocuments(wrapElements(supportingDocument))
+            .confidentialDocuments(wrapElements(confidentialDocument))
+            .build();
+
+        final Placement actualNonConfidentialPlacement = underTest.nonConfidential();
+
+        final Placement expectedNonConfidentialPlacement = underTest.toBuilder()
+            .confidentialDocuments(null)
+            .build();
+
+        assertThat(actualNonConfidentialPlacement).isEqualTo(expectedNonConfidentialPlacement);
     }
 
     @Test
-    void shouldRemovePlacementOrderFromListOfPlacementOrderAndNoticesWhenPresent() {
-        Placement placement = Placement.builder()
-                .orderAndNotices(wrapElements(
-                        placementOrderAndNoticeOfType(NOTICE_OF_HEARING),
-                        placementOrderAndNoticeOfType(PLACEMENT_ORDER)))
-                .build();
+    void shouldReturnNonConfidentialCopyWhenNoConfidentailDocuments() {
 
-        assertThat(unwrapElements(placement.removePlacementOrder().getOrderAndNotices()))
-                .containsOnly(placementOrderAndNoticeOfType(NOTICE_OF_HEARING));
+        final Placement underTest = Placement.builder()
+            .childName("Alex White")
+            .childId(randomUUID())
+            .application(testDocumentReference())
+            .build();
+
+        final Placement actualNonConfidentialPlacement = underTest.nonConfidential();
+
+        assertThat(actualNonConfidentialPlacement).isEqualTo(underTest);
     }
 
-    private PlacementOrderAndNotices placementOrderAndNoticeOfType(
-            PlacementOrderAndNotices.PlacementOrderAndNoticesType noticeOfHearing) {
-        return PlacementOrderAndNotices.builder().type(noticeOfHearing).build();
-    }
 }
