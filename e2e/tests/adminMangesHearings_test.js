@@ -96,8 +96,7 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
-  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
-  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  manageHearingsEventPage.selectedAllocatedJudge();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
