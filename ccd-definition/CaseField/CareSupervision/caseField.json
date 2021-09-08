@@ -2018,7 +2018,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherOrderType",
     "Label": " ",
-    "FieldType": "Text",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
