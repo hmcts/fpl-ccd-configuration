@@ -239,7 +239,7 @@ dependencyUpdates.resolutionStrategy = {
 
 sonarqube {
   properties {
-    property "sonar.projectName", "FPL :: Service"
+    property "sonar.projectName", "fpl-service"
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
