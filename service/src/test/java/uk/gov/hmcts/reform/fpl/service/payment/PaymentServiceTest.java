@@ -26,12 +26,14 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -54,6 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class PaymentServiceTest {
 
     private static final Long CASE_ID = 1L;
+
+    private static final String PBA_NUMBER = "PBA123";
 
     @MockBean
     private FeeService feeService;
@@ -94,7 +98,7 @@ class PaymentServiceTest {
                 .caseLocalAuthority("LA")
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
-                    .pbaNumber("PBA123")
+                    .pbaNumber(PBA_NUMBER)
                     .clientCode("clientCode")
                     .fileReference(customerReference)
                     .build())))
@@ -154,7 +158,7 @@ class PaymentServiceTest {
                 .caseLocalAuthority("LA")
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITHOUT_NOTICE)
-                    .pbaNumber("PBA123")
+                    .pbaNumber(PBA_NUMBER)
                     .clientCode("clientCode")
                     .fileReference(customerReference)
                     .build())))
@@ -215,7 +219,7 @@ class PaymentServiceTest {
                 .caseLocalAuthority("LA")
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
-                    .pbaNumber("PBA123")
+                    .pbaNumber(PBA_NUMBER)
                     .clientCode("clientCode")
                     .fileReference(customerReference)
                     .build())))
@@ -246,7 +250,6 @@ class PaymentServiceTest {
 
     @Nested
     class MakePaymentForAdditionalApplications {
-        String testPbaNumber = "PBA123";
         FeeDto feeForAdditionalApplications = FeeDto.builder().calculatedAmount(BigDecimal.TEN).build();
         FeesData feesData = buildFeesData(feeForAdditionalApplications);
 
@@ -329,7 +332,7 @@ class PaymentServiceTest {
                         .pbaPayment(PBAPayment.builder()
                             .clientCode(clientCode)
                             .fileReference(customerReference)
-                            .pbaNumber(testPbaNumber)
+                            .pbaNumber(PBA_NUMBER)
                             .build()).build()))).build();
         }
 
@@ -368,7 +371,7 @@ class PaymentServiceTest {
                 .localAuthorities(wrapElements(localAuthority))
                 .applicants(List.of(element(Applicant.builder()
                     .party(ApplicantParty.builder()
-                        .pbaNumber("PBA123")
+                        .pbaNumber(PBA_NUMBER)
                         .clientCode("clientCode")
                         .customerReference("customerReference")
                         .build())
@@ -403,7 +406,7 @@ class PaymentServiceTest {
                 .caseLocalAuthority("LA")
                 .applicants(List.of(element(Applicant.builder()
                     .party(ApplicantParty.builder()
-                        .pbaNumber("PBA123")
+                        .pbaNumber(PBA_NUMBER)
                         .clientCode("clientCode")
                         .customerReference("customerReference")
                         .build())
@@ -499,7 +502,7 @@ class PaymentServiceTest {
                 .caseLocalAuthority("LA")
                 .applicants(List.of(element(Applicant.builder()
                     .party(ApplicantParty.builder()
-                        .pbaNumber("PBA123")
+                        .pbaNumber(PBA_NUMBER)
                         .clientCode("clientCode")
                         .customerReference("customerReference")
                         .build())
@@ -523,6 +526,108 @@ class PaymentServiceTest {
         }
     }
 
+    @Nested
+    class MakePaymentForPlacement {
+
+        private final String applicant = "Applicant 1";
+
+        private final FeeDto placementFee = FeeDto.builder()
+            .calculatedAmount(BigDecimal.TEN)
+            .build();
+
+        @BeforeEach
+        void init() {
+            when(feeService.getFeesDataForPlacement()).thenReturn(FeesData.builder()
+                .totalAmount(BigDecimal.TEN)
+                .fees(List.of(placementFee))
+                .build());
+        }
+
+        @Test
+        void shouldMakePaymentForPlacement() {
+
+            final PBAPayment pbaPayment = PBAPayment.builder()
+                .pbaNumber(PBA_NUMBER)
+                .clientCode("Client code")
+                .fileReference("Customer reference")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .placementEventData(PlacementEventData.builder().placementPayment(pbaPayment).build())
+                .build();
+
+            paymentService.makePaymentForPlacement(caseData, applicant);
+
+            final CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .accountNumber(PBA_NUMBER)
+                .customerReference("Customer reference")
+                .caseReference("Client code")
+                .organisationName(applicant)
+                .amount(BigDecimal.TEN)
+                .fees(List.of(placementFee))
+                .build();
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+        }
+
+        @Test
+        void shouldMakePaymentForPlacementWithoutClientCodeAndCustomerReference() {
+
+            final PBAPayment pbaPayment = PBAPayment.builder()
+                .pbaNumber(PBA_NUMBER)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .placementEventData(PlacementEventData.builder().placementPayment(pbaPayment).build())
+                .build();
+
+            paymentService.makePaymentForPlacement(caseData, applicant);
+
+            final CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .accountNumber(PBA_NUMBER)
+                .customerReference("Not provided")
+                .caseReference("Not provided")
+                .amount(BigDecimal.TEN)
+                .fees(List.of(placementFee))
+                .organisationName(applicant)
+                .build();
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+        }
+
+        @Test
+        void shouldThrowsExceptionWhenPaymentDetailsNotPresent() {
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .placementEventData(PlacementEventData.builder().build())
+                .build();
+
+            assertThatThrownBy(() -> paymentService.makePaymentForPlacement(caseData, applicant))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Case does not have PBA number for placement payment");
+        }
+
+        @Test
+        void shouldThrowsExceptionWhenPBANumberNotPresent() {
+
+            final PBAPayment pbaPayment = PBAPayment.builder()
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placementPayment(pbaPayment)
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> paymentService.makePaymentForPlacement(caseData, applicant))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Case does not have PBA number for placement payment");
+        }
+    }
+
     @AfterEach
     void resetInvocations() {
         reset(localAuthorityNameLookupConfiguration);
@@ -532,7 +637,7 @@ class PaymentServiceTest {
 
     private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder creditAccountPaymentRequestBuilder() {
         CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder builder = CreditAccountPaymentRequest.builder()
-            .accountNumber("PBA123")
+            .accountNumber(PBA_NUMBER)
             .currency(GBP)
             .service(FPL)
             .ccdCaseNumber(String.valueOf(CASE_ID))
@@ -580,7 +685,7 @@ class PaymentServiceTest {
             .caseLocalAuthority("LA")
             .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                 .type(type)
-                .pbaNumber("PBA123")
+                .pbaNumber(PBA_NUMBER)
                 .clientCode(clientCode)
                 .fileReference(customerReference)
                 .build())))
@@ -593,7 +698,7 @@ class PaymentServiceTest {
             .caseLocalAuthority("LA")
             .localAuthorities(wrapElements(LocalAuthority.builder()
                 .designated("Yes")
-                .pbaNumber("PBA123")
+                .pbaNumber(PBA_NUMBER)
                 .clientCode(clientCode)
                 .customerReference(customerReference)
                 .build()))

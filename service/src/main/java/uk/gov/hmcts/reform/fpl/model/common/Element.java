@@ -18,4 +18,8 @@ public class Element<T> {
     @NotNull
     @Valid
     private T value;
+
+    public static <T> Element<T> newElement(T value) {
+        return Element.<T>builder().value(value).build();
+    }
 }

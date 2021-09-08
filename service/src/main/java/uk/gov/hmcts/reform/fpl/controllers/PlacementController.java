@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -33,7 +37,13 @@ public class PlacementController extends CallbackController {
 
         final PlacementEventData eventData = placementService.init(caseData);
 
-        caseProperties.putIfNotEmpty("placementSingleChild", eventData.getPlacementSingleChild());
+        final Cardinality childrenCardinality = eventData.getPlacementChildrenCardinality();
+
+        if (childrenCardinality == ZERO) {
+            return respond(caseProperties, List.of("There are no children available for placement application"));
+        }
+
+        caseProperties.put("placementChildrenCardinality", childrenCardinality);
         caseProperties.putIfNotEmpty("placementChildrenList", eventData.getPlacementChildrenList());
         caseProperties.putIfNotEmpty("placement", eventData.getPlacement());
         caseProperties.putIfNotEmpty("placementChildName", eventData.getPlacementChildName());
@@ -56,7 +66,7 @@ public class PlacementController extends CallbackController {
     }
 
     @PostMapping("documents/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleDocumens(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleDocuments(@RequestBody CallbackRequest callbackRequest) {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
         final CaseData caseData = getCaseData(caseDetails);
@@ -67,6 +77,19 @@ public class PlacementController extends CallbackController {
         caseProperties.putIfNotEmpty("placementFee", eventData.getPlacementFee());
 
         return respond(caseProperties);
+    }
+
+    @PostMapping("payment/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validatePayment(@RequestBody CallbackRequest callbackRequest) {
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
+        final CaseData caseData = getCaseData(caseDetails);
+
+        final List<String> errors = placementService.checkPayment(caseData);
+
+        caseProperties.putIfNotEmpty("placementPayment", caseData.getPlacementEventData().getPlacementPayment());
+
+        return respond(caseProperties, errors);
     }
 
     @PostMapping("/about-to-submit")
@@ -89,8 +112,6 @@ public class PlacementController extends CallbackController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         final CaseData caseData = getCaseData(caseDetails);
-        final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
-
 
         publishEvent(new PlacementApplicationAdded(caseData));
     }

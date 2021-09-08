@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "placement",
-    "CaseFieldID": "placementSingleChild",
+    "CaseFieldID": "placementChildrenCardinality",
     "PageFieldDisplayOrder": 1,
     "PageID": "childrenList",
     "DisplayContext": "READONLY",
@@ -11,7 +11,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "FieldShowCondition" : "placementChildrenList=\"DO NOT SHOW\"",
-    "PageShowCondition": "placementSingleChild=\"NO\"",
+    "PageShowCondition": "placementChildrenCardinality=\"MANY\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/child/mid-event"
   },
   {
@@ -86,7 +86,8 @@
     "DisplayContext": "READONLY",
     "PageID": "payment",
     "PageDisplayOrder": 3,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/payment/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",

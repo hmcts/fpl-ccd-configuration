@@ -8,13 +8,13 @@
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
-
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "placementSingleChild",
-    "Label": "Single child",
-    "FieldType": "YesOrNo",
+    "ID": "placementChildrenCardinality",
+    "Label": "Children cardinality",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "Cardinality",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -123,7 +123,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementPaymentNotRequiredLabel",
-    "Label": "<div class='govuk-notification-banner'><div class='govuk-notification-banner__header'><div class='govuk-notification-banner__title'>Payment already taken</div></div><div class='govuk-notification-banner__content'><p class='govuk-notification-banner__heading'>Payment has been already taken earlier today for other placement application. You wont be charged for this application.</p></div></div>",
+    "Label": "<div class='govuk-notification-banner'><div class='govuk-notification-banner__header'><div class='govuk-notification-banner__title'>No further Placement payments required</div></div><div class='govuk-notification-banner__content'><p class='govuk-notification-banner__heading'>Payment has already been received for a previously created Placement Application today, therefore there is no additional payments required for any additional Placement Applications made today.</p></div></div>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"

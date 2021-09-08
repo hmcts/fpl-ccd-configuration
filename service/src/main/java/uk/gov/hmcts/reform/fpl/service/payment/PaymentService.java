@@ -12,12 +12,15 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -115,14 +118,19 @@ public class PaymentService {
         paymentClient.callPaymentsApi(paymentRequest);
     }
 
-    public void makePaymentForPlacement(CaseData caseData, PBAPayment payment) {
+    public void makePaymentForPlacement(CaseData caseData, String applicantName) {
         final FeesData feesData = feeService.getFeesDataForPlacement();
 
-        final CreditAccountPaymentRequest paymentRequest  = getCreditAccountPaymentRequest(caseData.getId(),
-            payment.getPbaNumber(),
-            defaultIfBlank(payment.getClientCode(), BLANK_PARAMETER_VALUE),
-            defaultIfBlank(payment.getFileReference(), BLANK_PARAMETER_VALUE),
-            caseData.getCaseLocalAuthorityName(),
+        final PBAPayment placementPayment = Optional.ofNullable(caseData.getPlacementEventData())
+            .map(PlacementEventData::getPlacementPayment)
+            .filter(payment -> isNoneBlank(payment.getPbaNumber()))
+            .orElseThrow(() -> new IllegalArgumentException("Case does not have PBA number for placement payment"));
+
+        final CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseData.getId(),
+            placementPayment.getPbaNumber(),
+            defaultIfBlank(placementPayment.getClientCode(), BLANK_PARAMETER_VALUE),
+            defaultIfBlank(placementPayment.getFileReference(), BLANK_PARAMETER_VALUE),
+            applicantName,
             feesData);
 
         paymentClient.callPaymentsApi(paymentRequest);

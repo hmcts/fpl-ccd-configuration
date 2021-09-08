@@ -21,7 +21,7 @@ public enum ApplicationType {
     C19_WARRANT_TO_ASSISTANCE("C19 - Warrant of assistance"),
     C63_DECLARATION_OF_PARENTAGE("C63 - Declaration of parentage"),
     C100_CHILD_ARRANGEMENTS("C100 - Child arrangements, prohibited steps or specific issue"),
-    A50_PLACEMENT("A50_Placement");
+    A50_PLACEMENT("A50 - Application for a Placement Order");
 
     private final String type;
 }

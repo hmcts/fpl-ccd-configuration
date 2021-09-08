@@ -9,7 +9,7 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PBAPayment {
     private final String usePbaPayment;
-    private final String pbaNumber;
-    private final String clientCode;
-    private final String fileReference;
+    private String pbaNumber;
+    private String clientCode;
+    private String fileReference;
 }

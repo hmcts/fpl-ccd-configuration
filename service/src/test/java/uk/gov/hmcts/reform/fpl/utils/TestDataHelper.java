@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -141,6 +143,10 @@ public class TestDataHelper {
 
     public static Element<Child> testChild(ChildGender childGender) {
         return testChild(randomAlphanumeric(10), randomAlphanumeric(10), childGender, now());
+    }
+
+    public static Element<Child> testChild(String firstName, String lastName) {
+        return testChild(firstName, lastName, null, now());
     }
 
     public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {
@@ -335,6 +341,11 @@ public class TestDataHelper {
             .build());
     }
 
+    public static DynamicList buildDynamicList(List<Pair<UUID, String>> listElements) {
+        return buildDynamicList(-1, listElements);
+    }
+
+
     @SafeVarargs
     public static DynamicList buildDynamicList(Pair<UUID, String>... listElements) {
         return buildDynamicList(-1, listElements);
@@ -393,6 +404,12 @@ public class TestDataHelper {
                 .events(events)
                 .build())
             .build();
+    }
+
+    public static FeeResponse feeResponse(double amount) {
+        final FeeResponse feeResponse = new FeeResponse();
+        feeResponse.setAmount(BigDecimal.valueOf(amount));
+        return feeResponse;
     }
 
 }

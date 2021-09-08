@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -28,8 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class PlacementEventData {
 
     @Temp
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementSingleChild;
+    private Cardinality placementChildrenCardinality;
 
     @Temp
     private String placementChildName;
