@@ -77,9 +77,9 @@ public class HearingBooking implements TranslatableItem {
     private final LocalDateTime endDate;
     private final String hearingDuration;
     private final String endDateDerived;
-    private final String hearingDays;
-    private final String hearingMinutes;
-    private final String hearingHours;
+    private final Integer hearingDays;
+    private final Integer hearingMinutes;
+    private final Integer hearingHours;
     private final List<HearingNeedsBooked> hearingNeedsBooked;
     private final String hearingNeedsDetails;
     private final String additionalNotes;

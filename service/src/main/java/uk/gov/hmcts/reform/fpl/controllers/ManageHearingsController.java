@@ -218,12 +218,15 @@ public class ManageHearingsController extends CallbackController {
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
         List<String> errors;
 
         if (isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
                 caseData.getHearingEndDateTime());
+            errors.addAll(pastHearingDatesValidatorService.validateDays(caseData.getHearingDuration(),
+                caseData.getHearingDays()));
+            errors.addAll(pastHearingDatesValidatorService.validateHoursMinutes(caseData.getHearingDuration(),
+                caseData.getHearingHours(), caseData.getHearingMinutes()));
         } else {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
             if (errors.isEmpty()) {

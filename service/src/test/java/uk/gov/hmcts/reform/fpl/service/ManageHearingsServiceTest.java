@@ -491,9 +491,9 @@ class ManageHearingsServiceTest {
 
     @Test
     void shouldSetHearingDayAndHearingDurationWhenHearingDaysIsSet() {
-        String days = "9";
+        int days = 9;
         LocalDateTime startDate = time.now().plusDays(1);
-        LocalDateTime endDate = startDate.plusDays(Integer.parseInt(days));
+        LocalDateTime endDate = startDate.plusDays(days);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
         Judge allocatedJudge = testJudge();
 
@@ -535,11 +535,11 @@ class ManageHearingsServiceTest {
 
     @Test
     void shouldSetHearingHoursAndMinutesWhenHearingHoursAndMinutesIsSet() {
-        String hours = "9";
-        String minutes = "30";
+        int hours = 9;
+        int minutes = 30;
         LocalDateTime startDate = time.now().plusDays(1);
-        LocalDateTime endDate = startDate.plusHours(Integer.parseInt(hours))
-            .plusMinutes(Integer.parseInt(minutes));
+        LocalDateTime endDate = startDate.plusHours(hours)
+            .plusMinutes(minutes);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
         Judge allocatedJudge = testJudge();
 
@@ -702,7 +702,7 @@ class ManageHearingsServiceTest {
     @Test
     void shouldSetHearingDurationInDaysWhenHearingInDaysIsSet() {
         LocalDateTime startDate = time.now();
-        String hearingDays = "9";
+        int hearingDays = 9;
         PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
             .previousVenue("Custom House, Custom Street")
             .usePreviousVenue("Yes")
@@ -752,8 +752,8 @@ class ManageHearingsServiceTest {
             .previousVenueId("OTHER")
             .hearingType(CASE_MANAGEMENT)
             .hearingStartDate(startDate)
-            .hearingHours("9")
-            .hearingMinutes("45")
+            .hearingHours(9)
+            .hearingMinutes(45)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .noticeOfHearingNotes("notes")
             .previousHearingVenue(previousHearingVenue)
@@ -973,7 +973,7 @@ class ManageHearingsServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingStartDate(hearingStartDate)
-                .hearingDays("3")
+                .hearingDays(3)
                 .hearingDuration(DAYS.getType())
                 .build();
 
@@ -997,8 +997,8 @@ class ManageHearingsServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .hearingStartDate(hearingStartDate)
-                .hearingHours("3")
-                .hearingMinutes("20")
+                .hearingHours(3)
+                .hearingMinutes(20)
                 .hearingDuration(HOURS_MINS.getType())
                 .build();
 

@@ -443,12 +443,12 @@ public class ManageHearingsService {
                 formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime endDateTime = caseData.getHearingStartDate()
-                .plusDays(Long.parseLong(caseData.getHearingDays()));
+                .plusDays(caseData.getHearingDays());
             populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();
-            LocalDateTime endDateTime = startDate.plusHours(Long.parseLong(caseData.getHearingHours()))
-                .plusMinutes(Long.parseLong(caseData.getHearingMinutes()));
+            LocalDateTime endDateTime = startDate.plusHours(caseData.getHearingHours())
+                .plusMinutes(caseData.getHearingMinutes());
             populateFields.accept(endDateTime,
                 getHearingHoursAndMins(caseData.getHearingHours(), caseData.getHearingMinutes()));
         } else {
@@ -458,12 +458,12 @@ public class ManageHearingsService {
         return data;
     }
 
-    private String getHearingDays(String days) {
-        return String.join(" ", days, "days");
+    private String getHearingDays(Integer days) {
+        return String.join(" ", String.valueOf(days), "days");
     }
 
-    private String getHearingHoursAndMins(String hours, String minutes) {
-        return String.join(" ", hours, "hours", minutes, "minutes");
+    private String getHearingHoursAndMins(Integer hours, Integer minutes) {
+        return String.join(" ", String.valueOf(hours), "hours", String.valueOf(minutes), "minutes");
     }
 
     public Map<String, Object> updateHearingDates(CaseData caseData) {
@@ -493,7 +493,7 @@ public class ManageHearingsService {
         return reListedBooking.getId();
     }
 
-    private String getHearingInfo(String days, String hours, String minutes) {
+    private String getHearingInfo(Integer days, Integer hours, Integer minutes) {
         String hearingDuration = null;
         if (days != null) {
             hearingDuration = getHearingDays(days);

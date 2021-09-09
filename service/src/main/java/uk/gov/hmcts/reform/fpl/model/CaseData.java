@@ -952,9 +952,9 @@ public class CaseData {
     @HasFutureEndDate(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDateTime;
     private final LocalDateTime hearingEndDate;
-    private final String hearingDays;
-    private final String hearingMinutes;
-    private final String hearingHours;
+    private final Integer hearingDays;
+    private final Integer hearingMinutes;
+    private final Integer hearingHours;
     private final String hearingDuration;
     private final String sendNoticeOfHearing;
     private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
