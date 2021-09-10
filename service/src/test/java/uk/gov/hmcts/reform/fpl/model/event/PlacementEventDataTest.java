@@ -13,12 +13,12 @@ import java.util.List;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.PlacementDocumentType.ANNEX_B;
-import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.PlacementDocumentType.GUARDIANS_REPORT;
-import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.PlacementDocumentType.OTHER_CONFIDENTIAL_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.PlacementDocumentType.BIRTH_ADOPTION_CERTIFICATE;
-import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.PlacementDocumentType.FINAL_REPORTS_RELATING_TO_SIBLINGS;
-import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.PlacementDocumentType.STATEMENT_OF_FACTS;
+import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
+import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.GUARDIANS_REPORT;
+import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.OTHER_CONFIDENTIAL_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.FINAL_REPORTS_RELATING_TO_SIBLINGS;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 

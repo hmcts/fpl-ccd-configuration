@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -40,6 +42,10 @@ import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.MAINTENANCE_AGREEMENT_AWARD;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -246,6 +252,107 @@ class PlacementServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Child for placement application not selected");
         }
+    }
+
+    @Nested
+    class CheckDocuments {
+
+        @Test
+        void shouldReturnErrorsAboutAllMissingDocuments() {
+
+            final Placement placement = Placement.builder().build();
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placement(placement)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(placementEventData)
+                .build();
+
+            final List<String> actualErrors = underTest.checkDocuments(caseData);
+
+            assertThat(actualErrors).containsExactly(
+                "Add required placement application",
+                "Add required Birth/Adoption Certificate supporting document",
+                "Add required Statement of facts supporting document",
+                "Add required Annex B confidential document");
+        }
+
+        @Test
+        void shouldReturnErrorsAboutSomeOfMissingDocuments() {
+
+            final PlacementSupportingDocument supportingDocument1 = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(MAINTENANCE_AGREEMENT_AWARD)
+                .build();
+
+            final PlacementSupportingDocument supportingDocument2 = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(STATEMENT_OF_FACTS)
+                .build();
+
+            final PlacementConfidentialDocument confidentialDocument = PlacementConfidentialDocument.builder()
+                .document(testDocumentReference())
+                .type(ANNEX_B)
+                .build();
+
+            final Placement placement = Placement.builder()
+                .application(testDocumentReference())
+                .supportingDocuments(wrapElements(supportingDocument1, supportingDocument2))
+                .confidentialDocuments(wrapElements(confidentialDocument))
+                .build();
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placement(placement)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(placementEventData)
+                .build();
+
+            final List<String> actualErrors = underTest.checkDocuments(caseData);
+
+            assertThat(actualErrors).containsExactly("Add required Birth/Adoption Certificate supporting document");
+        }
+
+        @Test
+        void shouldReturnEmptyErrorListWhenAllRequiredDocumentsArePresent() {
+
+            final PlacementSupportingDocument supportingDocument1 = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(BIRTH_ADOPTION_CERTIFICATE)
+                .build();
+
+            final PlacementSupportingDocument supportingDocument2 = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(STATEMENT_OF_FACTS)
+                .build();
+
+            final PlacementConfidentialDocument confidentialDocument = PlacementConfidentialDocument.builder()
+                .document(testDocumentReference())
+                .type(ANNEX_B)
+                .build();
+
+            final Placement placement = Placement.builder()
+                .application(testDocumentReference())
+                .supportingDocuments(wrapElements(supportingDocument1, supportingDocument2))
+                .confidentialDocuments(wrapElements(confidentialDocument))
+                .build();
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placement(placement)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(placementEventData)
+                .build();
+
+            final List<String> actualErrors = underTest.checkDocuments(caseData);
+
+            assertThat(actualErrors).isEmpty();
+        }
+
     }
 
     @Nested
