@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.TempNullify;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -40,7 +41,7 @@ public class PlacementEventData {
     @Temp
     private DynamicList placementChildrenList;
 
-    @Temp
+    @TempNullify
     private Placement placement;
 
     @Temp
@@ -71,4 +72,82 @@ public class PlacementEventData {
         this.placement = placement;
         this.placementChildName = ofNullable(placement).map(Placement::getChildName).orElse(null);
     }
+
+    @Temp
+    private YesNo placementNoticeForLocalAuthorityRequired;
+
+    @Temp
+    private DocumentReference placementNoticeForLocalAuthority;
+
+    @Temp
+    private String placementNoticeForLocalAuthorityDescription;
+
+    @Temp
+    private YesNo placementNoticeResponseFromLocalAuthorityReceived;
+
+    @Temp
+    private DocumentReference placementNoticeResponseFromLocalAuthority;
+
+    @Temp
+    private String placementNoticeResponseFromLocalAuthorityDescription;
+
+    @Temp
+    private YesNo placementNoticeForCafcassRequired;
+
+    @Temp
+    private DocumentReference placementNoticeForCafcass;
+
+    @Temp
+    private String placementNoticeForCafcassDescription;
+
+    @Temp
+    private YesNo placementNoticeResponseFromCafcassReceived;
+
+    @Temp
+    private DocumentReference placementNoticeResponseFromCafcass;
+
+    @Temp
+    private String placementNoticeResponseFromCafcassDescription;
+
+    @Temp
+    private YesNo placementNoticeForFirstParentRequired;
+
+    @Temp
+    private DocumentReference placementNoticeForFirstParent;
+
+    @Temp
+    private String placementNoticeForFirstParentDescription;
+
+    @Temp
+    private DynamicList placementNoticeForFirstParentParentsList;
+
+    @Temp
+    private YesNo placementNoticeResponseFromFirstParentReceived;
+
+    @Temp
+    private DocumentReference placementNoticeResponseFromFirstParent;
+
+    @Temp
+    private String placementNoticeResponseFromFirstParentDescription;
+
+    @Temp
+    private YesNo placementNoticeForSecondParentRequired;
+
+    @Temp
+    private DocumentReference placementNoticeForSecondParent;
+
+    @Temp
+    private String placementNoticeForSecondParentDescription;
+
+    @Temp
+    private DynamicList placementNoticeForSecondParentParentsList;
+
+    @Temp
+    private YesNo placementNoticeResponseFromSecondParentReceived;
+
+    @Temp
+    private DocumentReference placementNoticeResponseFromSecondParent;
+
+    @Temp
+    private String placementNoticeResponseFromSecondParentDescription;
 }

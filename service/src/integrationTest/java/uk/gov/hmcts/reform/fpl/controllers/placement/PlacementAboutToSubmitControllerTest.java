@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -24,7 +25,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
+import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -77,6 +80,8 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
     @Test
     void shouldSealApplicationDocumentAndSavePlacementInConfidentialAndNonConfidentialVersions() {
 
+        final DocumentReference noticeOfPlacementForLocalAuthority = testDocumentReference();
+
         final PlacementSupportingDocument supportingDocument = PlacementSupportingDocument.builder()
             .document(testDocumentReference())
             .type(STATEMENT_OF_FACTS)
@@ -106,6 +111,9 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
             .placementEventData(PlacementEventData.builder()
                 .placement(newPlacement)
                 .placements(wrapElements(existingPlacement))
+                .placementNoticeForLocalAuthorityRequired(YES)
+                .placementNoticeForLocalAuthority(noticeOfPlacementForLocalAuthority)
+                .placementNoticeForLocalAuthorityDescription("Test description")
                 .build())
             .build();
 
@@ -115,6 +123,12 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         final Placement expectedNewPlacement = newPlacement.toBuilder()
             .application(sealedApplication)
+            .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
+                .type(LOCAL_AUTHORITY)
+                .recipientName("Local authority")
+                .notice(noticeOfPlacementForLocalAuthority)
+                .noticeDescription("Test description")
+                .build()))
             .build();
 
         final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
@@ -128,5 +142,6 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(actualPlacementData.getPlacementsNonConfidential())
             .extracting(Element::getValue)
             .containsExactly(existingPlacement, expectedNewNonConfidentialPlacement);
+
     }
 }

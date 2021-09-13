@@ -116,6 +116,7 @@ class PlacementApplicationEventHandlerTest {
         expectedCaseUpdates.put("placementLastPaymentTime", now);
         expectedCaseUpdates.put("placementPaymentRequired", null);
         expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
 
         verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
         verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
@@ -149,6 +150,7 @@ class PlacementApplicationEventHandlerTest {
         expectedCaseUpdates.put("placementLastPaymentTime", now);
         expectedCaseUpdates.put("placementPaymentRequired", null);
         expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
 
         verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
         verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
@@ -184,6 +186,7 @@ class PlacementApplicationEventHandlerTest {
         expectedCaseUpdates.put("placementLastPaymentTime", now);
         expectedCaseUpdates.put("placementPaymentRequired", null);
         expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
 
 
         verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
@@ -227,6 +230,7 @@ class PlacementApplicationEventHandlerTest {
         expectedCaseUpdates.put("placementLastPaymentTime", now);
         expectedCaseUpdates.put("placementPaymentRequired", null);
         expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
 
         verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
         verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);

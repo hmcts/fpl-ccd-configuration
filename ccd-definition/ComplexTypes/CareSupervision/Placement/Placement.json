@@ -41,5 +41,14 @@
     "FieldTypeParameter": "PlacementConfidentialDocument",
     "ElementLabel": "Confidential document",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "ListElementCode": "placementNoticeDocuments",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PlacementNoticeDocument",
+    "ElementLabel": "Notice of placement",
+    "SecurityClassification": "Public"
   }
 ]

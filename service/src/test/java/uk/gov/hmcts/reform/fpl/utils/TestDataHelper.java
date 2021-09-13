@@ -175,10 +175,15 @@ public class TestDataHelper {
     }
 
     public static Element<Respondent> testRespondent(String firstName, String lastName) {
+        return testRespondent(firstName, lastName, "");
+    }
+
+    public static Element<Respondent> testRespondent(String firstName, String lastName, String relationshipToChild) {
         return element(Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName(firstName)
                 .lastName(lastName)
+                .relationshipToChild(relationshipToChild)
                 .build())
             .build());
     }

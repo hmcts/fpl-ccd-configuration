@@ -31,6 +31,9 @@ public class Placement {
     @JsonProperty("placementConfidentialDocuments")
     private List<Element<PlacementConfidentialDocument>> confidentialDocuments;
 
+    @JsonProperty("placementNoticeDocuments")
+    private List<Element<PlacementNoticeDocument>> noticeDocuments;
+
     @JsonIgnore
     public Placement nonConfidential() {
         return this.toBuilder().confidentialDocuments(null).build();
