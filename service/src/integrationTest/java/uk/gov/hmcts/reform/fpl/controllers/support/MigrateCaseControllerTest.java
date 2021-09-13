@@ -3,30 +3,24 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeChildAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.NoSuchElementException;
@@ -39,10 +33,14 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MigrateCaseControllerTest extends AbstractCallbackTest {
+    public static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
+
+
     MigrateCaseControllerTest() {
         super("migrate-case");
     }
@@ -59,129 +57,75 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
     }
 
-    private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
-        CaseDetails caseDetails = asCaseDetails(caseData);
-        caseDetails.getData().put("migrationId", migrationId);
-        return caseDetails;
-    }
-
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla3262 {
-
-        private final String migrationId = "FPLA-3132";
+    class Dfpl164 {
+        private final String migrationId = "DFPL-164";
 
         @Test
         void shouldPerformMigration() {
             CaseData caseData = CaseData.builder()
-                .id(12345L)
+                .id(1626258358022834L)
                 .state(State.SUBMITTED)
-                .children1(wrapElements(
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build()
-
-                ))
-                .localAuthorities(wrapElements(LocalAuthority.builder().name("Some LA").build()))
+                .otherCourtAdminDocuments(
+                    wrapElements(
+                        CourtAdminDocument.builder()
+                            .document(DOCUMENT_REFERENCE).documentTitle("court-document1").build(),
+                        CourtAdminDocument.builder()
+                            .document(DOCUMENT_REFERENCE)
+                            .document(DocumentReference.builder().filename("LA Certificate.pdf").build())
+                            .documentTitle("court-document1").build()))
                 .build();
 
             CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
-                NoticeOfChangeChildAnswersData.builder()
-                    .noticeOfChangeChildAnswers0(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers1(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers2(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers3(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers4(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers5(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers6(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers7(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers8(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers9(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers10(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers11(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers12(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers13(NoticeOfChangeAnswers.builder().build())
-                    .noticeOfChangeChildAnswers14(NoticeOfChangeAnswers.builder().build())
-                    .build()
-            );
-
-            assertThat(responseData.getChildPolicyData()).isEqualTo(
-                ChildPolicyData.builder()
-                    .childPolicy0(blankPolicyFor(SolicitorRole.CHILDSOLICITORA))
-                    .childPolicy1(blankPolicyFor(SolicitorRole.CHILDSOLICITORB))
-                    .childPolicy2(blankPolicyFor(SolicitorRole.CHILDSOLICITORC))
-                    .childPolicy3(blankPolicyFor(SolicitorRole.CHILDSOLICITORD))
-                    .childPolicy4(blankPolicyFor(SolicitorRole.CHILDSOLICITORE))
-                    .childPolicy5(blankPolicyFor(SolicitorRole.CHILDSOLICITORF))
-                    .childPolicy6(blankPolicyFor(SolicitorRole.CHILDSOLICITORG))
-                    .childPolicy7(blankPolicyFor(SolicitorRole.CHILDSOLICITORH))
-                    .childPolicy8(blankPolicyFor(SolicitorRole.CHILDSOLICITORI))
-                    .childPolicy9(blankPolicyFor(SolicitorRole.CHILDSOLICITORJ))
-                    .childPolicy10(blankPolicyFor(SolicitorRole.CHILDSOLICITORK))
-                    .childPolicy11(blankPolicyFor(SolicitorRole.CHILDSOLICITORL))
-                    .childPolicy12(blankPolicyFor(SolicitorRole.CHILDSOLICITORM))
-                    .childPolicy13(blankPolicyFor(SolicitorRole.CHILDSOLICITORN))
-                    .childPolicy14(blankPolicyFor(SolicitorRole.CHILDSOLICITORO))
-                    .build()
-            );
+            assertThat(responseData.getOtherCourtAdminDocuments().size()).isEqualTo(1);
+            assertThat(responseData.getOtherCourtAdminDocuments().get(0).getValue().getDocumentTitle())
+                .isEqualTo("court-document1");
         }
 
         @Test
-        void shouldNotPerformMigrationWhenTooManyChildren() {
+        void shouldThrowAssersionError() {
             CaseData caseData = CaseData.builder()
-                .id(12345L)
+                .id(1626258358022000L)
                 .state(State.SUBMITTED)
-                .children1(wrapElements(
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build()
-                ))
-                .localAuthorities(wrapElements(LocalAuthority.builder().name("Some LA").build()))
+                .otherCourtAdminDocuments(
+                    wrapElements(
+                        CourtAdminDocument.builder()
+                            .document(DOCUMENT_REFERENCE).documentTitle("court-document1").build(),
+                        CourtAdminDocument.builder()
+                            .document(DOCUMENT_REFERENCE)
+                            .document(DocumentReference.builder().filename("LA Certificate.pdf").build())
+                            .documentTitle("court-document1").build()))
                 .build();
-
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage(
-                    "Migration {id = FPLA-3132, case reference = 12345} not migrating when number of children = 18 "
-                        + "(max = 15)"
-                );
+                .hasMessage("Migration {id = DFPL-164, case reference = 1626258358022000}, " +
+                    "expected case id 1626258358022834");
         }
 
-        @ParameterizedTest
-        @EnumSource(value = State.class, names = {"OPEN", "RETURNED", "CLOSED", "DELETED"})
-        void shouldNotPerformMigrationWhenInWrongState(State state) {
+        @Test
+        void shouldThrowErrorWhenCertificateNotFound() {
             CaseData caseData = CaseData.builder()
-                .id(12345L)
-                .state(state)
-                .children1(wrapElements(
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build(),
-                    Child.builder().build(), Child.builder().build(), Child.builder().build()
-                ))
-                .localAuthorities(wrapElements(LocalAuthority.builder().name("Some LA").build()))
+                .id(1626258358022834L)
+                .state(State.SUBMITTED)
+                .otherCourtAdminDocuments(
+                    wrapElements(
+                        CourtAdminDocument.builder()
+                            .document(DOCUMENT_REFERENCE).documentTitle("court-document1").build(),
+                        CourtAdminDocument.builder()
+                            .document(DOCUMENT_REFERENCE).documentTitle("court-document2").build()))
                 .build();
-
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = FPLA-3132, case reference = 12345} not migrating when state = " + state);
+                .isInstanceOf(NoSuchElementException.class);
         }
+    }
 
-        private OrganisationPolicy blankPolicyFor(SolicitorRole role) {
-            return OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole(role.getCaseRoleLabel())
-                .organisation(Organisation.builder().build())
-                .build();
-        }
+    private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
+        CaseDetails caseDetails = asCaseDetails(caseData);
+        caseDetails.getData().put("migrationId", migrationId);
+        return caseDetails;
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
