@@ -863,6 +863,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "TCBC",
+    "ListElement": "Torfaen County Borough Council",
+    "DisplayOrder": 404
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "TBC",
     "ListElement": "Trafford Borough Council",
     "DisplayOrder": 405
