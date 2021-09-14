@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -61,60 +63,89 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @Nested
     class Dfpl164 {
         private final String migrationId = "DFPL-164";
+        private final long validCaseId = 1626258358022834L;
+        private final long invalidCaseId = 1626258358022000L;
 
         @Test
         void shouldPerformMigration() {
             CaseData caseData = CaseData.builder()
-                .id(1626258358022834L)
+                .id(validCaseId)
                 .state(State.SUBMITTED)
                 .otherCourtAdminDocuments(
                     wrapElements(
                         CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE).documentTitle("court-document1").build(),
-                        CourtAdminDocument.builder()
                             .document(DOCUMENT_REFERENCE)
-                            .document(DocumentReference.builder().filename("LA Certificate.pdf").build())
-                            .documentTitle("court-document1").build()))
+                            .documentTitle("court-document1")
+                            .build(),
+                        CourtAdminDocument.builder()
+                            .document(
+                                DocumentReference.builder()
+                                    .filename("LA Certificate.pdf")
+                                    .build()
+                            )
+                            .documentTitle("court-document1").build())
+                )
                 .build();
 
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-            assertThat(responseData.getOtherCourtAdminDocuments().size()).isEqualTo(1);
-            assertThat(responseData.getOtherCourtAdminDocuments().get(0).getValue().getDocumentTitle())
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+            assertThat(response.getData().get("documentViewHMCTS"))
+                .asInstanceOf(InstanceOfAssertFactories.STRING)
+                .doesNotContain("LA Certificate.pdf");
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getOtherCourtAdminDocuments()).hasSize(1)
+                .first()
+                .extracting(doc -> doc.getValue().getDocumentTitle())
                 .isEqualTo("court-document1");
         }
 
         @Test
         void shouldThrowAssersionError() {
             CaseData caseData = CaseData.builder()
-                .id(1626258358022000L)
+                .id(invalidCaseId)
                 .state(State.SUBMITTED)
                 .otherCourtAdminDocuments(
                     wrapElements(
                         CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE).documentTitle("court-document1").build(),
-                        CourtAdminDocument.builder()
                             .document(DOCUMENT_REFERENCE)
-                            .document(DocumentReference.builder().filename("LA Certificate.pdf").build())
-                            .documentTitle("court-document1").build()))
+                            .documentTitle("court-document1")
+                            .build(),
+                        CourtAdminDocument.builder()
+                            .document(
+                                DocumentReference.builder()
+                                    .filename("LA Certificate.pdf")
+                                    .build()
+                            )
+                            .documentTitle("court-document1").build())
+                )
                 .build();
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-164, case reference = 1626258358022000}, " +
-                    "expected case id 1626258358022834");
+                .hasMessage("Migration {id = DFPL-164, case reference = 1626258358022000},"
+                    + " expected case id 1626258358022834");
         }
 
         @Test
         void shouldThrowErrorWhenCertificateNotFound() {
             CaseData caseData = CaseData.builder()
-                .id(1626258358022834L)
+                .id(validCaseId)
                 .state(State.SUBMITTED)
                 .otherCourtAdminDocuments(
                     wrapElements(
                         CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE).documentTitle("court-document1").build(),
+                            .document(DOCUMENT_REFERENCE)
+                            .documentTitle("court-document1")
+                            .build(),
                         CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE).documentTitle("court-document2").build()))
+                            .document(DOCUMENT_REFERENCE)
+                            .documentTitle("court-document2")
+                            .build()
+                    )
+                )
                 .build();
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()

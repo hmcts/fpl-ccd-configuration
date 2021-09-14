@@ -84,11 +84,12 @@ public class MigrateCaseController extends CallbackController {
 
     private void run164(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
 
-        if (caseData.getId() != 1626258358022834L) {
+        if (caseId != 1626258358022834L) {
             throw new AssertionError(format(
                 "Migration {id = DFPL-164, case reference = %s}, expected case id 1626258358022834",
-                caseData.getId()
+                caseId
             ));
         }
 
@@ -100,9 +101,12 @@ public class MigrateCaseController extends CallbackController {
             .findFirst()
             .orElseThrow();
 
-        log.info("Certificate document found");
+        log.info("Migration {id = DFPL-164, case reference = {}} Certificate document found",
+            caseId);
         boolean removed = otherCourtAdminDocuments.remove(documentElement);
-        log.info("Certificate document removed {} ", removed);
+        log.info("Migration {id = DFPL-164, case reference = {}} Certificate document removed {} ",
+            caseId,
+            removed);
         caseDetails.getData().put("otherCourtAdminDocuments", otherCourtAdminDocuments);
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
