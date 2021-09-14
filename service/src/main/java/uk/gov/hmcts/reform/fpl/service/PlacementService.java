@@ -269,6 +269,8 @@ public class PlacementService {
 
         placement.setNoticeDocuments(wrapElements(noticeDocuments));
 
+        placement.setPlacementUploadDateTime(time.now());
+
         placementData.getPlacements().add(newElement(placement));
 
         return placementData;
