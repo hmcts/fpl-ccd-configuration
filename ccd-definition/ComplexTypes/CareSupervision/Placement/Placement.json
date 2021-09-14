@@ -41,5 +41,13 @@
     "FieldTypeParameter": "PlacementConfidentialDocument",
     "ElementLabel": "Confidential document",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "ListElementCode": "placementUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Placement submission date",
+    "SecurityClassification": "Public"
   }
 ]

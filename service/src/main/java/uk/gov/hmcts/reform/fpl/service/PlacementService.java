@@ -126,6 +126,8 @@ public class PlacementService {
 
         placement.setApplication(sealingService.sealDocument(applicationDocument));
 
+        placement.setPlacementUploadDateTime(time.now());
+
         placementData.getPlacements().add(newElement(placement));
 
         return placementData;
