@@ -109,16 +109,17 @@ public class ManageHearingsService {
 
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
         List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
-        List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
+        List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
+        List<Element<HearingBooking>> sortedNonCancelledHearings = nonCancelledHearings
             .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
             .collect(toList());
 
-        Collections.reverse(nonCancelledHearings);
+        Collections.reverse(sortedNonCancelledHearings);
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
             HEARING_LIST, asDynamicList(nonCancelledHearings),
             PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
-            VACATE_HEARING_LIST, asDynamicList(nonCancelledHearings),
+            VACATE_HEARING_LIST, asDynamicList(sortedNonCancelledHearings),
             TO_RE_LIST_HEARING_LIST, asDynamicList(toBeReListedHearings)
         ));
 
