@@ -6,4 +6,18 @@
     <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate\-validator@.*$</packageUrl>
     <vulnerabilityName>CVE-2020-10693</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-embed-core-9.0.52.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+    <cve>CVE-2020-0822</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-embed-websocket-9.0.52.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+    <cve>CVE-2020-0822</cve>
+  </suppress>
 </suppressions>
