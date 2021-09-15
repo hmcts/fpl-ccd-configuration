@@ -772,6 +772,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "STY",
+    "ListElement": "South Tyneside MBC - legal/childcare",
+    "DisplayOrder": 346
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
     "DisplayOrder": 350
@@ -859,6 +866,13 @@
     "ListElementCode": "TWB",
     "ListElement": "Telford and Wrekin Borough Council",
     "DisplayOrder": 400
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TCBC",
+    "ListElement": "Torfaen County Borough Council",
+    "DisplayOrder": 404
   },
   {
     "LiveFrom": "01/01/2017",
