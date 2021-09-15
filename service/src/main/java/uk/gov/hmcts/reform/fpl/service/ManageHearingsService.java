@@ -108,7 +108,6 @@ public class ManageHearingsService {
     public Map<String, Object> populateHearingLists(CaseData caseData) {
 
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
-        List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
         List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
         List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
             .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
