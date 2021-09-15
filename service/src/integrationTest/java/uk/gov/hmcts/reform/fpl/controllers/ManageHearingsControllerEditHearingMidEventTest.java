@@ -120,10 +120,10 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
 
     @Test
     void shouldBuildVacateHearingDateListWhenHearingIsVacated() {
-        Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(2)));
+        Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(3)));
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));
-        Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(3)));
+        Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(2)));
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(HearingOptions.VACATE_HEARING)
@@ -134,7 +134,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
         assertThat(updatedCaseData.getVacateHearingDateList())
-            .isEqualTo(dynamicList(futureHearing1.getId(), futureHearing1, pastHearing1, pastHearing2, futureHearing2));
+            .isEqualTo(dynamicList(futureHearing1.getId(), futureHearing1, futureHearing2, pastHearing1, pastHearing2));
     }
 
     @Test

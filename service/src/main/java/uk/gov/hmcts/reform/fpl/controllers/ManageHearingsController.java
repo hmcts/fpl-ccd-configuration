@@ -30,11 +30,14 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
@@ -147,8 +150,14 @@ public class ManageHearingsController extends CallbackController {
         } else if (VACATE_HEARING == caseData.getHearingOption()) {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
+            List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
+                .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
+                .collect(toList());
+
+            Collections.reverse(nonCancelledHearings);
+
             caseDetails.getData().put(VACATE_HEARING_LIST,
-                hearingsService.asDynamicList(caseData.getAllNonCancelledHearings(), hearingBookingId));
+                hearingsService.asDynamicList(nonCancelledHearings, hearingBookingId));
 
             HearingBooking hearingBooking = hearingsService
                 .findHearingBooking(hearingBookingId, caseData.getHearingDetails())

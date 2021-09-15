@@ -31,6 +31,8 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,8 +110,12 @@ public class ManageHearingsService {
 
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
-        List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
         List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
+        List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
+            .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
+            .collect(toList());
+
+        Collections.reverse(nonCancelledHearings);
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
             HEARING_DATE_LIST, asDynamicList(futureHearings),

@@ -69,7 +69,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
     @Test
     void shouldSetHearingsDetails() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(3)));
-        Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(3)));
+        Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> todayHearing = element(testHearing(now()));
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));
