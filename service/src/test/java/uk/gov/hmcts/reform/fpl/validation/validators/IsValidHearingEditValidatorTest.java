@@ -38,33 +38,44 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
         }
 
         @Test
-        void shouldReturnAnErrorWhenEditingAHearingButFutureHearingsAreNotAvailable() {
-            List<Element<HearingBooking>> hearings = List.of(
+        void shouldNotReturnAnErrorWhenEditingAHearingWithFutureHearingsAvailable() {
+            List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
-                    .startDate(time.now())
-                    .build()),
-                element(HearingBooking.builder()
-                    .startDate(time.now().minusDays(1))
+                    .startDate(time.now().plusDays(2))
                     .build())
             );
 
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_HEARING)
-                .hearingDetails(hearings)
+                .hearingDetails(futureHearings)
                 .build();
 
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
-            assertThat(validationErrors).contains(ERROR_MESSAGE);
+            assertThat(validationErrors).isEmpty();
         }
 
         @Test
-        void shouldNotReturnAnErrorWhenEditingAHearingWithFutureHearingsAvailable() {
+        void shouldNotReturnAnErrorWhenEditingAHearingWithPastHearingsAvailable() {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
-                    .startDate(time.now().plusDays(2))
-                    .build()),
+                    .startDate(time.now().minusDays(2))
+                    .build())
+                );
+
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_HEARING)
+                .hearingDetails(futureHearings)
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingAHearingWithCurrentHearingsAvailable() {
+            List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
-                    .startDate(time.now().plusDays(1))
+                    .startDate(time.now())
                     .build())
             );
 

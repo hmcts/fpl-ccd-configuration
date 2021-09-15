@@ -138,21 +138,6 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
     }
 
     @Test
-    void shouldReturnErrorsWhenEditingAHearingButNoFutureHearingsExist() {
-        Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
-        Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));
-
-        CaseData initialCaseData = CaseData.builder()
-            .hearingOption(EDIT_HEARING)
-            .hearingDetails(List.of(pastHearing1, pastHearing2))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
-
-        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
-    }
-
-    @Test
     void shouldReturnErrorsWhenAdjourningAHearingButNoPastOrCurrentHearingsExist() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(3)));

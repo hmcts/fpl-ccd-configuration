@@ -20,7 +20,7 @@ public class IsValidHearingEditValidator implements ConstraintValidator<IsValidH
     }
 
     private boolean isInvalidHearingEdit(CaseData caseData) {
-        return EDIT_HEARING.equals(caseData.getHearingOption()) && isEmpty(caseData.getFutureHearings());
+        return EDIT_HEARING.equals(caseData.getHearingOption()) && isEmpty(caseData.getAllNonCancelledHearings());
     }
 
     private boolean isInvalidHearingAdjournment(CaseData caseData) {
