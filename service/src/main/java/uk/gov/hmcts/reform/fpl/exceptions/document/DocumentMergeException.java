@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.orders.generator;
+package uk.gov.hmcts.reform.fpl.exceptions.document;
 
 public class DocumentMergeException extends RuntimeException {
 

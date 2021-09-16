@@ -54,7 +54,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
 
     private static final String FAMILY_MAN_NO = RandomStringUtils.randomAlphabetic(10);
     private static final Document COVERSHEET_DOCUMENT = testDocument();
-    private static final Document MAIN_DOCUMENT = testDocument();
+    private static final Document MAIN_DOCUMENT = testDocument("main.pdf");
     private static final byte[] COVERSHEET_BINARIES = testDocumentBinaries();
     private static final byte[] MAIN_DOCUMENT_BINARIES = testDocumentBinaries();
     private static final UUID LETTER_ID = UUID.randomUUID();
@@ -93,7 +93,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
         Representative representative2 = testRepresentative(EMAIL);
         Representative representative3 = testRepresentative(DIGITAL_SERVICE);
 
-        DocumentReference documentToBeSent = testDocumentReference();
+        DocumentReference documentToBeSent = testDocumentReference("send_me.pdf");
         DocumentReference coversheet = buildFromDocument(COVERSHEET_DOCUMENT);
         DocumentReference mainDocument = buildFromDocument(MAIN_DOCUMENT);
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.exceptions.document.DocumentConversionException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -269,6 +270,43 @@ class SendDocumentServiceTest {
                 .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
 
             assertThat(logs.getErrors()).isEmpty();
+        }
+
+        @Test
+        void shouldHandleDocumentsThatFailToSend() {
+            final DocumentReference document1 = testDocumentReference("file.xyz");
+            final DocumentReference document2 = testDocumentReference();
+
+            final Recipient recipient = recipient("Test 1", testAddress());
+
+            final SentDocument sentDocument2ForRecipient = sentDocument();
+
+            final List<Element<SentDocuments>> sentDocumentsHistory = wrapElements(
+                SentDocuments.builder()
+                    .documentsSentToParty(wrapElements(sentDocument2ForRecipient))
+                    .build()
+            );
+
+            DocumentConversionException exception = new DocumentConversionException("xyz", new Exception());
+            when(sendLetters.send(
+                document1, List.of(recipient), caseData.getId(), caseData.getFamilyManCaseNumber(), ENGLISH
+            )).thenThrow(exception);
+
+            when(sendLetters.send(
+                document2, List.of(recipient), caseData.getId(), caseData.getFamilyManCaseNumber(), ENGLISH
+            )).thenReturn(List.of(sentDocument2ForRecipient));
+
+            when(sentDocumentsService.addToHistory(
+                caseData.getDocumentsSentToParties(), List.of(sentDocument2ForRecipient)
+            )).thenReturn(sentDocumentsHistory);
+
+            underTest.sendDocuments(caseData, List.of(document1, document2), List.of(recipient));
+
+            verify(caseService).updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+
+            assertThat(logs.getErrors()).isEqualTo(List.of(String.format(
+                "Not sending document of type xyz for case %s due to \"%s\"", caseData.getId(), exception.getMessage()
+            )));
         }
     }
 

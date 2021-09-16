@@ -29,6 +29,10 @@ public class DocumentsHelper {
         return hasDocumentPresent(document) && document.getTypeOfDocument() != null;
     }
 
+    public static String getExtension(DocumentReference document) {
+        return FilenameUtils.getExtension(document.getFilename());
+    }
+
     public static boolean hasExtension(DocumentReference document, String extension) {
         return hasExtension(document.getFilename(), extension);
     }

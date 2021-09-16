@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.exceptions.document.DocumentConversionException;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
@@ -27,11 +29,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentConversionService {
+    private static final String PDF = "pdf";
+
     private final RestTemplate restTemplate;
     private final DocmosisConfiguration configuration;
     private final DocumentDownloadService downloadService;
     private final UploadDocumentService uploadService;
-    private static final String PDF = "pdf";
 
     public DocumentReference convertToPdf(DocumentReference document) {
         String filename = document.getFilename();
@@ -46,11 +49,20 @@ public class DocumentConversionService {
     }
 
     public byte[] convertToPdf(byte[] documentContents, String filename) {
-        if (!hasExtension(filename, PDF)) {
-            return convertDocument(documentContents, filename, updateExtension(filename, PDF));
+        if (hasExtension(filename, PDF)) {
+            return documentContents;
         }
 
-        return documentContents;
+        String extension = getExtension(filename);
+        try {
+            log.info("Converting document of type \"{}\" and size {} bytes to pdf", extension, documentContents.length);
+            return convertDocument(documentContents, filename, updateExtension(filename, PDF));
+        } catch (Exception e) {
+            log.error(
+                "Could not convert document of type \"{}\" and size {} bytes to pdf", extension, documentContents.length, e
+            );
+            throw new DocumentConversionException(extension, e);
+        }
     }
 
     private byte[] convertDocument(byte[] binaries, String oldName, String newName) {
@@ -74,13 +86,9 @@ public class DocumentConversionService {
         final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         try {
-            return restTemplate
-                .exchange(
-                    configuration.getUrl() + "/rs/convert",
-                    HttpMethod.POST,
-                    requestEntity,
-                    byte[].class)
-                .getBody();
+            return restTemplate.exchange(
+                configuration.getUrl() + "/rs/convert", HttpMethod.POST, requestEntity, byte[].class
+            ).getBody();
         } catch (HttpClientErrorException.BadRequest ex) {
             log.error("Document conversion failed" + ex.getResponseBodyAsString());
             throw ex;

@@ -105,7 +105,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private static final Document COVERSHEET_OTHER_REPRESENTATIVE = testDocument();
     private static final byte[] ORDER_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_OTHER_REPRESENTATIVE_BINARY = testDocumentBinary();
-    private static final DocumentReference ORDER = testDocumentReference();
+    private static final DocumentReference DOCUMENT = testDocumentReference("document.pdf");
 
     @MockBean
     private NotificationClient notificationClient;
@@ -177,8 +177,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void init() {
         other.addRepresentative(OTHER_REP_BY_POST.getId());
         givenFplService();
-        given(documentDownloadService.downloadDocument(ORDER.getBinaryUrl())).willReturn(ORDER_BINARY);
-        given(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
+        given(documentDownloadService.downloadDocument(DOCUMENT.getBinaryUrl())).willReturn(ORDER_BINARY);
+        given(uploadDocumentService.uploadPDF(ORDER_BINARY, DOCUMENT.getFilename()))
             .willReturn(ORDER_DOCUMENT);
         given(documentService.createCoverDocuments(any(), any(), eq(OTHER_REP_BY_POST.getValue()), any()))
             .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_OTHER_REPRESENTATIVE_BINARY).build());
@@ -206,7 +206,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                 .pbaPayment(PBAPayment.builder().usePbaPayment("Yes").build())
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
-                    .document(ORDER)
+                    .document(DOCUMENT)
                     .supplementsBundle(new ArrayList<>())
                     .others(List.of(element(other)))
                     .respondents(List.of(
@@ -250,7 +250,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_OTHER_REPRESENTATIVE_BINARY, ORDER_BINARY);
+            CASE_ID, DOCUMENT, COVERSHEET_OTHER_REPRESENTATIVE_BINARY, ORDER_BINARY);
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
             .isEqualTo(List.of(expectedPrintRequest2));

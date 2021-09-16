@@ -12,13 +12,16 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.document.DocumentConversionException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -115,8 +118,22 @@ class DocumentConversionServiceTest {
         assertThat(converted).isEqualTo(convertedDocumentBinaries);
     }
 
-    private HttpEntity<MultiValueMap<String, Object>> getExpectedPayload(byte[] fileToBeConverted,
-                                                                         String oldFilename, String newFilename) {
+    @Test
+    void shouldThrowConversionExceptionWhenFailure() {
+        final byte[] inputDocumentBinaries = testDocumentBinaries();
+        final String fileName = "cmo.inconvertible";
+        final Exception cause = new RuntimeException();
+
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(byte[].class))).thenThrow(cause);
+
+        assertThatThrownBy(() -> underTest.convertToPdf(inputDocumentBinaries, fileName))
+            .isInstanceOf(DocumentConversionException.class)
+            .hasMessage("Could not convert document of type \"inconvertible\" to pdf")
+            .hasRootCause(cause);
+    }
+
+    private HttpEntity<MultiValueMap<String, Object>> getExpectedPayload(byte[] fileToBeConverted, String oldFilename,
+                                                                         String newFilename) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MULTIPART_FORM_DATA);
 

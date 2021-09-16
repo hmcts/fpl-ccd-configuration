@@ -83,8 +83,8 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH = testDocumentBinaries();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinaries();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY_ENGLISH = testDocumentBinaries();
-    private static final DocumentReference TRANSLATED_ORDER = testDocumentReference();
-    private static final DocumentReference ORIGINAL_ORDER = testDocumentReference();
+    private static final DocumentReference TRANSLATED_ORDER = testDocumentReference("translated.pdf");
+    private static final DocumentReference ORIGINAL_ORDER = testDocumentReference("original.pdf");
     private static final String ORDER_TYPE = "Care order (C32A)";
     private static final Map<String, Object> NOTIFICATION_PARAMETERS = getExpectedParametersMap(ORDER_TYPE);
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()

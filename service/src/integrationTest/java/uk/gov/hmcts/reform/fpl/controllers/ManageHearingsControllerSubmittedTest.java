@@ -259,7 +259,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @Test
     void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresent()
         throws NotificationClientException {
-        final DocumentReference noticeOfHearing = testDocumentReference();
+        final DocumentReference noticeOfHearing = testDocumentReference("noh.pdf");
 
         final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -308,7 +308,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, "noh.pdf"))
             .willReturn(NOTICE_OF_HEARING_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
             .willReturn(COVERSHEET_REPRESENTATIVE);

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
-import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
+import uk.gov.hmcts.reform.fpl.exceptions.document.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;

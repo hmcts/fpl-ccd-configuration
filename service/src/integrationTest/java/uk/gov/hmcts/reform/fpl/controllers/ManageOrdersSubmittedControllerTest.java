@@ -99,7 +99,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
         .toBuilder().documentTitle("pdf.pdf").build();
-    private static final DocumentReference ORDER = testDocumentReference();
+    private static final DocumentReference ORDER = testDocumentReference("order.pdf");
     private static final String ORDER_TYPE = "Care order (C32A)";
     private static final Map<String, Object> NOTIFICATION_PARAMETERS = getExpectedParametersMap(ORDER_TYPE, true);
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
@@ -350,7 +350,6 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldSendAmendedNotificationToLocalAuthorityWhenAmendedOrder() {
         CaseData caseData = caseData();
         CaseData caseDataBefore = caseDataBefore();

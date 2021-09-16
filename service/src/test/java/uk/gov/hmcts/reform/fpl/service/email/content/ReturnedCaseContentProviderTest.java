@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons;
-import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
+import uk.gov.hmcts.reform.fpl.exceptions.document.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Respondent;

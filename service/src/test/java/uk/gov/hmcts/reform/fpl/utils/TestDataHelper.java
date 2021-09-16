@@ -108,6 +108,10 @@ public class TestDataHelper {
     }
 
     public static Document testDocument() {
+        return testDocument(randomAlphanumeric(10));
+    }
+
+    public static Document testDocument(String name) {
         final Document.Link binaryLink = new Document.Link();
         binaryLink.href = randomAlphanumeric(10);
         final Document.Link selfLink = new Document.Link();
@@ -119,7 +123,7 @@ public class TestDataHelper {
 
         final Document document = new Document();
         document.links = links;
-        document.originalDocumentName = randomAlphanumeric(10);
+        document.originalDocumentName = name;
 
         return document;
     }

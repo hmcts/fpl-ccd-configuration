@@ -12,6 +12,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.getExtension;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusOf;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusSet;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
@@ -53,6 +54,12 @@ class DocumentsHelperTest {
     }
 
     @Test
+    void shouldReturnFileExtension() {
+        DocumentReference documentReference = buildDocumentReferenceWithExtension("test.pdf");
+        assertThat(getExtension(documentReference)).isEqualTo("pdf");
+    }
+
+    @Test
     void shouldReturnTrueWhenFilenameExtensionIncludesExpectedExtension() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("test.pdf");
         assertThat(hasExtension(documentReference, "pdf")).isTrue();
@@ -88,14 +95,14 @@ class DocumentsHelperTest {
         return DocumentReference.builder().filename(filename).build();
     }
 
-    private static Document document(DocumentStatus documentStatus) {
+    private Document document(DocumentStatus documentStatus) {
         return Document
             .builder()
             .documentStatus(Optional.ofNullable(documentStatus).map(DocumentStatus::getLabel).orElse(null))
             .build();
     }
 
-    private static Document document(boolean withBinaries) {
+    private Document document(boolean withBinaries) {
         return Document
             .builder()
             .typeOfDocument(withBinaries ? testDocumentReference() : null)
