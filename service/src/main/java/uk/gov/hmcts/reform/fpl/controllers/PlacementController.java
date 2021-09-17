@@ -75,6 +75,12 @@ public class PlacementController extends CallbackController {
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
         final CaseData caseData = getCaseData(caseDetails);
 
+        final List<String> errors = placementService.checkDocuments(caseData);
+
+        if (!errors.isEmpty()) {
+            return respond(caseProperties, errors);
+        }
+
         final PlacementEventData eventData = placementService.preparePayment(caseData);
 
         caseProperties.putIfNotEmpty("placementPaymentRequired", eventData.getPlacementPaymentRequired());
