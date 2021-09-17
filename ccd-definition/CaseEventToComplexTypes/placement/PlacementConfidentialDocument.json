@@ -15,7 +15,7 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments.document",
-    "EventElementLabel": "Add document",
+    "EventElementLabel": "Document",
     "SecurityClassification": "Public",
     "DisplayContext": "MANDATORY"
   },

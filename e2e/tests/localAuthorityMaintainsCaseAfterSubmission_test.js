@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
 const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
-const placementHelper = require('../helpers/placement_helper.js');
+const api = require('../helpers/api_helper');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 
 let caseId;
@@ -84,42 +84,71 @@ Scenario('local authority provides a statements of service', async ({I, caseView
 });
 
 Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
+
+  const placementFee = '£455.0';
   await setupScenario(I);
+
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
   await placementEventPage.addApplication(config.testFile);
   await placementEventPage.addSupportingDocument(0, 'Statement of facts', config.testFile);
   await placementEventPage.addConfidentialDocument(0, 'Annex B', config.testFile);
-  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testPdfFile, 'test note');
+
+  await I.goToNextPage();
+  I.see(placementFee);
+  await placementEventPage.setPaymentDetails('PBA0082848', '8888', 'Customer reference');
+
   await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.placement);
 
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('John Black');
   await placementEventPage.addApplication(config.testFile);
   await placementEventPage.addSupportingDocument(0, 'Other final orders', config.testFile);
   await placementEventPage.addConfidentialDocument(0, 'Other confidential documents', config.testFile);
+
+  await I.goToNextPage();
+  I.see('No further Placement payments required');
+
   await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.placement);
 
   caseViewPage.selectTab(caseViewPage.tabs.placement);
 
   I.seeInTab(['Child 1', 'Name'], 'Timothy Jones');
-  I.seeInTab(['Child 1', 'Application document'], 'mockFile.txt');
+  I.seeInTab(['Child 1', 'Application document'], 'mockFile.pdf');
   I.seeInTab(['Child 1', 'Supporting document 1', 'Document type'], 'Statement of facts');
   I.seeInTab(['Child 1', 'Supporting document 1', 'Document'], 'mockFile.txt');
   I.seeInTab(['Child 1', 'Confidential document 1', 'Document type'], 'Annex B');
   I.seeInTab(['Child 1', 'Confidential document 1', 'Document'], 'mockFile.txt');
-  I.seeInTab(['Child 1', 'Order and notices 1', 'Document type'], 'Placement order');
-  I.seeInTab(['Child 1', 'Order and notices 1', 'Document'], 'mockFile.pdf');
-  I.seeInTab(['Child 1', 'Order and notices 1', 'Description'], 'test note');
+  I.seeTagInTab(['Child 1', 'Confidential document 1', 'Confidential']);
 
   I.seeInTab(['Child 2', 'Name'], 'John Black');
-  I.seeInTab(['Child 2', 'Application document'], 'mockFile.txt');
+  I.seeInTab(['Child 2', 'Application document'], 'mockFile.pdf');
   I.seeInTab(['Child 2', 'Supporting document 1', 'Document type'], 'Other final orders');
   I.seeInTab(['Child 2', 'Supporting document 1', 'Document'], 'mockFile.txt');
   I.seeInTab(['Child 2', 'Confidential document 1', 'Document type'], 'Other confidential documents');
   I.seeInTab(['Child 2', 'Confidential document 1', 'Document'], 'mockFile.txt');
+  I.seeTagInTab(['Child 2', 'Confidential document 1', 'Confidential']);
 
-  await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
+  await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
+  await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
+  caseViewPage.selectTab(caseViewPage.tabs.placement);
+
+  I.seeInTab(['Child 1', 'Name'], 'Timothy Jones');
+  I.seeInTab(['Child 1', 'Application document'], 'mockFile.pdf');
+  I.seeInTab(['Child 1', 'Supporting document 1', 'Document type'], 'Statement of facts');
+  I.seeInTab(['Child 1', 'Supporting document 1', 'Document'], 'mockFile.txt');
+  I.dontSeeInTab(['Child 1', 'Confidential document 1', 'Document type']);
+  I.dontSeeInTab(['Child 1', 'Confidential document 1', 'Document']);
+
+  I.seeInTab(['Child 2', 'Name'], 'John Black');
+  I.seeInTab(['Child 2', 'Application document'], 'mockFile.pdf');
+  I.seeInTab(['Child 2', 'Supporting document 1', 'Document type'], 'Other final orders');
+  I.seeInTab(['Child 2', 'Supporting document 1', 'Document'], 'mockFile.txt');
+  I.dontSeeInTab(['Child 2', 'Confidential document 1', 'Document type']);
+  I.dontSeeInTab(['Child 2', 'Confidential document 1', 'Document']);
+
 });
 
 
