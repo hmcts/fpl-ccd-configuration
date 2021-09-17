@@ -98,6 +98,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
             .application(application)
             .supportingDocuments(wrapElements(supportingDocument))
             .confidentialDocuments(wrapElements(confidentialDocument))
+            .placementUploadDateTime(now())
             .build();
 
         final Placement existingPlacement = Placement.builder()
@@ -115,6 +116,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .placementNoticeForLocalAuthority(noticeOfPlacementForLocalAuthority)
                 .placementNoticeForLocalAuthorityDescription("Test description")
                 .build())
+
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));

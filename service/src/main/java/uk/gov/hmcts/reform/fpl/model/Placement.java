@@ -8,6 +8,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +34,9 @@ public class Placement {
 
     @JsonProperty("placementNoticeDocuments")
     private List<Element<PlacementNoticeDocument>> noticeDocuments;
+
+    @JsonProperty("placementUploadDateTime")
+    public LocalDateTime placementUploadDateTime;
 
     @JsonIgnore
     public Placement nonConfidential() {

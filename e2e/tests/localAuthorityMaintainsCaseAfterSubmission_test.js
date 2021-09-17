@@ -1,6 +1,7 @@
 const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
 const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
+const api = require('../helpers/api_helper');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 
 let caseId;
@@ -190,9 +191,9 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.seeInTab(['Child 2', 'Confidential document 1', 'Document'], 'mockFile14.txt');
   I.seeTagInTab(['Child 2', 'Confidential document 1', 'Confidential']);
 
-  await I.navigateToCaseDetailsAs(config.cafcassUser, caseId);
+  await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
+  await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.placement);
-
 
   I.seeInTab(['Child 1', 'Name'], 'Timothy Jones');
   I.seeInTab(['Child 1', 'Application document'], 'mockFile.pdf');

@@ -53,7 +53,7 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeForLocalAuthorityDescription",
     "PageFieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
@@ -82,7 +82,8 @@
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromLocalAuthorityReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForLocalAuthorityRequired = \"Yes\" AND placementNoticeResponseFromLocalAuthorityReceived = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -90,11 +91,12 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeResponseFromLocalAuthorityDescription",
     "PageFieldDisplayOrder": 8,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromLocalAuthorityReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForLocalAuthorityRequired = \"Yes\" AND placementNoticeResponseFromLocalAuthorityReceived = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -137,7 +139,7 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeForCafcassDescription",
     "PageFieldDisplayOrder": 12,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
@@ -166,7 +168,8 @@
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromCafcassReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForCafcassRequired = \"Yes\" AND placementNoticeResponseFromCafcassReceived = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -174,11 +177,12 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeResponseFromCafcassDescription",
     "PageFieldDisplayOrder": 15,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromCafcassReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForCafcassRequired = \"Yes\" AND placementNoticeResponseFromCafcassReceived = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -234,7 +238,7 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeForFirstParentDescription",
     "PageFieldDisplayOrder": 20,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
@@ -263,7 +267,8 @@
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromFirstParentReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForFirstParentRequired=\"Yes\" AND placementNoticeResponseFromFirstParentReceived = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -271,11 +276,12 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeResponseFromFirstParentDescription",
     "PageFieldDisplayOrder": 23,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromFirstParentReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForFirstParentRequired=\"Yes\" AND placementNoticeResponseFromFirstParentReceived = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -331,7 +337,7 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeForSecondParentDescription",
     "PageFieldDisplayOrder": 28,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
@@ -372,7 +378,8 @@
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromSecondParentReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForSecondParentRequired = \"Yes\" AND placementNoticeResponseFromSecondParentReceived = \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -380,10 +387,11 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementNoticeResponseFromSecondParentDescription",
     "PageFieldDisplayOrder": 32,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "notices",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "placementNoticeResponseFromSecondParentReceived = \"Yes\""
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "placementNoticeForSecondParentRequired = \"Yes\" AND placementNoticeResponseFromSecondParentReceived = \"Yes\""
   }
 ]

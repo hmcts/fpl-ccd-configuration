@@ -159,7 +159,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeForLocalAuthorityDescription",
-    "Label": "Description",
+    "Label": "Local authority notice of placement description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -186,7 +186,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeForCafcassDescription",
-    "Label": "Description",
+    "Label": "Cafcass notice of placement description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -222,7 +222,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeForFirstParentDescription",
-    "Label": "Description",
+    "Label": "First parent notice of placement description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -258,7 +258,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeForSecondParentDescription",
-    "Label": "Description",
+    "Label": "Second parent notice of placement description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -321,7 +321,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeResponseFromLocalAuthorityDescription",
-    "Label": "Description",
+    "Label": "Local authority response description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -348,7 +348,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeResponseFromCafcassDescription",
-    "Label": "Description",
+    "Label": "Cafcass response description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -375,7 +375,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeResponseFromFirstParentDescription",
-    "Label": "Description",
+    "Label": "First parent response description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -403,7 +403,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNoticeResponseFromSecondParentDescription",
-    "Label": "Description",
+    "Label": "Second parent response description",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
