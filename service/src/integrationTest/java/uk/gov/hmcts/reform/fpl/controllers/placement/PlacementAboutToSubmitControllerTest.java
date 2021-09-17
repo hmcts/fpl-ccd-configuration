@@ -91,6 +91,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
             .childId(child1.getId())
             .childName("Alex Brown")
             .application(application)
+            .placementUploadDateTime(now())
             .supportingDocuments(wrapElements(supportingDocument))
             .confidentialDocuments(wrapElements(confidentialDocument))
             .build();
@@ -115,6 +116,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         final Placement expectedNewPlacement = newPlacement.toBuilder()
             .application(sealedApplication)
+            .placementUploadDateTime(now())
             .build();
 
         final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
