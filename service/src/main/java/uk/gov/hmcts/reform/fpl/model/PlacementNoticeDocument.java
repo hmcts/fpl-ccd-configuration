@@ -20,7 +20,7 @@ public class PlacementNoticeDocument {
     private DocumentReference response;
     private String responseDescription;
     private String recipientName;
-    private UUID respondentID;
+    private UUID respondentId;
 
     @Getter
     @RequiredArgsConstructor

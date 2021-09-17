@@ -14,12 +14,14 @@ import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
+import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
+import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.addFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -47,12 +49,8 @@ public class PlacementController extends CallbackController {
 
         caseProperties.put("placementChildrenCardinality", childrenCardinality);
         caseProperties.putIfNotEmpty("placementChildrenList", eventData.getPlacementChildrenList());
-        caseProperties.putIfNotEmpty("placement", eventData.getPlacement());
-        caseProperties.putIfNotEmpty("placementChildName", eventData.getPlacementChildName());
-        caseProperties.putIfNotEmpty("placementNoticeForFirstParentParentsList",
-            eventData.getPlacementNoticeForFirstParentParentsList());
-        caseProperties.putIfNotEmpty("placementNoticeForSecondParentParentsList",
-            eventData.getPlacementNoticeForSecondParentParentsList());
+
+        addFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
 
         return respond(caseProperties);
     }
@@ -66,13 +64,7 @@ public class PlacementController extends CallbackController {
 
         final PlacementEventData eventData = placementService.preparePlacement(caseData);
 
-        caseProperties.putIfNotEmpty("placement", eventData.getPlacement());
-        caseProperties.putIfNotEmpty("placementChildName", eventData.getPlacementChildName());
-
-        caseProperties.putIfNotEmpty("placementNoticeForFirstParentParentsList",
-            eventData.getPlacementNoticeForFirstParentParentsList());
-        caseProperties.putIfNotEmpty("placementNoticeForSecondParentParentsList",
-            eventData.getPlacementNoticeForSecondParentParentsList());
+        addFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
 
         return respond(caseProperties);
     }
@@ -145,8 +137,9 @@ public class PlacementController extends CallbackController {
     public void handleSubmitted(@RequestBody CallbackRequest request) {
 
         final CaseData caseData = getCaseData(request);
+        final CaseData caseDataBefore = getCaseDataBefore(request);
 
-        publishEvents(placementService.getEvents(caseData));
+        publishEvents(placementService.getEvents(caseData, caseDataBefore));
     }
 
 }

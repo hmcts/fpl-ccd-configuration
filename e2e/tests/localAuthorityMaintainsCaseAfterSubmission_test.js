@@ -191,6 +191,28 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.seeInTab(['Child 2', 'Confidential document 1', 'Document'], 'mockFile14.txt');
   I.seeTagInTab(['Child 2', 'Confidential document 1', 'Confidential']);
 
+  await caseViewPage.goToNewActions(config.administrationActions.placement);
+  await placementEventPage.selectChild('Timothy Jones');
+  await I.goToNextPage();
+
+  placementEventPage.attachSupportingDocument(1, config.testFile15, 'Description updated');
+  await I.goToNextPage();
+
+  placementEventPage.selectFirstParentNoticeOfPlacementResponseReceived();
+  placementEventPage.attachFirstParentNoticeOfPlacementResponse(config.testFile16, 'Received today');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.placement);
+
+  caseViewPage.selectTab(caseViewPage.tabs.placement);
+  I.seeInTab(['Child 1', 'Supporting document 2', 'Document type'], 'Statement of facts');
+  I.seeInTab(['Child 1', 'Supporting document 2', 'Document'], 'mockFile15.txt');
+  I.seeInTab(['Child 1', 'Supporting document 2', 'Description'], 'Description updated');
+  I.seeInTab(['Child 1', 'Notice of placement 2', 'Party'], 'Emma Bloggs - Mother');
+  I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement'], 'mockFile8.txt');
+  I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement description'], 'Description 5');
+  I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement response'], 'mockFile16.txt');
+  I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement response description'], 'Received today');
+
   await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
   await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.placement);
@@ -200,8 +222,8 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.seeInTab(['Child 1', 'Supporting document 1', 'Document type'], 'Birth/Adoption Certificate');
   I.seeInTab(['Child 1', 'Supporting document 1', 'Document'], 'mockFile.txt');
   I.seeInTab(['Child 1', 'Supporting document 2', 'Document type'], 'Statement of facts');
-  I.seeInTab(['Child 1', 'Supporting document 2', 'Document'], 'mockFile2.txt');
-  I.seeInTab(['Child 1', 'Supporting document 2', 'Description'], 'Description 1');
+  I.seeInTab(['Child 1', 'Supporting document 2', 'Document'], 'mockFile15.txt');
+  I.seeInTab(['Child 1', 'Supporting document 2', 'Description'], 'Description updated');
   I.seeInTab(['Child 1', 'Supporting document 3', 'Document type'], 'Maintenance agreement/award');
   I.seeInTab(['Child 1', 'Supporting document 3', 'Document'], 'mockFile3.txt');
 
@@ -216,6 +238,8 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.seeInTab(['Child 1', 'Notice of placement 2', 'Party'], 'Emma Bloggs - Mother');
   I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement'], 'mockFile8.txt');
   I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement description'], 'Description 5');
+  I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement response'], 'mockFile16.txt');
+  I.seeInTab(['Child 1', 'Notice of placement 2', 'Notice of placement response description'], 'Received today');
   I.seeInTab(['Child 1', 'Notice of placement 3', 'Party'], 'Joe Bloggs - Father');
   I.seeInTab(['Child 1', 'Notice of placement 3', 'Notice of placement'], 'mockFile9.txt');
   I.seeInTab(['Child 1', 'Notice of placement 3', 'Notice of placement description'], 'Description 6');

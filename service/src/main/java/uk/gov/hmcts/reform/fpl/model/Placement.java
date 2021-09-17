@@ -3,14 +3,19 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.Objects.nonNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -41,5 +46,15 @@ public class Placement {
     @JsonIgnore
     public Placement nonConfidential() {
         return this.toBuilder().confidentialDocuments(null).build();
+    }
+
+    public DocumentReference getPlacementApplicationCopy() {
+        return application;
+    }
+
+    @JsonProperty("isSubmitted")
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    public YesNo isSubmitted() {
+        return YesNo.from(nonNull(this.placementUploadDateTime));
     }
 }
