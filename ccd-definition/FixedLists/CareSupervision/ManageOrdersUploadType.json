@@ -100,13 +100,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C29_RECOVERY_OF_A_CHILD",
-    "ListElement": "Recovery of a child (C29)",
-    "DisplayOrder": 160
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
     "ListElementCode": "C47B_REFUSAL_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN",
     "ListElement": "Refusal of appointment of a children's guardian (C47B)",
     "DisplayOrder": 170
