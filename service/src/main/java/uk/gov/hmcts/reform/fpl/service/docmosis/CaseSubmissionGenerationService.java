@@ -316,7 +316,7 @@ public class CaseSubmissionGenerationService
     }
 
     private String getThresholdReasonBeyondControl(Language applicationLanguage) {
-        return applicationLanguage == Language.ENGLISH ? "Beyond parental control." : "Beyond parental control. ";
+        return applicationLanguage == Language.ENGLISH ? "Beyond parental control." : "Y tu hwnt i reolaeth rhiant. ";
     }
 
     private String getThresholdReasonNoCare(Language applicationLanguage) {
