@@ -10,15 +10,15 @@ if [[ ${environment} != "prod" && ${environment} != "aat" && ${environment} != "
 fi
 
 if [[ ${environment} == "prod" ]]; then
-  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json,*-shuttered.json"
+  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json,*-nonshuttered.json"
 else
-  excludedFilenamePatterns="-e UserProfile.json,*-prod.json,*-shuttered.json"
+  excludedFilenamePatterns="-e UserProfile.json,*-prod.json,*-nonshuttered.json"
 fi
 
 root_dir=$(realpath $(dirname ${0})/..)
 config_dir=${root_dir}/ccd-definition
 build_dir=${root_dir}/build/ccd-release-config
-release_definition_output_file=${build_dir}/ccd-fpl-${environment}.xlsx
+release_definition_output_file=${build_dir}/ccd-fpl-${environment}-shuttered.xlsx
 
 mkdir -p ${build_dir}
 

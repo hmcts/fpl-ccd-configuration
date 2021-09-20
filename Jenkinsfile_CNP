@@ -60,6 +60,7 @@ def archiveCoreCaseDataDefinitions(env) {
       sh "./build-preview-ccd-definitions.sh ${CHANGE_ID}"
     } else {
       sh "./build-release-ccd-definition.sh ${env}"
+      sh "./build-shuttered-ccd-definition.sh ${env}"
     }
   }
 
@@ -69,6 +70,7 @@ def archiveCoreCaseDataDefinitions(env) {
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-off.xlsx"
     } else {
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}.xlsx"
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}-shuttered.xlsx"
     }
   }
 }
