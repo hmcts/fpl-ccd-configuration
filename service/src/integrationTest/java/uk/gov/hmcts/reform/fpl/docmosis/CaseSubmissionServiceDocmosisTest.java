@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.docmosis;
 
+import org.apache.commons.text.StringSubstitutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,6 +92,27 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
         String c110aContent = getPdfContent("c110a.pdf");
 
         String expectedText = readString("c110a.txt");
+        expectedText = StringSubstitutor.replace(expectedText, Map.of("languageRequirement", "Yes"));
+
+        assertThat(c110aContent).isEqualToNormalizingWhitespace(expectedText);
+    }
+
+    @Test
+    void testC110aNoLanguageRequirement() throws IOException {
+
+        caseData = populatedCaseData().toBuilder()
+            .c110A(C110A.builder()
+                .build())
+            .build();
+
+        doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any(), any());
+
+        underTest.generateSubmittedFormPDF(caseData, false);
+
+        String c110aContent = getPdfContent("c110a.pdf");
+
+        String expectedText = readString("c110a.txt");
+        expectedText = StringSubstitutor.replace(expectedText, Map.of("languageRequirement", "No"));
 
         assertThat(c110aContent).isEqualToNormalizingWhitespace(expectedText);
     }

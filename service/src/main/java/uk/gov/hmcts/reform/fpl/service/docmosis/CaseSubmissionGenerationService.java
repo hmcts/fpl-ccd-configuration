@@ -302,11 +302,11 @@ public class CaseSubmissionGenerationService
         if (isNotEmpty(thresholdReasons)) {
             thresholdReasons.forEach(thresholdReason -> {
                 if ("noCare".equals(thresholdReason)) {
-                    stringBuilder.append(getThreasoldReasonNoCare(applicationLanguage));
+                    stringBuilder.append(getThresholdReasonNoCare(applicationLanguage));
                     stringBuilder.append(NEW_LINE);
 
                 } else if ("beyondControl".equals(thresholdReason)) {
-                    stringBuilder.append(getThreasoldReasonBeyondControl(applicationLanguage));
+                    stringBuilder.append(getThresholdReasonBeyondControl(applicationLanguage));
                     stringBuilder.append(NEW_LINE);
                 }
             });
@@ -315,12 +315,11 @@ public class CaseSubmissionGenerationService
         return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
     }
 
-    private String getThreasoldReasonBeyondControl(
-        Language applicationLanguage) {
+    private String getThresholdReasonBeyondControl(Language applicationLanguage) {
         return applicationLanguage == Language.ENGLISH ? "Beyond parental control." : "Beyond parental control. ";
     }
 
-    private String getThreasoldReasonNoCare(Language applicationLanguage) {
+    private String getThresholdReasonNoCare(Language applicationLanguage) {
         return applicationLanguage == Language.ENGLISH
             ? "Not receiving care that would be reasonably expected from a parent."
             : "Not receiving care that would be reasonably expected from a parent. ";

@@ -28,7 +28,7 @@ class AgeDisplayFormatHelperTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenInputIsInFuture() {
+        void shouldReturn0DaysWhenInputIsFuture() {
             String age = formatAgeDisplay(NOW.plusDays(1), language);
             assertThat(age).isEqualTo("0 years old");
         }
@@ -102,7 +102,7 @@ class AgeDisplayFormatHelperTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenInputIsInFuture() {
+        void shouldReturn0DaysWhenInputIsFuture() {
             String age = formatAgeDisplay(NOW.plusDays(1), language);
             assertThat(age).isEqualTo("0 oed");
         }

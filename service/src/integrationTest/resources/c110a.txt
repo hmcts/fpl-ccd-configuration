@@ -28,7 +28,7 @@ Reason                allocation proposal reason
 
 Attending the hearing
 Interpreter                                       Yes interpreter required
-Welsh language requirement                        Yes
+Welsh language requirement                        ${languageRequirement}
 Spoken or written Welsh                           Yes welsh proceedings
 Intermediary                                      Yes intermediary hearing required
 Facilities or assistance for a disability         Yes learning disability
