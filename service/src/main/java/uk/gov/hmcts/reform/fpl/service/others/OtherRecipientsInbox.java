@@ -22,7 +22,7 @@ public class OtherRecipientsInbox {
                                                CaseData caseData, List<Element<Other>> othersSelected,
                                                Function<Element<Representative>, R> mapperFunction) {
 
-        Set<UUID> allOthersRepresentativeIds = caseData.getAllOthers().stream()
+        Set<UUID> allOthersRepresentativeIds = caseData.getAllActiveOthers().stream()
             .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
 

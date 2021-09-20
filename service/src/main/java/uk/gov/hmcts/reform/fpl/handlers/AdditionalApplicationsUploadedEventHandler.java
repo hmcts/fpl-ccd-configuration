@@ -150,7 +150,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
-        return caseData.getAllRespondents().stream()
+        return caseData.getAllActiveRespondents().stream()
             .collect(Collectors.toMap(
                 respondent -> respondent.getValue().getParty().getFullName(),
                 respondent -> hasNoSolicitorEmail(respondent) ? EMPTY

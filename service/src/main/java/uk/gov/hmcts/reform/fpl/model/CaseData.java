@@ -128,6 +128,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -293,6 +294,13 @@ public class CaseData {
     @JsonIgnore
     public List<Element<Respondent>> getAllRespondents() {
         return respondents1 != null ? respondents1 : new ArrayList<>();
+    }
+
+    @JsonIgnore
+    public List<Element<Respondent>> getAllActiveRespondents() {
+        return getAllRespondents().stream()
+            .filter(Respondent -> Respondent.getValue().getActiveParty().equals(YES.getValue()))
+            .collect(toList());
     }
 
     @JsonIgnore
@@ -498,20 +506,54 @@ public class CaseData {
     public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
         return getRepresentativesElementsByServedPreference(preference).stream()
             .map(Element::getValue)
-            .collect(Collectors.toList());
+            .filter(representative -> !getInactiveRepresentatives().contains(representative))
+            .collect(toList());
     }
 
     @JsonIgnore
     public List<Element<Representative>> getRepresentativesElementsByServedPreference(
-        RepresentativeServingPreferences preference
-    ) {
+        RepresentativeServingPreferences preference) {
         if (isNotEmpty(representatives)) {
             return representatives.stream()
                 .filter(Objects::nonNull)
+                .filter(representative -> !getInactiveRepresentatives().contains(representative.getValue()))
                 .filter(representative -> preference == representative.getValue().getServingPreferences())
                 .collect(toList());
         }
         return emptyList();
+    }
+
+    @JsonIgnore
+    private List<Representative> getInactiveRepresentatives() {
+        return Stream.concat(getInactiveOtherRepresentatives().stream(),
+            getInactiveRespondentRepresentatives().stream())
+            .collect(toList());
+    }
+
+    @JsonIgnore
+    private List<Representative> getInactiveOtherRepresentatives() {
+        return representatives.stream()
+            .map(Element::getValue)
+            .filter(representative -> null != representative.getRole())
+            .filter(representative -> null != representative.getRole().getSequenceNo())
+            .filter(representative -> findOther(representative.getRole().getSequenceNo()).isPresent())
+            .filter(representative -> NO.getValue()
+                .equals(findOther(representative.getRole().getSequenceNo())
+                    .map(Other::getActiveParty).orElse(null)))
+            .collect(toList());
+    }
+
+    @JsonIgnore
+    private List<Representative> getInactiveRespondentRepresentatives() {
+        return representatives.stream()
+            .map(Element::getValue)
+            .filter(representative -> null != representative.getRole())
+            .filter(representative -> null != representative.getRole().getSequenceNo())
+            .filter(representative -> findRespondent(representative.getRole().getSequenceNo()).isPresent())
+            .filter(representative -> NO.getValue()
+                .equals(findRespondent(representative.getRole().getSequenceNo())
+                    .map(Respondent::getActiveParty).orElse(null)))
+            .collect(Collectors.toList());
     }
 
     private final List<Element<LegalRepresentative>> legalRepresentatives;
@@ -558,6 +600,20 @@ public class CaseData {
         ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);
+    }
+
+    @JsonIgnore
+    public List<Element<Other>> getAllActiveOthers() {
+        return getAllOthers().stream()
+            .filter(Other -> Other.getValue().getActiveParty().equals(YES.getValue()))
+            .collect(toList());
+    }
+
+    @JsonIgnore
+    public List<Element<Other>> getAllInactiveOthers() {
+        return getAllOthers().stream()
+            .filter(Other -> Other.getValue().getActiveParty().equals(NO.getValue()))
+            .collect(toList());
     }
 
     public Optional<Other> findOther(int sequenceNo) {
@@ -836,7 +892,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
-                defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
             .flatMap(Collection::stream).collect(toList());
     }
 

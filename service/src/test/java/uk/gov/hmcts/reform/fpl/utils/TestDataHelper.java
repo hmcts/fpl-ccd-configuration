@@ -176,6 +176,7 @@ public class TestDataHelper {
                 .firstName(firstName)
                 .lastName(lastName)
                 .build())
+            .activeParty("Yes")
             .build());
     }
 
@@ -271,6 +272,7 @@ public class TestDataHelper {
             .name(name)
             .birthPlace(randomAlphanumeric(10))
             .address(testAddress())
+            .activeParty("Yes")
             .build();
     }
 

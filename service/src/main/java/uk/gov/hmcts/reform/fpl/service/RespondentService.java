@@ -44,7 +44,9 @@ public class RespondentService {
 
         if (isNotEmpty(respondents)) {
             for (int i = 0; i < respondents.size(); i++) {
-                RespondentParty respondentParty = respondents.get(i).getValue().getParty();
+                Respondent respondent = respondents.get(i).getValue();
+                RespondentParty respondentParty = respondent.getParty();
+
 
                 sb.append(String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty)))
                     .append("\n");

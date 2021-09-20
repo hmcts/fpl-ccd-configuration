@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class ApplicantsListGeneratorTest {
@@ -45,18 +46,18 @@ class ApplicantsListGeneratorTest {
     @BeforeEach
     void setup() {
         List<Element<Respondent>> respondents = List.of(
-            element(Respondent.builder().party(RESPONDENT_PARTY_1).build()),
-            element(Respondent.builder().party(RESPONDENT_PARTY_2).build()));
+            element(Respondent.builder().party(RESPONDENT_PARTY_1).activeParty(YES.getValue()).build()),
+            element(Respondent.builder().party(RESPONDENT_PARTY_2).activeParty(YES.getValue()).build()));
 
         List<Element<Other>> others = List.of(
-            element(Other.builder().name("Bob").build()),
-            element(Other.builder().name("Smith").build()));
+            element(Other.builder().name("Bob").activeParty(YES.getValue()).build()),
+            element(Other.builder().name("Smith").activeParty(YES.getValue()).build()));
 
         caseData = CaseData.builder()
             .caseLocalAuthorityName("Swansea local authority")
             .respondents1(respondents)
             .others(Others.builder()
-                .firstOther(Other.builder().name("Ross").build())
+                .firstOther(Other.builder().name("Ross").activeParty(YES.getValue()).build())
                 .additionalOthers(others)
                 .build())
             .build();

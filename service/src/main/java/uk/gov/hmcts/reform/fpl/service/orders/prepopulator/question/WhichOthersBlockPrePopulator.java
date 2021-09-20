@@ -38,7 +38,7 @@ public class WhichOthersBlockPrePopulator implements QuestionBlockOrderPrePopula
         }
 
         data.put("othersSelector", othersSelector);
-        data.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
+        data.put("others_label", othersService.getOthersLabel(caseData.getAllActiveOthers()));
 
         return data;
     }

@@ -2,6 +2,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
+    "ListElementCode": "activeTag",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='govuk-tag govuk-tag--blue'>ACTIVE PARTY</div>",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "activeParty=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "inactiveTag",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='govuk-tag govuk-tag--grey'>INACTIVE PARTY</div>",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "activeParty=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Full name",
@@ -110,6 +128,15 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "activeParty",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are they still a party on the case?",
+    "HintText": "Select 'No' to stop case notifications to this party",
     "SecurityClassification": "Public"
   },
   {

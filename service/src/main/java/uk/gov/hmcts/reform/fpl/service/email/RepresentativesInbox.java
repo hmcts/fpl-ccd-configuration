@@ -68,7 +68,7 @@ public class RepresentativesInbox {
 
     public HashSet<String> getRespondentSolicitorEmails(CaseData caseData,
                                                               RepresentativeServingPreferences preference) {
-        return caseData.getAllRespondents().stream()
+        return caseData.getAllActiveRespondents().stream()
             .filter(respondent -> shouldSend(preference, respondent))
             .map(this::extractEmail)
             .filter(StringUtils::isNotBlank)
@@ -99,7 +99,7 @@ public class RepresentativesInbox {
                                                          CaseData caseData,
                                                          List<Element<Respondent>> respondentsSelected,
                                                          Function<Element<Representative>, R> mapperFunction) {
-        Set<UUID> allRepresentativeIds = unwrapElements(caseData.getAllRespondents())
+        Set<UUID> allRepresentativeIds = unwrapElements(caseData.getAllActiveRespondents())
             .stream()
             .flatMap(respondent -> respondent.getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
@@ -126,7 +126,7 @@ public class RepresentativesInbox {
 
     private Set<Recipient> getNotSelectedUnrepresentedRespondents(CaseData caseData,
                                                                   List<Element<Respondent>> selectedRespondents) {
-        List<Element<Respondent>> unrepresentedRespondents = caseData.getAllRespondents().stream()
+        List<Element<Respondent>> unrepresentedRespondents = caseData.getAllActiveRespondents().stream()
             .filter(respondent -> isEmpty(respondent.getValue().getRepresentedBy())
                                   && !YES.getValue().equals(respondent.getValue().getLegalRepresentation()))
             .collect(toList());

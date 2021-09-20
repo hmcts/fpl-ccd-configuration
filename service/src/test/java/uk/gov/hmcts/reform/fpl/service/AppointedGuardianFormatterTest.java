@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class AppointedGuardianFormatterTest {
@@ -105,13 +106,16 @@ class AppointedGuardianFormatterTest {
 
     private CaseData getMultiplePeopleCaseData() {
         return CaseData.builder().respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
+                .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build())
+                .activeParty(YES.getValue()).build(),
             Respondent.builder()
-                .party(RespondentParty.builder().firstName("Tony").lastName("Stark").build()).build()))
+                .party(RespondentParty.builder().firstName("Tony").lastName("Stark").build())
+                .activeParty(YES.getValue()).build()))
             .others(Others.builder()
-                .firstOther(Other.builder().name("Ollie Otherworld").build())
+                .firstOther(Other.builder().name("Ollie Otherworld").activeParty(YES.getValue()).build())
                 .additionalOthers(wrapElements(Other.builder()
-                    .name("Otto Otherman").build(), Other.builder().name("Bob Bothers").build())).build())
+                    .name("Otto Otherman").activeParty(YES.getValue()).build(), Other.builder().name("Bob Bothers")
+                    .activeParty(YES.getValue()).build())).build())
             .appointedGuardianSelector(Selector.builder().selected(List.of(0, 3, 4)).build())
             .build();
     }

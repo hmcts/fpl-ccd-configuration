@@ -78,8 +78,8 @@ public class ApplicantsListGenerator {
                 .name(localAuthorityName + ", Secondary LA").build())
             .ifPresent(applicantsFullNames::add);
 
-        applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
-        applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers())); // Others to give notice
+        applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllActiveRespondents()));
+        applicantsFullNames.addAll(buildOthersElements(caseData.getAllActiveOthers())); // Others to give notice
 
         applicantsFullNames.add(
             InterlocutoryApplicant.builder().code(APPLICANT_SOMEONE_ELSE).name("Someone else").build());

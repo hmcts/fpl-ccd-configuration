@@ -83,9 +83,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         if (caseData.hasRespondentsOrOthers()) {
             caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
             caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
-                caseData.getAllRespondents(), caseData.getOthers()));
+                caseData.getAllActiveRespondents(), caseData.getAllActiveOthers()));
 
-            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
+            int selectorSize = caseData.getAllActiveRespondents().size() + caseData.getAllActiveOthers().size();
             caseDetails.getData().put("personSelector", newSelector(selectorSize));
         }
 

@@ -77,10 +77,10 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
 
-        if (isEmpty(errors) && isNotEmpty(caseData.getAllOthers())) {
+        if (isEmpty(errors) && isNotEmpty(caseData.getAllActiveOthers())) {
             caseDetails.getData().put("hasOthers", "Yes");
-            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));
+            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllActiveOthers()));
+            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllActiveOthers().size()));
 
             if (approveDraftOrdersService.hasApprovedReviewDecision(caseData, data)) {
                 caseDetails.getData().put("reviewCMOShowOthers", "Yes");

@@ -22,8 +22,8 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 public class AppointedGuardianFormatter {
 
     public String getGuardiansLabel(CaseData caseData) {
-        List<Element<Respondent>> respondents = caseData.getAllRespondents();
-        List<Element<Other>> others = caseData.getAllOthers();
+        List<Element<Respondent>> respondents = caseData.getAllActiveRespondents();
+        List<Element<Other>> others = caseData.getAllActiveOthers();
         if (isEmpty(respondents) && isEmpty(others)) {
             return "No respondents or others to be given notice on the case";
         }

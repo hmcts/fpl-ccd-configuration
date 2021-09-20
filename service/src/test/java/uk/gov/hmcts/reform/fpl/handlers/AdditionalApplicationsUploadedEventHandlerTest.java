@@ -267,7 +267,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .build()
         );
 
-        given(caseData.getAllRespondents()).willReturn(respondents);
+        given(caseData.getAllActiveRespondents()).willReturn(respondents);
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder()

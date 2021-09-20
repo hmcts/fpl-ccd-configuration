@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -43,13 +44,16 @@ class RepresentativesInboxTest {
     private static final UUID DIGITAL_REP_UUID = UUID.randomUUID();
     private static final Element<Respondent> RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
         .representedBy(wrapElements(EMAIL_REP_UUID))
+        .activeParty(YES.getValue())
         .build());
     private static final Element<Respondent> RESPONDENT_WITH_DIGITAL_REP = element(Respondent.builder()
         .representedBy(wrapElements(DIGITAL_REP_UUID))
+        .activeParty(YES.getValue())
         .build());
     private static final Element<Respondent> RESPONDENT_UNREPRESENTED = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("John").lastName("Smith").address(testAddress()).build())
         .representedBy(List.of())
+        .activeParty(YES.getValue())
         .build());
     private static final List<Element<Respondent>> RESPONDENTS = List.of(
         RESPONDENT_WITH_EMAIL_REP, RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_UNREPRESENTED
@@ -69,6 +73,7 @@ class RepresentativesInboxTest {
                 .organisationID(null)
                 .build())
             .build())
+        .activeParty(YES.getValue())
         .build();
     private static final Respondent REGISTERED_RESPONDENT = Respondent.builder()
         .solicitor(RespondentSolicitor.builder()
@@ -77,6 +82,7 @@ class RepresentativesInboxTest {
                 .organisationID(ORGANISATION_ID)
                 .build())
             .build())
+        .activeParty(YES.getValue())
         .build();
     private static final Representative EMAIL_REP = Representative.builder()
         .email(EMAIL_3)
@@ -270,6 +276,7 @@ class RepresentativesInboxTest {
                     .email(EMAIL_1)
                     .organisation(null)
                     .build())
+                .activeParty(YES.getValue())
                 .build()
         )).build();
 
@@ -299,6 +306,7 @@ class RepresentativesInboxTest {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(
             Respondent.builder()
                 .solicitor(null)
+                .activeParty(YES.getValue())
                 .build()
         )).build();
 
@@ -392,6 +400,8 @@ class RepresentativesInboxTest {
     void testFilterRepresentativesByRole() {
         CaseData caseData = CaseData.builder().representatives(wrapElements(CARCASS_REP, RESPONDENT_REP)).build();
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
+
+        System.out.println(RepresentativeRole.CAFCASS_GUARDIAN.getSequenceNo());
 
         Set<String> actual = underTest.getRepresentativeEmailsFilteredByRole(caseData, DIGITAL_SERVICE, roles);
 

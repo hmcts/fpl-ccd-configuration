@@ -34,8 +34,12 @@ class AppointedGuardianBlockPrePopulatorTest {
 
     @Test
     void prePopulate() {
-        List<Element<Respondent>> respondents = wrapElements(mock(Respondent.class));
-        Others others = Others.builder().additionalOthers(wrapElements(mock(Other.class))).build();
+        List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
+            .activeParty("Yes").build());
+
+        Others others = Others.builder().additionalOthers(wrapElements(Other.builder()
+            .activeParty("Yes").build())).build();
+
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
             .others(others)
