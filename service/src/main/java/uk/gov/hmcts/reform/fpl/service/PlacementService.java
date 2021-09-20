@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -47,12 +46,14 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STA
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.toCCDMoneyGBP;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class PlacementService {
 
     private static final List<PlacementSupportingDocument.Type> REQUIRED_SUPPORTING_DOCS =
@@ -140,7 +141,6 @@ public class PlacementService {
 
         return errors;
     }
-
 
     public List<String> checkNotices(CaseData caseData) {
 
@@ -339,4 +339,28 @@ public class PlacementService {
 
         return asDynamicList(caseData.getAllRespondents(), stringifier);
     }
+
+    public List<Element<String>> getPlacements(CaseData caseData) {
+        return caseData.getPlacementEventData().getPlacements().stream()
+            .map(element -> {
+                UUID placementId = element.getId();
+                Element<Child> child = getChildByPlacementId(caseData, placementId);
+                String childName = child.getValue().getParty().getFullName();
+                return element(placementId, childName);
+            }).collect(Collectors.toList());
+    }
+
+    public Element<Placement> getPlacementById(CaseData caseData, UUID placementId) {
+        return caseData.getPlacementEventData().getPlacements().stream()
+            .filter(placementElement -> placementElement.getId().equals(placementId))
+            .findFirst()
+            .orElseThrow();
+    }
+
+    public Element<Child> getChildByPlacementId(CaseData caseData, UUID placementId) {
+        Element<Placement> placement = getPlacementById(caseData, placementId);
+        UUID childId = placement.getValue().getChildId();
+        return findElement(childId, caseData.getAllChildren()).orElseThrow();
+    }
+
 }

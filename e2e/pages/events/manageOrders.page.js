@@ -17,6 +17,7 @@ const orders = {
   group: '#manageOrdersType',
   uploadGroup: '#manageOrdersUploadType',
   options: {
+    a70: 'A70_PLACEMENT_ORDER',
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c26: 'C26_SECURE_ACCOMMODATION_ORDER',
@@ -32,6 +33,7 @@ const orders = {
     other: 'OTHER_ORDER',
   },
   title: {
+    a70: 'Placement Order (A70)',
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
     c26: 'Authority to keep a child in secure accommodation (C26)',
@@ -220,6 +222,16 @@ const preview = {
 const amendment = {
   list: '#manageOrdersAmendmentList',
   upload: '#manageOrdersAmendedOrder',
+};
+
+const placement = {
+  application: '#manageOrdersChildPlacementApplication',
+  serialNumber: '#manageOrdersSerialNumber',
+  birthCertificateNumber: '#manageOrdersBirthCertificateNumber',
+  birthCertificateDate: '#manageOrdersBirthCertificateDate',
+  birthCertificateDistrict: '#manageOrdersBirthCertificateRegistrationDistrict',
+  birthCertificateSubDistrict: '#manageOrdersBirthCertificateRegistrationSubDistrict',
+  birthCertificateCounty: '#manageOrdersBirthCertificateRegistrationCounty',
 };
 
 // Actions
@@ -477,15 +489,15 @@ const selectSingleChild = async (childName) => {
 };
 
 const selectReasonForSecureAccommodation = (reason) => {
-  I.click('#manageOrdersReasonForSecureAccommodation-'+reason);
+  I.click('#manageOrdersReasonForSecureAccommodation-' + reason);
 };
 
 const selectWhetherChildIsRepresented = (answer) => {
-  I.click('#manageOrdersIsChildRepresented_'+answer);
+  I.click('#manageOrdersIsChildRepresented_' + answer);
 };
 
 const selectJurisdiction = (jurisdiction) => {
-  I.click('#manageOrdersOrderJurisdiction-'+jurisdiction);
+  I.click('#manageOrdersOrderJurisdiction-' + jurisdiction);
 };
 
 const reviewOrderToAmend = fileName => {
@@ -497,6 +509,19 @@ const uploadAmendedOrder = amendedOrder => {
   I.attachFile(amendment.upload, amendedOrder);
 };
 
+const selectPlacementApplication = childName => {
+  I.selectOption(placement.application, childName);
+};
+
+function fillPlacementOrderSpecificFields(values) {
+  I.fillField(placement.serialNumber, values.serialNumber);
+  I.fillField(placement.birthCertificateNumber, values.birthCertificateNumber);
+  I.fillField(placement.birthCertificateDate, values.birthCertificateDate);
+  I.fillField(placement.birthCertificateDistrict, values.birthCertificateDistrict);
+  I.fillField(placement.birthCertificateSubDistrict, values.birthCertificateSubDistrict);
+  I.fillField(placement.birthCertificateCounty, values.birthCertificateCounty);
+}
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4, whichOthers, amendment, selectTranslationRequirement,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
@@ -507,5 +532,5 @@ module.exports = {
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
-  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible,
+  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, selectPlacementApplication, fillPlacementOrderSpecificFields,
 };

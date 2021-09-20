@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderNotificationDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -35,6 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -97,6 +99,9 @@ class SealedOrderHistoryServiceTest {
     private final Other other2 = testOther("Second other");
     private final UUID other1ID = UUID.randomUUID();
     private final UUID other2ID = UUID.randomUUID();
+    private static final DocumentReference TEST_NOTIFICATION_DOCUMENT = DocumentReference.builder()
+        .filename("notificationDoc.pdf")
+        .build();
 
     private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final AppointedGuardianFormatter appointedGuardianFormatter = mock(AppointedGuardianFormatter.class);
@@ -115,6 +120,8 @@ class SealedOrderHistoryServiceTest {
         OthersNotifiedGenerator.class);
     private final SealedOrderLanguageRequirementGenerator languageRequirementGenerator = mock(
         SealedOrderLanguageRequirementGenerator.class);
+    private final OrderNotificationDocumentService notificationDocumentService =
+        mock(OrderNotificationDocumentService.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
@@ -122,6 +129,7 @@ class SealedOrderHistoryServiceTest {
         appointedGuardianFormatter,
         othersService,
         orderCreationService,
+        notificationDocumentService,
         extraTitleGenerator,
         typeGenerator,
         sealedOrderHistoryFinalMarker,
@@ -190,6 +198,32 @@ class SealedOrderHistoryServiceTest {
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
                     ),
                     "somethingClose", "closeCaseValue"
+                ));
+            }
+        }
+
+        @Test
+        void generateWithNotificationDocumentWhenNotificationDocumentIsGeneratedByService() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().build();
+                when(notificationDocumentService.createNotificationDocument(caseData))
+                    .thenReturn(Optional.of(TEST_NOTIFICATION_DOCUMENT));
+                mockDocumentUpload(caseData);
+                mockGenerators(caseData);
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrderWithNotificationDocument().build())
+                    )
                 ));
             }
         }
@@ -508,6 +542,10 @@ class SealedOrderHistoryServiceTest {
 
     private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrderWithLinkedApplication() {
         return startCommonExpectedGeneratedOrderBuilder().linkedApplicationId(LINKED_APPLICATION_ID.toString());
+    }
+
+    private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrderWithNotificationDocument() {
+        return startCommonExpectedGeneratedOrderBuilder().notificationDocument(TEST_NOTIFICATION_DOCUMENT);
     }
 
     private GeneratedOrder.GeneratedOrderBuilder startCommonExpectedGeneratedOrderBuilder() {
