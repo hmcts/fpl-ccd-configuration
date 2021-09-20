@@ -5,8 +5,8 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
 @Getter
 public enum EPOType {
-    REMOVE_TO_ACCOMMODATION("Remove to accommodation", "Remove to accommodation"),
-    PREVENT_REMOVAL("Prevent removal from an address", "Prevent removal from an address");
+    REMOVE_TO_ACCOMMODATION("Remove to accommodation", "Symud i lety"),
+    PREVENT_REMOVAL("Prevent removal from an address", "Atal symud rhywun o gyfeiriad");
 
     private final String label;
     private final String welshLabel;

@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 public enum YesNo {
     YES("Yes", "Ie"),
     NO("No", "Na"),
-    DONT_KNOW("Don't know", "Don't know"),
-    NOT_SPECIFIED("Not Specified", "Not Specified");
+    DONT_KNOW("Don't know", "Ddim yn gwybod"),
+    NOT_SPECIFIED("Not Specified", "Heb ei nodi");
 
     private final String value;
     private final String welshValue;

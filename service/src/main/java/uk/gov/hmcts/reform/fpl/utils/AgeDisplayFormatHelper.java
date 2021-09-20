@@ -68,15 +68,15 @@ public class AgeDisplayFormatHelper {
     }
 
     private static String yearOld(Language applicationLanguage) {
-        return isEnglish(applicationLanguage) ? " year old" : " oed";
+        return isEnglish(applicationLanguage) ? " year old" : " mlwydd oed";
     }
 
     private static String yearsOld(Language applicationLanguage) {
-        return isEnglish(applicationLanguage) ? " years old" : " oed";
+        return isEnglish(applicationLanguage) ? " years old" : " mlwydd oed";
     }
 
     private static String zeroYearsOld(Language applicationLanguage) {
-        return isEnglish(applicationLanguage) ? "0 years old" : "0 oed";
+        return isEnglish(applicationLanguage) ? "0 years old" : "0 mlwydd oed";
     }
 
     private static boolean isEnglish(Language applicationLanguage) {

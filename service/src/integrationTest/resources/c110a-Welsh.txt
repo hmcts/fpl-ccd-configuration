@@ -15,8 +15,8 @@ James Smith
 An Other
 Cais gan London Borough of Southwark a gyflwynwyd ar 12 Rhagfyr 0012
 Gorchmynion
-Angen gorchmynion Emergency protection order
-Angen cyfarwyddyd Contact with any named person
+Angen gorchmynion Gorchymyn Diogelu Brys
+Angen cyfarwyddyd Cyswllt ag unrhyw unigolyn a enwir
 Ie
 Angen gwrandawiad
 Gwnaethpwyd cais am ddyddiad y gwrandawiad Same day
@@ -259,18 +259,14 @@ achosion
 Manylion cyswllt cyfrinachol Ie
 Other two hide from parties
 Y seiliau dros wneud y cais
-Seiliau ar gyfer gwneud gorchymyn amddiffyn brys There’s reasonable cause to believe the child is likely
-to suffer significant harm if they’re not moved to
-accommodation provided by you, or on your behalf
-There’s reasonable cause to believe the child is likely
-to suffer significant harm if they don’t stay in their
-current accommodation
+Seiliau ar gyfer gwneud gorchymyn amddiffyn brys Mae rheswm rhesymol dros gredu bod y plentyn yn debygol o ddioddef
+niwed sylweddol os na chaiff ei symud i lety a ddarperir gennych chi, neu ar eich rhan
+Mae rheswm rhesymol dros gredu bod y plentyn yn debygol o ddioddef niwed sylweddol os nad yw'n aros yn ei lety presennol
 Bodlonwyd y trothwy gan fod y plentyn yn dioddef
 neu'n debygol o ddioddef niwed sylweddol
 oherwydd ei fod yn
-Not receiving care that would be reasonably
-expected from a parent.
-Beyond parental control.
+Ddim yn derbyn y gofal a fyddai'n rhesymol ddisgwyliedig gan riant
+Y tu hwnt i reolaeth rhiant
 Tystiolaeth o’r trothwy
 grounds for application criteria
 Risg a niwed i’r plant

@@ -10,7 +10,7 @@ public enum ChildGender {
 
     BOY("Boy", "Bachgen", "he", "himself"),
     GIRL("Girl", "Merch", "she", "herself"),
-    OTHER("They identify in another way", "They identify in another way", "they", "themselves");
+    OTHER("They identify in another way", "Maent yn uniaethu mewn ffordd arall", "they", "themselves");
 
     private final String label;
     private final String welshLabel;

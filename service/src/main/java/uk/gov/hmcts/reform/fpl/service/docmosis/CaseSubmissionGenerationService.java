@@ -322,7 +322,7 @@ public class CaseSubmissionGenerationService
     private String getThresholdReasonNoCare(Language applicationLanguage) {
         return applicationLanguage == Language.ENGLISH
             ? "Not receiving care that would be reasonably expected from a parent."
-            : "Not receiving care that would be reasonably expected from a parent. ";
+            : "Ddim yn derbyn y gofal a fyddai'n rhesymol ddisgwyliedig gan riant. ";
     }
 
     public String getSigneeName(CaseData caseData) {

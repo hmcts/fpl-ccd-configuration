@@ -104,7 +104,7 @@ class AgeDisplayFormatHelperTest {
         @Test
         void shouldReturn0DaysWhenInputIsFuture() {
             String age = formatAgeDisplay(NOW.plusDays(1), language);
-            assertThat(age).isEqualTo("0 oed");
+            assertThat(age).isEqualTo("0 mlwydd oed");
         }
 
         @Test
@@ -146,19 +146,19 @@ class AgeDisplayFormatHelperTest {
         @Test
         void shouldReturn1YearWhenBorn1YearAgo() {
             String age = formatAgeDisplay(NOW.minusYears(1), language);
-            assertThat(age).isEqualTo("1 oed");
+            assertThat(age).isEqualTo("1 mlwydd oed");
         }
 
         @Test
         void shouldReturn1YearWhenBorn1YearAnd1MonthAgo() {
             String age = formatAgeDisplay(NOW.minusYears(1).minusMonths(1), language);
-            assertThat(age).isEqualTo("1 oed");
+            assertThat(age).isEqualTo("1 mlwydd oed");
         }
 
         @Test
         void shouldReturn2YearsWhenBorn2YearsAgo() {
             String age = formatAgeDisplay(NOW.minusYears(2), language);
-            assertThat(age).isEqualTo("2 oed");
+            assertThat(age).isEqualTo("2 mlwydd oed");
         }
 
     }
