@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +54,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -82,6 +85,18 @@ public class CaseSubmissionGenerationService
     private static final String NEW_LINE = "\n";
     private static final String SPACE_DELIMITER = " ";
     private static final String DEFAULT_STRING = "-";
+    private static final Map<TranslationSection, LanguagePair> translations = Map.of(
+        TranslationSection.EXCLUDED, LanguagePair.of(" excluded", " wedi'u heithrio"),
+        TranslationSection.BEYOND_PARENTAL_CONTROL, LanguagePair.of(
+            "Beyond parental control.", "Y tu hwnt i reolaeth rhiant."
+        ),
+        TranslationSection.NOT_RECEIVING_CARE, LanguagePair.of(
+            "Not receiving care that would be reasonably expected from a parent.",
+            "Ddim yn derbyn y gofal a fyddai'n rhesymol ddisgwyliedig gan riant."
+        ),
+        TranslationSection.REASON, LanguagePair.of("Reason:", "Rheswm:"),
+        TranslationSection.CONFIDENTIAL, LanguagePair.of("Confidential", "Cyfrinachol")
+    );
 
     private final Time time;
     private final UserService userService;
@@ -114,22 +129,17 @@ public class CaseSubmissionGenerationService
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings(), applicationLanguage))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings(), applicationLanguage))
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
-                ? getGroundsForEPOReason(caseData.getOrders().getOrderType(),
+                                 ? getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO(),
                 applicationLanguage)
-                : DEFAULT_STRING)
+                                 : DEFAULT_STRING)
             .groundsThresholdReason(caseData.getGrounds() != null
-                ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason(),
+                                    ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason(),
                 applicationLanguage) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData, applicationLanguage))
             .userFullName(getSigneeName(caseData))
             .build();
-    }
-
-    private String getWelshLanguageRequirement(CaseData caseData,
-                                               Language applicationLanguage) {
-        return YesNo.fromString(defaultIfBlank(caseData.getLanguageRequirement(), "No")).getValue(applicationLanguage);
     }
 
     public void populateCaseNumber(final DocmosisCaseSubmission submittedCase, final long caseNumber) {
@@ -143,6 +153,17 @@ public class CaseSubmissionGenerationService
         } else {
             caseSubmission.setCourtSeal(getCourtSealData(imageLanguage));
         }
+    }
+
+    public String getSigneeName(CaseData caseData) {
+        return getLegalTeamManager(caseData)
+            .filter(StringUtils::isNotBlank)
+            .orElseGet(userService::getUserName);
+    }
+
+    private String getWelshLanguageRequirement(CaseData caseData,
+                                               Language applicationLanguage) {
+        return YesNo.fromString(defaultIfBlank(caseData.getLanguageRequirement(), "No")).getValue(applicationLanguage);
     }
 
     private String getApplicantsOrganisations(CaseData caseData) {
@@ -243,7 +264,7 @@ public class CaseSubmissionGenerationService
 
     private boolean hasDirections(final Orders orders) {
         return isNotEmpty(orders) && (isNotEmpty(orders.getEmergencyProtectionOrderDirections())
-            || StringUtils.isNotEmpty(orders.getDirections()));
+                                      || StringUtils.isNotEmpty(orders.getDirections()));
     }
 
     private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
@@ -252,7 +273,7 @@ public class CaseSubmissionGenerationService
 
         if (StringUtils.isNotBlank(orders.getExcluded())) {
             stringBuilder.append(orders.getExcluded())
-                .append(applicationLanguage == Language.ENGLISH ? " excluded" : " wedi'u heithrio");
+                .append(translations.get(TranslationSection.EXCLUDED).fromLanguage(applicationLanguage));
             stringBuilder.append(NEW_LINE);
         }
 
@@ -293,7 +314,7 @@ public class CaseSubmissionGenerationService
 
     private String getThresholdDetails(final Grounds grounds) {
         return (isNotEmpty(grounds) && StringUtils.isNotEmpty(grounds.getThresholdDetails()))
-            ? grounds.getThresholdDetails() : DEFAULT_STRING;
+               ? grounds.getThresholdDetails() : DEFAULT_STRING;
     }
 
     private String buildGroundsThresholdReason(final List<String> thresholdReasons,
@@ -316,19 +337,11 @@ public class CaseSubmissionGenerationService
     }
 
     private String getThresholdReasonBeyondControl(Language applicationLanguage) {
-        return applicationLanguage == Language.ENGLISH ? "Beyond parental control." : "Y tu hwnt i reolaeth rhiant. ";
+        return translations.get(TranslationSection.BEYOND_PARENTAL_CONTROL).fromLanguage(applicationLanguage);
     }
 
     private String getThresholdReasonNoCare(Language applicationLanguage) {
-        return applicationLanguage == Language.ENGLISH
-            ? "Not receiving care that would be reasonably expected from a parent."
-            : "Ddim yn derbyn y gofal a fyddai'n rhesymol ddisgwyliedig gan riant. ";
-    }
-
-    public String getSigneeName(CaseData caseData) {
-        return getLegalTeamManager(caseData)
-            .filter(StringUtils::isNotBlank)
-            .orElseGet(userService::getUserName);
+        return translations.get(TranslationSection.NOT_RECEIVING_CARE).fromLanguage(applicationLanguage);
     }
 
     private Optional<String> getLegalTeamManager(CaseData caseData) {
@@ -428,13 +441,13 @@ public class CaseSubmissionGenerationService
             .gender(formatGenderDisplay(Gender.fromLabel(other.getGender()).getLabel(applicationLanguage),
                 other.getGenderIdentification()))
             .dateOfBirth(StringUtils.isNotBlank(other.getDateOfBirth())
-                ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE, applicationLanguage)
-                : DEFAULT_STRING
+                         ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE, applicationLanguage)
+                         : DEFAULT_STRING
             )
             .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
             .address(isConfidential ? getConfidential(applicationLanguage) : formatAddress(other.getAddress()))
             .telephoneNumber(isConfidential ? getConfidential(applicationLanguage) :
-                getDefaultIfNullOrEmpty(other.getTelephone()))
+                             getDefaultIfNullOrEmpty(other.getTelephone()))
             .detailsHidden(getValidAnswerOrDefaultValue(other.getDetailsHidden(), applicationLanguage))
             .detailsHiddenReason(
                 concatenateYesOrNoKeyAndValue(
@@ -494,12 +507,12 @@ public class CaseSubmissionGenerationService
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
             .address(
                 isConfidential
-                    ? getConfidential(applicationLanguage)
-                    : formatAddress(respondent.getAddress()))
+                ? getConfidential(applicationLanguage)
+                : formatAddress(respondent.getAddress()))
             .telephoneNumber(
                 isConfidential
-                    ? getConfidential(applicationLanguage)
-                    : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
+                ? getConfidential(applicationLanguage)
+                : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
             .contactDetailsHidden(getValidAnswerOrDefaultValue(respondent.getContactDetailsHidden(),
                 applicationLanguage))
             .contactDetailsHiddenDetails(
@@ -580,12 +593,12 @@ public class CaseSubmissionGenerationService
 
     private String getTelephoneNumber(final Telephone telephone) {
         return telephone != null && StringUtils.isNotEmpty(telephone.getTelephoneNumber())
-            ? telephone.getTelephoneNumber() : DEFAULT_STRING;
+               ? telephone.getTelephoneNumber() : DEFAULT_STRING;
     }
 
     private String getContactName(final Telephone telephone) {
         return telephone != null && StringUtils.isNotEmpty(telephone.getContactDirection())
-            ? telephone.getContactDirection() : DEFAULT_STRING;
+               ? telephone.getContactDirection() : DEFAULT_STRING;
     }
 
     private String getDefaultIfNullOrEmpty(final String value) {
@@ -650,31 +663,31 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearing.builder()
             .timeFrame(hearingPresent
-                ? concatenateKeyAndValue(hearing.getTimeFrame(),
+                       ? concatenateKeyAndValue(hearing.getTimeFrame(),
                 addPrefixReason(hearing.getReason(), applicationLanguage))
-                : DEFAULT_STRING)
+                       : DEFAULT_STRING)
             .typeAndReason(hearingPresent
-                ? concatenateKeyAndValue(hearing.getType(), addPrefixReason(hearing.getTypeGiveReason(),
+                           ? concatenateKeyAndValue(hearing.getType(), addPrefixReason(hearing.getTypeGiveReason(),
                 applicationLanguage))
-                : DEFAULT_STRING)
+                           : DEFAULT_STRING)
             .withoutNoticeDetails(hearingPresent
-                ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice(),
+                                  ? concatenateYesOrNoKeyAndValue(hearing.getWithoutNotice(),
                 addPrefixReason(hearing.getWithoutNoticeReason(),
                     applicationLanguage),
                 applicationLanguage)
-                : DEFAULT_STRING)
+                                  : DEFAULT_STRING)
             .reducedNoticeDetails(hearingPresent
-                ? concatenateYesOrNoKeyAndValue(hearing.getReducedNotice(),
+                                  ? concatenateYesOrNoKeyAndValue(hearing.getReducedNotice(),
                 addPrefixReason(hearing.getReducedNoticeReason(),
                     applicationLanguage),
                 applicationLanguage)
-                : DEFAULT_STRING)
+                                  : DEFAULT_STRING)
             .respondentsAware(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
-                ? YesNo.fromString(hearing.getRespondentsAware()).getValue(applicationLanguage)
-                : DEFAULT_STRING)
+                              ? YesNo.fromString(hearing.getRespondentsAware()).getValue(applicationLanguage)
+                              : DEFAULT_STRING)
             .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
-                ? hearing.getRespondentsAwareReason()
-                : DEFAULT_STRING)
+                                    ? hearing.getRespondentsAwareReason()
+                                    : DEFAULT_STRING)
             .build();
     }
 
@@ -684,27 +697,27 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearingPreferences.builder()
             .interpreter(hearingPreferencesPresent
-                ? concatenateYesOrNoKeyAndValue(
+                         ? concatenateYesOrNoKeyAndValue(
                 hearingPreferences.getInterpreter(),
                 hearingPreferences.getInterpreterDetails(), applicationLanguage) : DEFAULT_STRING)
             .welshDetails(hearingPreferencesPresent
-                ? concatenateYesOrNoKeyAndValue(
+                          ? concatenateYesOrNoKeyAndValue(
                 hearingPreferences.getWelsh(),
                 hearingPreferences.getWelshDetails(), applicationLanguage) : DEFAULT_STRING)
             .intermediary(hearingPreferencesPresent
-                ? concatenateYesOrNoKeyAndValue(
+                          ? concatenateYesOrNoKeyAndValue(
                 hearingPreferences.getIntermediary(),
                 hearingPreferences.getIntermediaryDetails(), applicationLanguage) : DEFAULT_STRING)
             .disabilityAssistance(hearingPreferencesPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                  ? concatenateYesOrNoKeyAndValue(
                 hearingPreferences.getDisabilityAssistance(),
                 hearingPreferences.getDisabilityAssistanceDetails(), applicationLanguage) : DEFAULT_STRING)
             .extraSecurityMeasures(hearingPreferencesPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                   ? concatenateYesOrNoKeyAndValue(
                 hearingPreferences.getExtraSecurityMeasures(),
                 hearingPreferences.getExtraSecurityMeasuresDetails(), applicationLanguage) : DEFAULT_STRING)
             .somethingElse(hearingPreferencesPresent
-                ? concatenateYesOrNoKeyAndValue(
+                           ? concatenateYesOrNoKeyAndValue(
                 hearingPreferences.getSomethingElse(),
                 hearingPreferences.getSomethingElseDetails(), applicationLanguage) : DEFAULT_STRING)
             .build();
@@ -715,70 +728,68 @@ public class CaseSubmissionGenerationService
         final boolean risksPresent = (risks != null);
         return DocmosisRisks.builder()
             .neglectDetails(risksPresent
-                ? concatenateYesOrNoKeyAndValue(
+                            ? concatenateYesOrNoKeyAndValue(
                 risks.getNeglect(),
                 listToString(risks.getNeglectOccurrences()), applicationLanguage) : DEFAULT_STRING)
             .sexualAbuseDetails(risksPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                ? concatenateYesOrNoKeyAndValue(
                 risks.getSexualAbuse(),
                 listToString(risks.getSexualAbuseOccurrences()), applicationLanguage) : DEFAULT_STRING)
             .physicalHarmDetails(risksPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                 ? concatenateYesOrNoKeyAndValue(
                 risks.getPhysicalHarm(),
                 listToString(risks.getPhysicalHarmOccurrences()), applicationLanguage) : DEFAULT_STRING)
             .emotionalHarmDetails(risksPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                  ? concatenateYesOrNoKeyAndValue(
                 risks.getEmotionalHarm(),
                 listToString(risks.getEmotionalHarmOccurrences()), applicationLanguage) : DEFAULT_STRING)
             .build();
     }
 
-    private DocmosisFactorsParenting buildDocmosisFactorsParenting(
-        final FactorsParenting factorsParenting,
-        Language applicationLanguage) {
+    private DocmosisFactorsParenting buildDocmosisFactorsParenting(final FactorsParenting factorsParenting,
+                                                                   Language applicationLanguage) {
         final boolean factorsParentingPresent = (factorsParenting != null);
 
         return DocmosisFactorsParenting.builder()
             .alcoholDrugAbuseDetails(factorsParentingPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                     ? concatenateYesOrNoKeyAndValue(
                 factorsParenting.getAlcoholDrugAbuse(),
                 factorsParenting.getAlcoholDrugAbuseReason(), applicationLanguage) : DEFAULT_STRING)
             .domesticViolenceDetails(factorsParentingPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                     ? concatenateYesOrNoKeyAndValue(
                 factorsParenting.getDomesticViolence(),
                 factorsParenting.getDomesticViolenceReason(), applicationLanguage) : DEFAULT_STRING)
             .anythingElse(factorsParentingPresent
-                ? concatenateYesOrNoKeyAndValue(
+                          ? concatenateYesOrNoKeyAndValue(
                 factorsParenting.getAnythingElse(),
                 factorsParenting.getAnythingElseReason(), applicationLanguage) : DEFAULT_STRING)
             .build();
     }
 
-    private DocmosisInternationalElement buildDocmosisInternationalElement(
-        final InternationalElement internationalElement,
-        Language applicationLanguage) {
+    private DocmosisInternationalElement buildDocmosisInternationalElement(InternationalElement internationalElement,
+                                                                           Language applicationLanguage) {
         final boolean internationalElementPresent = internationalElement != null;
 
         return DocmosisInternationalElement.builder()
             .possibleCarer(internationalElementPresent
-                ? concatenateYesOrNoKeyAndValue(
+                           ? concatenateYesOrNoKeyAndValue(
                 internationalElement.getPossibleCarer(),
                 internationalElement.getPossibleCarerReason(), applicationLanguage) : DEFAULT_STRING)
             .significantEvents(internationalElementPresent
-                ? concatenateYesOrNoKeyAndValue(
+                               ? concatenateYesOrNoKeyAndValue(
                 internationalElement.getSignificantEvents(),
                 internationalElement.getSignificantEventsReason(), applicationLanguage) : DEFAULT_STRING)
             .proceedings(internationalElementPresent
-                ? concatenateYesOrNoKeyAndValue(
+                         ? concatenateYesOrNoKeyAndValue(
                 internationalElement.getProceedings(),
                 internationalElement.getProceedingsReason(), applicationLanguage) : DEFAULT_STRING)
             .internationalAuthorityInvolvement(internationalElementPresent
-                ? concatenateYesOrNoKeyAndValue(
+                                               ? concatenateYesOrNoKeyAndValue(
                 internationalElement.getInternationalAuthorityInvolvement(),
                 internationalElement.getInternationalAuthorityInvolvementDetails(),
                 applicationLanguage) : DEFAULT_STRING)
             .issues(internationalElementPresent
-                ? concatenateYesOrNoKeyAndValue(
+                    ? concatenateYesOrNoKeyAndValue(
                 internationalElement.getIssues(),
                 internationalElement.getIssuesReason(), applicationLanguage) : DEFAULT_STRING)
             .build();
@@ -789,7 +800,7 @@ public class CaseSubmissionGenerationService
         sb.append(StringUtils.isNotEmpty(key) ? key : DEFAULT_STRING);
 
         return StringUtils.isNotEmpty(value)
-            ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
+               ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
     }
 
     private String concatenateYesOrNoKeyAndValue(final String key, final String value,
@@ -798,7 +809,7 @@ public class CaseSubmissionGenerationService
         sb.append(getValidAnswerOrDefaultValue(key, applicationLanguage));
 
         return (equalsIgnoreCase(key, YES.getValue()) && StringUtils.isNotEmpty(value))
-            ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
+               ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
     }
 
     private String getValidAnswerOrDefaultValue(final String givenAnswer,
@@ -826,10 +837,6 @@ public class CaseSubmissionGenerationService
         return isNotEmpty(address) ? getDefaultIfNullOrEmpty(address.getAddressAsString(NEW_LINE)) : DEFAULT_STRING;
     }
 
-    private String formatDateDisplay(final LocalDate dateToFormat) {
-        return dateToFormat != null ? formatLocalDateToString(dateToFormat, DATE) : DEFAULT_STRING;
-    }
-
     private String formatDateDisplay(final LocalDate dateToFormat, Language language) {
         return dateToFormat != null ? formatLocalDateToString(dateToFormat, DATE, language) : DEFAULT_STRING;
     }
@@ -841,13 +848,35 @@ public class CaseSubmissionGenerationService
 
     private String addPrefixReason(String givenReason,
                                    Language applicationLanguage) {
+        String reason = translations.get(TranslationSection.REASON).fromLanguage(applicationLanguage);
         return isNotEmpty(givenReason)
-            ? join(SPACE_DELIMITER,
-            applicationLanguage == Language.ENGLISH ? "Reason:" : "Rheswm:", getDefaultIfNullOrEmpty(givenReason))
-            : EMPTY;
+               ? join(SPACE_DELIMITER, reason, getDefaultIfNullOrEmpty(givenReason))
+               : EMPTY;
     }
 
     private String getConfidential(Language applicationLanguage) {
-        return applicationLanguage == Language.ENGLISH ? "Confidential" : "Cyfrinachol";
+        return translations.get(TranslationSection.CONFIDENTIAL).fromLanguage(applicationLanguage);
+    }
+
+    private enum TranslationSection {
+        EXCLUDED,
+        BEYOND_PARENTAL_CONTROL,
+        NOT_RECEIVING_CARE,
+        REASON,
+        CONFIDENTIAL
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class LanguagePair {
+        private final String english;
+        private final String welsh;
+
+        public static LanguagePair of(String english, String welsh) {
+            return new LanguagePair(english, welsh);
+        }
+
+        public String fromLanguage(Language language) {
+            return Language.ENGLISH == language ? english : welsh;
+        }
     }
 }

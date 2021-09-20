@@ -112,8 +112,8 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
 
         assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
             .documents(List.of(
-                annexWith(DOCUMENT_TYPE.getLabel(), "Ynghlwm"),
-                annexWith(ANOTHER_DOCUMENT_TYPE.getLabel(), "Ynghlwm")
+                annexWith(DOCUMENT_TYPE.getLabel(Language.WELSH), "Ynghlwm"),
+                annexWith(ANOTHER_DOCUMENT_TYPE.getLabel(Language.WELSH), "Ynghlwm")
             ))
             .build());
     }
@@ -145,7 +145,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
 
         assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
             .documents(List.of(
-                annexWith(DOCUMENT_TYPE.getLabel(), "2 ynghlwm")
+                annexWith(DOCUMENT_TYPE.getLabel(Language.WELSH), "2 ynghlwm")
             ))
             .build());
     }
