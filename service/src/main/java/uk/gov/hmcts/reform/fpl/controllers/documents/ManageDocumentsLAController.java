@@ -111,7 +111,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
                     return respond(caseDetails, List.of("There are no hearings to associate a bundle with"));
                 }
-                caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
+//                caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
         }
 

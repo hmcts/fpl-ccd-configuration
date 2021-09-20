@@ -10,6 +10,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CourtBundleV2",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Court bundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundleV2",
     "ListElementCode": "courtBundleForHearing",
     "FieldType": "Collection",
     "FieldTypeParameter": "CourtBundleDetails",
