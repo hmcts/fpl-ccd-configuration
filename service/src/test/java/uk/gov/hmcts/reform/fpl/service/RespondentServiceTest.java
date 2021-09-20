@@ -10,6 +10,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,11 +59,13 @@ class RespondentServiceTest {
 
         @Test
         void shouldBuildExpectedLabelWhenManyElementsInList() {
-            List<Element<Respondent>> respondents = respondents();
+            List<Element<Respondent>> respondents = RespondentsTestHelper.respondents();
 
             String result = service.buildRespondentLabel(respondents);
 
-            assertThat(result).isEqualTo("Respondent 1 - James Daniels\nRespondent 2 - Bob Martyn\n");
+            assertThat(result).isEqualTo("Respondent 1 - James Daniels\n"
+                + "Respondent 2 - Bob Martyn\n"
+                + "Respondent 3 - Rachel Daniels\n");
         }
 
         @Test
@@ -175,7 +180,7 @@ class RespondentServiceTest {
     }
 
     @Test
-    void shouldReturnRegisteredSolicitor() {
+    void shouldReturnRespondentsWithRegisteredSolicitors() {
         RespondentSolicitor registeredSolicitor = RespondentSolicitor.builder()
             .firstName("Steven")
             .organisation(Organisation.builder().organisationID("Organisation ID").build())
@@ -186,22 +191,23 @@ class RespondentServiceTest {
             .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
             .build();
 
-        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
-                .legalRepresentation(YES.getValue())
-                .solicitor(registeredSolicitor)
-                .build()),
+        Respondent respondentWithRegisteredSolicitor = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(registeredSolicitor)
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(element(respondentWithRegisteredSolicitor),
             element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
                 .solicitor(unregisteredSolicitor)
                 .build()));
 
-        List<RespondentSolicitor> registeredSolicitors = service.getRegisteredSolicitors(respondents);
-
-        assertThat(registeredSolicitors).containsOnly(registeredSolicitor);
+        assertThat(service.getRespondentsWithRegisteredSolicitors(respondents))
+            .containsOnly(respondentWithRegisteredSolicitor);
     }
 
     @Test
-    void shouldReturnUnregisteredSolicitor() {
+    void shouldReturnRespondentsWithUnregisteredSolicitors() {
         RespondentSolicitor unregisteredSolicitor = RespondentSolicitor.builder()
             .firstName("Steven")
             .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
@@ -212,18 +218,19 @@ class RespondentServiceTest {
             .organisation(Organisation.builder().organisationID("Organisation ID").build())
             .build();
 
-        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
-                .legalRepresentation(YES.getValue())
-                .solicitor(unregisteredSolicitor)
-                .build()),
+        Respondent respondentWithUnregisteredSolicitor = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(unregisteredSolicitor)
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(element(respondentWithUnregisteredSolicitor),
             element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
                 .solicitor(registeredSolicitor)
                 .build()));
 
-        List<RespondentSolicitor> unregisteredSolicitors = service.getUnregisteredSolicitors(respondents);
-
-        assertThat(unregisteredSolicitors).containsOnly(unregisteredSolicitor);
+        assertThat(service.getRespondentsWithUnregisteredSolicitors(respondents))
+            .containsOnly(respondentWithUnregisteredSolicitor);
     }
 
     @Test
@@ -235,29 +242,11 @@ class RespondentServiceTest {
                 .legalRepresentation(NO.getValue())
                 .build()));
 
-        List<RespondentSolicitor> registeredSolicitors = service.getRegisteredSolicitors(respondents);
-        List<RespondentSolicitor> unregisteredSolicitors = service.getUnregisteredSolicitors(respondents);
+        List<Respondent> registeredSolicitors = service.getRespondentsWithRegisteredSolicitors(respondents);
+        List<Respondent> unregisteredSolicitors = service.getRespondentsWithUnregisteredSolicitors(respondents);
 
         assertThat(registeredSolicitors).isEmpty();
         assertThat(unregisteredSolicitors).isEmpty();
-    }
-
-    private List<Element<Respondent>> respondents() {
-        return wrapElements(respondent("James", "Daniels"), respondent("Bob", "Martyn"));
-    }
-
-    private Respondent respondent(String firstName, String lastName) {
-        return respondent(firstName, lastName, null);
-    }
-
-    private Respondent respondent(String firstName, String lastName, List<Element<UUID>> representedBy) {
-        return Respondent.builder()
-            .party(RespondentParty.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .build())
-            .representedBy(representedBy)
-            .build();
     }
 
     private Respondent buildRespondent(String legalRepresentation, String email) {
@@ -278,12 +267,15 @@ class RespondentServiceTest {
     }
 
     @Nested
+    @SuppressWarnings("unchecked")
     class RepresentationChanges {
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnEmptyListOfChangesWhenRespondentsNotPresent(List<Element<Respondent>> respondents) {
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(respondents, respondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) respondents,
+                (List) respondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             assertThat(changes).isEmpty();
         }
@@ -318,7 +310,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2, respondent3);
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2, respondent3);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             assertThat(changes).isEmpty();
         }
@@ -354,7 +348,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2);
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2Updated);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             assertThat(changes).isEmpty();
         }
@@ -384,7 +380,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(existingRespondent);
             List<Element<Respondent>> newRespondents = List.of(existingRespondent, newRespondent);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             ChangeOrganisationRequest expected = ChangeOrganisationRequest.builder()
                 .organisationToAdd(organisation)
@@ -429,7 +427,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2);
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2Updated);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             ChangeOrganisationRequest expected = ChangeOrganisationRequest.builder()
                 .organisationToAdd(newOrganisation)
@@ -494,7 +494,9 @@ class RespondentServiceTest {
             List<Element<Respondent>> oldRespondents = List.of(respondent1, respondent2, respondent3);
             List<Element<Respondent>> newRespondents = List.of(respondent1, respondent2Updated, respondent3Updated);
 
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(newRespondents, oldRespondents);
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges((List) newRespondents,
+                (List) oldRespondents,
+                SolicitorRole.Representing.RESPONDENT);
 
             ChangeOrganisationRequest expected1 = ChangeOrganisationRequest.builder()
                 .organisationToAdd(organisation3)

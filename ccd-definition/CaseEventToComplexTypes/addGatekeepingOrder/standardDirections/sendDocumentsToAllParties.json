@@ -1,0 +1,58 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "ListElementCode": "title",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "ListElementCode": "description",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "ListElementCode": "assignee",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "ListElementCode": "dueDateType",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES.dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES.dueDateType=\"DAYS\""
+  }
+]

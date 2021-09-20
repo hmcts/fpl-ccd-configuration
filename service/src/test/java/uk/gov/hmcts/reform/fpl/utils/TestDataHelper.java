@@ -6,14 +6,18 @@ import feign.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -51,8 +55,10 @@ import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -63,6 +69,16 @@ public class TestDataHelper {
     public static final byte[] DOCUMENT_CONTENT = {1, 2, 3, 4, 5};
 
     private TestDataHelper() {
+    }
+
+    public static Court testCourt() {
+        final String name = randomAlphanumeric(5);
+
+        return Court.builder()
+            .code(randomNumeric(3))
+            .name(name)
+            .email(String.format("%s@test.com", name))
+            .build();
     }
 
     public static Organisation testOrganisation() {
@@ -120,7 +136,11 @@ public class TestDataHelper {
     }
 
     public static Element<Child> testChild() {
-        return testChild(randomAlphanumeric(10), randomAlphanumeric(10), null, now());
+        return testChild(null);
+    }
+
+    public static Element<Child> testChild(ChildGender childGender) {
+        return testChild(randomAlphanumeric(10), randomAlphanumeric(10), childGender, now());
     }
 
     public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {
@@ -246,6 +266,14 @@ public class TestDataHelper {
             .build();
     }
 
+    public static Other testOther(String name) {
+        return Other.builder()
+            .name(name)
+            .birthPlace(randomAlphanumeric(10))
+            .address(testAddress())
+            .build();
+    }
+
     public static Judge testJudge() {
         return Judge.builder()
             .judgeTitle(MAGISTRATES)
@@ -265,6 +293,19 @@ public class TestDataHelper {
     public static DocmosisJudge testDocmosisJudge() {
         return DocmosisJudge.builder()
             .judgeTitleAndName("Brandon Stark (JP)")
+            .build();
+    }
+
+    public static HearingBooking testHearing() {
+        return testHearing(CASE_MANAGEMENT);
+    }
+
+    public static HearingBooking testHearing(HearingType type) {
+        return HearingBooking.builder()
+            .type(type)
+            .startDate(LocalDateTime.now())
+            .endDate(LocalDateTime.now().plusHours(1))
+            .venue("EXAMPLE")
             .build();
     }
 
@@ -305,7 +346,17 @@ public class TestDataHelper {
 
     @SafeVarargs
     public static DynamicList buildDynamicList(int selected, Pair<UUID, String>... listElements) {
-        List<DynamicListElement> listItems = Arrays.stream(listElements)
+        Stream<Pair<UUID, String>> pairStream = Arrays.stream(listElements);
+        return buildDynamicList(selected, pairStream);
+    }
+
+    public static DynamicList buildDynamicList(int selected, List<Pair<UUID, String>> listElements) {
+        Stream<Pair<UUID, String>> pairStream = listElements.stream();
+        return buildDynamicList(selected, pairStream);
+    }
+
+    private static DynamicList buildDynamicList(int selected, Stream<Pair<UUID, String>> pairStream) {
+        List<DynamicListElement> listItems = pairStream
             .map(listElement -> DynamicListElement.builder()
                 .code(listElement.getKey())
                 .label(listElement.getValue())
@@ -332,6 +383,20 @@ public class TestDataHelper {
 
     public static DynamicList caseRoleDynamicList(SolicitorRole role) {
         return caseRoleDynamicList(role.getCaseRoleLabel());
+    }
+
+    public static BankHolidays bankHolidays(LocalDate... days) {
+        final List<BankHolidays.Division.Event> events = Stream.of(days)
+            .map(day -> BankHolidays.Division.Event.builder()
+                .date(day)
+                .build())
+            .collect(toList());
+
+        return BankHolidays.builder()
+            .englandAndWales(BankHolidays.Division.builder()
+                .events(events)
+                .build())
+            .build();
     }
 
 }

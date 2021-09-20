@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/callback/enter-applicant")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated
 public class ApplicantController extends CallbackController {
     private static final String APPLICANTS_PROPERTY = "applicants";
     private final ApplicantService applicantService;
@@ -99,9 +100,7 @@ public class ApplicantController extends CallbackController {
     }
 
     private Optional<Organisation> getOrganisation(CaseData caseData) {
-        boolean isCaseOutsourced = caseData.getOutsourcingPolicy() != null;
-
-        if (isCaseOutsourced) {
+        if (caseData.isOutsourced()) {
             String organisationId = caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
             return organisationService.findOrganisation(organisationId);
         }

@@ -1,0 +1,10 @@
+spring:
+  profiles: docmosis-template-test
+
+integration-test:
+  docmosis:
+    tornado:
+      url: http://localhost:5433
+      key: ACCESS_KEY
+      output:
+        folder: '../build/docmosis-generated'

@@ -33,6 +33,10 @@ public class CoreCaseDataStoreLoader {
         new ObjectMapper();        // NO-OP
     }
 
+    public static CaseConverter getCaseConverterInstance() {
+        return caseConverter;
+    }
+
     public static CaseData emptyCaseData() {
         return caseConverter.convert(emptyCaseDetails());
     }

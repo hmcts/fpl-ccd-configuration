@@ -8,14 +8,13 @@ let caseId;
 
 Feature('Case maintenance after submission');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
-  await I.signIn(config.swanseaLocalAuthorityUserOne);
-});
-
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren); }
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+}
 
 Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
   await I.goToNextPage();
   await manageLegalRepresentativesEventPage.addLegalRepresentative(legalRepresentatives.barrister);
@@ -31,17 +30,22 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
-Scenario('local authority update solicitor', async ({I, caseViewPage, enterApplicantEventPage}) => {
+Scenario('local authority update its details', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+  await setupScenario(I);
   const solicitorEmail = 'solicitor@test.com';
-  await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-  await enterApplicantEventPage.enterSolicitorDetails({email: solicitorEmail});
+
+  await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
+  await I.goToNextPage();
+  await enterLocalAuthorityEventPage.enterColleague({email: solicitorEmail}, 0);
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeInTab(['Solicitor', 'Solicitor\'s email'], solicitorEmail);
+  I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], solicitorEmail);
 });
 
 Scenario('local authority provides a statements of service', async ({I, caseViewPage, addStatementOfServiceEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
   await I.addAnotherElementToCollection();
@@ -80,6 +84,7 @@ Scenario('local authority provides a statements of service', async ({I, caseView
 });
 
 Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
+  await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
   await placementEventPage.addApplication(config.testFile);

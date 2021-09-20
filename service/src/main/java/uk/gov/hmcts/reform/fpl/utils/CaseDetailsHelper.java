@@ -5,7 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.Temp;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
+import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
@@ -40,6 +45,20 @@ public class CaseDetailsHelper {
         for (String field : fields) {
             caseDetails.remove(field);
         }
+    }
+
+    public static void removeTemporaryFields(CaseDetailsMap caseDetails, List<String> fields) {
+        for (String field : fields) {
+            caseDetails.remove(field);
+        }
+    }
+
+    public static CaseDetails removeTemporaryFields(CaseDetails caseDetails, Class clazz) {
+        getFieldsListWithAnnotation(clazz, Temp.class).stream()
+            .map(Field::getName)
+            .forEach(caseDetails.getData()::remove);
+
+        return caseDetails;
     }
 
     public static boolean isInOpenState(CaseDetails caseDetails) {

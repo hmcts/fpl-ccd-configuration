@@ -8,12 +8,15 @@ import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ApproveDraftOrdersController.class)
@@ -58,6 +62,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
+            .others(Others.builder().firstOther(Other.builder().name("test1").build()).build())
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -67,6 +72,8 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).containsOnly("Add the new draft order 1");
+        assertThat(callbackResponse.getData()).doesNotContainKeys("hasOthers", "others_label", "reviewCMOShowOthers")
+            .containsEntry("othersSelector", null);
     }
 
     @Test
@@ -128,6 +135,10 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .build();
 
         CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .build())
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
@@ -136,6 +147,11 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(String.valueOf(callbackResponse.getData().get("hasOthers"))).isEqualTo("Yes");
+        assertThat(String.valueOf(callbackResponse.getData().get("reviewCMOShowOthers"))).isEqualTo("Yes");
+        assertThat(String.valueOf(callbackResponse.getData().get("others_label")))
+            .contains("Other 1: test1", "Other 2: test2");
+        assertThat(extractCaseData(callbackResponse).getOthersSelector()).isEqualTo(Selector.newSelector(2));
     }
 
     @Test

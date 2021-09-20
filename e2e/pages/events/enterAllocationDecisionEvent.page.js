@@ -1,7 +1,7 @@
 const { I } = inject();
 
 const proposalReason = '#allocationDecision_proposalReason';
-const judgeLevelRadio = '#allocationDecision_judgeLevelRadio-';
+const judgeLevelRadio = '#allocationDecision_judgeLevelRadio_';
 
 module.exports = {
 

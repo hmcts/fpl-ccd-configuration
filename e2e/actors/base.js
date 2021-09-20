@@ -41,6 +41,7 @@ module.exports = {
         await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
 
       }, signedInSelector, false, 10);
+      await this.rejectCookies();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
     } else {
@@ -70,6 +71,13 @@ module.exports = {
         this.click('Sign in');
         this.click('Yes');
       });
+    }
+  },
+
+  async rejectCookies() {
+    const rejectCookiesButton = '//button[@name="cookies" and @value="reject"]';
+    if (await this.hasSelector(rejectCookiesButton)) {
+      this.click(rejectCookiesButton);
     }
   },
 
@@ -108,7 +116,7 @@ module.exports = {
   },
 
   seeEventSubmissionConfirmation(event) {
-    this.see(`updated with event: ${event}`);
+    this.waitForText(`updated with event: ${event}`);
   },
 
   clickHyperlink(link, urlNavigatedTo) {
@@ -117,8 +125,8 @@ module.exports = {
   },
 
   async seeAvailableEvents(expectedEvents) {
-    const actualEvents = await this.grabTextFrom('//ccd-event-trigger//option')
-      .then(options => Array.isArray(options) ? options : [options])
+    const actualEvents = await this.grabTextFrom('//ccd-event-trigger//select')
+      .then(options => Array.isArray(options) ? options : options.split('\n'))
       .then(options => {
         return lodash.without(options, 'Select action');
       });
@@ -126,6 +134,14 @@ module.exports = {
     if (!lodash.isEqual(lodash.sortBy(expectedEvents), lodash.sortBy(actualEvents))) {
       throw new Error(`Events wanted: [${expectedEvents}], found: [${actualEvents}]`);
     }
+  },
+
+  async dontSeeEvent(eventName) {
+    await within('ccd-event-trigger', () => this.dontSee(eventName));
+  },
+
+  async seeEvent(eventName) {
+    await within('ccd-event-trigger', () => this.see(eventName));
   },
 
   async startEventViaHyperlink(linkLabel) {
@@ -174,9 +190,8 @@ module.exports = {
     if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
       await this.retryUntilExists(async () => {
         await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-      }, signedInSelector);
+      }, '#next-step');
     }
-    await this.waitForSelector('.ccd-dropdown');
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
@@ -239,6 +254,16 @@ module.exports = {
           this.fillField('Second', date.second);
         }
       });
+    }
+  },
+
+  async addElementToCollection(index = 0) {
+    const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
+
+    for(let i = numberOfElements; i <= index; i++){
+      this.click('Add new');
+      this.waitNumberOfVisibleElements('.collection-title', i + 1);
+      this.wait(0.5);
     }
   },
 
@@ -310,6 +335,10 @@ module.exports = {
 
       output.print(`Page change failed (${originalUrl})`);
     }
+  },
+
+  async goToPreviousPage() {
+    this.click('Previous');
   },
 
   async getActiveElementIndex() {

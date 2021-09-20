@@ -11,8 +11,8 @@ module.exports = {
       courtBundle: '#manageDocumentLA_type-COURT_BUNDLE',
     },
     relatedToHearing: {
-      yes: '#manageDocumentLA_relatedToHearing-Yes',
-      no: '#manageDocumentLA_relatedToHearing-No',
+      yes: '#manageDocumentLA_relatedToHearing_Yes',
+      no: '#manageDocumentLA_relatedToHearing_No',
     },
     subtype: {
       applicationDocuments: '#manageDocumentSubtypeListLA-APPLICATION_DOCUMENTS',

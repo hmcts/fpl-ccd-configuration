@@ -1,16 +1,12 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
-@Getter
-@EqualsAndHashCode
-@RequiredArgsConstructor
+@Data
 public class NoticeOfChangeEvent {
     private final CaseData caseData;
-    private final RespondentSolicitor oldRespondentSolicitor;
-    private final RespondentSolicitor newRespondentSolicitor;
+    private final WithSolicitor oldParty;
+    private final WithSolicitor newParty;
 }

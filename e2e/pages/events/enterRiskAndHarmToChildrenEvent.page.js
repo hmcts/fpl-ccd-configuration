@@ -4,13 +4,13 @@ module.exports = {
 
   fields: {
     physicalHarm: {
-      yes: '#risks_physicalHarm-Yes',
+      yes: '#risks_physicalHarm_Yes',
       pastHarm: locate('input').withAttr({id: 'risks_physicalHarmOccurrences-Past harm'}),
     },
-    emotionalHarmNo: '#risks_emotionalHarm-No',
-    sexualAbuseNo: '#risks_sexualAbuse-No',
+    emotionalHarmNo: '#risks_emotionalHarm_No',
+    sexualAbuseNo: '#risks_sexualAbuse_No',
     neglect: {
-      yes: '#risks_neglect-Yes',
+      yes: '#risks_neglect_Yes',
       pastHarm: locate('input').withAttr({id: 'risks_neglectOccurrences-Past harm'}),
       futureHarm: locate('input').withAttr({id: 'risks_neglectOccurrences-Future risk of harm'}),
     },

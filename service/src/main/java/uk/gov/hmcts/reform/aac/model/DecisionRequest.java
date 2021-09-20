@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.aac.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-@Getter
+@Data
 @Builder
 @Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -104,18 +104,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isSummaryTabEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("summary-tab-update"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabFirstCronRunEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -140,12 +128,22 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsNewDocumentUploadNotificationEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isFurtherEvidenceUploadNotificationEnabled()).isEqualTo(toggleState);
+        assertThat(service.isNewDocumentUploadNotificationEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("further-evidence-upload-notification"),
+            eq("document-upload-new-notification"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    void shouldMakeCorrectCallForIsLanguageRequirementsEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isLanguageRequirementsEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("language-requirements"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
@@ -158,6 +156,18 @@ class FeatureToggleServiceTest {
         assertThat(service.isFurtherEvidenceDocumentTabEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("further-evidence-document-tab"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsApplicantAdditionalContactsEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isApplicantAdditionalContactsEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("applicant-additional-contacts"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

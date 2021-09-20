@@ -1,50 +1,69 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
+import uk.gov.hmcts.reform.fpl.service.hearing.HearingService;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class ApproverBlockPrePopulatorTest {
 
-    private static final Judge ALLOCATED_JUDGE = mock(Judge.class);
-    private static final String FORMATTED_JUDGE = "Case assigned to: Formatted Judge Name";
-    private final ApproverBlockPrePopulator underTest = new ApproverBlockPrePopulator();
+    private static final DynamicList SELECTED_HEARING = mock(DynamicList.class);
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .manageOrdersEventData(ManageOrdersEventData.builder()
+            .manageOrdersApprovedAtHearingList(SELECTED_HEARING)
+            .build())
+        .build();
+    private static final Optional<Element<HearingBooking>> HEARING = Optional.empty();
+    private static final JudgeAndLegalAdvisor JUDGE_AND_LEGAL_ADVISOR = mock(
+        JudgeAndLegalAdvisor.class);
+
+    private final HearingService hearingService = mock(HearingService.class);
+    private final JudgeAndLegalAdvisorHelper judgeAndLegalAdvisorHelper = mock(JudgeAndLegalAdvisorHelper.class);
+
+    private final ApproverBlockPrePopulator underTest = new ApproverBlockPrePopulator(
+        hearingService, judgeAndLegalAdvisorHelper);
 
     @Test
-    public void accept() {
+    void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.APPROVER);
     }
 
     @Test
-    public void prePopulateWithAllocatedJudge() {
-        CaseData caseData = CaseData.builder()
-            .allocatedJudge(ALLOCATED_JUDGE)
-            .build();
+    void prePopulateWithNoHearing() {
 
-        try (MockedStatic<JudgeAndLegalAdvisorHelper> helper = mockStatic(JudgeAndLegalAdvisorHelper.class)) {
-            helper.when(() -> JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel(ALLOCATED_JUDGE))
-                .thenReturn(FORMATTED_JUDGE);
+        when(hearingService.findHearing(CASE_DATA, SELECTED_HEARING)).thenReturn(HEARING);
+        when(judgeAndLegalAdvisorHelper.buildForHearing(CASE_DATA,HEARING)).thenReturn(Optional.empty());
 
-            assertThat(underTest.prePopulate(caseData)).isEqualTo(
-                Map.of("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
-                    .allocatedJudgeLabel(FORMATTED_JUDGE)
-                    .build())
-            );
-        }
+        Map<String, Object> actual = underTest.prePopulate(CASE_DATA);
+
+        assertThat(actual).isEqualTo(Map.of());
     }
 
     @Test
-    void prePopulateWithNoAllocatedJudge() {
-        assertThat(underTest.prePopulate(CaseData.builder().build())).isEqualTo(Map.of());
+    void prePopulateWithSelectedHearing() {
+
+        when(hearingService.findHearing(CASE_DATA, SELECTED_HEARING)).thenReturn(HEARING);
+        when(judgeAndLegalAdvisorHelper.buildForHearing(CASE_DATA,HEARING)).thenReturn(Optional.of(
+            JUDGE_AND_LEGAL_ADVISOR));
+
+        Map<String, Object> actual = underTest.prePopulate(CASE_DATA);
+
+        assertThat(actual).isEqualTo(Map.of(
+            "judgeAndLegalAdvisor", JUDGE_AND_LEGAL_ADVISOR
+        ));
     }
+
 }

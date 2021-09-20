@@ -42,7 +42,7 @@ Additional note:
 You can skip some of the files by using -e option on the import-ccd-definitions, i.e.
 
 ```bash
-$ ./bin/import-ccd-definition.sh -e 'UserProfile.json,*-nonprod.json
+$ ./bin/import-ccd-definition.sh -e 'UserProfile.json,*-nonprod.json'
 ```
 
 The command above will skip UserProfile.json and all files with -nonprod suffix (from the folders).
@@ -87,6 +87,12 @@ To enable retry upon test failure please set `TEST_RETRIES` environment variable
 TEST_RETRIES=2 yarn test
 ```
 
+To disable chrome web security
+
+```$bash
+DISABLE_SECURITY=true yarn test
+```
+
 ## Creating sample case via E2E tests
 
 E2E tests can be used to create sample case with mandatory sections only. To do so please run the following command:
@@ -99,14 +105,14 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 
 ## Running E2E against remote environment
 ```$bash
-URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
+URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" yarn test
 ```
 If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD
 
 ## Running E2E against PR enviroment
 
 ```$bash
-PARALLEL_CHUNKS=1 SHOW_BROWSER_WINDOW=TRUE URL="https://xui-fpl-case-service-pr-<PR>.service.core-compute-preview.internal" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-pr-<PR>.service.core-compute-preview.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
+PR=<PR_NUMBER>; PARALLEL_CHUNKS=1 SHOW_BROWSER_WINDOW=TRUE URL=http://xui-fpl-case-service-pr-$PR.service.core-compute-preview.internal IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL=http://fpl-case-service-pr-$PR.service.core-compute-preview.internal yarn test
 ```
 
 ## Running api tests

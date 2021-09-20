@@ -8,16 +8,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -26,12 +31,14 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -55,6 +62,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ApproveDraftOrdersController.class)
@@ -94,7 +103,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
             .reviewCMODecision(reviewDecision)
-            .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -121,6 +129,13 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
+            .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
+            .others(Others.builder().firstOther(
+                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
+                .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
+                    .address(Address.builder().postcode("SW2").build()).build())).build())
+            .othersSelector(Selector.newSelector(2)).notifyApplicationsToAllOthers(YesNo.YES.getValue())
+            .sendOrderToAllOthers(YesNo.YES.getValue())
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
@@ -128,18 +143,35 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .ordersToBeSent(List.of(element(HearingOrder.builder().build()))) // should be reset
             .build();
 
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        HearingOrder expectedSealedCmo = cmo.toBuilder()
-            .order(sealedDocument)
-            .lastUploadedOrder(order)
-            .dateIssued(LocalDate.now())
-            .status(APPROVED)
-            .build();
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        CaseData responseData = extractCaseData(response);
 
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
-        assertThat(responseData.getSealedCMOs()).containsOnly(element(cmoElement.getId(), expectedSealedCmo));
-        assertThat(responseData.getOrdersToBeSent()).containsOnly(element(cmoElement.getId(), expectedSealedCmo));
+
+        assertThat(responseData.getSealedCMOs().size()).isEqualTo(1);
+        Element<HearingOrder> sealedCMO = responseData.getSealedCMOs().get(0);
+        assertThat(sealedCMO.getId()).isEqualTo(cmoElement.getId());
+        assertThat(sealedCMO.getValue())
+            .extracting("order", "lastUploadedOrder", "dateIssued", "status")
+            .contains(sealedDocument, order, LocalDate.now(), APPROVED);
+
+        assertThat(responseData.getOrdersToBeSent().size()).isEqualTo(1);
+        Element<HearingOrder> orderToBeSent = responseData.getOrdersToBeSent().get(0);
+        assertThat(orderToBeSent.getId()).isEqualTo(cmoElement.getId());
+        assertThat(orderToBeSent.getValue())
+            .extracting("order", "lastUploadedOrder", "dateIssued", "status")
+            .contains(sealedDocument, order, LocalDate.now(), APPROVED);
+
+        assertThat(sealedCMO.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
+        assertThat(unwrapElements(sealedCMO.getValue().getOthers()))
+            .contains(caseData.getOthers().getFirstOther(),
+                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+
+        assertThat(orderToBeSent.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
+        assertThat(unwrapElements(orderToBeSent.getValue().getOthers()))
+            .contains(caseData.getOthers().getFirstOther(),
+                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+        assertTemporaryFieldsAreRemovedFromCaseData(response.getData());
     }
 
     @ParameterizedTest
@@ -227,6 +259,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
         Element<HearingOrder> expectedOrderToReturn = element(draftOrderId,
             draftOrder.toBuilder().status(APPROVED).order(sealedDocument)
+                .others(null).othersNotified("")
                 .lastUploadedOrder(SEND_TO_ALL_PARTIES.equals(reviewOutcome) ? order : convertedDocument).build());
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -269,6 +302,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             .lastUploadedOrder(order)
             .dateIssued(LocalDate.now())
             .status(APPROVED)
+            .others(null)
+            .othersNotified("")
             .build();
 
         HearingOrder expectedRejectedOrder = draftOrder.toBuilder()
@@ -301,6 +336,17 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         assertThat(responseData.getSealedCMOs()).isEmpty();
         assertThat(responseData.getOrderCollection()).isEmpty();
         assertThat(responseData.getOrdersToBeSent()).isNull();
+    }
+
+    private void assertTemporaryFieldsAreRemovedFromCaseData(Map<String, Object> responseData) {
+        assertThat(responseData).doesNotContainKeys("numDraftCMOs", "cmoToReviewList", "draftCMOExists",
+            "draftBlankOrdersCount", "cmoDraftOrderTitle", "draftOrder1Title", "draftOrder2Title",
+            "draftOrder3Title", "draftOrder4Title", "draftOrder5Title", "draftOrder6Title", "draftOrder7Title",
+            "draftOrder8Title", "draftOrder9Title", "draftOrder10Title", "cmoDraftOrderDocument",
+            "draftOrder1Document", "draftOrder2Document", "draftOrder3Document", "draftOrder4Document",
+            "draftOrder5Document", "draftOrder6Document", "draftOrder7Document", "draftOrder8Document",
+            "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles", "draftOrdersTitlesInBundle",
+            "others_label", "hasOthers", "sendOrderToAllOthers", "othersSelector", "reviewCMOShowOthers");
     }
 
     private static Stream<Arguments> populateCaseDataWithState() {

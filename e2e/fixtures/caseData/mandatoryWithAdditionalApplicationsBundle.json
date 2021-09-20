@@ -134,7 +134,11 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "submissionConsent": [
       "agree"
     ],
@@ -142,34 +146,23 @@
       "proposal": "District judge"
     },
     "displayAmountToPay": "Yes",
-    "documents_socialWorkOther": [],
-    "documents_checklist_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
+    "applicationDocuments": [
+      {
+        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedBy": null,
+          "documentName": null,
+          "documentType": "THRESHOLD",
+          "includedInSWET": null,
+          "dateTimeUploaded": null
+        }
+      }
+    ],
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -188,9 +181,9 @@
             "type": "WITHOUT_NOTICE",
             "author": "HMCTS",
             "document": {
-              "document_url": "${DM_STORE_URL}/documents/29dbd747-f70d-4ef2-ac52-86520e0d3a1a",
+              "document_url": "${TEST_DOCUMENT_URL}",
               "document_filename": "Test.txt",
-              "document_binary_url": "${DM_STORE_URL}/documents/9e5d0a2c-8884-46ba-a147-dd0ca6b9e684/binary"
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
             },
             "uploadedDateTime": "25 March 2021, 3:16pm",
             "supplementsBundle": [],
@@ -206,9 +199,9 @@
             "id": "85bb3a49-e178-4a3a-ad73-165005d8c4bf",
             "author": "HMCTS",
             "document": {
-              "document_url": "${DM_STORE_URL}/documents/a6e375ca-c38d-4f4a-88b8-63a5ba428f96",
+              "document_url": "${TEST_DOCUMENT_URL}",
               "document_filename": "Test.txt",
-              "document_binary_url": "${DM_STORE_URL}/documents/a928c836-5d25-41d7-a6bd-d973f2c326b1/binary"
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
             },
             "applicationType": "C100_CHILD_ARRANGEMENTS",
             "uploadedDateTime": "25 March 2021, 3:16pm",

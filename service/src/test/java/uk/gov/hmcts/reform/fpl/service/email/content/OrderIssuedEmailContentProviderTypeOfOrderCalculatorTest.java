@@ -61,6 +61,20 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
     }
 
     @Test
+    void typeOfOrderForOtherGeneratedOrder() {
+
+        CaseData caseData = CaseData.builder()
+            .orderCollection(wrapElements(newGeneratedOrder1, legacyOrder1))
+            .build();
+        when(sealedOrderHistoryService.lastGeneratedOrder(caseData)).thenReturn(newGeneratedOrder1);
+        when(newGeneratedOrder1.getType()).thenReturn("other");
+
+        String actual = underTest.getTypeOfOrder(caseData, IssuedOrderType.GENERATED_ORDER);
+
+        assertThat(actual).isEqualTo("order");
+    }
+
+    @Test
     void typeOfOrderForOtherIssueTypeNoticeOfPlacement() {
 
         String actual = underTest.getTypeOfOrder(null, NOTICE_OF_PLACEMENT_ORDER);

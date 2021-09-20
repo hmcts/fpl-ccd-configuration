@@ -11,9 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
 
@@ -24,13 +25,15 @@ import static java.lang.String.format;
 public class C32CareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
     private static final GeneratedOrderType TYPE = GeneratedOrderType.CARE_ORDER;
+    private static final String ORDER_HEADER = "Care order restrictions";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
-    private final ChildrenService childrenService;
+    private final OrderMessageGenerator orderMessageGenerator;
+    private final ChildrenSmartSelector childrenSmartSelector;
 
     @Override
     public Order accept() {
-        return Order.C32_CARE_ORDER;
+        return Order.C32A_CARE_ORDER;
     }
 
     @Override
@@ -40,11 +43,13 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
         String localAuthorityCode = caseData.getCaseLocalAuthority();
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
 
         return C32CareOrderDocmosisParameters.builder()
-            .orderTitle(Order.C32_CARE_ORDER.getTitle())
+            .orderTitle(Order.C32A_CARE_ORDER.getTitle())
             .orderType(TYPE)
+            .orderHeader(ORDER_HEADER)
+            .orderMessage(orderMessageGenerator.getCareOrderRestrictions(caseData))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName))
             .localAuthorityName(localAuthorityName)
@@ -53,7 +58,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String orderDetails(int numOfChildren, String caseLocalAuthority) {

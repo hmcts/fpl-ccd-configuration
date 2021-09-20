@@ -1,101 +1,152 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
+import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
-
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@SpringBootTest(classes = {
-    AdditionalApplicationsUploadedEventHandler.class,
-    NotificationService.class,
-    ObjectMapper.class
+@ContextConfiguration(classes = {
+    AdditionalApplicationsUploadedEventHandler.class, EmailNotificationHelper.class,
+    AdditionalApplicationsUploadedEmailContentProvider.class, CaseUrlService.class,
+    RepresentativeNotificationService.class
 })
+@MockBeans({
+    @MockBean(RequestData.class), @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
+    @MockBean(OtherRecipientsInbox.class), @MockBean(Time.class)
+})
+class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
+    private static final long CASE_ID = 12345L;
+    private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
+    private static final String CHILD_LAST_NAME = "Jones";
+    private static final String RESPONDENT_LAST_NAME = "Smith";
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2099, 2, 20, 20, 20, 0);
 
-public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
-    private final String respondentLastName = "Smith";
-    private final String calloutText = "Smith, SACCCCCCCC5676576567";
-    private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#Other%20applications";
-    private final List<String> applicationTypes = Arrays.asList("C2 (With notice)",
-        "C13A - Special guardianship order");
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .id(CASE_ID)
+        .caseLocalAuthority(LOCAL_AUTHORITY_NAME)
+        .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+        .hearingDetails(wrapElements(HearingBooking.builder()
+            .startDate(HEARING_DATE)
+            .type(HearingType.CASE_MANAGEMENT)
+            .build()))
+        .respondents1(wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
+            .build()))
+        .children1(wrapElements(Child.builder()
+            .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
+            .build()))
+        .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(C2DocumentBundle.builder().type(WITH_NOTICE).supplementsBundle(List.of()).build())
+            .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                .applicationType(C1_WITH_SUPPLEMENT)
+                .supplementsBundle(List.of())
+                .build())
+            .build()))
+        .build();
+
+    private static final OrderApplicant APPLICANT = OrderApplicant.builder()
+        .type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build();
 
     @Autowired
     private AdditionalApplicationsUploadedEventHandler underTest;
 
-    @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
+    @Autowired
     private RequestData requestData;
 
-    @MockBean
-    private AdditionalApplicationsUploadedEmailContentProvider additionalApplicationsUploadedEmailContentProvider;
+    @Autowired
+    private Time time;
+
+    @BeforeEach
+    void setup() {
+        given(time.now()).willReturn(HEARING_DATE.minusDays(1));
+    }
 
     @Test
     void notifyAdmin() {
-        CaseData caseData = caseData();
+        given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoleNames()).build());
-
-        given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
-            .willReturn(
-                AdditionalApplicationsUploadedTemplate.builder()
-                    .callout(calloutText)
-                    .respondentLastName(respondentLastName)
-                    .caseUrl(caseUrl)
-                    .applicationTypes(applicationTypes)
-                    .build()
-            );
-
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
 
         assertThat(response())
-            .hasSubject("New application uploaded, " + respondentLastName)
+            .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
-                .callout(calloutText)
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
                 .line()
                 .h1("Applications")
                 .line()
                 .line()
                 .list("C2 (With notice)")
-                .list("C13A - Special guardianship order")
+                .list("C1 - With supplement")
                 .line()
                 .h1("Next steps")
                 .line("You need to:")
                 .list("check the applications",
                     "check payment has been taken",
-                    "send a message to the judge or legal adviser",
-                    "send a copy to relevant parties")
+                    "send a message to the judge or legal adviser")
                 .line()
-                .end("To review the application, sign in to " + caseUrl)
+                .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
             );
     }
 
+    @Test
+    void notifyParties() {
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
+
+        assertThat(response())
+            .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
+            .hasBody(emailContent()
+                .line("New applications have been made for the case:")
+                .line()
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
+                .line()
+                .h1("Applications")
+                .line()
+                .line()
+                .list("C2 (With notice)")
+                .list("C1 - With supplement")
+                .line()
+                .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
+            );
+    }
 }

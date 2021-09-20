@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
@@ -37,14 +38,14 @@ class RespondentStatementsTransformerTest {
     void shouldReturnRespondentStatementsForHmctsViewAndSortByUploadedDateTime() {
         Element<SupportingEvidenceBundle> respondent1Document1 = buildFurtherEvidenceBundle(
             "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS,
-            LocalDateTime.of(2021, 5, 13, 20, 55, 0));
+            LocalDateTime.of(2021, 5, 13, 20, 55, 0), null, null);
 
         Element<SupportingEvidenceBundle> respondent1Document2 = buildFurtherEvidenceBundle(
             "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS,
-            LocalDateTime.of(2021, 5, 13, 22, 13, 0));
+            LocalDateTime.of(2021, 5, 13, 22, 13, 0), null, null);
 
         Element<SupportingEvidenceBundle> respondent1Document3WithoutDate = buildFurtherEvidenceBundle(
-            "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS, null);
+            "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS, null, null, null);
 
         CaseData caseData = CaseData.builder()
             .respondents1(List.of(RESPONDENT1, RESPONDENT2))
@@ -62,11 +63,15 @@ class RespondentStatementsTransformerTest {
             buildDocumentView(respondent1Document1.getValue()),
             buildDocumentView(respondent1Document3WithoutDate.getValue()));
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.HMCTS);
 
         assertThat(documentBundleView).isEqualTo(List.of(
-            DocumentBundleView.builder().name("Respondent 1 statements").documents(expectedDocuments).build()));
+            DocumentBundleView.builder()
+                .name("Dave Miller statements")
+                .documents(expectedDocuments)
+                .build())
+        );
     }
 
     @Test
@@ -86,11 +91,15 @@ class RespondentStatementsTransformerTest {
             buildDocumentView(LA_CONFIDENTIAL_DOCUMENT.getValue()),
             buildDocumentView(LA_NON_CONFIDENTIAL_DOCUMENT.getValue()));
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.LA);
 
         assertThat(documentBundleView).isEqualTo(List.of(
-            DocumentBundleView.builder().name("Respondent 2 statements").documents(expectedDocuments).build()));
+            DocumentBundleView.builder()
+                .name("Will Smith statements")
+                .documents(expectedDocuments)
+                .build())
+        );
     }
 
     @Test
@@ -105,21 +114,21 @@ class RespondentStatementsTransformerTest {
                     .build(),
                 RespondentStatement.builder()
                     .respondentId(RESPONDENT2.getId())
-                    .respondentName(RESPONDENT2.getValue().getParty().getFullName())
+                    .respondentName("Will Smith")
                     .supportingEvidenceBundle(List.of(ADMIN_NON_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
                     .build()))
             .build();
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.NONCONFIDENTIAL);
 
         DocumentBundleView respondent1Bundle = DocumentBundleView.builder()
-            .name("Respondent 1 statements")
+            .name(RESPONDENT1.getValue().getParty().getFullName() + " statements")
             .documents(List.of(buildDocumentView(LA_NON_CONFIDENTIAL_DOCUMENT.getValue())))
             .build();
 
         DocumentBundleView respondent2Bundle = DocumentBundleView.builder()
-            .name("Respondent 2 statements")
+            .name(RESPONDENT2.getValue().getParty().getFullName() + " statements")
             .documents(List.of(buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue())))
             .build();
 
@@ -133,12 +142,12 @@ class RespondentStatementsTransformerTest {
             .respondentStatements(wrapElements(
                 RespondentStatement.builder()
                     .respondentId(RESPONDENT1.getId())
-                    .respondentName(RESPONDENT1.getValue().getParty().getFullName())
+                    .respondentName("Dave Miller")
                     .supportingEvidenceBundle(List.of(ADMIN_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
                     .build()))
             .build();
 
-        List<DocumentBundleView> documentBundleView = underTest.getRespondentStatementsBundle(
+        List<DocumentContainerView> documentBundleView = underTest.getRespondentStatementsBundle(
             caseData, DocumentViewType.NONCONFIDENTIAL);
 
         assertThat(documentBundleView).isEqualTo(List.of());

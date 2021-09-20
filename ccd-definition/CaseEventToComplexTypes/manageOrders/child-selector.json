@@ -7,7 +7,7 @@
     "ListElementCode": "optionCount",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "FieldShowCondition": "pageShow=\"DO_NOT_SHOW\""
   },
   {

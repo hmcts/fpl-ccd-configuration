@@ -17,6 +17,17 @@ java:
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
     TESTING_SUPPORT_ENABLED: true
+    C2_WITH_NOTICE: GAOnNotice
+    ESO_EXTENSION: EduSupervisionChange
+    WARRANT_TO_ASSIST_PERSON_KEYWORD: WarrantEPO
+    CHILD_ASSESSMENT_KEYWORD: ChildAssess
+    CONTACT_WITH_CHILD_IN_CARE_KEYWORD: ContactChild
+    CHANGE_SURNAME_KEYWORD: CareChildChange
+    SPECIAL_GUARDIANSHIP_KEYWORD: SpecialGuardian
+    APPOINTMENT_OF_GUARDIAN_KEYWORD: Guardians
+    PARENTAL_RESPONSIBILITY_FATHER_KEYWORD: ParentalResponsibChg
+    PARENTAL_RESPONSIBILITY_FEMALE_KEYWORD: ParentalResponsibility
+    DECLARATION_OF_PARENTAGE: Private
   keyVaults:
     fpl:
       secrets:
@@ -37,10 +48,13 @@ java:
         - local-authority-fallback-inbox
         - system-update-user-username
         - system-update-user-password
+        - translation-notification-sender
+        - translation-notification-recipient
         - robotics-notification-sender
         - robotics-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
+        - ctsc-team-lead-inbox
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
@@ -57,7 +71,7 @@ xui-webapp:
     imagePullPolicy: Always
     replicas: 2
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:prod-33b53c93
+    image: hmctspublic.azurecr.io/xui/webapp:prod-3871912-20210810135834
     ingressHost: xui-${SERVICE_FQDN}
     readinessPeriod: 5
     livenessPeriod: 3
@@ -69,6 +83,7 @@ xui-webapp:
       HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
       SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
+      SERVICES_DOCUMENTS_API_V2: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://aac-${SERVICE_FQDN}
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
@@ -131,12 +146,17 @@ ccd:
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
-      memoryRequests: '1524Mi'
-      cpuRequests: '900m'
+      devmemoryRequests: '1524Mi'
+      devmemoryLimits: '2048Mi'
+      devcpuRequests: '900m'
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
-        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
+        IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
+        IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
+        IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
+        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: fpl_case_service,aac_manage_case_assignment
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         ELASTIC_SEARCH_ENABLED: true
@@ -147,6 +167,8 @@ ccd:
         HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '30'
         DATA_STORE_DB_MAX_POOL_SIZE: 80
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
+        CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
+        CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
@@ -160,6 +182,7 @@ ccd:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
         DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,xui_webapp,aac_manage_case_assignment
+        DEFINITION_STORE_TX_TIMEOUT_DEFAULT: 60
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master

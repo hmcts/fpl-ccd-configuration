@@ -12,8 +12,8 @@ module.exports = {
     otherSupplements: supplementsFragment.supplements(0, 'temporaryOtherApplicationsBundle_supplementsBundle'),
     c2AdditionalOrdersRequested:'#temporaryC2Document_c2AdditionalOrdersRequested-',
     usePbaPayment: {
-      yes: '#temporaryPbaPayment_usePbaPayment-Yes',
-      no: '#temporaryPbaPayment_usePbaPayment-No',
+      yes: '#temporaryPbaPayment_usePbaPayment_Yes',
+      no: '#temporaryPbaPayment_usePbaPayment_No',
     },
     pbaNumber: '#temporaryPbaPayment_pbaNumber',
     clientCode: '#temporaryPbaPayment_clientCode',
@@ -22,15 +22,44 @@ module.exports = {
       c2TypePrefix: '#c2Type-',
       additionalApplicationTypePrefix: '#additionalApplicationType-',
     },
+    applicantsList: '#applicantsList',
+    otherApplicant: '#otherApplicant',
     otherApplicationPrefix: '#temporaryOtherApplicationsBundle_applicationType',
     uploadOtherApplication: '#temporaryOtherApplicationsBundle_document',
     otherSecureAccommodationTypePrefix: '#temporaryOtherApplicationsBundle_supplementsBundle_0_secureAccommodationType-',
     otherParentalResponsibilityTypePrefix: '#temporaryOtherApplicationsBundle_parentalResponsibilityType-',
     c2ParentalResponsibilityTypePrefix: '#temporaryC2Document_parentalResponsibilityType-',
+    allOthers: {
+      group: '#notifyApplicationsToAllOthers',
+      options: {
+        all: 'Yes',
+        select: 'No',
+      },
+    },
+    personSelector: {
+      selector: index => `#personSelector_option${index}-SELECTED`,
+    },
   },
 
   selectAdditionalApplicationType(type) {
     I.click(this.fields.applicationType.additionalApplicationTypePrefix + type);
+  },
+
+  selectPeople(option, indexes = []) {
+    I.click(`${this.fields.allOthers.group}_${option}`);
+
+    indexes.forEach((selectorIndex) => {
+      I.checkOption(this.fields.personSelector.selector(selectorIndex));
+    });
+  },
+
+  selectApplicantList(applicantName) {
+    I.waitForElement(this.fields.applicantsList);
+    I.selectOption(this.fields.applicantsList, applicantName);
+  },
+
+  enterOtherApplicantName(applicantName) {
+    I.fillField(this.fields.otherApplicant,applicantName);
   },
 
   selectC2Type(type) {

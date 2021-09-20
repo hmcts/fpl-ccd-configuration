@@ -4,12 +4,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -33,12 +38,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -95,6 +104,17 @@ class CaseDataTest {
     }
 
     @Test
+    void shouldGetAllOthersWhenFirstOtherIsEmpty() {
+        Other other1 = Other.builder().build();
+        Other other2 = otherWithName("Sam");
+
+        CaseData caseData = caseData(Others.builder().firstOther(other1).additionalOthers(wrapElements(other2)));
+
+        assertThat(caseData.getAllOthers()).hasSize(1);
+        assertThat(caseData.getAllOthers().get(0).getValue()).isEqualTo(other2);
+    }
+
+    @Test
     void shouldGetEmptyListOfOthersWhenOthersIsNull() {
         CaseData caseData = CaseData.builder().build();
 
@@ -143,9 +163,9 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         Other other2 = otherWithName("Sam");
         CaseData caseData = CaseData.builder().others(Others.builder()
-            .firstOther(other1)
-            .additionalOthers(wrapElements(other2))
-            .build())
+                .firstOther(other1)
+                .additionalOthers(wrapElements(other2))
+                .build())
             .build();
 
         assertThat(caseData.findOther(1)).contains(other2);
@@ -165,29 +185,6 @@ class CaseDataTest {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
         assertThat(caseData.findRespondent(1)).isEmpty();
-    }
-
-    @Test
-    void shouldFindExistingApplicant() {
-        Applicant applicant = Applicant.builder().build();
-        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
-
-        assertThat(caseData.findApplicant(0)).contains(applicant);
-    }
-
-    @Test
-    void shouldNotFindNonExistingApplicant() {
-        Applicant applicant = Applicant.builder().build();
-        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
-
-        assertThat(caseData.findApplicant(1)).isEmpty();
-    }
-
-    @Test
-    void shouldNotFindApplicantWhenNull() {
-        CaseData caseData = CaseData.builder().build();
-
-        assertThat(caseData.findApplicant(0)).isEmpty();
     }
 
     @Test
@@ -413,6 +410,39 @@ class CaseDataTest {
         boolean hearingInPast = caseData.isHearingDateInPast();
 
         assertThat(hearingInPast).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenWelshRequestedNotSelected() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement(null)
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenWelshRequestedSetToNo() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement("No")
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenWelshRequestedSetToYes() {
+        CaseData caseData = CaseData.builder()
+            .languageRequirement("Yes")
+            .build();
+
+        boolean languageRequirement = caseData.isWelshLanguageRequested();
+
+        assertThat(languageRequirement).isTrue();
     }
 
     @Test
@@ -1571,6 +1601,37 @@ class CaseDataTest {
         }
 
         @Test
+        void shouldReturnRepresentativesElementsByServedPreference() {
+            UUID firstID = randomUUID();
+            UUID secondID = randomUUID();
+            List<Element<Representative>> expectedReps = List.of(element(firstID, emailRepOne),
+                element(secondID, emailRepTwo));
+
+            CaseData caseData = CaseData.builder()
+                .representatives(List.of(element(firstID, emailRepOne), element(secondID, emailRepTwo),
+                    element(UUID.randomUUID(), digitalRepOne)))
+                .build();
+
+            List<Element<Representative>> digitalRepresentatives
+                = caseData.getRepresentativesElementsByServedPreference(EMAIL);
+
+            assertThat(digitalRepresentatives).isEqualTo(expectedReps);
+        }
+
+        @Test
+        void shouldReturnEmptyListIfNoRepresentativesByPreference() {
+            CaseData caseData = CaseData.builder()
+                .representatives(List.of(element(UUID.randomUUID(), emailRepOne),
+                    element(UUID.randomUUID(), emailRepTwo)))
+                .build();
+
+            List<Element<Representative>> digitalRepresentatives
+                = caseData.getRepresentativesElementsByServedPreference(DIGITAL_SERVICE);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
         void shouldReturnHearingOrdersBundlesForApproval() {
             Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
                 HearingOrdersBundle.builder()
@@ -1850,6 +1911,53 @@ class CaseDataTest {
     }
 
     @Nested
+    class HasRespondentsOrOthers {
+        Element<Respondent> respondent = element(Respondent.builder()
+            .party(RespondentParty.builder().firstName("David").lastName("Jones").build()).build());
+        Other firstOther = Other.builder().name("John Smith").build();
+
+        @Test
+        void shouldReturnTrueWhenRespondentsAndOthersExist() {
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(respondent))
+                .others(Others.builder().firstOther(firstOther).build())
+                .build();
+
+            assertTrue(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnTrueWhenRespondentsExist() {
+            CaseData caseData = CaseData.builder().respondents1(List.of(respondent)).build();
+
+            assertTrue(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnTrueWhenOthersExist() {
+            CaseData caseData = CaseData.builder()
+                .others(Others.builder().firstOther(firstOther).build())
+                .build();
+
+            assertTrue(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnFalseWhenRespondentsAndOthersDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertFalse(caseData.hasRespondentsOrOthers());
+        }
+
+        @Test
+        void shouldReturnFalseWhenFirstOtherDoesNotExist() {
+            CaseData caseData = CaseData.builder().others(Others.builder().build()).build();
+
+            assertFalse(caseData.hasRespondentsOrOthers());
+        }
+    }
+
+    @Nested
     class FindRespondent {
         UUID elementId = randomUUID();
 
@@ -1880,6 +1988,81 @@ class CaseDataTest {
         }
     }
 
+    @Test
+    void shouldReturnTrueIfCaseHasProperOutsourcingPolicy() {
+        CaseData caseData = CaseData.builder()
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationID("1").build())
+                .build())
+            .build();
+
+        assertThat(caseData.isOutsourced()).isTrue();
+    }
+
+    @ParameterizedTest
+    @MethodSource("incompleteOutsourcingPolicy")
+    @NullSource
+    void shouldReturnFalseIfCaseHasIncompleteOutsourcingPolicy(OrganisationPolicy outsourcingPolicy) {
+        CaseData caseData = CaseData.builder()
+            .outsourcingPolicy(outsourcingPolicy)
+            .build();
+
+        assertThat(caseData.isOutsourced()).isFalse();
+    }
+
+    @Nested
+    class DesignatedLocalAuthority {
+
+        @Test
+        void shouldReturnDesignatedLocalAuthority() {
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .name("LA1")
+                .designated("Yes")
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .name("LA1")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            assertThat(caseData.getDesignatedLocalAuthority()).isEqualTo(localAuthority1);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNonOfLocalAuthoritiesIsDesignated() {
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .name("LA1")
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .name("LA1")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .build();
+
+            assertThatThrownBy(caseData::getDesignatedLocalAuthority).isInstanceOf(LocalAuthorityNotFound.class);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNullWhenNoLocalAuthorities(List<Element<LocalAuthority>> localAuthorities) {
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(localAuthorities)
+                .build();
+
+            assertThat(caseData.getDesignatedLocalAuthority()).isNull();
+        }
+
+    }
+
     private HearingOrder buildHearingOrder(HearingOrderType type) {
         return HearingOrder.builder().type(type).build();
     }
@@ -1893,5 +2076,17 @@ class CaseDataTest {
             .id(randomUUID())
             .uploadedDateTime(formattedDateTime)
             .build());
+    }
+
+    private static Stream<OrganisationPolicy> incompleteOutsourcingPolicy() {
+        return Stream.of(
+            OrganisationPolicy.builder().build(),
+            OrganisationPolicy.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder().build())
+                .build(),
+            OrganisationPolicy.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("").build())
+                .build()
+        );
     }
 }

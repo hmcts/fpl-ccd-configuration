@@ -74,9 +74,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "organisationDetailsLink",
+    "ID": "localAuthorityDetailsLink",
     "FieldType": "Label",
-    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterApplicant)",
+    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterLocalAuthority)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -130,7 +130,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftSDOLinkOrdersTab",
     "FieldType": "Label",
-    "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)\n\nThis is also known as the initial or standard directions order",
+    "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/addGatekeepingOrder)\n\nThis is also known as the initial or standard directions order",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -139,7 +139,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftSDOLinkDraftOrdersTab",
     "FieldType": "Label",
-    "Label": "[Send or replace this order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)",
+    "Label": "[Send or replace this order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/addGatekeepingOrder)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -165,7 +165,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "createOrderLink",
     "FieldType": "Label",
-    "Label": "[Create or upload an order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/createOrder)",
+    "Label": "[Manage orders](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageOrders)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -202,6 +202,15 @@
     "ID": "manageDocumentsLALink",
     "FieldType": "Label",
     "Label": "[Manage documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageDocumentsLA)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsSolicitorLink",
+    "FieldType": "Label",
+    "Label": "[Manage documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageDocumentsSolicitor)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

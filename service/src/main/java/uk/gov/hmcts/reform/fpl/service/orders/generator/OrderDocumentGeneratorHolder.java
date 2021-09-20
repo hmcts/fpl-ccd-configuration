@@ -16,8 +16,20 @@ public class OrderDocumentGeneratorHolder {
 
     // parameter generators
     private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
-    private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
+    private final C26SecureAccommodationOrderDocumentParameterGenerator
+        c26SecureAccommodationOrderDocumentParameterGenerator;
+    private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
+    private final C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
+    private final C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
+    private final C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
+    private final C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
+    private final C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
+    private final C43aSpecialGuardianshipOrderDocumentParameterGenerator
+        c43ASpecialGuardianshipOrderDocumentParameterGenerator;
+    private final C47AAppointmentOfAChildrensGuardianParameterGenerator c47AParameterGenerator;
+    private final C45aParentalResponsibilityOrderDocumentParameterGenerator
+        c45aParentalResponsibilityOrderDocumentParameterGenerator;
 
     // additional document collectors
     private final C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
@@ -29,8 +41,17 @@ public class OrderDocumentGeneratorHolder {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
                 c21BlankOrderDocumentParameterGenerator,
+                c23EPODocumentParameterGenerator,
+                c26SecureAccommodationOrderDocumentParameterGenerator,
                 c32CareOrderDocumentParameterGenerator,
-                c23EPODocumentParameterGenerator
+                c32bDischargeOfCareOrderDocumentParameterGenerator,
+                c33InterimCareOrderDocumentParameterGenerator,
+                c35aSupervisionOrderDocumentParameterGenerator,
+                c35bISODocumentParameterGenerator,
+                c43ChildArrangementOrderDocumentParameterGenerator,
+                c43ASpecialGuardianshipOrderDocumentParameterGenerator,
+                c47AParameterGenerator,
+                c45aParentalResponsibilityOrderDocumentParameterGenerator
             ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
         return typeToGenerator;

@@ -51,7 +51,7 @@ public class HearingVenueLookUpService {
         }
     }
 
-    private HearingVenue getHearingVenue(final String venueId) {
+    public HearingVenue getHearingVenue(final String venueId) {
         return this.hearingVenues.stream()
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()

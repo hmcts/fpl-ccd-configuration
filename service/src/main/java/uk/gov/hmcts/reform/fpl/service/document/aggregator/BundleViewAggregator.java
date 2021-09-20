@@ -4,56 +4,53 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransformer;
+import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsBundlesTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.OtherDocumentsTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BundleViewAggregator {
 
     private final ApplicationDocumentBundleTransformer applicationDocumentTransformer;
-    private final FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
-    private final HearingBundleTransformer hearingBundleTransformer;
+    private final FurtherEvidenceDocumentsBundlesTransformer furtherEvidenceTransformer;
     private final RespondentStatementsTransformer respondentStatementsTransformer;
     private final OtherDocumentsTransformer otherDocumentsTransformer;
 
-    public List<DocumentBundleView> getDocumentBundleViews(
+    public List<DocumentContainerView> getDocumentBundleViews(
         CaseData caseData,
         DocumentViewType view) {
 
-        List<DocumentBundleView> bundles = new ArrayList<>();
-
-        List<DocumentBundleView> applicationStatementAndDocumentsBundle =
+        DocumentContainerView applicationStatementAndDocumentsBundle =
             applicationDocumentTransformer.getApplicationStatementAndDocumentBundle(caseData, view);
 
-        List<DocumentBundleView> furtherEvidenceBundle =
-            furtherEvidenceTransformer.getFurtherEvidenceBundleView(caseData, view);
+        List<DocumentContainerView> bundles = new ArrayList<>();
+        if (!isNull(applicationStatementAndDocumentsBundle)) {
+            bundles.add(applicationStatementAndDocumentsBundle);
+        }
 
-        List<DocumentBundleView> hearingEvidenceBundle = hearingBundleTransformer.getHearingBundleView(
-            caseData.getHearingFurtherEvidenceDocuments(), view);
+        List<DocumentContainerView> furtherEvidenceBundle
+            = furtherEvidenceTransformer.getFurtherEvidenceDocumentsBundleView(caseData, view);
 
-        List<DocumentBundleView> respondentStatementBundle =
+        List<DocumentContainerView> respondentStatementBundle =
             respondentStatementsTransformer.getRespondentStatementsBundle(caseData, view);
 
-        List<DocumentBundleView> anyOtherDocumentsBundle
+        List<DocumentContainerView> anyOtherDocumentsBundle
             = otherDocumentsTransformer.getOtherDocumentsView(caseData, view);
 
-        bundles.addAll(applicationStatementAndDocumentsBundle);
         bundles.addAll(furtherEvidenceBundle);
-        bundles.addAll(hearingEvidenceBundle);
         bundles.addAll(respondentStatementBundle);
         bundles.addAll(anyOtherDocumentsBundle);
 
         return bundles;
     }
-
 
 }

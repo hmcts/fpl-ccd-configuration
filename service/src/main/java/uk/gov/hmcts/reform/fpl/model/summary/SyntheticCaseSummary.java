@@ -11,12 +11,17 @@ import java.time.LocalDate;
 @Builder
 @Jacksonized
 public class SyntheticCaseSummary {
+    String caseSummaryLanguageRequirement;
+    String caseSummaryLALanguageRequirement;
+
     String caseSummaryOrdersRequested;
 
     LocalDate caseSummaryDateOfIssue;
     LocalDate deadline26week;
 
     String caseSummaryHasUnresolvedMessages;
+
+    String caseSummaryCourtName;
 
     String caseSummaryHasNextHearing;
     String caseSummaryNextHearingType;

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 class OrderValidatorTest {
 
-    private static final Order ORDER = Order.C32_CARE_ORDER;
+    private static final Order ORDER = Order.C32A_CARE_ORDER;
     private static final OrderSection ORDER_SECTION = OrderSection.ISSUING_DETAILS;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final OrderQuestionBlock BLOCK_IN_SECTION = OrderQuestionBlock.APPROVER;

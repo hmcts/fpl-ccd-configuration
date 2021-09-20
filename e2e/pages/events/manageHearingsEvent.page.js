@@ -12,10 +12,9 @@ module.exports = {
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
-    presence: {
-      inPerson: '#hearingPresence-IN_PERSON',
-      remote: '#hearingPresence-REMOTE',
-    },
+    attendance: '#hearingAttendance',
+    attendanceDetails: '#hearingAttendanceDetails',
+    preAttendanceDetails: '#preHearingAttendanceDetails',
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
@@ -24,18 +23,29 @@ module.exports = {
       caseManagement: '#hearingType-CASE_MANAGEMENT',
     },
     hearingVenue: '#hearingVenue',
-    usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue-Yes',
-    dontUsePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue-No',
+    usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_Yes',
+    dontUsePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_No',
     newVenue: '#previousHearingVenue_newVenue',
     newVenueCustomAddress: '#previousHearingVenue_newVenueCustomAddress_newVenueCustomAddress',
     startDate: '#hearingStartDate',
     endDate: '#hearingEndDate',
-    sendNotice: '#sendNoticeOfHearing-Yes',
-    dontSendNotice: '#sendNoticeOfHearing-No',
+    sendNotice: '#sendNoticeOfHearing_Yes',
+    dontSendNotice: '#sendNoticeOfHearing_No',
     noticeNotes: '#noticeOfHearingNotes',
+    translationRequirement: request =>  `#sendNoticeOfHearingTranslationRequirements-${request}`,
+    allOthers: {
+      group: '#sendOrderToAllOthers',
+      options: {
+        all: 'Yes',
+        select: 'No',
+      },
+    },
+    otherSelector: {
+      selector: index => `#othersSelector_option${index}-SELECTED`,
+    },
     confirmHearingDate: {
-      hearingDateCorrect: '#confirmHearingDate-Yes',
-      hearingDateIncorrect: '#confirmHearingDate-No',
+      hearingDateCorrect: '#confirmHearingDate_Yes',
+      hearingDateIncorrect: '#confirmHearingDate_No',
     },
     correctedStartDate: '#hearingStartDateConfirmation',
     correctedEndDate: '#hearingEndDateConfirmation',
@@ -80,16 +90,20 @@ module.exports = {
   async enterHearingDetails(hearingDetails) {
     I.click(this.fields.hearingType.caseManagement);
 
-    if (hearingDetails.presence) {
-      if (hearingDetails.presence === 'Remote') {
-        this.selectRemoteHearing();
-      } else {
-        this.selectInPersonHearing();
-      }
+    if (hearingDetails.attendance) {
+      hearingDetails.attendance.forEach(I.checkOption);
+    }
+
+    if (hearingDetails.attendanceDetails) {
+      I.fillField(this.fields.attendanceDetails, hearingDetails.attendanceDetails);
     }
 
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
+
+    if (hearingDetails.preAttendanceDetails) {
+      I.fillField(this.fields.preAttendanceDetails, hearingDetails.preAttendanceDetails);
+    }
   },
 
   enterVenue(hearingDetails) {
@@ -105,18 +119,10 @@ module.exports = {
     I.selectOption(this.fields.newVenue, hearingDetails.venue);
 
     if (hearingDetails.venue === 'Other') {
-      await within(this.fields.newVenueCustomAddress, () => {
-        postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
+      await within(this.fields.newVenueCustomAddress, async () => {
+        await postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
       });
     }
-  },
-
-  selectInPersonHearing() {
-    I.click(this.fields.presence.inPerson);
-  },
-
-  selectRemoteHearing() {
-    I.click(this.fields.presence.remote);
   },
 
   enterJudgeDetails(hearingDetails) {
@@ -145,18 +151,39 @@ module.exports = {
     I.fillField(this.fields.noticeNotes, notes);
   },
 
+  requestTranslationForNoticeOfHearing(value) {
+    I.click(this.fields.translationRequirement(value));
+  },
+
   dontSendNoticeOfHearing() {
     I.click(this.fields.dontSendNotice);
+  },
+
+  async selectOthers(option, indexes = []) {
+    I.click(`${this.fields.allOthers.group}_${option}`);
+
+    indexes.forEach((selectorIndex) => {
+      I.checkOption(this.fields.otherSelector.selector(selectorIndex));
+    });
+
   },
 
   selectHearingDateIncorrect() {
     I.click(this.fields.confirmHearingDate.hearingDateIncorrect);
   },
 
+  selectHearingDateCorrect() {
+    I.click(this.fields.confirmHearingDate.hearingDateCorrect);
+  },
+
   async enterCorrectedHearingDate(hearingDetails) {
     await I.runAccessibilityTest();
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
+  },
+
+  async grabPreHearingAttendance(){
+    return await I.grabValueFrom(this.fields.preAttendanceDetails);
   },
 
 };

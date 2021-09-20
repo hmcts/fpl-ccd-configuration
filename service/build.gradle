@@ -3,7 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
     classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.2.3") {
       exclude group: 'com.vladsch.flexmark'
     }
@@ -17,17 +17,16 @@ plugins {
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-  id 'org.springframework.boot' version '2.4.5'
-  id 'com.github.ben-manes.versions' version '0.36.0'
-  id 'org.sonarqube' version '3.2.0'
+  id 'org.springframework.boot' version '2.5.4'
+  id 'com.github.ben-manes.versions' version '0.39.0'
+  id 'org.sonarqube' version '3.3'
   id 'project-report'
   id "idea"
-  id 'info.solidsoft.pitest' version '1.6.0'
+  id "info.solidsoft.pitest" version '1.5.2'
 }
 
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'info.solidsoft.pitest'
 apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'au.com.dius.pact'
 
@@ -195,6 +194,18 @@ task crossbrowser(description: 'Runs crossbrowser tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
 }
 
+task fortifyScan(type: JavaExec)  {
+  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+}
+
+task highLevelDataSetup(type: JavaExec, description: 'High level data step mock implementation - DO NOTHING.') {
+  onlyIf {
+    return false
+  }
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = "8.25"
@@ -258,9 +269,9 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   log4j           : '2.13.2',
-  pdfbox          : '2.0.23',
+  pdfbox          : '2.0.24',
   mockito         : '3.7.7',
-  serenity        : '2.3.4',
+  serenity        : '2.4.5',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1'
 ]
@@ -291,12 +302,12 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.4.0'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.6.2'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.9.1'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.14.1'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -314,12 +325,18 @@ dependencies {
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.9.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.12.4'
+
+  implementation group: 'net.minidev', name:'json-smart', version: '2.4.7'
+
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.7.0'
+  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.2'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
@@ -337,6 +354,9 @@ dependencies {
   testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
   testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
+
+  // Fortify client for Fortify scans
+  testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 
   functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
@@ -361,11 +381,11 @@ dependencies {
   contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
   contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
-  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.2'
-  contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
+  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.8.0'
+  contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
   contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
-  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.7.RELEASE'
+  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.9.RELEASE'
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
@@ -391,39 +411,32 @@ integration {
 }
 
 pitest {
-  pitestVersion.set('1.6.2')
-  junit5PluginVersion.set('0.12')
-  targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
-  excludedClasses.set([
+  logger.lifecycle("Runs PIT  Tests")
+
+  junit5PluginVersion = '0.14'
+  testSourceSets = [sourceSets.test]
+  mainSourceSets = [sourceSets.main]
+  targetClasses = ['uk.gov.hmcts.reform.fpl.*']
+  excludedClasses = [
     'uk.gov.hmcts.reform.fpl.config.*',
     'uk.gov.hmcts.reform.fpl.exceptions.*',
     'uk.gov.hmcts.reform.fpl.controllers.*',
     'uk.gov.hmcts.reform.fpl.testingsupport.*'
-  ])
-  threads.set(10)
-  enableDefaultIncrementalAnalysis.set(true)
-  outputFormats.set(['XML', 'HTML'])
-  timestampedReports.set(false)
-  mutationThreshold.set(80)
-  timeoutConstInMillis.set(30000)
-  mutators.set([
-    'CONDITIONALS_BOUNDARY',
-    'INCREMENTS',
-    'INVERT_NEGS',
-    'MATH',
-    'NEGATE_CONDITIONALS',
-    'VOID_METHOD_CALLS',
-    'EMPTY_RETURNS',
-    'FALSE_RETURNS',
-    'NULL_RETURNS',
-    'PRIMITIVE_RETURNS',
-    'TRUE_RETURNS',
-    'REMOVE_CONDITIONALS'
-  ])
+  ]
+  jvmArgs = ['-Xms1G','-Xmx3G']
+  threads = 10
+  enableDefaultIncrementalAnalysis = true
+  outputFormats = ['XML', 'HTML']
+  timestampedReports = false
+  failWhenNoMutations = false
+  detectInlinedCode = true
+  maxMutationsPerClass = 15
+  mutationThreshold = 80
+  timeoutConstInMillis = 30000
 }
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
   }
 }

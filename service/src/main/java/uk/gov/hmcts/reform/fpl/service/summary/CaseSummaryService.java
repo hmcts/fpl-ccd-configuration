@@ -25,13 +25,17 @@ public class CaseSummaryService {
         CaseSummaryNextHearingGenerator caseSummaryNextHearingGenerator,
         CaseSummaryPreviousHearingGenerator caseSummaryPreviousHearingGenerator,
         CaseSummaryFinalHearingGenerator caseSummaryFinalHearingGenerator,
+        CaseSummaryWelshFlagGenerator caseSummaryWelshFlagGenerator,
         CaseSummaryPeopleInCaseGenerator caseSummaryPeopleInCaseGenerator,
+        CaseSummaryCourtGenerator caseSummaryCourtGenerator,
         ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.generators = List.of(
             caseSummaryOrdersRequestedGenerator,
             caseSummaryDeadlineGenerator,
+            caseSummaryCourtGenerator,
             caseSummaryJudgeInformationGenerator,
+            caseSummaryWelshFlagGenerator,
             caseSummaryMessagesGenerator,
             caseSummaryNextHearingGenerator,
             caseSummaryPreviousHearingGenerator,

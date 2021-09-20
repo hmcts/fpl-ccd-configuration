@@ -5,7 +5,7 @@
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocument",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "COMPLEX",
     "PageID": "ManageDocumentType",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
@@ -37,6 +37,19 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocument.hasC2s=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "languageRequirement",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

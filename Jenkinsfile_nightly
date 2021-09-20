@@ -9,8 +9,8 @@ properties([
       description: 'The URL of case service callbacks'),
     string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
       description: 'The URL of idam api'),
-    string(name: 'DM_STORE_URL', defaultValue: 'http://dm-store-aat.service.core-compute-aat.internal',
-      description: 'The URL of dm store'),
+    string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
+      description: 'The organisation id of Swansea local authority'),
     string(name: 'SECURITY_RULES',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
@@ -30,7 +30,8 @@ AppPipelineConfig pipelineConf;
 
 def integrationTestSecrets = [
   'fpl-aat': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
   ]
 ]
 
@@ -47,12 +48,23 @@ def setupSecretsForIntegrationTests(pipelineConf) {
     withTeamSecrets(pipelineConf, 'aat') {
       /* Setup Email template integration tests key with gov.notify */
       env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+      /* Setup Docmosis template integration tests key and url */
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
     }
   }
 }
 
+def archiveExtraFilesForIntegrationTests() {
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: "build/docmosis-generated/**/*"
+}
+
 def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
 }
 
 withNightlyPipeline(type, product, component) {
@@ -60,10 +72,10 @@ withNightlyPipeline(type, product, component) {
 
   env.URL = params.FRONTEND_URL
   env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
-  env.DM_STORE_URL=params.DM_STORE_URL
   env.IDAM_API_URL=params.IDAM_API_URL
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
   env.SECURITY_RULES = params.SECURITY_RULES
+  env.ORG_ID = params.ORG_ID
 
   loadVaultSecrets(integrationTestSecrets)
 
@@ -74,13 +86,14 @@ withNightlyPipeline(type, product, component) {
   }
 
   after('mutationTest') {
+    archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
   }
 
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 1
+    env.TEST_RETRIES = 2
     env.TESTS_FOR_ACCESSIBILITY = true
     env.ENV = 'aat'
   }
@@ -98,7 +111,15 @@ withNightlyPipeline(type, product, component) {
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
+  before('crossBrowserTest') {
+    env.TEST_RETRIES = 3
+  }
+
   after('crossBrowserTest') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  after('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }

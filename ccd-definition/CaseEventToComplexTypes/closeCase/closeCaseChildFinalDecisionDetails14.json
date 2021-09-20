@@ -1,0 +1,32 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childFinalDecisionDetails14",
+    "ListElementCode": "childFinalDecisionDetailsSubHeadingLabel",
+    "FieldType": "Label",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childFinalDecisionDetails14",
+    "ListElementCode": "childNameLabel",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "recordFinalDecisions",
+    "CaseFieldID": "childFinalDecisionDetails14",
+    "ListElementCode": "finalDecisionReason",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ChildFinalDecision",
+    "SecurityClassification": "Public",
+    "DisplayContext": "MANDATORY"
+  }
+]

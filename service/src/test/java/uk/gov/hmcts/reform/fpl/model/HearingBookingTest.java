@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +20,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SPOKEN_OR_WRITTEN_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
 
 class HearingBookingTest {
 
@@ -211,7 +217,7 @@ class HearingBookingTest {
     class Label {
 
         @Test
-        void shouldBuildHearingLableWithoutStatus() {
+        void shouldBuildHearingLabelWithoutStatus() {
             HearingBooking hearingBooking = HearingBooking.builder()
                 .type(CASE_MANAGEMENT)
                 .startDate(LocalDate.of(2020, 10, 10).atStartOfDay())
@@ -246,5 +252,111 @@ class HearingBookingTest {
             assertThat(hearingBooking.toLabel()).isEqualTo("Case management hearing, 30 October 2020 - vacated");
         }
 
+    }
+
+    @Nested
+    class PreAttendance {
+
+        @Test
+        void shouldReturnExistingPreHearingAttendanceDetails() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .preAttendanceDetails("Test")
+                .build();
+
+            assertThat(hearingBooking.getPreAttendanceDetails()).isEqualTo("Test");
+        }
+
+        @Test
+        void shouldReturnDefaultPreHearingAttendanceDetails() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .build();
+
+            assertThat(hearingBooking.getPreAttendanceDetails()).isEqualTo("1 hour before the hearing");
+        }
+    }
+
+    @Nested
+    class Attendance {
+
+        @Test
+        void shouldReturnAttendance() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .attendance(List.of(IN_PERSON, PHONE))
+                .build();
+
+            assertThat(hearingBooking.getAttendance()).containsExactlyInAnyOrder(IN_PERSON, PHONE);
+        }
+
+        @Test
+        void shouldConvertLegacyInPersonPresenceIntoAttendanceWhenAttendanceNotPresent() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .presence(HearingPresence.IN_PERSON)
+                .build();
+
+            assertThat(hearingBooking.getAttendance()).containsExactly(IN_PERSON);
+        }
+
+        @Test
+        void shouldConvertLegacyRemotePresenceIntoVideoAttendanceWhenAttendanceNotPresent() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .presence(HearingPresence.REMOTE)
+                .build();
+
+            assertThat(hearingBooking.getAttendance()).containsExactly(VIDEO);
+        }
+
+        @ParameterizedTest
+        @EnumSource(HearingPresence.class)
+        void shouldNotConvertLegacyPresenceIntoAttendanceWhenAttendancePresent(HearingPresence presence) {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .presence(presence)
+                .attendance(List.of(PHONE))
+                .build();
+
+            assertThat(hearingBooking.getAttendance()).containsExactly(PHONE);
+        }
+    }
+
+    @Nested
+    class IsRemote {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnFalseWhenAttendanceIsNotSpecified(List<HearingAttendance> attendance) {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .attendance(attendance)
+                .build();
+
+            assertThat(hearingBooking.isRemote()).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenNoRemoteHearingAttendanceAllowed() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .attendance(List.of(IN_PERSON))
+                .build();
+
+            assertThat(hearingBooking.isRemote()).isFalse();
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = HearingAttendance.class, names = {"VIDEO", "PHONE",})
+        void shouldReturnTrueWhenOnlyRemoteHearingAttendanceAllowed(HearingAttendance hearingAttendance) {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .attendance(List.of(hearingAttendance))
+                .build();
+
+            assertThat(hearingBooking.isRemote()).isTrue();
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = HearingAttendance.class, names = {"VIDEO", "PHONE",})
+        void shouldReturnTrueWhenRemoteHearingAttendanceAllowed(HearingAttendance hearingAttendance) {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .attendance(List.of(hearingAttendance, IN_PERSON))
+                .build();
+
+            assertThat(hearingBooking.isRemote()).isTrue();
+        }
     }
 }

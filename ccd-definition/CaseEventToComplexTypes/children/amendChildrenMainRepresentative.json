@@ -1,0 +1,200 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "firstName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "lastName",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "email",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "organisation",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "organisation.OrganisationName",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL",
+    "EventElementLabel": " ",
+    "FieldShowCondition": "childrenMainRepresentative.organisation.OrganisationName=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.signUpRequestHeader",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.signupRequestLabel",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.name",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "EventElementLabel": "Address",
+    "ListElementCode": "unregisteredOrganisation.address",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.address.AddressLine1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.address.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.address.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.address.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.address.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.address.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "unregisteredOrganisation.address.Country",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress",
+    "EventElementLabel": "Add the regional office managing this case",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress.AddressLine1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "regionalOfficeAddress.Country",
+    "DisplayContext": "OPTIONAL"
+  }
+]

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.LA;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.NONCONFIDENTIAL;
@@ -56,16 +58,34 @@ class OtherDocumentsTransformerTest {
     @Test
     void shouldTransformAllDocumentsForHmctsView() {
         Element<SupportingEvidenceBundle> hearingDocument1 = buildFurtherEvidenceBundle(
-            "hearing evidence1", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1));
+            "hearing evidence1", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1), null, null);
 
         Element<SupportingEvidenceBundle> hearingDocument2 = buildFurtherEvidenceBundle(
-            "hearing evidence2", "la@test.com", false, null, now().minusDays(1));
+            "hearing evidence2", "la@test.com", false, null, now().minusDays(1), null, null);
 
         Element<SupportingEvidenceBundle> hearingDocument3 = buildFurtherEvidenceBundle(
-            "hearing evidence3", "HMCTS", false, null, now().minusMinutes(1));
+            "hearing evidence3", "HMCTS", false, null, now().minusMinutes(1), null, null);
 
         Element<SupportingEvidenceBundle> hearingDocument4 = buildFurtherEvidenceBundle(
-            "hearing evidence3", "la@test.com", false, null, null);
+            "hearing evidence3", "la@test.com", false, null, null, null, null);
+
+        Element<SupportingEvidenceBundle> hearingDocument5 = buildFurtherEvidenceBundle(
+            "hearing evidence3",
+            "la@test.com",
+            false,
+            null,
+            null,
+            testDocumentReference("translated.pdf"),
+            WELSH_TO_ENGLISH);
+
+        Element<SupportingEvidenceBundle> hearingDocument6 = buildFurtherEvidenceBundle(
+            "hearing evidence3",
+            "la@test.com",
+            false,
+            null,
+            null,
+            null,
+            WELSH_TO_ENGLISH);
 
         CaseData caseData = CaseData.builder()
             .scannedDocuments(wrapElements(SCANNED_DOCUMENT_1, SCANNED_DOCUMENT_WITHOUT_DATE, SCANNED_DOCUMENT_2))
@@ -75,7 +95,10 @@ class OtherDocumentsTransformerTest {
                     .supportingEvidenceBundle(List.of(hearingDocument2, hearingDocument1)).build(),
                 HearingFurtherEvidenceBundle.builder()
                     .hearingName("hearing2")
-                    .supportingEvidenceBundle(List.of(hearingDocument3, hearingDocument4)).build()))
+                    .supportingEvidenceBundle(List.of(
+                        hearingDocument3, hearingDocument4,
+                        hearingDocument5, hearingDocument6
+                    )).build()))
             .build();
 
         List<DocumentBundleView> expectedDocumentsView = List.of(
@@ -84,6 +107,8 @@ class OtherDocumentsTransformerTest {
                     buildHearingOrderView(hearingDocument3.getValue()),
                     buildHearingOrderView(hearingDocument2.getValue()),
                     buildHearingOrderView(hearingDocument4.getValue()),
+                    buildHearingOrderView(hearingDocument5.getValue()),
+                    buildHearingOrderView(hearingDocument6.getValue()),
                     buildScannedDocumentView(SCANNED_DOCUMENT_2),
                     buildScannedDocumentView(SCANNED_DOCUMENT_1),
                     buildScannedDocumentView(SCANNED_DOCUMENT_WITHOUT_DATE),
@@ -91,7 +116,7 @@ class OtherDocumentsTransformerTest {
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2)))
                 .build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -99,16 +124,16 @@ class OtherDocumentsTransformerTest {
     @Test
     void shouldTransformOnlyNonConfidentialHearingEvidenceAndCourtAdminDocumentsForLA() {
         Element<SupportingEvidenceBundle> hearingDocument1 = buildFurtherEvidenceBundle(
-            "hearing evidence1", "la@test.com", false, null, now().minusDays(1));
+            "hearing evidence1", "la@test.com", false, null, now().minusDays(1), null, null);
 
         Element<SupportingEvidenceBundle> hearingDocument2 = buildFurtherEvidenceBundle(
-            "hearing evidence2", "HMCTS", true, null, now().minusDays(2));
+            "hearing evidence2", "HMCTS", true, null, now().minusDays(2), null, null);
 
         Element<SupportingEvidenceBundle> hearingDocument3 = buildFurtherEvidenceBundle(
-            "hearing evidence3", "HMCTS", false, null, now().minusDays(3));
+            "hearing evidence3", "HMCTS", false, null, now().minusDays(3), null, null);
 
         Element<SupportingEvidenceBundle> hearingDocument4 = buildFurtherEvidenceBundle(
-            "hearing evidence34", "la@test.com", true, null, null);
+            "hearing evidence34", "la@test.com", true, null, null, null, null);
 
         CaseData caseData = CaseData.builder()
             .scannedDocuments(wrapElements(SCANNED_DOCUMENT_1, SCANNED_DOCUMENT_WITHOUT_DATE, SCANNED_DOCUMENT_2))
@@ -129,7 +154,7 @@ class OtherDocumentsTransformerTest {
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_1),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2))).build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, LA);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, LA);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -137,16 +162,16 @@ class OtherDocumentsTransformerTest {
     @Test
     void shouldTransformOnlyNonConfidentialHearingEvidenceAndCourtAdminDocumentsForNonConfidentialView() {
         Element<SupportingEvidenceBundle> laConfidentialEvidence = buildFurtherEvidenceBundle(
-            "LA confidential evidence", "la@test.com", true, null, now());
+            "LA confidential evidence", "la@test.com", true, null, now(), null, null);
 
         Element<SupportingEvidenceBundle> laNonConfidentialEvidence = buildFurtherEvidenceBundle(
-            "LA non confidential evidence", "la@test.com", false, null, now().minusHours(1));
+            "LA non confidential evidence", "la@test.com", false, null, now().minusHours(1), null, null);
 
         Element<SupportingEvidenceBundle> hmctsNonConfidentialEvidence = buildFurtherEvidenceBundle(
-            "HMCTS non confidential evidence", "HMCTS", false, null, null);
+            "HMCTS non confidential evidence", "HMCTS", false, null, null, null, null);
 
         Element<SupportingEvidenceBundle> hmctsConfidentialEvidence = buildFurtherEvidenceBundle(
-            "HMCTS confidential evidence", "HMCTS", true, null, now().minusDays(1));
+            "HMCTS confidential evidence", "HMCTS", true, null, now().minusDays(1), null, null);
 
         CaseData caseData = CaseData.builder()
             .scannedDocuments(wrapElements(SCANNED_DOCUMENT_1, SCANNED_DOCUMENT_WITHOUT_DATE, SCANNED_DOCUMENT_2))
@@ -166,7 +191,7 @@ class OtherDocumentsTransformerTest {
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_1),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2))).build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, NONCONFIDENTIAL);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, NONCONFIDENTIAL);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -189,7 +214,7 @@ class OtherDocumentsTransformerTest {
             DocumentBundleView.builder().name(DOCUMENT_BUNDLE_NAME)
                 .documents(List.of(buildScannedDocumentView(scannedDocument1))).build());
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
 
         assertThat(actualDocumentsView).isEqualTo(expectedDocumentsView);
     }
@@ -201,7 +226,7 @@ class OtherDocumentsTransformerTest {
             .otherCourtAdminDocuments(List.of())
             .build();
 
-        List<DocumentBundleView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
+        List<DocumentContainerView> actualDocumentsView = underTest.getOtherDocumentsView(caseData, HMCTS);
 
         assertThat(actualDocumentsView).isEmpty();
     }
@@ -227,6 +252,8 @@ class OtherDocumentsTransformerTest {
             .document(bundle.getDocument())
             .fileName(bundle.getName())
             .title(bundle.getName())
+            .translatedDocument(bundle.getTranslatedDocument())
+            .sentForTranslation(bundle.sentForTranslation())
             .uploadedBy(bundle.getUploadedBy())
             .uploadedAt(isNotEmpty(bundle.getDateTimeUploaded())
                 ? formatLocalDateTimeBaseUsingFormat(bundle.getDateTimeUploaded(), TIME_DATE) : null)

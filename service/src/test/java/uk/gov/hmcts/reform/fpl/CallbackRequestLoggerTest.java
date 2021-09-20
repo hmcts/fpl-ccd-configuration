@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.logging.HeaderInformationExtractor;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
@@ -34,7 +35,7 @@ class CallbackRequestLoggerTest {
     @TestLogs
     private TestLogger logs = new TestLogger(CallbackRequestLogger.class);
 
-    private CallbackRequestLogger callbackLogger = new CallbackRequestLogger();
+    private CallbackRequestLogger callbackLogger = new CallbackRequestLogger(new HeaderInformationExtractor());
 
     @Test
     void shouldActivateAdviceOnCcdCallback() {

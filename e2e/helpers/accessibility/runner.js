@@ -60,7 +60,7 @@ async function runAccessibility(url, page) {
 }
 
 function updateResultObject(url, pageTitle, screenshotReportRef, accessibilityErrorsOnThePage) {
-  const isPageAccessible = accessibilityErrorsOnThePage.length === 0 ? result.PASSED : result.FAILED;
+  const isPageAccessible = accessibilityErrorsOnThePage && accessibilityErrorsOnThePage.length === 0 ? result.PASSED : result.FAILED;
 
   const urlArr = url.split('/');
 

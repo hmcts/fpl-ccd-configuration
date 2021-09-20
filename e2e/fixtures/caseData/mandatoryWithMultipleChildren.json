@@ -71,6 +71,38 @@
       "reference": "reference",
       "telephone": "00000000000"
     },
+    "localAuthorities": [
+      {
+        "id": "105409c7-9ec5-4c3a-9182-ad05d5290243",
+        "value": {
+          "id": "${SWANSEA_ORG_ID}",
+          "name": "Swansea City Council",
+          "email": "swansea@test.com",
+          "pbaNumber": "PBA0082848",
+          "phone": "02027725772",
+          "address": {
+            "County": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 12, Pinnacle Apartments",
+            "AddressLine2": "Saffron Central Square 11"
+          },
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "alex@test.com",
+                "fullName": "Alex Brown",
+                "notificationRecipient": "Yes",
+                "mainContact": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes"
+        }
+      }
+    ],
     "applicants": [
       {
         "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
@@ -159,8 +191,38 @@
         }
       }
     ],
+    "others": {
+      "firstOther": {
+        "DOB": "1980-03-31",
+        "name": "Noah King",
+        "gender": "Male",
+        "address": {
+          "County": "",
+          "Country": "United Kingdom",
+          "PostCode": "SE16 6BA",
+          "PostTown": "London",
+          "AddressLine1": "Flat 20",
+          "AddressLine2": "Heron House 8",
+          "AddressLine3": ""
+        },
+        "telephone": "07000 654321",
+        "birthPlace": "London",
+        "detailsHidden": "No",
+        "representedBy": [],
+        "childInformation": null,
+        "litigationIssues": "NO",
+        "detailsHiddenReason": null,
+        "genderIdentification": null,
+        "litigationIssuesDetails": ""
+      },
+      "additionalOthers": []
+    },
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "submissionConsent": [
       "agree"
     ],
@@ -170,34 +232,23 @@
     "displayAmountToPay": "Yes",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
     "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
-    "documents_socialWorkOther": [],
-    "documents_checklist_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
+    "applicationDocuments": [
+      {
+        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedBy": null,
+          "documentName": null,
+          "documentType": "THRESHOLD",
+          "includedInSWET": null,
+          "dateTimeUploaded": null
+        }
+      }
+    ],
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",

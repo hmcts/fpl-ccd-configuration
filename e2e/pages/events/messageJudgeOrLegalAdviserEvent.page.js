@@ -3,8 +3,8 @@ const {I} = inject();
 module.exports = {
   fields: {
     isMessageRegardingAdditionalApplications: {
-      yes: '#isMessageRegardingAdditionalApplications-Yes',
-      no: '#isMessageRegardingAdditionalApplications-No',
+      yes: '#isMessageRegardingAdditionalApplications_Yes',
+      no: '#isMessageRegardingAdditionalApplications_No',
     },
     eventOptions: {
       newMessage: '#messageJudgeOption-NEW_MESSAGE',
@@ -17,11 +17,10 @@ module.exports = {
     replyingToMessage: {
       id: '#judicialMessageReply_isReplying',
       options: {
-        yes: '#judicialMessageReply_isReplying-Yes',
-        no: '#judicialMessageReply_isReplying-No',
+        yes: '#judicialMessageReply_isReplying_Yes',
+        no: '#judicialMessageReply_isReplying_No',
       },
     },
-    closeMessageLabel: '#judicialMessageReply_closeMessageLabel',
     subject: '#judicialMessageMetaData_requestedBy',
     urgency: '#judicialMessageMetaData_urgency',
     latestMessage: '#judicialMessageNote',

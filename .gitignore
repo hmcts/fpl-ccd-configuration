@@ -21,6 +21,7 @@ test-results/
 !gradle/wrapper/gradle-wrapper.jar
 build/
 service/out
+service/bin
 
 ### STS ###
 .apt_generated
@@ -52,3 +53,4 @@ functional-output/
 
 # terraform modules
 infrastructure/.terraform/
+/update-local-env.sh

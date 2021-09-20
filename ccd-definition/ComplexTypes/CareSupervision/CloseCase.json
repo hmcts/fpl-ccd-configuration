@@ -21,8 +21,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "CloseCase",
     "ListElementCode": "fullReason",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CloseCaseFull",
+    "FieldType": "Text",
     "ElementLabel": "Reason",
     "FieldShowCondition": "showFullReason!=\"NO\"",
     "SecurityClassification": "Public"
@@ -31,8 +30,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "CloseCase",
     "ListElementCode": "partialReason",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CloseCasePartial",
+    "FieldType": "Text",
     "ElementLabel": "Reason",
     "FieldShowCondition": "showFullReason!=\"YES\"",
     "SecurityClassification": "Public"

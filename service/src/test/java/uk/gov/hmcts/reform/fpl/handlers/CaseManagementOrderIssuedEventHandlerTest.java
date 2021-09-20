@@ -5,163 +5,238 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CaseManagementOrderIssuedEventHandlerTest {
 
-    @Mock
-    private InboxLookupService inboxLookupService;
+    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
+    private static final long CASE_ID = 12345L;
+    private static final IssuedCMOTemplate DIGITAL_REP_CMO_TEMPLATE_DATA = mock(IssuedCMOTemplate.class);
+    private static final IssuedCMOTemplate EMAIL_REP_CMO_TEMPLATE_DATA = mock(IssuedCMOTemplate.class);
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final HearingOrder CMO = mock(HearingOrder.class);
+    private static final DocumentReference ORDER = mock(DocumentReference.class);
+    private static final CaseManagementOrderIssuedEvent EVENT = new CaseManagementOrderIssuedEvent(CASE_DATA, CMO);
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
+        LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
+    @Mock
+    private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private NotificationService notificationService;
-
     @Mock
-    private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
-
-    @Mock
-    private DocumentDownloadService documentDownloadService;
-
+    private CaseManagementOrderEmailContentProvider cmoContentProvider;
     @Mock
     private IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
-
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
-
     @Mock
     private CoreCaseDataService coreCaseDataService;
-
     @Mock
     private RepresentativesInbox representativesInbox;
+    @Mock
+    private OtherRecipientsInbox otherRecipientsInbox;
+    @Mock
+    private SendDocumentService sendDocumentService;
+    @Mock
+    private TranslationRequestService translationRequestService;
 
     @InjectMocks
     private CaseManagementOrderIssuedEventHandler underTest;
 
-    private final IssuedCMOTemplate digitalRepCMOTemplateData
-        = IssuedCMOTemplate.builder().familyManCaseNumber("1").build();
-
-    private final IssuedCMOTemplate emailRepCMOTemplateData
-        = IssuedCMOTemplate.builder().familyManCaseNumber("2").build();
-
-    private final CaseData caseData = caseData();
-    private final HearingOrder cmo = buildCmo();
-
-    private final CaseManagementOrderIssuedEvent event = new CaseManagementOrderIssuedEvent(caseData, cmo);
-    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-
     @BeforeEach
     void init() {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(CMO.getOrder()).willReturn(ORDER);
     }
 
     @Test
-    void shouldNotifyPartiesOfCMOIssued() {
-        CaseData caseData = caseData();
-        HearingOrder cmo = buildCmo();
-
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
-            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
-
-        CafcassLookupConfiguration.Cafcass cafcass =
-            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
-
-        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
-        when(representativesInbox.getEmailsByPreference(caseData, EMAIL)).thenReturn(Set.of("fred@flinstone.com",
-            "barney@rubble.com"));
-        when(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).thenReturn(Set.of(
-            "fred@flinstone.com"));
-
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
-            DIGITAL_SERVICE))
-            .willReturn(digitalRepCMOTemplateData);
-
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
-            EMAIL))
-            .willReturn(emailRepCMOTemplateData);
-
-        underTest.notifyParties(event);
-
-        verify(notificationService).sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
-            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            digitalRepCMOTemplateData,
-            caseData.getId().toString());
-
-        verify(notificationService).sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
-            "FamilyPublicLaw+cafcass@gmail.com",
-            emailRepCMOTemplateData,
-            caseData.getId());
-
-        verify(notificationService).sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
-            "fred@flinstone.com",
-            digitalRepCMOTemplateData,
-            caseData.getId());
-
-        verify(notificationService).sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
-            "barney@rubble.com",
-            emailRepCMOTemplateData,
-            caseData.getId());
-
-        verify(issuedOrderAdminNotificationHandler).notifyAdmin(
-            caseData,
-            cmo.getOrder(),
-            CMO);
+    void shouldNotifyAdmin() {
+        underTest.notifyAdmin(EVENT);
+        verify(issuedOrderAdminNotificationHandler).notifyAdmin(CASE_DATA, ORDER, IssuedOrderType.CMO);
     }
 
     @Test
-    void shouldNotifyPostRepresentatives() {
-        HearingOrder cmo = buildCmo();
+    void shouldNotifyLocalAuthority() {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(CASE_DATA).build()
+        )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
+            .willReturn(DIGITAL_REP_CMO_TEMPLATE_DATA);
 
-        underTest.sendDocumentToPostRepresentatives(event);
+        underTest.notifyLocalAuthority(EVENT);
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            12345L,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", cmo.getOrder()));
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            DIGITAL_REP_CMO_TEMPLATE_DATA,
+            CASE_ID
+        );
     }
 
-    private HearingOrder buildCmo() {
-        return HearingOrder.builder().order(DocumentReference.builder()
-            .filename("CMO")
-            .url("url")
-            .binaryUrl("testUrl")
-            .build()).build();
+    @Test
+    void shouldNotifyCafcass() {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS));
+        given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, EMAIL))
+            .willReturn(EMAIL_REP_CMO_TEMPLATE_DATA);
+
+        underTest.notifyCafcass(EVENT);
+
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+cafcass@gmail.com",
+            EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
+        );
+    }
+
+    @Test
+    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL))
+            .willReturn(newHashSet("barney@rubble.com", "andrew@rubble.com"));
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), any(), any()))
+            .willReturn(newHashSet("andrew@rubble.com"));
+        given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, EMAIL))
+            .willReturn(EMAIL_REP_CMO_TEMPLATE_DATA);
+
+        underTest.notifyEmailRepresentatives(EVENT);
+
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+    }
+
+    @Test
+    void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled() {
+        given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))
+            .willReturn(newHashSet("fred@flinstone.com", "barney@rubble.com"));
+        given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
+            .willReturn(DIGITAL_REP_CMO_TEMPLATE_DATA);
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(DIGITAL_SERVICE), eq(CASE_DATA), any(), any()))
+            .willReturn(newHashSet("barney@rubble.com"));
+
+        underTest.notifyDigitalRepresentatives(EVENT);
+
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "fred@flinstone.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+    }
+
+    @Test
+    void shouldNotifyPostRepresentativesWhenServingOthersIsEnabled() {
+        Other other1 = Other.builder().name("other1")
+            .address(Address.builder().postcode("SW1").build()).build();
+        Recipient otherRecipient1 = other1.toParty();
+        Recipient otherRecipient2 = Other.builder().name("other2")
+            .address(Address.builder().postcode("SW2").build()).build().toParty();
+        Recipient otherRecipient3 = Other.builder().name("other3")
+            .address(Address.builder().postcode("SW3").build()).build().toParty();
+
+        given(sendDocumentService.getStandardRecipients(CASE_DATA))
+            .willReturn(newArrayList(otherRecipient1, otherRecipient2));
+
+        List<Element<Other>> selectedOthers = wrapElements(other1);
+        given(CMO.getSelectedOthers()).willReturn(selectedOthers);
+        given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(CASE_DATA), any(), any()))
+            .willReturn(newHashSet(otherRecipient1));
+        given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers))
+            .willReturn(Set.of(otherRecipient3));
+
+        underTest.sendDocumentToPostRepresentatives(EVENT);
+
+        verify(sendDocumentService).sendDocuments(
+            CASE_DATA, List.of(ORDER), newArrayList(otherRecipient2, otherRecipient3));
+    }
+
+    @Test
+    void shouldNotNotifyPostRepresentativesWhenTranslationIsRequired() {
+        underTest.sendDocumentToPostRepresentatives(new CaseManagementOrderIssuedEvent(CASE_DATA, HearingOrder.builder()
+            .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+            .build()));
+
+        verifyNoInteractions(coreCaseDataService, sendDocumentService);
+    }
+
+    @Test
+    void shouldNotifyTranslationTeam() {
+        underTest.notifyTranslationTeam(
+            CaseManagementOrderIssuedEvent.builder()
+                .caseData(CASE_DATA)
+                .cmo(HearingOrder.builder()
+                    .status(CMOStatus.APPROVED)
+                    .order(ORDER)
+                    .dateIssued(LocalDate.of(2020, 1, 2))
+                    .translationRequirements(TRANSLATION_REQUIREMENTS)
+                    .build()
+                ).build()
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(TRANSLATION_REQUIREMENTS),
+            ORDER, "Sealed case management order issued on 2 January 2020");
+    }
+
+    @Test
+    void shouldNotifyTranslationTeamIfNoTranslationRequirements() {
+        underTest.notifyTranslationTeam(
+            CaseManagementOrderIssuedEvent.builder()
+                .caseData(CASE_DATA)
+                .cmo(HearingOrder.builder()
+                    .status(CMOStatus.APPROVED)
+                    .order(ORDER)
+                    .dateIssued(LocalDate.of(2020, 1, 2))
+                    .translationRequirements(null)
+                    .build()
+                ).build()
+        );
+
+        verify(translationRequestService).sendRequest(CASE_DATA,
+            Optional.of(LanguageTranslationRequirement.NO),
+            ORDER, "Sealed case management order issued on 2 January 2020");
     }
 }

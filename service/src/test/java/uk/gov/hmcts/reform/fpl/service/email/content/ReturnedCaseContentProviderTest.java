@@ -1,52 +1,94 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import org.json.JSONObject;
-import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate.ReturnedCaseTemplateBuilder;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {ReturnedCaseContentProvider.class, LookupTestConfig.class})
 class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
+    private static final byte[] C110A_BINARY = DOCUMENT_CONTENT;
+    private static final String ENCODED_BINARY = Base64.getEncoder().encodeToString(C110A_BINARY);
+    private static final DocumentReference C110A = testDocumentReference();
+    private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
+    private static final String CHILD_LAST_NAME = "Jones";
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .id(12345L)
+        .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+        .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+        .children1(wrapElements(mock(Child.class)))
+        .respondents1(wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().firstName("Paul").lastName("Smith").build())
+            .build()))
+        .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+            .submittedForm(C110A)
+            .build())
+        .returnApplication(ReturnApplication.builder()
+            .reason(List.of(ReturnedApplicationReasons.INCOMPLETE, ReturnedApplicationReasons.CLARIFICATION_NEEDED))
+            .note("Missing children details")
+            .build())
+        .build();
 
     @Autowired
     private ReturnedCaseContentProvider returnedCaseContentProvider;
 
+    @MockBean
+    private EmailNotificationHelper helper;
+
+    @BeforeEach
+    void setUp() {
+        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+    }
+
     @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithAllData() {
-        CaseData caseDetails = populatedCaseData();
         ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl().build();
 
-        ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(caseDetails);
+        ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(CASE_DATA);
 
         assertThat(actualData).isEqualTo(expectedData);
     }
 
     @Test
+    void shouldBuildReturnedCaseTemplateWithCaseUrlWithAllDataWhenToggleEnabled() {
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl().build();
+        ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(CASE_DATA);
+        assertThat(actualData).isEqualTo(expectedData);
+    }
+
+    @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithoutOptionalData() {
-        String familyManCaseNumber = "";
-        CaseData caseData = populatedCaseData(Map.of("familyManCaseNumber", familyManCaseNumber));
+        CaseData caseData = CASE_DATA.toBuilder().familyManCaseNumber(null).build();
 
         ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl()
-            .familyManCaseNumber(familyManCaseNumber)
+            .familyManCaseNumber("")
             .build();
 
         ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(caseData);
@@ -54,50 +96,47 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    @Nested
-    class TemplateWithApplicationLink {
+    @Test
+    void shouldBuildReturnedCaseTemplateWithApplicationUrl() {
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithApplicationUrl().build();
 
-        @Test
-        void shouldBuildReturnedCaseTemplateWithApplicationUrl() {
-            DocumentReference application = TestDataHelper.testDocumentReference();
-            CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", application.getBinaryUrl()));
+        when(documentDownloadService.downloadDocument(C110A.getBinaryUrl())).thenReturn(C110A_BINARY);
 
-            ReturnedCaseTemplate expectedData = returnedCaseTemplateWithApplicationUrl().build();
+        ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithApplicationLink(CASE_DATA);
 
-            when(documentDownloadService.downloadDocument(application.getBinaryUrl())).thenReturn(APPLICATION_BINARY);
+        assertThat(actualData).isEqualTo(expectedData);
+    }
 
-            ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithApplicationLink(caseData);
+    @Test
+    void shouldThrowExceptionWhenDocumentCannotBeDownload() {
+        when(documentDownloadService.downloadDocument(any())).thenReturn(null);
 
-            assertThat(actualData).isEqualTo(expectedData);
-        }
+        assertThrows(
+            DocumentException.class, () -> returnedCaseContentProvider.parametersWithApplicationLink(CASE_DATA)
+        );
+    }
 
-        @Test
-        void shouldThrowExceptionWhenDocumentCannotBeDownload() {
-            CaseData caseData = populatedCaseData();
+    @Test
+    void shouldThrowExceptionWhenApplicationDocumentIsEmpty() {
+        when(documentDownloadService.downloadDocument(any())).thenReturn(new byte[0]);
 
-            when(documentDownloadService.downloadDocument(any())).thenReturn(null);
+        assertThrows(
+            DocumentException.class, () -> returnedCaseContentProvider.parametersWithApplicationLink(CASE_DATA)
+        );
+    }
 
-            assertThrows(DocumentException.class,
-                () -> returnedCaseContentProvider.parametersWithApplicationLink(caseData));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenApplicationDocumentIsEmpty() {
-            CaseData caseData = populatedCaseData();
-            when(documentDownloadService.downloadDocument(any())).thenReturn(new byte[0]);
-            assertThrows(DocumentException.class,
-                () -> returnedCaseContentProvider.parametersWithApplicationLink(caseData));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenDocumentIsNotSpecified() {
-            CaseData caseData = populatedCaseData().toBuilder()
+    @Test
+    void shouldThrowExceptionWhenDocumentIsNotSpecified() {
+        CaseData caseData = CASE_DATA.toBuilder()
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
                 .submittedForm(null)
-                .build();
+                .build())
+            .build();
 
-            assertThrows(DocumentException.class,
-                () -> returnedCaseContentProvider.parametersWithApplicationLink(caseData));
-        }
+        assertThrows(
+            DocumentException.class,
+            () -> returnedCaseContentProvider.parametersWithApplicationLink(caseData)
+        );
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplateWithCaseUrl() {
@@ -105,21 +144,16 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplateWithApplicationUrl() {
-        return returnedCaseTemplate()
-            .applicationDocumentUrl(generateAttachedDocumentLink(APPLICATION_BINARY)
-                .map(JSONObject::toMap)
-                .orElse(null));
+        return returnedCaseTemplate().applicationDocumentUrl(Map.of("file", ENCODED_BINARY, "is_csv", false));
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplate() {
         return ReturnedCaseTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_NAME)
-            .respondentLastName("Smith")
+            .lastName(CHILD_LAST_NAME)
             .respondentFullName("Paul Smith")
             .returnedReasons("Application incomplete, clarification needed")
             .returnedNote("Missing children details")
-            .familyManCaseNumber("12345");
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER);
     }
 }
-
-

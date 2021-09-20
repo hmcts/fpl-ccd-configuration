@@ -1,0 +1,58 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-ARRANGE_INTERPRETERS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
+    "ListElementCode": "title",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-ARRANGE_INTERPRETERS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
+    "ListElementCode": "description",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-ARRANGE_INTERPRETERS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
+    "ListElementCode": "assignee",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-ARRANGE_INTERPRETERS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
+    "ListElementCode": "dueDateType",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-ARRANGE_INTERPRETERS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-ARRANGE_INTERPRETERS.dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-ARRANGE_INTERPRETERS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-ARRANGE_INTERPRETERS.dueDateType=\"DAYS\""
+  }
+]

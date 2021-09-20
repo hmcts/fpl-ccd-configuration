@@ -22,8 +22,15 @@
     "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Order title",
-    "SecurityClassification": "Public",
-    "Max": "90"
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "amendedDate",
+    "FieldType": "Date",
+    "ElementLabel": "Amended",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -52,6 +59,23 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\"",
     "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "translatedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Translated document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "translationUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Welsh translation upload time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translatedDocument=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -117,7 +141,8 @@
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -165,9 +190,80 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "specialGuardians",
+    "FieldType": "Text",
+    "ElementLabel": "Special guardians",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "markedFinal",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is the order final?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "linkedApplicationId",
+    "FieldType": "Text",
+    "ElementLabel": "Linked application",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "othersNotified",
+    "FieldType": "Text",
+    "ElementLabel": "Others notified",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "sentForTranslationLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Sent for translation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needTranslation=\"YES\" AND translatedDocument!=\"*\""
   }
 ]

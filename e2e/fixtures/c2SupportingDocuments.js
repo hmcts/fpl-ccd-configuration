@@ -11,5 +11,5 @@ module.exports = {
     minute: 0,
     second: 0,
   },
-  document: config.testFile,
+  document: config.testPdfFile,
 };

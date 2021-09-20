@@ -9,11 +9,14 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.GATEKEEPER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
@@ -23,12 +26,14 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
 class UserServiceTest {
 
+    private static final Long CASE_ID = 12345L;
     private static final String USER_EMAIL = "user@email.com";
     private static final String USER_AUTHORISATION = "USER_AUTH";
 
     private final RequestData requestData = mock(RequestData.class);
     private final IdamClient client = mock(IdamClient.class);
-    private final UserService underTest = new UserService(client, requestData);
+    private final CaseAccessService accessService = mock(CaseAccessService.class);
+    private final UserService underTest = new UserService(client, requestData, accessService);
 
     @Test
     void shouldReturnUserEmail() {
@@ -40,6 +45,19 @@ class UserServiceTest {
         String email = underTest.getUserEmail();
 
         assertThat(email).isEqualTo(USER_EMAIL);
+    }
+
+    @Test
+    void shouldReturnUserName() {
+        when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
+        when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(UserDetails.builder()
+            .surname("Smith")
+            .forename("John")
+            .build());
+
+        String name = underTest.getUserName();
+
+        assertThat(name).isEqualTo("John Smith");
     }
 
     @Test
@@ -70,7 +88,6 @@ class UserServiceTest {
 
         assertThat(actualUserDetails).isEqualTo(expectedUserDetails);
     }
-
 
     @Nested
     class IsHmctsAdminUser {
@@ -110,6 +127,32 @@ class UserServiceTest {
             when(requestData.userRoles()).thenReturn(roles);
 
             assertThat(underTest.isHmctsAdminUser()).isFalse();
+        }
+    }
+
+    @Nested
+    class HasAnyCaseRoleFromTests {
+        @Test
+        void shouldReturnTrueWhenCaseRolePresent() {
+            when(accessService.getUserCaseRoles(CASE_ID)).thenReturn(Set.of(SOLICITORA));
+            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORA), CASE_ID)).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseWhenCaseRoleNotPresent() {
+            when(accessService.getUserCaseRoles(CASE_ID)).thenReturn(Set.of(SOLICITORA));
+            assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORB), CASE_ID)).isFalse();
+        }
+    }
+
+    @Nested
+    class GetUserDetails {
+        @Test
+        void shouldReturnUserDetails() {
+            UserDetails userDetailsMock = mock(UserDetails.class);
+            when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
+            when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(userDetailsMock);
+            assertThat(underTest.getUserDetails()).isEqualTo(userDetailsMock);
         }
     }
 }

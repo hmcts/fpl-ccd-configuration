@@ -10,6 +10,41 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
+    "ListElementCode": "translatedOrderDoc",
+    "FieldType": "Document",
+    "ElementLabel": "Translated document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "translationUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Welsh translation upload time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translatedOrderDoc=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
     "ListElementCode": "lastUploadedOrder",
     "FieldType": "Document",
     "ElementLabel": "File",
@@ -22,6 +57,14 @@
     "ListElementCode": "hearingDate",
     "FieldType": "Date",
     "ElementLabel": "The date of the hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "amendedDate",
+    "FieldType": "Date",
+    "ElementLabel": "Amended",
     "SecurityClassification": "Public"
   },
   {
@@ -51,6 +94,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
+    "ListElementCode": "sentForTranslationLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Sent for translation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needTranslation=\"YES\" AND translatedOrderDoc!=\"*\" AND orderStatus=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
     "ListElementCode": "directions",
     "FieldType": "Collection",
     "ElementLabel": "Directions",
@@ -74,7 +126,8 @@
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "this might appear as empty even if nothing entered (will be fixed by EUI-3798)"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -83,5 +136,45 @@
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "unsealedDocumentCopy",
+    "FieldType": "Document",
+    "ElementLabel": "Unsealed copy",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "customDirections",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CustomDirection",
+    "ElementLabel": "Custom directions",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "standardDirections",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "StandardDirection",
+    "ElementLabel": "Standard directions",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "standardDirections = \"DO NOT SHOW\"",
+    "Comment": "Used to store the selected others to notify"
   }
 ]

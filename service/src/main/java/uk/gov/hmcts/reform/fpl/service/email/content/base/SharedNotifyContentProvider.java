@@ -2,14 +2,15 @@ package uk.gov.hmcts.reform.fpl.service.email.content.base;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,27 +24,29 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 public abstract class SharedNotifyContentProvider extends AbstractEmailContentProvider {
 
-    protected <T extends SharedNotifyTemplate> T buildNotifyTemplate(T template,
-                                                                     Long caseId,
-                                                                     Orders orders,
-                                                                     Hearing hearing,
-                                                                     List<Element<Respondent>> respondents1) {
-        List<String> ordersAndDirections = buildOrdersAndDirections(orders);
+    @Autowired
+    private EmailNotificationHelper helper;
 
-        Optional<String> timeFrame = Optional.ofNullable(hearing)
+    protected <T extends SharedNotifyTemplate> T buildNotifyTemplate(T template, CaseData caseData) {
+        Long caseId = caseData.getId();
+        List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
+        Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
             .map(Hearing::getTimeFrame)
             .filter(StringUtils::isNotBlank);
 
         template.setOrdersAndDirections(ordersAndDirections);
         template.setTimeFramePresent(timeFrame.isPresent() ? YES.getValue() : NO.getValue());
         template.setTimeFrameValue(uncapitalize(timeFrame.orElse("")));
-        template.setUrgentHearing(
-            timeFrame.isPresent() && timeFrame.get().equals("Same day") ? YES.getValue() : NO.getValue());
-        template.setNonUrgentHearing(
-            timeFrame.isPresent() && !timeFrame.get().equals("Same day") ? YES.getValue() : NO.getValue());
-        template.setFirstRespondentName(getFirstRespondentLastName(respondents1));
+        template.setUrgentHearing(timeFrame.isPresent() && timeFrame.get().equals("Same day")
+                                  ? YES.getValue() : NO.getValue()
+        );
+        template.setNonUrgentHearing(timeFrame.isPresent() && !timeFrame.get().equals("Same day")
+                                     ? YES.getValue() : NO.getValue()
+        );
+        template.setFirstRespondentName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setReference(String.valueOf(caseId));
         template.setCaseUrl(getCaseUrl(caseId));
+        template.setChildLastName(helper.getEldestChildLastName(caseData.getAllChildren()));
 
         return template;
     }

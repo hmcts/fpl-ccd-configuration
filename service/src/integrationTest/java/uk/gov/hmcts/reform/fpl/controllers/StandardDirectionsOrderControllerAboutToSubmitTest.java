@@ -11,18 +11,16 @@ import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -83,10 +81,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     private static final LocalDateTime HEARING_END_DATE = LocalDateTime.of(2020, 2, 20, 11, 11, 11);
     private static final String DIRECTION_TYPE = "Identify alternative carers";
     private static final String DIRECTION_TEXT = "Contact the parents to make sure there is a complete family tree "
-                                                 + "showing family members who could be alternative carers.";
-    private static final String LA_NAME = "example";
-    private static final String COURT_NAME = "Family Court";
-    private static final String COURT_CODE = "11";
+        + "showing family members who could be alternative carers.";
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisService;
@@ -99,9 +94,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
 
     @MockBean
     private DocumentSealingService sealingService;
-
-    @MockBean
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     StandardDirectionsOrderControllerAboutToSubmitTest() {
         super("draft-standard-directions");
@@ -123,9 +115,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .willReturn(c6Document);
         given(uploadDocumentService.uploadPDF(sdoBinaries, sdoFileName)).willReturn(SDO);
         given(uploadDocumentService.uploadPDF(c6Binaries, c6FileName)).willReturn(C6_DOCUMENT);
-        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME)).willReturn(
-            new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE)
-        );
     }
 
     @Test
@@ -239,10 +228,10 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
                 .endDate(now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
-            .caseLocalAuthority(LA_NAME)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("1234")
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
-            .sdoRouter(SDORoute.URGENT)
+            .sdoRouter(GatekeepingOrderRoute.URGENT)
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .urgentHearingAllocation(allocation)
                 .urgentHearingOrderDocument(urgentReference)
@@ -285,7 +274,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             "preparedSDO", DocumentReference.builder().build(),
             "currentSDO", DocumentReference.builder().build(),
             "replacementSDO", DocumentReference.builder().build(),
-            "useServiceRoute", "",
             "useUploadRoute", "YES",
             "noticeOfProceedings", NoticeOfProceedings.builder().build()
         ));
@@ -332,12 +320,12 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
                 .endDate(now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
-            .caseLocalAuthority(LA_NAME)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateSubmitted(dateNow())
-            .applicants(getApplicant())
+            .localAuthorities(getLocalAuthority())
             .familyManCaseNumber("1234")
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
-            .sdoRouter(SDORoute.SERVICE)
+            .sdoRouter(GatekeepingOrderRoute.SERVICE)
             .allParties(buildDirection(ALL_PARTIES))
             .localAuthorityDirections(buildDirection(LOCAL_AUTHORITY))
             .respondentDirections(buildDirection(PARENTS_AND_RESPONDENTS))
@@ -361,11 +349,11 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
                 .orderStatus(status)
                 .orderDoc(document)
                 .build())
-            .caseLocalAuthority(LA_NAME)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("1234")
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .noticeOfProceedings(buildNoticeOfProceedings())
-            .sdoRouter(SDORoute.UPLOAD)
+            .sdoRouter(GatekeepingOrderRoute.UPLOAD)
             .state(GATEKEEPING)
             .id(1234123412341234L);
 
@@ -450,8 +438,11 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         return wrapElements(direction.toBuilder().directionType("Direction").build());
     }
 
-    private List<Element<Applicant>> getApplicant() {
-        return wrapElements(Applicant.builder().party(ApplicantParty.builder().organisationName("").build()).build());
+    private List<Element<LocalAuthority>> getLocalAuthority() {
+        return wrapElements(LocalAuthority.builder()
+            .designated("Yes")
+            .name("Local authority name")
+            .build());
     }
 
     private NoticeOfProceedings buildNoticeOfProceedings() {

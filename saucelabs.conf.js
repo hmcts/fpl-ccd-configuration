@@ -3,7 +3,7 @@
 const supportedBrowsers = require('./e2e/crossbrowser/supportedBrowsers.js');
 const testConfig = require('./e2e/config');
 
-const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 45000;
+const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 30000;
 const smartWait = parseInt(process.env.SMART_WAIT) || 30000;
 const browser = process.env.SAUCELABS_BROWSER || 'chrome';
 const defaultSauceOptions = {
@@ -11,8 +11,8 @@ const defaultSauceOptions = {
   accessKey: process.env.SAUCE_ACCESS_KEY,
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
-  windowSize: '1600x900',
   tags: ['FPL'],
+  maxDuration: 3000,
 };
 
 function merge(intoObject, fromObject) {
@@ -70,12 +70,24 @@ const setupConfig = {
     StepListener: {
       require: './e2e/helpers/stepListener.js',
     },
+    },
+    Mochawesome: {
+      uniqueScreenshotNames: true,
+    },
   },
   plugins: {
     retryFailedStep: {
       enabled: true,
       retries: 2,
-    }
+    },
+    autoDelay: {
+      enabled: true,
+      delayAfter: 1000,
+    },
+    screenshotOnFail: {
+      enabled: true,
+      fullPageScreenshots: true,
+    },
   },
   include: {
     config: './e2e/config.js',
@@ -101,6 +113,7 @@ const setupConfig = {
     enterFactorsAffectingParentingEventPage: './e2e/pages/events/enterFactorsAffectingParentingEvent.page.js',
     enterInternationalElementEventPage: './e2e/pages/events/enterInternationalElementEvent.page.js',
     enterOtherProceedingsEventPage: './e2e/pages/events/enterOtherProceedingsEvent.page.js',
+    enterLanguageRequirementsEventPage: './e2e/pages/events/enterLanguageRequirementsEvent.page.js',
     enterAllocationProposalEventPage: './e2e/pages/events/enterAllocationProposalEvent.page.js',
     enterAllocationDecisionEventPage: './e2e/pages/events/enterAllocationDecisionEvent.page.js',
     enterAttendingHearingEventPage: './e2e/pages/events/enterAttendingHearingEvent.page.js',
@@ -113,7 +126,7 @@ const setupConfig = {
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
-    createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
+    addGatekeepingOrderEventPage: './e2e/pages/events/addGatekeepingOrderEvent.page.js',
     placementEventPage: './e2e/pages/events/placementEvent.page.js',
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
@@ -121,15 +134,16 @@ const setupConfig = {
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
     addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
     addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
-    closeTheCaseEventPage: './e2e/pages/events/closeTheCaseEvent.page.js',
+    recordFinalDecisionsEventPage: './e2e/pages/events/recordFinalDecisionsEvent.page.js',
     returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
     uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js',
     reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js',
-    removeOrderEventPage: './e2e/pages/events/removeOrderEvent.page.js',
+    removalToolEventPage: './e2e/pages/events/removalToolEvent.page.js',
     manageDocumentsEventPage: './e2e/pages/events/manageDocumentsEvent.page.js',
     manageDocumentsLAEventPage: './e2e/pages/events/manageDocumentsLAEvent.page.js',
     changeCaseStateEventPage: './e2e/pages/events/changeCaseStateEvent.page.js',
     manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
+    manageLegalCounsellorsEventPage: './e2e/pages/events/manageLegalCounsellorsEvent.page.js',
     addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',

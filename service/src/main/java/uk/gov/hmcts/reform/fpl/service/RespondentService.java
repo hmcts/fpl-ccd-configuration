@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
@@ -112,29 +113,28 @@ public class RespondentService {
         return String.format("%s %s", firstName, lastName);
     }
 
-    public List<RespondentSolicitor> getRegisteredSolicitors(List<Element<Respondent>> respondents) {
+    public List<Respondent> getRespondentsWithRegisteredSolicitors(List<Element<Respondent>> respondents) {
         return unwrapElements(respondents)
             .stream()
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasRegisteredOrganisation())
-            .map(Respondent::getSolicitor)
             .collect(Collectors.toList());
     }
 
-    public List<RespondentSolicitor> getUnregisteredSolicitors(List<Element<Respondent>> respondents) {
+    public List<Respondent> getRespondentsWithUnregisteredSolicitors(List<Element<Respondent>> respondents) {
         return unwrapElements(respondents)
             .stream()
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasUnregisteredOrganisation())
-            .map(Respondent::getSolicitor)
             .collect(Collectors.toList());
     }
 
-    public List<ChangeOrganisationRequest> getRepresentationChanges(List<Element<Respondent>> after,
-                                                                    List<Element<Respondent>> before) {
+    public List<ChangeOrganisationRequest> getRepresentationChanges(List<Element<WithSolicitor>> after,
+                                                                    List<Element<WithSolicitor>> before,
+                                                                    SolicitorRole.Representing target) {
 
-        final List<Element<Respondent>> newRespondents = defaultIfNull(after, new ArrayList<>());
-        final List<Element<Respondent>> oldRespondents = defaultIfNull(before, new ArrayList<>());
+        final List<Element<WithSolicitor>> newRespondents = defaultIfNull(after, new ArrayList<>());
+        final List<Element<WithSolicitor>> oldRespondents = defaultIfNull(before, new ArrayList<>());
 
         final Map<UUID, Organisation> newRespondentsOrganisations = organisationByRespondentId(newRespondents);
         final Map<UUID, Organisation> oldRespondentsOrganisations = organisationByRespondentId(oldRespondents);
@@ -142,7 +142,7 @@ public class RespondentService {
         final List<ChangeOrganisationRequest> changeRequests = new ArrayList<>();
 
         for (int i = 0; i < newRespondents.size(); i++) {
-            SolicitorRole solicitorRole = SolicitorRole.values()[i];
+            SolicitorRole solicitorRole = SolicitorRole.values(target).get(i);
             UUID respondentId = newRespondents.get(i).getId();
 
             Organisation newOrganisation = newRespondentsOrganisations.get(respondentId);
@@ -156,7 +156,7 @@ public class RespondentService {
         return changeRequests;
     }
 
-    private Map<UUID, Organisation> organisationByRespondentId(List<Element<Respondent>> respondents) {
+    private Map<UUID, Organisation> organisationByRespondentId(List<Element<WithSolicitor>> respondents) {
         return respondents.stream().collect(
             HashMap::new,
             (container, respondent) -> container.put(respondent.getId(), getOrganisation(respondent.getValue())),
@@ -185,9 +185,9 @@ public class RespondentService {
             .build();
     }
 
-    private Organisation getOrganisation(Respondent respondent) {
+    private Organisation getOrganisation(WithSolicitor respondent) {
         return Optional.ofNullable(respondent)
-            .map(Respondent::getSolicitor)
+            .map(WithSolicitor::getSolicitor)
             .map(RespondentSolicitor::getOrganisation)
             .filter(org -> isNotEmpty(org.getOrganisationID()))
             .orElse(null);

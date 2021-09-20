@@ -13,7 +13,7 @@ class SolicitorRoleTest {
     @ParameterizedTest
     @MethodSource("typeToEnumSource")
     void shouldConvertTypeStringToSolicitorRole(String label, SolicitorRole expectedSolicitorRole) {
-        assertThat(SolicitorRole.from(label)).isEqualTo(expectedSolicitorRole);
+        assertThat(SolicitorRole.from(label)).isPresent().hasValue(expectedSolicitorRole);
     }
 
     private static Stream<Arguments> typeToEnumSource() {

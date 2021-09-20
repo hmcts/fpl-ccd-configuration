@@ -8,6 +8,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -38,6 +39,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -77,6 +79,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -113,6 +116,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -143,6 +147,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"

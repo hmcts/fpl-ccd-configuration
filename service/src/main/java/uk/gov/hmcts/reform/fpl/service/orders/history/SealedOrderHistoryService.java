@@ -6,17 +6,24 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +33,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -36,35 +44,57 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeF
 public class SealedOrderHistoryService {
 
     private final IdentityService identityService;
-    private final ChildrenService childrenService;
+    private final ChildrenSmartSelector childrenSmartSelector;
+    private final AppointedGuardianFormatter appointedGuardianFormatter;
+    private final OthersService othersService;
     private final OrderCreationService orderCreationService;
+    private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
+    private final SealedOrderHistoryTypeGenerator typeGenerator;
+    private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker;
+    private final OthersNotifiedGenerator othersNotifiedGenerator;
+    private final SealedOrderLanguageRequirementGenerator languageRequirementGenerator;
     private final Time time;
+
+    private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
 
     public Map<String, Object> generate(CaseData caseData) {
         List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
-        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
+        List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData);
 
         DocumentReference sealedPdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
 
-        pastOrders.add(element(identityService.generateId(), GeneratedOrder.builder()
+        GeneratedOrder.GeneratedOrderBuilder generatedOrderBuilder = GeneratedOrder.builder()
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
-            .title(manageOrdersEventData.getManageOrdersTitle())
-            .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
+            .title(extraTitleGenerator.generate(caseData))
+            .type(typeGenerator.generate(caseData))
+            .markedFinal(sealedOrderHistoryFinalMarker.calculate(caseData).getValue())
             .children(selectedChildren)
+            .others(selectedOthers) // hidden field, to store the selected others for notify
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
-            .childrenDescription(getChildrenForOrder(selectedChildren))
+            .childrenDescription(getChildrenForOrder(selectedChildren, caseData))
+            .specialGuardians(appointedGuardianFormatter.getGuardiansNamesForTab(caseData))
+            .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
             .document(sealedPdfOrder)
-            .unsealedDocumentCopy(plainWordOrder)
-            .build()));
+            .translationRequirements(languageRequirementGenerator.translationRequirements(caseData))
+            .unsealedDocumentCopy(plainWordOrder);
+
+        Optional.ofNullable(manageOrdersEventData.getManageOrdersLinkedApplication())
+            .map(DynamicList::getValueCode)
+            .ifPresent(generatedOrderBuilder::linkedApplicationId);
+
+        pastOrders.add(element(identityService.generateId(), generatedOrderBuilder.build()));
 
         pastOrders.sort(legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc());
 
-        return Map.of("orderCollection", pastOrders);
+        Map<String, Object> data = new HashMap<>(manageOrdersClosedCaseFieldGenerator.generate(caseData));
+        data.put("orderCollection", pastOrders);
+        return data;
     }
 
     public GeneratedOrder lastGeneratedOrder(CaseData caseData) {
@@ -98,7 +128,13 @@ public class SealedOrderHistoryService {
             Comparator.nullsLast(reverseOrder()));
     }
 
-    private String getChildrenForOrder(List<Element<Child>> selectedChildren) {
+    private String getChildrenForOrder(List<Element<Child>> selectedChildren, CaseData caseData) {
+        String appliesToAllChildren = caseData.getOrderAppliesToAllChildren();
+
+        if (YES.getValue().equals(appliesToAllChildren)) {
+            return null;
+        }
+
         return Optional.ofNullable(selectedChildren).map(
             children -> children.stream().map(
                 child -> child.getValue().asLabel()

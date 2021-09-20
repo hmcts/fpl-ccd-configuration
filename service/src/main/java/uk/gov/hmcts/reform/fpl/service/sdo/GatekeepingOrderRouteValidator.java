@@ -31,6 +31,7 @@ public class GatekeepingOrderRouteValidator {
 
     public List<String> allowAccessToUrgentHearingRoute(CaseData caseData) {
         List<String> errors = new ArrayList<>();
+
         if (CASE_MANAGEMENT == caseData.getState()) {
             errors.add(URGENT_ROUTE_VALIDATION_MESSAGE);
         } else if (isEmpty(caseData.getHearingDetails())) {

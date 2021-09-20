@@ -20,8 +20,8 @@ module.exports = {
       children: `#proceeding_${index}children`,
       guardian: `#proceeding_${index}guardian`,
       sameGuardianNeeded: {
-        yes: `#proceeding_${index}sameGuardianNeeded-Yes`,
-        no: `#proceeding_${index}sameGuardianNeeded-No`,
+        yes: `#proceeding_${index}sameGuardianNeeded_Yes`,
+        no: `#proceeding_${index}sameGuardianNeeded_No`,
       },
     };
   },

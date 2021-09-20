@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -10,11 +10,13 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -36,7 +38,7 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
         boolean removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
 
         if (!removed) {
-            throw new RemovableOrderNotFoundException(removedOrderId);
+            throw new RemovableOrderOrApplicationNotFoundException(removedOrderId);
         }
 
         generatedRemovableOrder = generatedRemovableOrder.toBuilder()
@@ -62,7 +64,11 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
         data.put("orderToBeRemoved", generatedRemovableOrder.getDocument());
         data.put("orderTitleToBeRemoved", defaultIfNull(generatedRemovableOrder.getTitle(),
             generatedRemovableOrder.getType()));
-        data.put("orderIssuedDateToBeRemoved", generatedRemovableOrder.getDateOfIssue());
+        data.put("orderIssuedDateToBeRemoved", Optional.ofNullable(generatedRemovableOrder.getDateOfIssue())
+            .orElseGet(
+                () -> formatLocalDateTimeBaseUsingFormat(generatedRemovableOrder.getDateTimeIssued(), "d MMMM yyyy")
+            )
+        );
         data.put("orderDateToBeRemoved", generatedRemovableOrder.getDate());
         data.put("showRemoveCMOFieldsFlag", NO.getValue());
     }

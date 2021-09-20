@@ -18,10 +18,10 @@ class ApproveOrdersTemplateSerializerTest extends SerializerTest {
     @Test
     void shouldDefaultSerializeFields() {
         ApprovedOrdersTemplate template = ApprovedOrdersTemplate.builder()
-            .respondentLastName("Smith").build();
+            .lastName("Smith").build();
 
         Map<String, Object> templateMap = mapper.convertValue(template, new TypeReference<>() {});
-        assertThat(templateMap).hasFieldOrPropertyWithValue("respondentLastName", "Smith");
+        assertThat(templateMap).containsEntry("respondentLastName", "Smith");
     }
 
     @Test
@@ -39,8 +39,8 @@ class ApproveOrdersTemplateSerializerTest extends SerializerTest {
 
         assertThat(templateMap)
             .doesNotContainKey("attachedDocuments")
-            .hasFieldOrPropertyWithValue("attachedDocument1", map1)
-            .hasFieldOrPropertyWithValue("attachedDocument2", map2)
-            .hasFieldOrPropertyWithValue("attachedDocument3", "");
+            .containsEntry("attachedDocument1", map1)
+            .containsEntry("attachedDocument2", map2)
+            .containsEntry("attachedDocument3", "");
     }
 }

@@ -46,14 +46,14 @@ fees-register:
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: ${FEES_REGISTER_C2_WITHOUT_NOTICE_KEYWORD:GeneralAppWithoutNotice}
+      keyword: GeneralAppWithoutNotice
       service: other
     C2_WITH_NOTICE:
       channel: default
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: notice
+      keyword: ${C2_WITH_NOTICE:notice}
       service: other
     CARE_ORDER:
       channel: default
@@ -116,7 +116,7 @@ fees-register:
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: GHI
+      keyword: ${ESO_EXTENSION:GHI}
       service: private law
     CHILD_ARRANGEMENTS:
       channel: default
@@ -144,28 +144,28 @@ fees-register:
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: HIJ
+      keyword: ${WARRANT_TO_ASSIST_PERSON_KEYWORD:HIJ}
       service: private law
     CHILD_ASSESSMENT:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: NOP
+      keyword: ${CHILD_ASSESSMENT_KEYWORD:NOP}
       service: private law
     CONTACT_WITH_CHILD_IN_CARE:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: WXY
+      keyword: ${CONTACT_WITH_CHILD_IN_CARE_KEYWORD:WXY}
       service: private law
     CHANGE_SURNAME:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: ZAB
+      keyword: ${CHANGE_SURNAME_KEYWORD:ZAB}
       service: private law
     SECURE_ACCOMMODATION_ENGLAND:
       channel: default
@@ -179,28 +179,28 @@ fees-register:
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: FGH
+      keyword: ${SPECIAL_GUARDIANSHIP_KEYWORD:FGH}
       service: private law
     APPOINTMENT_OF_GUARDIAN:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: UVW
+      keyword: ${APPOINTMENT_OF_GUARDIAN_KEYWORD:UVW}
       service: private law
     PARENTAL_RESPONSIBILITY_FATHER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: XYZ
+      keyword: ${PARENTAL_RESPONSIBILITY_FATHER_KEYWORD:XYZ}
       service: private law
     PARENTAL_RESPONSIBILITY_FEMALE_PARENT:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: AABC
+      keyword: ${PARENTAL_RESPONSIBILITY_FEMALE_KEYWORD:AABC}
       service: private law
     SECURE_ACCOMMODATION_WALES:
       channel: default
@@ -214,7 +214,7 @@ fees-register:
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: JKL
+      keyword: ${DECLARATION_OF_PARENTAGE:JKL}
       service: other
 
 payment:

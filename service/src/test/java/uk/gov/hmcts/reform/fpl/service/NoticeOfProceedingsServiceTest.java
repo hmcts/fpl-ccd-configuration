@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.service.noticeofproceedings.NoticeOfProceedingsLanguageFactory;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -56,7 +57,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {JacksonAutoConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
     HearingVenueLookUpService.class, FixedTimeConfiguration.class, NoticeOfHearingGenerationService.class,
-    LookupTestConfig.class, DocmosisConfiguration.class, NoticeOfProceedingsService.class, CaseDetailsHelper.class})
+    NoticeOfProceedingsLanguageFactory.class,
+    LookupTestConfig.class, DocmosisConfiguration.class, NoticeOfProceedingsService.class, CaseDetailsHelper.class,
+    CourtService.class})
 class NoticeOfProceedingsServiceTest {
     private static final String JUDGE_SURNAME = "Davidson";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
@@ -234,7 +237,7 @@ class NoticeOfProceedingsServiceTest {
             .willReturn(document);
 
         List<Element<DocumentBundle>> noticeOfProceedings
-            = noticeOfProceedingService.uploadAndPrepareNoticeOfProceedingBundle(caseData, List.of(C6, C6A));
+            = noticeOfProceedingService.uploadNoticesOfProceedings(caseData, List.of(C6, C6A));
 
         assertThat(noticeOfProceedings.size()).isEqualTo(2);
     }

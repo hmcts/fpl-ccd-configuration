@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,5 +22,9 @@ public class LocalAuthorityNameLookupConfiguration {
         checkNotNull(localAuthorityCode, "Local authority code cannot be null");
 
         return checkNotNull(mapping.get(localAuthorityCode), "Local authority '" + localAuthorityCode + "' not found");
+    }
+
+    public Map<String, String> getLocalAuthoritiesNames() {
+        return new HashMap<>(mapping);
     }
 }

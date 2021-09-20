@@ -118,12 +118,12 @@ public class CaseService {
             .build();
     }
 
-    public void submittedCallback(CaseData caseData, User user, String callback) {
+    public void submittedCallback(CaseData caseData, CaseData caseDataBefore, User user, String callback) {
         SerenityRest
             .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
             .contentType(APPLICATION_JSON)
-            .body(toCallbackRequest(caseData))
+            .body(toCallbackRequest(caseData, caseDataBefore))
             .post(callback)
             .then()
             .statusCode(HTTP_OK);
@@ -144,21 +144,30 @@ public class CaseService {
         return caseConverter.convert(caseDetails);
     }
 
-    private CallbackRequest toCallbackRequest(CaseDetails caseDetails) {
+    private CallbackRequest toCallbackRequest(CaseDetails caseDetails, CaseDetails caseDetailsBefore) {
         return CallbackRequest.builder()
             .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
             .build();
     }
 
     private CallbackRequest toCallbackRequest(CaseData caseData) {
-        CaseDetails caseDetails = CaseDetails.builder()
+        return toCallbackRequest(caseData, caseData);
+    }
+
+    private CallbackRequest toCallbackRequest(CaseData caseData, CaseData caseDataBefore) {
+        CaseDetails caseDetails = toCaseDetails(caseData);
+        CaseDetails caseDetailsBefore = toCaseDetails(caseDataBefore);
+
+        return toCallbackRequest(caseDetails, caseDetailsBefore);
+    }
+
+    private CaseDetails toCaseDetails(CaseData caseData) {
+        return CaseDetails.builder()
             .id(caseData.getId())
             .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
             .data(objectMapper.convertValue(caseData, MAP_TYPE))
             .build();
-
-        return toCallbackRequest(caseDetails);
     }
 }
 

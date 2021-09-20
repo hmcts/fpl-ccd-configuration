@@ -26,7 +26,7 @@ public class MlaLookupConfiguration {
             mapping = emptyMap();
             log.warn("Managing local authority to local authorities config is missing or empty");
         } else {
-            this.mapping = LookupConfigParser.parse(config, value -> Stream.of(value.split(","))
+            this.mapping = LookupConfigParser.parse(config, value -> Stream.of(value.split("\\|"))
                 .map(StringUtils::trim)
                 .filter(StringUtils::isNotBlank)
                 .collect(toList()));

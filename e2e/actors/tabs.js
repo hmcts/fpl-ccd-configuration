@@ -17,6 +17,30 @@ function tabFieldSelector(pathToField) {
   return `${selector}//*[contains(@class,"complex-panel-simple-field") and .//th/span[text()="${fieldName}"]]`;
 }
 
+function tabLabelSelector(pathToField) {
+  let path = [].concat(pathToField);
+  let fieldName = path.splice(-1, 1)[0];
+  let selector = TAB_CLASS_SELECTOR;
+
+  path.forEach(step => {
+    selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+  });
+
+  return `${selector}//*//p[text()="${fieldName}"]`;
+}
+
+function tabTagSelector(pathToField) {
+  let path = [].concat(pathToField);
+  let fieldName = path.splice(-1, 1)[0];
+  let selector = TAB_CLASS_SELECTOR;
+
+  path.forEach(step => {
+    selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+  });
+
+  return `${selector}//*[contains(@class,"govuk-tag") and text()="${fieldName}"]`;
+}
+
 function organisationTabFieldSelector(pathToField) {
   let path = [].concat(pathToField);
   let fieldName = path.splice(-1, 1)[0];
@@ -27,6 +51,10 @@ function organisationTabFieldSelector(pathToField) {
   });
 
   return `${selector}//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${fieldName}:"]]`;
+}
+
+function getTabSelector(tab){
+  return `//*[@role="tab"]/div[text() = "${tab}"]`;
 }
 
 module.exports = {
@@ -41,6 +69,27 @@ module.exports = {
       this.seeElement(locate(fieldSelector).withText(fieldValue));
     }
   },
+
+  seeTagInTab: function (pathToTag) {
+    const fieldSelector = tabTagSelector(pathToTag);
+    this.seeElement(locate(fieldSelector));
+  },
+
+  dontSeeTagInTab: function (pathToTag) {
+    const fieldSelector = tabTagSelector(pathToTag);
+    this.dontSeeElement(locate(fieldSelector));
+  },
+
+  seeLabelInTab: function (pathToTag) {
+    const fieldSelector = tabLabelSelector(pathToTag);
+    this.seeElement(locate(fieldSelector));
+  },
+
+  dontSeeLabelInTab: function (pathToTag) {
+    const fieldSelector = tabLabelSelector(pathToTag);
+    this.dontSeeElement(locate(fieldSelector));
+  },
+
   seeOrganisationInTab(pathToField, fieldValue) {
     const fieldSelector = organisationTabFieldSelector(pathToField);
 
@@ -100,6 +149,35 @@ module.exports = {
       .withText('mockFile.txt'));
   },
 
+  seeInExpandedDocumentSentForTranslation(title, uploadedBy, dateTimeUploaded) {
+    this.waitForElement(locate('details').withAttr({open})
+      .withChild(locate('summary')
+        .withText(title))
+      .withChild(locate('div'))
+      .withText('Uploaded by')
+      .withText(uploadedBy)
+      .withText('Date and time uploaded')
+      .withText(dateTimeUploaded)
+      .withText('Document')
+      .withText('mockFile.pdf')
+      .withText('Sent for translation'));
+  },
+
+  seeInExpandedDocumentTranslated(title, uploadedBy, dateTimeUploaded) {
+    this.waitForElement(locate('details').withAttr({open})
+      .withChild(locate('summary')
+        .withText(title))
+      .withChild(locate('div'))
+      .withText('Uploaded by')
+      .withText(uploadedBy)
+      .withText('Date and time uploaded')
+      .withText(dateTimeUploaded)
+      .withText('Document')
+      .withText('mockFile.pdf')
+      .withText('Translated document')
+      .withText('mockFile-Welsh.pdf'));
+  },
+
   dontSeeDocumentSection(documentSection, documentTitle) {
     this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
       .inside(locate('details').withChild(locate('summary').withText(documentSection))));
@@ -123,7 +201,7 @@ module.exports = {
   },
 
   async selectTab(tab){
-    const tabSelector = `//*[@role="tab"]/div[text() = "${tab}"]`;
+    const tabSelector = getTabSelector(tab);
 
     const numberOfElements = await this.grabNumberOfVisibleElements('//*[@role="tab"]');
 
@@ -136,5 +214,9 @@ module.exports = {
     }
 
     return this.click(tabSelector);
+  },
+
+  async dontSeeTab(tab){
+    this.dontSeeElement(getTabSelector(tab));
   },
 };

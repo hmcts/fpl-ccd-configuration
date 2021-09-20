@@ -41,6 +41,7 @@ public class ChangeOrganisationRequest {
         return Optional.ofNullable(caseRoleId)
             .map(DynamicList::getValueCode)
             .map(SolicitorRole::from)
+            .map(Optional::orElseThrow)
             .orElse(null);
     }
 

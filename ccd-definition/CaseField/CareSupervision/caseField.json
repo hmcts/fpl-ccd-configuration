@@ -223,22 +223,69 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "children1",
-    "Label": "Child",
+    "ID": "localAuthorities",
+    "Label": "Local authority",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ChildrenNew",
+    "FieldTypeParameter": "LocalAuthority",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "applicants",
-    "Label": "Applicants",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Applicants",
+    "ID": "localAuthority",
+    "Label": "Applicant local authority",
+    "FieldType": "LocalAuthority",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleagues",
+    "Label": "Colleague",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Colleague",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleaguesLabel",
+    "FieldType": "Label",
+    "Label": "<h2 class='govuk-!-margin-bottom-0'>Add colleagues to the case</h2><span class='form-hint'>Add at least 1 case solicitor</span>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "mainContactLabel",
+    "FieldType": "Label",
+    "Label": "<h2>Main contact</h2>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityColleaguesList",
+    "Label": "Nominate a case contact",
+    "HintText": "HMCTS will contact this person if they have any questions",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityMainContactShown",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Control filed not displayed"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -273,6 +320,61 @@
     "ID": "hearingPreferences",
     "Label": "Attending the hearing",
     "FieldType": "HearingPreferences",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementDescriptionLabel",
+    "Label": "Parties on a case can request orders and documents in Welsh, or translations from Welsh to English.\n\nIf they leave the case, or if translation is no longer needed, choose the ‘No’ button below.\nThis will remove the request from the case.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirement",
+    "Label": "Will English or Welsh translations be needed on this case?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementApplication",
+    "Label": "What language are you using to fill in this form?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "Language",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementApplicationNeedWelsh",
+    "Label": "Do you need this form translating into Welsh?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementApplicationNeedEnglish",
+    "Label": "Do you need this form translating into English?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languageRequirementUrgent",
+    "Label": " ",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -338,6 +440,52 @@
     "ID": "submittedForm",
     "Label": "C110a Application",
     "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "translatedSubmittedForm",
+    "Label": "Translated document",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormTranslationUploadDateTime",
+    "Label": "Welsh translation upload time",
+    "FieldType": "DateTime",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormTranslationRequirements",
+    "Label": "Welsh translation requirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormNeedTranslation",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedFormSentForTranslationLabel",
+    "Label": "Sent for translation",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1173,6 +1321,33 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "closeCaseDetailsHeadingLabel",
+    "FieldType": "Label",
+    "Label": "## Add decision details",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childNameLabel",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "finalDecisionDate",
+    "FieldType": "Date",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "closeCase",
     "FieldType": "CloseCase",
     "Label": " ",
@@ -1188,6 +1363,15 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Couldn't work out how to show the label of the field for the tab view yet hide it in the event, could do it with the elements of the complex type but not the actual case field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childFinalDecisionDetails",
+    "FieldType": "ChildFinalDecisionDetails",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1446,6 +1630,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sharedLocalAuthorityPolicy",
+    "Label": "Secondary local authority policy",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "outsourcingPolicy",
     "Label": "Outsourcing policy",
     "FieldType": "OrganisationPolicy",
@@ -1576,6 +1769,61 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherRecipientsHeader",
+    "FieldType": "Label",
+    "Label": "### Confirm recipients",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherRecipientsSubHeader",
+    "FieldType": "Label",
+    "Label": "You must check to see if there are restrictions on who should be notified about the application.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "othersToNotifyTitle",
+    "FieldType": "Label",
+    "Label": "#### Others in the case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "peopleToNotifyTitle",
+    "FieldType": "Label",
+    "Label": "#### People in the case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "notifyApplicationsToAllOthers",
+    "Label": "Notify all people on the case about this application?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasOthers",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide other selection as to when there are no others to notify",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "paymentDetailsLabel",
     "Label": "## Add payment details",
     "FieldType": "Label",
@@ -1661,6 +1909,107 @@
     "ID": "submissionRequiredFieldsInfo",
     "Label": "You can save and return to this page at any time. Questions marked with a * need to be completed before you can send your application.",
     "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantsList",
+    "Label": "Select applicant",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherApplicant",
+    "Label": "Add applicant's name",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "managingOrganisationRemovalInfo",
+    "Label": "Use this page to remove case access from the third party that created this case for you.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "managingOrganisationRemovalConfirmation",
+    "Label": "Press 'Continue' to remove this organisation, or use the 'Cancel' link below to return to the case details page.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "managingOrganisationName",
+    "Label": "Current managing organisation:",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "optionCount",
+    "Label": "Hidden field used to store the count of things to be shown/hidden",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "othersSelector",
+    "Label": "Select who should get the order",
+    "FieldType": "OthersSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "personSelector",
+    "Label": "Select who should be notified",
+    "FieldType": "PersonSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "people_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of names for respondents and others"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasRespondentsOrOthers",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide people in the case selection as to when there are no respondents or others to notify",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewCMOShowOthers",
+    "Label": " ",
+    "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

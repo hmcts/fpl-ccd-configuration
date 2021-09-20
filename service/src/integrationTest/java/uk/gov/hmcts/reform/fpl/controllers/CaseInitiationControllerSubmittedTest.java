@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
-import uk.gov.hmcts.reform.rd.model.Status;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
+import static uk.gov.hmcts.reform.rd.model.Status.ACTIVE;
 
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -62,9 +61,6 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
-    private CaseAccessDataStoreApi caseDataAccessApi;
 
     CaseInitiationControllerSubmittedTest() {
         super("case-initiation");
@@ -98,12 +94,12 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
         AddCaseAssignedUserRolesRequest expectedAssignment = assignment(caseData, organisation, LASOLICITOR,
             LOGGED_USER_ID, OTHER_USER_ID);
 
-        verify(caseDataAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedAssignment);
-        verify(caseDataAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
+        verify(caseAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedAssignment);
+        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
 
         verifyTaskListUpdated(caseData);
 
-        verifyNoMoreInteractions(caseDataAccessApi);
+        verifyNoMoreInteractions(caseAccessApi);
     }
 
     @ParameterizedTest
@@ -130,10 +126,10 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
         AddCaseAssignedUserRolesRequest expectedUserAssignment = assignment(caseData, organisation, outsourcedCaseRole,
             LOGGED_USER_ID);
 
-        verify(caseDataAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
-        verify(caseDataAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserAssignment);
+        verify(caseAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
+        verify(caseAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserAssignment);
 
-        verifyNoMoreInteractions(caseDataAccessApi);
+        verifyNoMoreInteractions(caseAccessApi);
 
         verifyTaskListUpdated(caseData);
     }
@@ -144,7 +140,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
 
         givenUsersInSameOrganisation(LOGGED_USER_ID, OTHER_USER_ID);
 
-        doThrow(feignException(SC_BAD_REQUEST)).when(caseDataAccessApi).addCaseUserRoles(any(), any(), any());
+        doThrow(feignException(SC_BAD_REQUEST)).when(caseAccessApi).addCaseUserRoles(any(), any(), any());
 
         CaseData caseData = CaseData.builder()
             .id(nextLong())
@@ -163,7 +159,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void givenUsersInSameOrganisation(String... userIds) {
-        given(organisationApi.findUsersInOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
+        given(organisationApi.findUsersInCurrentUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
             .willReturn(organisation(userIds));
     }
 

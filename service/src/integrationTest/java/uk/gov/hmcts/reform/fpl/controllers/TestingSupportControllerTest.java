@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,10 +24,17 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.document.domain.UploadResponse;
+import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
+import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -35,11 +43,14 @@ import static com.microsoft.applicationinsights.core.dependencies.http.HttpStatu
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(TestingSupportController.class)
@@ -49,6 +60,7 @@ class TestingSupportControllerTest {
     private static final long CASE_ID = 1L;
     private static final String POPULATE_CASE_PATH = "/testing-support/case/populate/1";
     private static final String CREATE_CASE_PATH = "/testing-support/case/create";
+    private static final String TEST_DOCUMENT_PATH = "/testing-support/test-document";
     private static final String USER_ID = randomAlphanumeric(10);
     private static final String USER_AUTH_TOKEN = randomAlphanumeric(10);
     private static final String SERVICE_AUTH_TOKEN = randomAlphanumeric(10);
@@ -73,6 +85,9 @@ class TestingSupportControllerTest {
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
+
+    @MockBean
+    private DocumentUploadClientApi uploadClient;
 
     @BeforeEach
     void init() {
@@ -143,6 +158,36 @@ class TestingSupportControllerTest {
             .isEqualTo(new JSONObject(caseData).toString());
     }
 
+    @Test
+    void shouldGenerateDocument() throws Exception {
+        byte[] pdf = ResourceReader.readBytes("documents/document.pdf");
+        InMemoryMultipartFile file = new InMemoryMultipartFile("files", "mockFile.pdf", "application/pdf", pdf);
+        UploadResponse uploadResponse = mock(UploadResponse.class);
+        UploadResponse.Embedded embedded = mock(UploadResponse.Embedded.class);
+        Document uploadedDocument = testDocument();
+        DocumentReference uploadedReference = DocumentReference.buildFromDocument(uploadedDocument);
+
+
+        when(uploadClient.upload(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, List.of(file)))
+            .thenReturn(uploadResponse);
+        when(uploadResponse.getEmbedded()).thenReturn(embedded);
+        when(embedded.getDocuments()).thenReturn(List.of(uploadedDocument));
+
+        MockHttpServletResponse response = makeGetRequest(TEST_DOCUMENT_PATH).getResponse();
+        DocumentReference responseReference = mapper.readValue(response.getContentAsString(), DocumentReference.class);
+
+        assertThat(response.getStatus()).isEqualTo(SC_OK);
+        assertThat(responseReference).isEqualTo(uploadedReference);
+    }
+
+    private static Stream<Arguments> stateToEventNameSource() {
+        return Stream.of(
+            Arguments.of("GATEKEEPING", "populateCase-Gatekeeping"),
+            Arguments.of("SUBMITTED", "populateCase-Submitted"),
+            Arguments.of("PREPARE_FOR_HEARING", "populateCase-PREPARE_FOR_HEARING")
+        );
+    }
+
     private MvcResult makePostRequest(String url, Map<String, Object> body) throws Exception {
         return mockMvc
             .perform(post(url)
@@ -152,11 +197,11 @@ class TestingSupportControllerTest {
             ).andReturn();
     }
 
-    private static Stream<Arguments> stateToEventNameSource() {
-        return Stream.of(
-            Arguments.of("GATEKEEPING", "populateCase-Gatekeeping"),
-            Arguments.of("SUBMITTED", "populateCase-Submitted"),
-            Arguments.of("PREPARE_FOR_HEARING", "populateCase-PREPARE_FOR_HEARING")
-        );
+    private MvcResult makeGetRequest(String url) throws Exception {
+        return mockMvc
+            .perform(get(url)
+                .header("authorization", "Bearer token")
+            )
+            .andReturn();
     }
 }

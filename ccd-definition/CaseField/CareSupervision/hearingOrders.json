@@ -80,7 +80,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoJudgeInfo",
-    "Label": "This CMO will now be sent to:",
+    "Label": "Orders will be sent for approval to:",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -97,9 +97,227 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ordersToSendHeader",
+    "Label": "## Check your orders",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoToSend",
-    "Label": "Check the order",
+    "Label": " ",
     "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendOptionCount",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoToSendTranslationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend0",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements0",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend1",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements1",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend2",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements2",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend3",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements3",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend4",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements4",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend5",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements5",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend6",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements6",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend7",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements7",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend8",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements8",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSend9",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderToSendTranslationRequirements9",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "Label": "Is translation needed?",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -20,6 +19,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
@@ -89,10 +91,9 @@ class ApplicantAboutToStartControllerTest extends AbstractCallbackTest {
         given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
             .willReturn(POPULATED_ORGANISATION);
 
-        OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
+        OrganisationPolicy outsourcingPolicy = organisationPolicy("ORGEXT", null, LAMANAGING);
 
-        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID, null,
-            CaseRole.LASOLICITOR);
+        OrganisationPolicy localAuthorityPolicy = organisationPolicy(ORGANISATION_ID, null, LASOLICITOR);
 
         CaseData caseData = CaseData.builder()
             .localAuthorityPolicy(localAuthorityPolicy)

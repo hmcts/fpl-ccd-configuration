@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class LocalAuthorityUserLookupConfigurationTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_USER_IDS = "1,2,3";
+    private static final String LOCAL_AUTHORITY_USER_IDS = "1|2|3";
 
     private static final String CONFIG = String.format("%s=>%s", LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_USER_IDS);
 
@@ -45,7 +45,7 @@ class LocalAuthorityUserLookupConfigurationTest {
     void shouldReturnLocalAuthorityUserIdsWhenLocalAuthorityCodeExists() {
         List<String> localAuthorityUserIds = configuration.getUserIds(LOCAL_AUTHORITY_CODE);
 
-        assertThat(localAuthorityUserIds).containsExactly(LOCAL_AUTHORITY_USER_IDS.split(","));
+        assertThat(localAuthorityUserIds).containsExactly(LOCAL_AUTHORITY_USER_IDS.split("\\|"));
     }
 
 }

@@ -5,8 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
+
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -18,13 +22,18 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Builder(toBuilder = true)
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Child implements ConfidentialParty<Child> {
+public class Child implements WithSolicitor, ConfidentialParty<Child> {
     @Valid
     @NotNull(message = "You need to add details to children")
     private final ChildParty party;
 
     private String finalOrderIssued;
     private String finalOrderIssuedType;
+    private String finalDecisionReason;
+    private String finalDecisionDate;
+
+    private RespondentSolicitor solicitor;
+    private List<Element<LegalCounsellor>> legalCounsellors;
 
     public boolean containsConfidentialDetails() {
         String hiddenValue = defaultIfNull(party.getDetailsHidden(), "");

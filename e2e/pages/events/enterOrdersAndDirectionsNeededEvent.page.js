@@ -34,7 +34,7 @@ module.exports = {
     },
     removalAddress: '#orders_address_address',
     excluded: '#orders_excluded',
-    directions: '#orders_directions-Yes',
+    directions: '#orders_directions_Yes',
     directionsDetails: '#orders_directionDetails',
   },
 
@@ -128,8 +128,8 @@ module.exports = {
   },
 
   async enterAddress(address) {
-    await within(this.fields.removalAddress, () => {
-      postcodeLookup.enterAddressManually(address);
+    await within(this.fields.removalAddress, async () => {
+      await postcodeLookup.enterAddressManually(address);
     });
   },
 

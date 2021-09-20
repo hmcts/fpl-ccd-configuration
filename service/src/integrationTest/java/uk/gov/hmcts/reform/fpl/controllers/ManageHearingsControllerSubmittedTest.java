@@ -24,11 +24,13 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -41,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,6 +76,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -170,6 +175,9 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @MockBean
     private SendLetterApi sendLetterApi;
 
+    @MockBean
+    private OtherRecipientsInbox otherRecipientsInbox;
+
     ManageHearingsControllerSubmittedTest() {
         super("manage-hearings");
     }
@@ -267,6 +275,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
             .noticeOfHearing(testDocumentReference())
             .venue("162")
+            .others(emptyList())
             .build());
 
         final CaseData cdb = CaseData.builder()
@@ -288,6 +297,13 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
             .willReturn(NOTICE_OF_HEARING_BINARY);
 
+        given(otherRecipientsInbox.getNonSelectedRecipients(
+            EMAIL,
+            cdb,
+            emptyList(),
+            element -> element.getValue().getEmail())
+        ).willReturn(emptySet());
+
         given(sendLetterApi.sendLetter(eq(SERVICE_AUTH_TOKEN), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
@@ -299,9 +315,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
             .willReturn(COVERSHEET_RESPONDENT);
 
-        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue()))
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue(),
+            Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_REPRESENTATIVE_BINARY));
-        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty()))
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty(),
+            Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
 
         postSubmittedEvent(toCallBackRequest(cd, cdb));
@@ -386,7 +404,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", NEW_HEARING,
-                "hearingDetails", List.of(hearingWithNotice)
+                "hearingDetails", List.of(hearingWithNotice),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -429,7 +448,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", hearingOption,
                 "hearingReListOption", RE_LIST_NOW,
-                "hearingDetails", List.of(hearingWithNotice)
+                "hearingDetails", List.of(hearingWithNotice),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -471,7 +491,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Watson")
-                    .build()
+                    .build(),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -508,7 +529,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", hearingOption,
-                "hearingDetails", List.of(hearingWithNotice)
+                "hearingDetails", List.of(hearingWithNotice),
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE
             ))
             .state("Submitted")
             .build();
@@ -569,6 +591,9 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .caseSummaryHasNextHearing(hasNextHearing)
             .caseSummaryNextHearingType(hearingType)
             .caseSummaryNextHearingDate(hearingDate)
+            .caseSummaryCourtName(COURT_NAME)
+            .caseSummaryLanguageRequirement("No")
+            .caseSummaryLALanguageRequirement("No")
             .build());
     }
 

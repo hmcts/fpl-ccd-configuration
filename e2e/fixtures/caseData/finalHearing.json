@@ -161,7 +161,11 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -335,18 +339,26 @@
       {
         "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
         "value": {
-          "order":"TO BE FILLED WITH VALID DATA",
+          "order": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "cmo.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
           "dateSent": "2020-08-27",
           "dateIssued": "2020-08-27",
           "requestedChanges": null,
-          "judgeTitleAndName":"Her Honour Judge Reed"
+          "judgeTitleAndName": "Her Honour Judge Reed"
         }
       }
     ],
     "standardDirectionOrder": {
-      "orderDoc": "TO BE FILLED WITH VALID DATA",
+      "orderDoc": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "sdo.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
       "directions": [
         {
           "id": "c8f60fdf-d5fb-43cf-ad07-a38f86b6b96e",
@@ -657,36 +669,30 @@
         }
       }
     ],
-    "documents_socialWorkOther": [],
     "courtDirectionsHearingDate": "1 January 2050, 3:15pm",
     "respondentDirectionsCustom": [],
     "cafcassDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_checklist_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached"
-    },
     "otherPartiesDirectionsCustom": [],
     "localAuthorityDirectionsCustom": [],
     "respondentDirectionsHearingDate": "1 January 2050, 3:15pm",
     "otherPartiesDirectionsHearingDate": "1 January 2050, 3:15pm",
     "localAuthorityDirectionsHearingDate": "1 January 2050, 3:15pm",
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached"
-    }
+    "applicationDocuments": [
+      {
+        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedBy": null,
+          "documentName": null,
+          "documentType": "THRESHOLD",
+          "includedInSWET": null,
+          "dateTimeUploaded": null
+        }
+      }
+    ]
   }
 }

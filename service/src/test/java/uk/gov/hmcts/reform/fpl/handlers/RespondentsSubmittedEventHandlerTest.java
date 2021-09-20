@@ -8,19 +8,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.RespondentsSubmitted;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,9 +34,9 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.asser
 class RespondentsSubmittedEventHandlerTest {
 
     @Mock
-    private RegisteredRespondentSolicitorTemplate registeredTemplate;
+    private RegisteredRepresentativeSolicitorTemplate registeredTemplate;
     @Mock
-    private UnregisteredRespondentSolicitorTemplate unregisteredTemplate;
+    private UnregisteredRepresentativeSolicitorTemplate unregisteredTemplate;
 
     @Mock
     private NotificationService notificationService;
@@ -45,10 +45,10 @@ class RespondentsSubmittedEventHandlerTest {
     private RespondentService respondentService;
 
     @Mock
-    private RegisteredRespondentSolicitorContentProvider registeredContentProvider;
+    private RegisteredRepresentativeSolicitorContentProvider registeredContentProvider;
 
     @Mock
-    private UnregisteredRespondentSolicitorContentProvider unregisteredContentProvider;
+    private UnregisteredRepresentativeSolicitorContentProvider unregisteredContentProvider;
 
     @InjectMocks
     private RespondentsSubmittedEventHandler underTest;
@@ -58,24 +58,29 @@ class RespondentsSubmittedEventHandlerTest {
         final String recipient1 = "solicitor1@test.com";
         final String recipient2 = "solicitor2@test.com";
 
-        final RespondentSolicitor solicitor1 = RespondentSolicitor.builder().email(recipient1).build();
+        final Respondent respondent1 = Respondent.builder()
+            .party(RespondentParty.builder().firstName("William").lastName("Smith").build())
+            .solicitor(RespondentSolicitor.builder().email(recipient1).build())
+            .build();
 
-        final RespondentSolicitor solicitor2 = RespondentSolicitor.builder().email(recipient2).build();
+        final Respondent respondent2 = Respondent.builder()
+            .party(RespondentParty.builder().firstName("Emma").lastName("Jones").build())
+            .solicitor(RespondentSolicitor.builder().email(recipient2).build()).build();
 
         final CaseData caseData = CaseData.builder()
             .id(123L)
-            .respondents1(wrapElements(mock(Respondent.class), mock(Respondent.class)))
+            .respondents1(wrapElements(respondent1, respondent2))
             .build();
 
         final RespondentsSubmitted respondentsUpdated = new RespondentsSubmitted(caseData);
 
-        when(respondentService.getRegisteredSolicitors(caseData.getRespondents1()))
-            .thenReturn(new ArrayList<>(List.of(solicitor1, solicitor2)));
+        when(respondentService.getRespondentsWithRegisteredSolicitors(caseData.getRespondents1()))
+            .thenReturn(new ArrayList<>(List.of(respondent1, respondent2)));
 
-        when(registeredContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, solicitor1))
+        when(registeredContentProvider.buildContent(caseData, respondent1))
             .thenReturn(registeredTemplate);
 
-        when(registeredContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, solicitor2))
+        when(registeredContentProvider.buildContent(caseData, respondent2))
             .thenReturn(registeredTemplate);
 
         underTest.notifyRegisteredRespondentSolicitors(respondentsUpdated);
@@ -95,16 +100,18 @@ class RespondentsSubmittedEventHandlerTest {
     void shouldSendEmailToUnregisteredSolicitor() {
         final String expectedEmail = "test@test.com";
 
-        final RespondentSolicitor unregisteredSolicitor = RespondentSolicitor.builder().email(expectedEmail).build();
+        final Respondent respondent = Respondent.builder()
+            .solicitor(RespondentSolicitor.builder().email(expectedEmail).build())
+            .build();
 
-        final CaseData caseData = CaseData.builder().respondents1(wrapElements(mock(Respondent.class))).build();
+        final CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
         final RespondentsSubmitted submittedCaseEvent = new RespondentsSubmitted(caseData);
 
-        when(respondentService.getUnregisteredSolicitors(caseData.getRespondents1()))
-            .thenReturn(new ArrayList<>(List.of(unregisteredSolicitor)));
+        when(respondentService.getRespondentsWithUnregisteredSolicitors(caseData.getRespondents1()))
+            .thenReturn(new ArrayList<>(List.of(respondent)));
 
-        when(unregisteredContentProvider.buildContent(caseData))
+        when(unregisteredContentProvider.buildContent(caseData, respondent))
             .thenReturn(unregisteredTemplate);
 
         underTest.notifyUnregisteredRespondentSolicitors(submittedCaseEvent);

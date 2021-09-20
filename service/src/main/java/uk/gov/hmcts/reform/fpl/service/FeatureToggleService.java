@@ -46,13 +46,9 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
+    public boolean emailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
-    }
-
-    public boolean isSummaryTabEnabled() {
-        return ldClient.boolVariation("summary-tab-update", createLDUser(), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), true);
     }
 
     public boolean isSummaryTabFirstCronRunEnabled() {
@@ -63,8 +59,23 @@ public class FeatureToggleService {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }
 
-    public boolean isRetrievingOrganisationEnabled() {
-        return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
+    public boolean isNewDocumentUploadNotificationEnabled() {
+        return ldClient.boolVariation("document-upload-new-notification",
+            createLDUser(), false);
+
+    }
+
+    public boolean isFurtherEvidenceDocumentTabEnabled() {
+        return ldClient.boolVariation("further-evidence-document-tab",
+            createLDUser(), false);
+    }
+
+    public boolean isApplicantAdditionalContactsEnabled() {
+        return ldClient.boolVariation("applicant-additional-contacts", createLDUser(), false);
+    }
+
+    public boolean isLanguageRequirementsEnabled() {
+        return ldClient.boolVariation("language-requirements", createLDUser(), false);
     }
 
     private LDUser createLDUser() {
@@ -78,15 +89,5 @@ public class FeatureToggleService {
 
         values.forEach(builder::custom);
         return builder.build();
-    }
-
-    public boolean isFurtherEvidenceUploadNotificationEnabled() {
-        return ldClient.boolVariation("further-evidence-upload-notification",
-            createLDUser(), false);
-    }
-
-    public boolean isFurtherEvidenceDocumentTabEnabled() {
-        return ldClient.boolVariation("further-evidence-document-tab",
-            createLDUser(), false);
     }
 }

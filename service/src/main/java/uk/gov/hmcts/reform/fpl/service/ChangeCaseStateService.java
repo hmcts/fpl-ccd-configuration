@@ -8,8 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseController.CLOSE_CASE_TAB_FIELD;
-import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseController.DEPRIVATION_OF_LIBERTY_FLAG;
+import static uk.gov.hmcts.reform.fpl.controllers.RecordFinalDecisionsController.CLOSE_CASE_TAB_FIELD;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
@@ -45,7 +44,6 @@ public class ChangeCaseStateService {
     private Map<String, Object> migrateClosedCase(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        data.put(DEPRIVATION_OF_LIBERTY_FLAG, null);
         data.put(CLOSE_CASE_TAB_FIELD, null);
         data.put("state", caseData.getClosedStateRadioList());
 

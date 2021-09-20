@@ -108,12 +108,18 @@ class DateFormatterHelperTest {
     }
 
     @Test
+    void shouldParseAFormattedDateTimeToLocalDateTime() {
+        LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, DATE_TIME);
+        assertThat(parsed).isEqualTo(createDateTime());
+    }
+
+    @Test
     void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenMainFormat() {
         LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, DATE_TIME, TIME_DATE);
         assertThat(parsed).isEqualTo(createDateTime());
     }
 
-    @Test   
+    @Test
     void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenAlternativeFormat() {
         LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(TIME_JANUARY_2019, DATE_TIME, TIME_DATE);
         assertThat(parsed).isEqualTo(createDateTime());

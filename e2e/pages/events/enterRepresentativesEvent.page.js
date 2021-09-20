@@ -36,8 +36,8 @@ module.exports = {
       I.fillField(this.fields(elementIndex).representative.telephone, representative.telephone);
     }
     if (representative.address) {
-      await within(this.fields(elementIndex).representative.address, () => {
-        postcodeLookup.enterAddressManually(representative.address);
+      await within(this.fields(elementIndex).representative.address, async () => {
+        await postcodeLookup.enterAddressManually(representative.address);
       });
     }
     if (representative.servingPreferences) {

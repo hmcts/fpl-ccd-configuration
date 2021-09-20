@@ -24,11 +24,11 @@ module.exports = {
   },
 
   useAllocatedJudge(complexTypeAppender = '') {
-    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}-Yes`);
+    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}_Yes`);
   },
 
   useAlternateJudge(complexTypeAppender = '') {
-    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}-No`);
+    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}_No`);
   },
 
   selectJudgeTitle(complexTypeAppender = '', title = this.fields.judgeTitleRadioGroup.herHonourJudge, otherTitle = '') {

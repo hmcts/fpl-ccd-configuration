@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -64,7 +64,7 @@ public class RemoveOrderService {
             .filter(orderElement -> removedOrderId.equals(orderElement.getId()))
             .map(Element::getValue)
             .findAny()
-            .orElseThrow(() -> new RemovableOrderNotFoundException(removedOrderId));
+            .orElseThrow(() -> new RemovableOrderOrApplicationNotFoundException(removedOrderId));
     }
 
     public Optional<StandardDirectionOrder> getRemovedSDO(

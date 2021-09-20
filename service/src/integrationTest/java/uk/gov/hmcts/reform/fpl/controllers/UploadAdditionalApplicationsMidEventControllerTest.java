@@ -11,13 +11,21 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -36,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIAN
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -66,11 +75,22 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 .build()))
             .build();
 
+        Element<Representative> representative = element(Representative.builder()
+            .servingPreferences(RepresentativeServingPreferences.EMAIL)
+            .email("test@test.com").build());
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
             .temporaryOtherApplicationsBundle(temporaryOtherDocument)
             .temporaryC2Document(temporaryC2Document)
             .c2Type(WITH_NOTICE)
+            .representatives(List.of(representative))
+            .respondents1(wrapElements(Respondent.builder().representedBy(wrapElements(representative.getId()))
+                .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                .build()))
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .build())
             .build();
 
         List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.SPECIAL_GUARDIANSHIP,
@@ -79,13 +99,18 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-fee");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-data");
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
-            .containsKey("temporaryC2Document")
+            .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
+
+        assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
+        assertThat(String.valueOf(response.getData().get("people_label"))).contains(
+            "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - test1\nPerson 3: Other 2 - test2\n");
+        assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(3));
     }
 
     @Test
@@ -124,7 +149,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .temporaryC2Document(C2DocumentBundle.builder().type(WITH_NOTICE).build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "get-fee");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
 
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
     }

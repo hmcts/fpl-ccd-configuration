@@ -11,11 +11,20 @@ public class SendEmailResponseAssert extends AbstractAssert<SendEmailResponseAss
     private static final String URL = "https://documents\\.service\\.gov\\.uk/d/([\\w|-]+/[\\w|-]+\\?key=[\\w|-]+)";
     private static final Pattern PATTERN = Pattern.compile(URL);
 
+    public SendEmailResponseAssert(SendEmailResponse actual) {
+        super(actual, SendEmailResponseAssert.class);
+    }
+
+    public static SendEmailResponseAssert assertThat(SendEmailResponse actual) {
+        return new SendEmailResponseAssert(actual);
+    }
+
     public SendEmailResponseAssert hasSubject(String expectedSubject) {
         isNotNull();
         String actualSubject = actual.getSubject();
         if (!Objects.equals(actualSubject, expectedSubject)) {
-            failWithMessage("\nExpecting Subject to be\n<%s>\nbut was:\n<%s>",
+            throw failureWithActualExpected(
+                actualSubject, expectedSubject, "\nExpecting Subject to be\n<%s>\nbut was:\n<%s>",
                 expectedSubject, actualSubject
             );
         }
@@ -24,23 +33,19 @@ public class SendEmailResponseAssert extends AbstractAssert<SendEmailResponseAss
 
     public SendEmailResponseAssert hasBody(EmailContent emailContent) {
         isNotNull();
-        String actualBody = actual.getBody().replaceAll("\\P{Print}", "");
-        actualBody = cleanGovNotifyDocLink(actualBody);
-        String expectedBody = emailContent.body().replaceAll("\\P{Print}", "");
+        String actualBody = cleanGovNotifyDocLink(actual.getBody());
+        actualBody = standardiseLineBreaks(actualBody);
+        String expectedBody = emailContent.body();
         if (!Objects.equals(actualBody, expectedBody)) {
-            failWithMessage("\nExpecting Body to be\n<%s>\nbut was:\n<%s>",
-                expectedBody, actualBody
+            throw failureWithActualExpected(
+                actualBody, expectedBody, "\nExpected body to be\n<%s>\nbut was:\n<%s>", expectedBody, actualBody
             );
         }
         return this;
     }
 
-    public SendEmailResponseAssert(SendEmailResponse actual) {
-        super(actual, SendEmailResponseAssert.class);
-    }
-
-    public static SendEmailResponseAssert assertThat(SendEmailResponse actual) {
-        return new SendEmailResponseAssert(actual);
+    private String standardiseLineBreaks(String body) {
+        return body.replaceAll("\\r\\n", EmailContent.NEW_LINE);
     }
 
     private String cleanGovNotifyDocLink(String body) {

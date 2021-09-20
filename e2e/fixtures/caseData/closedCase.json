@@ -1,6 +1,30 @@
 {
   "state": "CLOSED",
   "caseData": {
+    "others": {
+      "firstOther": {
+        "DOB": null,
+        "name": "John Doe",
+        "gender": null,
+        "address": {
+          "County": "United Kingdom",
+          "PostCode": "CR0 2GE",
+          "PostTown": "London",
+          "AddressLine1": "Flat 12, Pinnacle Apartments",
+          "AddressLine2": "Saffron Central Square 11"
+        },
+        "telephone": null,
+        "birthPlace": "Newry",
+        "detailsHidden": null,
+        "representedBy": [],
+        "childInformation": null,
+        "litigationIssues": null,
+        "detailsHiddenReason": null,
+        "genderIdentification": null,
+        "litigationIssuesDetails": null
+      },
+      "additionalOthers": []
+    },
     "caseName": "e2e test case",
     "orders": {
       "orderType": [
@@ -163,7 +187,6 @@
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submittedForm": "TO BE FILLED WITH VALID DATA",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
@@ -355,34 +378,6 @@
         }
       }
     ],
-    "documents_socialWorkOther": [],
-    "documents_checklist_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_threshold_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkStatement_document": {
-      "documentStatus": "Included in social work evidence template (SWET)"
-    },
-    "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
-    "documents_socialWorkChronology_document": {
-      "statusReason": "mock reason",
-      "documentStatus": "To follow"
-    },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    },
     "orderCollection": [
       {
         "id": "52caf114-d171-4dc5-ac33-c842dba88205",
@@ -391,7 +386,11 @@
           "type": "Blank order (C21)",
           "title": "Example Order Title",
           "details": "szvd",
-          "document": "TO BE FILLED WITH VALID DATA",
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "blank_order_c21.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
           "expiryDate": null,
           "dateOfIssue": "26 May 2020",
           "furtherDirections": {},

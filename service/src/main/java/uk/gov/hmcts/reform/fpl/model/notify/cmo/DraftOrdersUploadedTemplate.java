@@ -1,16 +1,18 @@
 package uk.gov.hmcts.reform.fpl.model.notify.cmo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 @Data
-@SuperBuilder
+@Builder
 public class DraftOrdersUploadedTemplate implements NotifyData {
     private final String judgeTitle;
     private final String judgeName;
     private final String subjectLineWithHearingDate;
-    private final String respondentLastName;
+    @JsonProperty("respondentLastName")
+    private final String lastName;
     private final String caseUrl;
     private final String draftOrders;
 }

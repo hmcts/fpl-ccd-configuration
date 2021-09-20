@@ -59,7 +59,7 @@ public class NoticeOfProceedingsController extends CallbackController {
             .mapProceedingTypesToDocmosisTemplate();
 
         List<Element<DocumentBundle>> newNoticeOfProceedings =
-            noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData, docmosisTemplateTypes);
+            noticeOfProceedingsService.uploadNoticesOfProceedings(caseData, docmosisTemplateTypes);
 
         caseDetails.getData().put("noticeOfProceedingsBundle",
             noticeOfProceedingsService.prepareNoticeOfProceedingBundle(newNoticeOfProceedings,

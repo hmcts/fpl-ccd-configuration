@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -36,13 +37,10 @@ public class StandardDirectionsOrderService {
     private final RequestData requestData;
 
     public LocalDate generateDateOfIssue(StandardDirectionOrder order) {
-        LocalDate dateOfIssue = time.now().toLocalDate();
-
-        if (order != null && order.getDateOfIssue() != null) {
-            dateOfIssue = parseLocalDateFromStringUsingFormat(order.getDateOfIssue(), DATE);
-        }
-
-        return dateOfIssue;
+        return Optional.ofNullable(order)
+            .map(StandardDirectionOrder::getDateOfIssue)
+            .map(dateOfIssue -> parseLocalDateFromStringUsingFormat(dateOfIssue, DATE))
+            .orElse(time.now().toLocalDate());
     }
 
     public StandardDirectionOrder buildTemporarySDO(CaseData caseData, StandardDirectionOrder previousSDO) {

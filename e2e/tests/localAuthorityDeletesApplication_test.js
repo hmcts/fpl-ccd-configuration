@@ -5,14 +5,14 @@ let caseName;
 
 Feature('Local authority deletes application');
 
-BeforeSuite(async ({I}) => {
-  caseName = `Case ${new Date().toISOString()}`;
-  caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne, caseName);
-});
-
-Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
+async function setupScenario(I) {
+  if (!caseName) { caseName = `Case ${new Date().toISOString()}`; }
+  if (!caseId) { caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne, caseName); }
+}
 
 Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
+  await setupScenario(I);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   await deleteApplicationEventPage.tickDeletionConsent();
   // I.completeEvent() tries to search for the success alert, this can sometimes disappear to quickly as the user is

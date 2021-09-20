@@ -14,12 +14,14 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
 @OverrideAutoConfiguration(enabled = true)
@@ -73,10 +75,12 @@ abstract class ManageHearingsControllerTest extends AbstractCallbackTest {
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .build())
+            .others(emptyList())
             .venueCustomAddress(Address.builder().build())
             .caseManagementOrderId(cmoId)
             .venue(venue)
-            .presence(IN_PERSON)
+            .attendance(List.of(IN_PERSON))
+            .othersNotified("")
             .build();
     }
 

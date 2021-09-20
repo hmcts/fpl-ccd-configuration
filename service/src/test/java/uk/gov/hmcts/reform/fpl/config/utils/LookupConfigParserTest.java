@@ -46,20 +46,20 @@ class LookupConfigParserTest {
 
     @Test
     void parseStringListValueShouldReturnCorrectLookupTableWhenOnlyOneMappingExists() {
-        Map<String, List<String>> result = LookupConfigParser.parseStringListValue("SA=>1,2,3");
+        Map<String, List<String>> result = LookupConfigParser.parseStringListValue("SA=>1,2|3|4");
 
         assertThat(result)
             .hasSize(1)
-            .containsEntry("SA", ImmutableList.of("1", "2", "3"));
+            .containsEntry("SA", ImmutableList.of("1,2", "3", "4"));
     }
 
     @Test
     void parseStringListValueShouldReturnCorrectLookupTableWhenMoreThenOneMappingExists() {
-        Map<String, List<String>> result = LookupConfigParser.parseStringListValue("SA=>1,2,3;HN=>4,5,6");
+        Map<String, List<String>> result = LookupConfigParser.parseStringListValue("SA=>1|2|3;HN=>4|5, 6|7");
 
         assertThat(result)
             .hasSize(2)
             .containsEntry("SA", ImmutableList.of("1", "2", "3"))
-            .containsEntry("HN", ImmutableList.of("4", "5", "6"));
+            .containsEntry("HN", ImmutableList.of("4", "5, 6", "7"));
     }
 }

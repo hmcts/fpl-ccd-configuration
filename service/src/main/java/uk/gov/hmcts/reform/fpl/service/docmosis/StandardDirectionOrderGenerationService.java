@@ -42,7 +42,7 @@ public class StandardDirectionOrderGenerationService extends
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor()))
-                .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
+                .courtName(dataService.getCourtName(caseData))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
                 .dateOfIssue(standardDirectionOrder.getDateOfIssue())
@@ -50,7 +50,7 @@ public class StandardDirectionOrderGenerationService extends
                 .children(dataService.getChildrenDetails(caseData.getAllChildren()))
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-                .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
+                .applicantName(dataService.getApplicantName(caseData))
                 .directions(buildDirections(standardDirectionOrder.getDirections()))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
@@ -69,7 +69,7 @@ public class StandardDirectionOrderGenerationService extends
 
     private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) {
         List<Direction> directions = unwrapElements(elements);
-        List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getDirections();
+        List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getStandardDirections();
         List<DocmosisDirection> formattedDirections = new ArrayList<>();
         int index = SDO_DIRECTION_INDEX_START;
 

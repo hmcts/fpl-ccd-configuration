@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryLASolicitorName",
+    "Label": "Main contact",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  }
+]

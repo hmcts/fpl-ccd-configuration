@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 
 @Api
@@ -47,9 +48,14 @@ public class OthersController extends CallbackController {
 
         confidentialService.addConfidentialDetailsToCase(caseDetails, allOthers, OTHER);
 
-        List<Element<Other>> others = confidentialService.removeConfidentialDetails(allOthers);
+        List<Element<Other>> othersList = confidentialService.removeConfidentialDetails(allOthers);
 
-        caseDetails.getData().put("others", Others.from(others));
+        Others others = Others.from(othersList);
+        if (isNull(others)) {
+            caseDetails.getData().remove("others");
+        } else {
+            caseDetails.getData().put("others", others);
+        }
 
         return respond(caseDetails);
     }

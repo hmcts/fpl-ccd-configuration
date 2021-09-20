@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
@@ -64,8 +65,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, StandardDirectionOrderGenerationService.class,
-    CaseDataExtractionService.class, FixedTimeConfiguration.class
+    LookupTestConfig.class, StandardDirectionOrderGenerationService.class, CaseDataExtractionService.class,
+    FixedTimeConfiguration.class, CourtService.class
 })
 class StandardDirectionOrderGenerationServiceTest {
 
@@ -207,7 +208,9 @@ class StandardDirectionOrderGenerationServiceTest {
             .hearingBooking(DocmosisHearingBooking.builder()
                 .hearingDate(formatLocalDateToString(today, LONG))
                 .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
-                .preHearingAttendance("11:00pm")
+                .hearingAttendance("In person")
+                .hearingAttendanceDetails("Room: 123")
+                .preHearingAttendance("30 minutes before the hearing")
                 .hearingTime("12:00am - 12:00pm")
                 .hearingJudgeTitleAndName("Her Honour Judge Law")
                 .hearingLegalAdvisorName("Peter Parker")

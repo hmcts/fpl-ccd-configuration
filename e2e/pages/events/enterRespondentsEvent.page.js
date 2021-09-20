@@ -7,11 +7,7 @@ module.exports = {
       respondent: {
         firstName: `#respondents1_${index}_party_firstName`,
         lastName: `#respondents1_${index}_party_lastName`,
-        dateOfBirth: {
-          day: `#respondents1_${index}_party_dateOfBirth-day`,
-          month: `#respondents1_${index}_party_dateOfBirth-month`,
-          year: `#respondents1_${index}_party_dateOfBirth-year`,
-        },
+        dateOfBirth: `(//*[contains(@class, "collection-title")])[${index + 1}]/parent::div//*[@id="dateOfBirth"]`,
         address: `#respondents1_${index}_party_address_address`,
         telephone: `input[id="respondents1_${index}_party_telephoneNumber_telephoneNumber"]`,
         gender: `#respondents1_${index}_party_gender`,
@@ -38,13 +34,13 @@ module.exports = {
       },
       contactDetailsHidden: (option) => {
         return {
-          option: `#respondents1_${index}_party_contactDetailsHidden-${option}`,
+          option: `#respondents1_${index}_party_contactDetailsHidden_${option}`,
           reason: `#respondents1_${index}_party_contactDetailsHiddenReason`,
         };
       },
       legalRepresentation: (option) => {
         return {
-          option: `#respondents1_${index}_legalRepresentation-${option}`,
+          option: `#respondents1_${index}_legalRepresentation_${option}`,
         };
       },
     };
@@ -55,15 +51,14 @@ module.exports = {
 
     I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
     I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
-    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.day, respondent.dob.day);
-    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.month, respondent.dob.month);
-    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.year, respondent.dob.year);
+    I.fillDate(respondent.dob, this.fields(elementIndex).respondent.dateOfBirth);
+
     I.selectOption(this.fields(elementIndex).respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');
     }
-    await within(this.fields(elementIndex).respondent.address, () => {
-      postcodeLookup.enterAddressManually(respondent.address);
+    await within(this.fields(elementIndex).respondent.address, async () => {
+      await postcodeLookup.enterAddressManually(respondent.address);
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, respondent.relationshipToChild);
@@ -107,7 +102,6 @@ module.exports = {
   async enterRepresentationDetails(option, respondent, index) {
     const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
 
-
     I.click(this.fields(elementIndex).legalRepresentation(option).option);
     if (option === 'Yes') {
       I.fillField(this.fields(elementIndex).solicitor.firstName, respondent.solicitor.firstName);
@@ -124,8 +118,8 @@ module.exports = {
       I.click('//*[@id="organisation-table"]/caption/h3[text()="Swansea City Council"]/../../tbody//a');
     });
 
-    await within(this.fields(elementIndex).solicitor.regionalOfficeAddress, () => {
-      postcodeLookup.enterAddressManually(respondent.solicitor.regionalOfficeAddress);
+    await within(this.fields(elementIndex).solicitor.regionalOfficeAddress, async () => {
+      await postcodeLookup.enterAddressManually(respondent.solicitor.regionalOfficeAddress);
     });
   },
 
@@ -133,7 +127,7 @@ module.exports = {
     const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
 
     await within(this.fields(elementIndex).solicitor.element, () => {
-      I.click('Clear');
+      I.click('.//a[text()="Clear"]');
       I.fillField('.//input[@id="search-org-text"]', organisationName.split(' ')[0]);
       I.click(`.//*[@id="organisation-table"]/caption/h3[text()="${organisationName}"]/../../tbody//a`);
     });
@@ -143,8 +137,8 @@ module.exports = {
     const elementIndex = await I.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).solicitor.unregisteredOrganisation.name, respondent.solicitor.unregisteredOrganisation.name);
-    await within(this.fields(elementIndex).solicitor.unregisteredOrganisation.address, () => {
-      postcodeLookup.enterAddressManually(respondent.solicitor.unregisteredOrganisation.address);
+    await within(this.fields(elementIndex).solicitor.unregisteredOrganisation.address, async () => {
+      await postcodeLookup.enterAddressManually(respondent.solicitor.unregisteredOrganisation.address);
     });
   },
 };

@@ -49,6 +49,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
 
         UploadDraftOrdersData prevEventData = UploadDraftOrdersData.builder()
             .hearingOrderDraftKind(List.of(CMO, C21))
+            .cmoUploadType(CMOType.AGREED)
             .pastHearingsForCMO(pastHearingList)
             .build();
 
@@ -98,6 +99,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         UploadDraftOrdersData prevEventData = UploadDraftOrdersData.builder()
             .pastHearingsForCMO(pastHearingList)
             .hearingOrderDraftKind(List.of(CMO))
+            .cmoUploadType(CMOType.AGREED)
             .cmoSupportingDocs(supportingDocs)
             .build();
 

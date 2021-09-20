@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.config;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -41,6 +43,12 @@ class LocalAuthorityNameLookupConfigurationTest {
         String localAuthorityName = configuration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
 
         assertThat(localAuthorityName).isEqualTo(LOCAL_AUTHORITY_NAME);
+    }
+
+    @Test
+    void shouldReturnAllLocalAuthorities() {
+        assertThat(configuration.getLocalAuthoritiesNames())
+            .isEqualTo(Map.of(LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_NAME));
     }
 
 }

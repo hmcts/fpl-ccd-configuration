@@ -12,6 +12,7 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -33,6 +34,21 @@
           "[SOLICITORH]",
           "[SOLICITORI]",
           "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
@@ -57,6 +73,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -78,6 +95,21 @@
           "[SOLICITORH]",
           "[SOLICITORI]",
           "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "U",
@@ -103,6 +135,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -129,7 +162,22 @@
           "[SOLICITORG]",
           "[SOLICITORH]",
           "[SOLICITORI]",
-          "[SOLICITORJ]"
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]"
         ],
         "CRUD": "U",
         "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
@@ -148,6 +196,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
@@ -168,7 +217,22 @@
           "[SOLICITORG]",
           "[SOLICITORH]",
           "[SOLICITORI]",
-          "[SOLICITORJ]"
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]"
         ],
         "CRUD": "R"
       },

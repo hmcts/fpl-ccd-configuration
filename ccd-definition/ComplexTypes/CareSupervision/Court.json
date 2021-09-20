@@ -1,0 +1,26 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "email",
+    "ElementLabel": "Email",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "code",
+    "FieldType": "Text",
+    "ElementLabel": "Code",
+    "SecurityClassification": "Public"
+  }
+]

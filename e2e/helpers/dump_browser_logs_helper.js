@@ -29,16 +29,19 @@ function stringify(value) {
 module.exports = class HooksHelpers extends Helper {
   async _failed(test) {
     const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-    const logs = (await helper.grabBrowserLogs()).map(log => {
-      return {
-        type: log.type(),
-        message: log.text(),
-        location: log.location().url,
-      };
-    });
+    let logs = await helper.grabBrowserLogs();
+    if (logs !== undefined) {
+      logs = logs.map(log => {
+        return {
+          type: log.type(),
+          message: log.text(),
+          location: log.location().url,
+        };
+      });
 
-    if (logs.length > 0) {
-      fs.writeFileSync(`${buildOutputFileName(test)}.browser.log`, stringify(logs));
+      if (logs.length > 0) {
+        fs.writeFileSync(`${buildOutputFileName(test)}.browser.log`, stringify(logs));
+      }
     }
 
     const source = await helper.grabSource();

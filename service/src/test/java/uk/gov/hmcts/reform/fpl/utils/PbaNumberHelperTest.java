@@ -19,6 +19,11 @@ import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.setPrefix;
 class PbaNumberHelperTest {
 
     @Test
+    void shouldReturnNullWhenPbaNumberIsNull() {
+        assertThat(setPrefix(null)).isNull();
+    }
+
+    @Test
     void shouldReturnUnchangedPbaNumberForCorrectPrefix() {
         assertThat(setPrefix("PBA123")).isEqualTo("PBA123");
     }

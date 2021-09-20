@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityAction",
+    "ListElementCode": "ADD",
+    "ListElement": "Give case access to another local authority",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityAction",
+    "ListElementCode": "REMOVE",
+    "ListElement": "Remove case access from local authority",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityAction",
+    "ListElementCode": "TRANSFER",
+    "ListElement": "Transfer the case to another local authority",
+    "DisplayOrder": 3
+  }
+]

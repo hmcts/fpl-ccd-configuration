@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -34,6 +34,7 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
@@ -59,9 +60,10 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         .name("confidential test")
         .confidential(List.of("CONFIDENTIAL"))
         .build();
+    private static final long CASE_ID = 12345L;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
+    private UserService userService;
 
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
@@ -70,6 +72,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     @BeforeEach
     void init() {
         givenCurrentUser(createUserDetailsWithHmctsRole());
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), CASE_ID)).willReturn(false);
     }
 
     @Test
@@ -79,6 +82,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         HearingBooking hearingBooking = buildFinalHearingBooking();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .manageDocumentsHearingList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(hearingId)
@@ -89,8 +93,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocumentsRelatedToHearing(YES.getValue())
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
-
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
@@ -112,39 +114,46 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocumentsRelatedToHearing(NO.getValue())
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
-
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
 
         assertThat(extractedCaseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(extractedCaseData);
-
-        assertThat(response.getData().get("documentViewLA")).isNull();
-        assertThat(response.getData().get("documentViewHMCTS")).isNull();
-        assertThat(response.getData().get("documentViewNC")).isNull();
-        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();
     }
 
     @Test
     void shouldPopulateCorrespondenceEvidenceCollection() {
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
+            SupportingEvidenceBundle.builder()
+                .name("test1")
+                .dateTimeUploaded(now().minusDays(2))
+                .uploadedBy(USER)
+                .build(),
+            SupportingEvidenceBundle.builder()
+                .name("test2")
+                .dateTimeUploaded(now())
+                .uploadedBy(USER)
+                .build());
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
 
-        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        List<Element<SupportingEvidenceBundle>> expectedDocuments = List.of(
+            furtherEvidenceBundle.get(1), furtherEvidenceBundle.get(0));
+
+        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(expectedDocuments);
         assertExpectedFieldsAreRemoved(extractedCaseData);
 
         assertThat(response.getData().get("documentViewHMCTS")).isNull();
@@ -175,6 +184,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .value(DynamicListElement.builder().code(selectedC2DocumentId).build()).build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(expectedDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -211,6 +221,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .value(DynamicListElement.builder().code(selectedC2DocumentId).build()).build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .c2DocumentBundle(c2DocumentBundleList)
             .manageDocumentsSupportingC2List(expectedDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -246,6 +257,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .value(DynamicListElement.builder().code(selectedBundleId).build()).build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .manageDocumentsSupportingC2List(expectedDynamicList)
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(c2Application).otherApplicationsBundle(selectedOtherApplication).build()))
@@ -270,6 +282,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
@@ -292,6 +305,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();

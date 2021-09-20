@@ -15,8 +15,10 @@ public class AssertionHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AssertionHelper.class);
 
-    private static final Duration ASYNC_MAX_DELAY = Duration.ofSeconds(1);
     private static final Duration POLL_INTERVAL = Duration.ofMillis(100);
+
+    private static final Duration ASYNC_MAX_DELAY = Duration.ofSeconds(1);
+    public static final long ASYNC_MAX_TIMEOUT = ASYNC_MAX_DELAY.toMillis();
 
     private AssertionHelper() {
     }
@@ -48,14 +50,18 @@ public class AssertionHelper {
      * example usage: checkThat(() -> {verify(mock1, never()).method(); verify(mock2, never()).method())
      */
     public static void checkThat(ThrowableRunnable verification) {
+        checkThat(verification, ASYNC_MAX_DELAY);
+    }
+
+    public static void checkThat(ThrowableRunnable verification, Duration duration) {
         try {
-            await().pollInterval(POLL_INTERVAL).atMost(ASYNC_MAX_DELAY)
+            await().pollInterval(POLL_INTERVAL).atMost(duration)
                 .until(() -> {
                     verification.run();
                     return false;
                 });
         } catch (ConditionTimeoutException e) {
-            LOGGER.debug("Verification holds for {}", ASYNC_MAX_DELAY);
+            LOGGER.debug("Verification holds for {}", duration);
         }
     }
 

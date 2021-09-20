@@ -14,7 +14,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHDRAWN;
 
 @WebMvcTest(ChangeStateController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -38,9 +37,7 @@ class ChangeStateControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .state(CLOSED)
             .closedStateRadioList(FINAL_HEARING)
-            .deprivationOfLiberty("Test data")
             .closeCaseTabField(CloseCase.builder()
-                .reason(WITHDRAWN)
                 .build())
             .build();
 

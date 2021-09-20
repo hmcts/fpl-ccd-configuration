@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
@@ -43,45 +42,58 @@ public class ChildrenService {
         return builder.toString();
     }
 
-    public boolean allChildrenHaveFinalOrder(List<Element<Child>> children) {
+    public boolean allChildrenHaveFinalOrderOrDecision(List<Element<Child>> children) {
         if (children == null || children.isEmpty()) {
             return false;
         }
-        return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
+        return children.stream().allMatch(
+            child -> YES.getValue().equals(child.getValue().getFinalOrderIssued())
+                || child.getValue().getFinalDecisionReason() != null);
     }
 
-    public List<Element<Child>> updateFinalOrderIssued(OrderTypeAndDocument orderType, List<Element<Child>> children,
-                                                       String orderAppliesToAllChildren, Selector childSelector,
-                                                       String remainingChildIndex) {
+    public List<Element<Child>> updateFinalOrderIssued(String orderLabel,
+                                                       List<Element<Child>> children,
+                                                       String orderAppliesToAllChildren,
+                                                       List<Element<Child>> selectedChildren) {
+
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> {
                 child.getValue().setFinalOrderIssued(YES.getValue());
-                child.getValue().setFinalOrderIssuedType(orderType.getTypeLabel());
+                child.getValue().setFinalOrderIssuedType(orderLabel);
             });
         } else {
-            List<Integer> selectedChildren;
-            if (StringUtils.isNotBlank(remainingChildIndex)) {
-                selectedChildren = List.of(Integer.parseInt(remainingChildIndex));
-            } else if (childSelector != null) {
-                selectedChildren = childSelector.getSelected();
-            } else {
-                selectedChildren = new ArrayList<>();
-            }
-            for (int i = 0; i < children.size(); i++) {
-                Child child = children.get(i).getValue();
-                if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
-                    child.setFinalOrderIssued(YES.getValue());
-                    child.setFinalOrderIssuedType(orderType.getTypeLabel());
-                } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
-                    child.setFinalOrderIssued(NO.getValue());
+            children.forEach(child -> {
+                boolean childWasSelected = selectedChildren.contains(child);
+                if (childWasSelected) {
+                    child.getValue().setFinalOrderIssued(YES.getValue());
+                    child.getValue().setFinalOrderIssuedType(orderLabel);
                 }
-            }
+            });
         }
+
+        setFinalOrderNotIssuedForChildrenWithNoFinalOrderInformation(children);
+
         return children;
     }
 
+    private void setFinalOrderNotIssuedForChildrenWithNoFinalOrderInformation(List<Element<Child>> children) {
+        children.forEach(child -> {
+            boolean finalOrderForChildWasNotSet = StringUtils.isEmpty(child.getValue().getFinalOrderIssued());
+            if (finalOrderForChildWasNotSet) {
+                child.getValue().setFinalOrderIssued(NO.getValue());
+            }
+        });
+    }
+
+    public List<Element<Child>> getRemainingChildren(CaseData caseData) {
+        return caseData.getAllChildren().stream()
+            .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued())
+                && child.getValue().getFinalDecisionReason() == null)
+            .collect(toList());
+    }
+
     /**
-     * Returns the index of the only child without a final order issued against them.
+     * Returns the index of the only child without a final order or decision issued against them.
      * If there are multiple children then an empty optional is returned instead.
      * If there are no children then an empty optional is returned.
      *
@@ -91,7 +103,8 @@ public class ChildrenService {
     public Optional<Integer> getRemainingChildIndex(List<Element<Child>> children) {
         Optional<Integer> remainingChildIndex = Optional.empty();
         for (int i = 0; i < children.size(); i++) {
-            if (!YES.getValue().equals(children.get(i).getValue().getFinalOrderIssued())) {
+            if (!YES.getValue().equals(children.get(i).getValue().getFinalOrderIssued())
+                && children.get(i).getValue().getFinalDecisionReason() == null) {
                 if (remainingChildIndex.isEmpty()) {
                     remainingChildIndex = Optional.of(i);
                 } else {
@@ -105,7 +118,8 @@ public class ChildrenService {
 
     public String getRemainingChildrenNames(List<Element<Child>> children) {
         return children.stream()
-            .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued()))
+            .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued())
+                && child.getValue().getFinalDecisionReason() == null)
             .map(child -> child.getValue().getParty().getFullName())
             .collect(Collectors.joining("\n"));
     }
@@ -157,4 +171,24 @@ public class ChildrenService {
         // If there is only one child in the case then the choice will be null
         return appliesToAllChildren == null || "Yes".equals(appliesToAllChildren);
     }
+
+    public List<Element<Child>> getSelectedChildrenForIssuingFinalOrder(CaseData caseData) {
+        String remainingChildIndex = caseData.getRemainingChildIndex();
+        Selector childSelector = caseData.getChildSelector();
+        List<Element<Child>> children = caseData.getAllChildren();
+
+        List<Integer> selectedChildren;
+        if (StringUtils.isNotBlank(remainingChildIndex)) {
+            selectedChildren = List.of(Integer.parseInt(remainingChildIndex));
+        } else if (childSelector != null) {
+            selectedChildren = childSelector.getSelected();
+        } else {
+            selectedChildren = new ArrayList<>();
+        }
+
+        return selectedChildren.stream()
+            .map(children::get)
+            .collect(Collectors.toList());
+    }
+
 }

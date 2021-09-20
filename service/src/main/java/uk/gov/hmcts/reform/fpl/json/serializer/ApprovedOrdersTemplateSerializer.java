@@ -25,7 +25,7 @@ public class ApprovedOrdersTemplateSerializer extends JsonSerializer<ApprovedOrd
         serializers.defaultSerializeField("orderList", value.getOrderList(), gen);
         serializers.defaultSerializeField("documentLinks", value.getDocumentLinks(), gen);
         serializers.defaultSerializeField("subjectLineWithHearingDate", value.getSubjectLineWithHearingDate(), gen);
-        serializers.defaultSerializeField("respondentLastName", value.getRespondentLastName(), gen);
+        serializers.defaultSerializeField("respondentLastName", value.getLastName(), gen);
         serializers.defaultSerializeField("caseUrl", value.getCaseUrl(), gen);
         serializers.defaultSerializeField("digitalPreference", value.getDigitalPreference(), gen);
 

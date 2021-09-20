@@ -1,16 +1,19 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -33,11 +36,11 @@ import static java.lang.String.format;
 import static java.time.format.FormatStyle.LONG;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -47,14 +50,14 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
-    private static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Link and instructions will be "
+    private static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Details and instructions will be "
         + "sent by the local court.";
 
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final CourtService courtService;
 
-    public String getCourtName(String localAuthority) {
-        return hmctsCourtLookupConfiguration.getCourt(localAuthority).getName();
+    public String getCourtName(CaseData caseData) {
+        return courtService.getCourtName(caseData);
     }
 
     public String getHearingTime(HearingBooking hearingBooking) {
@@ -93,9 +96,14 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    public String getApplicantName(List<Element<Applicant>> applicants) {
-        Applicant applicant = applicants.get(0).getValue();
-        return ofNullable(applicant.getParty())
+    public String getApplicantName(CaseData caseData) {
+        if (ObjectUtils.isNotEmpty(caseData.getLocalAuthorities())) {
+            return ofNullable(caseData.getDesignatedLocalAuthority())
+                .map(LocalAuthority::getName)
+                .orElse("");
+        }
+
+        return ofNullable(caseData.getAllApplicants().get(0).getValue().getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");
     }
@@ -107,11 +115,6 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    public String extractPrehearingAttendance(HearingBooking booking) {
-        LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
-
-        return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTimeWithYear(time);
-    }
 
     public DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return DocmosisJudgeAndLegalAdvisor.builder()
@@ -185,7 +188,9 @@ public class CaseDataExtractionService {
         return DocmosisHearingBooking.builder()
             .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
             .hearingVenue(hearingVenue)
-            .preHearingAttendance(extractPrehearingAttendance(hearing))
+            .hearingAttendance(getHearingAttendance(hearing).orElse(null))
+            .hearingAttendanceDetails(hearing.getAttendanceDetails())
+            .preHearingAttendance(hearing.getPreAttendanceDetails())
             .hearingTime(getHearingTime(hearing))
             .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
             .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
@@ -237,12 +242,14 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    private LocalDateTime calculatePrehearingAttendance(LocalDateTime dateTime) {
-        return dateTime.minusHours(1);
-    }
-
-    private String formatDateTimeWithYear(LocalDateTime dateTime) {
-        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME);
+    public Optional<String> getHearingAttendance(HearingBooking hearingBooking) {
+        return Optional.ofNullable(hearingBooking.getAttendance())
+            .filter(ObjectUtils::isNotEmpty)
+            .map(attendances -> attendances.stream()
+                .map(HearingAttendance::getLabel)
+                .map(StringUtils::uncapitalize)
+                .collect(joining(", ")))
+            .map(StringUtils::capitalize);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {

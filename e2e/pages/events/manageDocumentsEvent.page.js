@@ -13,8 +13,8 @@ module.exports = {
       otherDocuments: 'Any other document',
     },
     relatedToHearing: {
-      yes: '#manageDocumentsRelatedToHearing-Yes',
-      no: '#manageDocumentsRelatedToHearing-No',
+      yes: '#manageDocumentsRelatedToHearing_Yes',
+      no: '#manageDocumentsRelatedToHearing_No',
     },
     hearingList: '#manageDocumentsHearingList',
     respondentStatementList: '#respondentStatementList',
@@ -22,6 +22,9 @@ module.exports = {
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
     supportingDocuments: function(index) {
       return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp');
+    },
+    translationRequirement: function(index, requirement) {
+      return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp').translationRequirement(requirement);
     },
   },
 
@@ -53,6 +56,11 @@ module.exports = {
   selectFurtherEvidenceIsRelatedToHearing() {
     I.waitForElement(this.fields.relatedToHearing.yes);
     I.click(this.fields.relatedToHearing.yes);
+  },
+
+  selectFurtherEvidenceIsNotRelatedToHearing() {
+    I.waitForElement(this.fields.relatedToHearing.no);
+    I.click(this.fields.relatedToHearing.no);
   },
 
   selectHearing(hearingDate) {
@@ -113,5 +121,10 @@ module.exports = {
     const index = await I.getActiveElementIndex();
     await this.uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType);
     this.selectConfidential(index);
+  },
+
+  selectTranslationRequirement(index, requirement) {
+    I.waitForElement(this.fields.translationRequirement(index, requirement));
+    I.click(this.fields.translationRequirement(index, requirement));
   },
 };

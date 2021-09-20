@@ -7,12 +7,30 @@ let caseId;
 
 Feature('Case administration by super user');
 
-BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(caseManagementCaseData);
+async function setupScenario(I) {
+  if (!caseId) { caseId = await I.submitNewCaseWithData(caseManagementCaseData); }
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
+}
+
+Scenario('HMCTS super user can add gatekeeping order', async ({I, caseViewPage}) => {
+  await setupScenario(I);
+  await caseViewPage.checkActionsAreAvailable([config.administrationActions.addGatekeepingOrder]);
+});
+
+Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCaseNameEventPage}) => {
+  await setupScenario(I);
+  caseViewPage.seeInCaseTitle('e2e test case');
+
+  await caseViewPage.goToNewActions(config.administrationActions.changeCaseName);
+  await changeCaseNameEventPage.changeCaseName('e2e test case updated by superuser');
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+
+  await I.seeEventSubmissionConfirmation(config.administrationActions.changeCaseName);
+  caseViewPage.seeInCaseTitle('e2e test case updated by superuser');
 });
 
 Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
+  await setupScenario(I);
   I.seeFamilyManNumber('mockcaseID');
 
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
@@ -24,7 +42,7 @@ Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseV
 });
 
 Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
-  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
+  await setupScenario(I);
 
   await caseViewPage.goToNewActions(config.superUserActions.changeCaseState);
   await changeCaseStateEventPage.seeAsCurrentState('Case management');

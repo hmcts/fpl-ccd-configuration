@@ -28,6 +28,7 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .caseCompletionDate(caseCompletionDate)
+            .dateSubmitted(LocalDate.of(2030, 8, 10))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);

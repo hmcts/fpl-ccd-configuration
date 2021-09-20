@@ -34,7 +34,12 @@ public class ChangeOfRepresentationService {
 
         changeOfRepresentatives.add(element(identityService.generateId(),
             ChangeOfRepresentation.builder()
-                .respondent(changeOfRepresentationRequest.getRespondent().getParty().getFullName())
+                .respondent(Optional.ofNullable(changeOfRepresentationRequest.getRespondent())
+                    .map(it -> it.toParty().getFullName())
+                    .orElse(null))
+                .child((Optional.ofNullable(changeOfRepresentationRequest.getChild())
+                    .map(it -> it.toParty().getFullName())
+                    .orElse(null)))
                 .via(changeOfRepresentationRequest.getMethod().getLabel())
                 .by(changeOfRepresentationRequest.getBy())
                 .date(time.now().toLocalDate())

@@ -1,16 +1,15 @@
 package uk.gov.hmcts.reform.fpl.events;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-@Getter
+@Data
+@Builder(toBuilder = true)
 @RequiredArgsConstructor
-@Builder
 public class AfterSubmissionCaseDataUpdated {
 
     private final CaseData caseData;
     private final CaseData caseDataBefore;
-
 }

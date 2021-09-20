@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import javax.validation.Valid;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Data
 @Builder(toBuilder = true)
@@ -25,5 +26,16 @@ public class RespondentSolicitor {
     @JsonIgnore
     public String getFullName() {
         return String.format("%s %s", defaultString(firstName), defaultString(lastName)).trim();
+    }
+
+    @JsonIgnore
+    public boolean hasFullName() {
+        return isNotEmpty(firstName) && isNotEmpty(lastName);
+    }
+
+    @JsonIgnore
+    public boolean hasOrganisationDetails() {
+        return null != unregisteredOrganisation && isNotEmpty(unregisteredOrganisation.getName())
+               || null != organisation && isNotEmpty(organisation.getOrganisationID());
     }
 }

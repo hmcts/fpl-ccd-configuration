@@ -1,0 +1,55 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalCounsellor",
+    "CaseEventID": "addOrRemoveLegalCounsel",
+    "CaseFieldID": "legalCounsellors",
+    "ListElementCode": "firstName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalCounsellor",
+    "CaseEventID": "addOrRemoveLegalCounsel",
+    "CaseFieldID": "legalCounsellors",
+    "ListElementCode": "lastName",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalCounsellor",
+    "CaseEventID": "addOrRemoveLegalCounsel",
+    "CaseFieldID": "legalCounsellors",
+    "ListElementCode": "email",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalCounsellor",
+    "CaseEventID": "addOrRemoveLegalCounsel",
+    "CaseFieldID": "legalCounsellors",
+    "ListElementCode": "telephoneNumber",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalCounsellor",
+    "CaseEventID": "addOrRemoveLegalCounsel",
+    "CaseFieldID": "legalCounsellors",
+    "ListElementCode": "organisation",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalCounsellor",
+    "CaseEventID": "addOrRemoveLegalCounsel",
+    "CaseFieldID": "legalCounsellors",
+    "ListElementCode": "organisation.OrganisationName",
+    "DisplayContext": "MANDATORY"
+  }
+]

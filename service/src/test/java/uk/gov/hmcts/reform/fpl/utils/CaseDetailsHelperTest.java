@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.Temp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,6 +111,12 @@ class CaseDetailsHelperTest {
 
             assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"));
         }
+
+        @Test
+        void shouldRemoveTempFieldsBasedOfGivenClass() {
+            removeTemporaryFields(caseDetails, TestClass.class);
+            assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"));
+        }
     }
 
     @Nested
@@ -159,4 +166,15 @@ class CaseDetailsHelperTest {
             assertThat(isInGatekeepingState(caseDetails)).isTrue();
         }
     }
+
+    private static class TestClass {
+        @Temp
+        private String key1;
+
+        private String key2;
+
+        @Temp
+        private String key3;
+    }
+
 }

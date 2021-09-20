@@ -1,0 +1,12 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedingsSDO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "proceedingTypes",
+    "EventElementLabel": "Which notice of proceedings need to be sent with this order?",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  }
+]

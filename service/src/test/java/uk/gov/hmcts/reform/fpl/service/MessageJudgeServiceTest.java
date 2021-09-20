@@ -99,17 +99,23 @@ class MessageJudgeServiceTest {
     @Test
     void shouldInitialiseCaseFieldsWhenAdditionalApplicationDocumentsAndJudicialMessagesExist() {
         UUID uuid = randomUUID();
+        String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
+            + "tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula nisl, tempor at eleifend ac, "
+            + "consequat condimentum sem. In sed porttitor turpis, at laoreet quam. Fusce bibendum vehicula ipsum, et "
+            + "tempus ante fermentum non.";
 
         List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()
                 .latestMessage("some note")
                 .messageHistory("some history")
+                .urgency(longUrgency)
                 .dateSent("01 Dec 2020")
                 .build()),
             element(JudicialMessage.builder()
                 .latestMessage("some note")
                 .messageHistory("some history")
                 .dateSent("02 Dec 2020")
+                .urgency("High")
                 .build())
         );
 
@@ -134,9 +140,13 @@ class MessageJudgeServiceTest {
             Pair.of(uuid, "C2, 01 Dec 2020")
         );
 
+        String expectedUrgencyText = "Lorem ipsum dolor sit amet, consectetur adipiscing "
+            + "elit. Sed sollicitudin eu felis tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula "
+            + "nisl, tempor at eleifend ac, consequat condimentum sem. In sed porttitor turpis...";
+
         DynamicList expectedJudicialDynamicList = buildDynamicList(
-            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020"),
-            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020")
+            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020, " + expectedUrgencyText),
+            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020, High")
         );
 
         Map<String, Object> expectedData = Map.of(

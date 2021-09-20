@@ -21,6 +21,9 @@ public class PbaNumberHelper {
     private static final Pattern PBA_NUMBER_PATTERN = Pattern.compile(PBA_NUMBER_REGEX);
 
     public static String setPrefix(String pbaNumber) {
+        if (pbaNumber == null) {
+            return null;
+        }
         if (pbaNumber.startsWith("PBA")) {
             return pbaNumber;
         } else if (pbaNumber.startsWith("pba")) {

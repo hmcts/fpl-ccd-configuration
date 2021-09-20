@@ -4,29 +4,35 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.OutsourcedCaseTemplate;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -38,15 +44,17 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SubmittedCaseEventHandler {
+
+    private final CourtService courtService;
     private final NotificationService notificationService;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
-    private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final OutsourcedCaseContentProvider outsourcedCaseContentProvider;
     private final PaymentService paymentService;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventService eventService;
+    private final TranslationRequestService translationRequestService;
 
     @Async
     @EventListener
@@ -54,9 +62,11 @@ public class SubmittedCaseEventHandler {
         CaseData caseData = event.getCaseData();
 
         NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
-        String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
+        String recipient = courtService.getCourtEmail(caseData);
 
-        notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
+        notificationService.sendEmail(
+            HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId()
+        );
     }
 
     @Async
@@ -74,17 +84,17 @@ public class SubmittedCaseEventHandler {
     public void notifyManagedLA(SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (caseData.getOutsourcingPolicy() == null) {
+        if (!caseData.isOutsourced()) {
             return;
         }
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
 
-        OutsourcedCaseTemplate templateData
-            = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
-        notificationService.sendEmail(OUTSOURCED_CASE_TEMPLATE, emails, templateData, caseData.getId().toString());
+        NotifyData templateData = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
+
+        notificationService.sendEmail(OUTSOURCED_CASE_TEMPLATE, recipients, templateData, caseData.getId());
     }
 
     @Async
@@ -118,6 +128,19 @@ public class SubmittedCaseEventHandler {
 
     private void handlePaymentNotTaken(CaseData caseData) {
         log.error("Payment not taken for case {}.", caseData.getId());
-        applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+        OrderApplicant applicant = OrderApplicant.builder().name(caseData.getCaseLocalAuthorityName())
+            .type(ApplicantType.LOCAL_AUTHORITY).build();
+        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION), applicant));
     }
+
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(SubmittedCaseEvent event) {
+        C110A c110A = event.getCaseData().getC110A();
+        translationRequestService.sendRequest(event.getCaseData(),
+            Optional.ofNullable(c110A.getTranslationRequirements()),
+            c110A.getSubmittedForm(), c110A.asLabel()
+        );
+    }
+
 }

@@ -30,6 +30,7 @@
     "ListElementCode": "fileReference",
     "FieldType": "Text",
     "ElementLabel": "Customer reference",
+    "HintText": "Add a meaningful reference to help with your reconciliation.",
     "SecurityClassification": "Public"
   }
 ]

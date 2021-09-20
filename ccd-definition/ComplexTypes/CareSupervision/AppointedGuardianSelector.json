@@ -1,0 +1,160 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "optionCount",
+    "FieldType": "Text",
+    "ElementLabel": "placeholder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option0",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option1",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option2",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 3",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option3",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 4",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option4",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 5",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option5",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 6",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option6",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 7",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option7",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 8",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option8",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 9",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option9",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 10",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option10",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 11",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option11",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 12",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789101112*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option12",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 13",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910111213*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option13",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 14",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011121314*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AppointedGuardianSelector",
+    "ListElementCode": "option14",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AppointedGuardianSelector",
+    "ElementLabel": "Person 15",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789101112131415\""
+  }
+]

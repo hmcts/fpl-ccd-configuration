@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHDRAWN;
 import static uk.gov.hmcts.reform.fpl.service.ChangeCaseStateService.LABEL_CONTENT;
 
 class ChangeCaseStateServiceTest {
@@ -65,9 +64,7 @@ class ChangeCaseStateServiceTest {
         CaseData caseData = CaseData.builder()
             .state(CLOSED)
             .closedStateRadioList(FINAL_HEARING)
-            .deprivationOfLiberty("Test data")
             .closeCaseTabField(CloseCase.builder()
-                .reason(WITHDRAWN)
                 .build())
             .build();
 

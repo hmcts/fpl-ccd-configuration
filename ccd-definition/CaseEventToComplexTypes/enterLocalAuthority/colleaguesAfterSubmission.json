@@ -1,0 +1,90 @@
+[
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "role",
+    "EventElementLabel": "Select their role",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "title",
+    "EventElementLabel": "Add job title",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "dx",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "reference",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "fullName",
+    "EventElementLabel": "Full name",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "email",
+    "EventElementLabel": "Email",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "phone",
+    "DisplayContext": "OPTIONAL",
+    "FieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "notificationRecipient",
+    "EventElementLabel": "Send them case update notifications?",
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthority",
+    "CaseEventID": "enterLocalAuthorityAfterSubmission",
+    "CaseFieldID": "localAuthorityColleagues",
+    "ListElementCode": "mainContact",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 8,
+    "FieldShowCondition": "role=\"DO NOT SHOW\""
+  }
+]

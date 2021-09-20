@@ -11,15 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrdersEventBuilder;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderProcessingService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
-import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
+import uk.gov.hmcts.reform.fpl.service.orders.amendment.list.AmendableOrderListBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.List;
@@ -30,24 +32,49 @@ import java.util.Map;
 @RequestMapping("/callback/manage-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageOrdersController extends CallbackController {
-
     private final OrderValidator orderValidator;
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
-    private final SealedOrderHistoryService sealedOrderHistoryService;
+    private final OrderProcessingService orderProcessing;
+    private final ManageOrderOperationPostPopulator operationPostPopulator;
+    private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
+    private final AmendableOrderListBuilder amendableOrderListBuilder;
+    private final ManageOrdersEventBuilder eventBuilder;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().put("manageOrdersAmendmentList", amendableOrderListBuilder.buildList(caseData));
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/initial-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse populateInitialSection(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        caseDetails.getData().putAll(operationPostPopulator.populate(caseDetails));
+
+        return respond(caseDetails);
+    }
 
     @PostMapping("/order-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = fixAndRetrieveCaseData(caseDetails);
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
-        data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(order, order.firstSection(), caseData));
+        data.putAll(
+            orderSectionAndQuestionsPrePopulator.prePopulate(
+                order, order.firstSection(), fixAndRetrieveCaseData(caseDetails))
+        );
 
         return respond(caseDetails);
     }
@@ -56,7 +83,7 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleSectionMidEvent(@PathVariable String section,
                                                                       @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = fixAndRetrieveCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
@@ -79,10 +106,12 @@ public class ManageOrdersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
 
-        data.putAll(sealedOrderHistoryService.generate(caseData));
+        Map<String, Object> data = updatedDetails.getData();
+        CaseData caseData = fixAndRetrieveCaseData(updatedDetails);
+
+        data.putAll(orderProcessing.process(caseData));
 
         fieldsCalculator.calculate().forEach(data::remove);
 
@@ -92,10 +121,13 @@ public class ManageOrdersController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        GeneratedOrder lastGeneratedOrder = sealedOrderHistoryService.lastGeneratedOrder(caseData);
+        publishEvent(eventBuilder.build(caseData, caseDataBefore));
+    }
 
-        publishEvent(new GeneratedOrderEvent(caseData, lastGeneratedOrder.getDocument()));
+    private CaseData fixAndRetrieveCaseData(CaseDetails caseDetails) {
+        return manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
     }
 
 }

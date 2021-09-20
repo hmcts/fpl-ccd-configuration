@@ -17,6 +17,8 @@ public interface ApplicationsBundle extends ConfidentialBundle {
 
     String getUploadedDateTime();
 
+    DocumentReference getApplication();
+
     @JsonIgnore
     default String getSupportingEvidenceFileNames() {
         return getSupportingEvidenceBundle().stream()

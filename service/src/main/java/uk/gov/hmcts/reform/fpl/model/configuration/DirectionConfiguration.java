@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 
 @Data
 @Builder
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 public class DirectionConfiguration {
     private final String title;
     private final String text;
+    private final DirectionType type;
     private final DirectionAssignee assignee;
     private final Display display;
 }

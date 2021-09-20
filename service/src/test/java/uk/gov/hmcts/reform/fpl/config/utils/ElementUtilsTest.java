@@ -23,14 +23,16 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.addMissingIds;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-public class ElementUtilsTest {
+class ElementUtilsTest {
 
     @Nested
     @ExtendWith(SpringExtension.class)
@@ -345,6 +347,74 @@ public class ElementUtilsTest {
         @Test
         void shouldReturnEmptyListIfListOfElementIsNull() {
             assertThat(unwrapElements(null)).isEmpty();
+        }
+    }
+
+    @Nested
+    class MissingIds {
+
+        @Test
+        void shouldReturnNullIfElementsAreNull() {
+            assertThat(addMissingIds(null)).isNull();
+        }
+
+        @Test
+        void shouldReturnEmptyListIfElementsAreEmpty() {
+            assertThat(addMissingIds(emptyList())).isEmpty();
+        }
+
+        @Test
+        void shouldDoNothingIfAllElementsHaveIds() {
+            final UUID id1 = randomUUID();
+            final UUID id2 = randomUUID();
+
+            final List<Element<String>> elements = List.of(element(id1, "First"), element(id2, "Second"));
+
+            assertThat(addMissingIds(elements)).containsExactly(
+                element(id1, "First"),
+                element(id2, "Second"));
+        }
+
+        @Test
+        void shouldGenerateIdsForElementsWithoutId() {
+            final UUID id1 = randomUUID();
+
+            final Element<String> element1 = element(id1, "First");
+            final Element<String> element2 = element(null, "Second");
+
+            addMissingIds(List.of(element1, element2));
+
+            assertThat(element1).isEqualTo(element(id1, "First"));
+            assertThat(element2.getId()).isNotNull();
+            assertThat(element2.getValue()).isEqualTo("Second");
+        }
+    }
+
+    @Nested
+    class ElementCreation {
+
+        @Test
+        void shouldCreateElementWithGivenValueAndRandomId() {
+
+            final Element<String> actualElement1 = element("Test");
+            final Element<String> actualElement2 = element("Test");
+
+            assertThat(actualElement1.getValue()).isEqualTo("Test");
+            assertThat(actualElement2.getValue()).isEqualTo("Test");
+            assertThat(actualElement1.getId()).isNotNull();
+            assertThat(actualElement2.getId()).isNotNull();
+            assertThat(actualElement1.getId()).isNotEqualTo(actualElement2.getId());
+        }
+
+        @Test
+        void shouldCreateElementWithGivenValueAndId() {
+
+            final UUID id = UUID.randomUUID();
+
+            final Element<String> actualElement = element(id, "Test");
+
+            assertThat(actualElement.getValue()).isEqualTo("Test");
+            assertThat(actualElement.getId()).isEqualTo(id);
         }
     }
 }

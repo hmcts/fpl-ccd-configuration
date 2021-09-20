@@ -19,7 +19,6 @@ public class ChildrenDetailsSectionPrePopulator implements OrderSectionPrePopula
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
         Order type = caseData.getManageOrdersEventData().getManageOrdersType();
-        // REFACTOR: 12/04/2021 remove and replace with field interpolation once EUI-3581 is complete
         return Map.of("childrenDetailsSectionSubHeader", type.getHistoryTitle());
     }
 }

@@ -1,0 +1,41 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "court",
+    "Label": "Court to issue",
+    "FieldType": "Court",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Designated court used in case orders"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtSelectionLabel",
+    "Label": "Your local authority is associated to more than 1 court. Choose which one you want to issue your application to.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "multiCourts",
+    "Label": "Has many associated courts",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "YES - when case local authority is associated with multiple courts in onboarding config"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtsList",
+    "Label": "Select court",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "List of courts associated with case local authority"
+  }
+]

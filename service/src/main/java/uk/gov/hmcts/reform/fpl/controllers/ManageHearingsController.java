@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
@@ -61,6 +63,7 @@ public class ManageHearingsController extends CallbackController {
 
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
+    private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
     private static final String HAS_SESSION_KEY = "hasSession";
@@ -72,13 +75,12 @@ public class ManageHearingsController extends CallbackController {
     private final ManageHearingsService hearingsService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
     private final ValidateEmailService validateEmailService;
+    private final ManageHearingsOthersGenerator othersGenerator;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         caseDetails.getData().remove(SELECTED_HEARING_ID);
-        caseDetails.getData().remove("hearingOption");
-        caseDetails.getData().remove("hearingReListOption");
 
         CaseData caseData = getCaseData(caseDetails);
 
@@ -86,7 +88,15 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
-        caseDetails.getData().put(FIRST_HEARING_FLAG, (isEmpty(caseData.getHearingDetails()) ? YES : NO).getValue());
+        boolean isFirstHearing = isEmpty(caseData.getAllHearings());
+
+        if (isFirstHearing) {
+            caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
+            caseDetails.getData().put(PRE_ATTENDANCE, DEFAULT_PRE_ATTENDANCE);
+            caseDetails.getData().putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
+        } else {
+            caseDetails.getData().put(FIRST_HEARING_FLAG, NO.getValue());
+        }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
 
@@ -105,7 +115,9 @@ public class ManageHearingsController extends CallbackController {
         }
 
         if (NEW_HEARING == caseData.getHearingOption()) {
-            caseDetails.getData().putAll(hearingsService.populatePreviousVenueFields(caseData));
+            caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
+            caseDetails.getData()
+                .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
         } else if (EDIT_HEARING == caseData.getHearingOption()) {
             final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
             final List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
@@ -156,6 +168,16 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
             caseDetails.getData().put(TO_RE_LIST_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getToBeReListedHearings(), hearingBookingId));
+        }
+
+        if (NEW_HEARING != caseData.getHearingOption()) {
+            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+
+            HearingBooking hearingBooking = hearingsService
+                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                .orElse(HearingBooking.builder().build());
+
+            caseDetails.getData().putAll(othersGenerator.generate(caseData, hearingBooking));
         }
 
         return respond(caseDetails);
@@ -231,12 +253,12 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
+        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
 
         if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
             Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
-            if (!error.isEmpty()) {
+            if (error.isPresent()) {
                 return respond(caseDetails, List.of(error.get()));
             }
         }

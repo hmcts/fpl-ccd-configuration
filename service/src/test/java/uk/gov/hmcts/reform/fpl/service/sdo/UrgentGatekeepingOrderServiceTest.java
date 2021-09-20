@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 
 class UrgentGatekeepingOrderServiceTest {
     private static final DocumentReference UPLOADED_ORDER = mock(DocumentReference.class);
@@ -78,6 +79,31 @@ class UrgentGatekeepingOrderServiceTest {
             .order(SEALED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
             .dateAdded(time.now().toLocalDate())
+            .build();
+
+        assertThat(underTest.finalise(caseData)).isEqualTo(Map.of(
+            "urgentHearingOrder", expectedOrder
+        ));
+    }
+
+    @Test
+    void finaliseWithPrePreparedAllocationDecisionAndTranslation() {
+        CaseData caseData = CaseData.builder()
+            .allocationDecision(mock(Allocation.class))
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .urgentHearingOrderDocument(UPLOADED_ORDER)
+                .showUrgentHearingAllocation(YesNo.NO)
+                .urgentGatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
+                .build())
+            .build();
+
+        when(sealingService.sealDocument(UPLOADED_ORDER)).thenReturn(SEALED_ORDER);
+
+        UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
+            .order(SEALED_ORDER)
+            .unsealedOrder(UPLOADED_ORDER)
+            .dateAdded(time.now().toLocalDate())
+            .translationRequirements(ENGLISH_TO_WELSH)
             .build();
 
         assertThat(underTest.finalise(caseData)).isEqualTo(Map.of(

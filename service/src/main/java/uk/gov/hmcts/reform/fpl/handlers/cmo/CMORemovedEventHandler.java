@@ -6,20 +6,20 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderRemovalEmailContentProvider;
 
-import java.util.Set;
+import java.util.Collection;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_TEMPLATE;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CMORemovedEventHandler {
-    private final InboxLookupService inboxLookupService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final NotificationService notificationService;
     private final OrderRemovalEmailContentProvider orderRemovalEmailContentProvider;
 
@@ -30,12 +30,13 @@ public class CMORemovedEventHandler {
         OrderRemovalTemplate template =
             orderRemovalEmailContentProvider.buildNotificationForOrderRemoval(caseData, event.getRemovalReason());
 
-        Set<String> emailList = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
-        );
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .secondaryLocalAuthorityExcluded(true)
+            .build();
 
-        notificationService.sendEmail(
-            CMO_REMOVAL_NOTIFICATION_TEMPLATE, emailList, template, String.valueOf(caseData.getId())
-        );
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+        notificationService.sendEmail(CMO_REMOVAL_NOTIFICATION_TEMPLATE, recipients, template, caseData.getId());
     }
 }

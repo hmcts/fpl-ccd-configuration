@@ -21,6 +21,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
+@Deprecated
 public class ApplicantService {
 
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData, Organisation organisation) {

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 @Api
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 public class UploadDocumentsController extends CallbackController {
     private final ApplicationDocumentsService applicationDocumentsService;
     private final DocumentListService documentListService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
@@ -34,9 +32,7 @@ public class UploadDocumentsController extends CallbackController {
         caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
             caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()));
 
-        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
-        }
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         return respond(caseDetails);
     }
 }

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
     private static final CaseData GATEKEEPING_CASE_DATA = CaseData.builder().state(GATEKEEPING).build();
     private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
+    private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
 
     @SpyBean
     private EventService eventService;
@@ -197,6 +199,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
         return baseCaseData()
             .urgentHearingOrder(UrgentHearingOrder.builder()
                 .order(URGENT_HEARING_ORDER_DOCUMENT)
+                .dateAdded(DATE_ADDED)
                 .build())
             .build();
     }

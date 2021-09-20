@@ -6,15 +6,11 @@ module.exports = {
     return {
       recipients: {
         name: `#statementOfService_${index}_name`,
-        addressCheck: `#statementOfService_${index}_addressCheck-Yes`,
+        addressCheck: `#statementOfService_${index}_addressCheck_Yes`,
         address: `#statementOfService_${index}_address_address`,
         documents: `#statementOfService_${index}_documents`,
-        date: {
-          day: `#statementOfService_${index}_date-day`,
-          month: `#statementOfService_${index}_date-month`,
-          year: `#statementOfService_${index}_date-year`,
-        },
         timeSent: `#statementOfService_${index}_timeSent`,
+        date: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[contains(@class,"form-date")]`,
         sentBy: {
           group: `#statementOfService_${index}_sentBy`,
           email: `#statementOfService_${index}_sentBy-EMAIL`,
@@ -33,15 +29,13 @@ module.exports = {
     await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
-    this.enterRecipientsAddress(elementIndex, recipients);
+    await this.enterRecipientsAddress(elementIndex, recipients);
     I.fillField(this.fields(elementIndex).recipients.documents, recipients.documents);
-    I.fillField(this.fields(elementIndex).recipients.date.day, recipients.date.day);
-    I.fillField(this.fields(elementIndex).recipients.date.month, recipients.date.month);
-    I.fillField(this.fields(elementIndex).recipients.date.year, recipients.date.year);
+    I.fillDate(recipients.date, this.fields(elementIndex).recipients.date);
     I.fillField(this.fields(elementIndex).recipients.timeSent, recipients.timeSent);
     I.click(this.fields(elementIndex).recipients.sentBy.email);
     I.waitForText('Recipient\'s email address');
-    within(this.fields(elementIndex).recipients.sentBy.email, () => {
+    await within(this.fields(elementIndex).recipients.sentBy.email, () => {
       I.fillField(this.fields(elementIndex).recipients.emailAddress, 'email@email.com');
     },);
   },
@@ -54,10 +48,10 @@ module.exports = {
     return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
   },
 
-  enterRecipientsAddress: function (elementIndex, recipients) {
-    within(this.fields(elementIndex).recipients.address, () => {
+  enterRecipientsAddress: async function (elementIndex, recipients) {
+    await within(this.fields(elementIndex).recipients.address, async () => {
       //XXX removed postcode lookup due to instability
-      postcodeLookup.enterAddressManually(recipients.address);
+      await postcodeLookup.enterAddressManually(recipients.address);
     });
   },
 };

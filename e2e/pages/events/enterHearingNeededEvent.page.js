@@ -16,15 +16,15 @@ module.exports = {
     },
 
     noticeWithoutHearing: {
-      no: '#hearing_withoutNotice-No',
+      no: '#hearing_withoutNotice_No',
     },
 
     reducedNoticeHearing: {
-      no: '#hearing_reducedNotice-No',
+      no: '#hearing_reducedNotice_No',
     },
 
     respondentsAware: {
-      no: '#hearing_respondentsAware-No',
+      no: '#hearing_respondentsAware_No',
     },
   },
 

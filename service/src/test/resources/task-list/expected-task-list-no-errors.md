@@ -58,7 +58,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Local authority's details</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -101,6 +101,10 @@
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
 <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/in-progress.png' title='In progress'/>
+
+<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
+
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 

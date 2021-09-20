@@ -10,4 +10,5 @@ public interface OrderSectionPrePopulator {
     OrderSection accept();
 
     Map<String,Object> prePopulate(CaseData caseData);
+
 }

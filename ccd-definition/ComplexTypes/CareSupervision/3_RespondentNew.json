@@ -1,0 +1,74 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "persistRepresentedBy",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public",
+    "Comment": "Used to ensure representedBy is persisted on about to submit - See RespondentController persist-representatives/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "leadRespondentIndicator",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this the first respondent?",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "party",
+    "FieldType": "RespondentParty",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "representedBy",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "ElementLabel": "Represented by",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "persistRepresentedBy=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "legalRepresentationLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Legal representation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "legalRepresentationLabel=\"HIDE_LABEL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "legalRepresentation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do they have legal representation?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "solicitor",
+    "FieldType": "RespondentSolicitor",
+    "ElementLabel": "Representative",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "legalRepresentation=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "legalCounsellors",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LegalCounsellor",
+    "ElementLabel": "Legal Counsellor",
+    "SecurityClassification": "Public"
+  }
+]

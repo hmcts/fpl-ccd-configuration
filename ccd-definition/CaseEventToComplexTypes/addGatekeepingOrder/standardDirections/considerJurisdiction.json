@@ -1,0 +1,58 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-CONSIDER_JURISDICTION",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-CONSIDER_JURISDICTION",
+    "ListElementCode": "title",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-CONSIDER_JURISDICTION",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-CONSIDER_JURISDICTION",
+    "ListElementCode": "description",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-CONSIDER_JURISDICTION",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-CONSIDER_JURISDICTION",
+    "ListElementCode": "assignee",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-CONSIDER_JURISDICTION",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-CONSIDER_JURISDICTION",
+    "ListElementCode": "dueDateType",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-CONSIDER_JURISDICTION",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-CONSIDER_JURISDICTION",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-CONSIDER_JURISDICTION.dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-CONSIDER_JURISDICTION",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-CONSIDER_JURISDICTION",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-CONSIDER_JURISDICTION.dueDateType=\"DAYS\""
+  }
+]

@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -47,6 +49,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -54,7 +57,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
@@ -74,8 +76,11 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
-import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.REMOTE;
+import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
@@ -106,11 +111,14 @@ class ManageHearingsServiceTest {
         .addressLine2("address")
         .build();
 
+    private static final List<Element<Other>> SELECTED_OTHERS = wrapElements(Other.builder().build());
+
     private static final Document DOCUMENT = testDocument();
 
-    public static final UUID RE_LISTED_HEARING_ID = randomUUID();
-    public static final UUID LINKED_CMO_ID = randomUUID();
-    public static final UUID HEARING_BUNDLE_ID = randomUUID();
+    private static final UUID RE_LISTED_HEARING_ID = randomUUID();
+    private static final UUID LINKED_CMO_ID = randomUUID();
+    private static final UUID HEARING_BUNDLE_ID = randomUUID();
+    private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS = ENGLISH_TO_WELSH;
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final HearingVenueLookUpService hearingVenueLookUpService = mock(HearingVenueLookUpService.class);
@@ -122,10 +130,12 @@ class ManageHearingsServiceTest {
     );
     private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
     private final IdentityService identityService = mock(IdentityService.class);
+    private final OthersService othersService = mock(OthersService.class);
+    private final OthersNotifiedGenerator othersNotifiedGenerator = mock(OthersNotifiedGenerator.class);
 
     private final ManageHearingsService service = new ManageHearingsService(
         noticeOfHearingGenerationService, docmosisDocumentGeneratorService, uploadDocumentService,
-        hearingVenueLookUpService, new ObjectMapper(), identityService, time
+        hearingVenueLookUpService, othersService, othersNotifiedGenerator, new ObjectMapper(), identityService, time
     );
 
     @Nested
@@ -340,18 +350,18 @@ class ManageHearingsServiceTest {
     }
 
     @Nested
-    class PreviousVenue {
+    class NewHearingInitiation {
 
         @Test
         void shouldReturnEmptyMapWhenNoHearingsAvailable() {
             CaseData caseData = CaseData.builder().build();
 
-            assertThat(service.populatePreviousVenueFields(caseData)).isEmpty();
+            assertThat(service.initiateNewHearing(caseData)).isEmpty();
         }
 
         @Test
         void shouldPullCustomAddressFromHearingWhenHearingVenueIsOther() {
-            given(hearingVenueLookUpService.getHearingVenue(any())).willCallRealMethod();
+            given(hearingVenueLookUpService.getHearingVenue(any(HearingBooking.class))).willCallRealMethod();
             given(hearingVenueLookUpService.buildHearingVenue(any())).willCallRealMethod();
 
             CaseData caseData = CaseData.builder()
@@ -359,15 +369,16 @@ class ManageHearingsServiceTest {
                     time.now().plusHours(1), time.now().plusHours(2)))))
                 .build();
 
-            Map<String, Object> previousVenueFields = service.populatePreviousVenueFields(caseData);
+            Map<String, Object> previousVenueFields = service.initiateNewHearing(caseData);
 
             PreviousHearingVenue hearingVenue = PreviousHearingVenue.builder()
                 .previousVenue("custom, address")
                 .newVenueCustomAddress(VENUE_CUSTOM_ADDRESS)
                 .build();
 
-            assertThat(previousVenueFields).hasSize(1)
-                .extracting("previousHearingVenue").isEqualTo(hearingVenue);
+            assertThat(previousVenueFields).containsOnly(
+                entry("previousHearingVenue", hearingVenue),
+                entry("preHearingAttendanceDetails", "1 hour before the hearing"));
         }
 
         @Test
@@ -382,15 +393,15 @@ class ManageHearingsServiceTest {
                 .hearingDetails(List.of(element(hearing)))
                 .build();
 
-            Map<String, Object> previousVenueFields = service.populatePreviousVenueFields(caseData);
+            Map<String, Object> previousVenueFields = service.initiateNewHearing(caseData);
 
             PreviousHearingVenue hearingVenue = PreviousHearingVenue.builder()
                 .previousVenue(venueAddress)
                 .build();
 
-            assertThat(previousVenueFields).hasSize(1)
-                .extracting("previousHearingVenue").isEqualTo((hearingVenue));
-
+            assertThat(previousVenueFields).containsOnly(
+                entry("previousHearingVenue", hearingVenue),
+                entry("preHearingAttendanceDetails", "1 hour before the hearing"));
         }
     }
 
@@ -405,11 +416,14 @@ class ManageHearingsServiceTest {
             .type(CASE_MANAGEMENT)
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
-            .presence(REMOTE)
+            .attendance(List.of(IN_PERSON, VIDEO))
+            .attendanceDetails("Test attendance details")
+            .preAttendanceDetails("Test pre attendance details")
             .startDate(startDate)
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .previousHearingVenue(previousHearingVenue)
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .build();
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, null);
@@ -420,7 +434,10 @@ class ManageHearingsServiceTest {
             "hearingEndDate", endDate,
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
             "previousHearingVenue", previousHearingVenue,
-            "hearingPresence", REMOTE
+            "hearingAttendance", List.of(IN_PERSON, VIDEO),
+            "hearingAttendanceDetails", "Test attendance details",
+            "preHearingAttendanceDetails", "Test pre attendance details",
+            "sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -438,27 +455,31 @@ class ManageHearingsServiceTest {
             .typeDetails("Fact finding")
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
-            .presence(IN_PERSON)
+            .attendance(List.of(IN_PERSON))
+            .attendanceDetails("Attendance details")
+            .preAttendanceDetails("Pre attendance details")
             .startDate(startDate)
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .previousHearingVenue(PreviousHearingVenue.builder().build())
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
             .build();
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
-        Map<String, Object> expectedCaseFields = Map.of(
-            "hearingType", OTHER,
-            "hearingTypeDetails", "Fact finding",
-            "hearingStartDate", startDate,
-            "hearingEndDate", endDate,
-            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
-            "hearingVenue", "OTHER",
-            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS,
-            "hearingPresence", IN_PERSON
-        );
-
-        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("hearingType", OTHER),
+            Map.entry("hearingTypeDetails", "Fact finding"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS),
+            Map.entry("hearingAttendance", List.of(IN_PERSON)),
+            Map.entry("hearingAttendanceDetails", "Attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS)
+        ));
     }
 
     @Test
@@ -469,24 +490,27 @@ class ManageHearingsServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(VENUE)
-            .hearingPresence(IN_PERSON)
+            .hearingAttendance(List.of(PHONE))
             .hearingStartDate(startDate)
             .hearingEndDate(endDate)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .noticeOfHearingNotes("notes")
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .venue(VENUE)
-            .presence(IN_PERSON)
+            .attendance(List.of(PHONE))
             .startDate(startDate)
             .endDate(endDate)
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .build();
 
@@ -504,13 +528,15 @@ class ManageHearingsServiceTest {
 
         CaseData caseData = CaseData.builder()
             .hearingType(CASE_MANAGEMENT)
-            .hearingPresence(REMOTE)
+            .hearingAttendance(List.of(VIDEO))
             .hearingStartDate(startDate)
             .hearingEndDate(endDate)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .noticeOfHearingNotes("notes")
             .previousHearingVenue(previousHearingVenue)
             .build();
+
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
 
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
@@ -519,10 +545,11 @@ class ManageHearingsServiceTest {
             .venue(VENUE)
             .startDate(startDate)
             .endDate(endDate)
-            .presence(REMOTE)
+            .attendance(List.of(VIDEO))
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
             .build();
@@ -549,6 +576,8 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(previousHearingVenue)
             .build();
 
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
         HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
 
         HearingBooking expectedHearingBooking = HearingBooking.builder()
@@ -560,6 +589,7 @@ class ManageHearingsServiceTest {
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
             .build();
@@ -602,6 +632,22 @@ class ManageHearingsServiceTest {
     }
 
     @Test
+    void shouldFindAndSetPreviousVenueIdWhenFlagNotPresent() {
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder().build())))
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        service.findAndSetPreviousVenueId(caseData);
+
+        assertThat(caseData.getPreviousVenueId()).isNull();
+    }
+
+    @Test
     void shouldNotFindAndSetPreviousVenueIdWhenNoHearings() {
         CaseData caseData = CaseData.builder().build();
 
@@ -617,7 +663,7 @@ class ManageHearingsServiceTest {
 
         final HearingBooking hearingToUpdate = randomHearing();
         final CaseData caseData = CaseData.builder()
-            .sendNoticeOfHearing(YesNo.YES.getValue())
+            .sendNoticeOfHearing(YES.getValue())
             .build();
 
         given(noticeOfHearingGenerationService.getTemplateData(caseData, hearingToUpdate))
@@ -638,17 +684,34 @@ class ManageHearingsServiceTest {
     }
 
     @Test
-    void shouldNotSendNoticeOfHearingIfNotRequested() {
-        HearingBooking hearingToUpdate = randomHearing();
-        CaseData caseData = CaseData.builder()
-            .sendNoticeOfHearing(YesNo.NO.getValue())
+    void shouldSendNoticeOfHearingIfRequestedWithTranslation() {
+        final DocmosisNoticeOfHearing docmosisData = DocmosisNoticeOfHearing.builder().build();
+        final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
+
+        final HearingBooking hearingToUpdate = randomHearing();
+        final CaseData caseData = CaseData.builder()
+            .sendNoticeOfHearing(YES.getValue())
+            .sendNoticeOfHearingTranslationRequirements(TRANSLATION_REQUIREMENTS)
             .build();
+
+        given(noticeOfHearingGenerationService.getTemplateData(caseData, hearingToUpdate))
+            .willReturn(docmosisData);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING))
+            .willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(eq(docmosisDocument.getBytes()), anyString())).willReturn(DOCUMENT);
 
         service.sendNoticeOfHearing(caseData, hearingToUpdate);
 
-        assertThat(hearingToUpdate.getNoticeOfHearing()).isNull();
-        verifyNoInteractions(uploadDocumentService, docmosisDocumentGeneratorService, noticeOfHearingGenerationService);
+        assertThat(hearingToUpdate.getNoticeOfHearing()).isEqualTo(DocumentReference.buildFromDocument(DOCUMENT));
+        assertThat(hearingToUpdate.getTranslationRequirements()).isEqualTo(TRANSLATION_REQUIREMENTS);
+
+        verify(noticeOfHearingGenerationService).getTemplateData(caseData, hearingToUpdate);
+        verify(docmosisDocumentGeneratorService).generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING);
+        verify(uploadDocumentService).uploadPDF(
+            TestDataHelper.DOCUMENT_CONTENT,
+            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
     }
+
 
     @Nested
     class PastHearings {
@@ -1511,6 +1574,51 @@ class ManageHearingsServiceTest {
 
             return asDynamicList(List.of(randomHearing1, randomHearing2), selectedId, HearingBooking::toLabel);
         }
+    }
+
+    @Test
+    void shouldReturnFieldsToBeDeleted() {
+
+        assertThat(service.caseFieldsToBeRemoved()).containsExactlyInAnyOrder(
+            "hearingType",
+            "hearingTypeDetails",
+            "hearingVenue",
+            "hearingVenueCustom",
+            "hearingStartDate",
+            "hearingEndDate",
+            "sendNoticeOfHearing",
+            "sendNoticeOfHearingTranslationRequirements",
+            "judgeAndLegalAdvisor",
+            "noticeOfHearingNotes",
+            "previousHearingVenue",
+            "firstHearingFlag",
+            "adjournmentReason",
+            "vacatedReason",
+            "hearingDateList",
+            "pastAndTodayHearingDateList",
+            "futureAndTodayHearingDateList",
+            "hasHearingsToAdjourn",
+            "hasHearingsToVacate",
+            "hasExistingHearings",
+            "hasFutureHearingDateFlag",
+            "hearingReListOption",
+            "hearingStartDateLabel",
+            "showConfirmPastHearingDatesPage",
+            "hearingEndDateLabel",
+            "confirmHearingDate",
+            "hearingStartDateConfirmation",
+            "hearingEndDateConfirmation",
+            "startDateFlag",
+            "endDateFlag",
+            "hasSession",
+            "hearingAttendance",
+            "preHearingAttendanceDetails",
+            "hearingAttendanceDetails",
+            "hearingOption",
+            "hasOthers",
+            "sendOrderToAllOthers",
+            "others_label",
+            "othersSelector");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {

@@ -56,6 +56,36 @@
     "FieldTypeParameter": "HearingPresence",
     "ElementLabel": "In person or remote",
     "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "attendance != \"*\"",
+    "Comment": "Backward compatibility - needed until data migration"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "attendance",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingAttendance",
+    "ElementLabel": "Hearing attendance",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "attendanceDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Hearing attendance details",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "preAttendanceDetails",
+    "FieldType": "Text",
+    "ElementLabel": "Pre-hearing attendance",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -158,6 +188,51 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "translatedNoticeOfHearing",
+    "FieldType": "Document",
+    "ElementLabel": "Translated document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "translationUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Welsh translation upload time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "sentForTranslationLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Sent for translation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needTranslation=\"YES\" AND translatedNoticeOfHearing!=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "caseManagementOrderId",
     "FieldType": "Text",
     "ElementLabel": "Id of the Case Management Order for this hearing",
@@ -195,5 +270,23 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "status=\"DO NOT SHOW\"",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "othersNotified",
+    "FieldType": "Text",
+    "ElementLabel": "Others notified",
+    "SecurityClassification": "Public"
   }
 ]

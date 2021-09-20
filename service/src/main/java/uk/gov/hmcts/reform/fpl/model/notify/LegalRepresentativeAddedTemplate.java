@@ -11,4 +11,5 @@ public class LegalRepresentativeAddedTemplate implements NotifyData {
     private final String firstRespondentLastName;
     private final String familyManCaseNumber;
     private final String caseUrl;
+    private final String childLastName;
 }

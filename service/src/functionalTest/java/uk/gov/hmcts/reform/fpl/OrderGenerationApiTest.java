@@ -6,11 +6,13 @@ import uk.gov.hmcts.reform.fpl.model.CallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,47 +29,29 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 public class OrderGenerationApiTest extends AbstractApiTest {
 
+    private final LocalDate approvalDate = now();
+
     @Autowired
     private DocumentService documentService;
 
     @Test
     public void shouldGenerateAndPostOrder() {
-        CaseData caseData = createCase("order-generation/case.json", LA_SWANSEA_USER_1);
-        caseData = callMidEvent(caseData);
-        caseData = callAboutToSubmit(caseData);
-        callSubmitted(caseData);
-    }
-
-    public CaseData callMidEvent(CaseData caseData) {
-
-        CaseData updatedCase = caseData.toBuilder()
-            .dateOfIssue(now())
-            .order(GeneratedOrder.builder()
-                .title("Order title")
-                .details("Order details")
-                .build())
-            .build();
-
-        CallbackResponse response = callback(updatedCase, COURT_ADMIN, "create-order/generate-document/mid-event");
-
-        DocumentReference generatedDocument = response.getCaseData().getOrderTypeAndDocument().getDocument();
-
-        String actualOrderContent = documentService.getPdfContent(generatedDocument, COURT_ADMIN);
-
-        String expectedOrderContent = readString("order-generation/blank-order.txt",
-            Map.of("id", formatCCDCaseNumber(caseData.getId()),
-                "issueDate", formatLocalDateToString(now(), DATE),
-                "orderTitle", "Order title",
-                "orderDetails", "Order details"
-            ));
-
-        assertThat(actualOrderContent).isEqualToNormalizingWhitespace(expectedOrderContent);
-
-        return response.getCaseData();
+        CaseData startingCaseData = createCase("order-generation/case.json", LA_SWANSEA_USER_1);
+        CaseData caseData = callAboutToSubmit(startingCaseData);
+        callSubmitted(caseData, startingCaseData);
     }
 
     public CaseData callAboutToSubmit(CaseData caseData) {
-        CallbackResponse response = callback(caseData, COURT_ADMIN, "create-order/about-to-submit");
+        CaseData updatedCase = caseData.toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(Order.C21_BLANK_ORDER)
+                .manageOrdersTitle("Order title")
+                .manageOrdersDirections("Order details")
+                .manageOrdersApprovalDate(approvalDate)
+                .build())
+            .build();
+
+        CallbackResponse response = callback(updatedCase, COURT_ADMIN, "manage-orders/about-to-submit");
 
         GeneratedOrder order = unwrapElements(response.getCaseData().getOrderCollection()).get(0);
 
@@ -75,7 +59,7 @@ public class OrderGenerationApiTest extends AbstractApiTest {
 
         String expectedOrderContent = readString("order-generation/blank-order.txt",
             Map.of("id", formatCCDCaseNumber(caseData.getId()),
-                "issueDate", formatLocalDateToString(now(), DATE),
+                "issueDate", formatLocalDateToString(approvalDate, DATE),
                 "orderTitle", "Order title",
                 "orderDetails", "Order details"
             ));
@@ -85,11 +69,12 @@ public class OrderGenerationApiTest extends AbstractApiTest {
         return response.getCaseData();
     }
 
-    public void callSubmitted(CaseData caseData) {
-        submittedCallback(caseData, COURT_ADMIN, "create-order/submitted");
+    public void callSubmitted(CaseData caseData, CaseData caseDataBefore) {
+        submittedCallback(caseData, caseDataBefore, COURT_ADMIN, "manage-orders/submitted");
 
-        CaseData updatedCase = caseService.pollCase(caseData.getId(), COURT_ADMIN,
-            aCase -> isNotEmpty(aCase.getDocumentsSentToParties()));
+        CaseData updatedCase = caseService.pollCase(
+            caseData.getId(), COURT_ADMIN, aCase -> isNotEmpty(aCase.getDocumentsSentToParties())
+        );
 
         assertThat(updatedCase.getDocumentsSentToParties()).isNotEmpty();
 

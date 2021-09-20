@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +66,26 @@ class ValidateEmailServiceTest {
 
         assertThat(error.get()).contains(
             "Custom error message");
+    }
+
+    @Nested
+    class ValidateIfPresent {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNoErrorsWhenEmailNotPresent(String email) {
+            assertThat(validateEmailService.validateIfPresent(email)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnNoErrorsWhenEmailIsValid() {
+            assertThat(validateEmailService.validateIfPresent("test@test.com")).isEmpty();
+        }
+
+        @Test
+        void shouldReturnErrorsWhenEmailIsPresentButInvalid() {
+            assertThat(validateEmailService.validateIfPresent("test@test")).containsExactly(ERROR_MESSAGE);
+        }
     }
 
     //See https://github.com/alphagov/notifications-utils/blob/master/tests/test_recipient_validation.py#L104-L121

@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.Optional;
@@ -8,10 +12,8 @@ import java.util.Optional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
+@Component
 public class JudgeAndLegalAdvisorHelper {
-
-    private JudgeAndLegalAdvisorHelper() {
-    }
 
     public static String getLegalAdvisorName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return Optional.ofNullable(judgeAndLegalAdvisor)
@@ -98,5 +100,30 @@ public class JudgeAndLegalAdvisorHelper {
             default:
                 return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
         }
+    }
+
+    public Optional<JudgeAndLegalAdvisor> buildForHearing(CaseData caseData,
+                                                          Optional<Element<HearingBooking>> hearing) {
+        Judge allocatedJudge = caseData.getAllocatedJudge();
+        boolean allocatedJudgeExists = caseData.allocatedJudgeExists();
+
+        if (hearing.isPresent()) {
+            if (allocatedJudgeExists) {
+                JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearing.get().getValue().getJudgeAndLegalAdvisor();
+                return Optional.of(prepareJudgeFields(judgeAndLegalAdvisor, allocatedJudge)
+                    .toBuilder()
+                    .allocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge)).build());
+            }
+
+            return Optional.of(hearing.get().getValue().getJudgeAndLegalAdvisor());
+        }
+
+        if (allocatedJudgeExists) {
+            return Optional.of(JudgeAndLegalAdvisor.builder()
+                .allocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge))
+                .build());
+        }
+
+        return Optional.empty();
     }
 }

@@ -28,28 +28,40 @@ module.exports = {
     courtBundle: 'Court bundle',
     judicialMessages: 'Judicial messages',
     otherApplications: 'Other applications',
-    furtherEvidence: 'Further evidence',
+    furtherEvidence: 'Documents',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
   caseTitle: '.case-title .markdown',
   tasksErrorsTitle: 'Why can\'t I submit my application?',
 
+  async getTaskListErrors() {
+    if (await I.hasSelector(`//p[text() = "${this.tasksErrorsTitle}"]`)) {
+      I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
+
+      return (await I.grabTextFrom('details div'))
+        .replace('\n\n', '\n')
+        .split('\n')
+        .filter(item => item);
+    }
+    return [];
+  },
+
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
-      if(await I.waitForSelector(this.actionsDropdown, 60) != null) {
+      if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
         await I.scrollToElement(this.actionsDropdown);
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
       } else {
         const newUrl = await I.grabCurrentUrl();
-        if(newUrl === currentUrl){
+        if(newUrl === currentUrl || !newUrl.includes('http')){
           output.print('Page refresh');
           I.refreshPage();
         }
       }
-    }, 'ccd-case-event-trigger');
+    }, 'ccd-case-event-trigger', false);
   },
 
   async checkActionsAreAvailable(actions) {
@@ -71,11 +83,13 @@ module.exports = {
   },
 
   checkTaskStatus(task, status) {
+    const taskElement = `//p/a[text()="${task}"]`;
+    I.waitForElement(locate(taskElement), 10);
+    I.scrollIntoView(taskElement);
     if(status) {
-      I.seeElement(locate(`//p/a[text()="${task}"]/../img`).withAttr({title: status}));
+      I.waitForElement(locate(`${taskElement}/../img`).withAttr({title: status}), 10);
     } else {
-      I.seeElement(locate(`//p/a[text()="${task}"]`));
-      I.dontSeeElement(locate(`//p/a[text()="${task}"]/../img`));
+      I.dontSeeElement(locate(`${taskElement}/../img`));
     }
   },
 
@@ -95,6 +109,10 @@ module.exports = {
     this.checkTaskStatus(task, undefined);
   },
 
+  async checkTaskIsNoPresent(task) {
+    I.dontSeeElement(`//p/a[text()="${task}"]`);
+  },
+
   async checkTaskIsAvailable(task) {
     await I.retryUntilExists(() => {
       I.click(task);
@@ -111,15 +129,21 @@ module.exports = {
   },
 
   async checkTasksHaveErrors(tasksErrors) {
-    I.see(this.tasksErrorsTitle);
-    I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
-
-    const errors = (await I.grabTextFrom('details div'))
-      .replace('\n\n','\n')
-      .split('\n')
-      .filter(item => item);
+    const errors = await this.getTaskListErrors();
 
     assert.deepStrictEqual(errors, tasksErrors);
+  },
+
+  async checkTasksDoesNotContainError(error) {
+    const errors = await this.getTaskListErrors();
+
+    assert.strictEqual(errors.includes(error), false);
+  },
+
+  async checkTasksContainsError(error) {
+    const errors = await this.getTaskListErrors();
+
+    assert.strictEqual(errors.includes(error), true);
   },
 
   async checkTasksHaveNoErrors() {

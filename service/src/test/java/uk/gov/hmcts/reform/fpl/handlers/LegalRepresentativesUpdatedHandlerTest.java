@@ -27,31 +27,30 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class LegalRepresentativesUpdatedHandlerTest {
-
-    public static final List<LegalRepresentative> LEGAL_REPRESENTATIVES_BEFORE =
+    private static final List<LegalRepresentative> LEGAL_REPRESENTATIVES_BEFORE =
         List.of(mock(LegalRepresentative.class));
-    public static final CaseData CASE_DATA_BEFORE = CaseData.builder()
+    private static final CaseData CASE_DATA_BEFORE = CaseData.builder()
         .legalRepresentatives(wrapElements(LEGAL_REPRESENTATIVES_BEFORE))
         .build();
-    public static final List<LegalRepresentative> LEGAL_REPRESENTATIVES_NOW = List.of(mock(LegalRepresentative.class));
-    public static final String REPRESENTATIVE_EMAIL = "representativeEmail";
-    public static final String REPRESENTATIVE_EMAIL_2 = "representativeEmail2";
-    public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
+    private static final List<LegalRepresentative> LEGAL_REPRESENTATIVES_NOW = List.of(mock(LegalRepresentative.class));
+    private static final String REPRESENTATIVE_EMAIL = "representativeEmail";
+    private static final String REPRESENTATIVE_EMAIL_2 = "representativeEmail2";
+    private static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
         .email(REPRESENTATIVE_EMAIL)
         .build();
-    public static final LegalRepresentative LEGAL_REPRESENTATIVE_2 = LegalRepresentative.builder()
+    private static final LegalRepresentative LEGAL_REPRESENTATIVE_2 = LegalRepresentative.builder()
         .email(REPRESENTATIVE_EMAIL_2)
         .build();
-    public static final String CASE_ID = "123344";
-    public static final CaseData CASE_DATA = CaseData.builder()
-        .id(Long.valueOf(CASE_ID))
+    private static final Long CASE_ID = 123344L;
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .id(CASE_ID)
         .legalRepresentatives(wrapElements(LEGAL_REPRESENTATIVES_NOW))
         .build();
 
     @Mock
-    private LegalRepresentativeAddedContentProvider legalRepresentativeAddedContentProvider;
+    private LegalRepresentativeAddedContentProvider contentProvider;
     @Mock
-    private LegalRepresentativesDifferenceCalculator legalRepresentativesDifferenceCalculator;
+    private LegalRepresentativesDifferenceCalculator diffCalculator;
     @Mock
     private NotificationService notificationService;
 
@@ -60,15 +59,11 @@ class LegalRepresentativesUpdatedHandlerTest {
 
     @Test
     void sendEmailToLegalRepresentativesAddedToCase() {
-        when(legalRepresentativesDifferenceCalculator.calculate(
-            LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW)
-        ).thenReturn(LegalRepresentativesChange.builder()
-            .added(Set.of(LEGAL_REPRESENTATIVE))
-            .build()
-        );
+        when(diffCalculator.calculate(LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW))
+            .thenReturn(LegalRepresentativesChange.builder().added(Set.of(LEGAL_REPRESENTATIVE)).build());
 
-        LegalRepresentativeAddedTemplate notifyData = LegalRepresentativeAddedTemplate.builder().build();
-        when(legalRepresentativeAddedContentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA))
+        LegalRepresentativeAddedTemplate notifyData = mock(LegalRepresentativeAddedTemplate.class);
+        when(contentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA))
             .thenReturn(notifyData);
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
@@ -76,62 +71,45 @@ class LegalRepresentativesUpdatedHandlerTest {
         );
 
         verify(notificationService).sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
-            REPRESENTATIVE_EMAIL,
-            notifyData,
-            CASE_ID
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE, REPRESENTATIVE_EMAIL, notifyData, CASE_ID
         );
     }
 
     @Test
     void sendEmailToLegalRepresentativesAddedToCaseMultiple() {
-        when(legalRepresentativesDifferenceCalculator.calculate(
-            LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW)
-        ).thenReturn(LegalRepresentativesChange.builder()
-            .added(Set.of(LEGAL_REPRESENTATIVE, LEGAL_REPRESENTATIVE_2))
-            .build()
-        );
+        when(diffCalculator.calculate(LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW))
+            .thenReturn(LegalRepresentativesChange.builder()
+                .added(Set.of(LEGAL_REPRESENTATIVE, LEGAL_REPRESENTATIVE_2))
+                .build()
+            );
 
-        LegalRepresentativeAddedTemplate notifyData1 = LegalRepresentativeAddedTemplate.builder().build();
-        LegalRepresentativeAddedTemplate notifyData2 = LegalRepresentativeAddedTemplate.builder().build();
+        LegalRepresentativeAddedTemplate notifyData1 = mock(LegalRepresentativeAddedTemplate.class);
+        LegalRepresentativeAddedTemplate notifyData2 = mock(LegalRepresentativeAddedTemplate.class);
 
-        when(legalRepresentativeAddedContentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA)).thenReturn(
-            notifyData1);
-        when(legalRepresentativeAddedContentProvider.getNotifyData(LEGAL_REPRESENTATIVE_2, CASE_DATA)).thenReturn(
-            notifyData2);
+        when(contentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA)).thenReturn(notifyData1);
+        when(contentProvider.getNotifyData(LEGAL_REPRESENTATIVE_2, CASE_DATA)).thenReturn(notifyData2);
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
         verify(notificationService).sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
-            REPRESENTATIVE_EMAIL,
-            notifyData1,
-            CASE_ID
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE, REPRESENTATIVE_EMAIL, notifyData1, CASE_ID
         );
         verify(notificationService).sendEmail(
-            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
-            REPRESENTATIVE_EMAIL_2,
-            notifyData2,
-            CASE_ID
+            LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE, REPRESENTATIVE_EMAIL_2, notifyData2, CASE_ID
         );
     }
 
     @Test
     void sendEmailToLegalRepresentativesAddedToCaseNone() {
-
-        when(legalRepresentativesDifferenceCalculator.calculate(
-            LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW)
-        ).thenReturn(LegalRepresentativesChange.builder()
-            .added(emptySet())
-            .build()
-        );
+        when(diffCalculator.calculate(LEGAL_REPRESENTATIVES_BEFORE, LEGAL_REPRESENTATIVES_NOW))
+            .thenReturn(LegalRepresentativesChange.builder().added(emptySet()).build());
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
-        verifyNoInteractions(legalRepresentativeAddedContentProvider, notificationService);
+        verifyNoInteractions(contentProvider, notificationService);
     }
 }

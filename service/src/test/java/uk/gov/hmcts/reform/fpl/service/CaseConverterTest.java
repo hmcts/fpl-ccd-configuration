@@ -127,4 +127,27 @@ class CaseConverterTest {
     void shouldReturnNullIfObjectIsNull() {
         assertThat(caseConverter.toMap(null)).isNull();
     }
+
+
+    @Test
+    void shouldReturnNullIfConvertedObjectIsNull() {
+        CaseData convertedObject = caseConverter.convert(null, CaseData.class);
+
+        assertThat(convertedObject).isNull();
+    }
+
+    @Test
+    void shouldConvertArbitraryObject() {
+        Map<String, Object> objectToBeConverted = Map.of("caseName", "name");
+
+        CaseData expectedConvertedObject = CaseData.builder()
+            .caseName("name")
+            .build();
+
+        when(objectMapper.convertValue(objectToBeConverted, CaseData.class)).thenReturn(expectedConvertedObject);
+
+        CaseData convertedObject = caseConverter.convert(objectToBeConverted, CaseData.class);
+
+        assertThat(convertedObject).isEqualTo(expectedConvertedObject);
+    }
 }

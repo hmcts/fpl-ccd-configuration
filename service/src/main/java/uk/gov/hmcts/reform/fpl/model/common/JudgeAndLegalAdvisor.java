@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JudgeAndLegalAdvisor extends AbstractJudge {
     private final JudgeOrMagistrateTitle judgeTitle;
     private final String otherTitle;
@@ -24,8 +26,8 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     @Builder(toBuilder = true)
     @SuppressWarnings("java:S107")
     private JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
-                                String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
-        String useAllocatedJudge, String judgeEmailAddress) {
+                                 String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
+                                 String useAllocatedJudge, String judgeEmailAddress) {
         super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress);
         this.judgeTitle = judgeTitle;
         this.otherTitle = otherTitle;
