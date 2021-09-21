@@ -21,11 +21,13 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
 
 import java.util.ArrayList;
@@ -41,8 +43,6 @@ import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
-import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
@@ -56,9 +56,10 @@ public class MigrateCaseController extends CallbackController {
     private static final int MAX_CHILDREN = 15;
 
     private final NoticeOfChangeFieldPopulator populator;
+    private final DocumentListService documentListService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "FPLA-3132", this::run3132,
-        "FPLA-3238", this::run3238
+        "FPLA-3238", this::run3238,
+        "DFPL-164", this::run164
     );
 
     @PostMapping("/about-to-submit")
@@ -81,25 +82,35 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run3132(CaseDetails caseDetails) {
+    private void run164(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        Long id = caseData.getId();
-        State state = caseData.getState();
-        if (IGNORED_STATES.contains(state)) {
+        var caseId = caseData.getId();
+
+        if (caseId != 1626258358022834L) {
             throw new AssertionError(format(
-                "Migration {id = FPLA-3132, case reference = %s} not migrating when state = %s", id, state
-            ));
-        }
-        int numChildren = caseData.getAllChildren().size();
-        if (MAX_CHILDREN < numChildren) {
-            throw new AssertionError(format(
-                "Migration {id = FPLA-3132, case reference = %s} not migrating when number of children = %d (max = %d)",
-                id, numChildren, MAX_CHILDREN
+                "Migration {id = DFPL-164, case reference = %s}, expected case id 1626258358022834",
+                caseId
             ));
         }
 
-        caseDetails.getData().putAll(populator.generate(caseData, CHILD, BLANK));
+        List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
+
+        Element<CourtAdminDocument> documentElement = otherCourtAdminDocuments.stream()
+            .filter(documents ->
+                "LA Certificate.pdf".equals(documents.getValue().getDocument().getFilename()))
+            .findFirst()
+            .orElseThrow();
+
+        log.info("Migration {id = DFPL-164, case reference = {}} Certificate document found",
+            caseId);
+        boolean removed = otherCourtAdminDocuments.remove(documentElement);
+        log.info("Migration {id = DFPL-164, case reference = {}} Certificate document removed {} ",
+            caseId,
+            removed);
+        caseDetails.getData().put("otherCourtAdminDocuments", otherCourtAdminDocuments);
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
+
 
     private void run3238(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
