@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -34,12 +35,12 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
         RespondentParty respondent2Party = RespondentParty.builder().firstName("John").lastName("Smith").build();
 
         List<Element<Respondent>> respondents = List.of(
-            element(Respondent.builder().party(respondent1Party).build()),
-            element(Respondent.builder().party(respondent2Party).build()));
+            element(Respondent.builder().party(respondent1Party).activeParty(YES.getValue()).build()),
+            element(Respondent.builder().party(respondent2Party).activeParty(YES.getValue()).build()));
 
         List<Element<Other>> others = List.of(
-            element(Other.builder().name("Bob").build()),
-            element(Other.builder().name("Tom").build()));
+            element(Other.builder().name("Bob").activeParty(YES.getValue()).build()),
+            element(Other.builder().name("Tom").activeParty(YES.getValue()).build()));
 
         CaseData caseData = CaseData.builder()
             .caseLocalAuthorityName("Swansea local authority")

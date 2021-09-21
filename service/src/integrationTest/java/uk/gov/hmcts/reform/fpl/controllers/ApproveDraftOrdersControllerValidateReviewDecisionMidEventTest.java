@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -136,8 +137,8 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
 
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .firstOther(Other.builder().name("test1").activeParty(YES.getValue()).build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").activeParty(YES.getValue()).build()))
                 .build())
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))

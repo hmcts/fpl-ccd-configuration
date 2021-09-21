@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -48,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -107,13 +107,15 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .representatives(List.of(representativeElement))
             .respondents1(wrapElements(Respondent.builder()
                 .representedBy(wrapElements(representativeElement.getId()))
-                .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build()).build()))
+                .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
+                .activeParty(YES.getValue()).build()))
             .others(Others.builder().firstOther(
-                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
+                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build())
+                        .activeParty(YES.getValue()).build())
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
-                    .address(Address.builder().postcode("SW2").build()).build())).build())
+                    .address(Address.builder().postcode("SW2").build()).activeParty(YES.getValue()).build())).build())
             .personSelector(Selector.newSelector(3))
-            .notifyApplicationsToAllOthers(YesNo.YES.getValue()).build();
+            .notifyApplicationsToAllOthers(YES.getValue()).build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
         CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -143,7 +145,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .servingPreferences(EMAIL).email("rep@test.com").build());
         Element<Respondent> respondentElement = element(Respondent.builder()
             .representedBy(wrapElements(representative.getId()))
-            .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build()).build());
+            .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
+            .activeParty(YES.getValue()).build());
 
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder()
             .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
@@ -155,9 +158,11 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .respondents1(List.of(respondentElement))
             .others(Others.builder()
                 .firstOther(Other.builder().name("Stephen Miller")
-                    .address(Address.builder().postcode("SE1").build()).build())
+                    .address(Address.builder().postcode("SE1").build())
+                    .activeParty(YES.getValue()).build())
                 .additionalOthers(wrapElements(Other.builder().name("Alex Smith")
-                    .address(Address.builder().postcode("SE2").build()).build())).build());
+                    .address(Address.builder().postcode("SE2").build())
+                    .activeParty(YES.getValue()).build())).build());
 
         Selector personSelector = Selector.newSelector(3);
         personSelector.setSelected(List.of(0, 2));

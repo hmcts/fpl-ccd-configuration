@@ -164,6 +164,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         .build());
     private static final Element<Respondent> RESPONDENT_WITH_POST_REP = element(Respondent.builder()
         .party(RespondentParty.builder().firstName("Tim").lastName("Jones").address(testAddress()).build())
+        .activeParty(YES.getValue())
         .representedBy(wrapElements(REPRESENTATIVE_WITH_POST_PREFERENCE.getId()))
         .build());
 

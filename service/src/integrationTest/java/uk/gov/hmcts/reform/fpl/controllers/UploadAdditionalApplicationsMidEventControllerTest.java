@@ -86,10 +86,11 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .representatives(List.of(representative))
             .respondents1(wrapElements(Respondent.builder().representedBy(wrapElements(representative.getId()))
                 .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                .activeParty(YES.getValue())
                 .build()))
             .others(Others.builder()
-                .firstOther(Other.builder().name("test1").build())
-                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .firstOther(Other.builder().name("test1").activeParty(YES.getValue()).build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").activeParty(YES.getValue()).build()))
                 .build())
             .build();
 
