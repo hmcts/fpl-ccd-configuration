@@ -22,7 +22,7 @@ plugins {
   id 'org.sonarqube' version '3.3'
   id 'project-report'
   id "idea"
-  id "info.solidsoft.pitest" version '1.5.2'
+  id "info.solidsoft.pitest" version '1.7.0'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -307,7 +307,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.14.1'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.15.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
