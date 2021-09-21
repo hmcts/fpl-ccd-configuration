@@ -13,7 +13,7 @@ public enum Gender {
     GIRL("FEMALE", "Female", "Benyw"),
     MALE("MALE", "Male", "Gwryw"),
     FEMALE("FEMALE", "Female", "Benyw"),
-    OTHER("OTHER", "They identify in another way", "They identify in another way"),
+    OTHER("OTHER", "They identify in another way", "Maent yn uniaethu mewn ffordd arall"),
     NONE("NONE", "", "");
 
     private final String value;

@@ -582,6 +582,10 @@ public class CaseSubmissionGenerationService
                 && StringUtils.isNotEmpty(genderIdentification)) {
                 return genderIdentification;
             }
+            if ("Maent yn uniaethu mewn ffordd arall".equalsIgnoreCase(gender)
+                && StringUtils.isNotEmpty(genderIdentification)) {
+                return genderIdentification;
+            }
             return gender;
         }
         return DEFAULT_STRING;
@@ -633,26 +637,47 @@ public class CaseSubmissionGenerationService
         switch (fromString(child.getLivingSituation())) {
             case HOSPITAL_SOON_TO_BE_DISCHARGED:
                 if (child.getDischargeDate() != null) {
-                    sb.append("Discharge date: ")
-                        .append(formatDateDisplay(child.getDischargeDate(), applicationLanguage));
+                    if (applicationLanguage.equals(Language.ENGLISH)) {
+                        sb.append("Discharge date: ")
+                            .append(formatDateDisplay(child.getDischargeDate(), applicationLanguage));
+                    } else {
+                        sb.append("Dyddiad diddymu: ")
+                            .append(formatDateDisplay(child.getDischargeDate(), applicationLanguage));
+                    }
                 }
                 break;
             case REMOVED_BY_POLICE_POWER_ENDS:
                 if (child.getDatePowersEnd() != null) {
-                    sb.append("Date powers end: ")
-                        .append(formatDateDisplay(child.getDatePowersEnd(), applicationLanguage));
+                    if (applicationLanguage.equals(Language.ENGLISH)) {
+                        sb.append("Date powers end: ")
+                            .append(formatDateDisplay(child.getDatePowersEnd(), applicationLanguage));
+                    } else {
+                        sb.append("Dyddiad y daw’r pwerau i ben: ")
+                            .append(formatDateDisplay(child.getDatePowersEnd(), applicationLanguage));
+                    }
                 }
                 break;
             case VOLUNTARILY_SECTION_CARE_ORDER:
                 if (child.getCareStartDate() != null) {
-                    sb.append("Date this began: ")
-                        .append(formatDateDisplay(child.getCareStartDate(), applicationLanguage));
+                    if (applicationLanguage.equals(Language.ENGLISH)) {
+                        sb.append("Date this began: ")
+                            .append(formatDateDisplay(child.getCareStartDate(), applicationLanguage));
+                    } else {
+                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                            .append(formatDateDisplay(child.getCareStartDate(), applicationLanguage));
+                    }
                 }
                 break;
             default:
                 if (child.getAddressChangeDate() != null) {
-                    sb.append("Date this began: ")
-                        .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
+
+                    if (applicationLanguage.equals(Language.ENGLISH)) {
+                        sb.append("Date this began: ")
+                            .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
+                    } else {
+                        sb.append("Dyddiad y bu i hyn gychwyn: ")
+                            .append(formatDateDisplay(child.getAddressChangeDate(), applicationLanguage));
+                    }
                 }
         }
     }
