@@ -77,6 +77,18 @@ class RespondentServiceTest {
             assertThat(result).isEqualTo("No respondents on the case");
         }
 
+        @Test
+        void shouldBuildExpectedLabelWhenInactiveRespondentsInList() {
+            List<Element<Respondent>> respondents = wrapElements(
+                respondent("James", "Daniels").toBuilder().activeParty(YES.getValue()).build(),
+                respondent("John", "Smith").toBuilder().activeParty(NO.getValue()).build()
+            );
+
+            String result = service.buildRespondentLabel(respondents);
+
+            assertThat(result).isEqualTo("Respondent 1 - James Daniels\n"
+                + "Respondent 2 - John Smith - Inactive\n");
+        }
     }
 
     @Test

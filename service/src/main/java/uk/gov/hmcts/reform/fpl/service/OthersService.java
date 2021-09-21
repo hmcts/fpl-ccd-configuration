@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -42,14 +43,15 @@ public class OthersService {
 
         if (otherExists(others)) {
             if (others.getFirstOther() != null) {
-                sb.append(String.format("Person 1 - %s", getName(others.getFirstOther()))).append("\n");
+                sb.append(String.format("Person 1 - %s", getName(others.getFirstOther())));
+                buildOtherStatus(sb, others.getFirstOther());
             }
 
             if (others.getAdditionalOthers() != null) {
                 for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
                     Other other = others.getAdditionalOthers().get(i).getValue();
-
-                    sb.append(String.format("Other person %d - %s", i + 1, getName(other))).append("\n");
+                    sb.append(String.format("Other person %d - %s", i + 1, getName(other)));
+                    buildOtherStatus(sb, other);
                 }
             }
         } else {
@@ -109,6 +111,14 @@ public class OthersService {
                 .map(others::get)
                 .collect(toList());
         }
+    }
+
+    private void buildOtherStatus(StringBuilder sb, Other other) {
+        if (NO.getValue().equals(other.getActiveParty())) {
+            sb.append(" - Inactive");
+        }
+
+        sb.append("\n");
     }
 
     private boolean useAllOthers(String sendOrdersToAllOthers) {

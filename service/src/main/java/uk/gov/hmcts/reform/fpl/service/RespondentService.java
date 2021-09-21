@@ -47,9 +47,8 @@ public class RespondentService {
                 Respondent respondent = respondents.get(i).getValue();
                 RespondentParty respondentParty = respondent.getParty();
 
-
-                sb.append(String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty)))
-                    .append("\n");
+                sb.append(String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty)));
+                buildRespondentStatus(sb, respondent);
             }
         } else {
             sb.append("No respondents on the case");
@@ -107,6 +106,15 @@ public class RespondentService {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
+
+    private void buildRespondentStatus(StringBuilder sb, Respondent respondent) {
+        if (NO.getValue().equals(respondent.getActiveParty())) {
+            sb.append(" - Inactive");
+        }
+
+        sb.append("\n");
+    }
+
 
     private String getRespondentFullName(RespondentParty respondentParty) {
         String firstName = defaultIfNull(respondentParty.getFirstName(), "");

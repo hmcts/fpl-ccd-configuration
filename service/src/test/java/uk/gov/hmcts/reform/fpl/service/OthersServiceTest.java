@@ -17,6 +17,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
@@ -70,7 +72,7 @@ class OthersServiceTest {
         List<Other> allOthers = List.of(firstOther, secondOther, thirdOther);
         List<Other> selectedOthers = List.of(firstOther, thirdOther);
 
-        Selector expectedSelector = Selector.builder().selected(List.of(0,2)).build().setNumberOfOptions(3);
+        Selector expectedSelector = Selector.builder().selected(List.of(0, 2)).build().setNumberOfOptions(3);
         Selector result = service.buildOtherSelector(allOthers, selectedOthers);
 
         assertThat(result).isEqualTo(expectedSelector);
@@ -120,6 +122,22 @@ class OthersServiceTest {
         String result = service.buildOthersLabel(others);
 
         assertThat(result).isEqualTo("Person 1 - \nOther person 1 - \n");
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenInactiveOthersInList() {
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("James Daniels").activeParty(NO.getValue()).build())
+            .additionalOthers(wrapElements(
+                Other.builder().name("Bob Martyn").activeParty(YES.getValue()).build(),
+                Other.builder().name("Rachel Daniels").activeParty(NO.getValue()).build()))
+            .build();
+
+        String result = service.buildOthersLabel(others);
+
+        assertThat(result).isEqualTo("Person 1 - James Daniels - Inactive\n"
+            + "Other person 1 - Bob Martyn\n"
+            + "Other person 2 - Rachel Daniels - Inactive\n");
     }
 
     @Test
@@ -228,7 +246,7 @@ class OthersServiceTest {
                 .additionalOthers(List.of(element(testOther("Second other"))))
                 .build())
             .sendOrderToAllOthers("Yes")
-                .build();
+            .build();
 
         List<Element<Other>> selectedOthers = service.getSelectedOthers(caseData);
 
