@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEdited;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
+import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,11 +42,13 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
+import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_FIRST;
@@ -203,7 +207,7 @@ public class PlacementService {
             .filter(pl -> Objects.equals(pl.getValue().getChildId(), currentPlacement.getChildId()))
             .findFirst();
 
-        currentPlacement.setNoticeDocuments(wrapElements(getListOfNotices(placementData)));
+        currentPlacement.setNoticeDocuments(getListOfNotices(placementData));
 
         if (existingPlacement.isPresent()) {
             existingPlacement.get().setValue(currentPlacement);
@@ -232,21 +236,75 @@ public class PlacementService {
         final PlacementEventData placementData = caseData.getPlacementEventData();
         final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
 
-        final Placement placement = placementData.getPlacement();
+        final UUID childId = placementData.getPlacement().getChildId();
 
-        final Optional<Placement> placementBefore = unwrapElements(placementDataBefore.getPlacements()).stream()
-            .filter(pl -> Objects.equals(pl.getChildId(), placement.getChildId()))
-            .findFirst();
+        final Placement placement = findChildPlacement(placementData, childId).orElseThrow();
+        final Optional<Placement> placementBefore = findChildPlacement(placementDataBefore, childId);
 
         if (placementBefore.isEmpty()) {
-            events.add(new PlacementApplicationAdded(caseData));
+            events.add(new PlacementApplicationSubmitted(caseData, placement));
         } else if (!placement.equals(placementBefore.get())) {
-            events.add(new PlacementApplicationEdited(caseData));
+            events.add(new PlacementApplicationChanged(caseData, placement));
         } else {
             log.info("No changes in placement application");
+            return emptyList();
+        }
+
+        final List<PlacementNoticeDocument> noticeDocuments = unwrapElements(placement.getNoticeDocuments());
+        final List<PlacementNoticeDocument> noticeDocumentsBefore = placementBefore
+            .map(Placement::getNoticeDocuments)
+            .map(ElementUtils::unwrapElements)
+            .orElse(emptyList());
+
+        final PlacementNoticeDocument localAuthorityNotice = getNotice(noticeDocuments, LOCAL_AUTHORITY);
+        final PlacementNoticeDocument localAuthorityNoticeBefore = getNotice(noticeDocumentsBefore, LOCAL_AUTHORITY);
+
+        final PlacementNoticeDocument cafcassNotice = getNotice(noticeDocuments, CAFCASS);
+        final PlacementNoticeDocument cafcassNoticeBefore = getNotice(noticeDocumentsBefore, CAFCASS);
+
+        final PlacementNoticeDocument firstParentNotice = getNotice(noticeDocuments, PARENT_FIRST);
+        final PlacementNoticeDocument firstParentNoticeBefore = getNotice(noticeDocumentsBefore, PARENT_FIRST);
+
+        final PlacementNoticeDocument secondParentNotice = getNotice(noticeDocuments, PARENT_SECOND);
+        final PlacementNoticeDocument secondParentNoticeBefore = getNotice(noticeDocumentsBefore, PARENT_SECOND);
+
+        if (nonNull(localAuthorityNotice) && !localAuthorityNotice.equals(localAuthorityNoticeBefore)) {
+            events.add(new PlacementNoticeChanged(caseData, placement, localAuthorityNotice));
+        }
+
+        if (nonNull(cafcassNotice) && !cafcassNotice.equals(cafcassNoticeBefore)) {
+            events.add(new PlacementNoticeChanged(caseData, placement, cafcassNotice));
+        }
+
+        if (nonNull(firstParentNotice) && !firstParentNotice.equals(firstParentNoticeBefore)
+            && !firstParentNotice.equals(secondParentNoticeBefore)) {
+
+            events.add(new PlacementNoticeChanged(caseData, placement, firstParentNotice));
+        }
+
+        if (nonNull(secondParentNotice) && !secondParentNotice.equals(secondParentNoticeBefore)
+            && !secondParentNotice.equals(firstParentNoticeBefore)) {
+
+            events.add(new PlacementNoticeChanged(caseData, placement, secondParentNotice));
         }
 
         return events;
+    }
+
+    private PlacementNoticeDocument getNotice(List<PlacementNoticeDocument> notices, RecipientType type) {
+        return notices.stream()
+            .filter(notice -> Objects.equals(notice.getType(), type))
+            .findFirst()
+            .orElse(null);
+    }
+
+    private UUID getNoticeId(List<Element<PlacementNoticeDocument>> notices, RecipientType type) {
+        return defaultIfNull(notices, new ArrayList<Element<PlacementNoticeDocument>>())
+            .stream()
+            .filter(notice -> Objects.equals(notice.getValue().getType(), type))
+            .map(Element::getId)
+            .findFirst()
+            .orElse(null);
     }
 
     private boolean isPaymentRequired(PlacementEventData eventData) {
@@ -260,15 +318,19 @@ public class PlacementService {
 
     private Placement getChildPlacement(PlacementEventData eventData, Element<Child> child) {
 
+        return findChildPlacement(eventData, child.getId()).orElseGet(() -> getDefaultPlacement(child));
+    }
+
+    private Optional<Placement> findChildPlacement(PlacementEventData eventData, UUID childId) {
+
         final List<Element<Placement>> placements = Optional.ofNullable(eventData)
             .map(PlacementEventData::getPlacements)
             .orElse(emptyList());
 
         return placements.stream()
             .map(Element::getValue)
-            .filter(placement -> Objects.equals(placement.getChildId(), child.getId()))
-            .findFirst()
-            .orElseGet(() -> getDefaultPlacement(child));
+            .filter(placement -> Objects.equals(placement.getChildId(), childId))
+            .findFirst();
     }
 
     private Placement getDefaultPlacement(Element<Child> child) {
@@ -391,8 +453,12 @@ public class PlacementService {
         return placementData;
     }
 
-    private List<PlacementNoticeDocument> getListOfNotices(PlacementEventData placementData) {
-        final List<PlacementNoticeDocument> noticeDocuments = new ArrayList<>();
+    private List<Element<PlacementNoticeDocument>> getListOfNotices(PlacementEventData placementData) {
+
+
+        final List<Element<PlacementNoticeDocument>> oldNotices = placementData.getPlacement().getNoticeDocuments();
+
+        final List<Element<PlacementNoticeDocument>> noticeDocuments = new ArrayList<>();
 
         if (YES == placementData.getPlacementNoticeForLocalAuthorityRequired()) {
 
@@ -407,7 +473,7 @@ public class PlacementService {
                     .responseDescription(placementData.getPlacementNoticeResponseFromLocalAuthorityDescription());
             }
 
-            noticeDocuments.add(noticeBuilder.build());
+            noticeDocuments.add(element(getNoticeId(oldNotices, LOCAL_AUTHORITY), noticeBuilder.build()));
         }
 
         if (YES == placementData.getPlacementNoticeForCafcassRequired()) {
@@ -422,7 +488,7 @@ public class PlacementService {
                     .responseDescription(placementData.getPlacementNoticeResponseFromCafcassDescription());
             }
 
-            noticeDocuments.add(noticeBuilder.build());
+            noticeDocuments.add(element(getNoticeId(oldNotices, CAFCASS), noticeBuilder.build()));
         }
 
         if (YES == placementData.getPlacementNoticeForFirstParentRequired()) {
@@ -439,7 +505,7 @@ public class PlacementService {
                     .responseDescription(placementData.getPlacementNoticeResponseFromFirstParentDescription());
             }
 
-            noticeDocuments.add(noticeBuilder.build());
+            noticeDocuments.add(element(getNoticeId(oldNotices, PARENT_FIRST), noticeBuilder.build()));
         }
 
         if (YES == placementData.getPlacementNoticeForSecondParentRequired()) {
@@ -455,7 +521,7 @@ public class PlacementService {
                     .responseDescription(placementData.getPlacementNoticeResponseFromSecondParentDescription());
             }
 
-            noticeDocuments.add(noticeBuilder.build());
+            noticeDocuments.add(element(getNoticeId(oldNotices, PARENT_SECOND), noticeBuilder.build()));
         }
 
         return noticeDocuments;
