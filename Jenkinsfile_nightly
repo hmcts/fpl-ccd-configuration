@@ -78,8 +78,8 @@ withNightlyPipeline(type, product, component) {
   env.ORG_ID = params.ORG_ID
 
   loadVaultSecrets(integrationTestSecrets)
-
-  enableCrossBrowserTest()
+  enableFullFunctionalTest(240)
+  enableCrossBrowserTest(['chrome', 'firefox'])
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
