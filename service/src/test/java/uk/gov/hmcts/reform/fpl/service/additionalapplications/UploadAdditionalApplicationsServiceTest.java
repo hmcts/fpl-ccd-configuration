@@ -174,9 +174,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
             .first()
             .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
-            .isEqualTo(SUPPLEMENT_DOCUMENT);
-
-        verifyNoInteractions(sealingService);
+            .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test
