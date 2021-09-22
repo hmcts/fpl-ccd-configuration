@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -23,13 +28,22 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
+import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
+import uk.gov.hmcts.reform.fpl.service.TaskListService;
+import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
@@ -48,6 +62,15 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     private static final String INVALID_MIGRATION_ID = "invalid id";
+
+    @MockBean
+    private TaskListService taskListService;
+
+    @MockBean
+    private TaskListRenderer taskListRenderer;
+
+    @MockBean
+    private CaseSubmissionChecker caseSubmissionChecker;
 
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
@@ -198,6 +221,56 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .reference("SOLICITOR_REFERENCE")
             .email("solicitor@legacy.com")
             .build();
+
+        final String expectedTaskList = "<h1>Task list</h1>";
+
+        @BeforeEach
+        void init() {
+
+            final List<Task> tasks = List.of(Task.builder()
+                .event(Event.SELECT_COURT)
+                .build());
+
+            final List<EventValidationErrors> tasksErrors = List.of(EventValidationErrors.builder()
+                .errors(List.of("Error1", "Error2"))
+                .event(Event.SELECT_COURT)
+                .build());
+
+            when(taskListService.getTasksForOpenCase(any())).thenReturn(tasks);
+            when(caseSubmissionChecker.validateAsGroups(any())).thenReturn(tasksErrors);
+            when(taskListRenderer.render(tasks, tasksErrors)).thenReturn(expectedTaskList);
+        }
+
+        @Test
+        void shouldMigrateTaskListWhenCaseInOpenState() {
+
+            final CaseData caseData = CaseData.builder()
+                .state(State.OPEN)
+                .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
+                .solicitor(legacySolicitor)
+                .localAuthorityPolicy(designatedOrg)
+                .build();
+
+            Map<String, Object> data = postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)).getData();
+
+            assertThat(data.get("taskList")).isEqualTo(expectedTaskList);
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = State.class, names = {"OPEN"}, mode = EnumSource.Mode.EXCLUDE)
+        void shouldNotMigrateTaskListWhenCaseNotInOpenState(State caseState) {
+
+            final CaseData caseData = CaseData.builder()
+                .state(caseState)
+                .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
+                .solicitor(legacySolicitor)
+                .localAuthorityPolicy(designatedOrg)
+                .build();
+
+            Map<String, Object> data = postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)).getData();
+
+            assertThat(data.get("taskList")).isNull();
+        }
 
         @Test
         void shouldMigrateLegacyApplicantAndSolicitor() {
