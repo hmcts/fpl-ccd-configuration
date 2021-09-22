@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -88,6 +89,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @BeforeEach
     void before() {
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(requestData.userRoles()).willReturn(Set.of(ADMIN_ROLE));
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
         given(documentSealingService.sealDocument(UPLOADED_DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_DOCUMENT);
     }
@@ -240,7 +242,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseData caseData = extractCaseData(callbackRequest()).toBuilder()
             .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .temporaryC2Document(C2DocumentBundle.builder().document(UPLOADED_DOCUMENT).build())
+            .temporaryC2Document(createTemporaryC2Document())
             .build();
 
         CaseData returnedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));

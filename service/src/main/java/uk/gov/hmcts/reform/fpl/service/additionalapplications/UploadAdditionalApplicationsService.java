@@ -135,9 +135,6 @@ public class UploadAdditionalApplicationsService {
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
 
-        DocumentReference sealedDocument = documentSealingService.sealDocument(temporaryC2Document.getDocument(),
-            caseData.getSealType());
-
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
         );
