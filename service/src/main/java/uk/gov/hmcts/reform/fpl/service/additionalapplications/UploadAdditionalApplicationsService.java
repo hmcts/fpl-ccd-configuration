@@ -43,7 +43,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -136,7 +135,6 @@ public class UploadAdditionalApplicationsService {
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
 
-
         DocumentReference sealedDocument = documentSealingService.sealDocument(temporaryC2Document.getDocument(),
             caseData.getSealType());
 
@@ -145,7 +143,7 @@ public class UploadAdditionalApplicationsService {
         );
 
         List<Element<Supplement>> updatedSupplementsBundle =
-            getSupplementsBundle(defaultIfNull(temporaryC2Document.getSupplementsBundle(), emptyList()),
+            getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
                 uploadedBy, uploadedTime, SealType.ENGLISH);
 
 
@@ -153,7 +151,7 @@ public class UploadAdditionalApplicationsService {
             .id(UUID.randomUUID())
             .applicantName(applicantName)
             .author(uploadedBy)
-            .document(getDocumentToStore(temporaryC2Document.getDocument()))
+            .document(getDocumentToStore(temporaryC2Document.getDocument(), SealType.ENGLISH))
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
@@ -190,7 +188,7 @@ public class UploadAdditionalApplicationsService {
             .applicantName(applicantName)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument()))
+            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument(), SealType.ENGLISH))
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .supplementsBundle(updatedSupplementsBundle)
             .respondents(selectedRespondents)
@@ -230,8 +228,8 @@ public class UploadAdditionalApplicationsService {
 
     }
 
-    private DocumentReference getDocumentToStore(DocumentReference originalDoc) {
-        return user.isHmctsUser() ? documentSealingService.sealDocument(originalDoc)
+    private DocumentReference getDocumentToStore(DocumentReference originalDoc, SealType sealType) {
+        return user.isHmctsUser() ? documentSealingService.sealDocument(originalDoc, sealType)
                                   : documentConversionService.convertToPdf(originalDoc);
     }
 }
