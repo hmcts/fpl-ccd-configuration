@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -73,6 +75,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @MockBean
     private DocumentSealingService documentSealingService;
 
+    @MockBean
+    private RequestData requestData;
+
     @Autowired
     private Time time;
 
@@ -84,7 +89,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void before() {
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(documentSealingService.sealDocument(uploadedDocument, SealType.ENGLISH)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument(UPLOADED_DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_DOCUMENT);
     }
 
     @Test
