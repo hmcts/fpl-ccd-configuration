@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -30,17 +31,17 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
     }
 
     @Test
-    void shouldPopulateApplicantsDynamicList() {
+    void shouldPopulateApplicantsDynamicListWithActiveRespondentsAndActiveOthers() {
         RespondentParty respondent1Party = RespondentParty.builder().firstName("Joe").lastName("Blogs").build();
         RespondentParty respondent2Party = RespondentParty.builder().firstName("John").lastName("Smith").build();
 
         List<Element<Respondent>> respondents = List.of(
             element(Respondent.builder().party(respondent1Party).activeParty(YES.getValue()).build()),
-            element(Respondent.builder().party(respondent2Party).activeParty(YES.getValue()).build()));
+            element(Respondent.builder().party(respondent2Party).activeParty(NO.getValue()).build()));
 
         List<Element<Other>> others = List.of(
             element(Other.builder().name("Bob").activeParty(YES.getValue()).build()),
-            element(Other.builder().name("Tom").activeParty(YES.getValue()).build()));
+            element(Other.builder().name("Tom").activeParty(NO.getValue()).build()));
 
         CaseData caseData = CaseData.builder()
             .caseLocalAuthorityName("Swansea local authority")
@@ -61,12 +62,8 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
                 DynamicListElement.builder().code("applicant").label("Swansea local authority, Applicant").build(),
                 DynamicListElement.builder().code(respondents.get(0).getId().toString())
                     .label(respondent1Party.getFullName() + ", Respondent 1").build(),
-                DynamicListElement.builder().code(respondents.get(1).getId().toString())
-                    .label(respondent2Party.getFullName() + ", Respondent 2").build(),
                 DynamicListElement.builder().code(caseData.getAllOthers().get(0).getId().toString())
                     .label("Bob, Other to be given notice 1").build(),
-                DynamicListElement.builder().code(caseData.getAllOthers().get(1).getId().toString())
-                    .label("Tom, Other to be given notice 2").build(),
                 DynamicListElement.builder().code("SOMEONE_ELSE").label("Someone else").build()))
             .value(DynamicListElement.EMPTY).build();
 

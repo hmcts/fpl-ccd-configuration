@@ -299,7 +299,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<Respondent>> getAllActiveRespondents() {
         return getAllRespondents().stream()
-            .filter(Respondent -> YES.getValue().equals(Respondent.getValue().getActiveParty()))
+            .filter(respondent -> YES.getValue().equals(respondent.getValue().getActiveParty()))
             .collect(toList());
     }
 
@@ -605,14 +605,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<Other>> getAllActiveOthers() {
         return getAllOthers().stream()
-            .filter(Other -> YES.getValue().equals(Other.getValue().getActiveParty()))
-            .collect(toList());
-    }
-
-    @JsonIgnore
-    public List<Element<Other>> getAllInactiveOthers() {
-        return getAllOthers().stream()
-            .filter(Other -> Other.getValue().getActiveParty().equals(NO.getValue()))
+            .filter(other -> YES.getValue().equals(other.getValue().getActiveParty()))
             .collect(toList());
     }
 

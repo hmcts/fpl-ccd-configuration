@@ -31,7 +31,7 @@ public class WhichOthersBlockPrePopulator implements QuestionBlockOrderPrePopula
     public Map<String, Object> prePopulate(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
         OrderTempQuestions orderTempQuestions = caseData.getManageOrdersEventData().getOrderTempQuestions();
-        final Selector othersSelector = newSelector(caseData.getAllOthers().size());
+        final Selector othersSelector = newSelector(caseData.getAllActiveOthers().size());
 
         if (isEmpty(caseData.getAllOthers())) {
             data.put("orderTempQuestions", orderTempQuestions.toBuilder().whichOthers("NO").build());

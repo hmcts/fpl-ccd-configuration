@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -37,34 +38,43 @@ class ApplicantsListGeneratorTest {
     private static final RespondentParty RESPONDENT_PARTY_2 = RespondentParty.builder()
         .firstName("David").lastName("Summer").build();
 
+    private static final RespondentParty RESPONDENT_PARTY_3 = RespondentParty.builder()
+        .firstName("Max").lastName("Winter").build();
+
     private DynamicListService dynamicListService = new DynamicListService(new ObjectMapper());
 
     private ApplicantsListGenerator underTest = new ApplicantsListGenerator(dynamicListService);
 
-    private static CaseData caseData;
+    private List<Element<Respondent>> respondents;
+
+    private List<Element<Other>> additionalOthers;
+
+    private CaseData caseData;
 
     @BeforeEach
     void setup() {
-        List<Element<Respondent>> respondents = List.of(
+        respondents = List.of(
             element(Respondent.builder().party(RESPONDENT_PARTY_1).activeParty(YES.getValue()).build()),
-            element(Respondent.builder().party(RESPONDENT_PARTY_2).activeParty(YES.getValue()).build()));
+            element(Respondent.builder().party(RESPONDENT_PARTY_2).activeParty(YES.getValue()).build()),
+            element(Respondent.builder().party(RESPONDENT_PARTY_3).activeParty(NO.getValue()).build()));
 
-        List<Element<Other>> others = List.of(
+        additionalOthers = List.of(
             element(Other.builder().name("Bob").activeParty(YES.getValue()).build()),
             element(Other.builder().name("Smith").activeParty(YES.getValue()).build()));
+        element(Other.builder().name("Jeremy").activeParty(NO.getValue()).build());
 
         caseData = CaseData.builder()
             .caseLocalAuthorityName("Swansea local authority")
             .respondents1(respondents)
             .others(Others.builder()
                 .firstOther(Other.builder().name("Ross").activeParty(YES.getValue()).build())
-                .additionalOthers(others)
+                .additionalOthers(additionalOthers)
                 .build())
             .build();
     }
 
     @Test
-    void shouldReturnAllApplicantsList() {
+    void shouldReturnAllActiveApplicantsList() {
         DynamicList actualDynamicList = underTest.buildApplicantsList(caseData);
 
         assertThat(actualDynamicList.getListItems())

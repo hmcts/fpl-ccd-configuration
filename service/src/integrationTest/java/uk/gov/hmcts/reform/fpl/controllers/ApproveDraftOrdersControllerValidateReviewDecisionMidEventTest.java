@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -171,6 +172,49 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldOnlyPopulateOthersFieldsWithActiveOthersInCase() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(agreedCMO));
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").activeParty(YES.getValue()).build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").activeParty(NO.getValue()).build()))
+                .build())
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
+
+        assertThat(callbackResponse.getData().get("hasOthers")).isEqualTo("Yes");
+        assertThat(callbackResponse.getData().get("others_label")).isEqualTo("Other 1: test1\n");
+    }
+
+    @Test
+    void shouldNotPopulateOthersFieldsWhenNoActiveOthersInCase() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
+            hearingOrdersBundleId, newArrayList(agreedCMO));
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").activeParty(NO.getValue()).build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").activeParty(NO.getValue()).build()))
+                .build())
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
+
+        assertThat(callbackResponse.getData()).doesNotContainKeys("hasOthers", "others_label");
+        assertThat(callbackResponse.getData()).containsEntry("othersSelector", null);
     }
 
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(

@@ -77,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -143,6 +144,41 @@ class CaseDataTest {
     }
 
     @Test
+    void shouldGetAllActiveOthers() {
+        Other activeOther1 = otherWithName("John").toBuilder().activeParty(YES.getValue()).build();
+        Other activeOther2 = otherWithName("Sam").toBuilder().activeParty(YES.getValue()).build();
+        Other inactiveOther = otherWithName("Calum").toBuilder().activeParty(NO.getValue()).build();
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(activeOther1)
+                .additionalOthers(wrapElements(activeOther2, inactiveOther)).build())
+            .build();
+
+        assertThat(unwrapElements(caseData.getAllActiveOthers())).isEqualTo(List.of(activeOther1, activeOther2));
+    }
+
+    @Test
+    void shouldGetEmptyListOfActiveOthersWhenNoActiveOthers() {
+        Other inactiveOther = otherWithName("Calum").toBuilder().activeParty(NO.getValue()).build();
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(inactiveOther)
+                .build())
+            .build();
+
+        assertThat(unwrapElements(caseData.getAllActiveOthers())).isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldGetEmptyListOfActiveOthersWhenOthersIsNull() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(caseData.getAllActiveOthers()).isEqualTo(List.of());
+    }
+
+    @Test
     void shouldFindFirstOther() {
         Other other1 = otherWithName("John");
         CaseData caseData = caseData(Others.builder().firstOther(other1));
@@ -163,9 +199,9 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         Other other2 = otherWithName("Sam");
         CaseData caseData = CaseData.builder().others(Others.builder()
-                .firstOther(other1)
-                .additionalOthers(wrapElements(other2))
-                .build())
+            .firstOther(other1)
+            .additionalOthers(wrapElements(other2))
+            .build())
             .build();
 
         assertThat(caseData.findOther(1)).contains(other2);
@@ -185,6 +221,38 @@ class CaseDataTest {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
         assertThat(caseData.findRespondent(1)).isEmpty();
+    }
+
+    @Test
+    void shouldGetAllActiveRespondents() {
+        Respondent activeRespondent1 = Respondent.builder().activeParty(YES.getValue()).build();
+        Respondent activeRespondent2 = Respondent.builder().activeParty(YES.getValue()).build();
+        Respondent inactiveRespondent1 = Respondent.builder().activeParty(NO.getValue()).build();
+
+        List<Element<Respondent>> respondents = wrapElements(activeRespondent1, activeRespondent2, inactiveRespondent1);
+
+        CaseData caseData = CaseData.builder().respondents1(respondents).build();
+
+        assertThat(unwrapElements(caseData.getAllActiveRespondents()))
+            .isEqualTo(List.of(activeRespondent1, activeRespondent2));
+    }
+
+    @Test
+    void shouldGetEmptyListOfActiveRespondentsWhenNoActiveRespondents() {
+        Respondent inactiveRespondent1 = Respondent.builder().activeParty(NO.getValue()).build();
+
+        List<Element<Respondent>> respondents = wrapElements(inactiveRespondent1);
+
+        CaseData caseData = CaseData.builder().respondents1(respondents).build();
+
+        assertThat(unwrapElements(caseData.getAllActiveRespondents())).isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldGetEmptyListOfActiveRespondentsWhenRespondentsIsNull() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(caseData.getAllActiveOthers()).isEqualTo(List.of());
     }
 
     @Test

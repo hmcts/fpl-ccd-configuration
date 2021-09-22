@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -30,7 +31,7 @@ class AppointedGuardianFormatterTest {
         }
 
         @Test
-        void shouldReturnFormattedLabelForMultipleRespondentsAndOthers() {
+        void shouldReturnFormattedLabelForMultipleActiveRespondentsAndActiveOthers() {
             CaseData caseData = getMultiplePeopleCaseData();
             String expected = "Person 1: Respondent - Remy Respondy\n"
                 + "Person 2: Respondent - Tony Stark\n"
@@ -105,18 +106,25 @@ class AppointedGuardianFormatterTest {
     }
 
     private CaseData getMultiplePeopleCaseData() {
-        return CaseData.builder().respondents1(wrapElements(Respondent.builder()
+        return CaseData.builder().respondents1(wrapElements(
+            Respondent.builder()
                 .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build())
                 .activeParty(YES.getValue()).build(),
             Respondent.builder()
                 .party(RespondentParty.builder().firstName("Tony").lastName("Stark").build())
-                .activeParty(YES.getValue()).build()))
+                .activeParty(YES.getValue()).build(),
+            Respondent.builder()
+                .party(RespondentParty.builder().firstName("Peter").lastName("Parker").build())
+                .activeParty(NO.getValue()).build()
+            ))
             .others(Others.builder()
                 .firstOther(Other.builder().name("Ollie Otherworld").activeParty(YES.getValue()).build())
-                .additionalOthers(wrapElements(Other.builder()
-                    .name("Otto Otherman").activeParty(YES.getValue()).build(), Other.builder().name("Bob Bothers")
-                    .activeParty(YES.getValue()).build())).build())
-            .appointedGuardianSelector(Selector.builder().selected(List.of(0, 3, 4)).build())
+                .additionalOthers(wrapElements(
+                    Other.builder().name("Otto Otherman").activeParty(YES.getValue()).build(),
+                    Other.builder().name("Bob Bothers").activeParty(YES.getValue()).build(),
+                    Other.builder().name("John Smith").activeParty(NO.getValue()).build())
+                ).build())
+            .appointedGuardianSelector(Selector.builder().selected(List.of(0, 4, 5)).build())
             .build();
     }
 }

@@ -110,10 +110,6 @@ class PeopleInCaseServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenRespondentsAreEmpty() {
-        //        Others others = Others.builder()
-        //            .firstOther(Other.builder().name("James Daniels").build())
-        //            .build();
-
         List<Element<Other>> others = wrapElements(Other.builder().name("James Daniels").build());
 
         String expectedOthersLabel = "Person 1: Other 1 - James Daniels\n";

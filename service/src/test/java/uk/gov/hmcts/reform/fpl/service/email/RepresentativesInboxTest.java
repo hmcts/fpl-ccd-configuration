@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -41,7 +42,9 @@ class RepresentativesInboxTest {
 
     private static final UUID EMAIL_REP_UUID = UUID.randomUUID();
     private static final UUID EMAIL_REP2_UUID = UUID.randomUUID();
+    private static final UUID EMAIL_REP_INACTIVE_UUID = UUID.randomUUID();
     private static final UUID DIGITAL_REP_UUID = UUID.randomUUID();
+    private static final UUID DIGITAL_REP_INACTIVE_UUID = UUID.randomUUID();
     private static final Element<Respondent> RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
         .representedBy(wrapElements(EMAIL_REP_UUID))
         .activeParty(YES.getValue())
@@ -55,8 +58,24 @@ class RepresentativesInboxTest {
         .representedBy(List.of())
         .activeParty(YES.getValue())
         .build());
+    private static final Element<Respondent> INACTIVE_RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
+        .party(RespondentParty.builder().firstName("Bill").lastName("Jones").address(testAddress()).build())
+        .representedBy(wrapElements(EMAIL_REP_INACTIVE_UUID))
+        .activeParty(NO.getValue())
+        .build());
+    private static final Element<Respondent> INACTIVE_RESPONDENT_WITH_DIGITAL_REP = element(Respondent.builder()
+        .party(RespondentParty.builder().firstName("Bill").lastName("Jones").address(testAddress()).build())
+        .representedBy(wrapElements(DIGITAL_REP_INACTIVE_UUID))
+        .activeParty(NO.getValue())
+        .build());
+    private static final Element<Respondent> INACTIVE_RESPONDENT_UNREPRESENTED = element(Respondent.builder()
+        .party(RespondentParty.builder().firstName("Mike").lastName("Jones").address(testAddress()).build())
+        .representedBy(List.of())
+        .activeParty(NO.getValue())
+        .build());
     private static final List<Element<Respondent>> RESPONDENTS = List.of(
-        RESPONDENT_WITH_EMAIL_REP, RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_UNREPRESENTED
+        RESPONDENT_WITH_EMAIL_REP, RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_UNREPRESENTED,
+        INACTIVE_RESPONDENT_WITH_EMAIL_REP, INACTIVE_RESPONDENT_WITH_DIGITAL_REP, INACTIVE_RESPONDENT_UNREPRESENTED
     );
     private static final String ORGANISATION_ID = "ORGANISATION_ID";
     private static final String EMAIL_1 = "email1";
@@ -66,6 +85,8 @@ class RepresentativesInboxTest {
     private static final String EMAIL_5 = "email5";
     private static final String EMAIL_6 = "email6";
     private static final String EMAIL_7 = "email7";
+    private static final String EMAIL_8 = "email8";
+    private static final String EMAIL_9 = "email9";
     private static final Respondent UNREGISTERED_RESPONDENT = Respondent.builder()
         .solicitor(RespondentSolicitor.builder()
             .email(EMAIL_1)
@@ -92,8 +113,18 @@ class RepresentativesInboxTest {
         .email(EMAIL_7)
         .servingPreferences(EMAIL)
         .build();
+    private static final Representative EMAIL_REP_INACTIVE = Representative.builder()
+        .role(RepresentativeRole.REPRESENTING_RESPONDENT_2)
+        .email(EMAIL_8)
+        .servingPreferences(EMAIL)
+        .build();
     private static final Representative DIGITAL_REP = Representative.builder()
         .email(EMAIL_4)
+        .servingPreferences(DIGITAL_SERVICE)
+        .build();
+    private static final Representative DIGITAL_REP_INACTIVE = Representative.builder()
+        .role(RepresentativeRole.REPRESENTING_RESPONDENT_2)
+        .email(EMAIL_9)
         .servingPreferences(DIGITAL_SERVICE)
         .build();
     private static final Child UNREGISTERED_CHILD = Child.builder()
@@ -114,9 +145,14 @@ class RepresentativesInboxTest {
         .build();
     private static final Element<Representative> EMAIL_REP_ELEMENT = element(EMAIL_REP_UUID, EMAIL_REP);
     private static final Element<Representative> EMAIL_REP_2_ELEMENT = element(EMAIL_REP2_UUID, EMAIL_REP2);
+    private static final Element<Representative> EMAIL_REP_INACTIVE_ELEMENT =
+        element(EMAIL_REP_INACTIVE_UUID, EMAIL_REP_INACTIVE);
     private static final Element<Representative> DIGITAL_REP_ELEMENT = element(DIGITAL_REP_UUID, DIGITAL_REP);
+    private static final Element<Representative> DIGITAL_REP_INACTIVE_ELEMENT =
+        element(DIGITAL_REP_INACTIVE_UUID, DIGITAL_REP_INACTIVE);
     private static final List<Element<Representative>> REPRESENTATIVES = List.of(
-        EMAIL_REP_ELEMENT, EMAIL_REP_2_ELEMENT, DIGITAL_REP_ELEMENT
+        EMAIL_REP_ELEMENT, EMAIL_REP_2_ELEMENT, EMAIL_REP_INACTIVE_ELEMENT, DIGITAL_REP_ELEMENT,
+        DIGITAL_REP_INACTIVE_ELEMENT
     );
 
     private static final Representative CARCASS_REP = Representative.builder()
@@ -134,7 +170,7 @@ class RepresentativesInboxTest {
     private final RepresentativesInbox underTest = new RepresentativesInbox();
 
     @Test
-    void testRepresentativesByPOSTIsNotAccepted() {
+    void testRepresentativesByPostIsNotAccepted() {
         CaseData caseData = CaseData.builder().build();
 
         assertThatThrownBy(() -> underTest.getEmailsByPreference(caseData, POST))
@@ -176,6 +212,29 @@ class RepresentativesInboxTest {
         Set<String> actual = underTest.getEmailsByPreference(caseData, DIGITAL_SERVICE);
 
         assertThat(actual).isEqualTo(Set.of(EMAIL_4));
+    }
+
+    @Test
+    void testFilterNoInactiveEmailRepresentatives() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(RESPONDENT_WITH_EMAIL_REP, INACTIVE_RESPONDENT_WITH_EMAIL_REP))
+            .representatives(wrapElements(EMAIL_REP, EMAIL_REP_INACTIVE))
+            .build();
+
+        Set<String> actual = underTest.getEmailsByPreference(caseData, EMAIL);
+
+        assertThat(actual).containsOnly(EMAIL_3);
+    }
+
+    @Test
+    void testFilterNoInactiveDigitalRepresentatives() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(RESPONDENT_WITH_DIGITAL_REP, INACTIVE_RESPONDENT_WITH_DIGITAL_REP))
+            .representatives(wrapElements(DIGITAL_REP, DIGITAL_REP_INACTIVE)).build();
+
+        Set<String> actual = underTest.getEmailsByPreference(caseData, DIGITAL_SERVICE);
+
+        assertThat(actual).containsOnly(EMAIL_4);
     }
 
     @Test
@@ -400,8 +459,6 @@ class RepresentativesInboxTest {
     void testFilterRepresentativesByRole() {
         CaseData caseData = CaseData.builder().representatives(wrapElements(CARCASS_REP, RESPONDENT_REP)).build();
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
-
-        System.out.println(RepresentativeRole.CAFCASS_GUARDIAN.getSequenceNo());
 
         Set<String> actual = underTest.getRepresentativeEmailsFilteredByRole(caseData, DIGITAL_SERVICE, roles);
 

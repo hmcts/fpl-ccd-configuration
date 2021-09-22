@@ -16,6 +16,8 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class AppointedGuardianBlockPrePopulatorTest {
@@ -34,11 +36,18 @@ class AppointedGuardianBlockPrePopulatorTest {
 
     @Test
     void prePopulate() {
-        List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
-            .activeParty("Yes").build());
+        List<Element<Respondent>> respondents = wrapElements(
+            Respondent.builder().activeParty(YES.getValue()).build(),
+            Respondent.builder().activeParty(NO.getValue()).build(),
+            Respondent.builder().activeParty(NO.getValue()).build()
+        );
 
-        Others others = Others.builder().additionalOthers(wrapElements(Other.builder()
-            .activeParty("Yes").build())).build();
+        Others others = Others.builder()
+            .firstOther(Other.builder().activeParty(NO.getValue()).build())
+            .additionalOthers(wrapElements(
+                Other.builder().activeParty(YES.getValue()).build(),
+                Other.builder().activeParty(NO.getValue()).build())
+            ).build();
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
