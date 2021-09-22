@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.json.deserializer.DynamicListDeserializer;
 import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.FieldsGroup;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -44,6 +45,7 @@ public class PlacementEventData {
     private String placementChildName;
 
     @Temp
+    @JsonDeserialize(using = DynamicListDeserializer.class)
     private DynamicList placementChildrenList;
 
     @TempNullify
@@ -146,6 +148,7 @@ public class PlacementEventData {
 
     @Temp
     @FieldsGroup(NOTICE_GROUP)
+    @JsonDeserialize(using = DynamicListDeserializer.class)
     private DynamicList placementNoticeForFirstParentParentsList;
 
     @Temp
@@ -176,6 +179,7 @@ public class PlacementEventData {
 
     @Temp
     @FieldsGroup(NOTICE_GROUP)
+    @JsonDeserialize(using = DynamicListDeserializer.class)
     private DynamicList placementNoticeForSecondParentParentsList;
 
     @Temp
