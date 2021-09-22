@@ -39,7 +39,7 @@ public abstract class AbstractEmailContentProvider {
         return caseUrlService.getCaseUrl(caseId, tab);
     }
 
-    protected Map<String, Object> linkToAttachedDocument(final DocumentReference documentReference) {
+    protected Map<String, Object>   linkToAttachedDocument(final DocumentReference documentReference) {
         return Optional.ofNullable(documentReference)
             .map(DocumentReference::getBinaryUrl)
             .map(documentDownloadService::downloadDocument)

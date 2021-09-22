@@ -69,17 +69,17 @@ public class CaseDetailsHelper {
         return caseDetails;
     }
 
-    public static CaseDetailsMap addFields(CaseDetailsMap caseDetails, Object target, String... groups) {
+    public static CaseDetailsMap putFields(CaseDetailsMap caseDetails, Object source, String... groups) {
 
-        requireNonNull(target);
+        requireNonNull(source);
 
         final List<String> groupList = Arrays.asList(groups);
 
-        getFieldsListWithAnnotation(target.getClass(), FieldsGroup.class).stream()
+        getFieldsListWithAnnotation(source.getClass(), FieldsGroup.class).stream()
             .filter(field -> stream(field.getAnnotation(FieldsGroup.class).value()).anyMatch(groupList::contains))
             .forEach(field -> {
                 ReflectionUtils.makeAccessible(field);
-                caseDetails.putIfNotEmpty(field.getName(), ReflectionUtils.getField(field, target));
+                caseDetails.putIfNotEmpty(field.getName(), ReflectionUtils.getField(field, source));
             });
 
         return caseDetails;
