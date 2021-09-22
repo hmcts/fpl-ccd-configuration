@@ -168,9 +168,6 @@ public class UploadAdditionalApplicationsService {
                                                                  LocalDateTime uploadedTime) {
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
 
-        DocumentReference sealedDocument =
-            documentSealingService.sealDocument(temporaryOtherApplicationsBundle.getDocument(), caseData.getSealType());
-
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
             temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
         );

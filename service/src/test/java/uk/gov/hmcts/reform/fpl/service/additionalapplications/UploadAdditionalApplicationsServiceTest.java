@@ -6,7 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
@@ -86,9 +85,7 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
-    @MockBean
-    private RequestData requestData;
-
+    private final RequestData requestData = mock(RequestData.class);
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final IdamClient idamClient = mock(IdamClient.class);
     private final UserService user = mock(UserService.class);
