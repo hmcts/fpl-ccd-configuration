@@ -1,21 +1,25 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import lombok.EqualsAndHashCode;
+import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 @Data
 @Builder(toBuilder = true)
-public class CourtBundle {
-    private String hearing;
-    private List<Element<CourtBundleForHearing>> courtBundleForHearing;
+@Jacksonized
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@EqualsAndHashCode(callSuper = true)
+public class CourtBundle extends DocumentMetaData {
+    private DocumentReference document;
 
-    public List<Element<CourtBundleForHearing>> getCourtBundleForHearing() {
-        return defaultIfNull(this.courtBundleForHearing, new ArrayList<>());
+    @JsonIgnore
+    @Override
+    public DocumentReference getTypeOfDocument() {
+        return document;
     }
 }

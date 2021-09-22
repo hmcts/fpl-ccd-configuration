@@ -6,18 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -35,6 +27,7 @@ public class ManageDocumentLAService {
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY = "furtherEvidenceDocumentsLA";
     public static final String DOCUMENT_SUB_TYPE = "manageDocumentSubtypeListLA";
     public static final String RELATED_TO_HEARING = "manageDocumentsRelatedToHearing";
+    public static final String COURT_BUNDLE_HEARING_LABEL_KEY = "manageDocumentsCourtBundleHearingLabel";
     public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
@@ -70,30 +63,47 @@ public class ManageDocumentLAService {
 
     public Map<String, Object> initialiseCourtBundleFields(CaseData caseData) {
         Map<String, Object> map = new HashMap<>();
-        map.put(COURT_BUNDLE_HEARING_LIST_KEY, initialiseCourtBundleHearingList((caseData)));
         map.put(COURT_BUNDLE_KEY, getCourtBundleForHearing((caseData)));
         return map;
     }
 
-    public List<Element<CourtBundle>> buildCourtBundleList(CaseData caseData) {
-        List<Element<CourtBundle>> courtBundleList = caseData.getCourtBundleList();
-
+    public List<Element<HearingCourtBundle>> buildCourtBundleList(CaseData caseData) {
+        List<Element<HearingCourtBundle>> courtBundleList = caseData.getCourtBundleList();
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
 
-        if (isNotEmpty(caseData.getHearingDetails())) {
-            return List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle()));
+        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingId);
+        if (hearingBooking.isEmpty()) {
+            throw new NoHearingBookingException(selectedHearingId);
         }
 
-        Optional<Element<CourtBundle>> editedBundle = findElement(selectedHearingId, courtBundleList);
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            return List.of(element(selectedHearingId, HearingCourtBundle.builder()
+                .hearing(hearingBooking.get().getValue().toLabel())
+                .courtBundle(caseData.getManageDocumentsCourtBundle())
+                .build()));
+        }
+
+        Optional<Element<HearingCourtBundle>> editedBundle = findElement(selectedHearingId, courtBundleList);
         editedBundle.ifPresentOrElse(
             courtBundleElement -> courtBundleList.set(courtBundleList.indexOf(courtBundleElement),
-                element(selectedHearingId, caseData.getManageDocumentsCourtBundle())),
-            () -> courtBundleList.add(element(selectedHearingId, caseData.getManageDocumentsCourtBundle())));
+                element(selectedHearingId,
+                    constructHearingCourtBundle(hearingBooking.get(), caseData.getManageDocumentsCourtBundle()))),
+            () -> courtBundleList.add(element(selectedHearingId,
+                constructHearingCourtBundle(hearingBooking.get(), caseData.getManageDocumentsCourtBundle())))
+        );
 
         return courtBundleList;
     }
 
-    private DynamicList initialiseCourtBundleHearingList(CaseData caseData) {
+    private HearingCourtBundle constructHearingCourtBundle(Element<HearingBooking> hearingBooking, List<Element<CourtBundle>> courtBundle) {
+        return HearingCourtBundle.builder()
+            .hearing(hearingBooking.getValue().toLabel())
+            .courtBundle(courtBundle)
+            .build();
+    }
+
+    public Map<String, Object> initialiseCourtBundleHearingListAndLabel(CaseData caseData) {
+        Map<String, Object> listAndLabel = new HashMap<>();
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
         Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(
             selectedHearingId);
@@ -101,18 +111,21 @@ public class ManageDocumentLAService {
         if (hearingBooking.isEmpty()) {
             throw new NoHearingBookingException(selectedHearingId);
         }
-        return caseData.buildDynamicHearingList(selectedHearingId);
+        listAndLabel.put(COURT_BUNDLE_HEARING_LABEL_KEY, hearingBooking.get().getValue().toLabel());
+        listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList(selectedHearingId));
+
+        return listAndLabel;
     }
 
-    private CourtBundle getCourtBundleForHearing(CaseData caseData) {
-        List<Element<CourtBundle>> bundles = caseData.getCourtBundleList();
+    public List<Element<CourtBundle>> getCourtBundleForHearing(CaseData caseData) {
+        List<Element<HearingCourtBundle>> bundles = caseData.getCourtBundleList();
 
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
 
-        Optional<Element<CourtBundle>> bundle = findElement(selectedHearingId, bundles);
+        Optional<Element<HearingCourtBundle>> bundle = findElement(selectedHearingId, bundles);
 
         if (bundle.isPresent()) {
-            return bundle.get().getValue();
+            return bundle.get().getValue().getCourtBundle();
         } else {
             Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingId);
 
@@ -120,7 +133,7 @@ public class ManageDocumentLAService {
                 throw new NoHearingBookingException(selectedHearingId);
             }
 
-            return CourtBundle.builder().hearing(hearingBooking.get().getValue().toLabel()).build();
+            return List.of(element(CourtBundle.builder().build()));
         }
     }
 }

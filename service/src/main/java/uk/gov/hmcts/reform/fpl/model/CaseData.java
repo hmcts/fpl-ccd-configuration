@@ -274,7 +274,7 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    public final CourtBundle courtBundle;
+    public final List<Element<CourtBundle>> courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -668,14 +668,18 @@ public class CaseData {
     private final Object courtBundleHearingList;
     private final Object respondentStatementList;
 
-    private final CourtBundle manageDocumentsCourtBundle;
-    private final List<Element<CourtBundle>> courtBundleList;
+    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
+    private final List<Element<HearingCourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
-    public List<Element<CourtBundle>> getCourtBundleList() {
+    public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
+        return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
+    }
+
+    public List<Element<HearingCourtBundle>> getCourtBundleList() {
         return defaultIfNull(courtBundleList, new ArrayList<>());
     }
 

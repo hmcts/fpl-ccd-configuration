@@ -128,7 +128,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtBundleList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CourtBundleV2",
+    "FieldTypeParameter": "HearingCourtBundle",
     "Label": "Court bundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
