@@ -91,6 +91,7 @@
             "litigationIssuesDetails": null,
             "detailsHidden": "Yes",
             "detailsHiddenReason": null,
+            "activeParty": null,
             "representedBy": [],
             "DOB": "2000-07-12"
           },
@@ -111,6 +112,7 @@
                 "PostCode": "CR0 2FT",
                 "Country": "United Kingdom"
               },
+              "activeParty": null,
               "telephone": null,
               "birthPlace": null,
               "childInformation": null,
