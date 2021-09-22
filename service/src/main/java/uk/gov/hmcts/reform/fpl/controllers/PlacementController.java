@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
@@ -49,6 +48,10 @@ public class PlacementController extends CallbackController {
         caseProperties.putIfNotEmpty("placementChildrenList", eventData.getPlacementChildrenList());
         caseProperties.putIfNotEmpty("placement", eventData.getPlacement());
         caseProperties.putIfNotEmpty("placementChildName", eventData.getPlacementChildName());
+        caseProperties.putIfNotEmpty("placementNoticeForFirstParentParentsList",
+            eventData.getPlacementNoticeForFirstParentParentsList());
+        caseProperties.putIfNotEmpty("placementNoticeForSecondParentParentsList",
+            eventData.getPlacementNoticeForSecondParentParentsList());
 
         return respond(caseProperties);
     }
@@ -65,6 +68,11 @@ public class PlacementController extends CallbackController {
         caseProperties.putIfNotEmpty("placement", eventData.getPlacement());
         caseProperties.putIfNotEmpty("placementChildName", eventData.getPlacementChildName());
 
+        caseProperties.putIfNotEmpty("placementNoticeForFirstParentParentsList",
+            eventData.getPlacementNoticeForFirstParentParentsList());
+        caseProperties.putIfNotEmpty("placementNoticeForSecondParentParentsList",
+            eventData.getPlacementNoticeForSecondParentParentsList());
+
         return respond(caseProperties);
     }
 
@@ -77,12 +85,25 @@ public class PlacementController extends CallbackController {
 
         final List<String> errors = placementService.checkDocuments(caseData);
 
+        return respond(caseProperties, errors);
+    }
+
+    @PostMapping("notices-upload/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleNoticesUploaded(@RequestBody CallbackRequest request) {
+
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
+        final CaseData caseData = getCaseData(caseDetails);
+
+        final List<String> errors = placementService.checkNotices(caseData);
+
         if (!errors.isEmpty()) {
             return respond(caseProperties, errors);
         }
 
         final PlacementEventData eventData = placementService.preparePayment(caseData);
 
+        caseProperties.putIfNotEmpty("placement", eventData.getPlacement());
         caseProperties.putIfNotEmpty("placementPaymentRequired", eventData.getPlacementPaymentRequired());
         caseProperties.putIfNotEmpty("placementFee", eventData.getPlacementFee());
 
@@ -124,7 +145,7 @@ public class PlacementController extends CallbackController {
 
         final CaseData caseData = getCaseData(request);
 
-        publishEvent(new PlacementApplicationAdded(caseData));
+        publishEvents(placementService.getEvents(caseData));
     }
 
 }

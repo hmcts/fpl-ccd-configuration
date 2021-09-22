@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -102,6 +103,7 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
                 .placementPayment(PBAPayment.builder()
                     .pbaNumber(PBA_NUMBER)
                     .build())
+                .placement(Placement.builder().build())
                 .build())
             .build();
 
@@ -140,6 +142,7 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
                 .placementPayment(PBAPayment.builder()
                     .pbaNumber(PBA_NUMBER)
                     .build())
+                .placement(Placement.builder().build())
                 .build())
             .build();
 
@@ -187,6 +190,7 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
             .id(CASE_ID)
             .placementEventData(PlacementEventData.builder()
                 .placementPaymentRequired(NO)
+                .placement(Placement.builder().build())
                 .build())
             .build();
 
@@ -220,6 +224,7 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
         expectedCaseChanges.put("placementLastPaymentTime", now());
         expectedCaseChanges.put("placementPaymentRequired", null);
         expectedCaseChanges.put("placementPayment", null);
+        expectedCaseChanges.put("placement", null);
 
         return CaseDataContent.builder()
             .event(Event.builder()
