@@ -33,11 +33,11 @@ public class TranslatableNoticeOfProceedingsProvider implements TranslatableList
     }
 
     @Override
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
         return nullSafeList(caseData.getNoticeOfProceedingsBundle())
             .stream()
             .filter(nop -> nop.getId().equals(selectedOrderId))
-            .findFirst().map(it -> it.getValue().getDocument())
+            .findFirst().map(Element::getValue)
             .orElseThrow(IllegalArgumentException::new);
     }
 

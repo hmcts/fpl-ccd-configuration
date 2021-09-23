@@ -56,7 +56,7 @@ public class StandardDirectionOrderGenerationService extends
                 .crest(getCrestData());
 
         if (standardDirectionOrder.isSealed()) {
-            orderBuilder.courtseal(getCourtSealData());
+            orderBuilder.courtseal(getCourtSealData(caseData.getImageLanguage()));
         } else {
             orderBuilder.draftbackground(getDraftWaterMarkData());
         }

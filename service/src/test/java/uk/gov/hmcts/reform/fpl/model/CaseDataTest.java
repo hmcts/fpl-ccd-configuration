@@ -74,6 +74,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.document.SealType.BILINGUAL;
+import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -212,7 +214,7 @@ class CaseDataTest {
     @Test
     void shouldReturnFalseWhenUsingAllocatedJudge() {
         CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-            .build())
+                .build())
             .allocatedJudge(Judge.builder()
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeEmailAddress("test@test.com")
@@ -959,8 +961,8 @@ class CaseDataTest {
                 C1_WITH_SUPPLEMENT, formattedFutureDate);
 
             List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
-                AdditionalApplicationsBundle.builder().c2DocumentBundle(pastC2Bundle)
-                    .otherApplicationsBundle(otherBundle1).build()),
+                    AdditionalApplicationsBundle.builder().c2DocumentBundle(pastC2Bundle)
+                        .otherApplicationsBundle(otherBundle1).build()),
                 element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle2).build()),
                 element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle3).build()),
                 element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle4).build()));
@@ -2061,6 +2063,25 @@ class CaseDataTest {
             assertThat(caseData.getDesignatedLocalAuthority()).isNull();
         }
 
+    }
+
+    @Nested
+    class GetSealType {
+
+        @Test
+        void testIfEmpty() {
+            assertThat(CaseData.builder().build().getSealType()).isEqualTo(ENGLISH);
+        }
+
+        @Test
+        void testIfLanguageRequirementNo() {
+            assertThat(CaseData.builder().languageRequirement("No").build().getSealType()).isEqualTo(ENGLISH);
+        }
+
+        @Test
+        void testIfLanguageRequirementYes() {
+            assertThat(CaseData.builder().languageRequirement("Yes").build().getSealType()).isEqualTo(BILINGUAL);
+        }
     }
 
     private HearingOrder buildHearingOrder(HearingOrderType type) {
