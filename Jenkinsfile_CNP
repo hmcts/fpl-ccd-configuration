@@ -68,6 +68,7 @@ def archiveCoreCaseDataDefinitions(env) {
     if("preview" == env){
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-off.xlsx"
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-shuttered.xlsx"
     } else {
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}.xlsx"
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}-shuttered.xlsx"
