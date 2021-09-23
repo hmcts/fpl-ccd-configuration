@@ -9,13 +9,18 @@
       "caseworker-publiclaw-cafcass",
       "caseworker-publiclaw-gatekeeper",
       "caseworker-publiclaw-judiciary",
-      "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
       "caseworker-approver"
     ],
     "CRUD": "D"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
