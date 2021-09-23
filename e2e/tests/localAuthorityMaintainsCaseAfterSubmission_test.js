@@ -3,11 +3,8 @@ const recipients = require('../fixtures/recipients.js');
 const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const api = require('../helpers/api_helper');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
-const moment = require('moment');
 
 let caseId;
-
-let approvalDate = moment().year(2021).month(3).day(9).hours(10).minutes(30).seconds(15).milliseconds(0).toDate();
 
 Feature('Case maintenance after submission');
 
@@ -286,7 +283,7 @@ Scenario('Admin creates placement order', async ({ I, caseViewPage, placementEve
   await I.goToNextPage();
   manageOrdersEventPage.selectPlacementApplication('Timothy Jones');
   manageOrdersEventPage.enterJudge();
-  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await manageOrdersEventPage.enterApprovalDate({day: '27', month: '04', year:'2021'});
   await I.goToNextPage();
   manageOrdersEventPage.selectIsFinalOrder();
   manageOrdersEventPage.fillPlacementOrderSpecificFields({
@@ -305,7 +302,7 @@ Scenario('Admin creates placement order', async ({ I, caseViewPage, placementEve
 
   I.seeInTab(['Order 1', 'Type of order'], 'Placement Order (A70)');
   I.seeInTab(['Order 1', 'Order document'], 'a70_placement_order.pdf');
-  I.seeInTab(['Order 1', 'Approval date'], '9 March 2021');
+  I.seeInTab(['Order 1', 'Approval date'], 	'27 Apr 2021');
   I.seeInTab(['Order 1', 'Children'], 'Timothy Jones');
   I.seeInTab(['Order 1', 'Notification document'], 'placement_order_notification_a206.pdf');
 });
