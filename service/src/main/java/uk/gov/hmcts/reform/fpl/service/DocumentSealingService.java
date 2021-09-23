@@ -39,10 +39,10 @@ public class DocumentSealingService {
     private final DocumentConversionService documentConversionService;
     private final DocumentDownloadService documentDownloadService;
 
-    public DocumentReference sealDocument(DocumentReference document) {
+    public DocumentReference sealDocument(DocumentReference document, SealType sealType) {
         byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
         documentContents = documentConversionService.convertToPdf(documentContents, document.getFilename());
-        documentContents = sealDocument(documentContents, SealType.ENGLISH);
+        documentContents = sealDocument(documentContents, sealType);
 
         String newFilename = updateExtension(document.getFilename(), PDF);
 
