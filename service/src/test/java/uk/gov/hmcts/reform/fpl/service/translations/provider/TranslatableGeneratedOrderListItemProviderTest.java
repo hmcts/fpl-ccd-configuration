@@ -67,21 +67,23 @@ class TranslatableGeneratedOrderListItemProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .orderCollection(List.of(element(SELECTED_ORDER_ID, GeneratedOrder.builder()
                         .document(DOCUMENT_REFERENCE)
                         .build())))
                     .build(),
                 SELECTED_ORDER_ID);
 
-            assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(GeneratedOrder.builder()
+                .document(DOCUMENT_REFERENCE)
+                .build());
 
         }
 
         @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .orderCollection(List.of(element(UUID_1, GeneratedOrder.builder()
                             .document(DOCUMENT_REFERENCE)
                             .build())))
@@ -93,7 +95,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
         @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .orderCollection(null)
                         .build(),
                     SELECTED_ORDER_ID));

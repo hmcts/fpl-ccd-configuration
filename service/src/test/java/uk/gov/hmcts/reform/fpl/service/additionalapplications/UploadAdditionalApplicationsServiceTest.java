@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -32,6 +34,8 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +48,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
@@ -79,7 +85,9 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
+    private final RequestData requestData = mock(RequestData.class);
     private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final IdamClient idamClient = mock(IdamClient.class);
     private final UserService user = mock(UserService.class);
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
     private final DocumentSealingService sealingService = mock(DocumentSealingService.class);
@@ -90,15 +98,17 @@ class UploadAdditionalApplicationsServiceTest {
 
     @BeforeEach()
     void init() {
+
+        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
+        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(sealingService.sealDocument(DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_CONVERTED_DOCUMENT);
+        given(sealingService.sealDocument(SUPPLEMENT_DOCUMENT, SealType.ENGLISH)).willReturn(
+            SEALED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
             time, user, uploadHelper, sealingService, conversionService, peopleInCaseService
         );
-
         given(user.isHmctsUser()).willReturn(true);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
-
-        given(sealingService.sealDocument(DOCUMENT)).willReturn(SEALED_CONVERTED_DOCUMENT);
-        given(sealingService.sealDocument(SUPPLEMENT_DOCUMENT)).willReturn(SEALED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test
@@ -164,9 +174,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
             .first()
             .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
-            .isEqualTo(SUPPLEMENT_DOCUMENT);
-
-        verifyNoInteractions(sealingService);
+            .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test
@@ -454,6 +462,16 @@ class UploadAdditionalApplicationsServiceTest {
             .secureAccommodationType(name == C20_SECURE_ACCOMMODATION ? WALES : null)
             .notes("Document notes")
             .document(SUPPLEMENT_DOCUMENT)
+            .build();
+    }
+
+    private UserDetails createUserDetailsWithHmctsRole() {
+        return UserDetails.builder()
+            .id(USER_ID)
+            .surname("Hudson")
+            .forename("Steve")
+            .email("steve.hudson@gov.uk")
+            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }
