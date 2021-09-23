@@ -13,21 +13,17 @@ import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
 class ChildPlacementOrderPrePopulatorTest {
 
-    private final UUID mockedChildApplicationId = UUID.randomUUID();
-    private Element<String> mockedChildApplication = Element.<String>builder()
-        .id(mockedChildApplicationId)
-        .value("Mocked child application")
-        .build();
+    private Element<String> mockedChildApplication = element("Mocked child application");
 
     @Mock
     private PlacementService placementService;
@@ -50,7 +46,7 @@ class ChildPlacementOrderPrePopulatorTest {
         assertThat(prePopulatedValues)
             .extractingByKey("manageOrdersChildPlacementApplication", DynamicListAssert.getInstanceOfAssertFactory())
             .hasNoSelectedValue()
-            .hasElements(Pair.of(mockedChildApplicationId, "Mocked child application"));
+            .hasElements(Pair.of(mockedChildApplication.getId(), "Mocked child application"));
     }
 
 }

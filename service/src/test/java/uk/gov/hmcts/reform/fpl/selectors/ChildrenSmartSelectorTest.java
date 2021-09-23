@@ -100,7 +100,7 @@ class ChildrenSmartSelectorTest {
 
         List<Element<Child>> selectedChildren = underTest.getSelectedChildren(caseData);
 
-        assertThat(selectedChildren).hasSize(1).contains(testChild);
+        assertThat(selectedChildren).containsExactly(testChild);
     }
 
     private Pair<UUID, String> buildPairFromChildElement(Element<Child> child) {

@@ -86,7 +86,8 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
                     .build()
             )
             .build();
-        when(placementService.getPlacementById(caseData, placementElement.getId())).thenReturn(placementElement);
+        when(placementService.getPlacementById(caseData, placementElement.getId()))
+            .thenReturn(placementElement.getValue());
         when(placementService.getChildByPlacementId(caseData, placementElement.getId())).thenReturn(placementChild);
 
         A70PlacementOrderDocmosisParameters docmosisParameters = parameterGenerator.generate(caseData);
@@ -134,7 +135,8 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
                     .build()
             )
             .build();
-        when(placementService.getPlacementById(caseData, placementElement.getId())).thenReturn(placementElement);
+        when(placementService.getPlacementById(caseData, placementElement.getId()))
+            .thenReturn(placementElement.getValue());
         when(placementService.getChildByPlacementId(caseData, placementElement.getId())).thenReturn(placementChild);
 
         A70PlacementOrderDocmosisParameters docmosisParameters = parameterGenerator.generate(caseData);

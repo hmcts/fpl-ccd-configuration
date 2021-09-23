@@ -4,7 +4,6 @@ const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const api = require('../helpers/api_helper');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const moment = require('moment');
-const dateFormat = require('dateformat');
 
 let caseId;
 
@@ -306,7 +305,7 @@ Scenario('Admin creates placement order', async ({ I, caseViewPage, placementEve
 
   I.seeInTab(['Order 1', 'Type of order'], 'Placement Order (A70)');
   I.seeInTab(['Order 1', 'Order document'], 'a70_placement_order.pdf');
-  I.seeInTab(['Order 1', 'Approval date'], dateFormat(approvalDate, 'd mmm yyyy'));
+  I.seeInTab(['Order 1', 'Approval date'], '9 March 2021');
   I.seeInTab(['Order 1', 'Children'], 'Timothy Jones');
   I.seeInTab(['Order 1', 'Notification document'], 'placement_order_notification_a206.pdf');
 });

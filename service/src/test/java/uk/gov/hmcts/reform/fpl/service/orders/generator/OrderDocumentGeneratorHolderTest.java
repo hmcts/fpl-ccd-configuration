@@ -156,19 +156,21 @@ class OrderDocumentGeneratorHolderTest {
         );
 
         //Check expected orders match expected generators
-        expectedNotificationDocumentPerType.forEach((order, generator) -> {
+        expectedNotificationDocumentPerType.forEach((order, generator) ->
             assertThat(underTest.getNotificationDocumentParameterGeneratorByOrderType(order))
+                .as("Order %s", order)
                 .isPresent()
-                .hasValue(generator);
-        });
+                .hasValue(generator)
+        );
 
         //Check remaining orders have no generator
         Set<Order> ordersWithNotificationDocument = expectedNotificationDocumentPerType.keySet();
         Arrays.stream(Order.values())
             .filter(not(ordersWithNotificationDocument::contains))
-            .forEach(order -> {
-                assertThat(underTest.getNotificationDocumentParameterGeneratorByOrderType(order)).isEmpty();
-            });
+            .forEach(order -> assertThat(underTest.getNotificationDocumentParameterGeneratorByOrderType(order))
+                .as("Order %s", order)
+                .isEmpty()
+            );
     }
 
 }

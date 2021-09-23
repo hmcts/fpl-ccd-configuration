@@ -579,7 +579,7 @@ class PlacementServiceTest {
         void shouldReturnAllChildPlacementApplications() {
             UUID placementId = randomUUID();
             Element<Child> childForPlacement = testChild();
-            List<Element<String>> childPlacementOrders = underTest.getPlacements(CaseData.builder()
+            CaseData caseData = CaseData.builder()
                 .children1(List.of(childForPlacement))
                 .placementEventData(
                     PlacementEventData.builder().placements(
@@ -587,8 +587,9 @@ class PlacementServiceTest {
                             element(placementId, Placement.builder().childId(childForPlacement.getId()).build())
                         )
                     ).build()
-                ).build()
-            );
+                ).build();
+
+            List<Element<String>> childPlacementOrders = underTest.getPlacements(caseData);
 
             assertThat(childPlacementOrders).contains(
                 element(placementId, childForPlacement.getValue().getParty().getFullName())
@@ -599,17 +600,17 @@ class PlacementServiceTest {
         void shouldReturnPlacementById() {
             UUID placementId = randomUUID();
             Placement chosenPlacement = Placement.builder().childName("Jonas Watson").build();
-            Element<Placement> placement = underTest.getPlacementById(CaseData.builder()
-                    .placementEventData(PlacementEventData.builder().placements(List.of(
+            CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder().placements(List.of(
                         element(placementId, chosenPlacement),
                         element(Placement.builder().childName("Brian Watson").build()),
                         element(Placement.builder().childName("Nancy Watson").build())
-                    )).build())
-                    .build(),
-                placementId
-            );
+                    )).build()
+                ).build();
 
-            assertThat(placement).isEqualTo(element(placementId, chosenPlacement));
+            Placement placement = underTest.getPlacementById(caseData, placementId);
+
+            assertThat(placement).isEqualTo(chosenPlacement);
         }
 
         @Test

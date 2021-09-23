@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class SealedOrderHistoryServiceTest {
@@ -99,9 +100,7 @@ class SealedOrderHistoryServiceTest {
     private final Other other2 = testOther("Second other");
     private final UUID other1ID = UUID.randomUUID();
     private final UUID other2ID = UUID.randomUUID();
-    private static final DocumentReference TEST_NOTIFICATION_DOCUMENT = DocumentReference.builder()
-        .filename("notificationDoc.pdf")
-        .build();
+    private static final DocumentReference TEST_NOTIFICATION_DOCUMENT = testDocumentReference("notificationDoc.pdf");
 
     private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final AppointedGuardianFormatter appointedGuardianFormatter = mock(AppointedGuardianFormatter.class);

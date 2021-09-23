@@ -345,21 +345,20 @@ public class PlacementService {
             .map(element -> {
                 UUID placementId = element.getId();
                 Element<Child> child = getChildByPlacementId(caseData, placementId);
-                String childName = child.getValue().getParty().getFullName();
+                String childName = child.getValue().asLabel();
                 return element(placementId, childName);
             }).collect(Collectors.toList());
     }
 
-    public Element<Placement> getPlacementById(CaseData caseData, UUID placementId) {
-        return caseData.getPlacementEventData().getPlacements().stream()
-            .filter(placementElement -> placementElement.getId().equals(placementId))
-            .findFirst()
+    public Placement getPlacementById(CaseData caseData, UUID placementId) {
+        return findElement(placementId, caseData.getPlacementEventData().getPlacements())
+            .map(Element::getValue)
             .orElseThrow();
     }
 
     public Element<Child> getChildByPlacementId(CaseData caseData, UUID placementId) {
-        Element<Placement> placement = getPlacementById(caseData, placementId);
-        UUID childId = placement.getValue().getChildId();
+        Placement placement = getPlacementById(caseData, placementId);
+        UUID childId = placement.getChildId();
         return findElement(childId, caseData.getAllChildren()).orElseThrow();
     }
 

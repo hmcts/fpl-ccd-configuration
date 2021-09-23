@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.document;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -16,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisCommonElementDecorator;
@@ -24,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisParameterGenerat
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -49,7 +46,7 @@ class DocumentGeneratorTest {
     private DocmosisCommonElementDecorator decorator;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private CaseConverter caseConverter;
 
     @InjectMocks
     private DocumentGenerator underTest;
@@ -57,9 +54,7 @@ class DocumentGeneratorTest {
     @BeforeEach
     void setUp() {
         when(decorator.decorate(DOCMOSIS_PARAMETERS, CASE_DATA, STATUS, ORDER)).thenReturn(DOCMOSIS_PARAMETERS);
-        when(objectMapper.convertValue(
-            eq(DOCMOSIS_PARAMETERS),
-            Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(TEMPLATE_DATA);
+        when(caseConverter.toMap(DOCMOSIS_PARAMETERS)).thenReturn(TEMPLATE_DATA);
         when(docmosisRenderer.generateDocmosisDocument(TEMPLATE_DATA, DOCMOSIS_TEMPLATE, FORMAT, Language.ENGLISH))
             .thenReturn(DOCMOSIS_DOCUMENT);
         when(parameterGenerator.accept()).thenReturn(ORDER);

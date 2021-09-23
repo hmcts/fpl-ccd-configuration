@@ -40,9 +40,9 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
         LocalAuthority designatedLocalAuthority = caseData.getDesignatedLocalAuthority();
 
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
-        UUID placementById = manageOrdersEventData.getManageOrdersChildPlacementApplication().getValueCodeAsUUID();
-        Placement selectedPlacementApplication = placementService.getPlacementById(caseData, placementById).getValue();
-        ChildParty childInfo = placementService.getChildByPlacementId(caseData, placementById)
+        UUID placementId = manageOrdersEventData.getManageOrdersChildPlacementApplication().getValueCodeAsUUID();
+        Placement selectedPlacementApplication = placementService.getPlacementById(caseData, placementId);
+        ChildParty childInfo = placementService.getChildByPlacementId(caseData, placementId)
             .getValue()
             .getParty();
 

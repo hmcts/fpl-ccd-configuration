@@ -509,9 +509,7 @@ const uploadAmendedOrder = amendedOrder => {
   I.attachFile(amendment.upload, amendedOrder);
 };
 
-const selectPlacementApplication = childName => {
-  I.selectOption(placement.application, childName);
-};
+const selectPlacementApplication = childName => I.selectOption(placement.application, childName);
 
 function fillPlacementOrderSpecificFields(values) {
   I.fillField(placement.serialNumber, values.serialNumber);
