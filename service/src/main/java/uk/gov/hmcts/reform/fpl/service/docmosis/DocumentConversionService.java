@@ -14,10 +14,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.document.DocumentConversionException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.exceptions.document.DocumentConversionException;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
 import static org.apache.commons.io.FilenameUtils.getExtension;
@@ -54,12 +54,13 @@ public class DocumentConversionService {
         }
 
         String extension = getExtension(filename);
+        int docSize = documentContents.length;
         try {
-            log.info("Converting document of type \"{}\" and size {} bytes to pdf", extension, documentContents.length);
+            log.info("Converting document of type \"{}\" and size {} bytes to pdf", extension, docSize);
             return convertDocument(documentContents, filename, updateExtension(filename, PDF));
         } catch (Exception e) {
             log.error(
-                "Could not convert document of type \"{}\" and size {} bytes to pdf", extension, documentContents.length, e
+                "Could not convert document of type \"{}\" and size {} bytes to pdf", extension, docSize, e
             );
             throw new DocumentConversionException(extension, e);
         }

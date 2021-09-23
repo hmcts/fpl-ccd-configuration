@@ -50,9 +50,7 @@ class DocumentConversionServiceTest {
 
     @Test
     void shouldReturnSameDocumentReferenceIfItIsPdf() {
-        final DocumentReference inputDocumentReference = DocumentReference.builder()
-            .filename(PDF_FILE_NAME)
-            .build();
+        final DocumentReference inputDocumentReference = DocumentReference.builder().filename(PDF_FILE_NAME).build();
 
         DocumentReference converted = underTest.convertToPdf(inputDocumentReference);
 
@@ -132,23 +130,22 @@ class DocumentConversionServiceTest {
             .hasRootCause(cause);
     }
 
-    private HttpEntity<MultiValueMap<String, Object>> getExpectedPayload(byte[] fileToBeConverted, String oldFilename,
-                                                                         String newFilename) {
+    private HttpEntity<MultiValueMap<String, Object>> getExpectedPayload(byte[] file, String oldName, String newName) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MULTIPART_FORM_DATA);
 
         final ContentDisposition contentDisposition = ContentDisposition
             .builder("form-data")
             .name("file")
-            .filename(oldFilename)
+            .filename(oldName)
             .build();
 
         final MultiValueMap<String, String> fileMap = new LinkedMultiValueMap<>();
         fileMap.add(CONTENT_DISPOSITION, contentDisposition.toString());
 
         final MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new HttpEntity<>(fileToBeConverted, fileMap));
-        body.add("outputName", newFilename);
+        body.add("file", new HttpEntity<>(file, fileMap));
+        body.add("outputName", newName);
         body.add("accessKey", ACCESS_KEY);
 
         return new HttpEntity<>(body, headers);
