@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -105,7 +106,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     ChildSelectionUtils.class,
     PlacementService.class,
     FixedTimeConfiguration.class,
-    PbaNumberService.class
+    PbaNumberService.class,
+    CaseConverter.class
 })
 @MockBeans({@MockBean(DocumentDownloadService.class), @MockBean(FeeService.class)})
 class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
