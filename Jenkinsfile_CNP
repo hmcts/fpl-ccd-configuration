@@ -15,7 +15,8 @@ def serviceSecrets = [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
+    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+    secret('use-shuttered-case-def', 'USE_SHUTTERED_CASE_DEF')
   ]
 ]
 
@@ -55,11 +56,6 @@ static Map<String, Object> secret(String secretName, String envVariable) {
   ]
 }
 
-static def shutterIsEnabled() {
-  // somehow get secret from vault here
-  return false;
-}
-
 def archiveCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin") {
     if ("preview" == env) {
@@ -89,16 +85,16 @@ def archiveCoreCaseDataDefinitions(env) {
  *
  * @param env target environment
  */
-def uploadCoreCaseDataDefinitions(env) {
-  dir("${WORKSPACE}/bin") {
-    if ("preview" == env) {
+def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
+  dir("${WORKSPACE}/bin"){
+    if("preview" == env){
       ccdDefinitionFilePath = "${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       sh """
         eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
         ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     } else {
-      ccdDefinitionFilePath = "prod" == env && shutterIsEnabled()
+      ccdDefinitionFilePath = "prod" == env && useShutteredCaseDef == '1'
         ? "${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}-shuttered.xlsx"
         : "${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
 
@@ -211,7 +207,7 @@ withPipeline(type, product, component) {
     """
 
     archiveCoreCaseDataDefinitions('preview')
-    uploadCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview', '0')
 
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
@@ -266,7 +262,7 @@ withPipeline(type, product, component) {
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
         withTeamSecrets(pipelineConf, env.ENV) {
           archiveCoreCaseDataDefinitions(env.ENV)
-          uploadCoreCaseDataDefinitions(env.ENV)
+          uploadCoreCaseDataDefinitions(env.ENV, env.USE_SHUTTERED_CASE_DEF)
         }
       }
     } else {
