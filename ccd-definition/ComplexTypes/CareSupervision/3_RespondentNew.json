@@ -21,21 +21,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentNew",
-    "ListElementCode": "activeParty",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Are they still a party on the case?",
-    "HintText": "Select 'No' to stop case notifications to this party",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "activeParty=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentNew",
     "ListElementCode": "activeTag",
     "FieldType": "Label",
     "ElementLabel": "<div class='govuk-tag govuk-tag--blue'>ACTIVE PARTY</div>",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "activeParty=\"Yes\""
+    "FieldShowCondition": "activeParty=\"Yes\"",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -43,8 +33,8 @@
     "ListElementCode": "inactiveTag",
     "FieldType": "Label",
     "ElementLabel": "<div class='govuk-tag govuk-tag--grey'>INACTIVE PARTY</div>",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "activeParty=\"No\""
+    "FieldShowCondition": "activeParty=\"No\"",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -89,6 +79,15 @@
     "ElementLabel": "Representative",
     "SecurityClassification": "Public",
     "FieldShowCondition": "legalRepresentation=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "activeParty",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are they still a party on the case?",
+    "HintText": "Select 'No' to stop case notifications to this party",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",

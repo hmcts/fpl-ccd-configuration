@@ -218,14 +218,6 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "activeParty",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterRespondents",
-    "CaseEventID": "enterRespondents",
-    "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.firstName",
     "FieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL"
@@ -420,5 +412,13 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.Country",
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "activeParty",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "activeParty=\"*\" OR activeParty!=\"*\""
   }
 ]

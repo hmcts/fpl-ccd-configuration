@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-public class WhichOthersBlockPrePopulatorTest {
+class WhichOthersBlockPrePopulatorTest {
 
     private static final String OTHER_LABEL = "other label";
     private final OthersService othersService = mock(OthersService.class);
