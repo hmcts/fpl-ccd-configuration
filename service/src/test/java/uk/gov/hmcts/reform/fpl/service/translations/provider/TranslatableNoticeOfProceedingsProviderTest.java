@@ -68,21 +68,23 @@ class TranslatableNoticeOfProceedingsProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .noticeOfProceedingsBundle(List.of(element(SELECTED_ORDER_ID, DocumentBundle.builder()
                         .document(DOCUMENT_REFERENCE)
                         .build())))
                     .build(),
                 SELECTED_ORDER_ID);
 
-            AssertionsForClassTypes.assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            AssertionsForClassTypes.assertThat(actual).isEqualTo(DocumentBundle.builder()
+                .document(DOCUMENT_REFERENCE)
+                .build());
 
         }
 
         @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .noticeOfProceedingsBundle(List.of(element(UUID_1, DocumentBundle.builder()
                             .document(DOCUMENT_REFERENCE)
                             .build())))
@@ -94,7 +96,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
         @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .noticeOfProceedingsBundle(null)
                         .build(),
                     SELECTED_ORDER_ID));
