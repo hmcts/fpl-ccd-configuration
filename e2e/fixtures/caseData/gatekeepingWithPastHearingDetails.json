@@ -16,6 +16,7 @@
         "telephone": null,
         "birthPlace": "Newry",
         "detailsHidden": null,
+        "activeParty": "Yes",
         "representedBy": [],
         "childInformation": null,
         "litigationIssues": null,
@@ -229,7 +230,8 @@
               "telephoneNumber": "00000 000000"
             },
             "relationshipToChild": "Uncle"
-          }
+          },
+          "activeParty": "Yes"
         }
       }
     ],

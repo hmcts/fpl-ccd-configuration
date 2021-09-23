@@ -156,6 +156,7 @@
               "address": {}
             }
           },
+          "activeParty": "Yes",
           "representedBy": [],
           "legalRepresentation": "No"
         }
@@ -183,6 +184,7 @@
               "address": {}
             }
           },
+          "activeParty": "Yes",
           "representedBy": [],
           "legalRepresentation": "No"
         }

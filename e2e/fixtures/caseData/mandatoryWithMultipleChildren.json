@@ -162,6 +162,7 @@
             },
             "relationshipToChild": "Uncle"
           },
+          "activeParty": "Yes",
           "legalRepresentation": "No"
         }
       },
@@ -187,6 +188,7 @@
             },
             "relationshipToChild": "Uncle"
           },
+          "activeParty": "Yes",
           "legalRepresentation": "No"
         }
       }
@@ -208,6 +210,7 @@
         "telephone": "07000 654321",
         "birthPlace": "London",
         "detailsHidden": "No",
+        "activeParty": "Yes",
         "representedBy": [],
         "childInformation": null,
         "litigationIssues": "NO",

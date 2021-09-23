@@ -292,6 +292,7 @@
             },
             "relationshipToChild": "Uncle"
           },
+          "activeParty": "Yes",
           "legalRepresentation": "No"
         }
       },
@@ -317,6 +318,7 @@
             },
             "relationshipToChild": "Uncle"
           },
+          "activeParty": "Yes",
           "legalRepresentation": "No"
         }
       }

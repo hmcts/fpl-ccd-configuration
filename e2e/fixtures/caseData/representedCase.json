@@ -97,6 +97,7 @@
             },
             "relationshipToChild": "Uncle"
           },
+          "activeParty": "Yes",
           "legalRepresentation": "Yes",
           "solicitor": {
             "firstName": "Tom",

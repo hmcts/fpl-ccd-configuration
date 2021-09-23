@@ -172,6 +172,7 @@
         "telephone": "07000 654321",
         "birthPlace": "London",
         "detailsHidden": "No",
+        "activeParty": "Yes",
         "representedBy": [],
         "childInformation": null,
         "litigationIssues": "NO",
@@ -204,7 +205,8 @@
               "telephoneNumber": "00000 000000"
             },
             "relationshipToChild": "Uncle"
-          }
+          },
+          "activeParty": "Yes"
         }
       }
     ],
