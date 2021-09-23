@@ -6,14 +6,11 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
-import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -21,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,21 +26,17 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
+class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTest {
 
-    private final Element<Child> child1 = testChild("Alex", "Brown");
-    private final Element<Child> child2 = testChild("Emma", "Green");
     private final Document sealedDocument = testDocument();
     private final DocumentReference sealedApplication = buildFromDocument(sealedDocument);
     private final DocumentReference application = testDocumentReference("application.doc");
@@ -55,10 +49,6 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private DocumentConversionService documentConversionService;
-
-    PlacementAboutToSubmitControllerTest() {
-        super("placement");
-    }
 
     @BeforeEach
     void init() {
@@ -78,27 +68,17 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSealApplicationDocumentAndSavePlacementInConfidentialAndNonConfidentialVersions() {
+    void shouldSaveNewPlacementApplication() {
 
-        final DocumentReference noticeOfPlacementForLocalAuthority = testDocumentReference();
-
-        final PlacementSupportingDocument supportingDocument = PlacementSupportingDocument.builder()
-            .document(testDocumentReference())
-            .type(STATEMENT_OF_FACTS)
-            .build();
-
-        final PlacementConfidentialDocument confidentialDocument = PlacementConfidentialDocument.builder()
-            .document(testDocumentReference())
-            .type(ANNEX_B)
-            .build();
+        final DocumentReference localAuthorityNotice = testDocumentReference();
 
         final Placement newPlacement = Placement.builder()
             .childId(child1.getId())
             .childName("Alex Brown")
             .application(application)
-            .supportingDocuments(wrapElements(supportingDocument))
-            .confidentialDocuments(wrapElements(confidentialDocument))
             .placementUploadDateTime(now())
+            .supportingDocuments(wrapElements(statementOfFacts))
+            .confidentialDocuments(wrapElements(annexB))
             .build();
 
         final Placement existingPlacement = Placement.builder()
@@ -113,10 +93,9 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .placement(newPlacement)
                 .placements(wrapElements(existingPlacement))
                 .placementNoticeForLocalAuthorityRequired(YES)
-                .placementNoticeForLocalAuthority(noticeOfPlacementForLocalAuthority)
+                .placementNoticeForLocalAuthority(localAuthorityNotice)
                 .placementNoticeForLocalAuthorityDescription("Test description")
                 .build())
-
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -128,9 +107,10 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
             .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                 .type(LOCAL_AUTHORITY)
                 .recipientName("Local authority")
-                .notice(noticeOfPlacementForLocalAuthority)
+                .notice(localAuthorityNotice)
                 .noticeDescription("Test description")
                 .build()))
+            .placementUploadDateTime(now())
             .build();
 
         final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
@@ -144,6 +124,73 @@ class PlacementAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(actualPlacementData.getPlacementsNonConfidential())
             .extracting(Element::getValue)
             .containsExactly(existingPlacement, expectedNewNonConfidentialPlacement);
+    }
 
+    @Test
+    void shouldUpdateExistingPlacement() {
+
+        final DocumentReference localAuthorityNotice = testDocumentReference();
+
+        final Placement existingApplicationForChild1 = Placement.builder()
+            .childId(child1.getId())
+            .childName("Alex Brown")
+            .application(testDocumentReference())
+            .placementUploadDateTime(LocalDateTime.of(2020, 10, 10, 12, 0))
+            .build();
+
+        final Placement existingApplicationForChild2 = Placement.builder()
+            .childId(child2.getId())
+            .childName("Emma Green")
+            .application(testDocumentReference())
+            .confidentialDocuments(wrapElements(PlacementConfidentialDocument.builder()
+                .type(ANNEX_B)
+                .document(testDocumentReference())
+                .build()))
+            .build();
+
+        final Placement newPlacementForChild1 = existingApplicationForChild1.toBuilder()
+            .supportingDocuments(wrapElements(statementOfFacts))
+            .confidentialDocuments(wrapElements(annexB))
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .children1(List.of(child1, child2))
+            .placementEventData(PlacementEventData.builder()
+                .placement(newPlacementForChild1)
+                .placements(wrapElements(existingApplicationForChild1, existingApplicationForChild2))
+                .placementNoticeForLocalAuthorityRequired(YES)
+                .placementNoticeForLocalAuthority(localAuthorityNotice)
+                .placementNoticeForLocalAuthorityDescription("Test description")
+                .build())
+            .build();
+
+        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
+
+        final Placement expectedNewPlacementForChild1 = newPlacementForChild1.toBuilder()
+            .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
+                .type(LOCAL_AUTHORITY)
+                .recipientName("Local authority")
+                .notice(localAuthorityNotice)
+                .noticeDescription("Test description")
+                .build()))
+            .build();
+
+        final Placement expectedNewNonConfidentialPlacementForChild1 = expectedNewPlacementForChild1.toBuilder()
+            .confidentialDocuments(null)
+            .build();
+
+        final Placement expectedNonConfidentialPlacementForChild2 = existingApplicationForChild2.toBuilder()
+            .confidentialDocuments(null)
+            .build();
+
+        assertThat(actualPlacementData.getPlacements())
+            .extracting(Element::getValue)
+            .containsExactly(expectedNewPlacementForChild1, existingApplicationForChild2);
+
+        assertThat(actualPlacementData.getPlacementsNonConfidential())
+            .extracting(Element::getValue)
+            .containsExactly(expectedNewNonConfidentialPlacementForChild1, expectedNonConfidentialPlacementForChild2);
     }
 }

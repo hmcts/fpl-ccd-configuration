@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -14,11 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementPaymentDetailsMidEventTest extends AbstractCallbackTest {
-
-    PlacementPaymentDetailsMidEventTest() {
-        super("placement");
-    }
+class PlacementPaymentDetailsMidEventTest extends AbstractPlacementControllerTest {
 
     @Test
     void shouldReturnErrorWhenPBANumberIsInvalid() {

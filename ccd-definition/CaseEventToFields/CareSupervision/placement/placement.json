@@ -57,7 +57,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "COMPLEX",
     "PageID": "placement",
     "PageDisplayOrder": 2,
@@ -88,7 +88,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "placementPaymentRequired = \"YES\""
+    "PageShowCondition": "placement.isSubmitted = \"NO\" AND placementPaymentRequired = \"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -125,6 +125,6 @@
     "PageID": "paymentNotRequired",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "PageShowCondition": "placementPaymentRequired=\"NO\""
+    "PageShowCondition": "placement.isSubmitted = \"NO\" AND placementPaymentRequired=\"NO\""
   }
 ]

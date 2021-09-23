@@ -190,6 +190,8 @@ module.exports = {
   testFile12: './e2e/fixtures/testFiles/mockFile12.txt',
   testFile13: './e2e/fixtures/testFiles/mockFile13.txt',
   testFile14: './e2e/fixtures/testFiles/mockFile14.txt',
+  testFile15: './e2e/fixtures/testFiles/mockFile15.txt',
+  testFile16: './e2e/fixtures/testFiles/mockFile16.txt',
   testPdfFile: './e2e/fixtures/testFiles/mockFile.pdf',
   testWordFile: './e2e/fixtures/testFiles/mockFile.docx',
   testWordFileSdo: './e2e/fixtures/testFiles/sdo.docx',

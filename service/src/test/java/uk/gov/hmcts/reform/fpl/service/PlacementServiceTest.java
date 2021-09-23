@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
-import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEdited;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -58,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientTyp
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_SECOND;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.MAINTENANCE_AGREEMENT_AWARD;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.PARENTS_CONSENT_FOR_ADOPTION;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -73,6 +74,10 @@ class PlacementServiceTest {
 
     private final Element<Respondent> respondent1 = testRespondent("John", "Smith", "father");
     private final Element<Respondent> respondent2 = testRespondent("Eva", "Smith", "mother");
+
+    private final Element<Child> child1 = testChild("Alex", "White");
+    private final Element<Child> child2 = testChild("Emma", "Brown");
+    private final Element<Child> child3 = testChild("George", "Green");
 
     @Mock
     private Time time;
@@ -92,10 +97,6 @@ class PlacementServiceTest {
     @Nested
     class PrepareChildren {
 
-        final Element<Child> child1 = testChild("Alex", "White");
-        final Element<Child> child2 = testChild("Emma", "Brown");
-        final Element<Child> child3 = testChild("George", "Green");
-
         final DynamicList respondentsList = respondentsDynamicList(respondent1, respondent2);
 
         final PlacementConfidentialDocument defaultAnnexB = PlacementConfidentialDocument.builder()
@@ -111,10 +112,11 @@ class PlacementServiceTest {
             .build();
 
         @Test
-        void shouldPrepareListOfChildrenWhenThereIsNoPlacement() {
+        void shouldPrepareListOfChildren() {
 
             final CaseData caseData = CaseData.builder()
                 .children1(List.of(child1, child2))
+                .respondents1(List.of(respondent1, respondent2))
                 .build();
 
             final PlacementEventData actualPlacementData = underTest.prepareChildren(caseData);
@@ -122,67 +124,6 @@ class PlacementServiceTest {
             final PlacementEventData expectedPlacementData = PlacementEventData.builder()
                 .placementChildrenCardinality(MANY)
                 .placementChildrenList(childrenDynamicList(child1, child2))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldPrepareListOfChildrenWithoutChildrenThatHavePlacement() {
-
-            final Placement child2Placement = Placement.builder()
-                .childId(child2.getId())
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .children1(List.of(child1, child2, child3))
-                .placementEventData(PlacementEventData.builder().placements(wrapElements(child2Placement)).build())
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.prepareChildren(caseData);
-
-            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
-                .placementChildrenCardinality(MANY)
-                .placementChildrenList(childrenDynamicList(child1, child3))
-                .placements(wrapElements(child2Placement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldPrepareChildPlacementWhenAllOtherChildrenHavePlacements() {
-
-            final Placement child1Placement = Placement.builder()
-                .childId(child1.getId())
-                .build();
-
-            final Placement child2Placement = Placement.builder()
-                .childId(child2.getId())
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .children1(List.of(child1, child2, child3))
-                .respondents1(List.of(respondent1, respondent2))
-                .placementEventData(PlacementEventData.builder()
-                    .placements(wrapElements(child1Placement, child2Placement))
-                    .build())
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.prepareChildren(caseData);
-
-            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
-                .placementChildrenCardinality(ONE)
-                .placementChildName("George Green")
-                .placement(Placement.builder()
-                    .childId(child3.getId())
-                    .childName("George Green")
-                    .confidentialDocuments(wrapElements(defaultAnnexB))
-                    .supportingDocuments(wrapElements(defaultBirthCertificate, defaultStatementOfFacts))
-                    .build())
-                .placements(wrapElements(child1Placement, child2Placement))
-                .placementNoticeForFirstParentParentsList(respondentsList)
-                .placementNoticeForSecondParentParentsList(respondentsList)
                 .build();
 
             assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
@@ -207,6 +148,125 @@ class PlacementServiceTest {
                     .confidentialDocuments(wrapElements(defaultAnnexB))
                     .supportingDocuments(wrapElements(defaultBirthCertificate, defaultStatementOfFacts))
                     .build())
+                .placementNoticeForLocalAuthorityRequired(NO)
+                .placementNoticeResponseFromLocalAuthorityReceived(NO)
+                .placementNoticeForCafcassRequired(NO)
+                .placementNoticeResponseFromCafcassReceived(NO)
+                .placementNoticeForFirstParentRequired(NO)
+                .placementNoticeResponseFromFirstParentReceived(NO)
+                .placementNoticeForSecondParentRequired(NO)
+                .placementNoticeResponseFromSecondParentReceived(NO)
+                .placementNoticeForFirstParentParentsList(respondentsList)
+                .placementNoticeForSecondParentParentsList(respondentsList)
+                .build();
+
+            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+        }
+
+        @Test
+        void shouldPrepareExistingPlacementForOnlyChildInACase() {
+
+            final PlacementConfidentialDocument annexB = PlacementConfidentialDocument.builder()
+                .document(testDocumentReference())
+                .type(ANNEX_B)
+                .build();
+
+            final PlacementSupportingDocument birthCertificate = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(BIRTH_ADOPTION_CERTIFICATE)
+                .build();
+
+            final PlacementSupportingDocument statementOfFacts = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(STATEMENT_OF_FACTS)
+                .build();
+
+            final PlacementNoticeDocument localAuthorityNotice = PlacementNoticeDocument.builder()
+                .type(LOCAL_AUTHORITY)
+                .notice(testDocumentReference())
+                .noticeDescription("Local authority description")
+                .response(testDocumentReference())
+                .responseDescription("Local authority response description")
+                .build();
+
+            final PlacementNoticeDocument cafcassNotice = PlacementNoticeDocument.builder()
+                .type(CAFCASS)
+                .notice(testDocumentReference())
+                .noticeDescription("Cafcass description")
+                .response(testDocumentReference())
+                .noticeDescription("Cafcass response description")
+                .build();
+
+            final PlacementNoticeDocument firstParentNotice = PlacementNoticeDocument.builder()
+                .type(PARENT_FIRST)
+                .recipientName("Recipient 1")
+                .respondentId(UUID.randomUUID())
+                .notice(testDocumentReference())
+                .noticeDescription("First parent description")
+                .response(testDocumentReference())
+                .noticeDescription("First parent response description")
+                .build();
+
+            final PlacementNoticeDocument secondParentNotice = PlacementNoticeDocument.builder()
+                .type(PARENT_SECOND)
+                .recipientName("Recipient 2")
+                .respondentId(UUID.randomUUID())
+                .notice(testDocumentReference())
+                .noticeDescription("Second parent description")
+                .response(testDocumentReference())
+                .noticeDescription("Second parent response description")
+                .build();
+
+            final Placement existingPlacement = Placement.builder()
+                .application(testDocumentReference())
+                .childId(child1.getId())
+                .childName("Alex White")
+                .placementUploadDateTime(LocalDateTime.now())
+                .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
+                .confidentialDocuments(wrapElements(annexB))
+                .noticeDocuments(wrapElements(localAuthorityNotice, cafcassNotice,
+                    firstParentNotice, secondParentNotice))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .children1(List.of(child1))
+                .respondents1(List.of(respondent1, respondent2))
+                .placementEventData(PlacementEventData.builder()
+                    .placements(wrapElements(existingPlacement))
+                    .build())
+                .build();
+
+            final PlacementEventData actualPlacementData = underTest.prepareChildren(caseData);
+
+            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
+                .placementChildrenCardinality(ONE)
+                .placementChildName("Alex White")
+                .placement(existingPlacement)
+                .placements(wrapElements(existingPlacement))
+                .placementNoticeForLocalAuthorityRequired(YES)
+                .placementNoticeForLocalAuthority(localAuthorityNotice.getNotice())
+                .placementNoticeForLocalAuthorityDescription(localAuthorityNotice.getNoticeDescription())
+                .placementNoticeResponseFromLocalAuthorityReceived(YES)
+                .placementNoticeResponseFromLocalAuthority(localAuthorityNotice.getResponse())
+                .placementNoticeResponseFromLocalAuthorityDescription(localAuthorityNotice.getResponseDescription())
+                .placementNoticeForCafcassRequired(YES)
+                .placementNoticeForCafcass(cafcassNotice.getNotice())
+                .placementNoticeForCafcassDescription(cafcassNotice.getNoticeDescription())
+                .placementNoticeResponseFromCafcassReceived(YES)
+                .placementNoticeResponseFromCafcass(cafcassNotice.getResponse())
+                .placementNoticeResponseFromCafcassDescription(cafcassNotice.getResponseDescription())
+                .placementNoticeForFirstParentRequired(YES)
+                .placementNoticeForFirstParent(firstParentNotice.getNotice())
+                .placementNoticeForFirstParentDescription(firstParentNotice.getNoticeDescription())
+                .placementNoticeResponseFromFirstParentReceived(YES)
+                .placementNoticeResponseFromFirstParent(firstParentNotice.getResponse())
+                .placementNoticeResponseFromFirstParentDescription(firstParentNotice.getResponseDescription())
+                .placementNoticeForSecondParentRequired(YES)
+                .placementNoticeForSecondParent(secondParentNotice.getNotice())
+                .placementNoticeForSecondParentDescription(secondParentNotice.getNoticeDescription())
+                .placementNoticeResponseFromSecondParentReceived(YES)
+                .placementNoticeResponseFromSecondParent(secondParentNotice.getResponse())
+                .placementNoticeResponseFromSecondParentDescription(secondParentNotice.getResponseDescription())
                 .placementNoticeForFirstParentParentsList(respondentsList)
                 .placementNoticeForSecondParentParentsList(respondentsList)
                 .build();
@@ -222,7 +282,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
-                .children1(List.of(child1))
+                .children1(emptyList())
                 .placementEventData(PlacementEventData.builder()
                     .placements(wrapElements(placement1))
                     .build())
@@ -242,10 +302,6 @@ class PlacementServiceTest {
 
     @Nested
     class PreparePlacement {
-
-        final Element<Child> child1 = testChild("Alex", "White");
-        final Element<Child> child2 = testChild("Emma", "Brown");
-        final Element<Child> child3 = testChild("George", "Green");
 
         @Test
         void shouldPreparePlacementForSelectedChild() {
@@ -288,9 +344,104 @@ class PlacementServiceTest {
                     .confidentialDocuments(wrapElements(defaultAnnexB))
                     .supportingDocuments(wrapElements(defaultBirthCertificate, defaultStatementOfFacts))
                     .build())
+                .placementChildrenList(childrenList)
+                .placementNoticeForLocalAuthorityRequired(NO)
+                .placementNoticeResponseFromLocalAuthorityReceived(NO)
+                .placementNoticeForCafcassRequired(NO)
+                .placementNoticeResponseFromCafcassReceived(NO)
+                .placementNoticeForFirstParentRequired(NO)
+                .placementNoticeResponseFromFirstParentReceived(NO)
+                .placementNoticeForSecondParentRequired(NO)
+                .placementNoticeResponseFromSecondParentReceived(NO)
                 .placementNoticeForFirstParentParentsList(respondentsList)
                 .placementNoticeForSecondParentParentsList(respondentsList)
+                .build();
+
+            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+        }
+
+
+        @Test
+        void shouldPrepareExistingPlacementForSelectedChild() {
+
+            final PlacementConfidentialDocument annexB = PlacementConfidentialDocument.builder()
+                .document(testDocumentReference())
+                .type(ANNEX_B)
+                .build();
+
+            final PlacementSupportingDocument birthCertificate = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(BIRTH_ADOPTION_CERTIFICATE)
+                .build();
+
+            final PlacementSupportingDocument statementOfFacts = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(STATEMENT_OF_FACTS)
+                .build();
+
+            final PlacementNoticeDocument localAuthorityNotice = PlacementNoticeDocument.builder()
+                .type(LOCAL_AUTHORITY)
+                .notice(testDocumentReference())
+                .noticeDescription("Local authority description")
+                .response(testDocumentReference())
+                .responseDescription("Local authority response description")
+                .build();
+
+            final PlacementNoticeDocument secondParentNotice = PlacementNoticeDocument.builder()
+                .type(PARENT_SECOND)
+                .recipientName("Recipient 2")
+                .respondentId(respondent2.getId())
+                .notice(testDocumentReference())
+                .build();
+
+            final Placement existingPlacement = Placement.builder()
+                .application(testDocumentReference())
+                .childId(child2.getId())
+                .childName("Emma Brown")
+                .placementUploadDateTime(LocalDateTime.now())
+                .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
+                .confidentialDocuments(wrapElements(annexB))
+                .noticeDocuments(wrapElements(localAuthorityNotice, secondParentNotice))
+                .build();
+
+            final DynamicList childrenList = childrenDynamicList(1, child1, child2, child3);
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placementChildrenCardinality(MANY)
                 .placementChildrenList(childrenList)
+                .placements(wrapElements(existingPlacement))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .children1(List.of(child1, child2, child3))
+                .respondents1(List.of(respondent1, respondent2))
+                .placementEventData(placementEventData)
+                .build();
+
+            final PlacementEventData actualPlacementData = underTest.preparePlacement(caseData);
+
+            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
+                .placementChildrenCardinality(MANY)
+                .placementChildName("Emma Brown")
+                .placement(existingPlacement)
+                .placementChildrenList(childrenList)
+                .placements(wrapElements(existingPlacement))
+                .placementNoticeForLocalAuthorityRequired(YES)
+                .placementNoticeForLocalAuthority(localAuthorityNotice.getNotice())
+                .placementNoticeForLocalAuthorityDescription(localAuthorityNotice.getNoticeDescription())
+                .placementNoticeResponseFromLocalAuthorityReceived(YES)
+                .placementNoticeResponseFromLocalAuthority(localAuthorityNotice.getResponse())
+                .placementNoticeResponseFromLocalAuthorityDescription(localAuthorityNotice.getResponseDescription())
+                .placementNoticeForCafcassRequired(NO)
+                .placementNoticeResponseFromCafcassReceived(NO)
+                .placementNoticeForFirstParentRequired(NO)
+                .placementNoticeResponseFromFirstParentReceived(NO)
+                .placementNoticeForSecondParentRequired(YES)
+                .placementNoticeForSecondParent(secondParentNotice.getNotice())
+                .placementNoticeForSecondParentDescription(secondParentNotice.getNoticeDescription())
+                .placementNoticeResponseFromSecondParentReceived(NO)
+                .placementNoticeForFirstParentParentsList(respondentsDynamicList(respondent1, respondent2))
+                .placementNoticeForSecondParentParentsList(respondentsDynamicList(1, respondent1, respondent2))
                 .build();
 
             assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
@@ -688,10 +839,12 @@ class PlacementServiceTest {
         void shouldSealApplicationAndAddNewPlacementToListOfExistingPlacements() {
 
             final Placement existingPlacement = Placement.builder()
+                .childId(child1.getId())
                 .application(testDocumentReference())
                 .build();
 
             final Placement currentPlacement = Placement.builder()
+                .childId(child2.getId())
                 .application(application)
                 .build();
 
@@ -716,6 +869,72 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+        }
+
+        @Test
+        void shouldReplaceExistingPlacementWithUpdatedVersion() {
+
+            final PlacementConfidentialDocument annexB = PlacementConfidentialDocument.builder()
+                .document(testDocumentReference())
+                .type(ANNEX_B)
+                .build();
+
+            final PlacementSupportingDocument birthCertificate = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(BIRTH_ADOPTION_CERTIFICATE)
+                .build();
+
+            final PlacementSupportingDocument statementOfFacts = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(STATEMENT_OF_FACTS)
+                .build();
+
+            final PlacementSupportingDocument parentsConsentForAdoption = PlacementSupportingDocument.builder()
+                .document(testDocumentReference())
+                .type(PARENTS_CONSENT_FOR_ADOPTION)
+                .build();
+
+            final PlacementNoticeDocument localAuthorityNotice = PlacementNoticeDocument.builder()
+                .type(LOCAL_AUTHORITY)
+                .notice(testDocumentReference())
+                .noticeDescription("Local authority description")
+                .response(testDocumentReference())
+                .responseDescription("Local authority response description")
+                .build();
+
+            final Placement existingPlacement = Placement.builder()
+                .application(testDocumentReference())
+                .childId(child1.getId())
+                .childName("Alex White")
+                .placementUploadDateTime(LocalDateTime.now())
+                .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
+                .confidentialDocuments(wrapElements(annexB))
+                .noticeDocuments(wrapElements(localAuthorityNotice))
+                .build();
+
+            final Placement currentPlacement = existingPlacement.toBuilder()
+                .supportingDocuments(wrapElements(birthCertificate, statementOfFacts, parentsConsentForAdoption))
+                .build();
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placement(currentPlacement)
+                .placements(wrapElements(existingPlacement))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(placementEventData)
+                .build();
+
+            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
+
+            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
+                .placement(currentPlacement)
+                .placements(wrapElements(currentPlacement))
+                .build();
+
+            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+
+            verifyNoInteractions(sealingService, time);
         }
 
         @Test
@@ -1006,7 +1225,7 @@ class PlacementServiceTest {
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_FIRST)
                     .recipientName("John Smith - father")
-                    .respondentID(respondent1.getId())
+                    .respondentId(respondent1.getId())
                     .notice(firstParentNotice)
                     .noticeDescription("First parent notice")
                     .response(firstParentNoticeResponse)
@@ -1054,7 +1273,7 @@ class PlacementServiceTest {
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_FIRST)
                     .recipientName("John Smith - father")
-                    .respondentID(respondent1.getId())
+                    .respondentId(respondent1.getId())
                     .notice(firstParentNotice)
                     .noticeDescription("First parent notice")
                     .build()))
@@ -1139,7 +1358,7 @@ class PlacementServiceTest {
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_SECOND)
                     .recipientName("Eva Smith - mother")
-                    .respondentID(respondent2.getId())
+                    .respondentId(respondent2.getId())
                     .notice(secondParentNotice)
                     .noticeDescription("Second parent notice")
                     .response(secondParentNoticeResponse)
@@ -1187,7 +1406,7 @@ class PlacementServiceTest {
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_SECOND)
                     .recipientName("Eva Smith - mother")
-                    .respondentID(respondent2.getId())
+                    .respondentId(respondent2.getId())
                     .notice(secondParentNotice)
                     .noticeDescription("Second parent notice")
                     .build()))
@@ -1298,14 +1517,14 @@ class PlacementServiceTest {
                     PlacementNoticeDocument.builder()
                         .type(PARENT_FIRST)
                         .recipientName("John Smith - father")
-                        .respondentID(respondent1.getId())
+                        .respondentId(respondent1.getId())
                         .notice(firstParentNotice)
                         .noticeDescription("First parent notice")
                         .build(),
                     PlacementNoticeDocument.builder()
                         .type(PARENT_SECOND)
                         .recipientName("Eva Smith - mother")
-                        .respondentID(respondent2.getId())
+                        .respondentId(respondent2.getId())
                         .notice(secondParentNotice)
                         .noticeDescription("Second parent notice")
                         .build()))
@@ -1344,72 +1563,108 @@ class PlacementServiceTest {
     class Events {
 
         @Test
-        void shouldReturnPlacementApplicationAndNoticesAddedEvents() {
-
-            final PlacementNoticeDocument localAuthorityNotice = PlacementNoticeDocument.builder()
-                .type(LOCAL_AUTHORITY)
-                .notice(testDocumentReference())
-                .build();
-
-            final PlacementNoticeDocument cafcassNotice = PlacementNoticeDocument.builder()
-                .type(CAFCASS)
-                .notice(testDocumentReference())
-                .build();
-
-            final PlacementNoticeDocument firstParentNotice = PlacementNoticeDocument.builder()
-                .type(PARENT_FIRST)
-                .notice(testDocumentReference())
-                .build();
-
-            final PlacementNoticeDocument secondParentNotice = PlacementNoticeDocument.builder()
-                .type(PARENT_SECOND)
-                .notice(testDocumentReference())
-                .build();
+        void shouldReturnPlacementApplicationAddedEventWhenPlacementAdded() {
 
             final Placement currentPlacement = Placement.builder()
+                .childId(child1.getId())
                 .application(testDocumentReference())
-                .noticeDocuments(wrapElements(localAuthorityNotice, cafcassNotice, firstParentNotice,
-                    secondParentNotice))
+                .build();
+
+            final Placement existingPlacement1 = Placement.builder()
+                .childId(child2.getId())
+                .application(testDocumentReference())
                 .build();
 
             final PlacementEventData placementEventData = PlacementEventData.builder()
                 .placement(currentPlacement)
+                .placements(wrapElements(existingPlacement1, currentPlacement))
+                .build();
+
+            final PlacementEventData placementEventDataBefore = PlacementEventData.builder()
+                .placements(wrapElements(existingPlacement1))
                 .build();
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
                 .build();
 
-            final List<Object> events = underTest.getEvents(caseData);
+            final CaseData caseDataBefore = CaseData.builder()
+                .placementEventData(placementEventDataBefore)
+                .build();
 
-            assertThat(events).containsExactly(
-                new PlacementNoticeAdded(caseData, localAuthorityNotice),
-                new PlacementNoticeAdded(caseData, cafcassNotice),
-                new PlacementNoticeAdded(caseData, firstParentNotice),
-                new PlacementNoticeAdded(caseData, secondParentNotice),
-                new PlacementApplicationAdded(caseData));
+            final List<Object> events = underTest.getEvents(caseData, caseDataBefore);
+
+            assertThat(events).containsExactly(new PlacementApplicationAdded(caseData));
         }
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnPlacementApplicationAddedEvent(List<Element<PlacementNoticeDocument>> notices) {
+        void shouldReturnPlacementApplicationAddedEventWhenFirstPlacementAdded(List<Element<Placement>> placements) {
 
             final Placement currentPlacement = Placement.builder()
+                .childId(child1.getId())
                 .application(testDocumentReference())
-                .noticeDocuments(notices)
                 .build();
+
 
             final PlacementEventData placementEventData = PlacementEventData.builder()
                 .placement(currentPlacement)
+                .placements(wrapElements(currentPlacement))
+                .build();
+
+            final PlacementEventData placementEventDataBefore = PlacementEventData.builder()
+                .placements(placements)
                 .build();
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
                 .build();
 
-            final List<Object> events = underTest.getEvents(caseData);
+            final CaseData caseDataBefore = CaseData.builder()
+                .placementEventData(placementEventDataBefore)
+                .build();
+
+            final List<Object> events = underTest.getEvents(caseData, caseDataBefore);
 
             assertThat(events).containsExactly(new PlacementApplicationAdded(caseData));
+        }
+
+        @Test
+        void shouldReturnPlacementApplicationEditedEvent() {
+
+            final Placement existingPlacement1 = Placement.builder()
+                .childId(child1.getId())
+                .application(testDocumentReference())
+                .build();
+
+            final Placement currentPlacement = existingPlacement1.toBuilder()
+                .childId(child1.getId())
+                .application(testDocumentReference())
+                .confidentialDocuments(wrapElements(PlacementConfidentialDocument.builder()
+                    .document(testDocumentReference())
+                    .build()))
+                .build();
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placement(currentPlacement)
+                .placements(wrapElements(currentPlacement))
+                .build();
+
+            final PlacementEventData placementEventDataBefore = PlacementEventData.builder()
+                .placements(wrapElements(existingPlacement1))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(placementEventData)
+                .build();
+
+            final CaseData caseDataBefore = CaseData.builder()
+                .placementEventData(placementEventDataBefore)
+                .build();
+
+            final List<Object> events = underTest.getEvents(caseData, caseDataBefore);
+
+            assertThat(events).containsExactly(new PlacementApplicationEdited(caseData));
         }
     }
 

@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -46,12 +45,14 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feeResponse;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementSubmittedControllerTest extends AbstractCallbackTest {
+class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
     private static final Long CASE_ID = 12345L;
     private static final BigDecimal FEE = BigDecimal.valueOf(455.5);
@@ -69,10 +70,6 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private NotificationClient notificationClient;
-
-    PlacementSubmittedControllerTest() {
-        super("placement");
-    }
 
     @BeforeEach
     void init() {
@@ -137,6 +134,7 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
             .id(CASE_ID)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .children1(List.of(child1, child2))
             .placementEventData(PlacementEventData.builder()
                 .placementPaymentRequired(YES)
                 .placementPayment(PBAPayment.builder()
@@ -188,6 +186,7 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
 
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .children1(List.of(child1, child2))
             .placementEventData(PlacementEventData.builder()
                 .placementPaymentRequired(NO)
                 .placement(Placement.builder().build())
@@ -197,6 +196,45 @@ class PlacementSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData);
 
         verifyNoInteractions(feesRegisterApi, paymentApi, coreCaseDataApi, notificationClient);
+    }
+
+    @Test
+    void shouldNotMakePaymentWhenPlacementIsUpdated() {
+
+        final Placement existingApplicationForChild1 = Placement.builder()
+            .childId(child1.getId())
+            .application(testDocumentReference())
+            .build();
+
+        final Placement existingApplicationForChild2 = Placement.builder()
+            .childId(child2.getId())
+            .application(testDocumentReference())
+            .confidentialDocuments(wrapElements(annexB))
+            .build();
+
+        final Placement newApplicationForChild2 = existingApplicationForChild2.toBuilder()
+            .confidentialDocuments(wrapElements(annexB, guardiansReport))
+            .build();
+
+        final CaseData caseDataBefore = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .children1(List.of(child1, child2))
+            .placementEventData(PlacementEventData.builder()
+                .placements(wrapElements(existingApplicationForChild1, existingApplicationForChild2))
+                .build())
+            .build();
+
+        final CaseData caseData = caseDataBefore.toBuilder()
+            .placementEventData(PlacementEventData.builder()
+                .placement(newApplicationForChild2)
+                .placements(wrapElements(existingApplicationForChild1, newApplicationForChild2))
+                .build())
+            .build();
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+
+        verifyNoInteractions(notificationClient, paymentApi, coreCaseDataApi);
     }
 
     private CreditAccountPaymentRequest expectedCreditAccountPaymentRequest() {
