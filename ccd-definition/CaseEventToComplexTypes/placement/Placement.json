@@ -25,10 +25,43 @@
     "ID": "Placement",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
+    "ListElementCode": "isSubmitted",
+    "SecurityClassification": "Public",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placement",
+    "ListElementCode": "placementUploadDateTime",
+    "EventElementLabel": "Date and time of submission",
+    "SecurityClassification": "Public",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placement",
     "ListElementCode": "placementApplication",
     "EventElementLabel": "Application document",
     "SecurityClassification": "Public",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placement",
+    "ListElementCode": "placementApplicationCopy",
+    "EventElementLabel": "Application document",
+    "SecurityClassification": "Public",
+    "DisplayContext": "READONLY",
+    "FieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
@@ -37,6 +70,7 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments",
     "SecurityClassification": "Public",
+    "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -46,16 +80,7 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments",
     "SecurityClassification": "Public",
+    "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Placement",
-    "CaseEventID": "placement",
-    "CaseFieldID": "placement",
-    "ListElementCode": "placementUploadDateTime",
-    "SecurityClassification": "Public",
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "placementUploadDateTime = \"DO NOT SHOW\""
   }
 ]

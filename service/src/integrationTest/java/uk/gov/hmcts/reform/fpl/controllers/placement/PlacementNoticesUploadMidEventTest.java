@@ -7,14 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
-import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 
@@ -26,42 +21,16 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
-import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
-import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feeResponse;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementNoticesUploadMidEventTest extends AbstractCallbackTest {
+class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest {
 
     @MockBean
     private FeesRegisterApi feesRegisterApi;
-
-    private final Element<Respondent> respondent1 = testRespondent("Emma", "Green", "mother");
-    private final Element<Respondent> respondent2 = testRespondent("Adam", "Green", "father");
-
-    private final PlacementSupportingDocument birtCertificate = PlacementSupportingDocument.builder()
-        .document(testDocumentReference())
-        .type(BIRTH_ADOPTION_CERTIFICATE)
-        .build();
-
-    private final PlacementSupportingDocument statementOfFacts = PlacementSupportingDocument.builder()
-        .document(testDocumentReference())
-        .type(STATEMENT_OF_FACTS)
-        .build();
-
-    private final PlacementConfidentialDocument annexB = PlacementConfidentialDocument.builder()
-        .document(testDocumentReference())
-        .type(ANNEX_B)
-        .build();
-
-    PlacementNoticesUploadMidEventTest() {
-        super("placement");
-    }
 
     @Test
     void shouldReturnErrorsWhenRequiredDocumentsNotPresent() {
@@ -106,7 +75,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractCallbackTest {
         final PlacementEventData placementData = PlacementEventData.builder()
             .placement(Placement.builder()
                 .application(testDocumentReference())
-                .supportingDocuments(wrapElements(birtCertificate, statementOfFacts))
+                .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
                 .confidentialDocuments(wrapElements(annexB))
                 .build())
             .placementNoticeForFirstParentParentsList(parentList1)
@@ -146,7 +115,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractCallbackTest {
             .placementLastPaymentTime(earlierToday)
             .placement(Placement.builder()
                 .application(testDocumentReference())
-                .supportingDocuments(wrapElements(birtCertificate, statementOfFacts))
+                .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
                 .confidentialDocuments(wrapElements(annexB))
                 .build())
             .placementNoticeForFirstParentParentsList(parentList1)

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEdited;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -71,7 +72,14 @@ public class PlacementApplicationEventHandler {
     }
 
     public void notifyAdmin(PlacementApplicationAdded event) {
-        final CaseData caseData = event.getCaseData();
+        notifyAdmin(event.getCaseData());
+    }
+
+    public void notifyAdmin(PlacementApplicationEdited event) {
+        notifyAdmin(event.getCaseData());
+    }
+
+    private void notifyAdmin(CaseData caseData) {
 
         final BaseCaseNotifyData notifyData = placementApplicationContentProvider
             .buildPlacementApplicationNotificationParameters(caseData);
