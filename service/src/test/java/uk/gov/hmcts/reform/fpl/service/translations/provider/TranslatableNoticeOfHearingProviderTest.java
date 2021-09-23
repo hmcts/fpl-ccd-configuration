@@ -66,21 +66,23 @@ class TranslatableNoticeOfHearingProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .hearingDetails(List.of(element(SELECTED_HEARING_ID, HearingBooking.builder()
                         .noticeOfHearing(DOCUMENT_REFERENCE)
                         .build())))
                     .build(),
                 SELECTED_HEARING_ID);
 
-            assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(HearingBooking.builder()
+                .noticeOfHearing(DOCUMENT_REFERENCE)
+                .build());
 
         }
 
         @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .hearingDetails(List.of(element(UUID_1, HearingBooking.builder()
                             .noticeOfHearing(DOCUMENT_REFERENCE)
                             .build())))
@@ -92,7 +94,7 @@ class TranslatableNoticeOfHearingProviderTest {
         @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .hearingDetails(null)
                         .build(),
                     SELECTED_HEARING_ID));
