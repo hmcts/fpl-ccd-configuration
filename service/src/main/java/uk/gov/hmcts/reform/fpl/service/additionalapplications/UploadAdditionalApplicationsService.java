@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -42,7 +43,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -139,15 +139,16 @@ public class UploadAdditionalApplicationsService {
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
         );
 
-        List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
-            temporaryC2Document.getSupplementsBundle(), uploadedBy, uploadedTime
-        );
+        List<Element<Supplement>> updatedSupplementsBundle =
+            getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
+                uploadedBy, uploadedTime, SealType.ENGLISH);
+
 
         return temporaryC2Document.toBuilder()
             .id(UUID.randomUUID())
             .applicantName(applicantName)
             .author(uploadedBy)
-            .document(getDocumentToStore(temporaryC2Document.getDocument()))
+            .document(getDocumentToStore(temporaryC2Document.getDocument(), SealType.ENGLISH))
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
@@ -172,8 +173,8 @@ public class UploadAdditionalApplicationsService {
         );
 
         List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
-            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime
-        );
+            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime, SealType.ENGLISH);
+
 
         return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
@@ -181,7 +182,7 @@ public class UploadAdditionalApplicationsService {
             .applicantName(applicantName)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument()))
+            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument(), SealType.ENGLISH))
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .supplementsBundle(updatedSupplementsBundle)
             .respondents(selectedRespondents)
@@ -202,24 +203,27 @@ public class UploadAdditionalApplicationsService {
         return supportingEvidenceBundle;
     }
 
-    private List<Element<Supplement>> getSupplementsBundle(List<Element<Supplement>> supplementsBundle,
-                                                           String uploadedBy, LocalDateTime dateTime) {
-        return nullSafeList(supplementsBundle).stream()
-            .map(supplementElement -> {
-                Supplement incomingSupplement = supplementElement.getValue();
-                Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                    .document(getDocumentToStore(incomingSupplement.getDocument()))
-                    .dateTimeUploaded(dateTime)
-                    .uploadedBy(uploadedBy)
-                    .build();
+    private List<Element<Supplement>> getSupplementsBundle(
+        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime, SealType sealType) {
 
-                return supplementElement.toBuilder().value(modifiedSupplement).build();
-            })
-            .collect(Collectors.toList());
+        return supplementsBundle.stream().map(supplementElement -> {
+            Supplement incomingSupplement = supplementElement.getValue();
+
+            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
+                sealType);
+            Supplement modifiedSupplement = incomingSupplement.toBuilder()
+                .document(sealedDocument)
+                .dateTimeUploaded(dateTime)
+                .uploadedBy(uploadedBy)
+                .build();
+
+            return supplementElement.toBuilder().value(modifiedSupplement).build();
+        }).collect(Collectors.toList());
+
     }
 
-    private DocumentReference getDocumentToStore(DocumentReference originalDoc) {
-        return user.isHmctsUser() ? documentSealingService.sealDocument(originalDoc)
+    private DocumentReference getDocumentToStore(DocumentReference originalDoc, SealType sealType) {
+        return user.isHmctsUser() ? documentSealingService.sealDocument(originalDoc, sealType)
                                   : documentConversionService.convertToPdf(originalDoc);
     }
 }

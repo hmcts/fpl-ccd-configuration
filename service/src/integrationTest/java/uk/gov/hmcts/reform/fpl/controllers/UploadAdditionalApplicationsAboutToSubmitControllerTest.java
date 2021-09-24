@@ -29,15 +29,19 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
@@ -72,6 +76,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @MockBean
     private DocumentSealingService documentSealingService;
 
+    @MockBean
+    private RequestData requestData;
+
     @Autowired
     private Time time;
 
@@ -81,8 +88,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @BeforeEach
     void before() {
-        givenCurrentUser(createUserDetailsWithHmctsRole());
-        given(documentSealingService.sealDocument(UPLOADED_DOCUMENT)).willReturn(SEALED_DOCUMENT);
+        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(requestData.userRoles()).willReturn(Set.of(ADMIN_ROLE));
+        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
+        given(documentSealingService.sealDocument(UPLOADED_DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_DOCUMENT);
     }
 
     @Test
@@ -245,7 +254,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseData caseData = extractCaseData(callbackRequest()).toBuilder()
             .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .temporaryC2Document(C2DocumentBundle.builder().document(UPLOADED_DOCUMENT).build())
+            .temporaryC2Document(createTemporaryC2Document())
             .build();
 
         CaseData returnedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));

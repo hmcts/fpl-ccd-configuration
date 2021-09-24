@@ -73,21 +73,23 @@ class TranslatableFurtherEvidenceProviderTest {
         @Test
         void testIfMatchingInCollection() {
 
-            DocumentReference actual = underTest.provideSelectedItemDocument(CaseData.builder()
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .furtherEvidenceDocuments(List.of(element(SELECTED_ORDER_ID, SupportingEvidenceBundle.builder()
                         .document(DOCUMENT_REFERENCE)
                         .build())))
                     .build(),
                 SELECTED_ORDER_ID);
 
-            assertThat(actual).isEqualTo(DOCUMENT_REFERENCE);
+            assertThat(actual).isEqualTo(SupportingEvidenceBundle.builder()
+                .document(DOCUMENT_REFERENCE)
+                .build());
 
         }
 
         @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .furtherEvidenceDocuments(List.of(element(UUID_1, SupportingEvidenceBundle.builder()
                             .document(DOCUMENT_REFERENCE)
                             .build())))
@@ -99,7 +101,7 @@ class TranslatableFurtherEvidenceProviderTest {
         @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
-                () -> underTest.provideSelectedItemDocument(CaseData.builder()
+                () -> underTest.provideSelectedItem(CaseData.builder()
                         .furtherEvidenceDocuments(null)
                         .build(),
                     SELECTED_ORDER_ID));
