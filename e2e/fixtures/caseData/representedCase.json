@@ -97,13 +97,13 @@
             },
             "relationshipToChild": "Uncle"
           },
-          "activeParty": "Yes",
           "legalRepresentation": "Yes",
           "solicitor": {
             "firstName": "Tom",
             "lastName": "Jones",
             "email": "test@test.co.uk"
-          }
+          },
+          "activeParty": "Yes"
         }
       }
     ],

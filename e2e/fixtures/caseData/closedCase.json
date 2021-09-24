@@ -21,7 +21,8 @@
         "litigationIssues": null,
         "detailsHiddenReason": null,
         "genderIdentification": null,
-        "litigationIssuesDetails": null
+        "litigationIssuesDetails": null,
+        "activeParty": "Yes"
       },
       "additionalOthers": []
     },

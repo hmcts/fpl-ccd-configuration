@@ -97,8 +97,8 @@
             },
             "relationshipToChild": "Uncle"
           },
-          "activeParty": "Yes",
-          "legalRepresentation": "No"
+          "legalRepresentation": "No",
+          "activeParty": "Yes"
         }
       }
     ],

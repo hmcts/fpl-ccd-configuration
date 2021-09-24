@@ -162,8 +162,8 @@
             },
             "relationshipToChild": "Uncle"
           },
-          "activeParty": "Yes",
-          "legalRepresentation": "No"
+          "legalRepresentation": "No",
+          "activeParty": "Yes"
         }
       },
       {
@@ -188,8 +188,8 @@
             },
             "relationshipToChild": "Uncle"
           },
-          "activeParty": "Yes",
-          "legalRepresentation": "No"
+          "legalRepresentation": "No",
+          "activeParty": "Yes"
         }
       }
     ],
@@ -210,13 +210,13 @@
         "telephone": "07000 654321",
         "birthPlace": "London",
         "detailsHidden": "No",
-        "activeParty": "Yes",
         "representedBy": [],
         "childInformation": null,
         "litigationIssues": "NO",
         "detailsHiddenReason": null,
         "genderIdentification": null,
-        "litigationIssuesDetails": ""
+        "litigationIssuesDetails": "",
+        "activeParty": "Yes"
       },
       "additionalOthers": []
     },

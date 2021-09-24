@@ -16,13 +16,13 @@
         "telephone": null,
         "birthPlace": "Newry",
         "detailsHidden": null,
-        "activeParty": "Yes",
         "representedBy": [],
         "childInformation": null,
         "litigationIssues": null,
         "detailsHiddenReason": null,
         "genderIdentification": null,
-        "litigationIssuesDetails": null
+        "litigationIssuesDetails": null,
+        "activeParty": "Yes"
       },
       "additionalOthers": []
     },
