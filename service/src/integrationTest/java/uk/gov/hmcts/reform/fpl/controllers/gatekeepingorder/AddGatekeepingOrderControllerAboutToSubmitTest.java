@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -279,7 +280,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .id(1234123412341234L)
             .build();
 
-        given(sealingService.sealDocument(urgentReference)).willReturn(sealedUrgentReference);
+        given(sealingService.sealDocument(urgentReference, SealType.ENGLISH)).willReturn(sealedUrgentReference);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
@@ -309,7 +310,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
 
         givenCurrentUserWithName("adam");
-        given(sealingService.sealDocument(document)).willReturn(sealedDocument);
+        given(sealingService.sealDocument(document, SealType.ENGLISH)).willReturn(sealedDocument);
 
         CaseData responseCaseData = extractCaseData(
             postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, SEALED))
