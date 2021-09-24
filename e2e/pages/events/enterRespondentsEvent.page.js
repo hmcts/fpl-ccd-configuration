@@ -20,6 +20,10 @@ module.exports = {
           dont_know: `#respondents1_${index}_party_litigationIssues-DONT_KNOW`,
         },
         litigationIssuesDetails: `#respondents1_${index}_party_litigationIssuesDetails`,
+        activeParty: {
+          yes: `#respondents1_${index}_activeParty_Yes`,
+          no: `#respondents1_${index}_activeParty_No`,
+        },
       },
       solicitor: {
         element: `#respondents1_${index}_solicitor_solicitor`,
@@ -96,6 +100,16 @@ module.exports = {
     }
     if (litigationIssue === 'yes') {
       I.fillField(this.fields(elementIndex).respondent.litigationIssuesDetails, litigationIssueDetail);
+    }
+  },
+
+  async enterActiveParty(option) {
+    const elementIndex = await I.getActiveElementIndex();
+
+    if (option === 'Yes') {
+      I.checkOption(this.fields(elementIndex).respondent.activeParty.yes);
+    } else if (option === 'No') {
+      I.checkOption(this.fields(elementIndex).respondent.activeParty.no);
     }
   },
 

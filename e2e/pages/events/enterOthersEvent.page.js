@@ -23,6 +23,10 @@ module.exports = {
           reason: `#others_${index}_detailsHiddenReason`,
         };
       },
+      activeParty: {
+        yes: `#others_${index}_activeParty_Yes`,
+        no: `#others_${index}_activeParty_No`,
+      },
     };
   },
 
@@ -72,6 +76,16 @@ module.exports = {
     }
     if (litigationIssue === 'yes') {
       I.fillField(this.fields(elementIndex).litigationIssuesDetails, litigationIssueDetail);
+    }
+  },
+
+  async enterActiveParty(option) {
+    const elementIndex = await this.getActiveElementSelector();
+
+    if (option === 'Yes') {
+      I.checkOption(this.fields(elementIndex).activeParty.yes);
+    } else if (option === 'No') {
+      I.checkOption(this.fields(elementIndex).activeParty.no);
     }
   },
 
