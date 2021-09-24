@@ -94,7 +94,7 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
         ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     } else {
-      ccdDefinitionFilePath = "prod" == env && useShutteredCaseDef == '1'
+      ccdDefinitionFilePath = useShutteredCaseDef == '1'
         ? "${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}-shuttered.xlsx"
         : "${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
 
