@@ -1,10 +1,13 @@
 const config = require('../config.js');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
 const manageDocumentsForLAHelper = require('../helpers/manage_documents_for_LA_helper.js');
+const moment = require('moment');
 const api = require('../helpers/api_helper');
 
 const dateFormat = require('dateformat');
+const {formatHearingDate} = require('../helpers/manage_documents_for_LA_helper');
 const respondent = 'Joe Bloggs';
 const respondent1StatementsSection = 'Joe Bloggs statements';
 const expertReportsSection = 'Expert reports';
@@ -13,6 +16,8 @@ const solicitor = config.privateSolicitorOne;
 
 let caseId;
 let submittedAt;
+const hearingStartDate = moment().add(5,'m').toDate();
+const hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
 Feature('Manage documents');
 
@@ -329,6 +334,49 @@ Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEv
 
 });
 
+Scenario('LA upload court bundle for a hearing @bundle', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage}) => {
+  await setupScenario(I);
+  await setupHearing(I, caseViewPage, manageHearingsEventPage);
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+
+  await manageDocumentsLAEventPage.selectCourtBundle();
+  await manageDocumentsLAEventPage.selectCourtBundleHearing(formatHearingDate(hearingStartDate));
+  await I.goToNextPage();
+
+  await manageDocumentsLAEventPage.uploadCourtBundleDocument(config.testFile);
+  await I.addAnotherElementToCollection();
+  await manageDocumentsLAEventPage.uploadCourtBundleDocument(config.testPdfFile);
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+
+  caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
+  const section = 'Court bundle 1';
+  I.seeInTab([section, 'Hearing'], 'Case management hearing, ' + formatHearingDate(hearingStartDate));
+  I.seeInTab([section, 'Documents 1', 'Document'], getFilename(config.testFile));
+  I.seeInTab([section, 'Documents 2', 'Document'], getFilename(config.testPdfFile));
+});
+
+async function setupHearing(I, caseViewPage, manageHearingsEventPage) {
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate, endDate: hearingEndDate}));
+  manageHearingsEventPage.enterVenue(hearingDetails[0]);
+  await I.goToNextPage();
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.goToNextPage();
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  await I.goToNextPage();
+  await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
+}
+
+function getFilename(file) {
+  return file.split('/').pop();
+}
 
 const assertConfidentialCorrespondence = (I, suffix, index, docName, notes) => {
   assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, true);

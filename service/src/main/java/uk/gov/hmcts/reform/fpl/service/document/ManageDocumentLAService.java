@@ -6,10 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -95,7 +103,8 @@ public class ManageDocumentLAService {
         return courtBundleList;
     }
 
-    private HearingCourtBundle constructHearingCourtBundle(Element<HearingBooking> hearingBooking, List<Element<CourtBundle>> courtBundle) {
+    private HearingCourtBundle constructHearingCourtBundle(Element<HearingBooking> hearingBooking,
+                                                           List<Element<CourtBundle>> courtBundle) {
         return HearingCourtBundle.builder()
             .hearing(hearingBooking.getValue().toLabel())
             .courtBundle(courtBundle)

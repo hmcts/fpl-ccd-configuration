@@ -22,7 +22,7 @@ module.exports = {
     respondentStatementList: '#respondentStatementList',
     hearingList: '#manageDocumentsHearingList',
     courtBundleHearingList: '#courtBundleHearingList',
-    courtBundleDocument: '#manageDocumentsCourtBundle_document',
+    courtBundleDocument: index => supportingDocumentsFragment.supportingDocuments(index, 'manageDocumentsCourtBundle'),
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
@@ -75,8 +75,9 @@ module.exports = {
     I.selectOption(this.fields.courtBundleHearingList, `Case management hearing, ${hearingDate}`);
   },
 
-  async attachCourtBundle(document) {
-    I.attachFile(this.fields.courtBundleDocument, document);
+  async uploadCourtBundleDocument(document) {
+    const elementIndex = await this.getActiveElementIndex();
+    I.attachFile(this.fields.courtBundleDocument(elementIndex).document, document);
   },
 
   async selectFurtherEvidenceIsRelatedToHearing() {

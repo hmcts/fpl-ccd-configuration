@@ -494,13 +494,15 @@
           "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
         }
       },
-      "courtBundle": {
-        "typeOfDocument": {
-          "document_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e",
-          "document_filename": "form.pdf",
-          "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
+      "courtBundle": [
+        {
+          "typeOfDocument": {
+            "document_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e",
+            "document_filename": "form.pdf",
+            "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
+          }
         }
-      },
+      ],
       "noticeOfProceedings": {
         "proceedingTypes": [
           "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"

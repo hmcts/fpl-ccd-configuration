@@ -9,11 +9,13 @@ import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -151,31 +153,93 @@ class ManageDocumentsLAServiceTest {
     @Test
     void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
 
         CaseData caseData = CaseData.builder()
-            .manageDocumentsCourtBundle(CourtBundle.builder().hearing("Test hearing").build())
+            .manageDocumentsCourtBundle(courtBundle)
             .courtBundleHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
             .build();
 
-        assertThat(manageDocumentLAService.buildCourtBundleList(caseData))
-            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle())));
+        List<HearingCourtBundle> results = unwrapElements(manageDocumentLAService.buildCourtBundleList(caseData));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(courtBundle);
     }
 
     @Test
     void shouldReturnEditedCourtBundleListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
-        List<Element<CourtBundle>> courtBundleList = new ArrayList<>();
-        courtBundleList.add(element(selectedHearingId, CourtBundle.builder().hearing("Test hearing").build()));
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> currentCourtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<CourtBundle>> editedCourtBundle = List.of(element(createCourtBundleWithFile("New filename")));
 
-        CourtBundle editedBundle = CourtBundle.builder().hearing("Edited hearing").build();
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            selectedHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(currentCourtBundle)
+                .build()));
+
         CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(editedCourtBundle)
             .courtBundleList(courtBundleList)
-            .manageDocumentsCourtBundle(editedBundle)
             .courtBundleHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
             .build();
 
-        assertThat(unwrapElements(manageDocumentLAService.buildCourtBundleList(caseData)))
-            .containsExactly(editedBundle);
+        List<HearingCourtBundle> results = unwrapElements(manageDocumentLAService.buildCourtBundleList(caseData));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(editedCourtBundle);
+    }
+
+    @Test
+    void shouldReturnAdditionalCourtBundleForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> currentCourtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<CourtBundle>> newCourtBundle = new ArrayList<>(currentCourtBundle);
+        newCourtBundle.add(element(createCourtBundleWithFile("New filename 1")));
+        newCourtBundle.add(element(createCourtBundleWithFile("New filename 2")));
+
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            selectedHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(currentCourtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(newCourtBundle)
+            .courtBundleList(courtBundleList)
+            .courtBundleHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        List<HearingCourtBundle> results = unwrapElements(manageDocumentLAService.buildCourtBundleList(caseData));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .hasSize(3)
+            .isEqualTo(newCourtBundle);
+    }
+
+    private CourtBundle createCourtBundleWithFile(String filename) {
+        return CourtBundle.builder()
+            .document(
+                DocumentReference.builder()
+                    .filename(filename)
+                    .build())
+            .build();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

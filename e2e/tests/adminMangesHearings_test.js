@@ -1,12 +1,12 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const dateFormat = require('dateformat');
-const dateToString = require('../helpers/date_to_string_helper');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const supportingEvidenceDocuments = require('../fixtures/hearingSupportingEvidenceDocuments.js');
 const moment = require('moment');
 const assert = require('assert');
 const api = require('../helpers/api_helper');
+const {formatHearingDate, formatHearingTime} = require('../helpers/manage_documents_for_LA_helper');
 const defaultPreHearing = '1 hour before the hearing';
 
 let caseId;
@@ -127,7 +127,7 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
+Scenario('HMCTS admin uploads further hearing evidence documents @document', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.selectFurtherEvidence();
@@ -330,7 +330,3 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
   I.seeInTab(['Hearing 3', 'Others notified'], 'Noah King');
 });
-
-const formatHearingTime = hearingDate => formatDate(hearingDate, 'd mmm yyyy, h:MM:ss TT');
-const formatHearingDate = hearingDate => formatDate(hearingDate, 'd mmmm yyyy');
-const formatDate = (date, format) => dateFormat(date instanceof Date ? date : dateToString(date), format);

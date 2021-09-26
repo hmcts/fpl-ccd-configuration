@@ -2,6 +2,8 @@ const config = require('../config');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const moment = require('moment');
 const c2Payment = require('../fixtures/c2Payment.js');
+const dateFormat = require('dateformat');
+const dateToString = require('../helpers/date_to_string_helper');
 
 let hearingStartDate;
 let hearingEndDate;
@@ -57,6 +59,10 @@ const uploadOtherApplications = async (I, caseViewPage, uploadAdditionalApplicat
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
 };
 
+const formatHearingTime = hearingDate => formatDate(hearingDate, 'd mmm yyyy, h:MM:ss TT');
+const formatHearingDate = hearingDate => formatDate(hearingDate, 'd mmmm yyyy');
+const formatDate = (date, format) => dateFormat(date instanceof Date ? date : dateToString(date), format);
+
 module.exports = {
-  createHearing, uploadC2, uploadOtherApplications,
+  createHearing, uploadC2, uploadOtherApplications, formatHearingTime, formatHearingDate,
 };
