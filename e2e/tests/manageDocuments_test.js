@@ -334,7 +334,7 @@ Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEv
 
 });
 
-Scenario('LA upload court bundle for a hearing @bundle', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage}) => {
+Scenario('LA upload court bundle for a hearing', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await setupHearing(I, caseViewPage, manageHearingsEventPage);
 
