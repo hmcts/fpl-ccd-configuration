@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -33,7 +32,6 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
     private final String leadRespondentIndicator;
-    @Value("${some.key:Yes}")
     private final String activeParty;
     @Deprecated(since = "FPLA-2428")
     private String persistRepresentedBy;

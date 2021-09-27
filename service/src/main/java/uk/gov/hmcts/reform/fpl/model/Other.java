@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -43,7 +42,6 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String litigationIssuesDetails;
     private final String detailsHidden;
     private final String detailsHiddenReason;
-    @Value("${some.key:Yes}")
     private final String activeParty;
     private final List<Element<UUID>> representedBy = new ArrayList<>();
 
