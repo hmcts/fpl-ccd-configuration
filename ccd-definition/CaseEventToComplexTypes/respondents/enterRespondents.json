@@ -419,6 +419,6 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "activeParty",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "activeParty=\"SHOW_LABEL\""
+    "FieldShowCondition": "activeParty!=\"SHOW_LABEL\""
   }
 ]
