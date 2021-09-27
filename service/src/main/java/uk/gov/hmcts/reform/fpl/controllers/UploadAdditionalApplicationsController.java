@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -73,6 +74,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        List<Element<Other>> activeOthers = caseData.getAllActiveOthers();
 
         if (!isNull(caseData.getTemporaryC2Document())) {
             caseData.getTemporaryC2Document().setType(caseData.getC2Type());
@@ -83,9 +85,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         if (caseData.hasRespondentsOrOthers()) {
             caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
             caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
-                caseData.getAllActiveRespondents(), caseData.getAllActiveOthers()));
+                caseData.getAllActiveRespondents(), activeOthers));
 
-            int selectorSize = caseData.getAllActiveRespondents().size() + caseData.getAllActiveOthers().size();
+            int selectorSize = caseData.getAllActiveRespondents().size() + activeOthers.size();
             caseDetails.getData().put("personSelector", newSelector(selectorSize));
         }
 

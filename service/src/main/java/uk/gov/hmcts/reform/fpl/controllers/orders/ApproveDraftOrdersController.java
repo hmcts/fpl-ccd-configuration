@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -76,11 +77,12 @@ public class ApproveDraftOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+        List<Element<Other>> activeOthers = caseData.getAllActiveOthers();
 
-        if (isEmpty(errors) && isNotEmpty(caseData.getAllActiveOthers())) {
+        if (isEmpty(errors) && isNotEmpty(activeOthers)) {
             caseDetails.getData().put("hasOthers", "Yes");
-            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllActiveOthers()));
-            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllActiveOthers().size()));
+            caseDetails.getData().put("others_label", othersService.getOthersLabel(activeOthers));
+            caseDetails.getData().put("othersSelector", newSelector(activeOthers.size()));
 
             if (approveDraftOrdersService.hasApprovedReviewDecision(caseData, data)) {
                 caseDetails.getData().put("reviewCMOShowOthers", "Yes");

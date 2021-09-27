@@ -6,7 +6,7 @@
     "FieldType": "Label",
     "ElementLabel": "<div class='govuk-tag govuk-tag--blue'>ACTIVE PARTY</div>",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "activeParty=\"Yes\""
+    "FieldShowCondition": "activeParty !=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",

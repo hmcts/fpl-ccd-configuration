@@ -301,7 +301,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<Respondent>> getAllActiveRespondents() {
         return getAllRespondents().stream()
-            .filter(respondent -> YES.getValue().equals(respondent.getValue().getActiveParty()))
+            .filter(respondent -> !NO.getValue().equals(respondent.getValue().getActiveParty()))
             .collect(toList());
     }
 
@@ -516,19 +516,23 @@ public class CaseData {
 
     @JsonIgnore
     public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
+        List<Representative> inactiveRepresentatives = getInactiveRepresentatives();
+
         return getRepresentativesElementsByServedPreference(preference).stream()
             .map(Element::getValue)
-            .filter(representative -> !getInactiveRepresentatives().contains(representative))
+            .filter(representative -> !inactiveRepresentatives.contains(representative))
             .collect(toList());
     }
 
     @JsonIgnore
     public List<Element<Representative>> getRepresentativesElementsByServedPreference(
         RepresentativeServingPreferences preference) {
+        List<Representative> inactiveRepresentatives = getInactiveRepresentatives();
+
         if (isNotEmpty(representatives)) {
             return representatives.stream()
                 .filter(Objects::nonNull)
-                .filter(representative -> !getInactiveRepresentatives().contains(representative.getValue()))
+                .filter(representative -> !inactiveRepresentatives.contains(representative.getValue()))
                 .filter(representative -> preference == representative.getValue().getServingPreferences())
                 .collect(toList());
         }
@@ -544,7 +548,7 @@ public class CaseData {
 
     @JsonIgnore
     private List<Representative> getInactiveOtherRepresentatives() {
-        return representatives.stream()
+        return Optional.ofNullable(representatives).orElse(emptyList()).stream()
             .map(Element::getValue)
             .filter(representative -> null != representative.getRole())
             .filter(representative -> null != representative.getRole().getSequenceNo())
@@ -557,7 +561,7 @@ public class CaseData {
 
     @JsonIgnore
     private List<Representative> getInactiveRespondentRepresentatives() {
-        return representatives.stream()
+        return Optional.ofNullable(representatives).orElse(emptyList()).stream()
             .map(Element::getValue)
             .filter(representative -> null != representative.getRole())
             .filter(representative -> null != representative.getRole().getSequenceNo())
@@ -617,7 +621,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<Other>> getAllActiveOthers() {
         return getAllOthers().stream()
-            .filter(other -> YES.getValue().equals(other.getValue().getActiveParty()))
+            .filter(other -> !NO.getValue().equals(other.getValue().getActiveParty()))
             .collect(toList());
     }
 

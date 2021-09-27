@@ -79,14 +79,10 @@ module.exports = {
     }
   },
 
-  async enterActiveParty(option) {
-    const elementIndex = await this.getActiveElementSelector();
+  async setAsActiveParty() {
+    const elementIndex = await I.getActiveElementIndex();
 
-    if (option === 'Yes') {
-      I.checkOption(this.fields(elementIndex).activeParty.yes);
-    } else if (option === 'No') {
-      I.checkOption(this.fields(elementIndex).activeParty.no);
-    }
+    I.checkOption(this.fields(elementIndex).respondent.activeParty.yes);
   },
 
   async getActiveElementSelector() {

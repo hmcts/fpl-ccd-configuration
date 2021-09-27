@@ -166,7 +166,7 @@
     "CaseFieldID": "others",
     "ListElementCode": "firstOther.activeParty",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "activeParty=\"*\" OR activeParty!=\"*\""
+    "FieldShowCondition": "activeParty=\"SHOW_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -343,7 +343,7 @@
     "CaseFieldID": "others",
     "ListElementCode": "additionalOthers.activeParty",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "activeParty=\"*\" OR activeParty!=\"*\""
+    "FieldShowCondition": "activeParty=\"SHOW_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",

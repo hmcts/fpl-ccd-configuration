@@ -103,14 +103,10 @@ module.exports = {
     }
   },
 
-  async enterActiveParty(option) {
+  async setAsActiveParty() {
     const elementIndex = await I.getActiveElementIndex();
 
-    if (option === 'Yes') {
-      I.checkOption(this.fields(elementIndex).respondent.activeParty.yes);
-    } else if (option === 'No') {
-      I.checkOption(this.fields(elementIndex).respondent.activeParty.no);
-    }
+    I.checkOption(this.fields(elementIndex).respondent.activeParty.yes);
   },
 
   async enterRepresentationDetails(option, respondent, index) {

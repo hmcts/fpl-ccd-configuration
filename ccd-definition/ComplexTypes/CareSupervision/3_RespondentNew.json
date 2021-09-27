@@ -24,7 +24,7 @@
     "ListElementCode": "activeTag",
     "FieldType": "Label",
     "ElementLabel": "<div class='govuk-tag govuk-tag--blue'>ACTIVE PARTY</div>",
-    "FieldShowCondition": "activeParty=\"Yes\"",
+    "FieldShowCondition": "activeParty !=\"No\"",
     "SecurityClassification": "Public"
   },
   {
