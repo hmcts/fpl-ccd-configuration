@@ -15,7 +15,8 @@ def serviceSecrets = [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
+    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+    secret('use-shuttered-case-def', 'USE_SHUTTERED_CASE_DEF')
   ]
 ]
 
@@ -47,28 +48,32 @@ def otherSecrets = [
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
-  [ $class: 'AzureKeyVaultSecret',
-    secretType: 'Secret',
-    name: secretName,
+  [
+    $class     : 'AzureKeyVaultSecret',
+    secretType : 'Secret',
+    name       : secretName,
     envVariable: envVariable
   ]
 }
 
 def archiveCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin") {
-    if("preview" == env){
+    if ("preview" == env) {
       sh "./build-preview-ccd-definitions.sh ${CHANGE_ID}"
     } else {
       sh "./build-release-ccd-definition.sh ${env}"
+      sh "./build-shuttered-ccd-definition.sh ${env}"
     }
   }
 
   dir("${WORKSPACE}/build") {
-    if("preview" == env){
+    if ("preview" == env) {
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-off.xlsx"
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-shuttered.xlsx"
     } else {
       steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}.xlsx"
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}-shuttered.xlsx"
     }
   }
 }
@@ -80,16 +85,19 @@ def archiveCoreCaseDataDefinitions(env) {
  *
  * @param env target environment
  */
-def uploadCoreCaseDataDefinitions(env) {
+def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
   dir("${WORKSPACE}/bin"){
     if("preview" == env){
-      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
+      ccdDefinitionFilePath = "${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       sh """
         eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
         ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     } else {
-      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
+      ccdDefinitionFilePath = useShutteredCaseDef == '1'
+        ? "${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}-shuttered.xlsx"
+        : "${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
+
       sh """
         eval \$(./variables/load-${env}-environment-variables.sh)
         ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
@@ -148,10 +156,10 @@ withPipeline(type, product, component) {
   onDemo {
     env.ENV = 'demo'
   }
-  onPerftest{
+  onPerftest {
     env.ENV = 'perftest'
   }
-  onIthc{
+  onIthc {
     env.ENV = 'ithc'
   }
 
@@ -199,15 +207,15 @@ withPipeline(type, product, component) {
     """
 
     archiveCoreCaseDataDefinitions('preview')
-    uploadCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview', '0')
 
-    env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.SWANSEA_ORG_ID="62LYJRF"
-    env.MOCKED_PAYMENTS=false
-    env.PARALLEL_CHUNKS=4
-    env.TEST_RETRIES=2
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL = "http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.URL = "http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.SWANSEA_ORG_ID = "62LYJRF"
+    env.MOCKED_PAYMENTS = false
+    env.PARALLEL_CHUNKS = 4
+    env.TEST_RETRIES = 2
   }
 
   after('smoketest:saat') {
@@ -237,7 +245,8 @@ withPipeline(type, product, component) {
 
   after('functionalTest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
-    env.ENV = 'prod' // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
+    env.ENV = 'prod'
+    // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
 
   after('functionalTest:preview') {
@@ -247,12 +256,13 @@ withPipeline(type, product, component) {
   }
 
   after('highleveldatasetup') {
-    if (env.ENV != 'preview') { // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
+    if (env.ENV != 'preview') {
+      // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
       echo "CCD definition upload for environment: ${env.ENV}"
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
         withTeamSecrets(pipelineConf, env.ENV) {
           archiveCoreCaseDataDefinitions(env.ENV)
-          uploadCoreCaseDataDefinitions(env.ENV)
+          uploadCoreCaseDataDefinitions(env.ENV, env.USE_SHUTTERED_CASE_DEF)
         }
       }
     } else {
