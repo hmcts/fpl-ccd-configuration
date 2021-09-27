@@ -85,7 +85,7 @@ Scenario('local authority provides a statements of service', async ({ I, caseVie
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
+Scenario('local authority upload placement application and court admin make order', async ({I, caseViewPage, placementEventPage, manageOrdersEventPage}) => {
 
   const placementFee = '£455.0';
   await setupScenario(I);
@@ -256,49 +256,8 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.dontSeeInTab(['Child 2', 'Confidential document 1', 'Document type']);
   I.dontSeeInTab(['Child 2', 'Confidential document 1', 'Document']);
 
-});
+  I.say('Admin generates placement order');
 
-Scenario('Admin creates placement order', async ({ I, caseViewPage, placementEventPage, manageOrdersEventPage }) => {
-
-  const placementFee = '£455.0';
-  await setupScenario(I);
-
-  await caseViewPage.goToNewActions(config.administrationActions.placement);
-  await placementEventPage.selectChild('Timothy Jones');
-
-  await I.goToNextPage();
-  await placementEventPage.addApplication(config.testWordFile);
-
-  placementEventPage.attachSupportingDocument(0, config.testFile);
-  placementEventPage.attachSupportingDocument(1, config.testFile2, 'Description 1');
-  await placementEventPage.addSupportingDocument(2, 'Maintenance agreement/award', config.testFile3);
-  placementEventPage.attachConfidentialDocument(0, config.testFile4);
-  await placementEventPage.addConfidentialDocument(1, 'Other confidential documents', config.testFile5, 'Description 2');
-
-  await I.goToNextPage();
-  placementEventPage.selectLocalAuthorityNoticeOfPlacementRequired();
-  placementEventPage.attachLocalAuthorityNoticeOfPlacement(config.testFile6, 'Description 3');
-  placementEventPage.selectLocalAuthorityNoticeOfPlacementResponseReceived();
-  placementEventPage.attachLocalAuthorityNoticeOfPlacementResponse(config.testFile7, 'Description 4');
-  placementEventPage.selectCafcassNoticeOfPlacementNotRequired();
-  placementEventPage.selectFirstParentNoticeOfPlacementRequired();
-  placementEventPage.selectFirstParent('Emma Bloggs - Mother');
-  placementEventPage.attachFirstParentNoticeOfPlacement(config.testFile8, 'Description 5');
-  placementEventPage.selectFirstParentNoticeOfPlacementResponseNotReceived();
-  placementEventPage.selectSecondParentNoticeOfPlacementRequired();
-  placementEventPage.selectSecondParent('Joe Bloggs - Father');
-  placementEventPage.attachSecondParentNoticeOfPlacement(config.testFile9, 'Description 6');
-  placementEventPage.selectSecondParentNoticeOfPlacementResponseReceived();
-  placementEventPage.attachSecondParentNoticeOfPlacementResponse(config.testFile10, 'Description 7');
-
-  await I.goToNextPage();
-  I.see(placementFee);
-  await placementEventPage.setPaymentDetails('PBA0082848', '8888', 'Customer reference');
-
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.placement);
-
-  //Log in as admin
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
@@ -329,4 +288,6 @@ Scenario('Admin creates placement order', async ({ I, caseViewPage, placementEve
   I.seeInTab(['Order 1', 'Approval date'], 	'27 Apr 2021');
   I.seeInTab(['Order 1', 'Children'], 'Timothy Jones');
   I.seeInTab(['Order 1', 'Notification document'], 'placement_order_notification_a206.pdf');
+
 });
+
