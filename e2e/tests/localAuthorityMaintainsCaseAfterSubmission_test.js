@@ -15,7 +15,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 }
 
-Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
+Scenario('local authority add an external barrister as a legal representative for the case', async ({ I, caseViewPage, manageLegalRepresentativesEventPage }) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
   await I.goToNextPage();
@@ -32,13 +32,13 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
-Scenario('local authority update its details', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+Scenario('local authority update its details', async ({ I, caseViewPage, enterLocalAuthorityEventPage }) => {
   await setupScenario(I);
   const solicitorEmail = 'solicitor@test.com';
 
   await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
   await I.goToNextPage();
-  await enterLocalAuthorityEventPage.enterColleague({email: solicitorEmail}, 0);
+  await enterLocalAuthorityEventPage.enterColleague({ email: solicitorEmail }, 0);
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
 
@@ -46,7 +46,7 @@ Scenario('local authority update its details', async ({I, caseViewPage, enterLoc
   I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], solicitorEmail);
 });
 
-Scenario('local authority provides a statements of service', async ({I, caseViewPage, addStatementOfServiceEventPage}) => {
+Scenario('local authority provides a statements of service', async ({ I, caseViewPage, addStatementOfServiceEventPage }) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
@@ -85,7 +85,7 @@ Scenario('local authority provides a statements of service', async ({I, caseView
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
+Scenario('local authority upload placement application and court admin make order', async ({I, caseViewPage, placementEventPage, manageOrdersEventPage}) => {
 
   const placementFee = '£455.0';
   await setupScenario(I);
@@ -256,6 +256,38 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.dontSeeInTab(['Child 2', 'Confidential document 1', 'Document type']);
   I.dontSeeInTab(['Child 2', 'Confidential document 1', 'Document']);
 
-});
+  I.say('Admin generates placement order');
 
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.a70);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectPlacementApplication('Timothy Jones');
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate({day: '27', month: '04', year:'2021'});
+  await I.goToNextPage();
+  manageOrdersEventPage.selectIsFinalOrder();
+  manageOrdersEventPage.fillPlacementOrderSpecificFields({
+    serialNumber: '123',
+    birthCertificateNumber: 'BC-123',
+    birthCertificateDate: '12-Dec-2019',
+    birthCertificateDistrict: 'My District',
+    birthCertificateSubDistrict: 'My Sub-district',
+    birthCertificateCounty: 'My County',
+  });
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+
+  I.seeInTab(['Order 1', 'Type of order'], 'Placement Order (A70)');
+  I.seeInTab(['Order 1', 'Order document'], 'a70_placement_order.pdf');
+  I.seeInTab(['Order 1', 'Approval date'], 	'27 Apr 2021');
+  I.seeInTab(['Order 1', 'Children'], 'Timothy Jones');
+  I.seeInTab(['Order 1', 'Notification document'], 'placement_order_notification_a206.pdf');
+
+});
 

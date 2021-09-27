@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -59,9 +60,11 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIR
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.MAINTENANCE_AGREEMENT_AWARD;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.PARENTS_CONSENT_FOR_ADOPTION;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
@@ -721,6 +724,59 @@ class PlacementServiceTest {
 
             verify(feeService).getFeesDataForPlacement();
             verifyNoInteractions(time);
+        }
+
+        @Test
+        void shouldReturnAllChildPlacementApplications() {
+            UUID placementId = randomUUID();
+            Element<Child> childForPlacement = testChild();
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(childForPlacement))
+                .placementEventData(
+                    PlacementEventData.builder().placements(
+                        List.of(
+                            element(placementId, Placement.builder().childId(childForPlacement.getId()).build())
+                        )
+                    ).build()
+                ).build();
+
+            List<Element<String>> childPlacementOrders = underTest.getPlacements(caseData);
+
+            assertThat(childPlacementOrders).contains(
+                element(placementId, childForPlacement.getValue().getParty().getFullName())
+            );
+        }
+
+        @Test
+        void shouldReturnPlacementById() {
+            UUID placementId = randomUUID();
+            Placement chosenPlacement = Placement.builder().childName("Jonas Watson").build();
+            CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder().placements(List.of(
+                        element(placementId, chosenPlacement),
+                        element(Placement.builder().childName("Brian Watson").build()),
+                        element(Placement.builder().childName("Nancy Watson").build())
+                    )).build()
+                ).build();
+
+            Placement placement = underTest.getPlacementById(caseData, placementId);
+
+            assertThat(placement).isEqualTo(chosenPlacement);
+        }
+
+        @Test
+        void shouldReturnChildByPlacementById() {
+            List<Element<Child>> children = testChildren();
+            Element<Child> selectedChild = children.get(0);
+            Element<Placement> placement = element(Placement.builder().childId(selectedChild.getId()).build());
+            CaseData caseData = CaseData.builder()
+                .children1(children)
+                .placementEventData(PlacementEventData.builder().placements(List.of(placement)).build())
+                .build();
+
+            Element<Child> actualChild = underTest.getChildByPlacementId(caseData, placement.getId());
+
+            assertThat(actualChild).isEqualTo(selectedChild);
         }
     }
 

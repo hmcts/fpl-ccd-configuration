@@ -9,7 +9,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\" OR orderTempQuestions.orderDetails=\"YES\" OR orderTempQuestions.needSealing=\"YES\" OR orderTempQuestions.uploadOrderFile=\"YES\"",
+    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\" OR orderTempQuestions.orderDetails=\"YES\" OR orderTempQuestions.needSealing=\"YES\" OR orderTempQuestions.uploadOrderFile=\"YES\" OR orderTempQuestions.childPlacementQuestions=\"YES\"",
     "FieldShowCondition": "manageOrdersOperation=\"CREATE\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/order-details/mid-event",
     "ShowSummaryChangeOption": "N"
@@ -531,6 +531,84 @@
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.translationRequirements=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersSerialNumber",
+    "PageFieldDisplayOrder": 51,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersBirthCertificateNumber",
+    "PageFieldDisplayOrder": 52,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersBirthCertificateDate",
+    "PageFieldDisplayOrder": 53,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersBirthCertificateRegistrationDistrict",
+    "PageFieldDisplayOrder": 54,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersBirthCertificateRegistrationSubDistrict",
+    "PageFieldDisplayOrder": 55,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersBirthCertificateRegistrationCounty",
+    "PageFieldDisplayOrder": 56,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
