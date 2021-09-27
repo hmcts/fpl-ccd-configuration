@@ -12,7 +12,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
@@ -25,7 +29,21 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 public class DocumentConversionService {
     private final RestTemplate restTemplate;
     private final DocmosisConfiguration configuration;
+    private final DocumentDownloadService downloadService;
+    private final UploadDocumentService uploadService;
     private static final String PDF = "pdf";
+
+    public DocumentReference convertToPdf(DocumentReference document) {
+        String filename = document.getFilename();
+        if (hasExtension(filename, PDF)) {
+            return document;
+        }
+
+        byte[] documentContent = downloadService.downloadDocument(document.getBinaryUrl());
+        byte[] updatedContent = convertToPdf(documentContent, filename);
+        Document uploadedPDF = uploadService.uploadPDF(updatedContent, updateExtension(filename, PDF));
+        return DocumentReference.buildFromDocument(uploadedPDF);
+    }
 
     public byte[] convertToPdf(byte[] documentContents, String filename) {
         if (!hasExtension(filename, PDF)) {

@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.io.UncheckedIOException;
@@ -58,7 +59,7 @@ class DocumentSealingServiceTest {
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
-            .sealDocument(inputDocumentReference);
+            .sealDocument(inputDocumentReference, SealType.ENGLISH);
 
         verify(uploadDocumentService).uploadPDF(actualDocumentBinaries.capture(), eq(newFileName));
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
@@ -80,7 +81,7 @@ class DocumentSealingServiceTest {
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
-            .sealDocument(inputDocumentReference);
+            .sealDocument(inputDocumentReference, SealType.ENGLISH);
 
         verify(uploadDocumentService)
             .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
@@ -100,6 +101,6 @@ class DocumentSealingServiceTest {
         when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(notPdf);
 
         assertThrows(UncheckedIOException.class, () ->
-            documentSealingService.sealDocument(inputDocumentReference));
+            documentSealingService.sealDocument(inputDocumentReference, SealType.ENGLISH));
     }
 }

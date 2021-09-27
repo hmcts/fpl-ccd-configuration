@@ -31,8 +31,8 @@ public class TranslatableUrgentHearingOrderProvider implements TranslatableListI
     }
 
     @Override
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
-        return caseData.getUrgentHearingOrder().getOrder();
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
+        return caseData.getUrgentHearingOrder();
     }
 
     @Override
