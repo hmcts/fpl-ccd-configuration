@@ -1,20 +1,23 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
 import java.util.stream.Stream;
 
 @Getter
 public enum YesNo {
-    YES("Yes"),
-    NO("No"),
-    DONT_KNOW("Don't know"),
-    NOT_SPECIFIED("Not Specified");
+    YES("Yes", "Ie"),
+    NO("No", "Na"),
+    DONT_KNOW("Don't know", "Ddim yn gwybod"),
+    NOT_SPECIFIED("Not Specified", "Heb ei nodi");
 
     private final String value;
+    private final String welshValue;
 
-    YesNo(String value) {
+    YesNo(String value, String welshValue) {
         this.value = value;
+        this.welshValue = welshValue;
     }
 
     public static YesNo from(boolean val) {
@@ -27,4 +30,9 @@ public enum YesNo {
             .findFirst()
             .orElse(NOT_SPECIFIED);
     }
+
+    public String getValue(Language language) {
+        return language == Language.WELSH ? welshValue : value;
+    }
+
 }

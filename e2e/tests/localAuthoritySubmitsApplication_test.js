@@ -3,7 +3,6 @@ const config = require('../config.js');
 const children = require('../fixtures/children.js');
 const respondents = require('../fixtures/respondents.js');
 const applicant = require('../fixtures/applicant.js');
-const solicitor = require('../fixtures/solicitor.js');
 const localAuthority = require('../fixtures/localAuthority.js');
 const others = require('../fixtures/others.js');
 const otherProceedings = require('../fixtures/otherProceedingData');
@@ -347,39 +346,6 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
     'Add the grounds for the application in the Grounds for the application',
     'Add local authority\'s details in the Local authority\'s details',
     'Add the allocation proposal in the Allocation proposal']);
-});
-
-Scenario('local authority enters applicant @create-case-with-mandatory-sections-only @deprecated', async ({I, caseViewPage, enterApplicantEventPage}) => {
-  await setupScenario(I);
-  await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-  await enterApplicantEventPage.enterApplicantDetails(applicant);
-  await enterApplicantEventPage.enterSolicitorDetails(solicitor);
-  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-
-  I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicant);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-  I.seeInTab(['Applicants 1', 'Party', 'Name of applicant'], applicant.name);
-  I.seeInTab(['Applicants 1', 'Party', 'Payment by account (PBA) number'], applicant.pbaNumber);
-  I.seeInTab(['Applicants 1', 'Party', 'Client code'], applicant.clientCode);
-  I.seeInTab(['Applicants 1', 'Party', 'Customer reference'], applicant.customerReference);
-  I.seeInTab(['Applicants 1', 'Address', 'Building and Street'], applicant.address.buildingAndStreet.lineOne);
-  I.seeInTab(['Applicants 1', 'Address', 'Address Line 2'], applicant.address.buildingAndStreet.lineTwo);
-  I.seeInTab(['Applicants 1', 'Address', 'Address Line 3'], applicant.address.buildingAndStreet.lineThree);
-  I.seeInTab(['Applicants 1', 'Address', 'Town or City'], applicant.address.townCity);
-  I.seeInTab(['Applicants 1', 'Address', 'County'], applicant.address.county);
-  I.seeInTab(['Applicants 1', 'Address', 'Postcode/Zipcode'], applicant.address.postcode);
-  I.seeInTab(['Applicants 1', 'Address', 'Country'], applicant.address.country);
-  I.seeInTab(['Applicants 1', 'Telephone number', 'Telephone number'], applicant.telephoneNumber);
-  I.seeInTab(['Applicants 1', 'Telephone number', 'Name of person to contact'], applicant.nameOfPersonToContact);
-  I.seeInTab(['Applicants 1', 'Job title'], applicant.jobTitle);
-  I.seeInTab(['Applicants 1', 'Mobile number', 'Mobile number'], applicant.mobileNumber);
-  I.seeInTab(['Applicants 1', 'Email', 'Email'], applicant.email);
-  I.seeInTab(['Solicitor', 'Solicitor\'s full name'], 'John Smith');
-  I.seeInTab(['Solicitor', 'Solicitor\'s mobile number'], '7000000000');
-  I.seeInTab(['Solicitor', 'Solicitor\'s telephone number'], '00000000000');
-  I.seeInTab(['Solicitor', 'Solicitor\'s email'], 'solicitor@email.com');
-  I.seeInTab(['Solicitor', 'DX number'], '160010 Kingsway 7');
-  I.seeInTab(['Solicitor', 'Solicitor\'s reference'], 'reference');
 });
 
 Scenario('local authority enters its details @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
