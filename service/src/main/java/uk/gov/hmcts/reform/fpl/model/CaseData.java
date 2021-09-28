@@ -45,6 +45,8 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
@@ -490,6 +492,16 @@ public class CaseData {
             return false;
         }
         return languageValue.get().equals("Yes");
+    }
+
+    @JsonIgnore
+    public SealType getSealType() {
+        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+    }
+
+    @JsonIgnore
+    public Language getImageLanguage() {
+        return isWelshLanguageRequested() ? Language.WELSH : Language.ENGLISH;
     }
 
     private final List<Element<Representative>> representatives;

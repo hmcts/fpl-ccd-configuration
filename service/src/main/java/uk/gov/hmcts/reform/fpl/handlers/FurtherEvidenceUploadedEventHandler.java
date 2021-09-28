@@ -27,7 +27,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
@@ -53,9 +55,7 @@ public class FurtherEvidenceUploadedEventHandler {
         final UserDetails uploader = event.getInitiatedBy();
 
         DocumentUploaderType userType = event.getUserType();
-        List<Element<SupportingEvidenceBundle>> newBundle = getEvidenceBundle(caseData, userType);
-        List<Element<SupportingEvidenceBundle>> oldBundle = getEvidenceBundle(caseDataBefore, userType);
-        var newNonConfidentialDocuments = getNewNonConfidentialDocuments(newBundle, oldBundle);
+        var newNonConfidentialDocuments = getNewNonConfidentialDocuments(caseData, caseDataBefore, userType);
 
         final Set<String> recipients = new HashSet<>();
 
@@ -91,9 +91,8 @@ public class FurtherEvidenceUploadedEventHandler {
             final CaseData caseData = event.getCaseData();
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
-            List<Element<SupportingEvidenceBundle>> newBundle = getEvidenceBundle(caseData, userType);
-            List<Element<SupportingEvidenceBundle>> oldBundle = getEvidenceBundle(caseDataBefore, userType);
-            var newNonConfidentialDocuments = getNewNonConfidentialDocuments(newBundle, oldBundle);
+            var newNonConfidentialDocuments = getNewNonConfidentialDocuments(caseData,
+                caseDataBefore, userType);
 
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
             List<DocumentReference> documents = getDocumentReferences(newNonConfidentialDocuments);
@@ -101,8 +100,11 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    private List<SupportingEvidenceBundle> getNewNonConfidentialDocuments(
-        List<Element<SupportingEvidenceBundle>> newBundle, List<Element<SupportingEvidenceBundle>> oldBundle) {
+    private List<SupportingEvidenceBundle> getNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore,
+                                                                          DocumentUploaderType userType) {
+
+        var newBundle = getEvidenceBundle(caseData, userType);
+        var oldBundle = getEvidenceBundle(caseDataBefore, userType);
 
         List<SupportingEvidenceBundle> newDocs = new ArrayList<>();
 
@@ -135,13 +137,30 @@ public class FurtherEvidenceUploadedEventHandler {
                                                                       DocumentUploaderType uploaderType) {
         if (uploaderType == DESIGNATED_LOCAL_AUTHORITY || uploaderType == SECONDARY_LOCAL_AUTHORITY) {
             return caseData.getFurtherEvidenceDocumentsLA();
-        } else if (uploaderType == SOLICITOR) {
-            return caseData.getFurtherEvidenceDocumentsSolicitor();
+        }  else if (uploaderType == SOLICITOR) {
+            List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle =
+                defaultIfNull(caseData.getFurtherEvidenceDocumentsSolicitor(), List.of());
+            List<Element<SupportingEvidenceBundle>> respondentStatementsBundle =
+                getEvidenceBundleFromRespondentStatements(caseData);
+
+            return concatEvidenceBundles(furtherEvidenceBundle, respondentStatementsBundle);
         } else {
             return caseData.getFurtherEvidenceDocuments();
         }
     }
 
+    private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
+        List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
+        caseData.getRespondentStatements().forEach(statement -> {
+            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle());
+        });
+        return evidenceBundle;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
+                                                                          List<Element<SupportingEvidenceBundle>> b2) {
+        return Stream.concat(b1.stream(), b2.stream()).collect(Collectors.toList());
+    }
 
     @Async
     @EventListener
