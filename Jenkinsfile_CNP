@@ -129,7 +129,7 @@ def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
 }
 
-def setupShutteringSecret(pipelineConf) {
+def setupShutteringSecret() {
   azureKeyVault(
     keyVaultURL: "https://fpl-${env.ENV}.vault.azure.net/",
     secrets: [
@@ -268,7 +268,7 @@ withPipeline(type, product, component) {
     if (env.ENV != 'preview') {
       // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
       echo "CCD definition upload for environment: ${env.ENV}"
-      setupShutteringSecret(pipelineConf)
+      setupShutteringSecret()
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
         withTeamSecrets(pipelineConf, env.ENV) {
           archiveCoreCaseDataDefinitions(env.ENV)
