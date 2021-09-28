@@ -337,6 +337,12 @@ public class CaseData {
     private final DynamicList applicantsList;
     private final String otherApplicant;
 
+    private final DocumentReference redDotAssessmentForm;
+    private final String caseFlagNotes;
+    private final String caseFlagAdded;
+    // Transient field
+    private YesNo caseFlagValueUpdated;
+
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
     }
