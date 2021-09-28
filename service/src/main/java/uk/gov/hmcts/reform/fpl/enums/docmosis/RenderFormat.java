@@ -6,6 +6,8 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.util.Arrays;
 
+import static java.lang.String.format;
+
 @Getter
 @RequiredArgsConstructor
 public enum RenderFormat {
@@ -19,11 +21,10 @@ public enum RenderFormat {
     public static RenderFormat fromFileName(String filename) {
         String extension = FilenameUtils.getExtension(filename);
         return Arrays.stream(RenderFormat.values())
-            .filter(format -> extension.equals(format.getExtension()))
+            .filter(format -> format.getExtension().equalsIgnoreCase(extension))
             .findFirst()
-            .orElseThrow(
-                () -> new IllegalArgumentException(String.format("Extension %s not recognised for rendering",
-                    extension)));
-
+            .orElseThrow(() -> new IllegalArgumentException(format(
+                "Extension '%s' is not recognised for rendering", extension
+            )));
     }
 }

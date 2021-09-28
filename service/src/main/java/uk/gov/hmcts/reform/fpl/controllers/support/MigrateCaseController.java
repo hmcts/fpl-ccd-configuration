@@ -21,12 +21,19 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
+import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
+import uk.gov.hmcts.reform.fpl.service.TaskListService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
+import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +48,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
-import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
@@ -55,10 +61,15 @@ public class MigrateCaseController extends CallbackController {
     private static final List<State> IGNORED_STATES = List.of(State.OPEN, State.RETURNED, State.CLOSED, State.DELETED);
     private static final int MAX_CHILDREN = 15;
 
+    private final TaskListService taskListService;
+    private final TaskListRenderer taskListRenderer;
+    private final CaseSubmissionChecker caseSubmissionChecker;
+
     private final NoticeOfChangeFieldPopulator populator;
+    private final DocumentListService documentListService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "FPLA-3132", this::run3132,
-        "FPLA-3238", this::run3238
+        "FPLA-3238", this::run3238,
+        "DFPL-164", this::run164
     );
 
     @PostMapping("/about-to-submit")
@@ -81,25 +92,35 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run3132(CaseDetails caseDetails) {
+    private void run164(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        Long id = caseData.getId();
-        State state = caseData.getState();
-        if (IGNORED_STATES.contains(state)) {
+        var caseId = caseData.getId();
+
+        if (caseId != 1626258358022834L) {
             throw new AssertionError(format(
-                "Migration {id = FPLA-3132, case reference = %s} not migrating when state = %s", id, state
-            ));
-        }
-        int numChildren = caseData.getAllChildren().size();
-        if (MAX_CHILDREN < numChildren) {
-            throw new AssertionError(format(
-                "Migration {id = FPLA-3132, case reference = %s} not migrating when number of children = %d (max = %d)",
-                id, numChildren, MAX_CHILDREN
+                "Migration {id = DFPL-164, case reference = %s}, expected case id 1626258358022834",
+                caseId
             ));
         }
 
-        caseDetails.getData().putAll(populator.generate(caseData, CHILD, BLANK));
+        List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
+
+        Element<CourtAdminDocument> documentElement = otherCourtAdminDocuments.stream()
+            .filter(documents ->
+                "LA Certificate.pdf".equals(documents.getValue().getDocument().getFilename()))
+            .findFirst()
+            .orElseThrow();
+
+        log.info("Migration {id = DFPL-164, case reference = {}} Certificate document found",
+            caseId);
+        boolean removed = otherCourtAdminDocuments.remove(documentElement);
+        log.info("Migration {id = DFPL-164, case reference = {}} Certificate document removed {} ",
+            caseId,
+            removed);
+        caseDetails.getData().put("otherCourtAdminDocuments", otherCourtAdminDocuments);
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
+
 
     private void run3238(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
@@ -109,13 +130,37 @@ public class MigrateCaseController extends CallbackController {
 
             if (designatedLocalAuthority.isPresent()) {
                 caseDetails.getData().put("localAuthorities", wrapElements(designatedLocalAuthority.get()));
-                log.info("Migration 3238. Case {} migrated", caseDetails.getId());
+                log.info("Migration 3238. LocalAuthorities migrated for case {}", caseDetails.getId());
             } else {
                 log.warn("Migration 3238. Could not find designated local authority for case {}", caseDetails.getId());
             }
+
+            final Optional<String> taskList = migrateTaskList(caseDetails);
+            if (taskList.isPresent()) {
+                caseDetails.getData().put("taskList", taskList.get());
+                log.info("Migration 3238. Task list migrated for case {}", caseDetails.getId());
+            }
+
         } else {
             log.warn("Migration 3238. Case {} already have local authority. Migration skipped", caseDetails.getId());
         }
+    }
+
+
+    private Optional<String> migrateTaskList(CaseDetails caseDetails) {
+
+        final CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getState() == OPEN) {
+
+            final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+            final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
+            final String taskList = taskListRenderer.render(tasks, eventErrors);
+
+            return Optional.of(taskList);
+        }
+
+        return Optional.empty();
     }
 
     private Optional<LocalAuthority> migrateFromLegacyApplicant(CaseData caseData) {
