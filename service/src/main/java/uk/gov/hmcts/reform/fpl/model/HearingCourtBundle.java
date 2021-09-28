@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -21,5 +22,11 @@ public class HearingCourtBundle {
 
     public List<Element<CourtBundle>> getCourtBundle() {
         return defaultIfNull(this.courtBundle, new ArrayList<>());
+    }
+
+    public List<Element<CourtBundle>> getCourtBundleNC() {
+        return courtBundle.stream()
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
+            .collect(Collectors.toList());
     }
 }

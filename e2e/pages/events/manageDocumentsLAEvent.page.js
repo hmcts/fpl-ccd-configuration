@@ -80,6 +80,11 @@ module.exports = {
     I.attachFile(this.fields.courtBundleDocument(elementIndex).document, document);
   },
 
+  async uploadConfidentialCourtBundleDocument(document) {
+    await this.uploadCourtBundleDocument(document);
+    await this.selectConfidentialCourtBundle();
+  },
+
   async selectFurtherEvidenceIsRelatedToHearing() {
     I.waitForElement(this.fields.relatedToHearing.yes);
     I.click(this.fields.relatedToHearing.yes);
@@ -134,6 +139,11 @@ module.exports = {
   async selectConfidential() {
     const elementIndex = await this.getActiveElementIndex();
     I.click(this.fields.supportingDocuments(elementIndex).confidential);
+  },
+
+  async selectConfidentialCourtBundle() {
+    const elementIndex = await this.getActiveElementIndex();
+    I.click(this.fields.courtBundleDocument(elementIndex).confidential);
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType) {

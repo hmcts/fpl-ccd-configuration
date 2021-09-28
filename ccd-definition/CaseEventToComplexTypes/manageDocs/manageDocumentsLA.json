@@ -152,7 +152,8 @@
     "ListElementCode": "confidentialWarningLabel",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if documents are confidential</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if documents are confidential</strong></div><br>",
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",

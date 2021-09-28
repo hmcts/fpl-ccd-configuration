@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -30,10 +29,5 @@ public class CourtBundle extends DocumentMetaData {
     @JsonIgnore
     public boolean isConfidentialDocument() {
         return confidential != null && confidential.contains("CONFIDENTIAL");
-    }
-
-    @JsonGetter("confidentialTabLabel")
-    public String generateConfidentialTabLabel() {
-        return isConfidentialDocument() ? "<div class='govuk-tag govuk-tag--red'>Confidential</div>" : null;
     }
 }
