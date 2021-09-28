@@ -31,21 +31,12 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]",
-          "[EPSMANAGING]",
-          "[LAMANAGING]",
-          "caseworker-publiclaw-courtadmin"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-solicitor"
+          "caseworker-publiclaw-gatekeeper"
         ],
-        "CRUD": "R"
+        "CRUD": "CR"
       }
     ]
   }
