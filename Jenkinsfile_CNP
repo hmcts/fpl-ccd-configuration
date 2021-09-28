@@ -130,16 +130,12 @@ def teardownSecretsForIntegrationTests() {
 }
 
 def setupShutteringSecret(pipelineConf) {
-  withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
-    withTeamSecrets(pipelineConf, env.ENV) {
-      azureKeyVault(
-        keyVaultURL: "https://fpl-${env.ENV}.vault.azure.net/",
-        secrets: [
-          secret('use-shuttered-case-def', 'USE_SHUTTERED_CASE_DEF')
-        ]) {
-        env.USE_SHUTTERED_CASE_DEF = "${USE_SHUTTERED_CASE_DEF}"
-      }
-    }
+  azureKeyVault(
+    keyVaultURL: "https://fpl-${env.ENV}.vault.azure.net/",
+    secrets: [
+      secret('use-shuttered-case-def', 'USE_SHUTTERED_CASE_DEF')
+    ]) {
+    env.USE_SHUTTERED_CASE_DEF = "${USE_SHUTTERED_CASE_DEF}"
   }
 }
 
