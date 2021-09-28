@@ -23,5 +23,13 @@
     "FieldType": "TextArea",
     "ElementLabel": "Description",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementConfidentialDocument",
+    "ListElementCode": "tag",
+    "FieldType": "Label",
+    "ElementLabel": "<div class='govuk-tag govuk-tag--red'>Confidential</div>",
+    "SecurityClassification": "Public"
   }
 ]

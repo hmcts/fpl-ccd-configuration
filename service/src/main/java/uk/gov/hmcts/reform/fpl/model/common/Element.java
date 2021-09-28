@@ -15,7 +15,12 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Element<T> {
     private UUID id;
+
     @NotNull
     @Valid
     private T value;
+
+    public static <T> Element<T> newElement(T value) {
+        return Element.<T>builder().value(value).build();
+    }
 }

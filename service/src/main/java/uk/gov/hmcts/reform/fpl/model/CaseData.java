@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -56,6 +55,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
@@ -222,7 +222,6 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
-    private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
     private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
@@ -628,11 +627,6 @@ public class CaseData {
 
     public List<Element<Other>> getConfidentialOthers() {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
-    }
-
-    @JsonGetter("confidentialPlacements")
-    public List<Element<Placement>> getPlacements() {
-        return defaultIfNull(placements, new ArrayList<>());
     }
 
     private final String caseNote;
@@ -1103,6 +1097,11 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
+
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final PlacementEventData placementEventData = PlacementEventData.builder().build();
 
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
