@@ -326,17 +326,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "languageRequirementDescriptionLabel",
-    "Label": "Parties on a case can request orders and documents in Welsh, or translations from Welsh to English.\n\nIf they leave the case, or if translation is no longer needed, choose the ‘No’ button below.\nThis will remove the request from the case.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "languageRequirement",
-    "Label": "Will English or Welsh translations be needed on this case?",
+    "Label": "Does any respondent, child or other person on this case need orders or court documents in Welsh?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -345,7 +336,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "languageRequirementApplication",
-    "Label": "What language are you using to fill in this form?",
+    "Label": "Which language are you using to complete this application?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "Language",
     "SecurityClassification": "Public",
@@ -355,7 +346,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "languageRequirementApplicationNeedWelsh",
-    "Label": "Do you need this form translating into Welsh?",
+    "Label": "Does this application need to be translated into Welsh?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -364,7 +355,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "languageRequirementApplicationNeedEnglish",
-    "Label": "Do you need this form translating into English?",
+    "Label": "Does this application need to be translated into English?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
