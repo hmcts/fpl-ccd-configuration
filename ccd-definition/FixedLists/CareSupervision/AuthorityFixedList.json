@@ -72,6 +72,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BRA",
+    "ListElement": "Bradford Metropolitan District Council",
+    "DisplayOrder": 24
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BRD",
     "ListElement": "Bridgend County Borough Council",
     "DisplayOrder": 25
