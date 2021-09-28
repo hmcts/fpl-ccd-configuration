@@ -90,4 +90,62 @@ class PlacementTest {
         }
     }
 
+    @Nested
+    class Label {
+
+        @Test
+        void shouldReturnLabelWithSubmissionDate() {
+
+            final Placement underTest = Placement.builder()
+                .childName("Alex Green")
+                .placementUploadDateTime(LocalDateTime.of(2019, 5, 15, 13, 10))
+                .build();
+
+            assertThat(underTest.toLabel()).isEqualTo("A50, Alex Green, 15 May 2019, 1:10pm");
+        }
+
+        @Test
+        void shouldReturnLabelWithoutSubmissionDate() {
+
+            final Placement underTest = Placement.builder()
+                .childName("Alex Green")
+                .placementUploadDateTime(null)
+                .build();
+
+            assertThat(underTest.toLabel()).isEqualTo("A50, Alex Green");
+        }
+    }
+
+    @Nested
+    class UploadTime {
+
+        @Test
+        void shouldReturnLabelWithSubmissionDate() {
+
+            final Placement underTest = Placement.builder()
+                .placementUploadDateTime(LocalDateTime.of(2019, 5, 15, 13, 10))
+                .build();
+
+            assertThat(underTest.getUploadedDateTime()).isEqualTo("15 May 2019, 1:10pm");
+        }
+
+        @Test
+        void shouldReturnLabelWithoutSubmissionDate() {
+
+            final Placement underTest = Placement.builder()
+                .placementUploadDateTime(null)
+                .build();
+
+            assertThat(underTest.getUploadedDateTime()).isNull();
+        }
+    }
+
+    @Test
+    void shouldReturnDefaultSortOrder() {
+
+        final Placement underTest = Placement.builder().build();
+
+        assertThat(underTest.getSortOrder()).isEqualTo(3);
+    }
+
 }
