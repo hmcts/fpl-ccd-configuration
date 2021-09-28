@@ -341,6 +341,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "applicants",
+    "FieldShowCondition": "localAuthorities != \"*\"",
     "TabFieldDisplayOrder": 39
   },
   {
@@ -351,7 +352,29 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "solicitor",
+    "FieldShowCondition": "localAuthorities != \"*\"",
     "TabFieldDisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "localAuthorities",
+    "TabFieldDisplayOrder": 41
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "localAuthorityDetailsLink",
+    "FieldShowCondition": "localAuthorities!=\"\"",
+    "TabFieldDisplayOrder": 42
   },
   {
     "LiveFrom": "01/01/2017",

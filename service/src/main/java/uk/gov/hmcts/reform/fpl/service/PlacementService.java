@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -219,7 +220,7 @@ public class PlacementService {
                 throw new IllegalStateException("Missing placement application document");
             }
 
-            currentPlacement.setApplication(sealingService.sealDocument(applicationDocument));
+            currentPlacement.setApplication(sealingService.sealDocument(applicationDocument, SealType.ENGLISH));
 
             currentPlacement.setPlacementUploadDateTime(time.now());
 

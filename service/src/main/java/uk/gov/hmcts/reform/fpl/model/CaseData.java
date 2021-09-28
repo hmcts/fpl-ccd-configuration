@@ -44,6 +44,8 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
@@ -334,6 +336,12 @@ public class CaseData {
     private final DynamicList applicantsList;
     private final String otherApplicant;
 
+    private final DocumentReference redDotAssessmentForm;
+    private final String caseFlagNotes;
+    private final String caseFlagAdded;
+    // Transient field
+    private YesNo caseFlagValueUpdated;
+
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
     }
@@ -489,6 +497,16 @@ public class CaseData {
             return false;
         }
         return languageValue.get().equals("Yes");
+    }
+
+    @JsonIgnore
+    public SealType getSealType() {
+        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+    }
+
+    @JsonIgnore
+    public Language getImageLanguage() {
+        return isWelshLanguageRequested() ? Language.WELSH : Language.ENGLISH;
     }
 
     private final List<Element<Representative>> representatives;

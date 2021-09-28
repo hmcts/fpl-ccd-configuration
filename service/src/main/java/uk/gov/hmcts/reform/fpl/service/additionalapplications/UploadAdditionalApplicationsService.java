@@ -18,8 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -31,13 +34,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -47,11 +48,13 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
 
-    public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
+    private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
 
     private final Time time;
+    private final UserService user;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
+    private final DocumentConversionService documentConversionService;
     private final PeopleInCaseService peopleInCaseService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
@@ -68,44 +71,44 @@ public class UploadAdditionalApplicationsService {
     }
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
-        final Optional<String> applicantName = getSelectedApplicantName(
-            caseData.getApplicantsList(), defaultIfNull(caseData.getOtherApplicant(), EMPTY)
-        );
-
-        if (applicantName.isEmpty()) {
-            throw new IllegalArgumentException("Applicant should not be empty");
-        }
+        String applicantName = getSelectedApplicantName(caseData.getApplicantsList(), caseData.getOtherApplicant())
+            .filter(not(String::isBlank))
+            .orElseThrow(() -> new IllegalArgumentException("Applicant should not be empty"));
 
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
-        final LocalDateTime currentDateTime = time.now();
+        final LocalDateTime now = time.now();
 
         List<Element<Other>> selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
         List<Element<Respondent>> selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
         String othersNotified = peopleInCaseService.getPeopleNotified(
-            caseData.getRepresentatives(), selectedRespondents, selectedOthers);
+            caseData.getRepresentatives(), selectedRespondents, selectedOthers
+        );
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
             .pbaPayment(caseData.getTemporaryPbaPayment())
             .amountToPay(caseData.getAmountToPay())
             .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(currentDateTime, DATE_TIME));
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME));
 
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
-            additionalApplicationsBundleBuilder.c2DocumentBundle(
-                buildC2DocumentBundle(caseData, applicantName.get(), selectedOthers, selectedRespondents,
-                    othersNotified, uploadedBy, currentDateTime)
-            );
+            additionalApplicationsBundleBuilder.c2DocumentBundle(buildC2DocumentBundle(
+                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+            ));
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
-            additionalApplicationsBundleBuilder.otherApplicationsBundle(
-                buildOtherApplicationsBundle(caseData, applicantName.get(), selectedOthers, selectedRespondents,
-                    othersNotified, uploadedBy, currentDateTime)
-            );
+            additionalApplicationsBundleBuilder.otherApplicationsBundle(buildOtherApplicationsBundle(
+                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+            ));
         }
 
         return additionalApplicationsBundleBuilder.build();
+    }
+
+    public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>> bundles) {
+        bundles.sort(comparing(bundle -> bundle.getValue().getUploadedDateTime(), reverseOrder()));
+        return bundles;
     }
 
     private Optional<String> getSelectedApplicantName(DynamicList applicantsList, String otherApplicant) {
@@ -132,20 +135,20 @@ public class UploadAdditionalApplicationsService {
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
 
-        DocumentReference sealedDocument = documentSealingService.sealDocument(temporaryC2Document.getDocument());
-
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
-            temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime);
+            temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
+        );
 
         List<Element<Supplement>> updatedSupplementsBundle =
-            getSupplementsBundle(defaultIfNull(temporaryC2Document.getSupplementsBundle(), emptyList()),
-                uploadedBy, uploadedTime);
+            getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
+                uploadedBy, uploadedTime, SealType.ENGLISH);
+
 
         return temporaryC2Document.toBuilder()
             .id(UUID.randomUUID())
             .applicantName(applicantName)
             .author(uploadedBy)
-            .document(sealedDocument)
+            .document(getDocumentToStore(temporaryC2Document.getDocument(), SealType.ENGLISH))
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
@@ -163,17 +166,15 @@ public class UploadAdditionalApplicationsService {
                                                                  String othersNotified,
                                                                  String uploadedBy,
                                                                  LocalDateTime uploadedTime) {
-
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
 
-        DocumentReference sealedDocument =
-            documentSealingService.sealDocument(temporaryOtherApplicationsBundle.getDocument());
-
         List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
-            temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy, uploadedTime);
+            temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
+        );
 
         List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
-            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime);
+            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime, SealType.ENGLISH);
+
 
         return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
@@ -181,19 +182,13 @@ public class UploadAdditionalApplicationsService {
             .applicantName(applicantName)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-            .document(sealedDocument)
+            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument(), SealType.ENGLISH))
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .supplementsBundle(updatedSupplementsBundle)
             .respondents(selectedRespondents)
             .others(selectedOthers)
             .othersNotified(othersNotified)
             .build();
-    }
-
-    public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(
-        List<Element<C2DocumentBundle>> c2DocumentBundle) {
-        c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
-        return c2DocumentBundle;
     }
 
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -209,12 +204,13 @@ public class UploadAdditionalApplicationsService {
     }
 
     private List<Element<Supplement>> getSupplementsBundle(
-        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime) {
+        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime, SealType sealType) {
 
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
-            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument());
+            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
+                sealType);
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
                 .document(sealedDocument)
                 .dateTimeUploaded(dateTime)
@@ -223,6 +219,11 @@ public class UploadAdditionalApplicationsService {
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
         }).collect(Collectors.toList());
+
     }
 
+    private DocumentReference getDocumentToStore(DocumentReference originalDoc, SealType sealType) {
+        return user.isHmctsUser() ? documentSealingService.sealDocument(originalDoc, sealType)
+                                  : documentConversionService.convertToPdf(originalDoc);
+    }
 }
