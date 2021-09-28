@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -753,9 +754,9 @@ class PlacementServiceTest {
             Placement chosenPlacement = Placement.builder().childName("Jonas Watson").build();
             CaseData caseData = CaseData.builder()
                 .placementEventData(PlacementEventData.builder().placements(List.of(
-                        element(placementId, chosenPlacement),
-                        element(Placement.builder().childName("Brian Watson").build()),
-                        element(Placement.builder().childName("Nancy Watson").build())
+                    element(placementId, chosenPlacement),
+                    element(Placement.builder().childName("Brian Watson").build()),
+                    element(Placement.builder().childName("Nancy Watson").build())
                     )).build()
                 ).build();
 
@@ -832,7 +833,7 @@ class PlacementServiceTest {
 
         @BeforeEach
         void init() {
-            when(sealingService.sealDocument(application)).thenReturn(sealedApplication);
+            when(sealingService.sealDocument(application, SealType.ENGLISH)).thenReturn(sealedApplication);
         }
 
         @Test
