@@ -254,7 +254,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
-  await enterRespondentsEventPage.setAsActiveParty('Yes');
+  await enterRespondentsEventPage.setAsActiveParty();
   await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[0]);
   await enterRespondentsEventPage.enterRegisteredOrganisation(respondents[0]);
 
@@ -262,14 +262,14 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
-  await enterRespondentsEventPage.setAsActiveParty('Yes');
+  await enterRespondentsEventPage.setAsActiveParty();
   await enterRespondentsEventPage.enterRepresentationDetails('No');
 
   await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[2]);
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
-  await enterRespondentsEventPage.setAsActiveParty('Yes');
+  await enterRespondentsEventPage.setAsActiveParty();
   await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[2]);
   await enterRespondentsEventPage.enterUnregisteredOrganisation(respondents[2]);
 
@@ -415,13 +415,13 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('No');
   await enterOthersEventPage.enterLitigationIssues('No');
-  await enterOthersEventPage.setAsActiveParty('Yes');
+  await enterOthersEventPage.setAsActiveParty();
   await I.addAnotherElementToCollection('Other person');
   await enterOthersEventPage.enterOtherDetails(others[1]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
   await enterOthersEventPage.enterLitigationIssues('Yes', 'mock reason');
-  await enterOthersEventPage.setAsActiveParty('Yes');
+  await enterOthersEventPage.setAsActiveParty();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);

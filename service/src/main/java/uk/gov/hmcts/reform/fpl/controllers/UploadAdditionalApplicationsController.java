@@ -74,7 +74,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        List<Element<Other>> activeOthers = caseData.getAllActiveOthers();
 
         if (!isNull(caseData.getTemporaryC2Document())) {
             caseData.getTemporaryC2Document().setType(caseData.getC2Type());
@@ -83,6 +82,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
         if (caseData.hasRespondentsOrOthers()) {
+            List<Element<Other>> activeOthers = caseData.getAllActiveOthers();
+
             caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
             caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
                 caseData.getAllActiveRespondents(), activeOthers));
