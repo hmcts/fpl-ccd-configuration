@@ -137,6 +137,7 @@ module.exports = {
     addOrRemoveLegalCounsel: 'Add or remove legal counsel',
   },
   administrationActions: {
+    addCaseFlag: 'Add case flag',
     addFamilyManCaseNumber: 'Add case number',
     changeCaseName: 'Change case name',
     sendToGatekeeper: 'Send to gatekeeper',

@@ -30,6 +30,8 @@ class CaseSummaryServiceTest {
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY8 = mock(SyntheticCaseSummary.class);
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY9 = mock(SyntheticCaseSummary.class);
 
+    private final CaseSummaryCaseFlagGenerator caseSummaryCaseFlagGenerator = mock(
+        CaseSummaryCaseFlagGenerator.class);
     private final CaseSummaryOrdersRequestedGenerator caseSummaryOrdersRequestedGenerator = mock(
         CaseSummaryOrdersRequestedGenerator.class);
     private final CaseSummaryDeadlineGenerator caseSummaryDeadlineGenerator = mock(CaseSummaryDeadlineGenerator.class);
@@ -50,7 +52,8 @@ class CaseSummaryServiceTest {
         CaseSummaryCourtGenerator.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
 
-    private final CaseSummaryService underTest = new CaseSummaryService(
+    private CaseSummaryService underTest = new CaseSummaryService(
+        caseSummaryCaseFlagGenerator,
         caseSummaryOrdersRequestedGenerator,
         caseSummaryDeadlineGenerator,
         caseSummaryJudgeInformationGenerator,
@@ -75,6 +78,7 @@ class CaseSummaryServiceTest {
         when(caseSummaryFinalHearingGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY6);
         when(caseSummaryPeopleInCaseGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY7);
         when(caseSummaryCourtGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY8);
+        when(caseSummaryCaseFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY9);
         when(caseSummaryWelshFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY9);
 
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0),

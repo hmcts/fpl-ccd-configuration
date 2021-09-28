@@ -29,8 +29,8 @@ public class TranslatableC110AProvider implements TranslatableListItemProvider {
     }
 
     @Override
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
-        return caseData.getC110A().getSubmittedForm();
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
+        return caseData.getC110A();
     }
 
     @Override
