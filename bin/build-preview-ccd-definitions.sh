@@ -12,5 +12,9 @@ mkdir -p ${build_dir}
 export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-pr-${1}.service.core-compute-preview.internal
 export CCD_DEF_AAC_URL=http://aac-fpl-case-service-pr-${1}.service.core-compute-preview.internal
 
-${root_dir}/fpla-docker/bin/utils/fpl-process-definition.sh ${config_dir} ${build_dir}/ccd-fpl-preview-${1}-toggle-on.xlsx "-e *-prod.json"
-${root_dir}/fpla-docker/bin/utils/fpl-process-definition.sh ${config_dir} ${build_dir}/ccd-fpl-preview-${1}-toggle-off.xlsx "-e *-nonprod.json"
+printf "Generating toggled on definitions\n"
+${root_dir}/fpla-docker/bin/utils/fpl-process-definition.sh ${config_dir} ${build_dir}/ccd-fpl-preview-${1}-toggle-on.xlsx "-e *-prod.json,*-shuttered.json"
+printf "\nGenerating toggled off definitions\n"
+${root_dir}/fpla-docker/bin/utils/fpl-process-definition.sh ${config_dir} ${build_dir}/ccd-fpl-preview-${1}-toggle-off.xlsx "-e *-nonprod.json,*-shuttered.json"
+printf "\nGenerating shuttered definitions\n"
+${root_dir}/fpla-docker/bin/utils/fpl-process-definition.sh ${config_dir} ${build_dir}/ccd-fpl-preview-${1}-shuttered.xlsx "-e *-prod.json,*-nonshuttered.json"
