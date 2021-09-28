@@ -63,6 +63,10 @@ public class ElementUtils {
             .build();
     }
 
+    public static <T> Element<T> getElement(UUID id, List<Element<T>> elements) {
+        return findElement(id, elements).orElseThrow();
+    }
+
     public static <T> Optional<Element<T>> findElement(UUID id, List<Element<T>> elements) {
         return nullSafeCollection(elements).stream()
             .filter(element -> Objects.equals(element.getId(), id))

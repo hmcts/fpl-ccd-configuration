@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.ADOPTION_SERVICE;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.C2_WITHOUT_NOTICE_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.C2_WITH_NOTICE_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CARE_ORDER_KEYWORD;
@@ -57,9 +58,7 @@ import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SERVICE;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SUPERVISION_ORDER_KEYWORD;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    FeeService.class, TestFeeConfig.class,
-})
+@ContextConfiguration(classes = {FeeService.class, TestFeeConfig.class})
 class FeeServiceTest {
 
     @MockBean
@@ -86,8 +85,8 @@ class FeeServiceTest {
                 .thenReturn(careOrderResponse);
             when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, OTHER_KEYWORD, SERVICE))
                 .thenReturn(otherResponse);
-            when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, PLACEMENT_KEYWORD, SERVICE))
-                .thenReturn(placementResponse);
+            when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, PLACEMENT_KEYWORD,
+                ADOPTION_SERVICE)).thenReturn(placementResponse);
 
             List<FeeResponse> fees = feeService.getFees(List.of(CARE_ORDER, OTHER, PLACEMENT));
 
@@ -238,6 +237,32 @@ class FeeServiceTest {
         void resetInvocations() {
             reset(feesRegisterApi);
         }
+    }
+
+    @Nested
+    class GetFeesDataForPlacement {
+
+        private static final String PLACEMENT_CODE = "FEE0309";
+
+        @Test
+        void shouldReturnCorrespondingFeesDataForPlacementApplicationType() {
+
+            when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, PLACEMENT_KEYWORD,
+                ADOPTION_SERVICE)).thenReturn(buildFeeResponse(PLACEMENT_CODE, BigDecimal.ONE));
+
+            final FeesData actualFeesData = feeService.getFeesDataForPlacement();
+            final FeesData expectedFeesData = FeesData.builder()
+                .totalAmount(BigDecimal.ONE)
+                .fees(List.of(FeeDto.builder()
+                    .calculatedAmount(BigDecimal.ONE)
+                    .version(1)
+                    .code(PLACEMENT_CODE)
+                    .build()))
+                .build();
+
+            assertThat(actualFeesData).isEqualTo(expectedFeesData);
+        }
+
     }
 
     @Nested
