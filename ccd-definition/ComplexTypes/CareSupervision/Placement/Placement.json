@@ -19,10 +19,38 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
+    "ListElementCode": "isSubmitted",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "placementSupportingDocuments = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "ListElementCode": "placementUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Application submission date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "isSubmitted = \"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
     "ListElementCode": "placementApplication",
     "FieldType": "Document",
     "ElementLabel": "Application document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "isSubmitted = \"NO\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "ListElementCode": "placementApplicationCopy",
+    "FieldType": "Document",
+    "ElementLabel": "Application document",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "isSubmitted = \"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,10 +73,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "ListElementCode": "placementOrderAndNotices",
+    "ListElementCode": "placementNoticeDocuments",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PlacementOrderAndNotices",
-    "ElementLabel": "Order and notices",
+    "FieldTypeParameter": "PlacementNoticeDocument",
+    "ElementLabel": "Notice of placement",
     "SecurityClassification": "Public"
   }
 ]

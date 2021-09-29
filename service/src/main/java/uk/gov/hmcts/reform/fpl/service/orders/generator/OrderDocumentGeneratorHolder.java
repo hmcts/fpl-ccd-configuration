@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class OrderDocumentGeneratorHolder {
 
     // parameter generators
+    private final A70PlacementOrderDocumentParameterGenerator a70PlacementOrderDocumentParameterGenerator;
     private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     private final C26SecureAccommodationOrderDocumentParameterGenerator
@@ -30,16 +32,19 @@ public class OrderDocumentGeneratorHolder {
     private final C47AAppointmentOfAChildrensGuardianParameterGenerator c47AParameterGenerator;
     private final C45aParentalResponsibilityOrderDocumentParameterGenerator
         c45aParentalResponsibilityOrderDocumentParameterGenerator;
+    private final A206PlacementOrderNotificationParameterGenerator a206PlacementOrderNotificationParameterGenerator;
 
     // additional document collectors
     private final C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
 
     private Map<Order, DocmosisParameterGenerator> typeToGenerator;
     private Map<Order, AdditionalDocumentsCollector> typeToAdditionalDocsCollector;
+    private Map<Order, DocmosisParameterGenerator> typeToNotificationDocumentGenerator;
 
     public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
+                a70PlacementOrderDocumentParameterGenerator,
                 c21BlankOrderDocumentParameterGenerator,
                 c23EPODocumentParameterGenerator,
                 c26SecureAccommodationOrderDocumentParameterGenerator,
@@ -64,6 +69,19 @@ public class OrderDocumentGeneratorHolder {
             ).stream().collect(Collectors.toMap(AdditionalDocumentsCollector::accept, Function.identity()));
         }
         return typeToAdditionalDocsCollector;
+    }
+
+    public Optional<DocmosisParameterGenerator> getNotificationDocumentParameterGeneratorByOrderType(Order orderType) {
+        return Optional.ofNullable(getTypeToNotificationDocumentGenerator().get(orderType));
+    }
+
+    private Map<Order, DocmosisParameterGenerator> getTypeToNotificationDocumentGenerator() {
+        if (typeToNotificationDocumentGenerator == null) {
+            typeToNotificationDocumentGenerator = Map.of(
+                Order.A70_PLACEMENT_ORDER, a206PlacementOrderNotificationParameterGenerator
+            );
+        }
+        return typeToNotificationDocumentGenerator;
     }
 
 }

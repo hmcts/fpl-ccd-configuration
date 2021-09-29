@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderNotificationDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -48,6 +49,7 @@ public class SealedOrderHistoryService {
     private final AppointedGuardianFormatter appointedGuardianFormatter;
     private final OthersService othersService;
     private final OrderCreationService orderCreationService;
+    private final OrderNotificationDocumentService notificationDocumentService;
     private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
     private final SealedOrderHistoryTypeGenerator typeGenerator;
     private final SealedOrderHistoryFinalMarker sealedOrderHistoryFinalMarker;
@@ -83,6 +85,9 @@ public class SealedOrderHistoryService {
             .document(sealedPdfOrder)
             .translationRequirements(languageRequirementGenerator.translationRequirements(caseData))
             .unsealedDocumentCopy(plainWordOrder);
+
+        notificationDocumentService.createNotificationDocument(caseData)
+            .ifPresent(generatedOrderBuilder::notificationDocument);
 
         Optional.ofNullable(manageOrdersEventData.getManageOrdersLinkedApplication())
             .map(DynamicList::getValueCode)

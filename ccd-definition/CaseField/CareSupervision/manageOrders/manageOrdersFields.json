@@ -542,5 +542,68 @@
     "FieldTypeParameter": "RelationshipWithChild",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersChildPlacementApplication",
+    "FieldType": "DynamicList",
+    "Label": "Select child placement application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSerialNumber",
+    "FieldType": "Text",
+    "Label": "Serial number",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersBirthCertificateNumber",
+    "FieldType": "Text",
+    "Label": "Birth certificate number",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersBirthCertificateDate",
+    "FieldType": "Text",
+    "Label": "Birth certificate date",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersBirthCertificateRegistrationDistrict",
+    "FieldType": "Text",
+    "Label": "Registration District",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersBirthCertificateRegistrationSubDistrict",
+    "FieldType": "Text",
+    "Label": "Registration Sub-district",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersBirthCertificateRegistrationCounty",
+    "FieldType": "Text",
+    "Label": "Registration County",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
