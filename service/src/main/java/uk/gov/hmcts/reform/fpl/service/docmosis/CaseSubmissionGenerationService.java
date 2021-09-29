@@ -128,6 +128,7 @@ public class CaseSubmissionGenerationService
             .others(buildDocmosisOthers(caseData.getAllOthers(), applicationLanguage))
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings(), applicationLanguage))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings(), applicationLanguage))
+            .dischargeOfOrder(caseData.isDischargeOfCareApplication())
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
                                  ? getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO(),
