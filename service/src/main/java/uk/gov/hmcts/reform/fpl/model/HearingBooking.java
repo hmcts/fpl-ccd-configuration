@@ -62,6 +62,7 @@ public class HearingBooking implements TranslatableItem {
     private final HearingType type;
     private HearingStatus status;
     private final String typeDetails;
+    private final String typeReason;
     private final String venue;
     private final String customPreviousVenue;
     private final Address venueCustomAddress;

@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -98,6 +100,7 @@ class CaseSubmissionGenerationServiceTest {
     @Mock
     private CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
+    @MockBean
     @Mock
     private CourtService courtService;
 
@@ -1339,6 +1342,19 @@ class CaseSubmissionGenerationServiceTest {
 
             assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(DONT_KNOW.getValue());
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldSetDischargeOfOrder(boolean dischargeOfCare) {
+        final CaseData updatedCaseData = mock(CaseData.class);
+
+        when(updatedCaseData.getC110A()).thenReturn(C110A.builder().build());
+        when(updatedCaseData.isDischargeOfCareApplication()).thenReturn(dischargeOfCare);
+
+        DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+        assertThat(caseSubmission.isDischargeOfOrder()).isEqualTo(dischargeOfCare);
     }
 
     @Test
