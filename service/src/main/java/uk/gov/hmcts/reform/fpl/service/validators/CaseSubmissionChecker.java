@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -22,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Service
 public class CaseSubmissionChecker extends CompoundEventChecker {
@@ -55,19 +55,27 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
 
     private List<Event> getRequiredEvents(CaseData caseData) {
 
-        boolean hasMultipleCourt = YesNo.YES.equals(caseData.getMultiCourts());
+        final List<Event> events = new ArrayList<>();
 
-        List<Event> events = new ArrayList<>(List.of(
-            CASE_NAME,
-            ORDERS_SOUGHT,
-            HEARING_URGENCY,
-            GROUNDS,
-            featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
-            CHILDREN,
-            RESPONDENTS,
-            ALLOCATION_PROPOSAL));
+        events.add(CASE_NAME);
+        events.add(ORDERS_SOUGHT);
+        events.add(HEARING_URGENCY);
 
-        if (hasMultipleCourt) {
+        if (!caseData.isDischargeOfCareApplication()) {
+            events.add(GROUNDS);
+        }
+
+        if (featureToggles.isApplicantAdditionalContactsEnabled()) {
+            events.add(LOCAL_AUTHORITY_DETAILS);
+        } else {
+            events.add(ORGANISATION_DETAILS);
+        }
+
+        events.add(CHILDREN);
+        events.add(RESPONDENTS);
+        events.add(ALLOCATION_PROPOSAL);
+
+        if (YES.equals(caseData.getMultiCourts())) {
             events.add(SELECT_COURT);
         }
 

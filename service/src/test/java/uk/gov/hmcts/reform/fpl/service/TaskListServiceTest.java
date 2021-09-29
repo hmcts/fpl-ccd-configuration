@@ -55,6 +55,9 @@ class TaskListServiceTest {
     private static final TaskState COMPLETED_TASK_STATE = TaskState.COMPLETED_FINISHED;
 
     @Mock
+    private CaseData caseData;
+
+    @Mock
     private EventsChecker eventsChecker;
 
     @Mock
@@ -62,8 +65,6 @@ class TaskListServiceTest {
 
     @InjectMocks
     private TaskListService taskListService;
-
-    private CaseData caseData = CaseData.builder().build();
 
     @Nested
     class AdditionalApplication {
@@ -76,7 +77,7 @@ class TaskListServiceTest {
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(additionalContactsEnabled);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
-            final List<Task> expectedTasks = getTasks(IN_PROGRESS, additionalContactsEnabled, false);
+            final List<Task> expectedTasks = getTasks(IN_PROGRESS, additionalContactsEnabled, false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -91,7 +92,7 @@ class TaskListServiceTest {
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(additionalContactsEnabled);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
-            final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, additionalContactsEnabled, false);
+            final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, additionalContactsEnabled, false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -107,7 +108,7 @@ class TaskListServiceTest {
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(additionalContactsEnabled);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
-            final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, additionalContactsEnabled, false);
+            final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, additionalContactsEnabled, false, false);
 
             verify(eventsChecker, never()).completedState(any(Event.class));
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
@@ -135,8 +136,9 @@ class TaskListServiceTest {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTasks = getTasks(IN_PROGRESS, true, multiCourts, false);
 
-            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(IN_PROGRESS, true, multiCourts));
+            assertThat(tasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
             verify(eventsChecker, never()).isAvailable(any(), any());
         }
@@ -153,9 +155,10 @@ class TaskListServiceTest {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
             when(eventsChecker.completedState(any(Event.class))).thenReturn(COMPLETED_TASK_STATE);
 
-            final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, true, multiCourts, false);
 
-            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(COMPLETED_TASK_STATE, true, multiCourts));
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
             verify(eventsChecker, never()).isAvailable(any(), any());
             verify(eventsChecker, never()).isInProgress(any(), any());
@@ -173,22 +176,80 @@ class TaskListServiceTest {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
             when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
 
-            final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTasks = taskListService.getTasksForOpenCase(caseData);
+
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
             verify(eventsChecker, never()).completedState(any(Event.class));
-            assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(NOT_AVAILABLE, true, multiCourts));
         }
     }
 
-    private List<Task> getTasks(TaskState state, boolean additionalContactsEnabled, boolean hasMultipleCourts) {
+
+    @Nested
+    class DischargeOfCareOrder {
+
+        @BeforeEach
+        void init() {
+            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnTasksInProgress(boolean dischargeOfCare) {
+
+            when(caseData.isDischargeOfCareApplication()).thenReturn(dischargeOfCare);
+            when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTask = getTasks(IN_PROGRESS, true, false, dischargeOfCare);
+
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTask);
+
+            verify(eventsChecker, never()).isAvailable(any(), any());
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnCompletedTasks(boolean dischargeOfCare) {
+            when(caseData.isDischargeOfCareApplication()).thenReturn(dischargeOfCare);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.completedState(any(Event.class))).thenReturn(COMPLETED_TASK_STATE);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, true, false, dischargeOfCare);
+
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
+
+            verify(eventsChecker, never()).isAvailable(any(), any());
+            verify(eventsChecker, never()).isInProgress(any(), any());
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnNotAvailableTasks(boolean dischargeOfCare) {
+            when(caseData.isDischargeOfCareApplication()).thenReturn(dischargeOfCare);
+
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+            when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, true, false, dischargeOfCare);
+
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
+
+            verify(eventsChecker, never()).completedState(any(Event.class));
+        }
+    }
+
+    private List<Task> getTasks(TaskState state, boolean additionalContacts, boolean multipleCourts,
+                                boolean dischargeOfCare) {
 
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
             HEARING_URGENCY,
-            GROUNDS,
-            RISK_AND_HARM,
-            FACTORS_AFFECTING_PARENTING,
-            additionalContactsEnabled ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
+            additionalContacts ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
             ALLOCATION_PROPOSAL,
@@ -202,8 +263,14 @@ class TaskListServiceTest {
             LANGUAGE_REQUIREMENTS
         ));
 
-        if (hasMultipleCourts) {
+        if (multipleCourts) {
             events.add(SELECT_COURT);
+        }
+
+        if (!dischargeOfCare) {
+            events.add(GROUNDS);
+            events.add(RISK_AND_HARM);
+            events.add(FACTORS_AFFECTING_PARENTING);
         }
 
         return events.stream()

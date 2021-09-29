@@ -938,6 +938,7 @@ public class CaseData {
 
     private final HearingType hearingType;
     private final String hearingTypeDetails;
+    private final String hearingTypeReason;
     private final String hearingVenue;
     private final Address hearingVenueCustom;
     private final String firstHearingFlag; //also used for logic surrounding legacy hearings
@@ -1102,4 +1103,11 @@ public class CaseData {
     @Builder.Default
     private final PlacementEventData placementEventData = PlacementEventData.builder().build();
 
+    @JsonIgnore
+    public boolean isDischargeOfCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
 }
