@@ -36,12 +36,12 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
     void shouldReturnErrorsWhenRequiredDocumentsNotPresent() {
 
         final DynamicList parentList1 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", respondent1.getId()),
-            Pair.of("Adam Green - father", respondent2.getId()));
+            Pair.of("Emma Green - mother", mother.getId()),
+            Pair.of("Adam Green - father", father.getId()));
 
         final DynamicList parentList2 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", respondent1.getId()),
-            Pair.of("Adam Green - father", respondent2.getId()));
+            Pair.of("Emma Green - mother", mother.getId()),
+            Pair.of("Adam Green - father", father.getId()));
 
         final PlacementEventData placementData = PlacementEventData.builder()
             .placement(Placement.builder().build())
@@ -50,7 +50,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
             .build();
 
         final CaseData caseData = CaseData.builder()
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .placementEventData(placementData)
             .build();
 
@@ -65,12 +65,12 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
     void shouldFetchPlacementFeeWhenPaymentIsRequired() {
 
         final DynamicList parentList1 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", respondent1.getId()),
-            Pair.of("Adam Green - father", respondent2.getId()));
+            Pair.of("Emma Green - mother", mother.getId()),
+            Pair.of("Adam Green - father", father.getId()));
 
         final DynamicList parentList2 = dynamicLists.from(1,
-            Pair.of("Emma Green - mother", respondent1.getId()),
-            Pair.of("Adam Green - father", respondent2.getId()));
+            Pair.of("Emma Green - mother", mother.getId()),
+            Pair.of("Adam Green - father", father.getId()));
 
         final PlacementEventData placementData = PlacementEventData.builder()
             .placement(Placement.builder()
@@ -83,7 +83,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
             .build();
 
         final CaseData caseData = CaseData.builder()
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .placementEventData(placementData)
             .build();
 
@@ -102,12 +102,12 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
     void shouldNoFetchPlacementFeeWhenPaymentHasBeenAlreadyTakenOnSameDay() {
 
         final DynamicList parentList1 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", respondent1.getId()),
-            Pair.of("Adam Green - father", respondent2.getId()));
+            Pair.of("Emma Green - mother", mother.getId()),
+            Pair.of("Adam Green - father", father.getId()));
 
         final DynamicList parentList2 = dynamicLists.from(1,
-            Pair.of("Emma Green - mother", respondent1.getId()),
-            Pair.of("Adam Green - father", respondent2.getId()));
+            Pair.of("Emma Green - mother", mother.getId()),
+            Pair.of("Adam Green - father", father.getId()));
 
         final LocalDateTime earlierToday = dateNow().atTime(0, 0, 1);
 
@@ -123,7 +123,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
             .build();
 
         final CaseData caseData = CaseData.builder()
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .placementEventData(placementData)
             .build();
 
