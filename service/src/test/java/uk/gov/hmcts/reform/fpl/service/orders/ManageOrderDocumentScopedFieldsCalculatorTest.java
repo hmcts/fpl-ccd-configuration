@@ -79,7 +79,14 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersOrderToAmend",
             "manageOrdersAmendedOrder",
             "manageOrdersTranslationNeeded",
-            "manageOrdersRelationshipWithChild"
+            "manageOrdersRelationshipWithChild",
+            "manageOrdersChildPlacementApplication",
+            "manageOrdersSerialNumber",
+            "manageOrdersBirthCertificateNumber",
+            "manageOrdersBirthCertificateDate",
+            "manageOrdersBirthCertificateRegistrationDistrict",
+            "manageOrdersBirthCertificateRegistrationSubDistrict",
+            "manageOrdersBirthCertificateRegistrationCounty"
         );
     }
 }

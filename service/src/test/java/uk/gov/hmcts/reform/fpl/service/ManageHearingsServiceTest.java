@@ -418,6 +418,7 @@ class ManageHearingsServiceTest {
 
         HearingBooking hearing = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
+            .typeReason("Reason")
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
             .attendance(List.of(IN_PERSON, VIDEO))
@@ -432,19 +433,20 @@ class ManageHearingsServiceTest {
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, null);
 
-        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
-            Map.entry("hearingType", CASE_MANAGEMENT),
-            Map.entry("hearingStartDate", startDate),
-            Map.entry("hearingEndDate", endDate),
-            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
-            Map.entry("previousHearingVenue", previousHearingVenue),
-            Map.entry("hearingAttendance", List.of(IN_PERSON, VIDEO)),
-            Map.entry("hearingAttendanceDetails", "Test attendance details"),
-            Map.entry("preHearingAttendanceDetails", "Test pre attendance details"),
-            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
-            Map.entry("hearingDuration", "DATE_TIME"),
-            Map.entry("hearingEndDateTime", endDate)
-        ));
+        Map<String, Object> expectedCaseFields = Map.of(
+            "hearingType", CASE_MANAGEMENT,
+            "hearingTypeReason", "Reason",
+            "hearingStartDate", startDate,
+            "hearingEndDate", endDate,
+            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
+            "previousHearingVenue", previousHearingVenue,
+            "hearingAttendance", List.of(IN_PERSON, VIDEO),
+            "hearingAttendanceDetails", "Test attendance details",
+            "preHearingAttendanceDetails", "Test pre attendance details",
+            "sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS
+        );
+
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
     }
 
     @Test
@@ -457,6 +459,7 @@ class ManageHearingsServiceTest {
         HearingBooking hearing = HearingBooking.builder()
             .type(OTHER)
             .typeDetails("Fact finding")
+            .typeReason("Reason")
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
             .attendance(List.of(IN_PERSON))
@@ -474,6 +477,7 @@ class ManageHearingsServiceTest {
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
             Map.entry("hearingType", OTHER),
             Map.entry("hearingTypeDetails", "Fact finding"),
+            Map.entry("hearingTypeReason", "Reason"),
             Map.entry("hearingStartDate", startDate),
             Map.entry("hearingEndDate", endDate),
             Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
@@ -1852,6 +1856,7 @@ class ManageHearingsServiceTest {
         assertThat(service.caseFieldsToBeRemoved()).containsExactlyInAnyOrder(
             "hearingType",
             "hearingTypeDetails",
+            "hearingTypeReason",
             "hearingVenue",
             "hearingVenueCustom",
             "hearingStartDate",

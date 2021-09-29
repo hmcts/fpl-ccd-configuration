@@ -43,7 +43,7 @@ const uploadC2 = async (I, caseViewPage, uploadAdditionalApplicationsEventPage) 
 const uploadOtherApplications = async (I, caseViewPage, uploadAdditionalApplicationsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('OTHER_ORDER');
-  uploadAdditionalApplicationsEventPage.selectApplicantList('George Bloggs, Respondent 2');
+  uploadAdditionalApplicationsEventPage.selectApplicantList('Emma Bloggs, Respondent 2');
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Appointment of a guardian');
   uploadAdditionalApplicationsEventPage.uploadDocument(config.testWordFile);

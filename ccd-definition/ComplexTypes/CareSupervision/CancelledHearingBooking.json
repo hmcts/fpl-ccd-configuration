@@ -21,6 +21,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CancelledHearingBooking",
+    "ListElementCode": "typeReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason",
+    "FieldShowCondition": "type=\"ACCELERATED_DISCHARGE_OF_CARE\"",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
     "ListElementCode": "startDate",
     "FieldType": "DateTime",
     "ElementLabel": "Start date and time",

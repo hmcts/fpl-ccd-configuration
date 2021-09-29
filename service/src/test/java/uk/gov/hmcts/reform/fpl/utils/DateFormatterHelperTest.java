@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,6 +60,13 @@ class DateFormatterHelperTest {
         LocalDate date = createDate();
         String formattedDate = formatLocalDateToString(date, FormatStyle.SHORT);
         assertThat(formattedDate).isEqualTo("01/01/2019");
+    }
+
+    @Test
+    void shouldFormatLocalDateInMediumFormatWithLocaleWelsh() {
+        LocalDate date = createDate();
+        String formattedDate = formatLocalDateToString(date, "d MMMM yyyy", Language.WELSH);
+        assertThat(formattedDate).isEqualTo("1 Ionawr 2019");
     }
 
     @Test

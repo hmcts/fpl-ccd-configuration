@@ -1,0 +1,25 @@
+[
+  {
+    "ID": "PlacementPayment",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placementPayment",
+    "ListElementCode": "pbaNumber",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementPayment",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placementPayment",
+    "ListElementCode": "clientCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementPayment",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placementPayment",
+    "ListElementCode": "fileReference",
+    "DisplayContext": "OPTIONAL"
+  }
+]

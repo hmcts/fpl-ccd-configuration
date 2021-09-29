@@ -80,7 +80,7 @@ public class FailedPBAPaymentEventHandler {
         final CaseData caseData = event.getCaseData();
 
         final FailedPBANotificationData parameters = notificationContent
-            .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
+            .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData());
 
         final Collection<String> recipients = localAuthorityRecipients.getRecipients(request);
 
@@ -89,7 +89,7 @@ public class FailedPBAPaymentEventHandler {
 
     private void notifyRespondent(FailedPBAPaymentEvent event, String email) {
         FailedPBANotificationData parameters = notificationContent
-            .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData().getId());
+            .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData());
 
         notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT,
             email, parameters, event.getCaseData().getId().toString());

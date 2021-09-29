@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +16,7 @@ public class DateFormatterHelper {
     public static final String DATE = "d MMMM yyyy";
     public static final String DATE_TIME_WITH_ORDINAL_SUFFIX = "h:mma 'on the' d'%s' MMMM y";
     public static final String DATE_WITH_ORDINAL_SUFFIX = "d'%s' MMMM y";
-    public static final String DATE_SHORT = "dd/MM/YYYY";
+    public static final String DATE_SHORT = "dd/MM/yyyy";
 
     private DateFormatterHelper() {
         // NO-OP
@@ -26,6 +28,10 @@ public class DateFormatterHelper {
 
     public static String formatLocalDateToString(LocalDate date, String format) {
         return date.format(DateTimeFormatter.ofPattern(format, Locale.UK));
+    }
+
+    public static String formatLocalDateToString(LocalDate date, String format, Language language) {
+        return date.format(DateTimeFormatter.ofPattern(format, language.getLocale()));
     }
 
     public static String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {

@@ -1,0 +1,313 @@
+Cais am orchymyn gofal neu oruchwyliaeth
+a gorchmynion eraill o dan Ran 4,
+Deddf Plant 1989 neu orchymyn
+amddiffyn brys o dan adran 44,
+Deddf Plant 1989
+
+At ddefnydd y Llys yn unig
+Yn y llys teulu yn eistedd yn: La Court
+Rhif yr achos 12345
+Dyddiad cychwyn 12 Rhagfyr 0012
+Y ffi a godir
+Ceisydd London Borough of Southwark
+Atebwyr Paul Smith
+James Smith
+An Other
+Cais gan London Borough of Southwark a gyflwynwyd ar 12 Rhagfyr 0012
+Gorchmynion
+Angen gorchmynion Gorchymyn Diogelu Brys
+Angen cyfarwyddyd Cyswllt ag unrhyw unigolyn a enwir
+Ie
+Angen gwrandawiad
+Gwnaethpwyd cais am ddyddiad y gwrandawiad Same day
+Rheswm: Baby will be discharged from hospital on 21
+June 2018
+Math o wrandawiad Contested interim care order
+Rheswm: Standard case management hearing
+Heb rybudd Ie
+Rheswm: Notice without hearing needed
+Llai o rybudd Ie
+Rheswm: Baby needs to be discharged from the
+hospital
+Atebwyr yn ymwybodol o’r achosion Ie
+Barn yr atebwyr am yr achosion They seek to care for baby in mother and baby unit
+Cynnig i ddyrannu
+Cynnig y ceisydd Section 9 circuit judge
+Rheswm allocation proposal reason
+Mynychu’r gwrandawiad
+Cyfieithydd Ie
+interpreter required
+Gofyniad Iaith Gymraeg Ie
+Cymraeg llafar neu ysgrifenedig Ie
+welsh proceedings
+Cyfryngwr Ie
+intermediary hearing required
+Cyfleusterau neu gymorth ar gyfer rhywun ag
+anabledd
+Ie
+learning disability
+Ystafell aros ar wahân neu fesurau diogelwch
+eraill
+Ie
+security needed
+Rhywbeth arall Ie
+I need this from someone
+Plentyn 1
+Enw Tom Reeves
+Oedran 3 mlwydd oed
+Dyddiad geni 15 Mehefin 2018
+Rhywedd Bachgen
+Amgylchiadau byw y plentyn Living with respondents
+Cyfrinachol
+Dyddiad y bu i hyn gychwyn: 8 Tachwedd 2018
+Dyddiadau Allweddol child starting primary school or taking GCSEs
+Cynllun gofal a chyswllt Place baby in local authority foster care
+Ystyried mabwysiadu Ie
+Enw’r Fam Isbella Reeves
+Enw’r Tad Rob Reeves
+Mae gan y Tad gyfrifoldeb rhiant Ie
+Enw’r gweithiwr cymdeithasol Helen Green
+Rhif ffôn y gweithiwr cymdeithasol 0123456789
+Anghenion ychwanegol Ie
+Autism
+Problemau gyda chapasiti ymgyfreitha -
+Manylion cyswllt cyfrinachol Yes
+History of domestic violence with relatives
+Plentyn 2
+Enw Sarah Reeves
+Oedran 19 mlwydd oed
+Dyddiad geni 2 Chwefror 2002
+Rhywedd Merch
+Amgylchiadau byw y plentyn Living with respondents
+Carnegie House
+Central Milton Keynes
+Milton Keynes
+MK
+London
+MK10 1SA
+BT66 7RR
+Dyddiad y bu i hyn gychwyn: 2 Chwefror 2002
+Dyddiadau Allweddol test child two key date
+Cynllun gofal a chyswllt test child two care and contact plan
+Ystyried mabwysiadu Ie
+Enw’r Fam Sarah Simpson
+Enw’r Tad Scott Simpson
+Mae gan y Tad gyfrifoldeb rhiant Ie
+Enw’r gweithiwr cymdeithasol Paul Wilsdon
+Rhif ffôn y gweithiwr cymdeithasol 07749972242
+Anghenion ychwanegol Ie
+learning disabilities
+Problemau gyda chapasiti ymgyfreitha Ie
+test child two ability to take part in proceedings
+Manylion cyswllt cyfrinachol No
+test child two contact details hidden reason
+Atebydd 1
+Enw Paul Smith
+Oedran 77 mlwydd oed
+Dyddiad geni 2 Mai 1944
+Rhywedd Gwryw
+Man geni Crewe
+Cyfeiriad Presennol -
+Rhif ffôn 07712345678
+Perthynas â’r plentyn neu blant Uncle
+Cyfieithydd -
+Cymraeg llafar neu ysgrifenedig -
+Cyfryngwr -
+Cyfleusterau neu gymorth ar gyfer rhywun ag
+anabledd
+-
+Ystafell aros ar wahân neu fesurau diogelwch
+eraill
+-
+Problemau gyda chapasiti ymgyfreitha Ie
+respondent one test litigation reason
+Unrhyw beth arall i’ch helpu i gymryd rhan mewn
+achosion
+-
+Manylion cyswllt cyfrinachol Na
+Atebydd 2
+Enw James Smith
+Oedran 88 mlwydd oed
+Dyddiad geni 2 Ebrill 1933
+Rhywedd Unknown
+Man geni Newry
+Cyfeiriad Presennol Unit 12
+Transa Way
+Hillsborough
+Lurgan
+Down
+BT26 6RJ
+United Kingdom
+Rhif ffôn 02892611016
+Perthynas â’r plentyn neu blant Brother
+Cyfieithydd -
+Cymraeg llafar neu ysgrifenedig -
+Cyfryngwr -
+Cyfleusterau neu gymorth ar gyfer rhywun ag
+anabledd
+-
+Ystafell aros ar wahân neu fesurau diogelwch
+eraill
+-
+Problemau gyda chapasiti ymgyfreitha Ie
+respondent two litigation capacity reason
+Unrhyw beth arall i’ch helpu i gymryd rhan mewn
+achosion
+-
+Manylion cyswllt cyfrinachol Na
+Atebydd 3
+Enw An Other
+Oedran 88 mlwydd oed
+Dyddiad geni 2 Ebrill 1933
+Rhywedd Gwryw
+Man geni Reading
+Cyfeiriad Presennol Flat 90
+Surrey street
+Surrey road
+Surrey
+Croydon
+BT22 2345
+UK
+Rhif ffôn 0987654321
+Perthynas â’r plentyn neu blant Cousin
+Cyfieithydd -
+Cymraeg llafar neu ysgrifenedig -
+Cyfryngwr -
+Cyfleusterau neu gymorth ar gyfer rhywun ag
+anabledd
+-
+Ystafell aros ar wahân neu fesurau diogelwch
+eraill
+-
+Problemau gyda chapasiti ymgyfreitha Na
+Unrhyw beth arall i’ch helpu i gymryd rhan mewn
+achosion
+-
+Manylion cyswllt cyfrinachol -
+Ceisydd
+Enw London Borough of Southwark
+Enw cyswllt Jane Smith
+Teitl swydd Legal adviser
+Cyfeiriad 160 Tooley St
+Tooley road
+Tooley
+Limerick
+Galway
+SE1 2QH
+Ireland
+Rhif ffôn symudol 2020202020
+Rhif ffôn 02120202020
+Cyfeiriad e-bost jane@smith.com
+Rhif Trosglwyddiad Cyfrif (PBA) PBA1234567
+Enw eich cyfreithiwr Brian Banks
+Rhif ffon symudol y Cyfreithiwr 7665545327
+Rhif ffôn y cyfreithiwr 020 2772 5772
+Cyfeiriad e-bost y cyfreithiwr brian@banks.com
+Rhif DX y cyfreithiwr 106 Southwark &
+Cyfeirnod y Cyfreithiwr 12345
+Arall 1
+Enw Jason Lavery
+Dyddiad geni 2 Chwefror 1999
+Rhywedd Unknown
+Man geni Armagh
+Cyfeiriad Presennol Flat 13
+Portadown street
+Portadown road
+Portadown
+Armagh
+BT43 343
+N.Ire
+Rhif ffôn 07749972245
+Perthynas â’r plentyn neu blant Cousin
+Cyfieithydd -
+Cymraeg llafar neu ysgrifenedig -
+Cyfryngwr -
+Cyfleusterau neu gymorth ar gyfer rhywun ag
+anabledd
+-
+Ystafell aros ar wahân neu fesurau diogelwch
+eraill
+-
+Problemau gyda chapasiti ymgyfreitha Na
+Unrhyw beth arall i’ch helpu i gymryd rhan mewn
+achosion
+-
+Manylion cyswllt cyfrinachol -
+Arall 2
+Enw Peter Lavery
+Dyddiad geni 2 Chwefror 2000
+Rhywedd Gwryw
+Man geni Lisburn
+Cyfeiriad Presennol Cyfrinachol
+Rhif ffôn Cyfrinachol
+Perthynas â’r plentyn neu blant Friend of family
+Cyfieithydd -
+Cymraeg llafar neu ysgrifenedig -
+Cyfryngwr -
+Cyfleusterau neu gymorth ar gyfer rhywun ag
+anabledd
+-
+Ystafell aros ar wahân neu fesurau diogelwch
+eraill
+-
+Problemau gyda chapasiti ymgyfreitha Ie
+Other two inability to take part in proceedings
+Unrhyw beth arall i’ch helpu i gymryd rhan mewn
+achosion
+-
+Manylion cyswllt cyfrinachol Ie
+Other two hide from parties
+Y seiliau dros wneud y cais
+Seiliau ar gyfer gwneud gorchymyn amddiffyn brys Mae rheswm rhesymol dros gredu bod y plentyn yn
+debygol o ddioddef niwed sylweddol os na chaiff ei
+symud i lety a ddarperir gennych chi, neu ar eich
+rhan
+Mae rheswm rhesymol dros gredu bod y plentyn yn
+debygol o ddioddef niwed sylweddol os nad yw'n
+aros yn ei lety presennol
+Bodlonwyd y trothwy gan fod y plentyn yn dioddef
+neu'n debygol o ddioddef niwed sylweddol
+oherwydd ei fod yn
+Ddim yn derbyn y gofal a fyddai'n rhesymol
+ddisgwyliedig gan riant.
+Y tu hwnt i reolaeth rhiant.
+Tystiolaeth o’r trothwy
+grounds for application criteria
+Risg a niwed i’r plant
+Niwed corfforol gan gynnwys anaf nad yw'n
+ddamweiniol
+Ie
+Past harm
+Future risk of harm
+Niwed emosiynol Ie
+Past harm
+Future risk of harm
+Cam-drin rhywiol Ie
+Past harm
+Future risk of harm
+Esgeulustra Ie
+Past harm
+Future risk of harm
+Ffactorau sy'n effeithio ar rianta
+Cam-drin alcohol a chyffuriau Ie
+history of drug abuse
+Trais domestig Ie
+history of domestic violence
+Unrhyw beth arall Na
+Elfen ryngwladol
+Gofalwyr addas y tu allan i’r DU Ie
+Aunt outside UK
+Digwyddiadau sylweddol y tu allan i’r DU Ie
+Something happened in France
+Problemau gydag awdurdodaeth Ie
+Brussels 2 regulation
+Achosion y tu allan i’r DU Ie
+Outside of the UK
+Llywodraeth neu awdurdod canolog mewn gwlad
+arall wedi bod yn rhan o
+Ie
+French authorities were involved
+Achosion eraill
+Achosion perthnasol eraill Ie
+Dogfennau Ategol
+Rwyf i, user name, yn credu bod y ffeithiau a nodir yn y cais hwn yn wir.

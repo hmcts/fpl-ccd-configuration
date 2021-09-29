@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGua
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ChildPlacementOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
@@ -51,6 +52,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
     private final AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
     private final ParentalResponsibilityPrePopulator parentalResponsibilityPrePopulator;
+    private final ChildPlacementOrderPrePopulator childPlacementOrderPrePopulator;
 
     // Sections
     private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
@@ -70,6 +72,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
         blockOrderPrePopulatorMap = List.of(
             linkedToHearingBlockPrePopulator,
             linkApplicationBlockPrePopulator,
+            childPlacementOrderPrePopulator,
             approvalDateBlockPrePopulator,
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
