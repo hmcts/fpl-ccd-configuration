@@ -3,23 +3,30 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Stream.ofNullable;
-import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static java.lang.String.format;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Placement {
+public class Placement implements SelectableItem {
 
     @JsonProperty("placementChildId")
     private UUID childId;
@@ -36,28 +43,47 @@ public class Placement {
     @JsonProperty("placementConfidentialDocuments")
     private List<Element<PlacementConfidentialDocument>> confidentialDocuments;
 
-    @JsonProperty("placementOrderAndNotices")
-    private List<Element<PlacementOrderAndNotices>> orderAndNotices;
+    @JsonProperty("placementNoticeDocuments")
+    private List<Element<PlacementNoticeDocument>> noticeDocuments;
+
+    @JsonProperty("placementUploadDateTime")
+    public LocalDateTime placementUploadDateTime;
 
     @JsonIgnore
-    public Placement setChild(Element<Child> child) {
-        this.setChildId(child.getId());
-        this.setChildName(child.getValue().getParty().getFullName());
-        return this;
-    }
-
-    @JsonIgnore
-    public Placement removePlacementOrder() {
-        List<Element<PlacementOrderAndNotices>> filteredOrders = ofNullable(this.getOrderAndNotices())
-            .flatMap(Collection::stream)
-            .filter(x -> x.getValue().getType() != PLACEMENT_ORDER)
-            .collect(Collectors.toList());
-
-        return this.toBuilder().orderAndNotices(filteredOrders.isEmpty() ? null : filteredOrders).build();
-    }
-
-    @JsonIgnore
-    public Placement removeConfidentialDocuments() {
+    public Placement nonConfidential() {
         return this.toBuilder().confidentialDocuments(null).build();
+    }
+
+    public DocumentReference getPlacementApplicationCopy() {
+        return application;
+    }
+
+    @JsonProperty("isSubmitted")
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    public YesNo isSubmitted() {
+        return YesNo.from(nonNull(this.placementUploadDateTime));
+    }
+
+    @Override
+    @JsonIgnore
+    public String toLabel() {
+        if (isNull(placementUploadDateTime)) {
+            return format("A50, %s", childName);
+        }
+        return format("A50, %s, %s", childName, getUploadedDateTime());
+    }
+
+    @Override
+    @JsonIgnore
+    public int getSortOrder() {
+        return 3;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUploadedDateTime() {
+        return ofNullable(placementUploadDateTime)
+            .map(time -> formatLocalDateTimeBaseUsingFormat(time, DATE_TIME))
+            .orElse(null);
     }
 }
