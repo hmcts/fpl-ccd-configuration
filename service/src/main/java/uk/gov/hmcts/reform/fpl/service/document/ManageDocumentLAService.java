@@ -91,15 +91,6 @@ public class ManageDocumentLAService {
                 .build()));
         }
 
-        Optional<Element<HearingCourtBundle>> editedBundle = findElement(selectedHearingId, courtBundleList);
-        editedBundle.ifPresentOrElse(
-            courtBundleElement -> courtBundleList.set(courtBundleList.indexOf(courtBundleElement),
-                element(selectedHearingId,
-                    constructHearingCourtBundle(hearingBooking.get(), caseData.getManageDocumentsCourtBundle()))),
-            () -> courtBundleList.add(element(selectedHearingId,
-                constructHearingCourtBundle(hearingBooking.get(), caseData.getManageDocumentsCourtBundle())))
-        );
-
         return courtBundleList;
     }
 
@@ -126,7 +117,7 @@ public class ManageDocumentLAService {
         return listAndLabel;
     }
 
-    public List<Element<CourtBundle>> getCourtBundleForHearing(CaseData caseData) {
+    private List<Element<CourtBundle>> getCourtBundleForHearing(CaseData caseData) {
         List<Element<HearingCourtBundle>> bundles = caseData.getCourtBundleList();
 
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
