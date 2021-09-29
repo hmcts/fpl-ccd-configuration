@@ -660,6 +660,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "PLY",
+    "ListElement": "Plymouth City Council",
+    "DisplayOrder": 298
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "PCC",
     "ListElement": "Portsmouth City Council",
     "DisplayOrder": 300
@@ -670,13 +677,6 @@
     "ListElementCode": "POW",
     "ListElement": "Powys County Council",
     "DisplayOrder": 303
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AuthorityFixedList",
-    "ListElementCode": "PLY",
-    "ListElement": "Plymouth City Council",
-    "DisplayOrder": 304
   },
   {
     "LiveFrom": "01/01/2017",
