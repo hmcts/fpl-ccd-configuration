@@ -433,20 +433,20 @@ class ManageHearingsServiceTest {
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, null);
 
-        Map<String, Object> expectedCaseFields = Map.of(
-            "hearingType", CASE_MANAGEMENT,
-            "hearingTypeReason", "Reason",
-            "hearingStartDate", startDate,
-            "hearingEndDate", endDate,
-            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
-            "previousHearingVenue", previousHearingVenue,
-            "hearingAttendance", List.of(IN_PERSON, VIDEO),
-            "hearingAttendanceDetails", "Test attendance details",
-            "preHearingAttendanceDetails", "Test pre attendance details",
-            "sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS
-        );
-
-        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("hearingType", CASE_MANAGEMENT),
+            Map.entry("hearingTypeReason", "Reason"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("previousHearingVenue", previousHearingVenue),
+            Map.entry("hearingAttendance", List.of(IN_PERSON, VIDEO)),
+            Map.entry("hearingAttendanceDetails", "Test attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Test pre attendance details"),
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
+            Map.entry("hearingDuration", "DATE_TIME"),
+            Map.entry("hearingEndDateTime", endDate)
+        ));
     }
 
     @Test
@@ -505,6 +505,7 @@ class ManageHearingsServiceTest {
             .type(OTHER)
             .typeDetails("Fact finding")
             .venue("OTHER")
+            .typeReason("Reason")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
             .attendance(List.of(IN_PERSON))
             .attendanceDetails("Attendance details")
@@ -533,7 +534,8 @@ class ManageHearingsServiceTest {
             Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
             Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
             Map.entry("hearingDuration", DAYS.getType()),
-            Map.entry("hearingDays", days)
+            Map.entry("hearingDays", days),
+            Map.entry("hearingTypeReason", "Reason")
         ));
     }
 
@@ -551,6 +553,7 @@ class ManageHearingsServiceTest {
             .type(OTHER)
             .typeDetails("Fact finding")
             .venue("OTHER")
+            .typeReason("Reason")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
             .attendance(List.of(IN_PERSON))
             .attendanceDetails("Attendance details")
@@ -581,7 +584,8 @@ class ManageHearingsServiceTest {
             Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
             Map.entry("hearingDuration", HOURS_MINS.getType()),
             Map.entry("hearingHours", hours),
-            Map.entry("hearingMinutes", minutes)
+            Map.entry("hearingMinutes", minutes),
+            Map.entry("hearingTypeReason", "Reason")
         ));
     }
 
