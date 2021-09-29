@@ -123,10 +123,11 @@ public class PlacementController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        final PlacementEventData placementEventData = placementService.savePlacement(caseData);
+        final PlacementEventData eventData = placementService.savePlacement(caseData);
 
-        caseDetails.getData().put("placements", placementEventData.getPlacements());
-        caseDetails.getData().put("placementsNonConfidential", placementEventData.getPlacementsNonConfidential());
+        caseDetails.getData().put("placements", eventData.getPlacements());
+        caseDetails.getData().put("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
+        caseDetails.getData().put("placementsNonConfidentialNotices", eventData.getPlacementsNonConfidential(true));
 
         removeTemporaryFields(caseDetails, PlacementEventData.class);
 

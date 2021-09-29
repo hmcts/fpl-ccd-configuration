@@ -121,7 +121,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .extracting(Element::getValue)
             .containsExactly(existingPlacement, expectedNewPlacement);
 
-        assertThat(actualPlacementData.getPlacementsNonConfidential())
+        assertThat(actualPlacementData.getPlacementsNonConfidential(true))
             .extracting(Element::getValue)
             .containsExactly(existingPlacement, expectedNewNonConfidentialPlacement);
     }
@@ -189,7 +189,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .extracting(Element::getValue)
             .containsExactly(expectedNewPlacementForChild1, existingApplicationForChild2);
 
-        assertThat(actualPlacementData.getPlacementsNonConfidential())
+        assertThat(actualPlacementData.getPlacementsNonConfidential(true))
             .extracting(Element::getValue)
             .containsExactly(expectedNewNonConfidentialPlacementForChild1, expectedNonConfidentialPlacementForChild2);
     }
