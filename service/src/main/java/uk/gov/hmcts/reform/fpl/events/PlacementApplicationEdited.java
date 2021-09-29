@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-@Getter
+@Data
 @RequiredArgsConstructor
-public class PlacementApplicationEvent {
+public class PlacementApplicationEdited {
     private final CaseData caseData;
 }

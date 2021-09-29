@@ -131,12 +131,6 @@ class CaseDataTest {
     }
 
     @Test
-    void shouldGetEmptyListOfPlacementsWhenPlacementsIsNull() {
-        CaseData caseData = CaseData.builder().build();
-        assertThat(caseData.getPlacements()).isEmpty();
-    }
-
-    @Test
     void shouldGetFirstOtherWhenNoAdditionalOthers() {
         Other other1 = otherWithName("John");
         CaseData caseData = caseData(Others.builder().firstOther(other1));

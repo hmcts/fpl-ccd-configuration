@@ -74,6 +74,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
+import static uk.gov.hmcts.reform.fpl.utils.Constants.NEW_LINE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -82,7 +83,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 public class CaseSubmissionGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisCaseSubmission> {
-    private static final String NEW_LINE = "\n";
     private static final String SPACE_DELIMITER = " ";
     private static final String DEFAULT_STRING = "-";
     private static final Map<TranslationSection, LanguagePair> translations = Map.of(

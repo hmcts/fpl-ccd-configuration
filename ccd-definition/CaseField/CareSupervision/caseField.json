@@ -1008,63 +1008,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "placementChildName",
-    "Label": "Child name",
-    "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "placementLabel",
-    "Label": "# ${placementChildName}",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "placement",
-    "Label": "Placement application",
-    "FieldType": "Placement",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "placements",
-    "Label": "Child",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Placement",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "confidentialPlacements",
-    "Label": "Child",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Placement",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "placementsWithoutPlacementOrder",
-    "Label": "Child",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Placement",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "evidenceHandled",
     "Label": "Supplementary evidence handled",
     "FieldType": "YesOrNo",
