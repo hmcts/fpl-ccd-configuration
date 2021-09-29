@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -86,6 +88,24 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
+    public static CaseData buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor() {
+        return commonCaseBuilder()
+            .respondentStatements(buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(REP_USER)))
+            .build();
+    }
+
+    public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
+        return commonCaseBuilder()
+            .respondentStatements(buildRespondentStatementsList(buildNonConfidentialNonPDFDocumentList(REP_USER)))
+            .build();
+    }
+
+    public static CaseData buildCaseDataWithConfidentialRespondentStatementsSolicitor() {
+        return commonCaseBuilder()
+            .respondentStatements(buildRespondentStatementsList(buildConfidentialDocumentList(REP_USER)))
+            .build();
+    }
+
     public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
         return wrapElements(
             createDummyEvidenceBundle("confidential-1", uploadedBy, true, PDF_DOCUMENT_1),
@@ -118,6 +138,16 @@ public class FurtherEvidenceUploadedEventTestData {
         }
 
         return document.build();
+    }
+
+    private static List<Element<RespondentStatement>> buildRespondentStatementsList(
+        List<Element<SupportingEvidenceBundle>> bundle
+    ) {
+        return wrapElements(RespondentStatement.builder()
+            .respondentId(UUID.randomUUID())
+            .respondentName("name")
+            .supportingEvidenceBundle(bundle)
+            .build());
     }
 
     public static CaseData.CaseDataBuilder commonCaseBuilder() {

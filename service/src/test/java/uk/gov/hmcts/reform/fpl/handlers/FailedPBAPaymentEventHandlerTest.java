@@ -130,7 +130,7 @@ class FailedPBAPaymentEventHandlerTest {
             .caseUrl("caseUrl")
             .build();
 
-        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C110A_APPLICATION), CASE_ID))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C110A_APPLICATION), caseData))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
@@ -152,7 +152,7 @@ class FailedPBAPaymentEventHandlerTest {
             .applicant(LOCAL_AUTHORITY_NAME + ", Applicant")
             .build();
 
-        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C2_APPLICATION), CASE_ID))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C2_APPLICATION), caseData))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
@@ -174,7 +174,7 @@ class FailedPBAPaymentEventHandlerTest {
             .applicant(LOCAL_AUTHORITY_NAME + ", Applicant")
             .build();
 
-        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C2_APPLICATION), CASE_ID))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C2_APPLICATION), caseData))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
@@ -200,7 +200,7 @@ class FailedPBAPaymentEventHandlerTest {
             .applicant(RESPONDENT_1_NAME)
             .build();
 
-        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C1_APPOINTMENT_OF_A_GUARDIAN), CASE_ID))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C1_APPOINTMENT_OF_A_GUARDIAN), caseData))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(
@@ -223,7 +223,7 @@ class FailedPBAPaymentEventHandlerTest {
             .applicant(RESPONDENT_1_NAME)
             .build();
 
-        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C1_APPOINTMENT_OF_A_GUARDIAN), CASE_ID))
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C1_APPOINTMENT_OF_A_GUARDIAN), caseData))
             .willReturn(expectedParameters);
 
         failedPBAPaymentEventHandler.notifyApplicant(

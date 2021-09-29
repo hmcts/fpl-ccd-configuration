@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -45,6 +44,8 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
@@ -54,6 +55,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
@@ -220,7 +222,6 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
-    private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
     private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
@@ -334,6 +335,12 @@ public class CaseData {
     private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
+
+    private final DocumentReference redDotAssessmentForm;
+    private final String caseFlagNotes;
+    private final String caseFlagAdded;
+    // Transient field
+    private YesNo caseFlagValueUpdated;
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
@@ -492,6 +499,16 @@ public class CaseData {
         return languageValue.get().equals("Yes");
     }
 
+    @JsonIgnore
+    public SealType getSealType() {
+        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+    }
+
+    @JsonIgnore
+    public Language getImageLanguage() {
+        return isWelshLanguageRequested() ? Language.WELSH : Language.ENGLISH;
+    }
+
     private final List<Element<Representative>> representatives;
 
     @JsonIgnore
@@ -610,11 +627,6 @@ public class CaseData {
 
     public List<Element<Other>> getConfidentialOthers() {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
-    }
-
-    @JsonGetter("confidentialPlacements")
-    public List<Element<Placement>> getPlacements() {
-        return defaultIfNull(placements, new ArrayList<>());
     }
 
     private final String caseNote;
@@ -840,7 +852,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
-                defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
             .flatMap(Collection::stream).collect(toList());
     }
 
@@ -930,6 +942,7 @@ public class CaseData {
 
     private final HearingType hearingType;
     private final String hearingTypeDetails;
+    private final String hearingTypeReason;
     private final String hearingVenue;
     private final Address hearingVenueCustom;
     private final String firstHearingFlag; //also used for logic surrounding legacy hearings
@@ -1089,4 +1102,16 @@ public class CaseData {
     @Builder.Default
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final PlacementEventData placementEventData = PlacementEventData.builder().build();
+
+    @JsonIgnore
+    public boolean isDischargeOfCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
 }

@@ -249,4 +249,5 @@ public class ManageDocumentsLAController extends CallbackController {
 
         return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
     }
+
 }

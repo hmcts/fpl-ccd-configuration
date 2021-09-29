@@ -2,14 +2,21 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
+import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -19,10 +26,15 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailCon
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {
-    PlacementApplicationEventHandler.class, PlacementApplicationContentProvider.class, EmailNotificationHelper.class,
-    CaseUrlService.class
+@ContextConfiguration(classes = {PlacementApplicationEventHandler.class, PlacementApplicationContentProvider.class,
+    EmailNotificationHelper.class, CaseUrlService.class
 })
+@MockBeans({
+    @MockBean(UserService.class),
+    @MockBean(PaymentService.class),
+    @MockBean(CoreCaseDataService.class),
+    @MockBean(EventService.class),
+    @MockBean(Time.class)})
 class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
     private static final String CHILD_LAST_NAME = "should ask for other names";
@@ -39,7 +51,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
                 .build()))
             .build();
 
-        underTest.notifyAdmin(new PlacementApplicationEvent(caseData));
+        underTest.notifyAdmin(new PlacementApplicationAdded(caseData));
 
         assertThat(response())
             .hasSubject("New placement application, " + CHILD_LAST_NAME)

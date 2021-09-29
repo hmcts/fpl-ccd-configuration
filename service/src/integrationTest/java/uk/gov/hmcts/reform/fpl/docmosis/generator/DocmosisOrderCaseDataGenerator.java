@@ -4,17 +4,21 @@ import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
@@ -25,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.Month.JULY;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
@@ -39,16 +44,25 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 public class DocmosisOrderCaseDataGenerator {
 
     private static final String LA_CODE = "LA_CODE";
+    private static final LocalAuthority LOCAL_AUTHORITY = LocalAuthority.builder()
+        .designated(YesNo.YES.getValue())
+        .name("Test Local Authority")
+        .clientCode(LA_CODE)
+        .address(Address.builder().addressLine1("10 First Lane").postcode("SE15 5UJ").build())
+        .build();
 
     private static final Element<Child> FIRST_CHILD = element(UUID.randomUUID(), Child.builder()
         .party(ChildParty.builder()
             .firstName("Kenny")
             .lastName("Kruger")
+            .mothersName("Elizabeth Kruger")
+            .fathersName("Jason Kruger")
             .dateOfBirth(LocalDate.of(2010, 1, 1))
             .gender("Boy")
             .build()
         ).build()
     );
+    private static final UUID PLACEMENT_ID = UUID.randomUUID();
 
     public CaseData generateForOrder(final Order order) {
 
@@ -62,6 +76,16 @@ public class DocmosisOrderCaseDataGenerator {
     private CaseData.CaseDataBuilder commonCaseData(Order order) {
         return CaseData.builder()
             .children1(List.of(FIRST_CHILD))
+            .placementEventData(PlacementEventData.builder()
+                .placements(List.of(
+                    element(PLACEMENT_ID, Placement.builder()
+                        .childId(FIRST_CHILD.getId())
+                        .placementUploadDateTime(LocalDateTime.of(2021, JULY, 15, 14, 30))
+                        .build()
+                    )
+                ))
+                .build()
+            )
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(order)
                 .build())
@@ -70,6 +94,7 @@ public class DocmosisOrderCaseDataGenerator {
             .others(Others.builder().additionalOthers(wrapElements(
                 Other.builder().name("Otto Otherman").build())).build())
             .familyManCaseNumber("FamilyManCaseNumber113")
+            .localAuthorities(wrapElements(LOCAL_AUTHORITY))
             .caseLocalAuthority(LA_CODE)
             .id(1234567890123456L);
     }
@@ -235,6 +260,23 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersIsByConsent("Yes")
+                        .build()
+                );
+            case CHILD_PLACEMENT_APPLICATIONS:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersChildPlacementApplication(buildDynamicList(0, Pair.of(PLACEMENT_ID, "Placement")))
+                        .build()
+                );
+            case CHILD_PLACEMENT:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersSerialNumber("123-serialNumber")
+                        .manageOrdersBirthCertificateNumber("BC-123")
+                        .manageOrdersBirthCertificateDate("24-Dec-2020")
+                        .manageOrdersBirthCertificateRegistrationDistrict("RegDistrict")
+                        .manageOrdersBirthCertificateRegistrationSubDistrict("RegSubDistrict")
+                        .manageOrdersBirthCertificateRegistrationCounty("RegCounty")
                         .build()
                 );
             default:

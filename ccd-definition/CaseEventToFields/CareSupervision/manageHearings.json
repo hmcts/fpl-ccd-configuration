@@ -281,6 +281,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingTypeReason",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EnterHearingDetails",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 5,
+    "FieldShowCondition": "hearingType=\"ACCELERATED_DISCHARGE_OF_CARE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingVenue",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",

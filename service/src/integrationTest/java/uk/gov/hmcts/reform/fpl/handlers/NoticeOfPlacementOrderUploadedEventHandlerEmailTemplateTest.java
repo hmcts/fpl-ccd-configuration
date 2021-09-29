@@ -18,10 +18,12 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderNotificationDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
@@ -58,8 +60,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(ManageOrdersClosedCaseFieldGenerator.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
     @MockBean(SealedOrderHistoryTypeGenerator.class), @MockBean(AppointedGuardianFormatter.class),
     @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(OthersService.class),
-    @MockBean(SealedOrderLanguageRequirementGenerator.class),
-    @MockBean(OthersNotifiedGenerator.class)
+    @MockBean(SealedOrderLanguageRequirementGenerator.class), @MockBean(OthersNotifiedGenerator.class),
+    @MockBean(OrderNotificationDocumentService.class), @MockBean(PlacementService.class)
 })
 public class NoticeOfPlacementOrderUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
