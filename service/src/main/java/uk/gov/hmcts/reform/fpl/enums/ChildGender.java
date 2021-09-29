@@ -1,17 +1,19 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public enum ChildGender {
 
-    BOY("Boy", "he", "himself"),
-    GIRL("Girl", "she", "herself"),
-    OTHER("They identify in another way", "they", "themselves");
+    BOY("Boy", "Bachgen", "he", "himself"),
+    GIRL("Girl", "Merch", "she", "herself"),
+    OTHER("They identify in another way", "Maent yn uniaethu mewn ffordd arall", "they", "themselves");
 
     private final String label;
+    private final String welshLabel;
     private final String subjectPronoun;
     private final String reflexivePronoun;
 
@@ -26,6 +28,9 @@ public enum ChildGender {
         return label;
     }
 
+    public String getLabel(Language language) {
+        return language == Language.WELSH ? welshLabel : label;
+    }
 
     public String getReflexivePronoun() {
         return reflexivePronoun;

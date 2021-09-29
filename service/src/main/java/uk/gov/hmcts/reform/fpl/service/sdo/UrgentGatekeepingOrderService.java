@@ -60,7 +60,7 @@ public class UrgentGatekeepingOrderService {
         }
 
         final UrgentHearingOrder order = UrgentHearingOrder.builder()
-            .order(sealingService.sealDocument(orderDocument))
+            .order(sealingService.sealDocument(orderDocument, caseData.getSealType()))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
             .translationRequirements(eventData.getUrgentGatekeepingTranslationRequirements())

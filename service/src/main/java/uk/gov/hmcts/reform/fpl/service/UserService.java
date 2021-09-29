@@ -44,8 +44,7 @@ public class UserService {
 
     public boolean hasAnyCaseRoleFrom(List<CaseRole> caseRoles, Long caseId) {
         final Set<CaseRole> userCaseRoles = getCaseRoles(caseId);
-
-        return getCaseRoles(caseId).stream().anyMatch(caseRoles::contains);
+        return userCaseRoles.stream().anyMatch(caseRoles::contains);
     }
 
     public Set<CaseRole> getCaseRoles(Long caseId) {

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -54,7 +55,7 @@ class HearingOrderGeneratorTest {
         String othersNotified = "John Smith";
         List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
 
-        when(documentSealingService.sealDocument(order)).thenReturn(sealedOrder);
+        when(documentSealingService.sealDocument(order, SealType.ENGLISH)).thenReturn(sealedOrder);
 
         Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
@@ -66,7 +67,7 @@ class HearingOrderGeneratorTest {
             ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build(),
             element(ORDER_ID, hearingOrder),
             selectedOthers,
-            othersNotified);
+            othersNotified, SealType.ENGLISH);
 
         assertThat(actual).isEqualTo(expectedOrder);
     }
@@ -75,7 +76,7 @@ class HearingOrderGeneratorTest {
     void shouldBuildSealedHearingOrderWhenJudgeAmendsTheDocument() {
         HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
 
-        when(documentSealingService.sealDocument(amendedOrder)).thenReturn(sealedOrder);
+        when(documentSealingService.sealDocument(amendedOrder, SealType.ENGLISH)).thenReturn(sealedOrder);
 
         Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
@@ -85,7 +86,7 @@ class HearingOrderGeneratorTest {
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
             ReviewDecision.builder().decision(JUDGE_AMENDS_DRAFT).judgeAmendedDocument(amendedOrder).build(),
             element(ORDER_ID, hearingOrder),
-            List.of(), "");
+            List.of(), "", SealType.ENGLISH);
 
         assertThat(actual).isEqualTo(expectedOrder);
     }

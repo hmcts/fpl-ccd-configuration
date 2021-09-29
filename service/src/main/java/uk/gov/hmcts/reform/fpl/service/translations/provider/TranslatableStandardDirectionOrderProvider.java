@@ -32,8 +32,8 @@ public class TranslatableStandardDirectionOrderProvider implements TranslatableL
     }
 
     @Override
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
-        return caseData.getStandardDirectionOrder().getOrderDoc();
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
+        return caseData.getStandardDirectionOrder();
     }
 
     @Override

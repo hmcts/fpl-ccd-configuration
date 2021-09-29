@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
@@ -73,7 +74,7 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER)).thenReturn(SEALED_ORDER);
+        when(sealingService.sealDocument(UPLOADED_ORDER, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
 
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
             .order(SEALED_ORDER)
@@ -97,7 +98,7 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER)).thenReturn(SEALED_ORDER);
+        when(sealingService.sealDocument(UPLOADED_ORDER, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
 
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
             .order(SEALED_ORDER)
@@ -124,7 +125,7 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER)).thenReturn(SEALED_ORDER);
+        when(sealingService.sealDocument(UPLOADED_ORDER, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
         when(allocationService.setAllocationDecisionIfNull(caseData, enteredAllocation)).thenReturn(updatedAllocation);
         when(updatedAllocation.getProposal()).thenReturn("some allocation level");
 

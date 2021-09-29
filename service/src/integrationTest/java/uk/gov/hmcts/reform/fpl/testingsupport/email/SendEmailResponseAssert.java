@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static uk.gov.hmcts.reform.fpl.utils.Constants.NEW_LINE;
+
 public class SendEmailResponseAssert extends AbstractAssert<SendEmailResponseAssert, SendEmailResponse> {
     private static final String URL = "https://documents\\.service\\.gov\\.uk/d/([\\w|-]+/[\\w|-]+\\?key=[\\w|-]+)";
     private static final Pattern PATTERN = Pattern.compile(URL);
@@ -45,7 +47,7 @@ public class SendEmailResponseAssert extends AbstractAssert<SendEmailResponseAss
     }
 
     private String standardiseLineBreaks(String body) {
-        return body.replaceAll("\\r\\n", EmailContent.NEW_LINE);
+        return body.replaceAll("\\r\\n", NEW_LINE);
     }
 
     private String cleanGovNotifyDocLink(String body) {

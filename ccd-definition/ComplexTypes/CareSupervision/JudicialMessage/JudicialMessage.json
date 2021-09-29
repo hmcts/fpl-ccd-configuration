@@ -97,7 +97,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
     "ListElementCode": "relatedDocumentFileNames",
-    "FieldType": "Text",
+    "FieldType": "TextArea",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
