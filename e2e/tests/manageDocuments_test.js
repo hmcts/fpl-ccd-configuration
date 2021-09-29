@@ -334,41 +334,37 @@ Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEv
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
 
   assertCorrespondence(I, 'solicitor', 1, 'Email with evidence attached', 'Case evidence included');
-
 });
 
 Scenario('LA upload confidential and non confidential court bundle documents for a hearing', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await setupHearing(I, caseViewPage, manageHearingsEventPage);
 
+  // Update a confidential and a non-confidential document for the court bundle
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await uploadDocumentsToCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage);
 
-  await manageDocumentsLAEventPage.selectCourtBundle();
-  await manageDocumentsLAEventPage.selectCourtBundleHearing(formatHearingDate(hearingStartDate));
-  await I.goToNextPage();
-
-  // Update a confidential and a non-confidential document
-  await manageDocumentsLAEventPage.uploadConfidentialCourtBundleDocument(config.testFile);
-  await I.addAnotherElementToCollection();
-  await manageDocumentsLAEventPage.uploadCourtBundleDocument(config.testPdfFile);
-
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
-
-  // Assert local authority can see both confidential and non-confidential documents
+  // Assert local authority can see both confidential and non-confidential documents on Court bundle tab
   caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
-  assertCourtBundleTabForHMCTSAndLA(I, 'Court bundle 1');
+  assertCourtBundleTabForHMCTSAndLA(I);
 
-  // Assert HMCTS users can see both confidential and non-confidential documents
+  // Assert HMCTS users can see both confidential and non-confidential documents on Court bundle tab
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
   assertCourtBundleTabForHMCTSAndLA(I);
 
-  // Assert solicitor can see the non-confidential document only
+  // Assert solicitor can see the non-confidential document only on Court bundle tab
   await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
   assertCourtBundleTabForSolicitor(I);
+
+  // Remove all documents from the court bundle
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await removeDocumentsFromCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage);
+
+  // Assert no more documents on Court bundle tab
+  caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
+  I.dontSeeTagInTab(['Court bundle 1', 'Documents 1']);
 });
 
 async function setupHearing(I, caseViewPage, manageHearingsEventPage) {
@@ -386,6 +382,34 @@ async function setupHearing(I, caseViewPage, manageHearingsEventPage) {
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 }
 
+async function uploadDocumentsToCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage) {
+  await selectCourtBundleEventForHearing(I, caseViewPage, manageDocumentsLAEventPage);
+
+  await manageDocumentsLAEventPage.uploadConfidentialCourtBundleDocument(config.testPdfFile);
+  await I.addAnotherElementToCollection();
+  await manageDocumentsLAEventPage.uploadCourtBundleDocument(config.testWordFile);
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+}
+
+async function removeDocumentsFromCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage) {
+  await selectCourtBundleEventForHearing(I, caseViewPage, manageDocumentsLAEventPage);
+
+  await I.removeElementFromCollection();
+  await I.removeElementFromCollection();
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+}
+
+async function selectCourtBundleEventForHearing(I, caseViewPage, manageDocumentsLAEventPage) {
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await manageDocumentsLAEventPage.selectCourtBundle();
+  await manageDocumentsLAEventPage.selectCourtBundleHearing(formatHearingDate(hearingStartDate));
+  await I.goToNextPage();
+}
+
 function getFilename(file) {
   return file.split('/').pop();
 }
@@ -393,16 +417,16 @@ function getFilename(file) {
 const assertCourtBundleTabForHMCTSAndLA = (I) => {
   const courtBundle = 'Court bundle 1';
   I.seeInTab([courtBundle, 'Hearing'], 'Case management hearing, ' + formatHearingDate(hearingStartDate));
-  I.seeInTab([courtBundle, 'Documents 1', 'Document'], getFilename(config.testFile));
+  I.seeInTab([courtBundle, 'Documents 1', 'Document'], getFilename(config.testPdfFile));
   I.seeTagInTab([courtBundle, 'Documents 1', 'Confidential']);
-  I.seeInTab([courtBundle, 'Documents 2', 'Document'], getFilename(config.testPdfFile));
+  I.seeInTab([courtBundle, 'Documents 2', 'Document'], getFilename(config.testWordFile));
   I.dontSeeTagInTab([courtBundle, 'Documents 2', 'Confidential']);
 };
 
 const assertCourtBundleTabForSolicitor = (I) => {
   const courtBundle = 'Court bundle 1';
   I.seeInTab([courtBundle, 'Hearing'], 'Case management hearing, ' + formatHearingDate(hearingStartDate));
-  I.seeInTab([courtBundle, 'Documents 1', 'Document'], getFilename(config.testPdfFile));
+  I.seeInTab([courtBundle, 'Documents 1', 'Document'], getFilename(config.testWordFile));
   I.dontSeeTagInTab([courtBundle, 'Documents 1', 'Confidential']);
   I.dontSeeInTab([courtBundle, 'Documents 2', 'Document']);
 };
