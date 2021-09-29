@@ -70,7 +70,6 @@ const setupConfig = {
     StepListener: {
       require: './e2e/helpers/stepListener.js',
     },
-    },
     Mochawesome: {
       uniqueScreenshotNames: true,
     },
