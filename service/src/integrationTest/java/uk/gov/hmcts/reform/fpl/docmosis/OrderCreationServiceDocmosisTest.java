@@ -18,14 +18,20 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
+import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.A206PlacementOrderNotificationParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.A70PlacementOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C21BlankOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPOAdditionalDocumentsCollector;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPODocumentParameterGenerator;
@@ -46,7 +52,9 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHo
 import uk.gov.hmcts.reform.fpl.service.orders.generator.UploadedOrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.io.IOException;
 import java.util.stream.Stream;
@@ -64,11 +72,14 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 @ContextConfiguration(classes = {
     OrderCreationService.class,
     OrderDocumentGenerator.class,
+    DocumentGenerator.class,
     DocmosisDocumentGeneratorService.class,
     OrderDocumentGeneratorHolder.class,
     DocmosisCommonElementDecorator.class,
     CaseDataExtractionService.class,
     AppointedGuardianFormatter.class,
+    A70PlacementOrderDocumentParameterGenerator.class,
+    A206PlacementOrderNotificationParameterGenerator.class,
     C21BlankOrderDocumentParameterGenerator.class,
     C32CareOrderDocumentParameterGenerator.class,
     C23EPODocumentParameterGenerator.class,
@@ -92,9 +103,13 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     DocumentSealingService.class,
     ChildrenSmartSelector.class,
     DocmosisHelper.class,
-    ChildSelectionUtils.class
+    ChildSelectionUtils.class,
+    PlacementService.class,
+    FixedTimeConfiguration.class,
+    PbaNumberService.class,
+    CaseConverter.class
 })
-@MockBeans({@MockBean(DocumentDownloadService.class)})
+@MockBeans({@MockBean(DocumentDownloadService.class), @MockBean(FeeService.class)})
 class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";

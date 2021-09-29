@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -10,7 +12,8 @@ public class AgeDisplayFormatHelper {
     private AgeDisplayFormatHelper() {
     }
 
-    public static String formatAgeDisplay(final LocalDate dateOfBirth) {
+    public static String formatAgeDisplay(final LocalDate dateOfBirth,
+                                          Language applicationLanguage) {
         checkNotNull(dateOfBirth, "Date of birth value is required");
 
         final Period period = Period.between(dateOfBirth, LocalDate.now());
@@ -19,28 +22,65 @@ public class AgeDisplayFormatHelper {
         final int days = period.getDays();
 
         if (period.isNegative()) {
-            return "0 years old";
+            return zeroYearsOld(applicationLanguage);
         }
         if (years > 1) {
-            return years + " years old";
+            return years + yearsOld(applicationLanguage);
         }
         if (years == 1) {
-            return years + " year old";
+            return years + yearOld(applicationLanguage);
         }
         if (months > 1) {
-            return months + " months old";
+            return months + monthsOld(applicationLanguage);
         }
         if (months == 1) {
-            return months + " month old";
+            return months + monthOld(applicationLanguage);
         }
         if (days > 1) {
-            return days + " days old";
+            return days + daysOld(applicationLanguage);
         }
         if (days == 1) {
-            return days + " day old";
+            return days + dayOld(applicationLanguage);
         }
 
-        return "0 days old";
+        return zeroDaysOld(applicationLanguage);
 
     }
+
+    private static String zeroDaysOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? "0 days old" : "0 diwrnod oed";
+    }
+
+    private static String dayOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? " day old" : " diwrnod oed";
+    }
+
+    private static String daysOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? " days old" : " diwrnod oed";
+    }
+
+    private static String monthOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? " month old" : " mis oed";
+    }
+
+    private static String monthsOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? " months old" : " mis oed";
+    }
+
+    private static String yearOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? " year old" : " mlwydd oed";
+    }
+
+    private static String yearsOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? " years old" : " mlwydd oed";
+    }
+
+    private static String zeroYearsOld(Language applicationLanguage) {
+        return isEnglish(applicationLanguage) ? "0 years old" : "0 mlwydd oed";
+    }
+
+    private static boolean isEnglish(Language applicationLanguage) {
+        return applicationLanguage == Language.ENGLISH;
+    }
+
 }

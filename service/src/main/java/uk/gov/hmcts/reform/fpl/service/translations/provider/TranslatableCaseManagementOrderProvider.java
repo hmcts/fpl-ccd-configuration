@@ -32,11 +32,11 @@ public class TranslatableCaseManagementOrderProvider implements TranslatableList
     }
 
     @Override
-    public DocumentReference provideSelectedItemDocument(CaseData caseData, UUID selectedOrderId) {
+    public TranslatableItem provideSelectedItem(CaseData caseData, UUID selectedOrderId) {
         return caseData.getSealedCMOs()
             .stream()
             .filter(order -> order.getId().equals(selectedOrderId))
-            .findFirst().map(it -> it.getValue().getOrder())
+            .findFirst().map(Element::getValue)
             .orElseThrow(IllegalArgumentException::new);
     }
 

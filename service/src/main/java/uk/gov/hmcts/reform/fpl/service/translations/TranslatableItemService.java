@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -71,7 +72,7 @@ public class TranslatableItemService {
                 eventData.getUploadTranslationsRelatedToDocument().getValueCode()
             )));
 
-        return translatableProvider.provideSelectedItemDocument(caseData, selectedOrderId);
+        return translatableProvider.provideSelectedItem(caseData, selectedOrderId).getDocument();
     }
 
 
@@ -92,8 +93,11 @@ public class TranslatableItemService {
 
         byte[] finalisedTranslatedByes = translatedDocumentGenerator.generate(caseData);
 
+        LanguageTranslationRequirement translationRequirements = translatableProvider.provideSelectedItem(
+            caseData, selectedOrderId).getTranslationRequirements();
+
         Document stampedDocument = uploadService.uploadDocument(finalisedTranslatedByes,
-            translatedFileNameGenerator.generate(caseData),
+            translatedFileNameGenerator.generate(caseData, translationRequirements),
             MEDIA_TYPE);
 
         return translatableProvider.applyTranslatedOrder(

@@ -110,6 +110,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .orderIsByConsent(NO)
             .parentResponsible(NO)
             .parentResponsible(NO)
+            .childPlacementApplications(NO)
+            .childPlacementQuestions(NO)
             .build()
         );
     }
@@ -166,6 +168,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .orderIsByConsent(NO)
             .orderTitle(YES)
             .parentResponsible(NO)
+            .childPlacementApplications(NO)
+            .childPlacementQuestions(NO)
             .build()
         );
     }

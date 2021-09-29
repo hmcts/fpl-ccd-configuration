@@ -25,6 +25,10 @@ public class DynamicListAssert extends AbstractAssert<DynamicListAssert, Dynamic
         return new DynamicListAssert(actual, DynamicListAssert.class);
     }
 
+    public static DynamicListAssert assertThatDynamicList(DynamicList actual) {
+        return assertThat(actual);
+    }
+
     public static InstanceOfAssertFactory<DynamicList, DynamicListAssert> getInstanceOfAssertFactory() {
         return new InstanceOfAssertFactory<>(DynamicList.class, DynamicListAssert::assertThat);
     }

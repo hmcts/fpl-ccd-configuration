@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -125,7 +126,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
             UUID.randomUUID(), newArrayList(cmoElement));
 
-        given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
 
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
@@ -179,7 +180,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     void shouldUpdateCaseStateWhenCmoDecisionIsSendToAllParties(
         String testName, HearingType hearingType, State expectedCaseState) {
 
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument(convertedDocument, SealType.ENGLISH)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
@@ -231,9 +232,9 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             UUID.randomUUID(), newArrayList(orderElement));
 
         if (SEND_TO_ALL_PARTIES.equals(reviewOutcome)) {
-            given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
+            given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
         } else {
-            given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+            given(documentSealingService.sealDocument(convertedDocument, SealType.ENGLISH)).willReturn(sealedDocument);
         }
 
         ReviewDecision reviewDecision =
@@ -277,7 +278,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     @Test
     void shouldRemoveRejectedBlankOrderAndSealApprovedOrderWhenJudgeRejectsOneOrderAndApprovesTheOther() {
         DocumentReference order = cmo.getOrder();
-        given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
         UUID draftOrderId = UUID.randomUUID();
