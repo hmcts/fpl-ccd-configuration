@@ -63,6 +63,14 @@ manage-case:
 fees-register:
   api:
     url: http://fake-fees-register-api
+  parameters:
+    PLACEMENT:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: Placement
+      service: adoption
 
 bankHolidays:
   api:

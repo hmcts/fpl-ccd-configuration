@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -28,12 +30,17 @@ class ChildrenSmartSelectorTest {
 
     private ChildrenService mockChildrenService;
 
+    private PlacementService mockPlacementService;
+
     private ChildrenSmartSelector underTest;
 
     @BeforeEach
     void setUp() {
         mockChildrenService = mock(ChildrenService.class);
-        underTest = new ChildrenSmartSelector(new ChildSelectionUtils(), mockChildrenService);
+        mockPlacementService = mock(PlacementService.class);
+        underTest = new ChildrenSmartSelector(new ChildSelectionUtils(),
+            mockChildrenService,
+            mockPlacementService);
     }
 
     @Test
@@ -63,7 +70,7 @@ class ChildrenSmartSelectorTest {
                     buildDynamicList(0, buildPairFromChildElement(firstChild), buildPairFromChildElement(secondChild))
                 )
                 .orderTempQuestions(OrderTempQuestions.builder()
-                    .selectSingleChild("YES")
+                    .selectSingleChild(YES.getValue())
                     .build())
                 .build())
             .build();
@@ -74,6 +81,26 @@ class ChildrenSmartSelectorTest {
             .hasSize(1)
             .contains(firstChild);
         verify(mockChildrenService, never()).getSelectedChildren(incomingCaseData);
+    }
+
+    @Test
+    void shouldRetrieveChildFromSelectedPlacement_WhenThisChildPlacementSelectionIsOn() {
+        UUID selectedPlacementId = UUID.randomUUID();
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(
+                ManageOrdersEventData.builder()
+                    .orderTempQuestions(OrderTempQuestions.builder().childPlacementApplications(YES.getValue()).build())
+                    .manageOrdersChildPlacementApplication(
+                        buildDynamicList(0, Pair.of(selectedPlacementId, "selected placement application"))
+                    ).build()
+            )
+            .build();
+        Element<Child> testChild = testChild();
+        when(mockPlacementService.getChildByPlacementId(caseData, selectedPlacementId)).thenReturn(testChild);
+
+        List<Element<Child>> selectedChildren = underTest.getSelectedChildren(caseData);
+
+        assertThat(selectedChildren).containsExactly(testChild);
     }
 
     private Pair<UUID, String> buildPairFromChildElement(Element<Child> child) {

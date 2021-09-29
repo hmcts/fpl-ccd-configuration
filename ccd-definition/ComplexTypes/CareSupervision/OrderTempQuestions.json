@@ -313,5 +313,23 @@
     "ElementLabel": " ",
     "FieldShowCondition": "parentResponsible=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "childPlacementApplications",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "childPlacementApplications=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "childPlacementQuestions",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "childPlacementQuestions=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]

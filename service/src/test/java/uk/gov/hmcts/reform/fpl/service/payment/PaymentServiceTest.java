@@ -26,12 +26,14 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -54,6 +56,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class PaymentServiceTest {
 
     private static final Long CASE_ID = 1L;
+
+    private static final String PBA_NUMBER = "PBA123";
+    private static final String CLIENT_CODE = "clientCode";
+    private static final String CUSTOMER_REFERENCE = "customerReference";
+    private static final String NOT_PROVIDED = "Not provided";
+    private static final String LOCAL_AUTHORITY_CODE = "LA";
 
     @MockBean
     private FeeService feeService;
@@ -87,21 +95,20 @@ class PaymentServiceTest {
             when(feeService.getFeesDataForC2(WITHOUT_NOTICE)).thenReturn(buildFeesData(feeForC2WithoutNotice));
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"customerReference"})
-        void shouldMakeCorrectPaymentForC2WithNotice(final String customerReference) {
+        @Test
+        void shouldMakeCorrectPaymentForC2WithNotice() {
             CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA")
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
-                    .pbaNumber("PBA123")
-                    .clientCode("clientCode")
-                    .fileReference(customerReference)
+                    .pbaNumber(PBA_NUMBER)
+                    .clientCode(CLIENT_CODE)
+                    .fileReference(CUSTOMER_REFERENCE)
                     .build())))
                 .build();
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference(customerReference)
+                .customerReference(CUSTOMER_REFERENCE)
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
@@ -109,59 +116,56 @@ class PaymentServiceTest {
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC2WithNoticeWhenCustomerReferenceIsInvalid(final String customerReference) {
-            String clientCode = "clientCode";
-            CaseData caseData = buildCaseData(clientCode, customerReference, WITH_NOTICE);
+            CaseData caseData = buildCaseData(CLIENT_CODE, customerReference, WITH_NOTICE);
 
-            CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
+            CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(CLIENT_CODE,
                 customerReference,
                 feeForC2WithNotice);
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC2WithNoticeWhenCaseReferenceIsInvalid(final String clientCode) {
-            String customerReference = "customerReference";
-            CaseData caseData = buildCaseData(clientCode, customerReference, WITH_NOTICE);
+            CaseData caseData = buildCaseData(clientCode, CUSTOMER_REFERENCE, WITH_NOTICE);
 
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
-                customerReference,
+                CUSTOMER_REFERENCE,
                 feeForC2WithNotice);
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"customerReference"})
-        void shouldMakeCorrectPaymentForC2WithoutNotice(final String customerReference) {
+        @Test
+        void shouldMakeCorrectPaymentForC2WithoutNotice() {
             CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA")
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITHOUT_NOTICE)
-                    .pbaNumber("PBA123")
-                    .clientCode("clientCode")
-                    .fileReference(customerReference)
+                    .pbaNumber(PBA_NUMBER)
+                    .clientCode(CLIENT_CODE)
+                    .fileReference(CUSTOMER_REFERENCE)
                     .build())))
                 .build();
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference(customerReference)
+                .customerReference(CUSTOMER_REFERENCE)
                 .amount(feeForC2WithoutNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithoutNotice))
                 .build();
@@ -169,62 +173,59 @@ class PaymentServiceTest {
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC2WithoutNoticeWhenCustomerReferenceIsInvalid(final String customerReference) {
-            String clientCode = "clientCode";
-            CaseData caseData = buildCaseData(clientCode, customerReference, WITHOUT_NOTICE);
+            CaseData caseData = buildCaseData(CLIENT_CODE, customerReference, WITHOUT_NOTICE);
 
-            CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
+            CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(CLIENT_CODE,
                 customerReference,
                 feeForC2WithoutNotice);
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC2WithoutNoticeWhenCaseReferenceIsInvalid(final String clientCode) {
-            String customerReference = "customerReference";
-            CaseData caseData = buildCaseData(clientCode, customerReference, WITHOUT_NOTICE);
+            CaseData caseData = buildCaseData(clientCode, CUSTOMER_REFERENCE, WITHOUT_NOTICE);
 
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
-                customerReference,
+                CUSTOMER_REFERENCE,
                 feeForC2WithoutNotice);
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
         void shouldMakeExpectedPaymentWhenFeeAndPayCaseTypeFeatureToggleIsToggledOnAndOff(final boolean toggleStatus) {
-            String customerReference = "customerReference";
             CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA")
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
-                    .pbaNumber("PBA123")
-                    .clientCode("clientCode")
-                    .fileReference(customerReference)
+                    .pbaNumber(PBA_NUMBER)
+                    .clientCode(CLIENT_CODE)
+                    .fileReference(CUSTOMER_REFERENCE)
                     .build())))
                 .build();
 
             when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference(customerReference)
+                .customerReference(CUSTOMER_REFERENCE)
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
@@ -232,7 +233,7 @@ class PaymentServiceTest {
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
 
@@ -246,13 +247,12 @@ class PaymentServiceTest {
 
     @Nested
     class MakePaymentForAdditionalApplications {
-        String testPbaNumber = "PBA123";
         FeeDto feeForAdditionalApplications = FeeDto.builder().calculatedAmount(BigDecimal.TEN).build();
         FeesData feesData = buildFeesData(feeForAdditionalApplications);
 
         @Test
         void shouldMakeCorrectPaymentForAdditionalApplications() {
-            CaseData caseData = buildCaseData("clientCode", "customerReference");
+            CaseData caseData = buildCaseData(CLIENT_CODE, CUSTOMER_REFERENCE);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference("customerReference")
@@ -263,15 +263,15 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForAdditionalApplicationsWhenCustomerReferenceIsInvalid(
             final String customerReference) {
-            String clientCode = "clientCode";
-            CaseData caseData = buildCaseData(clientCode, customerReference);
+
+            CaseData caseData = buildCaseData(CLIENT_CODE, customerReference);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference(BLANK_PARAMETER_VALUE)
@@ -282,35 +282,33 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForAdditionalApplicationsWhenCaseReferenceIsInvalid(final String clientCode) {
-            String customerReference = "customerReference";
-            CaseData caseData = buildCaseData(clientCode, customerReference);
+            CaseData caseData = buildCaseData(clientCode, CUSTOMER_REFERENCE);
 
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
-                customerReference,
+                CUSTOMER_REFERENCE,
                 feeForAdditionalApplications);
 
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
         void shouldMakeExpectedPaymentWhenFeeAndPayCaseTypeFeatureToggleIsToggledOnAndOff(final boolean toggleStatus) {
-            String customerReference = "customerReference";
-            CaseData caseData = buildCaseData("clientCode", "customerReference");
+            CaseData caseData = buildCaseData(CLIENT_CODE, CUSTOMER_REFERENCE);
 
             when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference(customerReference)
+                .customerReference(CUSTOMER_REFERENCE)
                 .amount(feeForAdditionalApplications.getCalculatedAmount())
                 .fees(List.of(feeForAdditionalApplications))
                 .build();
@@ -318,18 +316,18 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         private CaseData buildCaseData(String clientCode, String customerReference) {
             return CaseData.builder()
-                .caseLocalAuthority("LA")
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(List.of(
                     element(AdditionalApplicationsBundle.builder()
                         .pbaPayment(PBAPayment.builder()
                             .clientCode(clientCode)
                             .fileReference(customerReference)
-                            .pbaNumber(testPbaNumber)
+                            .pbaNumber(PBA_NUMBER)
                             .build()).build()))).build();
         }
 
@@ -364,13 +362,13 @@ class PaymentServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
-                .caseLocalAuthority("LA")
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .localAuthorities(wrapElements(localAuthority))
                 .applicants(List.of(element(Applicant.builder()
                     .party(ApplicantParty.builder()
-                        .pbaNumber("PBA123")
-                        .clientCode("clientCode")
-                        .customerReference("customerReference")
+                        .pbaNumber(PBA_NUMBER)
+                        .clientCode(CLIENT_CODE)
+                        .customerReference(CUSTOMER_REFERENCE)
                         .build())
                     .build())))
                 .orders(orders)
@@ -387,7 +385,7 @@ class PaymentServiceTest {
             paymentService.makePaymentForCaseOrders(caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForOrders(orders);
         }
 
@@ -400,19 +398,19 @@ class PaymentServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
-                .caseLocalAuthority("LA")
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .applicants(List.of(element(Applicant.builder()
                     .party(ApplicantParty.builder()
-                        .pbaNumber("PBA123")
-                        .clientCode("clientCode")
-                        .customerReference("customerReference")
+                        .pbaNumber(PBA_NUMBER)
+                        .clientCode(CLIENT_CODE)
+                        .customerReference(CUSTOMER_REFERENCE)
                         .build())
                     .build())))
                 .orders(orders)
                 .build();
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference("customerReference")
+                .customerReference(CUSTOMER_REFERENCE)
                 .amount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build();
@@ -420,7 +418,7 @@ class PaymentServiceTest {
             paymentService.makePaymentForCaseOrders(caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForOrders(orders);
         }
 
@@ -444,46 +442,44 @@ class PaymentServiceTest {
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC110AWhenCustomerReferenceIsInvalid(final String customerReference) {
-            String clientCode = "clientCode";
 
             when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
                 .totalAmount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build());
 
-            CaseData caseData = buildCaseDataForC110Application(clientCode, customerReference, orders);
+            CaseData caseData = buildCaseDataForC110Application(CLIENT_CODE, customerReference, orders);
 
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequestForC110Application(
-                clientCode,
+                CLIENT_CODE,
                 customerReference);
 
             paymentService.makePaymentForCaseOrders(caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForOrders(orders);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC110AWhenCaseReferenceIsInvalid(final String clientCode) {
-            String customerReference = "customerReference";
 
             when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
                 .totalAmount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build());
 
-            CaseData caseData = buildCaseDataForC110Application(clientCode, customerReference, orders);
+            CaseData caseData = buildCaseDataForC110Application(clientCode, CUSTOMER_REFERENCE, orders);
 
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequestForC110Application(
                 clientCode,
-                customerReference);
+                CUSTOMER_REFERENCE);
 
             paymentService.makePaymentForCaseOrders(caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForOrders(orders);
         }
 
@@ -496,12 +492,12 @@ class PaymentServiceTest {
                 .build());
             CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
-                .caseLocalAuthority("LA")
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .applicants(List.of(element(Applicant.builder()
                     .party(ApplicantParty.builder()
-                        .pbaNumber("PBA123")
-                        .clientCode("clientCode")
-                        .customerReference("customerReference")
+                        .pbaNumber(PBA_NUMBER)
+                        .clientCode(CLIENT_CODE)
+                        .customerReference(CUSTOMER_REFERENCE)
                         .build())
                     .build())))
                 .orders(orders)
@@ -510,7 +506,7 @@ class PaymentServiceTest {
             when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference("customerReference")
+                .customerReference(CUSTOMER_REFERENCE)
                 .amount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build();
@@ -518,8 +514,111 @@ class PaymentServiceTest {
             paymentService.makePaymentForCaseOrders(caseData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
             verify(feeService).getFeesDataForOrders(orders);
+        }
+    }
+
+    @Nested
+    class MakePaymentForPlacement {
+
+        private final String applicant = "Applicant 1";
+
+        private final FeeDto placementFee = FeeDto.builder()
+            .calculatedAmount(BigDecimal.TEN)
+            .build();
+
+        @BeforeEach
+        void init() {
+
+            when(feeService.getFeesDataForPlacement()).thenReturn(FeesData.builder()
+                .totalAmount(BigDecimal.TEN)
+                .fees(List.of(placementFee))
+                .build());
+        }
+
+        @Test
+        void shouldMakePaymentForPlacement() {
+
+            final PBAPayment pbaPayment = PBAPayment.builder()
+                .pbaNumber(PBA_NUMBER)
+                .clientCode(CLIENT_CODE)
+                .fileReference(CUSTOMER_REFERENCE)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .placementEventData(PlacementEventData.builder().placementPayment(pbaPayment).build())
+                .build();
+
+            paymentService.makePaymentForPlacement(caseData, applicant);
+
+            final CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .accountNumber(PBA_NUMBER)
+                .customerReference(CUSTOMER_REFERENCE)
+                .caseReference(CLIENT_CODE)
+                .organisationName(applicant)
+                .amount(BigDecimal.TEN)
+                .fees(List.of(placementFee))
+                .build();
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+        }
+
+        @Test
+        void shouldMakePaymentForPlacementWithoutClientCodeAndCustomerReference() {
+
+            final PBAPayment pbaPayment = PBAPayment.builder()
+                .pbaNumber(PBA_NUMBER)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .placementEventData(PlacementEventData.builder().placementPayment(pbaPayment).build())
+                .build();
+
+            paymentService.makePaymentForPlacement(caseData, applicant);
+
+            final CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .accountNumber(PBA_NUMBER)
+                .customerReference(NOT_PROVIDED)
+                .caseReference(NOT_PROVIDED)
+                .amount(BigDecimal.TEN)
+                .fees(List.of(placementFee))
+                .organisationName(applicant)
+                .build();
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+        }
+
+        @Test
+        void shouldThrowsExceptionWhenPaymentDetailsNotPresent() {
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .placementEventData(PlacementEventData.builder().build())
+                .build();
+
+            assertThatThrownBy(() -> paymentService.makePaymentForPlacement(caseData, applicant))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Case does not have PBA number for placement payment");
+        }
+
+        @Test
+        void shouldThrowsExceptionWhenPBANumberNotPresent() {
+
+            final PBAPayment pbaPayment = PBAPayment.builder()
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placementPayment(pbaPayment)
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> paymentService.makePaymentForPlacement(caseData, applicant))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Case does not have PBA number for placement payment");
         }
     }
 
@@ -532,7 +631,7 @@ class PaymentServiceTest {
 
     private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder creditAccountPaymentRequestBuilder() {
         CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder builder = CreditAccountPaymentRequest.builder()
-            .accountNumber("PBA123")
+            .accountNumber(PBA_NUMBER)
             .currency(GBP)
             .service(FPL)
             .ccdCaseNumber(String.valueOf(CASE_ID))
@@ -549,7 +648,7 @@ class PaymentServiceTest {
     }
 
     private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder() {
-        return creditAccountPaymentRequestBuilder().caseReference("clientCode");
+        return creditAccountPaymentRequestBuilder().caseReference(CLIENT_CODE);
     }
 
     private CreditAccountPaymentRequest buildCreditAccountPaymentRequest(String caseReference,
@@ -577,10 +676,10 @@ class PaymentServiceTest {
 
     private CaseData buildCaseData(String clientCode, String customerReference, C2ApplicationType type) {
         return CaseData.builder()
-            .caseLocalAuthority("LA")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                 .type(type)
-                .pbaNumber("PBA123")
+                .pbaNumber(PBA_NUMBER)
                 .clientCode(clientCode)
                 .fileReference(customerReference)
                 .build())))
@@ -590,10 +689,10 @@ class PaymentServiceTest {
     private CaseData buildCaseDataForC110Application(String clientCode, String customerReference, Orders orders) {
         return CaseData.builder()
             .id(CASE_ID)
-            .caseLocalAuthority("LA")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .localAuthorities(wrapElements(LocalAuthority.builder()
                 .designated("Yes")
-                .pbaNumber("PBA123")
+                .pbaNumber(PBA_NUMBER)
                 .clientCode(clientCode)
                 .customerReference(customerReference)
                 .build()))

@@ -75,3 +75,8 @@ resource "azurerm_key_vault_secret" "scheduler-db-password" {
   value     = module.fpl-scheduler-db.postgresql_password
   key_vault_id = module.key-vault.key_vault_id
 }
+
+data "azurerm_key_vault_secret" "use-shuttered-case-def" {
+  name      = "use-shuttered-case-def"
+  key_vault_id = module.key-vault.key_vault_id
+}

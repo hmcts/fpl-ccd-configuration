@@ -40,6 +40,7 @@ public class TestFeeConfig {
     public static final String JURISDICTION_1 = "family";
     public static final String JURISDICTION_2 = "family court";
     public static final String SERVICE = "private law";
+    public static final String ADOPTION_SERVICE = "adoption";
 
     public static final String C2_WITHOUT_NOTICE_KEYWORD = "CWON";
     public static final String C2_WITH_NOTICE_KEYWORD = "CWN";
@@ -104,7 +105,7 @@ public class TestFeeConfig {
             JURISDICTION_1,
             JURISDICTION_2,
             feeTypeToKeyword.get(feeType),
-            SERVICE
+            feeType == PLACEMENT ? ADOPTION_SERVICE : SERVICE
         );
     }
 }
