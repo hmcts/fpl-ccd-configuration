@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 
@@ -19,18 +21,32 @@ class PlacementTest {
     @Nested
     class NonConfidential {
 
+        private final PlacementSupportingDocument supportingDocument = PlacementSupportingDocument.builder()
+            .type(BIRTH_ADOPTION_CERTIFICATE)
+            .document(testDocumentReference())
+            .build();
+
+        private final PlacementConfidentialDocument confidentialDocument = PlacementConfidentialDocument.builder()
+            .type(ANNEX_B)
+            .document(testDocumentReference())
+            .build();
+
+        private final PlacementNoticeDocument noticeDocument1 = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .notice(testDocumentReference())
+            .noticeDescription("Notice description")
+            .response(testDocumentReference())
+            .responseDescription("Response description")
+            .build();
+
+        private final PlacementNoticeDocument noticeDocument2 = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
+            .notice(testDocumentReference())
+            .noticeDescription("Cafcass description")
+            .build();
+
         @Test
-        void shouldReturnNonConfidentialCopy() {
-
-            final PlacementSupportingDocument supportingDocument = PlacementSupportingDocument.builder()
-                .type(BIRTH_ADOPTION_CERTIFICATE)
-                .document(testDocumentReference())
-                .build();
-
-            final PlacementConfidentialDocument confidentialDocument = PlacementConfidentialDocument.builder()
-                .type(ANNEX_B)
-                .document(testDocumentReference())
-                .build();
+        void shouldReturnNonConfidentialCopyWithoutNoticeResponses() {
 
             final Placement underTest = Placement.builder()
                 .childName("Alex White")
@@ -38,9 +54,35 @@ class PlacementTest {
                 .application(testDocumentReference())
                 .supportingDocuments(wrapElements(supportingDocument))
                 .confidentialDocuments(wrapElements(confidentialDocument))
+                .noticeDocuments(wrapElements(noticeDocument1, noticeDocument2))
                 .build();
 
-            final Placement actualNonConfidentialPlacement = underTest.nonConfidential();
+            final Placement actualNonConfidentialPlacement = underTest.nonConfidential(false);
+
+            final Placement expectedNonConfidentialPlacement = underTest.toBuilder()
+                .confidentialDocuments(null)
+                .noticeDocuments(wrapElements(noticeDocument1.toBuilder()
+                    .response(null)
+                    .responseDescription(null)
+                    .build(), noticeDocument2))
+                .build();
+
+            assertThat(actualNonConfidentialPlacement).isEqualTo(expectedNonConfidentialPlacement);
+        }
+
+        @Test
+        void shouldReturnNonConfidentialCopyWithNoticeResponses() {
+
+            final Placement underTest = Placement.builder()
+                .childName("Alex White")
+                .childId(randomUUID())
+                .application(testDocumentReference())
+                .supportingDocuments(wrapElements(supportingDocument))
+                .confidentialDocuments(wrapElements(confidentialDocument))
+                .noticeDocuments(wrapElements(noticeDocument1, noticeDocument2))
+                .build();
+
+            final Placement actualNonConfidentialPlacement = underTest.nonConfidential(true);
 
             final Placement expectedNonConfidentialPlacement = underTest.toBuilder()
                 .confidentialDocuments(null)
@@ -49,8 +91,9 @@ class PlacementTest {
             assertThat(actualNonConfidentialPlacement).isEqualTo(expectedNonConfidentialPlacement);
         }
 
-        @Test
-        void shouldReturnNonConfidentialCopyWhenNoConfidentialDocuments() {
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnNonConfidentialCopyWhenNoConfidentialDocuments(boolean withNoticeResponses) {
 
             final Placement underTest = Placement.builder()
                 .childName("Alex White")
@@ -58,7 +101,7 @@ class PlacementTest {
                 .application(testDocumentReference())
                 .build();
 
-            final Placement actualNonConfidentialPlacement = underTest.nonConfidential();
+            final Placement actualNonConfidentialPlacement = underTest.nonConfidential(withNoticeResponses);
 
             assertThat(actualNonConfidentialPlacement).isEqualTo(underTest);
         }
