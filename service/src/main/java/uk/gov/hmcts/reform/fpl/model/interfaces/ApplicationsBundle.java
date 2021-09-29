@@ -9,13 +9,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface ApplicationsBundle extends ConfidentialBundle {
-
-    String toLabel();
-
-    int getSortOrder();
-
-    String getUploadedDateTime();
+public interface ApplicationsBundle extends ConfidentialBundle, SelectableItem {
 
     DocumentReference getApplication();
 
