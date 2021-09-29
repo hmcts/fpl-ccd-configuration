@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
+import static uk.gov.hmcts.reform.fpl.utils.Constants.NEW_LINE;
+
 public class EmailContent {
-    public static final String NEW_LINE = "\n";
+
     private final StringBuilder body = new StringBuilder();
 
     public static EmailContent emailContent() {

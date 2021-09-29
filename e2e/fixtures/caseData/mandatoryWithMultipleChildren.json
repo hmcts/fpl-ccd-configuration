@@ -160,7 +160,7 @@
             "telephoneNumber": {
               "telephoneNumber": "00000 000000"
             },
-            "relationshipToChild": "Uncle"
+            "relationshipToChild": "Father"
           },
           "legalRepresentation": "No"
         }
@@ -179,13 +179,13 @@
               "AddressLine2": "Heron House 8"
             },
             "lastName": "Bloggs",
-            "firstName": "George",
+            "firstName": "Emma",
             "dateOfBirth": "1990-02-03",
             "placeOfBirth": "London",
             "telephoneNumber": {
               "telephoneNumber": "07000 654321"
             },
-            "relationshipToChild": "Uncle"
+            "relationshipToChild": "Mother"
           },
           "legalRepresentation": "No"
         }

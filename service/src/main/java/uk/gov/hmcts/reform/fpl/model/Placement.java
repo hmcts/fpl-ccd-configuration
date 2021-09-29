@@ -3,18 +3,19 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Stream.ofNullable;
-import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static java.util.Objects.nonNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -36,28 +37,24 @@ public class Placement {
     @JsonProperty("placementConfidentialDocuments")
     private List<Element<PlacementConfidentialDocument>> confidentialDocuments;
 
-    @JsonProperty("placementOrderAndNotices")
-    private List<Element<PlacementOrderAndNotices>> orderAndNotices;
+    @JsonProperty("placementNoticeDocuments")
+    private List<Element<PlacementNoticeDocument>> noticeDocuments;
+
+    @JsonProperty("placementUploadDateTime")
+    public LocalDateTime placementUploadDateTime;
 
     @JsonIgnore
-    public Placement setChild(Element<Child> child) {
-        this.setChildId(child.getId());
-        this.setChildName(child.getValue().getParty().getFullName());
-        return this;
-    }
-
-    @JsonIgnore
-    public Placement removePlacementOrder() {
-        List<Element<PlacementOrderAndNotices>> filteredOrders = ofNullable(this.getOrderAndNotices())
-            .flatMap(Collection::stream)
-            .filter(x -> x.getValue().getType() != PLACEMENT_ORDER)
-            .collect(Collectors.toList());
-
-        return this.toBuilder().orderAndNotices(filteredOrders.isEmpty() ? null : filteredOrders).build();
-    }
-
-    @JsonIgnore
-    public Placement removeConfidentialDocuments() {
+    public Placement nonConfidential() {
         return this.toBuilder().confidentialDocuments(null).build();
+    }
+
+    public DocumentReference getPlacementApplicationCopy() {
+        return application;
+    }
+
+    @JsonProperty("isSubmitted")
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    public YesNo isSubmitted() {
+        return YesNo.from(nonNull(this.placementUploadDateTime));
     }
 }

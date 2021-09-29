@@ -8,4 +8,5 @@ public class CaseDefinitionConstants {
 
     public static final String JURISDICTION = "PUBLICLAW";
     public static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
+    public static final String CASE_UPDATE_EVENT = "internal-change-UPDATE_CASE";
 }
