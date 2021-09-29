@@ -14,7 +14,7 @@
     "ListElementCode": "reason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "timeFrame=\"Same day\"",
+    "FieldShowCondition": "timeFrame=\"Same day\" OR timeFrame=\"Other\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
   },

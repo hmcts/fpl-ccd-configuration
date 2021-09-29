@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
@@ -159,9 +160,9 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         Other other2 = otherWithName("Sam");
         CaseData caseData = CaseData.builder().others(Others.builder()
-                .firstOther(other1)
-                .additionalOthers(wrapElements(other2))
-                .build())
+            .firstOther(other1)
+            .additionalOthers(wrapElements(other2))
+            .build())
             .build();
 
         assertThat(caseData.findOther(1)).contains(other2);
@@ -208,7 +209,7 @@ class CaseDataTest {
     @Test
     void shouldReturnFalseWhenUsingAllocatedJudge() {
         CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .build())
+            .build())
             .allocatedJudge(Judge.builder()
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeEmailAddress("test@test.com")
@@ -955,8 +956,8 @@ class CaseDataTest {
                 C1_WITH_SUPPLEMENT, formattedFutureDate);
 
             List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
-                    AdditionalApplicationsBundle.builder().c2DocumentBundle(pastC2Bundle)
-                        .otherApplicationsBundle(otherBundle1).build()),
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(pastC2Bundle)
+                    .otherApplicationsBundle(otherBundle1).build()),
                 element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle2).build()),
                 element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle3).build()),
                 element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle4).build()));
@@ -2076,6 +2077,53 @@ class CaseDataTest {
         void testIfLanguageRequirementYes() {
             assertThat(CaseData.builder().languageRequirement("Yes").build().getSealType()).isEqualTo(BILINGUAL);
         }
+    }
+
+    @Nested
+    class DischargeOfCareApplication {
+
+        @Test
+        void shouldReturnFalseWhenNoOrders() {
+            CaseData underTest = CaseData.builder()
+                .build();
+
+            assertThat(underTest.isDischargeOfCareApplication()).isFalse();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnFalseWhenNoOrdersTypesSpecified(List<OrderType> orderTypes) {
+            CaseData underTest = CaseData.builder()
+                .orders(Orders.builder()
+                    .orderType(orderTypes)
+                    .build())
+                .build();
+
+            assertThat(underTest.isDischargeOfCareApplication()).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenMultipleOrdersSpecified() {
+            CaseData underTest = CaseData.builder()
+                .orders(Orders.builder()
+                    .orderType(List.of(OrderType.OTHER, OrderType.SUPERVISION_ORDER))
+                    .build())
+                .build();
+
+            assertThat(underTest.isDischargeOfCareApplication()).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrueWhenOnlyDischargeOrdersSpecified() {
+            CaseData underTest = CaseData.builder()
+                .orders(Orders.builder()
+                    .orderType(List.of(OrderType.OTHER))
+                    .build())
+                .build();
+
+            assertThat(underTest.isDischargeOfCareApplication()).isTrue();
+        }
+
     }
 
     private HearingOrder buildHearingOrder(HearingOrderType type) {
