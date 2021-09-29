@@ -10,17 +10,23 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Placement {
+public class Placement implements SelectableItem {
 
     @JsonProperty("placementChildId")
     private UUID childId;
@@ -56,5 +62,28 @@ public class Placement {
     @JsonDeserialize(using = YesNoDeserializer.class)
     public YesNo isSubmitted() {
         return YesNo.from(nonNull(this.placementUploadDateTime));
+    }
+
+    @Override
+    @JsonIgnore
+    public String toLabel() {
+        if (isNull(placementUploadDateTime)) {
+            return format("A50, %s", childName);
+        }
+        return format("A50, %s, %s", childName, getUploadedDateTime());
+    }
+
+    @Override
+    @JsonIgnore
+    public int getSortOrder() {
+        return 3;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUploadedDateTime() {
+        return ofNullable(placementUploadDateTime)
+            .map(time -> formatLocalDateTimeBaseUsingFormat(time, DATE_TIME))
+            .orElse(null);
     }
 }
