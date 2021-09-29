@@ -16,7 +16,7 @@ public class DateFormatterHelper {
     public static final String DATE = "d MMMM yyyy";
     public static final String DATE_TIME_WITH_ORDINAL_SUFFIX = "h:mma 'on the' d'%s' MMMM y";
     public static final String DATE_WITH_ORDINAL_SUFFIX = "d'%s' MMMM y";
-    public static final String DATE_SHORT = "dd/MM/YYYY";
+    public static final String DATE_SHORT = "dd/MM/yyyy";
 
     private DateFormatterHelper() {
         // NO-OP
