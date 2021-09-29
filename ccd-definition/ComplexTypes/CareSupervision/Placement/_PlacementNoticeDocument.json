@@ -1,0 +1,61 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "recipientName",
+    "FieldType": "Text",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "notice",
+    "FieldType": "Document",
+    "ElementLabel": "Notice of placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "noticeDescription",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notice of placement description",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "response",
+    "FieldType": "Document",
+    "ElementLabel": "Notice of placement response",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "responseDescription",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notice of placement response description",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "respondentId",
+    "FieldType": "Text",
+    "ElementLabel": "Respondent id",
+    "FieldShowCondition": "notice=\"DO NOT SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "type",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PlacementNoticeRecipientType",
+    "ElementLabel": "Recipient type",
+    "FieldShowCondition": "notice = \"DO NOT SHOW\"",
+    "SecurityClassification": "Public"
+  }
+]

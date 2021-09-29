@@ -21,7 +21,7 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
     @SuppressWarnings("unchecked")
     void shouldAddEPOReasoningShowValueToCaseDataWhenCallbackContainsEPO() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/case.json");
-
+        assertThat(response.getData().get("otherOrderType")).isEqualTo("NO");
         assertThat((List<String>) response.getData().get("EPO_REASONING_SHOW")).contains("SHOW_FIELD");
     }
 
@@ -30,6 +30,14 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseDataWithRemovedEPO.json");
 
         assertThat(response.getData().get("groundsForEPO")).isEqualTo(null);
+        assertThat(response.getData().get("EPO_REASONING_SHOW")).isEqualTo(null);
+    }
+
+    @Test
+    void shouldSetOtherOrderTypeToYesWhenOtherOrderTypeIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseOtherOrderType.json");
+
+        assertThat(response.getData().get("otherOrderType")).isEqualTo("YES");
         assertThat(response.getData().get("EPO_REASONING_SHOW")).isEqualTo(null);
     }
 }

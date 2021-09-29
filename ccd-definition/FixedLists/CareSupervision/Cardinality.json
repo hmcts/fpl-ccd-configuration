@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Cardinality",
+    "ListElementCode": "ZERO",
+    "ListElement": "Zero",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Cardinality",
+    "ListElementCode": "ONE",
+    "ListElement": "One",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Cardinality",
+    "ListElementCode": "MANY",
+    "ListElement": "Many",
+    "DisplayOrder": 3
+  }
+]

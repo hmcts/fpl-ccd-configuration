@@ -60,4 +60,8 @@ public abstract class CallbackController {
     protected void publishEvent(Object event) {
         eventPublisher.publishEvent(event);
     }
+
+    protected void publishEvents(List<Object> events) {
+        events.forEach(this::publishEvent);
+    }
 }

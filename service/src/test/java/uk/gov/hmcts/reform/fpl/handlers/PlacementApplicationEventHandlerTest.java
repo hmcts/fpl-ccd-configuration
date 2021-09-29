@@ -2,61 +2,277 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
-import uk.gov.hmcts.reform.fpl.service.CourtService;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
+import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.HMCTS;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.A50_PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, TestLogsExtension.class})
 class PlacementApplicationEventHandlerTest {
-    private static final BaseCaseNotifyData NOTIFY_DATA = mock(BaseCaseNotifyData.class);
-    private static final CaseData CASE_DATA = mock(CaseData.class);
-    private static final long CASE_ID = 123456L;
+
+    private static final Long CASE_ID = 100L;
 
     @Mock
-    private NotificationService notificationService;
+    private Time time;
+
     @Mock
-    private CourtService courtService;
+    private UserService userService;
+
     @Mock
-    private PlacementApplicationContentProvider contentProvider;
+    private EventService eventService;
+
+    @Mock
+    private PaymentService paymentService;
+
+    @Mock
+    private CoreCaseDataService coreCaseDataService;
+
+    @TestLogs
+    private TestLogger logs = new TestLogger(PlacementApplicationEventHandler.class);
+
     @InjectMocks
     private PlacementApplicationEventHandler underTest;
 
     @Test
-    void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDisabled() {
-        given(contentProvider.buildPlacementApplicationNotificationParameters(CASE_DATA)).willReturn(NOTIFY_DATA);
-        given(courtService.getCourtEmail(CASE_DATA)).willReturn(COURT_EMAIL_ADDRESS);
-        given(CASE_DATA.getId()).willReturn(CASE_ID);
+    void shouldNotTakePaymentWhenItIsNotRequired() {
 
-        underTest.notifyAdmin(new PlacementApplicationEvent(CASE_DATA));
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+            .placementPaymentRequired(NO)
+            .build();
 
-        verify(notificationService).sendEmail(
-            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, COURT_EMAIL_ADDRESS, NOTIFY_DATA, CASE_ID
-        );
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .placementEventData(placementEventData)
+            .build();
+
+        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+
+        underTest.takePayment(event);
+
+        assertThat(logs.get()).containsExactly("Payment not required for placement for case 100");
+
+        verifyNoInteractions(paymentService, eventService, coreCaseDataService, userService, time);
     }
 
     @Test
-    void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() {
-        given(contentProvider.buildPlacementApplicationNotificationParameters(CASE_DATA)).willReturn(NOTIFY_DATA);
-        given(courtService.getCourtEmail(CASE_DATA)).willReturn(CTSC_INBOX);
-        given(CASE_DATA.getId()).willReturn(CASE_ID);
+    void shouldTakeCourtPaymentWhenRequiredAndUpdatePaymentTimestamp() {
 
-        underTest.notifyAdmin(new PlacementApplicationEvent(CASE_DATA));
+        final LocalDateTime now = LocalDateTime.now();
 
-        verify(notificationService).sendEmail(
-            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, CTSC_INBOX, NOTIFY_DATA, CASE_ID
-        );
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+            .placementPaymentRequired(YES)
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthorityName("Test local authority")
+            .placementEventData(placementEventData)
+            .build();
+
+        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+
+        when(time.now()).thenReturn(now);
+        when(userService.isHmctsAdminUser()).thenReturn(true);
+
+        underTest.takePayment(event);
+
+        final Map<String, Object> expectedCaseUpdates = new HashMap<>();
+        expectedCaseUpdates.put("placementLastPaymentTime", now);
+        expectedCaseUpdates.put("placementPaymentRequired", null);
+        expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
+
+        verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
+        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
+
+        verifyNoInteractions(eventService);
+    }
+
+    @Test
+    void shouldTakeLocalAuthorityPaymentWhenRequiredAndUpdatePaymentTimestamp() {
+
+        final LocalDateTime now = LocalDateTime.now();
+
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+            .placementPaymentRequired(YES)
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthorityName("Test local authority")
+            .placementEventData(placementEventData)
+            .build();
+
+        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+
+        when(time.now()).thenReturn(now);
+        when(userService.isHmctsAdminUser()).thenReturn(false);
+
+        underTest.takePayment(event);
+
+        final Map<String, Object> expectedCaseUpdates = new HashMap<>();
+        expectedCaseUpdates.put("placementLastPaymentTime", now);
+        expectedCaseUpdates.put("placementPaymentRequired", null);
+        expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
+
+        verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
+        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
+
+        verifyNoInteractions(eventService);
+    }
+
+    @ParameterizedTest
+    @MethodSource("paymentExceptions")
+    void shouldNotifyCtscWhenCourtInitiatedPlacementPaymentFailed(Exception paymentException) {
+
+        final LocalDateTime now = LocalDateTime.now();
+
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+            .placementPaymentRequired(YES)
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthorityName("Test local authority")
+            .placementEventData(placementEventData)
+            .build();
+
+        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+
+        when(time.now()).thenReturn(now);
+        when(userService.isHmctsAdminUser()).thenReturn(true);
+        doThrow(paymentException).when(paymentService).makePaymentForPlacement(any(), any());
+
+        underTest.takePayment(event);
+
+        final Map<String, Object> expectedCaseUpdates = new HashMap<>();
+        expectedCaseUpdates.put("placementLastPaymentTime", now);
+        expectedCaseUpdates.put("placementPaymentRequired", null);
+        expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
+
+
+        verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
+        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
+        verify(eventService).publishEvent(FailedPBAPaymentEvent.builder()
+            .caseData(caseData)
+            .applicant(OrderApplicant.builder()
+                .name(HMCTS.name())
+                .type(HMCTS)
+                .build())
+            .applicationTypes(List.of(A50_PLACEMENT))
+            .build());
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("paymentExceptions")
+    void shouldNotifyCtscWhenLocalAuthorityInitiatedPlacementPaymentFailed(Exception paymentException) {
+
+        final LocalDateTime now = LocalDateTime.now();
+
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+            .placementPaymentRequired(YES)
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthorityName("Test local authority")
+            .placementEventData(placementEventData)
+            .build();
+
+        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+
+        when(time.now()).thenReturn(now);
+        when(userService.isHmctsAdminUser()).thenReturn(false);
+        doThrow(paymentException).when(paymentService).makePaymentForPlacement(any(), any());
+
+        underTest.takePayment(event);
+
+        final Map<String, Object> expectedCaseUpdates = new HashMap<>();
+        expectedCaseUpdates.put("placementLastPaymentTime", now);
+        expectedCaseUpdates.put("placementPaymentRequired", null);
+        expectedCaseUpdates.put("placementPayment", null);
+        expectedCaseUpdates.put("placement", null);
+
+        verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
+        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
+        verify(eventService).publishEvent(FailedPBAPaymentEvent.builder()
+            .caseData(caseData)
+            .applicant(OrderApplicant.builder()
+                .name("Test local authority")
+                .type(LOCAL_AUTHORITY)
+                .build())
+            .applicationTypes(List.of(A50_PLACEMENT))
+            .build());
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenUnrecognisedExceptionThrown() {
+
+        final Exception unexpectedException = new RuntimeException();
+
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+            .placementPaymentRequired(YES)
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthorityName("Test local authority")
+            .placementEventData(placementEventData)
+            .build();
+
+        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+
+        when(userService.isHmctsAdminUser()).thenReturn(false);
+        doThrow(unexpectedException).when(paymentService).makePaymentForPlacement(any(), any());
+
+        assertThatThrownBy(() -> underTest.takePayment(event)).isEqualTo(unexpectedException);
+
+        verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
+        verifyNoMoreInteractions(coreCaseDataService, eventService);
+    }
+
+    private static Stream<Exception> paymentExceptions() {
+        return Stream.of(
+            new PaymentsApiException("Payment Exception", new RuntimeException()),
+            new FeeRegisterException(404, "Fee Exception", new RuntimeException()));
     }
 }

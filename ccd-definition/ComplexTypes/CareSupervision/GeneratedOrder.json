@@ -265,5 +265,14 @@
     "ElementLabel": "Sent for translation",
     "SecurityClassification": "Public",
     "FieldShowCondition": "needTranslation=\"YES\" AND translatedDocument!=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "notificationDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Notification document",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "notificationDocument!=\"\""
   }
 ]
