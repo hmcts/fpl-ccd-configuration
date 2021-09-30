@@ -23,13 +23,13 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.addFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
@@ -161,7 +161,7 @@ class CaseDetailsHelperTest {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
 
-            final CaseDetailsMap actualCaseDetails = addFields(caseDetails, target);
+            final CaseDetailsMap actualCaseDetails = putFields(caseDetails, target);
 
             assertThat(actualCaseDetails).containsExactly(
                 entry("key1", "some value 1"),
@@ -173,7 +173,7 @@ class CaseDetailsHelperTest {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
 
-            final CaseDetailsMap actualCaseDetails = addFields(caseDetails, target, "Non existing");
+            final CaseDetailsMap actualCaseDetails = putFields(caseDetails, target, "Non existing");
 
             assertThat(actualCaseDetails).containsExactly(
                 entry("key1", "some value 1"),
@@ -185,7 +185,7 @@ class CaseDetailsHelperTest {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
 
-            final CaseDetailsMap actualCaseDetails = addFields(caseDetails, target, "Group1");
+            final CaseDetailsMap actualCaseDetails = putFields(caseDetails, target, "Group1");
 
             assertThat(actualCaseDetails).containsExactly(
                 entry("key1", "one"),
@@ -199,7 +199,7 @@ class CaseDetailsHelperTest {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
 
-            final CaseDetailsMap actualCaseDetails = addFields(caseDetails, target, "Group1", "Group2");
+            final CaseDetailsMap actualCaseDetails = putFields(caseDetails, target, "Group1", "Group2");
 
             assertThat(actualCaseDetails).containsExactly(
                 entry("key1", "one"),
@@ -212,7 +212,7 @@ class CaseDetailsHelperTest {
 
             final TestClass target = new TestClass(null, null, null, null);
 
-            final CaseDetailsMap caseDetailsMap = addFields(caseDetails, target, "Group2");
+            final CaseDetailsMap caseDetailsMap = putFields(caseDetails, target, "Group2");
 
             assertThat(caseDetailsMap).containsExactly(entry("key1", "some value 1"));
         }
@@ -222,7 +222,7 @@ class CaseDetailsHelperTest {
 
             final TestClass target = new TestClass(null, null, null, null);
 
-            final CaseDetailsMap actualCaseDetails = addFields(caseDetails, target, "Group1", "Group2");
+            final CaseDetailsMap actualCaseDetails = putFields(caseDetails, target, "Group1", "Group2");
 
             assertThat(actualCaseDetails).isEmpty();
         }
@@ -230,7 +230,7 @@ class CaseDetailsHelperTest {
         @Test
         void shouldThrowExceptionWhenTargetObjectIsNull() {
 
-            assertThatThrownBy(() -> addFields(caseDetails, null, "Group1", "Group2"))
+            assertThatThrownBy(() -> putFields(caseDetails, null, "Group1", "Group2"))
                 .isInstanceOf(NullPointerException.class);
         }
     }

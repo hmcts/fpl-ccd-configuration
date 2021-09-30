@@ -10,9 +10,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ExtendWith({MockitoExtension.class, TestLogsExtension.class})
-class PlacementApplicationEventHandlerTest {
+class PlacementEventsHandlerPaymentTest {
 
     private static final Long CASE_ID = 100L;
 
@@ -64,16 +66,21 @@ class PlacementApplicationEventHandlerTest {
     private CoreCaseDataService coreCaseDataService;
 
     @TestLogs
-    private TestLogger logs = new TestLogger(PlacementApplicationEventHandler.class);
+    private TestLogger logs = new TestLogger(PlacementEventsHandler.class);
 
     @InjectMocks
-    private PlacementApplicationEventHandler underTest;
+    private PlacementEventsHandler underTest;
 
     @Test
     void shouldNotTakePaymentWhenItIsNotRequired() {
 
+        final Placement placement = Placement.builder()
+            .childId(randomUUID())
+            .build();
+
         final PlacementEventData placementEventData = PlacementEventData.builder()
             .placementPaymentRequired(NO)
+            .placement(placement)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -81,9 +88,9 @@ class PlacementApplicationEventHandlerTest {
             .placementEventData(placementEventData)
             .build();
 
-        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+        final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
-        underTest.takePayment(event);
+        underTest.takeApplicationPayment(event);
 
         assertThat(logs.get()).containsExactly("Payment not required for placement for case 100");
 
@@ -95,8 +102,13 @@ class PlacementApplicationEventHandlerTest {
 
         final LocalDateTime now = LocalDateTime.now();
 
+        final Placement placement = Placement.builder()
+            .childId(randomUUID())
+            .build();
+
         final PlacementEventData placementEventData = PlacementEventData.builder()
             .placementPaymentRequired(YES)
+            .placement(placement)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -105,12 +117,12 @@ class PlacementApplicationEventHandlerTest {
             .placementEventData(placementEventData)
             .build();
 
-        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+        final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
         when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(true);
 
-        underTest.takePayment(event);
+        underTest.takeApplicationPayment(event);
 
         final Map<String, Object> expectedCaseUpdates = new HashMap<>();
         expectedCaseUpdates.put("placementLastPaymentTime", now);
@@ -129,8 +141,13 @@ class PlacementApplicationEventHandlerTest {
 
         final LocalDateTime now = LocalDateTime.now();
 
+        final Placement placement = Placement.builder()
+            .childId(randomUUID())
+            .build();
+
         final PlacementEventData placementEventData = PlacementEventData.builder()
             .placementPaymentRequired(YES)
+            .placement(placement)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -139,12 +156,12 @@ class PlacementApplicationEventHandlerTest {
             .placementEventData(placementEventData)
             .build();
 
-        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+        final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
         when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(false);
 
-        underTest.takePayment(event);
+        underTest.takeApplicationPayment(event);
 
         final Map<String, Object> expectedCaseUpdates = new HashMap<>();
         expectedCaseUpdates.put("placementLastPaymentTime", now);
@@ -164,8 +181,13 @@ class PlacementApplicationEventHandlerTest {
 
         final LocalDateTime now = LocalDateTime.now();
 
+        final Placement placement = Placement.builder()
+            .childId(randomUUID())
+            .build();
+
         final PlacementEventData placementEventData = PlacementEventData.builder()
             .placementPaymentRequired(YES)
+            .placement(placement)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -174,13 +196,13 @@ class PlacementApplicationEventHandlerTest {
             .placementEventData(placementEventData)
             .build();
 
-        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+        final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
         when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(true);
         doThrow(paymentException).when(paymentService).makePaymentForPlacement(any(), any());
 
-        underTest.takePayment(event);
+        underTest.takeApplicationPayment(event);
 
         final Map<String, Object> expectedCaseUpdates = new HashMap<>();
         expectedCaseUpdates.put("placementLastPaymentTime", now);
@@ -208,8 +230,13 @@ class PlacementApplicationEventHandlerTest {
 
         final LocalDateTime now = LocalDateTime.now();
 
+        final Placement placement = Placement.builder()
+            .childId(randomUUID())
+            .build();
+
         final PlacementEventData placementEventData = PlacementEventData.builder()
             .placementPaymentRequired(YES)
+            .placement(placement)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -218,13 +245,13 @@ class PlacementApplicationEventHandlerTest {
             .placementEventData(placementEventData)
             .build();
 
-        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+        final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
         when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(false);
         doThrow(paymentException).when(paymentService).makePaymentForPlacement(any(), any());
 
-        underTest.takePayment(event);
+        underTest.takeApplicationPayment(event);
 
         final Map<String, Object> expectedCaseUpdates = new HashMap<>();
         expectedCaseUpdates.put("placementLastPaymentTime", now);
@@ -249,8 +276,13 @@ class PlacementApplicationEventHandlerTest {
 
         final Exception unexpectedException = new RuntimeException();
 
+        final Placement placement = Placement.builder()
+            .childId(randomUUID())
+            .build();
+
         final PlacementEventData placementEventData = PlacementEventData.builder()
             .placementPaymentRequired(YES)
+            .placement(placement)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -259,12 +291,12 @@ class PlacementApplicationEventHandlerTest {
             .placementEventData(placementEventData)
             .build();
 
-        final PlacementApplicationAdded event = new PlacementApplicationAdded(caseData);
+        final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
         when(userService.isHmctsAdminUser()).thenReturn(false);
         doThrow(unexpectedException).when(paymentService).makePaymentForPlacement(any(), any());
 
-        assertThatThrownBy(() -> underTest.takePayment(event)).isEqualTo(unexpectedException);
+        assertThatThrownBy(() -> underTest.takeApplicationPayment(event)).isEqualTo(unexpectedException);
 
         verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
         verifyNoMoreInteractions(coreCaseDataService, eventService);

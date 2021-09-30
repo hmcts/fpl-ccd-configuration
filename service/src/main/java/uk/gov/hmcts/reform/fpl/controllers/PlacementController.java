@@ -21,7 +21,7 @@ import java.util.List;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.addFields;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -50,7 +50,7 @@ public class PlacementController extends CallbackController {
         caseProperties.put("placementChildrenCardinality", childrenCardinality);
         caseProperties.putIfNotEmpty("placementChildrenList", eventData.getPlacementChildrenList());
 
-        addFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+        putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
 
         return respond(caseProperties);
     }
@@ -64,7 +64,7 @@ public class PlacementController extends CallbackController {
 
         final PlacementEventData eventData = placementService.preparePlacement(caseData);
 
-        addFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+        putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
 
         return respond(caseProperties);
     }
@@ -123,10 +123,11 @@ public class PlacementController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        final PlacementEventData placementEventData = placementService.savePlacement(caseData);
+        final PlacementEventData eventData = placementService.savePlacement(caseData);
 
-        caseDetails.getData().put("placements", placementEventData.getPlacements());
-        caseDetails.getData().put("placementsNonConfidential", placementEventData.getPlacementsNonConfidential());
+        caseDetails.getData().put("placements", eventData.getPlacements());
+        caseDetails.getData().put("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
+        caseDetails.getData().put("placementsNonConfidentialNotices", eventData.getPlacementsNonConfidential(true));
 
         removeTemporaryFields(caseDetails, PlacementEventData.class);
 
