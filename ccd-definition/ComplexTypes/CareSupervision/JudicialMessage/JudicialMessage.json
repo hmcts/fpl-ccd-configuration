@@ -78,6 +78,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
+    "ListElementCode": "latestMessageDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Latest message",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status!=\"CLOSED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
     "ListElementCode": "status",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "JudicialMessageStatus",

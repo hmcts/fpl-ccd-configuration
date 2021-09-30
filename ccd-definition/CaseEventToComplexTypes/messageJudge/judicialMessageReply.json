@@ -100,9 +100,20 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "latestMessageDocument",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload Document",
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "closeMessageLabel",
     "EventElementLabel": "This message will now be marked as closed",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 11,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
   }
