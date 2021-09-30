@@ -474,6 +474,8 @@ class OrderShowHideQuestionsCalculatorTest {
         recoveryOfChildQuestions.put("isFinalOrder", "YES");
         recoveryOfChildQuestions.put("appointedGuardian", "NO");
         recoveryOfChildQuestions.put("parentResponsible", "NO");
+        recoveryOfChildQuestions.put("childPlacementApplications", "NO");
+        recoveryOfChildQuestions.put("childPlacementQuestions", "NO");
         recoveryOfChildQuestions.put("orderPlacedChildInCustody", "YES");
 
         Map<String, String> placementOrder = new HashMap<>(commonQuestions);
