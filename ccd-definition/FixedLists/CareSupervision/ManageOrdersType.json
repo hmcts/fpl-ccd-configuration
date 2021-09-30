@@ -72,6 +72,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
+    "ListElementCode": "A70_PLACEMENT_ORDER",
+    "ListElement": "Placement Order (A70)",
+    "DisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
     "ListElementCode": "C43A_SPECIAL_GUARDIANSHIP_ORDER",
     "ListElement": "Special guardianship order (C43A)",
     "DisplayOrder": 12
