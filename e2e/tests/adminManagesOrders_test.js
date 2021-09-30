@@ -229,6 +229,46 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
   });
 });
 
+Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+  await setupScenario(I, caseViewPage);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c29);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectWhichOrder(manageOrdersEventPage.section4.whichOrder.options.epo);
+  await manageOrdersEventPage.enterOrderMadeDate(approvalDate);
+  await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.inform);
+  await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.produce);
+  await manageOrdersEventPage.selectOrderPermissions(manageOrdersEventPage.section4.orderPermissions.options.remove);
+  await manageOrdersEventPage.enterRemovalAddress(removalAddress);
+  await manageOrdersEventPage.selectIsExparte();
+  await manageOrdersEventPage.enterOfficerName('Officer Barbrady');
+  await manageOrdersEventPage.selectIsFinalOrder();
+
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 1,
+    orderType: manageOrdersEventPage.orders.title.c29,
+    orderTitle: orderTitle,
+    approvalDate: approvalDate,
+    others: 'John Doe',
+  });
+});
+
 Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
