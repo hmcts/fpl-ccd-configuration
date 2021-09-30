@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -128,6 +127,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
         given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
 
+        Selector othersSelector = Selector.newSelector(2);
+        othersSelector.setSelected(List.of(0, 1));
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
             .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
@@ -135,8 +136,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
                     Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
                 .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
                     .address(Address.builder().postcode("SW2").build()).build())).build())
-            .othersSelector(Selector.newSelector(2)).notifyApplicationsToAllOthers(YesNo.YES.getValue())
-            .sendOrderToAllOthers(YesNo.YES.getValue())
+            .othersSelector(othersSelector)
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
@@ -347,7 +347,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             "draftOrder1Document", "draftOrder2Document", "draftOrder3Document", "draftOrder4Document",
             "draftOrder5Document", "draftOrder6Document", "draftOrder7Document", "draftOrder8Document",
             "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles", "draftOrdersTitlesInBundle",
-            "others_label", "hasOthers", "sendOrderToAllOthers", "othersSelector", "reviewCMOShowOthers");
+            "others_label", "hasOthers", "othersSelector", "reviewCMOShowOthers");
     }
 
     private static Stream<Arguments> populateCaseDataWithState() {

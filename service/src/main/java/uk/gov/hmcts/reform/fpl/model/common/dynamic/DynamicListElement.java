@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.StringUtils.abbreviate;
+
 /**
  * An element of the {@link DynamicList}.
  *
@@ -20,6 +22,13 @@ public class DynamicListElement {
     public static final UUID DEFAULT_CODE = UUID.fromString("00000000-0000-0000-0000-000000000000");
     public static final String DEFAULT_LABEL = "";
     public static final DynamicListElement EMPTY = DynamicListElement.builder().build();
+
+    static final int MAX_DYNAMIC_LIST_LABEL_LENGTH = 250;
+
+    private DynamicListElement(String code, String label) {
+        this.code = code;
+        this.label = abbreviate(label, MAX_DYNAMIC_LIST_LABEL_LENGTH);
+    }
 
     /**
      * Property that maps to the value attribute of the option tag.

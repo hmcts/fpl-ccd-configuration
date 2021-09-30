@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestBody CallbackRequest callbackrequest) {
         final String showEpoFieldId = "EPO_REASONING_SHOW";
+        final CaseData caseData = getCaseData(callbackrequest);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
@@ -45,6 +47,12 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
         } else {
             data.remove("groundsForEPO");
             data.remove(showEpoFieldId);
+        }
+
+        if (caseData.isDischargeOfCareApplication()) {
+            data.put("otherOrderType", "YES");
+        } else {
+            data.put("otherOrderType", "NO");
         }
 
         return respond(caseDetails);

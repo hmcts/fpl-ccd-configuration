@@ -21,11 +21,13 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderNotificationDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryExtraTitleGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryFinalMarker;
@@ -64,7 +66,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(SealedOrderHistoryTypeGenerator.class), @MockBean(SealedOrderHistoryFinalMarker.class),
     @MockBean(AppointedGuardianFormatter.class), @MockBean(SealedOrderLanguageRequirementGenerator.class),
     @MockBean(TranslationRequestService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
-    @MockBean(SendDocumentService.class), @MockBean(OthersNotifiedGenerator.class)
+    @MockBean(SendDocumentService.class), @MockBean(OthersNotifiedGenerator.class),
+    @MockBean(OrderNotificationDocumentService.class), @MockBean(PlacementService.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";
