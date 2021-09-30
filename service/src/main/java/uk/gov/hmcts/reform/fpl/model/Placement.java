@@ -20,8 +20,10 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
@@ -50,8 +52,22 @@ public class Placement implements SelectableItem {
     public LocalDateTime placementUploadDateTime;
 
     @JsonIgnore
-    public Placement nonConfidential() {
-        return this.toBuilder().confidentialDocuments(null).build();
+    public Placement nonConfidential(boolean withNoticesResponses) {
+
+        final PlacementBuilder placementBuilder = this.toBuilder().confidentialDocuments(null);
+
+        if (!withNoticesResponses && nonNull(noticeDocuments)) {
+            final List<Element<PlacementNoticeDocument>> nonConfidentialNotices = noticeDocuments.stream()
+                .map(notice -> element(notice.getId(), notice.getValue().toBuilder()
+                    .response(null)
+                    .responseDescription(null)
+                    .build()))
+                .collect(toList());
+
+            placementBuilder.noticeDocuments(nonConfidentialNotices);
+        }
+
+        return placementBuilder.build();
     }
 
     public DocumentReference getPlacementApplicationCopy() {

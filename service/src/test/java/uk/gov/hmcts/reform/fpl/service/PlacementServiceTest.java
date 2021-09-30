@@ -11,8 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationAdded;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEdited;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -1595,7 +1595,7 @@ class PlacementServiceTest {
 
             final List<Object> events = underTest.getEvents(caseData, caseDataBefore);
 
-            assertThat(events).containsExactly(new PlacementApplicationAdded(caseData));
+            assertThat(events).containsExactly(new PlacementApplicationSubmitted(caseData, currentPlacement));
         }
 
         @ParameterizedTest
@@ -1627,7 +1627,7 @@ class PlacementServiceTest {
 
             final List<Object> events = underTest.getEvents(caseData, caseDataBefore);
 
-            assertThat(events).containsExactly(new PlacementApplicationAdded(caseData));
+            assertThat(events).containsExactly(new PlacementApplicationSubmitted(caseData, currentPlacement));
         }
 
         @Test
@@ -1665,7 +1665,7 @@ class PlacementServiceTest {
 
             final List<Object> events = underTest.getEvents(caseData, caseDataBefore);
 
-            assertThat(events).containsExactly(new PlacementApplicationEdited(caseData));
+            assertThat(events).containsExactly(new PlacementApplicationChanged(caseData, currentPlacement));
         }
     }
 

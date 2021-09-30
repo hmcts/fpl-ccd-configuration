@@ -79,7 +79,7 @@ class PlacementChildSelectionMidEventTest extends AbstractPlacementControllerTes
 
         final CaseData caseData = CaseData.builder()
             .children1(List.of(child1))
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .placementEventData(PlacementEventData.builder()
                 .placementChildrenList(childrenList)
                 .placements(wrapElements(existingPlacement))
@@ -109,8 +109,8 @@ class PlacementChildSelectionMidEventTest extends AbstractPlacementControllerTes
         assertThatDynamicList(actualPlacementData.getPlacementNoticeForFirstParentParentsList())
             .hasSize(2)
             .hasNoSelectedValue()
-            .hasElement(respondent1.getId(), "Emma Green - mother")
-            .hasElement(respondent2.getId(), "Adam Green - father");
+            .hasElement(mother.getId(), "Emma Green - mother")
+            .hasElement(father.getId(), "Adam Green - father");
         assertThat(actualPlacementData.getPlacementNoticeResponseFromFirstParentReceived()).isEqualTo(NO);
 
         assertThat(actualPlacementData.getPlacementNoticeForSecondParentRequired())
@@ -118,8 +118,8 @@ class PlacementChildSelectionMidEventTest extends AbstractPlacementControllerTes
         assertThatDynamicList(actualPlacementData.getPlacementNoticeForSecondParentParentsList())
             .hasSize(2)
             .hasNoSelectedValue()
-            .hasElement(respondent1.getId(), "Emma Green - mother")
-            .hasElement(respondent2.getId(), "Adam Green - father");
+            .hasElement(mother.getId(), "Emma Green - mother")
+            .hasElement(father.getId(), "Adam Green - father");
         assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParentReceived())
             .isEqualTo(NO);
 
