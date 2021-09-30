@@ -1092,6 +1092,58 @@ class CaseDataTest {
     }
 
     @Nested
+    class GetNonCancelledHearings {
+
+        @Test
+        void shouldReturnNonCancelledHearingBookings() {
+            Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
+                .startDate(now())
+                .build());
+            Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
+                .build());
+            Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
+                .startDate(now().minusDays(1))
+                .build());
+            Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
+                .startDate(now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(
+                    pastHearingBooking,
+                    todayHearingBooking,
+                    todayLateHearingBooking,
+                    futureHearingBooking))
+                .build();
+
+            assertThat(caseData.getAllNonCancelledHearings())
+                .containsExactly(pastHearingBooking, todayHearingBooking, todayLateHearingBooking,
+                    futureHearingBooking);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoNonCancelledHearingBookings() {
+            Element<HearingBooking> hearing1 = element(HearingBooking.builder()
+                .startDate(now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .cancelledHearingDetails(List.of(hearing1))
+                .build();
+
+            assertThat(caseData.getAllNonCancelledHearings()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingBookings() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getAllNonCancelledHearings()).isEmpty();
+        }
+    }
+
+    @Nested
     class GetPastAndTodayHearings {
 
         @Test
