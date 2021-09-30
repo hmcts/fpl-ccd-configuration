@@ -34,7 +34,7 @@ public class DocumentsHelper {
     }
 
     public static boolean hasExtension(String filename, String extension) {
-        return filename.endsWith(extension);
+        return extension.equalsIgnoreCase(FilenameUtils.getExtension(filename));
     }
 
     public static String updateExtension(String filename, String newExtension) {

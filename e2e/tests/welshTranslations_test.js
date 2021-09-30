@@ -38,7 +38,7 @@ const orders = {
   c11a: {
     name: 'Application (C110A)',
     originalFile: 'test.pdf',
-    translationFile: 'test-Welsh.pdf',
+    translationFile: 'test-English.pdf',
     tabName: caseView.tabs.furtherEvidence,
   },
   draftOrder: {

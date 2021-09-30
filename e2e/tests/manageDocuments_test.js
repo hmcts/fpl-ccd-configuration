@@ -199,6 +199,9 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
 Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await setupScenario(I);
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
+
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
+
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();

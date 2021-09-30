@@ -59,6 +59,12 @@ class DocumentsHelperTest {
     }
 
     @Test
+    void shouldReturnTrueWhenFilenameExtensionIncludesExpectedExtensionWithDifferentCase() {
+        DocumentReference documentReference = buildDocumentReferenceWithExtension("test.PDF");
+        assertThat(hasExtension(documentReference, "pdf")).isTrue();
+    }
+
+    @Test
     void shouldReturnFalseWhenFilenameExtensionDoesNotIncludeExpectedExtension() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("test.doc");
         assertThat(hasExtension(documentReference, "pdf")).isFalse();

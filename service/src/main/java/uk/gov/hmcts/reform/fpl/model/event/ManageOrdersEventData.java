@@ -82,6 +82,13 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersAmendmentList;
     DocumentReference manageOrdersOrderToAmend;
     DocumentReference manageOrdersAmendedOrder;
+    DynamicList manageOrdersChildPlacementApplication;
+    String manageOrdersSerialNumber;
+    String manageOrdersBirthCertificateNumber;
+    String manageOrdersBirthCertificateDate;
+    String manageOrdersBirthCertificateRegistrationDistrict;
+    String manageOrdersBirthCertificateRegistrationSubDistrict;
+    String manageOrdersBirthCertificateRegistrationCounty;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

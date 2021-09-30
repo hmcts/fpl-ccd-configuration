@@ -72,6 +72,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BRA",
+    "ListElement": "City of Bradford Metropolitan District Council",
+    "DisplayOrder": 24
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BRD",
     "ListElement": "Bridgend County Borough Council",
     "DisplayOrder": 25
@@ -660,6 +667,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "PLY",
+    "ListElement": "Plymouth City Council",
+    "DisplayOrder": 298
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "PCC",
     "ListElement": "Portsmouth City Council",
     "DisplayOrder": 300
@@ -702,9 +716,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "GRW",
+    "ListElement": "Royal Borough of Greenwich",
+    "DisplayOrder": 318
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WIM",
     "ListElement": "Royal Borough of Windsor & Maidenhead",
-    "DisplayOrder": 318
+    "DisplayOrder": 319
   },
   {
     "LiveFrom": "01/01/2017",
@@ -738,7 +759,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SHR",
-    "ListElement": "Shropshire Borough Council",
+    "ListElement": "Shropshire Council",
     "DisplayOrder": 330
   },
   {
@@ -768,6 +789,13 @@
     "ListElementCode": "SGL",
     "ListElement": "South Gloucestershire Council",
     "DisplayOrder": 345
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STY",
+    "ListElement": "South Tyneside MBC - legal/childcare",
+    "DisplayOrder": 346
   },
   {
     "LiveFrom": "01/01/2017",
@@ -859,6 +887,20 @@
     "ListElementCode": "TWB",
     "ListElement": "Telford and Wrekin Borough Council",
     "DisplayOrder": 400
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TOR",
+    "ListElement": "Torbay Council",
+    "DisplayOrder": 403
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TCBC",
+    "ListElement": "Torfaen County Borough Council",
+    "DisplayOrder": 404
   },
   {
     "LiveFrom": "01/01/2017",

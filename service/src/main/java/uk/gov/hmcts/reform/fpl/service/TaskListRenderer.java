@@ -9,14 +9,13 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
-import static java.util.List.of;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
@@ -71,60 +70,60 @@ public class TaskListRenderer {
     private List<TaskSection> groupInSections(List<Task> allTasks) {
         final Map<Event, Task> tasks = allTasks.stream().collect(toMap(Task::getEvent, identity()));
 
-        final TaskSection applicationDetails = newSection("Add application details", of(
-            tasks.get(CASE_NAME),
-            tasks.get(ORDERS_SOUGHT),
-            tasks.get(HEARING_URGENCY)
-        ));
+        final TaskSection applicationDetails = newSection("Add application details")
+            .withTask(tasks.get(CASE_NAME))
+            .withTask(tasks.get(ORDERS_SOUGHT))
+            .withTask(tasks.get(HEARING_URGENCY));
 
-        final TaskSection applicationGrounds = newSection("Add grounds for the application", of(
-            tasks.get(GROUNDS),
-            tasks.get(RISK_AND_HARM)
-                .withHint("In emergency cases, you can send your application without this information"),
-            tasks.get(FACTORS_AFFECTING_PARENTING)
-                .withHint("In emergency cases, you can send your application without this information")
-        ));
+        final TaskSection applicationGrounds = newSection("Add grounds for the application");
 
-        final TaskSection documents = newSection("Add application documents",
-            of(tasks.get(APPLICATION_DOCUMENTS)))
+        ofNullable(tasks.get(GROUNDS))
+            .ifPresent(applicationGrounds::withTask);
+        ofNullable(tasks.get(RISK_AND_HARM))
+            .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
+            .ifPresent(applicationGrounds::withTask);
+        ofNullable(tasks.get(FACTORS_AFFECTING_PARENTING))
+            .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
+            .ifPresent(applicationGrounds::withTask);
+
+        final TaskSection documents = newSection("Add application documents")
+            .withTask(tasks.get(APPLICATION_DOCUMENTS))
             .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
                 + "you can send your application without this information ");
 
-        final TaskSection parties = newSection("Add information about the parties",
-            List.of(
-                tasks.containsKey(ORGANISATION_DETAILS)
-                    ? tasks.get(ORGANISATION_DETAILS) : tasks.get(LOCAL_AUTHORITY_DETAILS),
-                tasks.get(CHILDREN),
-                tasks.get(RESPONDENTS)
-            ));
+        final TaskSection parties = newSection("Add information about the parties")
+            .withTask(tasks.containsKey(ORGANISATION_DETAILS)
+                ? tasks.get(ORGANISATION_DETAILS) : tasks.get(LOCAL_AUTHORITY_DETAILS))
+            .withTask(tasks.get(CHILDREN))
+            .withTask(tasks.get(RESPONDENTS));
 
-        final List<Task> courtRequirementsTasks = new ArrayList<>(List.of(tasks.get(ALLOCATION_PROPOSAL)));
-        ofNullable(tasks.get(SELECT_COURT)).ifPresent(courtRequirementsTasks::add);
+        final TaskSection courtRequirements = newSection("Add court requirements")
+            .withTask(tasks.get(ALLOCATION_PROPOSAL));
+        ofNullable(tasks.get(SELECT_COURT)).ifPresent(courtRequirements::withTask);
 
-        final TaskSection courtRequirements = newSection("Add court requirements", courtRequirementsTasks);
-
-        ArrayList<Task> additionalInformationTasks = new ArrayList<>(of(
-            tasks.get(OTHER_PROCEEDINGS),
-            tasks.get(INTERNATIONAL_ELEMENT),
-            tasks.get(OTHERS),
-            tasks.get(COURT_SERVICES)));
+        final TaskSection additionalInformation = newSection("Add additional information")
+            .withTask(tasks.get(OTHER_PROCEEDINGS))
+            .withTask(tasks.get(INTERNATIONAL_ELEMENT))
+            .withTask(tasks.get(OTHERS))
+            .withTask(tasks.get(COURT_SERVICES))
+            .withInfo("Only complete if relevant");
 
         if (featureToggleService.isLanguageRequirementsEnabled()) {
-            additionalInformationTasks.add(tasks.get(LANGUAGE_REQUIREMENTS));
+            additionalInformation.withTask(tasks.get(LANGUAGE_REQUIREMENTS));
         }
 
-        final TaskSection additionalInformation = newSection("Add additional information",
-            additionalInformationTasks).withInfo("Only complete if relevant");
+        final TaskSection sentApplication = newSection("Send application")
+            .withTask(tasks.get(SUBMIT_APPLICATION));
 
-        final TaskSection sentApplication = newSection("Send application", of(tasks.get(SUBMIT_APPLICATION)));
-
-        return List.of(applicationDetails,
+        return Stream.of(applicationDetails,
             applicationGrounds,
             documents,
             parties,
             courtRequirements,
             additionalInformation,
-            sentApplication);
+            sentApplication)
+            .filter(TaskSection::hasAnyTask)
+            .collect(toList());
     }
 
     private List<String> renderSection(TaskSection sec) {
