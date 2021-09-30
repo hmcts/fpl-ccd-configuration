@@ -36,7 +36,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
 
         final CaseData caseData = CaseData.builder()
             .children1(List.of(child1, child2))
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
@@ -59,7 +59,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
 
         final CaseData caseData = CaseData.builder()
             .children1(List.of(child2))
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .placementEventData(PlacementEventData.builder().build())
             .build();
 
@@ -89,16 +89,16 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
         assertThatDynamicList(actualPlacementData.getPlacementNoticeForFirstParentParentsList())
             .hasSize(2)
             .hasNoSelectedValue()
-            .hasElement(respondent1.getId(), "Emma Green - mother")
-            .hasElement(respondent2.getId(), "Adam Green - father");
+            .hasElement(mother.getId(), "Emma Green - mother")
+            .hasElement(father.getId(), "Adam Green - father");
 
         assertThat(actualPlacementData.getPlacementNoticeForSecondParentRequired()).isEqualTo(NO);
         assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParentReceived()).isEqualTo(NO);
         assertThatDynamicList(actualPlacementData.getPlacementNoticeForSecondParentParentsList())
             .hasSize(2)
             .hasNoSelectedValue()
-            .hasElement(respondent1.getId(), "Emma Green - mother")
-            .hasElement(respondent2.getId(), "Adam Green - father");
+            .hasElement(mother.getId(), "Emma Green - mother")
+            .hasElement(father.getId(), "Adam Green - father");
 
         assertThat(actualPlacementData.getPlacementChildrenList()).isNull();
     }
@@ -125,7 +125,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
         final PlacementNoticeDocument firstParentNotice = PlacementNoticeDocument.builder()
             .type(PARENT_FIRST)
             .recipientName("Emma Green")
-            .respondentId(respondent1.getId())
+            .respondentId(mother.getId())
             .notice(testDocumentReference())
             .noticeDescription("First parent description")
             .response(testDocumentReference())
@@ -135,7 +135,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
         final PlacementNoticeDocument secondParentNotice = PlacementNoticeDocument.builder()
             .type(PARENT_SECOND)
             .recipientName("Adam Green")
-            .respondentId(respondent2.getId())
+            .respondentId(father.getId())
             .notice(testDocumentReference())
             .noticeDescription("Second parent description")
             .response(testDocumentReference())
@@ -154,7 +154,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
 
         final CaseData caseData = CaseData.builder()
             .children1(List.of(child1))
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .placementEventData(PlacementEventData.builder()
                 .placements(wrapElements(existingPlacement))
                 .build())
@@ -204,9 +204,9 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
             .isEqualTo(firstParentNotice.getNoticeDescription());
         assertThatDynamicList(actualPlacementData.getPlacementNoticeForFirstParentParentsList())
             .hasSize(2)
-            .hasSelectedValue(respondent1.getId(), "Emma Green - mother")
-            .hasElement(respondent1.getId(), "Emma Green - mother")
-            .hasElement(respondent2.getId(), "Adam Green - father");
+            .hasSelectedValue(mother.getId(), "Emma Green - mother")
+            .hasElement(mother.getId(), "Emma Green - mother")
+            .hasElement(father.getId(), "Adam Green - father");
         assertThat(actualPlacementData.getPlacementNoticeResponseFromFirstParentReceived())
             .isEqualTo(YES);
         assertThat(actualPlacementData.getPlacementNoticeResponseFromFirstParent())
@@ -222,9 +222,9 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
             .isEqualTo(secondParentNotice.getNoticeDescription());
         assertThatDynamicList(actualPlacementData.getPlacementNoticeForSecondParentParentsList())
             .hasSize(2)
-            .hasSelectedValue(respondent2.getId(), "Adam Green - father")
-            .hasElement(respondent1.getId(), "Emma Green - mother")
-            .hasElement(respondent2.getId(), "Adam Green - father");
+            .hasSelectedValue(father.getId(), "Adam Green - father")
+            .hasElement(mother.getId(), "Emma Green - mother")
+            .hasElement(father.getId(), "Adam Green - father");
         assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParentReceived())
             .isEqualTo(YES);
         assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParent())
@@ -240,7 +240,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
 
         final CaseData caseData = CaseData.builder()
             .children1(emptyList())
-            .respondents1(List.of(respondent1, respondent2))
+            .respondents1(List.of(mother, father))
             .placementEventData(PlacementEventData.builder()
                 .build())
             .build();
