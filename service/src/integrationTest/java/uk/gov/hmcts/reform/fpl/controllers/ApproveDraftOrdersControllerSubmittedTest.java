@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
+import uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.Duration;
@@ -84,7 +85,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12345L;
-    private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
@@ -166,7 +166,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                eq(CAFCASS_EMAIL),
+                eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
@@ -239,7 +239,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                eq(CAFCASS_EMAIL),
+                eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
