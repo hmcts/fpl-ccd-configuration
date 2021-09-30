@@ -22,7 +22,7 @@ public interface Constants {
     String PRIVATE_ORG_ID = "ORG-EXT";
     String DEFAULT_LA_COURT = "Family Court";
     String DEFAULT_CAFCASS_COURT = "cafcass";
-    String DEFAULT_CAFCASS_EMAIL = "FamilyPublicLaw+cafcass@gmail.com";
+    String DEFAULT_CAFCASS_EMAIL = "cafcass@cafcass.com";
     String DEFAULT_CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
     String DEFAULT_ADMIN_EMAIL = "court1@family-court.com";
     String USER_AUTH_TOKEN = "token";
