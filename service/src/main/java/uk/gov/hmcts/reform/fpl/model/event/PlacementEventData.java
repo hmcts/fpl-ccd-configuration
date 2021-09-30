@@ -67,12 +67,12 @@ public class PlacementEventData {
     @Builder.Default
     private List<Element<Placement>> placements = new ArrayList<>();
 
-    public List<Element<Placement>> getPlacementsNonConfidential() {
+    public List<Element<Placement>> getPlacementsNonConfidential(boolean withNoticesResponses) {
         if (isEmpty(placements)) {
             return emptyList();
         }
         return placements.stream()
-            .map(element -> element(element.getId(), element.getValue().nonConfidential()))
+            .map(element -> element(element.getId(), element.getValue().nonConfidential(withNoticesResponses)))
             .collect(toList());
     }
 
