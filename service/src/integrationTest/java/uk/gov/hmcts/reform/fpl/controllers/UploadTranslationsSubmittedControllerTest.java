@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
+import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -165,22 +166,22 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), eq(WELSH)))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
-        when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
+        when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .thenReturn(COVERSHEET_REPRESENTATIVE);
 
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), eq(ENGLISH)))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH).build());
-        when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, "Coversheet.pdf"))
+        when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, COVERSHEET_PDF))
             .thenReturn(COVERSHEET_REPRESENTATIVE_ENGLISH);
 
         when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty()), eq(WELSH)))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
-        when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
+        when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, COVERSHEET_PDF))
             .thenReturn(COVERSHEET_RESPONDENT);
 
         when(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty()), eq(ENGLISH)))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY_ENGLISH).build());
-        when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY_ENGLISH, "Coversheet.pdf"))
+        when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY_ENGLISH, COVERSHEET_PDF))
             .thenReturn(COVERSHEET_RESPONDENT_ENGLISH);
 
         when(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
