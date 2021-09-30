@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -29,6 +30,16 @@ public class PastHearingDatesValidatorService {
             && !hearingEndDate.isAfter(hearingStartDate)
         ) {
             errors.add("The end date and time must be after the start date and time");
+        }
+
+        return errors;
+    }
+
+    public List<String> validateVacatedDate(LocalDateTime hearingEndDate, LocalDate vacatedDate) {
+        List<String> errors = new ArrayList<>();
+
+        if (vacatedDate != null && vacatedDate.isAfter(hearingEndDate.toLocalDate())) {
+            errors.add("The vacated date must be before, or the same as the hearing date.");
         }
 
         return errors;
