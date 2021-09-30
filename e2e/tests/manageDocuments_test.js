@@ -357,14 +357,6 @@ Scenario('LA upload confidential and non confidential court bundle documents for
   await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
   assertCourtBundleTabForSolicitor(I);
-
-  // Remove all documents from the court bundle
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await removeDocumentsFromCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage);
-
-  // Assert no more documents on Court bundle tab
-  caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
-  I.dontSeeTagInTab(['Court bundle 1', 'Documents 1']);
 });
 
 async function setupHearing(I, caseViewPage, manageHearingsEventPage) {
@@ -388,16 +380,6 @@ async function uploadDocumentsToCourtBundleEvent(I, caseViewPage, manageDocument
   await manageDocumentsLAEventPage.uploadConfidentialCourtBundleDocument(config.testPdfFile);
   await I.addAnotherElementToCollection();
   await manageDocumentsLAEventPage.uploadCourtBundleDocument(config.testWordFile);
-
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
-}
-
-async function removeDocumentsFromCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage) {
-  await selectCourtBundleEventForHearing(I, caseViewPage, manageDocumentsLAEventPage);
-
-  await I.removeElementFromCollection();
-  await I.removeElementFromCollection();
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
