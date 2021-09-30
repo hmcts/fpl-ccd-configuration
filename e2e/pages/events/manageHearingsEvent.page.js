@@ -12,12 +12,13 @@ module.exports = {
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
+    vacatedDate: '#vacatedHearingDate',
     attendance: '#hearingAttendance',
     attendanceDetails: '#hearingAttendanceDetails',
     preAttendanceDetails: '#preHearingAttendanceDetails',
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
-    futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
+    vacateHearingDateList: '#vacateHearingDateList',
     toReListHearingDateList: '#toReListHearingDateList',
     hearingType: {
       caseManagement: '#hearingType-CASE_MANAGEMENT',
@@ -70,12 +71,16 @@ module.exports = {
 
   selectVacateHearing(hearing) {
     I.click(this.fields.hearingOptions.vacateHearing);
-    I.selectOption(this.fields.futureAndTodayHearingDateList, hearing);
+    I.selectOption(this.fields.vacateHearingDateList, hearing);
   },
 
   selectReListHearing(hearing) {
     I.click(this.fields.hearingOptions.reListHearing);
     I.selectOption(this.fields.toReListHearingDateList, hearing);
+  },
+
+  enterVacatedDate(date) {
+    I.fillDate(date, this.fields.vacatedDate);
   },
 
   selectCancellationReasonType(type) {

@@ -172,6 +172,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "vacatedDate",
+    "FieldType": "Date",
+    "ElementLabel": "Vacated date",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingNeedsBooked",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingNeedsBooked",
