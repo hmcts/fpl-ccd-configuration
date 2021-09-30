@@ -29,6 +29,8 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Component
 public class EmailNotificationHelper {
 
+    private static final String GOV_NOTIFY_INSET_TEXT_STYLING = "^";
+
     public String getEldestChildLastName(List<Element<Child>> children) {
         return unwrapElements(children).stream()
             .map(Child::getParty)
@@ -74,12 +76,12 @@ public class EmailNotificationHelper {
     }
 
     public static String buildCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
-        return "^" + buildUnformattedCalloutWithNextHearing(caseData, time);
+        return GOV_NOTIFY_INSET_TEXT_STYLING + buildUnformattedCalloutWithNextHearing(caseData, time);
     }
 
     public static String buildCalloutWithChildNameForNextHearing(final CaseData caseData, Child child) {
         StringBuilder childCallout = new StringBuilder()
-            .append("^")
+            .append(GOV_NOTIFY_INSET_TEXT_STYLING)
             .append(child.getParty().getFullName());
 
         Optional.ofNullable(caseData.getFamilyManCaseNumber())
