@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -186,6 +187,28 @@ public class TestDataHelper {
                 .relationshipToChild(relationshipToChild)
                 .build())
             .build());
+    }
+
+    public static Element<Respondent> testRespondentWithAddress(String firstName, String lastName) {
+        return testRepresentedRespondentWithAddress(firstName, lastName, null);
+    }
+
+    public static Element<Respondent> testRepresentedRespondentWithAddress(String firstName,
+                                                                           String lastName,
+                                                                           String solicitorEmail) {
+        Respondent.RespondentBuilder respondentBuilder = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .address(testAddress())
+                .build()
+            );
+
+        if (solicitorEmail != null) {
+            respondentBuilder.solicitor(RespondentSolicitor.builder().email(solicitorEmail).build());
+        }
+
+        return element(respondentBuilder.build());
     }
 
     public static Representative testRepresentative() {
@@ -372,5 +395,4 @@ public class TestDataHelper {
         feeResponse.setAmount(BigDecimal.valueOf(amount));
         return feeResponse;
     }
-
 }
