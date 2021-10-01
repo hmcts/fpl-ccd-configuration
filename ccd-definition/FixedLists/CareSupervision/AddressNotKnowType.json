@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AddressNotKnowType",
+    "ListElementCode": "NO_FIXED_ABODE",
+    "ListElement": "No fixed abode",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AddressNotKnowType",
+    "ListElementCode": "DECEASED",
+    "ListElement": "Person deceased",
+    "DisplayOrder": 2
+  }
+]

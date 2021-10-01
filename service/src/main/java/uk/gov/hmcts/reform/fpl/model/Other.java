@@ -70,9 +70,10 @@ public class Other implements Representable, ConfidentialParty<Other> {
                            LocalDate dateOfBirth,
                            Address address,
                            EmailAddress email,
-                           Telephone telephoneNumber) {
+                           Telephone telephoneNumber,
+                           String addressNotKnowReason) {
             super(partyId, partyType, firstName, lastName, organisationName, dateOfBirth, address, email,
-                telephoneNumber);
+                telephoneNumber, addressNotKnowReason);
         }
     }
 

@@ -66,9 +66,10 @@ public final class RespondentParty extends Party {
                            String contactDetailsHidden,
                            String contactDetailsHiddenReason,
                            String litigationIssues,
-                           String litigationIssuesDetails) {
+                           String litigationIssuesDetails,
+                           String addressNotKnowReason) {
         super(partyId, partyType, firstName, lastName, organisationName,
-            dateOfBirth, address, email, telephoneNumber);
+            dateOfBirth, address, email, telephoneNumber, addressNotKnowReason);
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.placeOfBirth = placeOfBirth;

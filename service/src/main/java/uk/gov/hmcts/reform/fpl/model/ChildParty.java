@@ -103,9 +103,10 @@ public final class ChildParty extends Party {
                       String detailsHiddenReason,
                       String litigationIssues,
                       String litigationIssuesDetails,
-                      String showAddressInConfidentialTab) {
+                      String showAddressInConfidentialTab,
+                      String addressNotKnowReason) {
         super(partyId, partyType, firstName, lastName, organisationName,
-            dateOfBirth, address, email, telephoneNumber);
+            dateOfBirth, address, email, telephoneNumber, addressNotKnowReason);
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;
