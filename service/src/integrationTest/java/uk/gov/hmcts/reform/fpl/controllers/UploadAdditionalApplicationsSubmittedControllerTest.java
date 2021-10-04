@@ -80,6 +80,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -182,7 +183,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willReturn(ORDER_DOCUMENT);
         given(documentService.createCoverDocuments(any(), any(), eq(OTHER_REP_BY_POST.getValue()), any()))
             .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_OTHER_REPRESENTATIVE_BINARY).build());
-        given(uploadDocumentService.uploadPDF(COVERSHEET_OTHER_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
+        given(uploadDocumentService.uploadPDF(COVERSHEET_OTHER_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .willReturn(COVERSHEET_OTHER_REPRESENTATIVE);
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID));

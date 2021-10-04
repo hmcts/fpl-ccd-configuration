@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 
 import java.util.List;
 import java.util.Optional;
+
+import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -28,12 +31,19 @@ public class ManageOrdersEventBuilder {
 
         if (!isAmendedOrder(currentOrders, oldOrders)) {
             GeneratedOrder lastGeneratedOrder = historyService.lastGeneratedOrder(caseData);
-            return new GeneratedOrderEvent(
-                caseData,
-                lastGeneratedOrder.getDocument(),
-                lastGeneratedOrder.getTranslationRequirements(),
-                lastGeneratedOrder.asLabel()
-            );
+
+            if (A70_PLACEMENT_ORDER.name().equals(lastGeneratedOrder.getOrderType())) {
+                return new GeneratedPlacementOrderEvent(caseData,
+                    lastGeneratedOrder.getDocument(),
+                    lastGeneratedOrder.getNotificationDocument());
+            } else {
+                return new GeneratedOrderEvent(
+                    caseData,
+                    lastGeneratedOrder.getDocument(),
+                    lastGeneratedOrder.getTranslationRequirements(),
+                    lastGeneratedOrder.asLabel()
+                );
+            }
         }
 
         return finders.stream()
