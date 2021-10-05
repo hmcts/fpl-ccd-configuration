@@ -108,7 +108,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         assertThat(payments).contains(
             Payment.builder()
                 .accountNumber("PBA0082848")
-                .amount(BigDecimal.valueOf(2055).setScale(2, FLOOR))
+                .amount(BigDecimal.valueOf(2215).setScale(2, FLOOR))
                 .build());
 
         assertThat(emails)
