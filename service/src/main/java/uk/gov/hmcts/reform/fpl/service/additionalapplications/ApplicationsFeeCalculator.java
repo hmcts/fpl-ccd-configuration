@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicationsFeeCalculator {
 
@@ -90,9 +92,11 @@ public class ApplicationsFeeCalculator {
 
             data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
             data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-        } catch (FeeRegisterException ignore) {
+        } catch (FeeRegisterException e) {
+            log.error("Case id {} ", caseData.getId(), e);
             data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
         }
+        log.info("DISPLAY_AMOUNT_TO_PAY {} ", data.get(DISPLAY_AMOUNT_TO_PAY));
         return data;
     }
 
