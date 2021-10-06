@@ -39,9 +39,11 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
@@ -109,6 +111,54 @@ class ApplicantLocalAuthorityServiceTest {
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 
             assertThat(actualLocalAuthority).isEqualTo(localAuthority2);
+        }
+
+        @Test
+        void shouldGetDesignateLocalAuthorityFromCaseIfLoggedInUserBelongsToOutsourcingOrganisation() {
+
+            final Organisation userOrganisation = Organisation.builder()
+                .name("Organisation 1")
+                .organisationIdentifier("ORG1")
+                .build();
+
+            final Organisation outsourcedOrganisation = Organisation.builder()
+                .name("Organisation 2")
+                .organisationIdentifier("ORG2")
+                .build();
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .id(outsourcedOrganisation.getOrganisationIdentifier())
+                .name(outsourcedOrganisation.getName())
+                .build();
+
+            final LocalAuthority localAuthority2 = LocalAuthority.builder()
+                .id(userOrganisation.getOrganisationIdentifier())
+                .name(userOrganisation.getName())
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy(outsourcedOrganisation.getOrganisationIdentifier(),
+                    outsourcedOrganisation.getName(), LASOLICITOR))
+                .outsourcingPolicy(organisationPolicy(userOrganisation.getOrganisationIdentifier(),
+                    userOrganisation.getName(), LAMANAGING))
+                .localAuthorities(wrapElements(localAuthority1, localAuthority2))
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Legacy org")
+                        .build())
+                    .build()))
+                .solicitor(Solicitor.builder()
+                    .email("solicitor@legacy.com")
+                    .build())
+                .build();
+
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+            when(organisationService.findOrganisation(outsourcedOrganisation.getOrganisationIdentifier()))
+                .thenReturn(Optional.of(outsourcedOrganisation));
+
+            final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
+
+            assertThat(actualLocalAuthority).isEqualTo(localAuthority1);
         }
 
         @Test
@@ -363,6 +413,115 @@ class ApplicantLocalAuthorityServiceTest {
                 .build();
 
             when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+
+            final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
+
+            assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
+        }
+
+        @Test
+        void shouldGetDesignatedLocalAuthorityFromReferenceDataWhenLoggedInUserBelongsToOutsourcingOrganisation() {
+
+            final Organisation userOrganisation = Organisation.builder()
+                .name("Organisation 1")
+                .organisationIdentifier("ORG1")
+                .contactInformation(List.of(ContactInformation.builder()
+                    .addressLine1("L1-1")
+                    .addressLine2("L1-2")
+                    .addressLine3("L1-3")
+                    .country("Country 1")
+                    .county("County 1")
+                    .postCode("AB 100")
+                    .townCity("City 1")
+                    .build()))
+                .build();
+
+            final Organisation designatedOrganisation = Organisation.builder()
+                .name("Organisation 2")
+                .organisationIdentifier("ORG2")
+                .contactInformation(List.of(ContactInformation.builder()
+                    .addressLine1("L2-1")
+                    .addressLine2("L2-2")
+                    .addressLine3("L2-3")
+                    .country("Country 2")
+                    .county("County 2")
+                    .postCode("AB 200")
+                    .townCity("City 2")
+                    .build()))
+                .build();
+
+            when(localAuthorityIds.getLocalAuthorityCode(designatedOrganisation.getOrganisationIdentifier()))
+                .thenReturn(Optional.of("LA2"));
+
+            when(localAuthorityEmails.getSharedInbox("LA2"))
+                .thenReturn(Optional.of("designatedla@shared.com"));
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy(designatedOrganisation.getOrganisationIdentifier(),
+                    designatedOrganisation.getName(), LASOLICITOR))
+                .outsourcingPolicy(organisationPolicy(userOrganisation.getOrganisationIdentifier(),
+                    userOrganisation.getName(), LAMANAGING))
+                .build();
+
+            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .name("Organisation 2")
+                .id("ORG2")
+                .email("designatedla@shared.com")
+                .address(Address.builder()
+                    .addressLine1("L2-1")
+                    .addressLine2("L2-2")
+                    .addressLine3("L2-3")
+                    .postcode("AB 200")
+                    .country("Country 2")
+                    .county("County 2")
+                    .postTown("City 2")
+                    .build())
+                .build();
+
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+            when(organisationService.findOrganisation(designatedOrganisation.getOrganisationIdentifier()))
+                .thenReturn(Optional.of(designatedOrganisation));
+
+            final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
+
+            assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
+
+            verify(localAuthorityIds, never()).getLocalAuthorityCode(userOrganisation.getOrganisationIdentifier());
+            verify(localAuthorityEmails, never()).getSharedInbox(userOrganisation.getOrganisationIdentifier());
+        }
+
+        @Test
+        void shouldGetEmptyLocalAuthorityWhenLoggedInUserBelongsToOutsourcingOrganisationAndOrganisationNotInRefData() {
+
+            final Organisation userOrganisation = Organisation.builder()
+                .name("Organisation 1")
+                .organisationIdentifier("ORG1")
+                .build();
+
+            final String designatedOrganisationId = "ORG2";
+
+            when(localAuthorityIds.getLocalAuthorityCode(designatedOrganisationId))
+                .thenReturn(Optional.of("LA2"));
+
+            when(localAuthorityEmails.getSharedInbox("LA2"))
+                .thenReturn(Optional.of("designatedla@shared.com"));
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(organisationPolicy(designatedOrganisationId,
+                    "Designated", LASOLICITOR))
+                .outsourcingPolicy(organisationPolicy(userOrganisation.getOrganisationIdentifier(),
+                    userOrganisation.getName(), LAMANAGING))
+                .build();
+
+            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
+                .id(designatedOrganisationId)
+                .email("designatedla@shared.com")
+                .address(Address.builder().build())
+                .build();
+
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(userOrganisation));
+            when(organisationService.findOrganisation(designatedOrganisationId))
+                .thenReturn(Optional.empty());
 
             final LocalAuthority actualLocalAuthority = underTest.getUserLocalAuthority(caseData);
 

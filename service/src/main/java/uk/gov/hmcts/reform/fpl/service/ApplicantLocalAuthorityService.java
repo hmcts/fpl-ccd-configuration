@@ -57,13 +57,12 @@ public class ApplicantLocalAuthorityService {
 
     public LocalAuthority getUserLocalAuthority(CaseData caseData) {
 
-        final Organisation userOrganisation = organisationService.findOrganisation()
-            .orElseThrow(() -> new OrganisationNotFound("Organisation not found for logged in user"));
+        final Organisation organisation = getOrganisation(caseData);
 
-        return findLocalAuthority(caseData, userOrganisation.getOrganisationIdentifier())
+        return findLocalAuthority(caseData, organisation.getOrganisationIdentifier())
             .map(Element::getValue)
-            .orElseGet(() -> migrateFromLegacyApplicant(caseData, userOrganisation.getOrganisationIdentifier())
-                .orElseGet(() -> getLocalAuthority(userOrganisation)));
+            .orElseGet(() -> migrateFromLegacyApplicant(caseData, organisation.getOrganisationIdentifier())
+                .orElseGet(() -> getLocalAuthority(organisation)));
     }
 
     public void normalisePba(LocalAuthority localAuthority) {
@@ -284,5 +283,30 @@ public class ApplicantLocalAuthorityService {
         return Optional.ofNullable(caseData.getLocalAuthorityPolicy())
             .map(OrganisationPolicy::getOrganisation)
             .map(uk.gov.hmcts.reform.ccd.model.Organisation::getOrganisationID);
+    }
+
+    private Organisation getOrganisation(CaseData caseData) {
+        final Organisation userOrganisation = organisationService.findOrganisation()
+            .orElseThrow(() -> new OrganisationNotFound("Organisation not found for logged in user"));
+
+        final Optional<String> outsourcingOrganisationId = Optional.ofNullable(caseData.getOutsourcingPolicy())
+            .map(OrganisationPolicy::getOrganisation)
+            .map(uk.gov.hmcts.reform.ccd.model.Organisation::getOrganisationID);
+
+        final boolean isUserFromOutsourcingOrganisation = outsourcingOrganisationId.isPresent()
+            && outsourcingOrganisationId.get().equals(userOrganisation.getOrganisationIdentifier());
+
+        if (isUserFromOutsourcingOrganisation) {
+            final String designatedLocalAuthorityId = caseData.getLocalAuthorityPolicy()
+                .getOrganisation()
+                .getOrganisationID();
+
+            return organisationService.findOrganisation(designatedLocalAuthorityId)
+                .orElse(Organisation.builder()
+                    .organisationIdentifier(designatedLocalAuthorityId)
+                    .build());
+        }
+
+        return userOrganisation;
     }
 }
