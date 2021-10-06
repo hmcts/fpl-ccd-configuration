@@ -75,7 +75,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
                            Telephone telephoneNumber,
                            String addressNotKnowReason) {
             super(partyId, partyType, firstName, lastName, organisationName, dateOfBirth, address, email,
-                telephoneNumber, addressNotKnowReason);
+                telephoneNumber);
         }
     }
 
@@ -124,6 +124,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
     public boolean isEmpty() {
         return Stream.of(dateOfBirth, name, gender, telephone, birthPlace, childInformation, genderIdentification,
             litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy
-        ).allMatch(ObjectUtils::isEmpty) && (isNull(address) || address.equals(Address.builder().build()));
+        ).allMatch(ObjectUtils::isEmpty)
+            && (isNull(address) || address.equals(Address.builder().build()) || ObjectUtils.isEmpty(addressNotKnowReason));
     }
 }

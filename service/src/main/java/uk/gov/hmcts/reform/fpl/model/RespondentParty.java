@@ -29,6 +29,7 @@ public final class RespondentParty extends Party {
     private final String contactDetailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+    private final String addressNotKnowReason;
     private final String addressKnow;
 
 
@@ -69,9 +70,9 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails,
-                           String addressNotKnowReason, String addressKnow) {
+                           String addressNotKnowReason,  String addressKnow) {
         super(partyId, partyType, firstName, lastName, organisationName,
-            dateOfBirth, address, email, telephoneNumber, addressNotKnowReason);
+            dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.placeOfBirth = placeOfBirth;
@@ -80,6 +81,7 @@ public final class RespondentParty extends Party {
         this.contactDetailsHiddenReason = contactDetailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+        this.addressNotKnowReason = addressNotKnowReason;
         this.addressKnow = addressKnow;
     }
 

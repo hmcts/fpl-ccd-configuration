@@ -32,7 +32,6 @@ public class Party implements Recipient {
     @Valid
     protected final EmailAddress email;
     protected final Telephone telephoneNumber;
-    protected final String addressNotKnowReason;
 
     @JsonIgnore
     public String getFullName() {
