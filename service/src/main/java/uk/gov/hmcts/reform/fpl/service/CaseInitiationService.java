@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseInitiationService {
 
+    public static final String NOT_PRESENT = "NOT_PRESENT";
     private final RequestData requestData;
     private final DynamicListService dynamicLists;
     private final CaseAccessService caseAccessService;
@@ -101,6 +102,11 @@ public class CaseInitiationService {
         boolean userInMO = userOrg.isPresent();
         boolean userInLA = userLA.isPresent();
         boolean caseOutsourced = outsourcingLA.isPresent() && !outsourcingLA.equals(userLA);
+
+        log.info("userOrg: {}, userLA: {} and outsourcingLA: {}",
+            userOrg.map(Organisation::getOrganisationIdentifier).orElse(NOT_PRESENT),
+            userLA.orElse(NOT_PRESENT),
+            outsourcingLA.orElse(NOT_PRESENT));
 
         if (userInMO && !userInLA && !caseOutsourced) {
             return List.of(
