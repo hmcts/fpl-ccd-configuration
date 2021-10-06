@@ -159,7 +159,7 @@ public class ApplicationsFeeCalculator {
                     feeTypes.add(fromSupplementTypes(supplement.getName()));
                 }
             });
-
+        log.info("FeeType required {} ", feeTypes);
         return feeTypes;
     }
 }
