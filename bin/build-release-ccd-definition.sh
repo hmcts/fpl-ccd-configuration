@@ -10,9 +10,9 @@ if [[ ${environment} != "prod" && ${environment} != "aat" && ${environment} != "
 fi
 
 if [[ ${environment} == "prod" ]]; then
-  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json"
+  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json,*-shuttered.json"
 else
-  excludedFilenamePatterns="-e UserProfile.json,*-prod.json"
+  excludedFilenamePatterns="-e UserProfile.json,*-prod.json,*-shuttered.json"
 fi
 
 root_dir=$(realpath $(dirname ${0})/..)

@@ -157,26 +157,6 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
         }
 
         @Test
-        void shouldReturnAnErrorWhenVacatingAHearingButNoFutureHearingsAreAvailable() {
-            List<Element<HearingBooking>> futureHearings = List.of(
-                element(HearingBooking.builder()
-                    .startDate(time.now().minusDays(1))
-                    .build()),
-                element(HearingBooking.builder()
-                    .startDate(time.now().minusDays(2))
-                    .build())
-            );
-
-            CaseData caseData = CaseData.builder()
-                .hearingOption(VACATE_HEARING)
-                .hearingDetails(futureHearings)
-                .build();
-
-            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
-            assertThat(validationErrors).contains(ERROR_MESSAGE);
-        }
-
-        @Test
         void shouldNotReturnAnErrorWhenVacatingAHearingAndFutureHearingsAreAvailable() {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()

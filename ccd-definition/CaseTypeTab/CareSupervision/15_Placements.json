@@ -16,7 +16,7 @@
     "TabID": "PlacementTab",
     "TabLabel": "Placement",
     "TabDisplayOrder": 15,
-    "CaseFieldID": "confidentialPlacements",
+    "CaseFieldID": "placementsNonConfidential",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -26,7 +26,7 @@
     "TabID": "PlacementTab",
     "TabLabel": "Placement",
     "TabDisplayOrder": 15,
-    "CaseFieldID": "placementsWithoutPlacementOrder",
+    "CaseFieldID": "placementsNonConfidentialNotices",
     "TabFieldDisplayOrder": 1
   }
 ]

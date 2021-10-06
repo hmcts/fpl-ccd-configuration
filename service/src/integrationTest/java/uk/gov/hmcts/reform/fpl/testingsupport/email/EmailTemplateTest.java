@@ -48,6 +48,10 @@ public class EmailTemplateTest {
     protected static final String CAFCASS_EMAIL = "cafcass@example.com";
     protected static final String GOV_NOTIFY_DOC_URL = "https://documents.service.gov.uk/d/";
 
+    protected static final String FOOTER_HEADER = "Her Majesty’s Courts & Tribunal Service";
+    protected static final String FOOTER_CONTACT_DETAILS = "Do not reply to this email. "
+        + "If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk";
+
     @SpyBean
     private NotificationClient client;
 
