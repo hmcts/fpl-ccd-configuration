@@ -29,6 +29,8 @@ public final class RespondentParty extends Party {
     private final String contactDetailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+    private final String addressKnow;
+
 
     @Override
     @NotBlank(message = "Enter the respondent's full name")
@@ -67,7 +69,7 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails,
-                           String addressNotKnowReason) {
+                           String addressNotKnowReason, String addressKnow) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber, addressNotKnowReason);
         this.gender = gender;
@@ -78,6 +80,7 @@ public final class RespondentParty extends Party {
         this.contactDetailsHiddenReason = contactDetailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+        this.addressKnow = addressKnow;
     }
 
     @JsonPOJOBuilder(withPrefix = "")

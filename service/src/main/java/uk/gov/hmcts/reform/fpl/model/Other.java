@@ -43,6 +43,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String detailsHidden;
     private final String detailsHiddenReason;
     private final List<Element<UUID>> representedBy = new ArrayList<>();
+    private final String addressNotKnowReason;
+    private final String addressKnow;
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
