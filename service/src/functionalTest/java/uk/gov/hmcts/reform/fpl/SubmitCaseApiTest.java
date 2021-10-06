@@ -54,7 +54,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         final String expectedApplication = readString("case-submission/application-draft.txt",
             Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE)));
 
-        assertThat(response.getCaseData().getAmountToPay()).isEqualTo("205500");
+        assertThat(response.getCaseData().getAmountToPay()).isEqualTo("221500");
         assertThat(actualApplication).isEqualToNormalizingWhitespace(expectedApplication);
 
         return response.getCaseData();
@@ -108,7 +108,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         assertThat(payments).contains(
             Payment.builder()
                 .accountNumber("PBA0082848")
-                .amount(BigDecimal.valueOf(2055).setScale(2, FLOOR))
+                .amount(BigDecimal.valueOf(2215).setScale(2, FLOOR))
                 .build());
 
         assertThat(emails)
