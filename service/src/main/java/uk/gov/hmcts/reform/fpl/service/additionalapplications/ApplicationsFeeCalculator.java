@@ -87,7 +87,7 @@ public class ApplicationsFeeCalculator {
         try {
             final List<FeeType> feeTypes = getFeeTypes(caseData.getTemporaryC2Document(),
                 caseData.getTemporaryOtherApplicationsBundle());
-
+            log.info("feeTypes lookup {} ", feeTypes);
             final FeesData feesData = feeService.getFeesDataForAdditionalApplications(feeTypes);
 
             data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
