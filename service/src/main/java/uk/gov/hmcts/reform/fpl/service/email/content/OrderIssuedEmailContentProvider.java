@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.PlacementOrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -21,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithChildNameForNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 
@@ -77,6 +80,18 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .orderType(typeCalculator.getTypeOfOrder(caseData, type))
             .courtName(courtService.getCourtName(caseData))
             .callout(NOTICE_OF_PLACEMENT_ORDER != type ? buildCalloutWithNextHearing(caseData, time.now()) : "")
+            .build();
+    }
+
+    public PlacementOrderIssuedNotifyData getNotifyDataForPlacementOrder(CaseData caseData,
+                                                                         DocumentReference documentToSend,
+                                                                         Child child) {
+        return PlacementOrderIssuedNotifyData.builder()
+            .callout(buildCalloutWithChildNameForNextHearing(caseData, child))
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
+            .courtName(courtService.getCourtName(caseData))
+            .documentLink(linkToAttachedDocument(documentToSend))
+            .childLastName(child.getParty().getLastName())
             .build();
     }
 

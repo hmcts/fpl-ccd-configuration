@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -22,6 +25,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.addMissingIds;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -29,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -232,6 +237,45 @@ class ElementUtilsTest {
         @Test
         void shouldNotFindNullElement() {
             assertThat(findElement(null, null)).isNotPresent();
+        }
+    }
+
+    @Nested
+    class GetElement {
+
+        private final Element<String> element1 = Element.<String>builder().id(randomUUID()).value("First").build();
+        private final Element<String> element2 = Element.<String>builder().id(randomUUID()).value("Second").build();
+
+        @Test
+        void shouldGetElementById() {
+
+            final List<Element<String>> elements = List.of(element1, element2);
+
+            assertThat(getElement(element1.getId(), elements)).isEqualTo(element1);
+            assertThat(getElement(element2.getId(), elements)).isEqualTo(element2);
+        }
+
+        @Test
+        void shouldThrowsExceptionWhenRequestedElementDoesNotExists() {
+
+            final List<Element<String>> elements = List.of(element1, element2);
+
+            assertThatThrownBy(() -> getElement(randomUUID(), elements)).isInstanceOf(NoSuchElementException.class);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrowsExceptionWhenListOfElementIsNotPresent(List<Element<Object>> elements) {
+
+            assertThatThrownBy(() -> getElement(randomUUID(), elements)).isInstanceOf(NoSuchElementException.class);
+        }
+
+        @Test
+        void shouldThrowsExceptionWhenIdOfElementToBeGetIsNull() {
+
+            final List<Element<String>> elements = List.of(element1, element2);
+
+            assertThatThrownBy(() -> getElement(null, elements)).isInstanceOf(NoSuchElementException.class);
         }
     }
 

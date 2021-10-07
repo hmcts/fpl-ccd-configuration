@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithChildNameForNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
@@ -233,4 +234,20 @@ class EmailNotificationHelperTest {
 
         assertThat(emailAddresses).containsOnly("gatekeeper1@test.com");
     }
+
+    @Test
+    void shouldBuildChildCalloutLine() {
+        Child child = Child.builder()
+            .party(ChildParty.builder().firstName("Ted").lastName("Danson").build())
+            .build();
+
+        CaseData caseDataWithNoFamilyManId = CaseData.builder().build();
+        assertThat(buildCalloutWithChildNameForNextHearing(caseDataWithNoFamilyManId, child))
+            .isEqualTo("^Ted Danson");
+
+        CaseData caseDataWithFamilyManId = CaseData.builder().familyManCaseNumber("ABC").build();
+        assertThat(buildCalloutWithChildNameForNextHearing(caseDataWithFamilyManId, child))
+            .isEqualTo("^Ted Danson, ABC");
+    }
+
 }

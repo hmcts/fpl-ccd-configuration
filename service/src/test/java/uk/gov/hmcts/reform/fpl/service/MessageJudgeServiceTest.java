@@ -22,6 +22,10 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -31,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -60,6 +65,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -74,8 +80,8 @@ class MessageJudgeServiceTest {
     private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
     private static final String OTHER_FILE_NAME = "other.doc";
     private static final String OTHER_SUPPORTING_DOCUMENT_FILE_NAME = "other_supporting.doc";
-    private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
-    private static final UUID NEW_ELEMENT_ID = UUID.randomUUID();
+    private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = randomUUID();
+    private static final UUID NEW_ELEMENT_ID = randomUUID();
 
     @Mock
     private Time time;
@@ -98,13 +104,13 @@ class MessageJudgeServiceTest {
 
     @Test
     void shouldInitialiseCaseFieldsWhenAdditionalApplicationDocumentsAndJudicialMessagesExist() {
-        UUID uuid = randomUUID();
-        String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
+
+        final String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
             + "tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula nisl, tempor at eleifend ac, "
             + "consequat condimentum sem. In sed porttitor turpis, at laoreet quam. Fusce bibendum vehicula ipsum, et "
             + "tempus ante fermentum non.";
 
-        List<Element<JudicialMessage>> judicialMessages = List.of(
+        final List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()
                 .latestMessage("some note")
                 .messageHistory("some history")
@@ -116,40 +122,47 @@ class MessageJudgeServiceTest {
                 .messageHistory("some history")
                 .dateSent("02 Dec 2020")
                 .urgency("High")
-                .build())
-        );
+                .build()));
 
-        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
-            AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .id(uuid)
-                    .uploadedDateTime("01 Dec 2020")
-                    .author("Some author")
-                    .build())
-                .build())
-        );
-
-        CaseData caseData = CaseData.builder()
-            .judicialMessages(judicialMessages)
-            .additionalApplicationsBundle(additionalApplicationsBundle)
+        final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+            .id(randomUUID())
+            .uploadedDateTime("01 Dec 2020")
+            .author("Some author")
             .build();
 
-        Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+        final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(c2DocumentBundle)
+                .build()));
 
-        DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
-            Pair.of(uuid, "C2, 01 Dec 2020")
-        );
+        final Element<Placement> placement = element(Placement.builder()
+            .childName("Alex Green")
+            .placementUploadDateTime(LocalDateTime.of(2020, 10, 12, 13, 0))
+            .build());
 
-        String expectedUrgencyText = "Lorem ipsum dolor sit amet, consectetur adipiscing "
+        final CaseData caseData = CaseData.builder()
+            .judicialMessages(judicialMessages)
+            .additionalApplicationsBundle(additionalApplicationsBundle)
+            .placementEventData(PlacementEventData.builder()
+                .placements(List.of(placement))
+                .build())
+            .build();
+
+        final Map<String, Object> expectedEventData = messageJudgeService.initialiseCaseFields(caseData);
+
+        final DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
+            Pair.of(c2DocumentBundle.getId(), "C2, 01 Dec 2020"),
+            Pair.of(placement.getId(), "A50, Alex Green, 12 October 2020, 1:00pm"));
+
+        final String expectedUrgencyText = "Lorem ipsum dolor sit amet, consectetur adipiscing "
             + "elit. Sed sollicitudin eu felis tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula "
             + "nisl, tempor at eleifend ac, consequat condimentum sem. In sed porttitor turpis...";
 
-        DynamicList expectedJudicialDynamicList = buildDynamicList(
+        final DynamicList expectedJudicialDynamicList = buildDynamicList(
             Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020, " + expectedUrgencyText),
-            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020, High")
-        );
+            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020, High"));
 
-        Map<String, Object> expectedData = Map.of(
+        final Map<String, Object> expectedData = Map.of(
             "hasAdditionalApplications", "Yes",
             "hasJudicialMessages", "Yes",
             "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
@@ -158,17 +171,17 @@ class MessageJudgeServiceTest {
                 .sender(COURT_EMAIL)
                 .recipient(EMPTY).build());
 
-        assertThat(data).isEqualTo(expectedData);
+        assertThat(expectedEventData).isEqualTo(expectedData);
     }
 
     @Test
     void shouldInitialiseAdditionalApplicationDocumentFieldsOnlyWhenJudicialMessagesDoNotExist() {
-        UUID uuid = randomUUID();
+        UUID applicationId = randomUUID();
 
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder()
-                    .id(uuid)
+                    .id(applicationId)
                     .uploadedDateTime("01 Dec 2020")
                     .author("Some author")
                     .build())
@@ -182,7 +195,7 @@ class MessageJudgeServiceTest {
         Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
 
         DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
-            Pair.of(uuid, "C2, 01 Dec 2020")
+            Pair.of(applicationId, "C2, 01 Dec 2020")
         );
 
         Map<String, Object> expectedData = Map.of(
@@ -311,7 +324,7 @@ class MessageJudgeServiceTest {
 
     @Test
     void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenOtherApplicationSelected() {
-        UUID c2DocumentBundleId = UUID.randomUUID();
+        UUID c2DocumentBundleId = randomUUID();
 
         OtherApplicationsBundle selectedOtherDocumentBundle = OtherApplicationsBundle.builder()
             .id(SELECTED_DYNAMIC_LIST_ITEM_ID)
@@ -369,7 +382,7 @@ class MessageJudgeServiceTest {
 
     @Test
     void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenC2ApplicationSelected() {
-        UUID otherDocumentBundleId = UUID.randomUUID();
+        UUID otherDocumentBundleId = randomUUID();
 
         OtherApplicationsBundle selectedOtherDocumentBundle = OtherApplicationsBundle.builder()
             .id(otherDocumentBundleId)
@@ -442,7 +455,7 @@ class MessageJudgeServiceTest {
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(List.of(
                 element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
-                element(UUID.randomUUID(), C2DocumentBundle.builder()
+                element(randomUUID(), C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
                         .build())
@@ -620,7 +633,7 @@ class MessageJudgeServiceTest {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .judicialMessages(List.of(
-                element(UUID.randomUUID(), selectedJudicialMessage),
+                element(randomUUID(), selectedJudicialMessage),
                 element(JudicialMessage.builder().build())))
             .build();
 
@@ -773,6 +786,124 @@ class MessageJudgeServiceTest {
     }
 
     @Test
+    void shouldAppendNewJudicialMessageToJudicialMessageListWhenPlacementApplicationHasBeenSelected() {
+
+        final DocumentReference placementApplication = testDocumentReference("placement application");
+        final DocumentReference supportingDocument1 = testDocumentReference("first supporting document");
+        final DocumentReference supportingDocument2 = testDocumentReference("second supporting document");
+        final DocumentReference confidentialDocument1 = testDocumentReference("first confidential document");
+        final DocumentReference notice1 = testDocumentReference("first notice document");
+        final DocumentReference notice2 = testDocumentReference("second notice document");
+        final DocumentReference notice2Response = testDocumentReference("second notice response");
+
+        final Element<Placement> placement = element(Placement.builder()
+            .childName("Alex Green")
+            .placementUploadDateTime(LocalDateTime.of(2020, 10, 12, 13, 0))
+            .application(placementApplication)
+            .supportingDocuments(wrapElements(
+                PlacementSupportingDocument.builder()
+                    .document(supportingDocument1)
+                    .build(),
+                PlacementSupportingDocument.builder()
+                    .document(supportingDocument2)
+                    .build()))
+            .confidentialDocuments(wrapElements(
+                PlacementConfidentialDocument.builder()
+                    .document(confidentialDocument1)
+                    .build()))
+            .noticeDocuments(wrapElements(
+                PlacementNoticeDocument.builder()
+                    .notice(notice1)
+                    .build(),
+                PlacementNoticeDocument.builder()
+                    .notice(notice2)
+                    .response(notice2Response)
+                    .build()))
+            .build());
+
+        final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageNote(MESSAGE_NOTE)
+            .judicialMessageMetaData(JudicialMessageMetaData.builder()
+                .recipient(MESSAGE_RECIPIENT)
+                .build())
+            .additionalApplicationsDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(placement.getId())
+                    .build())
+                .build())
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .placementEventData(PlacementEventData.builder()
+                .placements(List.of(placement))
+                .build())
+            .build();
+
+        final List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+
+        final JudicialMessage newMessage = updatedMessages.get(0).getValue();
+
+        assertThat(newMessage.getRelatedDocumentFileNames()).isEqualTo(
+            "Application: placement application\n"
+                + "Supporting documents: first supporting document, second supporting document\n"
+                + "Confidential documents: first confidential document\n"
+                + "Notices: first notice document, second notice document\n"
+                + "Notices responses: second notice response");
+
+        assertThat(newMessage.getRelatedDocuments()).extracting(Element::getValue).containsExactly(
+            placementApplication,
+            supportingDocument1,
+            supportingDocument2,
+            confidentialDocument1,
+            notice1,
+            notice2,
+            notice2Response);
+    }
+
+    @Test
+    void shouldAppendJudicialMessageToJudicialMessageListWhenPlacementApplicationWithMissingDocumentsHasBeenSelected() {
+
+        final DocumentReference placementApplication = testDocumentReference("placement application");
+
+        final Element<Placement> placement = element(Placement.builder()
+            .childName("Alex Green")
+            .placementUploadDateTime(LocalDateTime.of(2020, 10, 12, 13, 0))
+            .application(placementApplication)
+            .build());
+
+        final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageNote(MESSAGE_NOTE)
+            .judicialMessageMetaData(JudicialMessageMetaData.builder()
+                .recipient(MESSAGE_RECIPIENT)
+                .build())
+            .additionalApplicationsDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(placement.getId())
+                    .build())
+                .build())
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .placementEventData(PlacementEventData.builder()
+                .placements(List.of(placement))
+                .build())
+            .build();
+
+        final List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+
+        final JudicialMessage newMessage = updatedMessages.get(0).getValue();
+
+        assertThat(newMessage.getRelatedDocumentFileNames())
+            .isEqualTo("Application: placement application");
+
+        assertThat(newMessage.getRelatedDocuments())
+            .extracting(Element::getValue)
+            .containsExactly(placementApplication);
+    }
+
+    @Test
     void shouldAppendNewJudicialMessageToExistingJudicialMessageList() {
         JudicialMessage newMessage = JudicialMessage.builder()
             .subject(MESSAGE_REQUESTED_BY)
@@ -780,7 +911,7 @@ class MessageJudgeServiceTest {
             .sender(MESSAGE_SENDER)
             .build();
 
-        UUID existingJudicialMessageId = UUID.randomUUID();
+        UUID existingJudicialMessageId = randomUUID();
         JudicialMessage existingJudicialMessage = JudicialMessage.builder().build();
 
         List<Element<JudicialMessage>> existingJudicialMessages = new ArrayList<>();
@@ -1036,8 +1167,8 @@ class MessageJudgeServiceTest {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .judicialMessages(List.of(
-                element(UUID.randomUUID(), JudicialMessage.builder().build()),
-                element(UUID.randomUUID(), JudicialMessage.builder().build())))
+                element(randomUUID(), JudicialMessage.builder().build()),
+                element(randomUUID(), JudicialMessage.builder().build())))
             .build();
 
         assertThatThrownBy(() -> messageJudgeService.updateJudicialMessages(caseData))

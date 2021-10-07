@@ -18,6 +18,7 @@ public class CaseSummaryService {
 
     @SuppressWarnings("all")
     public CaseSummaryService(
+        CaseSummaryCaseFlagGenerator caseSummaryCaseFlagGenerator,
         CaseSummaryOrdersRequestedGenerator caseSummaryOrdersRequestedGenerator,
         CaseSummaryDeadlineGenerator caseSummaryDeadlineGenerator,
         CaseSummaryJudgeInformationGenerator caseSummaryJudgeInformationGenerator,
@@ -31,6 +32,7 @@ public class CaseSummaryService {
         ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.generators = List.of(
+            caseSummaryCaseFlagGenerator,
             caseSummaryOrdersRequestedGenerator,
             caseSummaryDeadlineGenerator,
             caseSummaryCourtGenerator,
