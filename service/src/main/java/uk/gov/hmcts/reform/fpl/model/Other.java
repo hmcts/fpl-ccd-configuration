@@ -72,8 +72,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
                            LocalDate dateOfBirth,
                            Address address,
                            EmailAddress email,
-                           Telephone telephoneNumber,
-                           String addressNotKnowReason) {
+                           Telephone telephoneNumber) {
             super(partyId, partyType, firstName, lastName, organisationName, dateOfBirth, address, email,
                 telephoneNumber);
         }
@@ -123,8 +122,9 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @JsonIgnore
     public boolean isEmpty() {
         return Stream.of(dateOfBirth, name, gender, telephone, birthPlace, childInformation, genderIdentification,
-            litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy
+            litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy,
+            addressNotKnowReason
         ).allMatch(ObjectUtils::isEmpty)
-            && (isNull(address) || address.equals(Address.builder().build()) || ObjectUtils.isEmpty(addressNotKnowReason));
+            && (isNull(address) || address.equals(Address.builder().build()));
     }
 }
