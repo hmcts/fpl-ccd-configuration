@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.docmosis.generator.DocmosisOrderCaseDataGenerator;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -118,8 +117,6 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     private static final String LA_NAME = "LocalAuthorityName";
 
     private final DocmosisOrderCaseDataGenerator dataGenerator = new DocmosisOrderCaseDataGenerator();
-    @Autowired
-    private DocmosisConfiguration configuration;
 
     @SpyBean
     private DocmosisDocumentGeneratorService generatorService;
@@ -138,8 +135,7 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     @ParameterizedTest
     @MethodSource("allOrders")
     void testAllOrders(Order order) throws IOException {
-        System.out.println("OrderCreationServiceDocmosisTest: url " + configuration.getUrl());
-        assertThat(configuration.getUrl()).isEqualTo("http://localhost");
+
         String actualContent = getPdfContent(dataGenerator.generateForOrder(order));
 
         assertThat(actualContent)
