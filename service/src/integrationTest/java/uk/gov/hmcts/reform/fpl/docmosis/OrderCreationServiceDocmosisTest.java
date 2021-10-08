@@ -78,7 +78,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     DocmosisCommonElementDecorator.class,
     CaseDataExtractionService.class,
     AppointedGuardianFormatter.class,
-    A70PlacementOrderDocumentParameterGenerator.class,
     A206PlacementOrderNotificationParameterGenerator.class,
     C21BlankOrderDocumentParameterGenerator.class,
     C32CareOrderDocumentParameterGenerator.class,
