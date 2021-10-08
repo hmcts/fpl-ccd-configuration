@@ -69,7 +69,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
     @Test
     void shouldSetHearingsDetails() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(3)));
-        Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(3)));
+        Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> todayHearing = element(testHearing(now()));
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));
@@ -87,8 +87,8 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
             .isEqualTo(dynamicList(futureHearing1, futureHearing2));
         assertThat(updatedCaseData.getPastAndTodayHearingDateList())
             .isEqualTo(dynamicList(todayHearing, pastHearing1, pastHearing2));
-        assertThat(updatedCaseData.getFutureAndTodayHearingDateList())
-            .isEqualTo(dynamicList(futureHearing1, futureHearing2, todayHearing));
+        assertThat(updatedCaseData.getVacateHearingDateList())
+            .isEqualTo(dynamicList(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2));
         assertThat(updatedCaseData.getSelectedHearingId()).isNull();
     }
 

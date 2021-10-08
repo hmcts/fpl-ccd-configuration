@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.List;
 import java.util.UUID;
+
+import static java.util.Arrays.asList;
 
 @Data
 @Builder(toBuilder = true)
@@ -31,6 +34,8 @@ public class PlacementNoticeDocument {
         PARENT_SECOND("Second parent");
 
         private final String name;
+
+        public static final List<RecipientType> PARENT_TYPES = asList(PARENT_FIRST, PARENT_SECOND);
     }
 
 }

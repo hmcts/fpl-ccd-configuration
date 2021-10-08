@@ -39,6 +39,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CancelledHearingBooking",
+    "ListElementCode": "vacatedDate",
+    "FieldType": "Date",
+    "ElementLabel": "Vacated date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
     "ListElementCode": "status",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingStatus",
