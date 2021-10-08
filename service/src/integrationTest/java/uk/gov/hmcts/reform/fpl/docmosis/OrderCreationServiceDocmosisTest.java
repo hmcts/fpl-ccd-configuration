@@ -159,7 +159,6 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     private static Stream<Arguments> allOrders() {
         return Stream.of(Order.values())
             .filter(order -> order.getSourceType() == OrderSourceType.DIGITAL)
-            .peek(System.out::println)
             .map(Arguments::of);
     }
 
