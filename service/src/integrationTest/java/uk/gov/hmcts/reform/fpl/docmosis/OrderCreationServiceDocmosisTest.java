@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.document.DocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.A206PlacementOrderNotificationParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.A70PlacementOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C21BlankOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPOAdditionalDocumentsCollector;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPODocumentParameterGenerator;
@@ -77,6 +78,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     DocmosisCommonElementDecorator.class,
     CaseDataExtractionService.class,
     AppointedGuardianFormatter.class,
+    A70PlacementOrderDocumentParameterGenerator.class,
     A206PlacementOrderNotificationParameterGenerator.class,
     C21BlankOrderDocumentParameterGenerator.class,
     C32CareOrderDocumentParameterGenerator.class,
