@@ -139,6 +139,7 @@ class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     @MethodSource("allOrders")
     void testAllOrders(Order order) throws IOException {
         System.out.println("OrderCreationServiceDocmosisTest: url " + configuration.getUrl());
+        assertThat(configuration.getUrl()).isEqualTo("http://localhost");
         String actualContent = getPdfContent(dataGenerator.generateForOrder(order));
 
         assertThat(actualContent)
