@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +28,8 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 @Component
 public class EmailNotificationHelper {
+
+    private static final String GOV_NOTIFY_INSET_TEXT_STYLING = "^";
 
     public String getEldestChildLastName(List<Element<Child>> children) {
         return unwrapElements(children).stream()
@@ -43,10 +46,10 @@ public class EmailNotificationHelper {
 
     public static String buildSubjectLine(final String familyManCaseNumber,
                                           final List<Element<Respondent>> respondents) {
-        final String respondentlastName = getFirstRespondentLastName(respondents);
+        final String respondentLastName = getFirstRespondentLastName(respondents);
         final String familyMan = defaultIfNull(familyManCaseNumber, "");
 
-        return Stream.of(respondentlastName, familyMan)
+        return Stream.of(respondentLastName, familyMan)
             .filter(StringUtils::isNotBlank)
             .collect(joining(", "));
     }
@@ -73,7 +76,18 @@ public class EmailNotificationHelper {
     }
 
     public static String buildCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
-        return "^" + buildUnformattedCalloutWithNextHearing(caseData, time);
+        return GOV_NOTIFY_INSET_TEXT_STYLING + buildUnformattedCalloutWithNextHearing(caseData, time);
+    }
+
+    public static String buildCalloutWithChildNameForNextHearing(final CaseData caseData, Child child) {
+        StringBuilder childCallout = new StringBuilder()
+            .append(GOV_NOTIFY_INSET_TEXT_STYLING)
+            .append(child.getParty().getFullName());
+
+        Optional.ofNullable(caseData.getFamilyManCaseNumber())
+            .ifPresent(familyManCaseNumber -> childCallout.append(", ").append(familyManCaseNumber));
+
+        return childCallout.toString();
     }
 
     public static String buildUnformattedCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {

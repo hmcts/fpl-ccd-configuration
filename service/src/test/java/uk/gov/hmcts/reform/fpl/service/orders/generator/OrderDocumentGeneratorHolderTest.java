@@ -10,17 +10,20 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static java.util.function.Predicate.not;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
@@ -41,6 +44,8 @@ class OrderDocumentGeneratorHolderTest {
     private Map<Order, AdditionalDocumentsCollector> typeToAdditionalDocsCollector;
 
     // Parameter Generators
+    @Mock
+    private A70PlacementOrderDocumentParameterGenerator a70PlacementOrderDocumentParameterGenerator;
     @Mock
     private C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     @Mock
@@ -66,9 +71,14 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C45aParentalResponsibilityOrderDocumentParameterGenerator
         c45aParentalResponsibilityOrderDocumentParameterGenerator;
+
     // Additional Document Collectors
     @Mock
     private C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
+
+    // Notification document generators
+    @Mock
+    private A206PlacementOrderNotificationParameterGenerator a206PlacementOrderNotificationParameterGenerator;
 
     @InjectMocks
     private OrderDocumentGeneratorHolder underTest;
@@ -76,6 +86,7 @@ class OrderDocumentGeneratorHolderTest {
     @BeforeEach
     void setUp() {
         generators = List.of(
+            a70PlacementOrderDocumentParameterGenerator,
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
             c26SecureAccommodationOrderDocumentParameterGenerator, c32CareOrderDocumentParameterGenerator,
             c32bDischargeOfCareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
@@ -87,6 +98,7 @@ class OrderDocumentGeneratorHolderTest {
 
         typeToGenerator = new HashMap<>() {
             {
+                put(A70_PLACEMENT_ORDER, a70PlacementOrderDocumentParameterGenerator);
                 put(C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator);
                 put(C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator);
                 put(C26_SECURE_ACCOMMODATION_ORDER, c26SecureAccommodationOrderDocumentParameterGenerator);
@@ -136,4 +148,29 @@ class OrderDocumentGeneratorHolderTest {
 
         collectors.forEach(collector -> verify(collector).accept());
     }
+
+    @Test
+    void shouldReturnAppropriateNotificationDocumentGenerators() {
+        Map<Order, DocmosisParameterGenerator> expectedNotificationDocumentPerType = Map.of(
+            A70_PLACEMENT_ORDER, a206PlacementOrderNotificationParameterGenerator
+        );
+
+        //Check expected orders match expected generators
+        expectedNotificationDocumentPerType.forEach((order, generator) ->
+            assertThat(underTest.getNotificationDocumentParameterGeneratorByOrderType(order))
+                .as("Order %s", order)
+                .isPresent()
+                .hasValue(generator)
+        );
+
+        //Check remaining orders have no generator
+        Set<Order> ordersWithNotificationDocument = expectedNotificationDocumentPerType.keySet();
+        Arrays.stream(Order.values())
+            .filter(not(ordersWithNotificationDocument::contains))
+            .forEach(order -> assertThat(underTest.getNotificationDocumentParameterGeneratorByOrderType(order))
+                .as("Order %s", order)
+                .isEmpty()
+            );
+    }
+
 }

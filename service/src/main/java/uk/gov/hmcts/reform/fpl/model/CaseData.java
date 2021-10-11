@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -56,6 +55,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
@@ -223,7 +223,6 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
-    private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
     private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
@@ -344,6 +343,12 @@ public class CaseData {
     private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
+
+    private final DocumentReference redDotAssessmentForm;
+    private final String caseFlagNotes;
+    private final String caseFlagAdded;
+    // Transient field
+    private YesNo caseFlagValueUpdated;
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
@@ -677,11 +682,6 @@ public class CaseData {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
 
-    @JsonGetter("confidentialPlacements")
-    public List<Element<Placement>> getPlacements() {
-        return defaultIfNull(placements, new ArrayList<>());
-    }
-
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
     private final List<Element<EmailAddress>> gatekeeperEmails;
@@ -906,6 +906,12 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getAllNonCancelledHearings() {
+        return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()))
+            .flatMap(Collection::stream).collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
@@ -991,6 +997,7 @@ public class CaseData {
 
     private final HearingType hearingType;
     private final String hearingTypeDetails;
+    private final String hearingTypeReason;
     private final String hearingVenue;
     private final Address hearingVenueCustom;
     private final String firstHearingFlag; //also used for logic surrounding legacy hearings
@@ -999,7 +1006,7 @@ public class CaseData {
     private final String noticeOfHearingNotes;
     private final Object hearingDateList;
     private final Object pastAndTodayHearingDateList;
-    private final Object futureAndTodayHearingDateList;
+    private final Object vacateHearingDateList;
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
@@ -1020,6 +1027,7 @@ public class CaseData {
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
     private final HearingCancellationReason vacatedReason;
+    private final LocalDate vacatedHearingDate;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
 
@@ -1150,4 +1158,16 @@ public class CaseData {
     @Builder.Default
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final PlacementEventData placementEventData = PlacementEventData.builder().build();
+
+    @JsonIgnore
+    public boolean isDischargeOfCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
 }

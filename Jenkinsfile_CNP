@@ -15,8 +15,7 @@ def serviceSecrets = [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('use-shuttered-case-def', 'USE_SHUTTERED_CASE_DEF')
+    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
   ]
 ]
 
@@ -128,6 +127,16 @@ def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
+}
+
+def setupShutteringSecret() {
+  azureKeyVault(
+    keyVaultURL: "https://fpl-${env.ENV}.vault.azure.net/",
+    secrets: [
+      secret('use-shuttered-case-def', 'USE_SHUTTERED_CASE_DEF')
+    ]) {
+    env.USE_SHUTTERED_CASE_DEF = "${USE_SHUTTERED_CASE_DEF}"
+  }
 }
 
 
@@ -259,6 +268,7 @@ withPipeline(type, product, component) {
     if (env.ENV != 'preview') {
       // For Preview the setup is performed before the smoke test since the environment could be not bootstrapped yet (if the first build or removed the PR helm release)
       echo "CCD definition upload for environment: ${env.ENV}"
+      setupShutteringSecret()
       withSubscription(env.ENV != 'prod' ? 'nonprod' : 'prod') {
         withTeamSecrets(pipelineConf, env.ENV) {
           archiveCoreCaseDataDefinitions(env.ENV)

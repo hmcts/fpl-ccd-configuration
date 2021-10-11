@@ -23,6 +23,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "typeReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason",
+    "FieldShowCondition": "type=\"ACCELERATED_DISCHARGE_OF_CARE\"",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "venue",
     "FieldType": "FixedList",
     "FieldTypeParameter": "HearingVenue",
@@ -105,6 +115,15 @@
     "FieldType": "DateTime",
     "ElementLabel": "End date and time",
     "HintText": "Use 24 hour format",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "vacatedDate",
+    "FieldType": "Date",
+    "ElementLabel": "Vacated date",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

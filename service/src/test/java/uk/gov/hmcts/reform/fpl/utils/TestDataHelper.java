@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -20,12 +21,11 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -143,6 +144,10 @@ public class TestDataHelper {
         return testChild(randomAlphanumeric(10), randomAlphanumeric(10), childGender, now());
     }
 
+    public static Element<Child> testChild(String firstName, String lastName) {
+        return testChild(firstName, lastName, null, now());
+    }
+
     public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {
         return element(Child.builder()
             .party(testChildParty(firstName, lastName, gender, dob))
@@ -171,13 +176,40 @@ public class TestDataHelper {
     }
 
     public static Element<Respondent> testRespondent(String firstName, String lastName) {
+        return testRespondent(firstName, lastName, "");
+    }
+
+    public static Element<Respondent> testRespondent(String firstName, String lastName, String relationshipToChild) {
         return element(Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName(firstName)
                 .lastName(lastName)
+                .relationshipToChild(relationshipToChild)
                 .build())
             .activeParty("Yes")
             .build());
+    }
+
+    public static Element<Respondent> testRespondentWithAddress(String firstName, String lastName) {
+        return testRepresentedRespondentWithAddress(firstName, lastName, null);
+    }
+
+    public static Element<Respondent> testRepresentedRespondentWithAddress(String firstName,
+                                                                           String lastName,
+                                                                           String solicitorEmail) {
+        Respondent.RespondentBuilder respondentBuilder = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .address(testAddress())
+                .build()
+            );
+
+        if (solicitorEmail != null) {
+            respondentBuilder.solicitor(RespondentSolicitor.builder().email(solicitorEmail).build());
+        }
+
+        return element(respondentBuilder.build());
     }
 
     public static Representative testRepresentative() {
@@ -191,51 +223,6 @@ public class TestDataHelper {
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
             .servingPreferences(servingPreferences)
             .address(Address.builder().build())
-            .build();
-    }
-
-    public static Placement testPlacement(Element<Child> child, DocumentReference application) {
-        return Placement.builder()
-            .childId(child.getId())
-            .childName(child.getValue().getParty().getFullName())
-            .application(application)
-            .build();
-    }
-
-    public static Placement testPlacement(Element<Child> child) {
-        return Placement.builder()
-            .childId(child.getId())
-            .childName(child.getValue().getParty().getFullName())
-            .application(testDocumentReference())
-            .build();
-    }
-
-    public static Placement testPlacement(Element<Child> child,
-                                          List<PlacementOrderAndNotices> placementOrderAndNotices) {
-        return Placement.builder()
-            .childId(child.getId())
-            .childName(child.getValue().getParty().getFullName())
-            .application(testDocumentReference())
-            .orderAndNotices(placementOrderAndNotices
-                .stream()
-                .map(ElementUtils::element)
-                .collect(toList()))
-            .build();
-    }
-
-    public static PlacementOrderAndNotices testPlacementOrderAndNotices(
-        PlacementOrderAndNotices.PlacementOrderAndNoticesType type, String documentBinaryUrl) {
-        return PlacementOrderAndNotices.builder()
-            .type(type)
-            .document(DocumentReference.builder().binaryUrl(documentBinaryUrl).build())
-            .build();
-    }
-
-    public static PlacementOrderAndNotices testPlacementOrderAndNotices(
-        PlacementOrderAndNotices.PlacementOrderAndNoticesType type, DocumentReference documentReference) {
-        return PlacementOrderAndNotices.builder()
-            .type(type)
-            .document(documentReference)
             .build();
     }
 
@@ -341,6 +328,10 @@ public class TestDataHelper {
             .build());
     }
 
+    public static DynamicList buildDynamicList(List<Pair<UUID, String>> listElements) {
+        return buildDynamicList(-1, listElements);
+    }
+
     @SafeVarargs
     public static DynamicList buildDynamicList(Pair<UUID, String>... listElements) {
         return buildDynamicList(-1, listElements);
@@ -401,4 +392,9 @@ public class TestDataHelper {
             .build();
     }
 
+    public static FeeResponse feeResponse(double amount) {
+        final FeeResponse feeResponse = new FeeResponse();
+        feeResponse.setAmount(BigDecimal.valueOf(amount));
+        return feeResponse;
+    }
 }
