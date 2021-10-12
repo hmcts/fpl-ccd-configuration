@@ -16,7 +16,7 @@ public enum AddressNotKnowReason {
 
     public static Optional<AddressNotKnowReason> fromType(String value) {
         return Stream.of(AddressNotKnowReason.values())
-            .filter(gender -> gender.getType().equalsIgnoreCase(value))
+            .filter(addressNotKnowReason -> addressNotKnowReason.getType().equalsIgnoreCase(value))
             .findFirst();
     }
 }
