@@ -58,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -242,7 +243,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(cafcassTemplate),
-            eq("cafcass@cafcass.com"),
+            eq(CAFCASS_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));

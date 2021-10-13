@@ -281,7 +281,7 @@ Scenario('Request and upload translation for case management order', async ({ I,
   await reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   await I.goToNextPage();
-  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
+  reviewAgreedCaseManagementOrderEventPage.selectOthers(0);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 

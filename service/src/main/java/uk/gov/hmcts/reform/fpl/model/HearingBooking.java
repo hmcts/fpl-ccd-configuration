@@ -76,6 +76,7 @@ public class HearingBooking implements TranslatableItem {
     @TimeNotMidnight(message = "Enter a valid end time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter an end date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime endDate;
+    private final LocalDate vacatedDate;
     private final List<HearingNeedsBooked> hearingNeedsBooked;
     private final String hearingNeedsDetails;
     private final String additionalNotes;
