@@ -15,6 +15,10 @@ public class DocmosisHearingBooking {
     private final String hearingAttendanceDetails;
     private final String preHearingAttendance;
     private final String hearingTime;
+    private final String hearingDuration;
     private final String hearingJudgeTitleAndName;
     private final String hearingLegalAdvisorName;
+    private final String hearingStartDate;
+    private final String hearingEndDate;
+    private final String endDateDerived;
 }
