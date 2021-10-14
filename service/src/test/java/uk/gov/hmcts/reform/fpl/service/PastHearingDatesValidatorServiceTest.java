@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
-import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = PastHearingDatesValidatorService.class)
@@ -83,48 +80,6 @@ class PastHearingDatesValidatorServiceTest {
             .containsOnly("The vacated date must be before, or the same as the hearing date.");
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = { 0,-1})
-    void shouldReturnValidationErrorWhenHearingDaysIsNegativeOrZero(int days) {
-        final List<String> validationErrors = service.validateDays(DAYS.getType(), days);
-
-        assertThat(validationErrors)
-            .containsOnly("Enter valid days");
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenHearingDaysIsValid() {
-        final List<String> validationErrors = service.validateDays(DAYS.getType(), 10);
-
-        assertThat(validationErrors).isEmpty();
-    }
-
-
-    @ParameterizedTest
-    @MethodSource("invalidHoursMinutesSource")
-    void shouldReturnValidationErrorWhenHearingHoursOrMinutesAreInvalid(int hours, int minutes) {
-        final List<String> validationErrors = service.validateHoursMinutes(HOURS_MINS.getType(), hours, minutes);
-
-        assertThat(validationErrors)
-            .containsOnly("Enter valid hours and minutes");
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenHearingHoursOrMinutesAreValid() {
-        final List<String> validationErrors = service.validateHoursMinutes(HOURS_MINS.getType(), 2, 4);
-
-        assertThat(validationErrors).isEmpty();
-    }
-
-    private static Stream<Arguments> invalidHoursMinutesSource() {
-        return Stream.of(
-            Arguments.of(0,0),
-            Arguments.of(-1,0),
-            Arguments.of(-1,-1),
-            Arguments.of(0,-1)
-        );
-    }
-
     private static Stream<Arguments> validateHearingDatesSource() {
         LocalDateTime startTime = LocalDateTime.of(2020, 12, 10, 10, 10, 10);
         return Stream.of(
@@ -134,6 +89,4 @@ class PastHearingDatesValidatorServiceTest {
             Arguments.of("Hearing end date time and start date time are same", startTime, startTime)
         );
     }
-
-
 }

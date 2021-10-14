@@ -314,8 +314,7 @@ Scenario('Request and upload translation for notice of hearing', async ({ I, cas
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
-  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate}));
-  await manageHearingsEventPage.selectHearingDuration(Object.assign({}, hearingDetails[0], {endDate: hearingEndDate}));
+  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate, endDate: hearingEndDate}));
   manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
   manageHearingsEventPage.selectHearingDateCorrect();

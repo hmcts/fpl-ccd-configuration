@@ -92,9 +92,7 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasFutureEndDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasHearingEndDateAfterStartDate;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasTimeNotMidnight;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
@@ -967,14 +965,9 @@ public class CaseData {
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingStartDate;
 
-    @HasTimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
-    @HasFutureEndDate(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
-    private final LocalDateTime hearingEndDateTime;
+    @TimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
-    private final Integer hearingDays;
-    private final Integer hearingMinutes;
-    private final Integer hearingHours;
-    private final String hearingDuration;
     private final String sendNoticeOfHearing;
     private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
     private final HearingOptions hearingOption;

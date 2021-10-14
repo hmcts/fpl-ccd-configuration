@@ -134,53 +134,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "hearingEndDateTime",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "DateTime",
-    "Label": "End date and time",
-    "HintText": "Use 24 hour format",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearingDuration",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "HearingDuration",
-    "Label": "Hearing duration",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearingDays",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "Number",
-    "Label": "Hearing length, in days",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearingHours",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "Number",
-    "Label": "Hearing length, in hours",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "hearingMinutes",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "Number",
-    "Label": "Hearing length, in minutes",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "hearingStartDateConfirmation",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DateTime",
@@ -476,8 +429,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingDurationLabel",
-    "Label": "Hearing duration",
+    "ID": "hearingEndDateLabel",
+    "Label": "End date and time",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"

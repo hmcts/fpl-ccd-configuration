@@ -41,7 +41,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -193,12 +192,8 @@ public class CaseDataExtractionService {
             .hearingAttendanceDetails(hearing.getAttendanceDetails())
             .preHearingAttendance(hearing.getPreAttendanceDetails())
             .hearingTime(getHearingTime(hearing))
-            .hearingDuration(hearing.getHearingDuration())
             .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
             .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
-            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
-            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearing.getEndDate(), DATE_TIME))
-            .endDateDerived(hearing.getEndDateDerived())
             .build();
     }
 
