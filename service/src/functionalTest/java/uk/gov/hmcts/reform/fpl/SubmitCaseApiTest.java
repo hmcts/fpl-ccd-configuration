@@ -54,7 +54,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         final String expectedApplication = readString("case-submission/application-draft.txt",
             Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE)));
 
-        assertThat(response.getCaseData().getAmountToPay()).isEqualTo("221500");
+        assertThat(response.getCaseData().getAmountToPay()).isEqualTo("205500");
         assertThat(actualApplication).isEqualToNormalizingWhitespace(expectedApplication);
 
         return response.getCaseData();
