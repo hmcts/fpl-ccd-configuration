@@ -37,7 +37,7 @@ public class ManageDocumentLAService {
     public static final String RELATED_TO_HEARING = "manageDocumentsRelatedToHearing";
     public static final String COURT_BUNDLE_HEARING_LABEL_KEY = "manageDocumentsCourtBundleHearingLabel";
     public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
-    public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
+    public static final String COURT_BUNDLE_LIST_KEY = "courtBundleListV2";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
@@ -76,7 +76,7 @@ public class ManageDocumentLAService {
     }
 
     public List<Element<HearingCourtBundle>> buildCourtBundleList(CaseData caseData) {
-        List<Element<HearingCourtBundle>> courtBundleList = caseData.getCourtBundleList();
+        List<Element<HearingCourtBundle>> courtBundleList = caseData.getCourtBundleListV2();
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
 
         Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingId);
@@ -118,7 +118,7 @@ public class ManageDocumentLAService {
     }
 
     private List<Element<CourtBundle>> getCourtBundleForHearing(CaseData caseData) {
-        List<Element<HearingCourtBundle>> bundles = caseData.getCourtBundleList();
+        List<Element<HearingCourtBundle>> bundles = caseData.getCourtBundleListV2();
 
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
 

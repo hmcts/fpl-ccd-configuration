@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -83,6 +84,55 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl82 {
+        private final String migrationId = "DFPL-82";
+        private static final String CONFIDENTIAL = "CONFIDENTIAL";
+
+        private CourtBundle createCourtBundle(String hearing, String fileName, String fileUrl, String binaryUrl) {
+            return CourtBundle.builder()
+                .hearing(hearing)
+                .document(DocumentReference.builder()
+                    .filename(fileName)
+                    .url(fileUrl)
+                    .binaryUrl(binaryUrl)
+                    .build())
+                .confidential(List.of(CONFIDENTIAL))
+                .build();
+        }
+
+        @Test
+        void shouldPerformMigration() {
+            List<CourtBundle> courtBundles = List.of(
+                createCourtBundle("hearing 1",
+                    "doc1", "url", "binaryUrl"),
+                createCourtBundle("hearing 2",
+                   "doc2", "url2", "binaryUrl2"),
+                createCourtBundle("hearing 1",
+                   "doc3", "url3", "binaryUrl3")
+            );
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .state(State.SUBMITTED)
+                .courtBundleList(wrapElements(courtBundles)).build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getOtherCourtAdminDocuments()).hasSize(1)
+                .first()
+                .extracting(doc -> doc.getValue().getDocumentTitle())
+                .isEqualTo("court-document1");
+        }
+    }
+
+
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Dfpl164 {
         private final String migrationId = "DFPL-164";

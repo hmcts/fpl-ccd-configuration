@@ -188,7 +188,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
                 .courtBundle(courtBundle)
                 .build()
         );
-        assertThat(responseData.getCourtBundleList()).first()
+        assertThat(responseData.getCourtBundleListV2()).first()
             .isEqualTo(expected);
         assertExpectedFieldsAreRemoved(responseData);
     }

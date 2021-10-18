@@ -17,6 +17,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
 public class CourtBundle extends DocumentMetaData {
+    @Deprecated
+    private String hearing;
     private DocumentReference document;
     private List<String> confidential;
 

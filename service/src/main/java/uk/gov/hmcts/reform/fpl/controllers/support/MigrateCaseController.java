@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -34,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +44,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -49,6 +53,7 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
@@ -69,7 +74,8 @@ public class MigrateCaseController extends CallbackController {
     private final DocumentListService documentListService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "FPLA-3238", this::run3238,
-        "DFPL-164", this::run164
+        "DFPL-164", this::run164,
+        "DFPL-82", this::run82
     );
 
     @PostMapping("/about-to-submit")
@@ -90,6 +96,37 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run82(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        List<Element<CourtBundle>> oldCourBundles = caseData.getCourtBundleList();
+
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        if (oldCourBundles != null) {
+            log.info("Migration {id = DFPL-82, case reference = {}} courtbundles start", caseId);
+            Map<String, List<Element<CourtBundle>>> courtBundles = oldCourBundles.stream().map(Element::getValue).collect(
+                Collectors.groupingBy(CourtBundle::getHearing,
+                    Collectors.mapping(data -> Element.<CourtBundle>builder().value(data).build(), Collectors.toList())));
+
+
+            List<Element<HearingCourtBundle>> hearingBundles = courtBundles.entrySet().stream().map(entry -> {
+                    HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
+                        .hearing(entry.getKey())
+                        .courtBundle(entry.getValue())
+                        .build();
+                    return Element.<HearingCourtBundle>builder().value(hearingCourtBundle).build();
+                }
+            ).collect(Collectors.toList());
+
+            caseDetailsData.remove("courtBundleList");
+            caseDetailsData.put("courtBundleListV2", hearingBundles);
+            log.info("Migration {id = DFPL-82, case reference = {}} courtbundles finish", caseId);
+        } else {
+            log.warn("Migration {id = DFPL-82, case reference = {}, case state = {}} doesn't have court bundles "
+                , caseId, caseData.getState().getValue());
+        }
     }
 
     private void run164(CaseDetails caseDetails) {

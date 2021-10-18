@@ -144,7 +144,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .courtBundleList(courtBundleList)
+            .courtBundleListV2(courtBundleList)
             .courtBundleHearingList(hearingList)
             .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
             .build();
@@ -153,7 +153,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
+        assertThat(responseData.getCourtBundleListV2()).isEqualTo(courtBundleList);
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(COURT_BUNDLE)

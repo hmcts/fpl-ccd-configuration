@@ -193,7 +193,7 @@ class ManageDocumentsLAServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(editedCourtBundle)
-            .courtBundleList(courtBundleList)
+            .courtBundleListV2(courtBundleList)
             .courtBundleHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .build();
@@ -225,7 +225,7 @@ class ManageDocumentsLAServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(newCourtBundle)
-            .courtBundleList(courtBundleList)
+            .courtBundleListV2(courtBundleList)
             .courtBundleHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .build();
@@ -291,7 +291,7 @@ class ManageDocumentsLAServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(courtBundle)
-            .courtBundleList(courtBundleList)
+            .courtBundleListV2(courtBundleList)
             .courtBundleHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .build();
@@ -320,7 +320,7 @@ class ManageDocumentsLAServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(courtBundle)
-            .courtBundleList(courtBundleList)
+            .courtBundleListV2(courtBundleList)
             .courtBundleHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .build();

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class HearingCourtBundle {
         return defaultIfNull(this.courtBundle, new ArrayList<>());
     }
 
+    @JsonIgnore
     public List<Element<CourtBundle>> getCourtBundleNC() {
         return courtBundle.stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())

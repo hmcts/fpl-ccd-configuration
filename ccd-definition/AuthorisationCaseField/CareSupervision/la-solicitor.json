@@ -633,7 +633,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleList",
+    "CaseFieldID": "courtBundleListV2",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRUD"
   },
