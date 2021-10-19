@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -124,15 +125,49 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseData responseData = extractCaseData(response);
 
-            assertThat(responseData.getOtherCourtAdminDocuments()).hasSize(1)
-                .first()
-                .extracting(doc -> doc.getValue().getDocumentTitle())
-                .isEqualTo("court-document1");
+            assertThat(responseData.getCourtBundleList()).isNull();
+            assertThat(responseData.getCourtBundleListV2())
+                .extracting(Element::getValue)
+                .contains(
+                        HearingCourtBundle.builder()
+                            .hearing("hearing 1")
+                            .courtBundle(wrapElements(List.of(
+                                createCourtBundle("hearing 1",
+                                    "doc1", "url", "binaryUrl"),
+                                createCourtBundle("hearing 1",
+                                    "doc3", "url3", "binaryUrl3"))))
+                            .build(),
+                        HearingCourtBundle.builder()
+                            .hearing("hearing 2")
+                            .courtBundle(wrapElements(List.of(
+                                createCourtBundle("hearing 2",
+                                    "doc2", "url2", "binaryUrl2"))))
+                            .build()
+
+                );
+        }
+
+        @Test
+        void shouldSkipMigration() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .state(State.SUBMITTED)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getCourtBundleList()).isNull();
+            assertThat(responseData.getCourtBundleListV2()).isEmpty();
         }
     }
 
 
-        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Dfpl164 {
         private final String migrationId = "DFPL-164";

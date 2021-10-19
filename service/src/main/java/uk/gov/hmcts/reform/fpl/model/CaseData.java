@@ -275,8 +275,7 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    @Deprecated
-    public final List<Element<CourtBundle>> courtBundle;
+    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;

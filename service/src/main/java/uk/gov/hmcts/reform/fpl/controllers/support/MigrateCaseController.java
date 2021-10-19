@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,16 +43,17 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
@@ -106,26 +106,30 @@ public class MigrateCaseController extends CallbackController {
         Map<String, Object> caseDetailsData = caseDetails.getData();
         if (oldCourBundles != null) {
             log.info("Migration {id = DFPL-82, case reference = {}} courtbundles start", caseId);
-            Map<String, List<Element<CourtBundle>>> courtBundles = oldCourBundles.stream().map(Element::getValue).collect(
-                Collectors.groupingBy(CourtBundle::getHearing,
-                    Collectors.mapping(data -> Element.<CourtBundle>builder().value(data).build(), Collectors.toList())));
+            Map<String, List<Element<CourtBundle>>> courtBundles = oldCourBundles.stream()
+                .map(Element::getValue)
+                .collect(
+                    groupingBy(CourtBundle::getHearing,
+                        mapping(data -> Element.<CourtBundle>builder().value(data).build(),
+                            toList()))
+                );
 
-
-            List<Element<HearingCourtBundle>> hearingBundles = courtBundles.entrySet().stream().map(entry -> {
+            List<Element<HearingCourtBundle>> hearingBundles = courtBundles.entrySet().stream()
+                .map(entry -> {
                     HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
                         .hearing(entry.getKey())
                         .courtBundle(entry.getValue())
                         .build();
                     return Element.<HearingCourtBundle>builder().value(hearingCourtBundle).build();
                 }
-            ).collect(Collectors.toList());
+            ).collect(toList());
 
             caseDetailsData.remove("courtBundleList");
             caseDetailsData.put("courtBundleListV2", hearingBundles);
             log.info("Migration {id = DFPL-82, case reference = {}} courtbundles finish", caseId);
         } else {
-            log.warn("Migration {id = DFPL-82, case reference = {}, case state = {}} doesn't have court bundles "
-                , caseId, caseData.getState().getValue());
+            log.warn("Migration {id = DFPL-82, case reference = {}, case state = {}} doesn't have court bundles ",
+                caseId, caseData.getState().getValue());
         }
     }
 
