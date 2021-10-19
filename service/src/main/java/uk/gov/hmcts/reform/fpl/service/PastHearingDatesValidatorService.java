@@ -10,6 +10,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PastHearingDatesValidatorService {
@@ -42,6 +45,24 @@ public class PastHearingDatesValidatorService {
             errors.add("The vacated date must be before, or the same as the hearing date.");
         }
 
+        return errors;
+    }
+
+    public List<String> validateDays(String hearingDuration, Integer hearingDays) {
+        List<String> errors = new ArrayList<>();
+        if (DAYS.getType().equals(hearingDuration) && hearingDays <= 0) {
+            errors.add("Enter valid days");
+        }
+        return errors;
+    }
+
+    public List<String> validateHoursMinutes(String hearingDuration, Integer hearingHours, Integer hearingMinutes) {
+        List<String> errors = new ArrayList<>();
+        if (HOURS_MINS.getType().equals(hearingDuration)
+            && ((hearingHours < 0 || hearingMinutes < 0)
+                || (hearingHours == 0 && hearingMinutes == 0))) {
+            errors.add("Enter valid hours and minutes");
+        }
         return errors;
     }
 
