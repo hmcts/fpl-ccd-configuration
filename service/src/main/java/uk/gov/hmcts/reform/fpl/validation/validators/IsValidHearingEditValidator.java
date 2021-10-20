@@ -28,6 +28,6 @@ public class IsValidHearingEditValidator implements ConstraintValidator<IsValidH
     }
 
     private boolean isInvalidHearingVacate(CaseData caseData) {
-        return VACATE_HEARING.equals(caseData.getHearingOption()) && isEmpty(caseData.getFutureAndTodayHearings());
+        return VACATE_HEARING.equals(caseData.getHearingOption()) && isEmpty(caseData.getAllNonCancelledHearings());
     }
 }

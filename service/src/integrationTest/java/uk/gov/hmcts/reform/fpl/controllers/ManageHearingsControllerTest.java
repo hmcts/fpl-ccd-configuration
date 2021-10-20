@@ -69,6 +69,7 @@ abstract class ManageHearingsControllerTest extends AbstractCallbackTest {
             .status(status)
             .startDate(startDate)
             .endDate(startDate.plusDays(1))
+            .endDateDerived("No")
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel("")
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()

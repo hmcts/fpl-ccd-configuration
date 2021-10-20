@@ -49,6 +49,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,6 +61,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
@@ -81,7 +85,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARINGS_TO_ADJOURN;
@@ -91,6 +94,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -153,7 +157,8 @@ class ManageHearingsServiceTest {
 
             DynamicList expectedHearingList = dynamicList(futureHearing1, futureHearing2);
             DynamicList expectedPastHearingList = dynamicList(todayHearing, pastHearing1, pastHearing2);
-            DynamicList expectedFutureHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing);
+            DynamicList expectedVacateHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing,
+                pastHearing1, pastHearing2);
 
             CaseData initialCaseData = CaseData.builder()
                 .hearingDetails(List.of(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2))
@@ -168,7 +173,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
                 .containsEntry(HEARING_DATE_LIST, expectedHearingList)
                 .containsEntry(PAST_HEARING_LIST, expectedPastHearingList)
-                .containsEntry(FUTURE_HEARING_LIST, expectedFutureHearingList)
+                .containsEntry(VACATE_HEARING_LIST, expectedVacateHearingList)
                 .containsEntry(TO_RE_LIST_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARING_TO_RE_LIST)
                 .doesNotContainKeys(TO_RE_LIST_HEARING_LABEL);
@@ -206,7 +211,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
                 .containsEntry(HEARING_DATE_LIST, emptyDynamicList)
                 .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
-                .containsEntry(FUTURE_HEARING_LIST, emptyDynamicList)
+                .containsEntry(VACATE_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARINGS_TO_ADJOURN)
                 .doesNotContainKeys(HAS_FUTURE_HEARING_FLAG)
                 .doesNotContainKeys(HAS_HEARINGS_TO_VACATE);
@@ -253,7 +258,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
                 .containsEntry(HEARING_DATE_LIST, expectedHearingList)
                 .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
-                .containsEntry(FUTURE_HEARING_LIST, expectedFutureHearingList);
+                .containsEntry(VACATE_HEARING_LIST, expectedFutureHearingList);
         }
 
         private Element<HearingBooking> hearingFromToday(int daysFromToday) {
@@ -429,20 +434,20 @@ class ManageHearingsServiceTest {
 
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, null);
 
-        Map<String, Object> expectedCaseFields = Map.of(
-            "hearingType", CASE_MANAGEMENT,
-            "hearingTypeReason", "Reason",
-            "hearingStartDate", startDate,
-            "hearingEndDate", endDate,
-            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
-            "previousHearingVenue", previousHearingVenue,
-            "hearingAttendance", List.of(IN_PERSON, VIDEO),
-            "hearingAttendanceDetails", "Test attendance details",
-            "preHearingAttendanceDetails", "Test pre attendance details",
-            "sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS
-        );
-
-        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("hearingType", CASE_MANAGEMENT),
+            Map.entry("hearingTypeReason", "Reason"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("previousHearingVenue", previousHearingVenue),
+            Map.entry("hearingAttendance", List.of(IN_PERSON, VIDEO)),
+            Map.entry("hearingAttendanceDetails", "Test attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Test pre attendance details"),
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
+            Map.entry("hearingDuration", "DATE_TIME"),
+            Map.entry("hearingEndDateTime", endDate)
+        ));
     }
 
     @Test
@@ -482,7 +487,106 @@ class ManageHearingsServiceTest {
             Map.entry("hearingAttendance", List.of(IN_PERSON)),
             Map.entry("hearingAttendanceDetails", "Attendance details"),
             Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
-            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS)
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
+            Map.entry("hearingDuration", "DATE_TIME"),
+            Map.entry("hearingEndDateTime", endDate)
+        ));
+
+    }
+
+    @Test
+    void shouldSetHearingDayAndHearingDurationWhenHearingDaysIsSet() {
+        int days = 9;
+        LocalDateTime startDate = time.now().plusDays(1);
+        LocalDateTime endDate = startDate.plusDays(days);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
+        Judge allocatedJudge = testJudge();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .type(OTHER)
+            .typeDetails("Fact finding")
+            .venue("OTHER")
+            .typeReason("Reason")
+            .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
+            .attendance(List.of(IN_PERSON))
+            .attendanceDetails("Attendance details")
+            .preAttendanceDetails("Pre attendance details")
+            .startDate(startDate)
+            .endDate(endDate)
+            .endDateDerived(YES.getValue())
+            .hearingDays(days)
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+            .previousHearingVenue(PreviousHearingVenue.builder().build())
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
+            .build();
+
+        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
+
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("hearingType", OTHER),
+            Map.entry("hearingTypeDetails", "Fact finding"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS),
+            Map.entry("hearingAttendance", List.of(IN_PERSON)),
+            Map.entry("hearingAttendanceDetails", "Attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
+            Map.entry("hearingDuration", DAYS.getType()),
+            Map.entry("hearingDays", days),
+            Map.entry("hearingTypeReason", "Reason")
+        ));
+    }
+
+    @Test
+    void shouldSetHearingHoursAndMinutesWhenHearingHoursAndMinutesIsSet() {
+        int hours = 9;
+        int minutes = 30;
+        LocalDateTime startDate = time.now().plusDays(1);
+        LocalDateTime endDate = startDate.plusHours(hours)
+            .plusMinutes(minutes);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
+        Judge allocatedJudge = testJudge();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .type(OTHER)
+            .typeDetails("Fact finding")
+            .venue("OTHER")
+            .typeReason("Reason")
+            .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
+            .attendance(List.of(IN_PERSON))
+            .attendanceDetails("Attendance details")
+            .preAttendanceDetails("Pre attendance details")
+            .startDate(startDate)
+            .endDate(endDate)
+            .endDateDerived(YES.getValue())
+            .hearingHours(hours)
+            .hearingMinutes(minutes)
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+            .previousHearingVenue(PreviousHearingVenue.builder().build())
+            .translationRequirements(TRANSLATION_REQUIREMENTS)
+            .build();
+
+        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
+
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
+            Map.entry("hearingType", OTHER),
+            Map.entry("hearingTypeDetails", "Fact finding"),
+            Map.entry("hearingStartDate", startDate),
+            Map.entry("hearingEndDate", endDate),
+            Map.entry("judgeAndLegalAdvisor", judgeAndLegalAdvisor),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS),
+            Map.entry("hearingAttendance", List.of(IN_PERSON)),
+            Map.entry("hearingAttendanceDetails", "Attendance details"),
+            Map.entry("preHearingAttendanceDetails", "Pre attendance details"),
+            Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
+            Map.entry("hearingDuration", HOURS_MINS.getType()),
+            Map.entry("hearingHours", hours),
+            Map.entry("hearingMinutes", minutes),
+            Map.entry("hearingTypeReason", "Reason")
         ));
     }
 
@@ -516,6 +620,7 @@ class ManageHearingsServiceTest {
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .others(SELECTED_OTHERS)
             .additionalNotes("notes")
+            .endDateDerived("No")
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
@@ -556,6 +661,7 @@ class ManageHearingsServiceTest {
             .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
+            .endDateDerived("No")
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
@@ -590,6 +696,89 @@ class ManageHearingsServiceTest {
             .customPreviousVenue("Custom House, Custom Street")
             .startDate(startDate)
             .endDate(endDate)
+            .hearingJudgeLabel("Her Honour Judge Judy")
+            .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
+            .additionalNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .endDateDerived("No")
+            .build();
+
+        assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
+    }
+
+    @Test
+    void shouldSetHearingDurationInDaysWhenHearingInDaysIsSet() {
+        LocalDateTime startDate = time.now();
+        int hearingDays = 9;
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .usePreviousVenue("Yes")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .previousVenueId("OTHER")
+            .hearingType(CASE_MANAGEMENT)
+            .hearingStartDate(startDate)
+            .hearingDays(hearingDays)
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .noticeOfHearingNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
+        HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
+
+        HearingBooking expectedHearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .venue("OTHER")
+            .customPreviousVenue("Custom House, Custom Street")
+            .startDate(startDate)
+            .hearingDuration("9 days")
+            .endDateDerived(YES.getValue())
+            .hearingJudgeLabel("Her Honour Judge Judy")
+            .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .others(SELECTED_OTHERS)
+            .additionalNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
+    }
+
+    @Test
+    void shouldSetHearingDurationInHoursAndMinutesWhenHearingInHoursAndMinutesIsSet() {
+        LocalDateTime startDate = time.now();
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .usePreviousVenue("Yes")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .previousVenueId("OTHER")
+            .hearingType(CASE_MANAGEMENT)
+            .hearingStartDate(startDate)
+            .hearingHours(9)
+            .hearingMinutes(45)
+            .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
+            .noticeOfHearingNotes("notes")
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        given(othersService.getSelectedOthers(caseData)).willReturn(SELECTED_OTHERS);
+
+        HearingBooking hearingBooking = service.getCurrentHearingBooking(caseData);
+
+        HearingBooking expectedHearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .venue("OTHER")
+            .customPreviousVenue("Custom House, Custom Street")
+            .startDate(startDate)
+            .hearingDuration("9 hours 45 minutes")
+            .endDateDerived(YES.getValue())
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -725,13 +914,19 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.now().plusDays(3);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDateTime(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
+
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
                 "startDateFlag", "Yes",
-                "hearingStartDateLabel", "15 March 2010, 8:20pm");
+                "hearingStartDateLabel", "15 March 2010, 8:20pm",
+                "hearingEndDate", hearingEndDate);
 
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
@@ -741,14 +936,19 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(3);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDateTime(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
+
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "15 March 2010, 8:20pm");
-
+                "hearingDurationLabel", "15 March 2010, 8:20pm",
+                "hearingEndDate", hearingEndDate);
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
 
@@ -757,17 +957,85 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDateTime(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
 
             Map<String, Object> extractedFields = Map.of(
                 "showConfirmPastHearingDatesPage", "Yes",
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel", "15 March 2010, 8:20pm");
+                "hearingDurationLabel", "15 March 2010, 8:20pm",
+                "hearingEndDate", hearingEndDate);
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
+        }
+
+        @Test
+        void shouldSetBothStartAndEndHearingDaysWhenBothHearingDatesAreInThePast() {
+            LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
+
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingDays(3)
+                .hearingDuration(DAYS.getType())
+                .build();
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
+
+            Map<String, Object> extractedFields = Map.of(
+                "showConfirmPastHearingDatesPage", "Yes",
+                "startDateFlag", "Yes",
+                "hearingStartDateLabel", "16 April 2011, 8:20pm",
+                "endDateFlag", "Yes",
+                "hearingDurationLabel", "3 days",
+                "hearingEndDate", LocalDateTime.parse("2011-04-19T20:20:00"));
+
+
+            assertThat(hearingDateFields).isEqualTo(extractedFields);
+        }
+
+        @Test
+        void shouldSetBothStartAndEndHearingHoursAndMinutesWhenBothHearingDatesAreInThePast() {
+            LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
+
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingHours(3)
+                .hearingMinutes(20)
+                .hearingDuration(HOURS_MINS.getType())
+                .build();
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
+
+            Map<String, Object> extractedFields = Map.of(
+                "showConfirmPastHearingDatesPage", "Yes",
+                "startDateFlag", "Yes",
+                "hearingStartDateLabel", "16 April 2011, 8:20pm",
+                "endDateFlag", "Yes",
+                "hearingDurationLabel", "3 hours 20 minutes",
+                "hearingEndDate", LocalDateTime.parse("2011-04-16T23:40:00"));
+
+            assertThat(hearingDateFields).isEqualTo(extractedFields);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenHearingDurationNotSet() {
+            LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
+
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingDuration("INVALID")
+                .build();
+
+            assertThatThrownBy(() -> service.populateFieldsWhenPastHearingDateAdded(caseData))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid hearing duration INVALID");
         }
 
         @Test
@@ -775,10 +1043,17 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(1);
             LocalDateTime hearingEndDate = hearingStartDate.plusHours(1);
 
-            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
-                hearingEndDate);
+            CaseData caseData = CaseData.builder()
+                .hearingStartDate(hearingStartDate)
+                .hearingEndDateTime(hearingEndDate)
+                .hearingDuration(DATE_TIME.getType())
+                .build();
 
-            Map<String, Object> extractedFields = Map.of("showConfirmPastHearingDatesPage", "No");
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(caseData);
+
+            Map<String, Object> extractedFields = Map.of(
+                "showConfirmPastHearingDatesPage", "No",
+                "hearingEndDate", hearingEndDate);
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
@@ -1066,6 +1341,7 @@ class ManageHearingsServiceTest {
 
     @Nested
     class Vacating {
+        private final LocalDate vacatedDate = time.now().minusDays(1).toLocalDate();
 
         @Test
         void shouldVacateHearingToBeReListedLater() {
@@ -1090,11 +1366,13 @@ class ManageHearingsServiceTest {
                 hearingElement1.getValue().toBuilder()
                     .status(VACATED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateHearing(caseData, hearingElement1.getId());
@@ -1111,10 +1389,12 @@ class ManageHearingsServiceTest {
             Element<HearingBooking> vacatedHearing = element(hearingElement1.getId(),
                 hearingElement1.getValue().toBuilder()
                     .status(VACATED)
+                    .vacatedDate(vacatedDate)
                     .build());
 
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateHearing(caseData, hearingElement1.getId());
@@ -1138,11 +1418,13 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
@@ -1167,6 +1449,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1180,6 +1463,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .build();
 
             service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
@@ -1207,6 +1491,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1222,6 +1507,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .draftUploadedCMOs(List.of(linkedDraftCMO))
                 .build();
 
@@ -1252,6 +1538,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1267,6 +1554,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .draftUploadedCMOs(List.of(linkedDraftCMO))
                 .build();
 
@@ -1296,6 +1584,7 @@ class ManageHearingsServiceTest {
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
@@ -1313,6 +1602,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .hearingOrdersBundlesDrafts(newArrayList(
                     element(HEARING_BUNDLE_ID, HearingOrdersBundle.builder()
                         .orders(newArrayList(linkedDraftCMO))
@@ -1346,6 +1636,7 @@ class ManageHearingsServiceTest {
                 hearingElement1.getValue().toBuilder()
                     .status(expectedStatus)
                     .cancellationReason(vacatedReason.getReason())
+                    .vacatedDate(vacatedDate)
                     .build());
 
             final Element<HearingFurtherEvidenceBundle> vacatedHearingBundle = randomDocumentBundle(hearingElement1);
@@ -1354,6 +1645,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .hearingReListOption(reListOption)
                 .vacatedReason(vacatedReason)
+                .vacatedHearingDate(vacatedDate)
                 .hearingFurtherEvidenceDocuments(List.of(vacatedHearingBundle))
                 .build();
 
@@ -1441,11 +1733,11 @@ class ManageHearingsServiceTest {
     class HearingsDynamicList {
 
         @Test
-        void shouldReturnFutureAndTodayHearingDateListWhenHearingOptionIsVacateHearing() {
+        void shouldReturnVacateDateListWhenHearingOptionIsVacateHearing() {
             CaseData caseData = caseData(VACATE_HEARING);
 
             Object dynamicList = service.getHearingsDynamicList(caseData);
-            assertThat(dynamicList).isEqualTo(caseData.getFutureAndTodayHearingDateList());
+            assertThat(dynamicList).isEqualTo(caseData.getVacateHearingDateList());
         }
 
         @Test
@@ -1484,7 +1776,7 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList())
-                .futureAndTodayHearingDateList(randomDynamicList())
+                .vacateHearingDateList(randomDynamicList())
                 .toReListHearingDateList(randomDynamicList())
                 .hearingDateList(randomDynamicList())
                 .build();
@@ -1555,7 +1847,7 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList(selectedPastAndTodayHearing))
-                .futureAndTodayHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
+                .vacateHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
                 .toReListHearingDateList(randomDynamicList(selectedToReListHearing))
                 .hearingDateList(randomDynamicList(selectedHearing))
                 .build();
@@ -1601,7 +1893,8 @@ class ManageHearingsServiceTest {
             "vacatedReason",
             "hearingDateList",
             "pastAndTodayHearingDateList",
-            "futureAndTodayHearingDateList",
+            "vacateHearingDateList",
+            "vacatedHearingDate",
             "hasHearingsToAdjourn",
             "hasHearingsToVacate",
             "hasExistingHearings",
@@ -1609,7 +1902,7 @@ class ManageHearingsServiceTest {
             "hearingReListOption",
             "hearingStartDateLabel",
             "showConfirmPastHearingDatesPage",
-            "hearingEndDateLabel",
+            "hearingDurationLabel",
             "confirmHearingDate",
             "hearingStartDateConfirmation",
             "hearingEndDateConfirmation",
@@ -1623,7 +1916,12 @@ class ManageHearingsServiceTest {
             "hasOthers",
             "sendOrderToAllOthers",
             "others_label",
-            "othersSelector");
+            "othersSelector",
+            "hearingMinutes",
+            "hearingDuration",
+            "hearingDays",
+            "hearingHours",
+            "hearingEndDateTime");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {

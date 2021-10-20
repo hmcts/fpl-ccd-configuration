@@ -281,7 +281,7 @@ Scenario('Request and upload translation for case management order', async ({ I,
   await reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   await I.goToNextPage();
-  reviewAgreedCaseManagementOrderEventPage.selectAllOthers();
+  reviewAgreedCaseManagementOrderEventPage.selectOthers(0);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 
@@ -314,7 +314,8 @@ Scenario('Request and upload translation for notice of hearing', async ({ I, cas
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
-  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate, endDate: hearingEndDate}));
+  await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate}));
+  await manageHearingsEventPage.selectHearingDuration(Object.assign({}, hearingDetails[0], {endDate: hearingEndDate}));
   manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
   manageHearingsEventPage.selectHearingDateCorrect();

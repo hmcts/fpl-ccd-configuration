@@ -92,7 +92,9 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasFutureEndDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasHearingEndDateAfterStartDate;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasTimeNotMidnight;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
@@ -859,6 +861,12 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getAllNonCancelledHearings() {
+        return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()))
+            .flatMap(Collection::stream).collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
@@ -953,7 +961,7 @@ public class CaseData {
     private final String noticeOfHearingNotes;
     private final Object hearingDateList;
     private final Object pastAndTodayHearingDateList;
-    private final Object futureAndTodayHearingDateList;
+    private final Object vacateHearingDateList;
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
@@ -965,15 +973,21 @@ public class CaseData {
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingStartDate;
 
-    @TimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
-    @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
+    @HasTimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
+    @HasFutureEndDate(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingEndDateTime;
     private final LocalDateTime hearingEndDate;
+    private final Integer hearingDays;
+    private final Integer hearingMinutes;
+    private final Integer hearingHours;
+    private final String hearingDuration;
     private final String sendNoticeOfHearing;
     private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
     private final HearingOptions hearingOption;
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
     private final HearingCancellationReason vacatedReason;
+    private final LocalDate vacatedHearingDate;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
 

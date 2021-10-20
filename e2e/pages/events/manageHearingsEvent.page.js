@@ -12,15 +12,19 @@ module.exports = {
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
+    vacatedDate: '#vacatedHearingDate',
     attendance: '#hearingAttendance',
     attendanceDetails: '#hearingAttendanceDetails',
     preAttendanceDetails: '#preHearingAttendanceDetails',
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
-    futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
+    vacateHearingDateList: '#vacateHearingDateList',
     toReListHearingDateList: '#toReListHearingDateList',
     hearingType: {
       caseManagement: '#hearingType-CASE_MANAGEMENT',
+    },
+    hearingDuration: {
+      dateTime: '#hearingDuration-DATE_TIME',
     },
     hearingVenue: '#hearingVenue',
     usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_Yes',
@@ -28,7 +32,7 @@ module.exports = {
     newVenue: '#previousHearingVenue_newVenue',
     newVenueCustomAddress: '#previousHearingVenue_newVenueCustomAddress_newVenueCustomAddress',
     startDate: '#hearingStartDate',
-    endDate: '#hearingEndDate',
+    endDate: '#hearingEndDateTime',
     sendNotice: '#sendNoticeOfHearing_Yes',
     dontSendNotice: '#sendNoticeOfHearing_No',
     noticeNotes: '#noticeOfHearingNotes',
@@ -67,12 +71,16 @@ module.exports = {
 
   selectVacateHearing(hearing) {
     I.click(this.fields.hearingOptions.vacateHearing);
-    I.selectOption(this.fields.futureAndTodayHearingDateList, hearing);
+    I.selectOption(this.fields.vacateHearingDateList, hearing);
   },
 
   selectReListHearing(hearing) {
     I.click(this.fields.hearingOptions.reListHearing);
     I.selectOption(this.fields.toReListHearingDateList, hearing);
+  },
+
+  enterVacatedDate(date) {
+    I.fillDate(date, this.fields.vacatedDate);
   },
 
   selectCancellationReasonType(type) {
@@ -99,7 +107,6 @@ module.exports = {
     }
 
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
-    await I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
 
     if (hearingDetails.preAttendanceDetails) {
       I.fillField(this.fields.preAttendanceDetails, hearingDetails.preAttendanceDetails);
@@ -184,6 +191,11 @@ module.exports = {
 
   async grabPreHearingAttendance(){
     return await I.grabValueFrom(this.fields.preAttendanceDetails);
+  },
+
+  selectHearingDuration(hearingDetails) {
+    I.click(this.fields.hearingDuration.dateTime);
+    I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
   },
 
 };
