@@ -417,6 +417,14 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
+    "ListElementCode": "legalCounsellors",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
     "ListElementCode": "activeParty",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "activeParty!=\"SHOW_LABEL\""
