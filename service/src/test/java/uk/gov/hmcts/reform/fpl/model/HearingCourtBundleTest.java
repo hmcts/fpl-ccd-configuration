@@ -74,8 +74,7 @@ public class HearingCourtBundleTest {
 
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
-            "courtBundle", expectedCourtBundle,
-            "courtBundleNC", emptyList()
+            "courtBundle", expectedCourtBundle
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);
@@ -94,7 +93,5 @@ public class HearingCourtBundleTest {
 
         assertThat(unwrapElements(hearingCourtBundle.getCourtBundle()))
             .isEqualTo(List.of(NON_CONFIDENTIAL_COURT_BUNDLE, CONFIDENTIAL_COURT_BUNDLE));
-        assertThat(unwrapElements(hearingCourtBundle.getCourtBundleNC()))
-            .isEqualTo(List.of(NON_CONFIDENTIAL_COURT_BUNDLE));
     }
 }
