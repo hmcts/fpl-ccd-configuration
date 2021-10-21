@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 import uk.gov.hmcts.reform.fnp.model.payment.enums.Currency;
 import uk.gov.hmcts.reform.fnp.model.payment.enums.Service;
 
