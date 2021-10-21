@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreditAccountPaymentRequest {
-    @ToString.Exclude
     @JsonProperty("account_number")
     private String accountNumber;
     @JsonProperty("amount")
