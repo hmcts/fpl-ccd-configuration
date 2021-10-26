@@ -53,7 +53,7 @@ fees-register:
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: ${C2_WITH_NOTICE:notice}
+      keyword: ${C2_WITH_NOTICE:GAOnNotice}
       service: other
     CARE_ORDER:
       channel: default
