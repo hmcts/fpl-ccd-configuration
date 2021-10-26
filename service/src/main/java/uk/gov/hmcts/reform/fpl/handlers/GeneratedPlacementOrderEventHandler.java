@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_TYPES;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Slf4j
@@ -49,6 +51,7 @@ public class GeneratedPlacementOrderEventHandler {
     private final CourtService courtService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final SendDocumentService sendDocumentService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @EventListener
     public void sendPlacementOrderEmail(final GeneratedPlacementOrderEvent orderEvent) {
@@ -105,6 +108,13 @@ public class GeneratedPlacementOrderEventHandler {
             orderEvent.getOrderNotificationDocument(),
             child);
         sendEmail(notifyData, emailRecipients, caseData.getId());
+    }
+
+    @EventListener
+    public void notifyCafcass(GeneratedPlacementOrderEvent orderEvent) {
+        cafcassNotificationService.sendRequest(orderEvent.getCaseData(),
+            orderEvent.getOrderDocument(),
+            ORDER);
     }
 
     private void sendOrderByEmail(final CaseData caseData,

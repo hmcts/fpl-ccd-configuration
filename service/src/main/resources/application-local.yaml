@@ -123,6 +123,12 @@ translation:
     sender: sender@example.com
     recipient: FamilyPublicLaw+translation@gmail.com
 
+cafcass:
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+cafcass@gmail.com
+    recipient_large_file: FamilyPublicLaw+cafcass+exception@gmail.com
+
 scheduler:
   enabled: false
 

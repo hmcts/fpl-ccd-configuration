@@ -28,5 +28,8 @@ spring:
         ctsc-team-lead-inbox: fpl.ctsc_team_lead_inbox
         translation-notification-sender: translation.notification.sender
         translation-notification-recipient: translation.notification.recipient
+        cafcass-notification-sender: cafcass.notification.sender
+        cafcass-notification-recipient: cafcass.notification.recipient
+        cafcass-notification-recipient-large-file: cafcass.notification.recipient_large_file
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         scheduler-db-password: SCHEDULER_DB_PASSWORD
