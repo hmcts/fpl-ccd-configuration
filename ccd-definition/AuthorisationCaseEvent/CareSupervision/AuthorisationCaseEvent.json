@@ -1327,14 +1327,13 @@
           "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
           "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]",
-          "caseworker-publiclaw-solicitor"
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-solicitor", "caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
