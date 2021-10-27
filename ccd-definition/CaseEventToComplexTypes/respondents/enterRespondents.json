@@ -412,5 +412,13 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress.Country",
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "legalCounsellors",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   }
 ]

@@ -51,7 +51,9 @@ import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
@@ -275,6 +277,8 @@ class CaseDataExtractionServiceTest {
             .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
+            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
+            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getEndDate(), DATE_TIME))
             .build();
 
         assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
@@ -298,6 +302,8 @@ class CaseDataExtractionServiceTest {
             .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
+            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
+            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getEndDate(), DATE_TIME))
             .build();
 
         assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
@@ -321,6 +327,8 @@ class CaseDataExtractionServiceTest {
             .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
+            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
+            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getEndDate(), DATE_TIME))
             .build();
 
         assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
@@ -348,6 +356,8 @@ class CaseDataExtractionServiceTest {
             .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
+            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
+            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getEndDate(), DATE_TIME))
             .build();
 
         assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
@@ -370,6 +380,8 @@ class CaseDataExtractionServiceTest {
             .hearingVenue("Remote hearing at some building. Details and instructions will be sent by the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
+            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
+            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getEndDate(), DATE_TIME))
             .build();
 
         DocmosisHearingBooking hearingBookingData = service.getHearingBookingData(hearingBooking);
@@ -398,6 +410,8 @@ class CaseDataExtractionServiceTest {
             .hearingVenue("Remote hearing at some building. Details and instructions will be sent by the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
+            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
+            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getEndDate(), DATE_TIME))
             .build();
 
         DocmosisHearingBooking hearingBookingData = service.getHearingBookingData(hearingBooking);
@@ -426,6 +440,8 @@ class CaseDataExtractionServiceTest {
             .hearingVenue("some building, somewhere")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
+            .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
+            .hearingEndDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getEndDate(), DATE_TIME))
             .build();
 
         DocmosisHearingBooking hearingBookingData = service.getHearingBookingData(hearingBooking);

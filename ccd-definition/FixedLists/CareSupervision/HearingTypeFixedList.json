@@ -19,5 +19,12 @@
     "ListElementCode": "Contested interim care order",
     "ListElement": "Contested interim care order",
     "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingTypeFixedList",
+    "ListElementCode": "Accelerated discharge of care",
+    "ListElement": "Accelerated discharge of care",
+    "DisplayOrder": 4
   }
 ]
