@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -54,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,6 +102,8 @@ class GeneratedOrderEventHandlerTest {
     private OthersService othersService;
     @Mock
     private OtherRecipientsInbox otherRecipientsInbox;
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
 
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
@@ -284,5 +288,15 @@ class GeneratedOrderEventHandlerTest {
         underTest.sendOrderByPost(EVENT);
 
         verifyNoInteractions(sendDocumentService,notificationService);
+    }
+
+    @Test
+    void shouldSendNotificationToCafcass() {
+        underTest.notifyCafcass(EVENT);
+        verify(cafcassNotificationService).sendRequest(
+            CASE_DATA,
+            Set.of(TEST_DOCUMENT),
+            ORDER,
+            ORDER_TITLE);
     }
 }

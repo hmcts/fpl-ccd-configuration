@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 
 @Slf4j
 @Component
@@ -53,6 +55,7 @@ public class GeneratedOrderEventHandler {
     private final SealedOrderHistoryService sealedOrderHistoryService;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final TranslationRequestService translationRequestService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -96,6 +99,18 @@ public class GeneratedOrderEventHandler {
         translationRequestService.sendRequest(event.getCaseData(),
             event.getLanguageTranslationRequirement(),
             event.getOrderDocument(), event.getOrderTitle());
+    }
+
+    @EventListener
+    public void notifyCafcass(GeneratedOrderEvent orderEvent) {
+        log.info("For case id {} notifying Cafcass for new order {}",
+            orderEvent.getCaseData().getId(),
+            orderEvent.getOrderTitle());
+
+        cafcassNotificationService.sendRequest(orderEvent.getCaseData(),
+            Set.of(orderEvent.getOrderDocument()),
+            ORDER,
+            orderEvent.getOrderTitle());
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,

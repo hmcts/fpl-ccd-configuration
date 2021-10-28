@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -32,6 +33,9 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
 
     ManageDocumentsLAControllerSubmittedTest() {
         super("manage-documents-la");

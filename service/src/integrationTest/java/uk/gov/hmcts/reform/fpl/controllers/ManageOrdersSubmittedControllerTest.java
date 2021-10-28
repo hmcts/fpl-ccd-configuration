@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -50,7 +49,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
@@ -65,7 +63,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -249,6 +246,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         assertThat(documentsSent.get(1).getValue().getDocumentsSentToParty())
             .extracting(Element::getValue)
             .containsExactly(expectedRespondentDocument);
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
     }
 
     @Test
@@ -256,6 +254,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         CaseData caseData = caseData();
         postSubmittedEvent(caseData);
 
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(REPRESENTATIVE_DIGITAL.getValue().getEmail()), eqJson(NOTIFICATION_PARAMETERS),
@@ -273,6 +272,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
         ));
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
     }
 
     @Test
@@ -286,6 +286,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
         ));
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
     }
 
     @Test
@@ -298,6 +299,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL),
             eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
         ));
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
     }
 
     @Test
@@ -316,6 +318,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL), any(), any()
             );
         });
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
     }
 
     @Test
@@ -338,7 +341,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData);
 
         checkUntil(() -> checkUntil(() -> verify(emailService).sendEmail(eq("sender@example.com"), any())));
-
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
     }
 
     @Test
@@ -347,7 +350,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        checkThat(() -> verifyNoInteractions(emailService), Duration.ofSeconds(2));
+        checkUntil(() -> verify(emailService, never()).sendEmail(eq("sender@example.com"), any()));
+        checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), any()));
     }
 
     @Test
