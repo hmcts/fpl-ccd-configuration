@@ -56,7 +56,7 @@ class CafcassNotificationServiceTest {
             .familyManCaseNumber(FAMILY_MAN)
             .build();
 
-        underTest.sendRequest(caseData,
+        underTest.sendEmail(caseData,
             of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
                 .filename(DOCUMENT_FILENAME)
                 .build()),

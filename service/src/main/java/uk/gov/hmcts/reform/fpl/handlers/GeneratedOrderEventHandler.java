@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Set.of;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -103,12 +104,8 @@ public class GeneratedOrderEventHandler {
 
     @EventListener
     public void notifyCafcass(GeneratedOrderEvent orderEvent) {
-        log.info("For case id {} notifying Cafcass for new order {}",
-            orderEvent.getCaseData().getId(),
-            orderEvent.getOrderTitle());
-
-        cafcassNotificationService.sendRequest(orderEvent.getCaseData(),
-            Set.of(orderEvent.getOrderDocument()),
+        cafcassNotificationService.sendEmail(orderEvent.getCaseData(),
+            of(orderEvent.getOrderDocument()),
             ORDER,
             orderEvent.getOrderTitle());
     }

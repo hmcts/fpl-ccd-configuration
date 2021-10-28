@@ -28,10 +28,13 @@ public class CafcassNotificationService {
     private final DocumentDownloadService documentDownloadService;
     private final CafcassEmailConfiguration configuration;
 
-    public void sendRequest(CaseData caseData,
-                            Set<DocumentReference> documentReferences,
-                            CafcassRequestEmailContentProvider provider,
-                            String messageParam) {
+    public void sendEmail(CaseData caseData,
+                          Set<DocumentReference> documentReferences,
+                          CafcassRequestEmailContentProvider provider,
+                          String messageParam) {
+        log.info("For case id {} notifying Cafcass for {}",
+            caseData.getId(),
+            messageParam);
 
         String subject = String.format(SUBJECT, caseData.getFamilyManCaseNumber(), provider.getType());
 
@@ -44,6 +47,9 @@ public class CafcassNotificationService {
                     messageParam))
                 .build());
 
+        log.info("For case id {} notification sent to Cafcass for {}",
+            caseData.getId(),
+            messageParam);
     }
 
     private Set<EmailAttachment> getEmailAttachments(Set<DocumentReference> documentReferences) {
