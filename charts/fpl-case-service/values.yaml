@@ -62,7 +62,8 @@ java:
         - translation-notification-sender
         - translation-notification-recipient
         - cafcass-notification-sender
-        - cafcass-notification-recipient
+        - cafcass-notification-recipient-order
+        - cafcass-notification-recipient-courtbundle
         - cafcass-notification-recipient-large-file
         - ld-sdk-key
         - ctsc-inbox

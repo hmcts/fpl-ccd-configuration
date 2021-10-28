@@ -13,8 +13,9 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.net.URLConnection;
+import java.util.Set;
 
-import static java.util.Set.of;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
 
@@ -27,26 +28,41 @@ public class CafcassNotificationService {
     private final DocumentDownloadService documentDownloadService;
     private final CafcassEmailConfiguration configuration;
 
-    public void sendRequest(CaseData caseData, DocumentReference documentReference,
-                            CafcassRequestEmailContentProvider provider) {
-        byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
-
-        EmailAttachment emailAttachment = document(
-            defaultIfNull(URLConnection.guessContentTypeFromName(documentReference.getFilename()),
-                "application/octet-stream"),
-            documentContent,
-            documentReference.getFilename());
+    public void sendEmail(CaseData caseData,
+                          Set<DocumentReference> documentReferences,
+                          CafcassRequestEmailContentProvider provider,
+                          String messageParam) {
+        log.info("For case id {} notifying Cafcass for {}",
+            caseData.getId(),
+            messageParam);
 
         String subject = String.format(SUBJECT, caseData.getFamilyManCaseNumber(), provider.getType());
 
         emailService.sendEmail(configuration.getSender(),
             EmailData.builder()
-                .recipient(configuration.getRecipient())
+                .recipient(provider.getRecipient().apply(configuration))
                 .subject(subject)
-                .attachments(of(emailAttachment))
+                .attachments(getEmailAttachments(documentReferences))
                 .message(String.format(provider.getContent(),
-                    documentReference.getFilename()))
+                    messageParam))
                 .build());
 
+        log.info("For case id {} notification sent to Cafcass for {}",
+            caseData.getId(),
+            messageParam);
+    }
+
+    private Set<EmailAttachment> getEmailAttachments(Set<DocumentReference> documentReferences) {
+        return documentReferences.stream()
+            .map(documentReference -> {
+                byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
+
+                return document(
+                    defaultIfNull(URLConnection.guessContentTypeFromName(documentReference.getFilename()),
+                        "application/octet-stream"),
+                    documentContent,
+                    documentReference.getFilename());
+            })
+            .collect(toSet());
     }
 }

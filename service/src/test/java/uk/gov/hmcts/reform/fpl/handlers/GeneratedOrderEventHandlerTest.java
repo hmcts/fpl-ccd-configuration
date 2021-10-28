@@ -293,9 +293,10 @@ class GeneratedOrderEventHandlerTest {
     @Test
     void shouldSendNotificationToCafcass() {
         underTest.notifyCafcass(EVENT);
-        verify(cafcassNotificationService).sendRequest(
+        verify(cafcassNotificationService).sendEmail(
             CASE_DATA,
-            TEST_DOCUMENT,
-            ORDER);
+            Set.of(TEST_DOCUMENT),
+            ORDER,
+            ORDER_TITLE);
     }
 }

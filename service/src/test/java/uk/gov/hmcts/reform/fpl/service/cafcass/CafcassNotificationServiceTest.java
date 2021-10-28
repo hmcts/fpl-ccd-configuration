@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
+import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -29,6 +30,7 @@ class CafcassNotificationServiceTest {
     private static final byte[] DOCUMENT_CONTENT = "OriginalDocumentContent".getBytes();
     private static final String DOCUMENT_FILENAME = "fileToSend.pdf";
     private static final String FAMILY_MAN = "FM1234";
+    private static final String ORDER_TITLE = "dummy";
 
     @Mock
     private EmailService emailService;
@@ -45,7 +47,7 @@ class CafcassNotificationServiceTest {
 
     @Test
     void testSendRequest() {
-        when(configuration.getRecipient()).thenReturn(RECIPIENT_EMAIL);
+        when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
             DOCUMENT_CONTENT);
@@ -54,11 +56,12 @@ class CafcassNotificationServiceTest {
             .familyManCaseNumber(FAMILY_MAN)
             .build();
 
-        underTest.sendRequest(caseData,
-            DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+        underTest.sendEmail(caseData,
+            of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
                 .filename(DOCUMENT_FILENAME)
-                .build(),
-            ORDER
+                .build()),
+            ORDER,
+            ORDER_TITLE
         );
 
         verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
@@ -77,7 +80,7 @@ class CafcassNotificationServiceTest {
         assertThat(data.getMessage()).isEqualTo(
             String.join(" ",
                 "A new order for this case was uploaded to the Public Law Portal entitled",
-                DOCUMENT_FILENAME)
+                ORDER_TITLE)
         );
     }
 }

@@ -118,8 +118,9 @@ translation:
 cafcass:
   notification:
     sender: sender-cafcass@example.com
-    recipient: FamilyPublicLaw+cafcass@gmail.com
-    recipient_large_file: FamilyPublicLaw+cafcass+exception@gmail.com
+    order: FamilyPublicLaw+cafcass@gmail.com
+    courtbundle: FamilyPublicLaw+cafcass@gmail.com
+    large: FamilyPublicLaw+cafcass@gmail.com
 
 security:
   anonymousPaths:
