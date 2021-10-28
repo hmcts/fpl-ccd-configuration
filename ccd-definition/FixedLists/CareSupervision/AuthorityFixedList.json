@@ -716,6 +716,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "REC",
+    "ListElement": "Redcar & Cleveland Borough Council",
+    "DisplayOrder": 306
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "RCT",
     "ListElement": "Rhondda Cynon Taf CBC",
     "DisplayOrder": 310
