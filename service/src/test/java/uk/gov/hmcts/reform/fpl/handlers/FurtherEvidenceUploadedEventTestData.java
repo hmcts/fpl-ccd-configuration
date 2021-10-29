@@ -1,17 +1,21 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -138,6 +142,29 @@ public class FurtherEvidenceUploadedEventTestData {
         }
 
         return document.build();
+    }
+
+    public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
+        return commonCaseBuilder()
+            .courtBundleList(
+                createCourtBundleList(count, hearing, uploadedBy)
+            ).build();
+    }
+
+    public static List<Element<CourtBundle>> createCourtBundleList(int count, String hearing, String uploadedBy) {
+        return IntStream.rangeClosed(1, count)
+            .boxed()
+            .map(value -> ElementUtils.element(createDummyCourtBundle(hearing, uploadedBy)))
+            .collect(Collectors.toList());
+    }
+
+    public static CourtBundle createDummyCourtBundle(String hearing, String uploadedBy) {
+        return CourtBundle.builder()
+            .document(getPDFDocument())
+            .hearing(hearing)
+            .dateTimeUploaded(LocalDateTime.now())
+            .uploadedBy(uploadedBy)
+            .build();
     }
 
     private static List<Element<RespondentStatement>> buildRespondentStatementsList(

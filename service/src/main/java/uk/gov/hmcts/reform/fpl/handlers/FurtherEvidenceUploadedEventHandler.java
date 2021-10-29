@@ -118,16 +118,16 @@ public class FurtherEvidenceUploadedEventHandler {
         Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
             .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
             .collect(groupingBy(CourtBundle::getHearing,
-                mapping(courtBundle -> courtBundle.getDocument(), toSet())));
+                mapping(CourtBundle::getDocument, toSet())));
 
-        newCourtBundles.entrySet().stream()
-                .forEach(
-                    entry -> cafcassNotificationService.sendRequest(
-                        caseData,
-                        entry.getValue(),
-                        COURT_BUNDLE,
-                        entry.getKey()
-                    )
+        newCourtBundles
+            .forEach((key, value) ->
+                cafcassNotificationService.sendEmail(
+                    caseData,
+                    value,
+                    COURT_BUNDLE,
+                    key
+                )
         );
     }
 
@@ -183,9 +183,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
         List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
-        caseData.getRespondentStatements().forEach(statement -> {
-            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle());
-        });
+        caseData.getRespondentStatements().forEach(statement ->
+            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle())
+        );
         return evidenceBundle;
     }
 
