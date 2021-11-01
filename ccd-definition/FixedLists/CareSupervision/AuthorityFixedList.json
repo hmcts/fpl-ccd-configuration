@@ -367,7 +367,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "KECH",
-    "ListElement": "Kensington and Chelsea Borough Council",
+    "ListElement": "Royal Borough of Kensington and Chelsea",
     "DisplayOrder": 149
   },
   {
@@ -563,7 +563,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MON",
-    "ListElement": "Monmouthshire County Borough Council",
+    "ListElement": "Monmouthshire County Council",
     "DisplayOrder": 223
   },
   {
