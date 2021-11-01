@@ -256,8 +256,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         assertThat(documentsSent.get(1).getValue().getDocumentsSentToParty())
             .extracting(Element::getValue)
             .containsExactly(expectedRespondentDocument);
+        verifyCafcassOrderNotification();
+    }
+
+    private void verifyCafcassOrderNotification() {
         checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
+            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(), any()
         ));
         assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
             .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
@@ -268,11 +272,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         CaseData caseData = caseData();
         postSubmittedEvent(caseData);
 
-        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
-        ));
-        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
-            .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
+        verifyCafcassOrderNotification();
 
         checkUntil(() -> verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
@@ -291,11 +291,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES), eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             eqJson(getExpectedParametersMapForRepresentatives(ORDER_TYPE, true)), eq(NOTIFICATION_REFERENCE)
         ));
-        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
-        ));
-        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
-            .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -309,11 +305,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             eq(LOCAL_AUTHORITY_1_INBOX), eqJson(NOTIFICATION_PARAMETERS),
             eq(NOTIFICATION_REFERENCE)
         ));
-        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
-        ));
-        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
-            .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -326,11 +318,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL),
             eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
         ));
-        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
-        ));
-        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
-            .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -349,11 +337,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL), any(), any()
             );
         });
-        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
-        ));
-        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
-            .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -376,11 +360,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData);
 
         checkUntil(() -> checkUntil(() -> verify(emailService).sendEmail(eq("sender@example.com"), any())));
-        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
-        ));
-        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
-            .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -390,11 +370,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData);
 
         checkUntil(() -> verify(emailService, never()).sendEmail(eq("sender@example.com"), any()));
-        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
-            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(),any()
-        ));
-        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
-            .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
+        verifyCafcassOrderNotification();
     }
 
     @Test

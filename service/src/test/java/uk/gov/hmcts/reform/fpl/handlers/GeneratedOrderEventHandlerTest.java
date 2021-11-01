@@ -48,6 +48,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -292,11 +293,13 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldSendNotificationToCafcass() {
+        String fileName = "dummyFile.doc";
+        when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
         underTest.notifyCafcass(EVENT);
         verify(cafcassNotificationService).sendEmail(
             CASE_DATA,
             Set.of(TEST_DOCUMENT),
             ORDER,
-            ORDER_TITLE);
+            fileName);
     }
 }
