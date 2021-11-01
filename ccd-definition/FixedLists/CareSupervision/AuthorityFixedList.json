@@ -611,6 +611,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NTHN",
+    "ListElement": "North Northamptonshire Council",
+    "DisplayOrder": 252
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NSC",
     "ListElement": "North Somerset Council",
     "DisplayOrder": 255
@@ -982,9 +989,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NTHW",
+    "ListElement": "West Northamptonshire Council",
+    "DisplayOrder": 427
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WMS",
     "ListElement": "Westminster City Council",
-    "DisplayOrder": 427
+    "DisplayOrder": 428
   },
   {
     "LiveFrom": "01/01/2017",
