@@ -7,7 +7,8 @@ module.exports = {
   fields: {
     hearingOptions: {
       addNewHearing: '#hearingOption-NEW_HEARING',
-      editHearing: '#hearingOption-EDIT_HEARING',
+      editFutureHearing: '#hearingOption-EDIT_FUTURE_HEARING',
+      editPastHearing: '#hearingOption-EDIT_PAST_HEARING',
       adjournHearing: '#hearingOption-ADJOURN_HEARING',
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
@@ -17,6 +18,7 @@ module.exports = {
     attendanceDetails: '#hearingAttendanceDetails',
     preAttendanceDetails: '#preHearingAttendanceDetails',
     hearingDateList: '#hearingDateList',
+    futureHearingDateList: '#futureHearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     vacateHearingDateList: '#vacateHearingDateList',
     toReListHearingDateList: '#toReListHearingDateList',
@@ -59,9 +61,14 @@ module.exports = {
     I.click(this.fields.hearingOptions.addNewHearing);
   },
 
-  selectEditHearing(hearing) {
-    I.click(this.fields.hearingOptions.editHearing);
+  selectEditPastHearing(hearing) {
+    I.click(this.fields.hearingOptions.editPastHearing);
     I.selectOption(this.fields.hearingDateList, hearing);
+  },
+
+  selectEditFutureHearing(hearing) {
+    I.click(this.fields.hearingOptions.editFutureHearing);
+    I.selectOption(this.fields.futureHearingDateList, hearing);
   },
 
   selectAdjournHearing(hearing) {

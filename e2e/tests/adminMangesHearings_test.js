@@ -96,7 +96,7 @@ Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, man
 Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.selectEditFutureHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
   manageHearingsEventPage.selectedAllocatedJudge();
   await I.completeEvent('Save and continue');
