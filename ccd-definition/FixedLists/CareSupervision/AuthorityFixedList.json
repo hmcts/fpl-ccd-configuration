@@ -401,6 +401,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LAM",
+    "ListElement": "LB Lambeth",
+    "DisplayOrder": 156
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LEE",
     "ListElement": "Leeds City Council",
     "DisplayOrder": 157
@@ -445,27 +452,34 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRE",
     "ListElement": "London Borough of Brent",
-    "DisplayOrder": 183
+    "DisplayOrder": 182
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRO",
     "ListElement": "London Borough of Bromley",
-    "DisplayOrder": 184
+    "DisplayOrder": 183
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HAF",
     "ListElement": "London Borough of Hammersmith and Fulham",
-    "DisplayOrder": 185
+    "DisplayOrder": 184
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HRW",
     "ListElement": "London Borough of Harrow",
+    "DisplayOrder": 185
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "ISL",
+    "ListElement": "London Borough of Islington",
     "DisplayOrder": 186
   },
   {
