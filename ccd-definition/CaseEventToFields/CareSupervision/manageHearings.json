@@ -40,7 +40,19 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hasPastOrFutureHearings",
+    "CaseFieldID": "hasPastHearings",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hearingOption=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hasFutureHearings",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "SelectHearingOption",
@@ -106,19 +118,31 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "hearingOption=\"EDIT_PAST_HEARING\" AND hasPastOrFutureHearings=\"Yes\""
+    "FieldShowCondition": "hearingOption=\"EDIT_PAST_HEARING\" AND hasPastHearings=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "noHearingsToEditLabel",
+    "CaseFieldID": "noPastHearingsToEditLabel",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "hearingOption=\"EDIT_FUTURE_HEARING\" AND hasPastOrFutureHearings=\"\""
+    "FieldShowCondition": "hearingOption=\"EDIT_PAST_HEARING\" AND hasPastHearings=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "noFutureHearingsToEditLabel",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hearingOption=\"EDIT_FUTURE_HEARING\" AND hasFutureHearings=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -154,7 +178,7 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "hearingOption=\"EDIT_FUTURE_HEARING\" AND hasPastOrFutureHearings=\"Yes\""
+    "FieldShowCondition": "hearingOption=\"EDIT_FUTURE_HEARING\" AND hasFutureHearings=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -166,7 +190,7 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasPastOrFutureHearings=\"\""
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasPastHearings=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -200,7 +224,7 @@
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasPastOrFutureHearings=\"Yes\"",
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasPastHearings=\"Yes\"",
     "PageID": "SelectHearingOption",
     "PageDisplayOrder": 1
   },
@@ -212,7 +236,7 @@
     "PageFieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasPastOrFutureHearings=\"Yes\"",
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasPastHearings=\"Yes\"",
     "PageID": "SelectHearingOption",
     "PageDisplayOrder": 1
   },

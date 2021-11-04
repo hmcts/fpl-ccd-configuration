@@ -400,11 +400,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hasPastOrFutureHearings",
+    "ID": "hasPastHearings",
     "FieldType": "YesOrNo",
     "Label": " ",
     "SecurityClassification": "Public",
-    "Comment": "Used for show/hide message as to when there are no hearings to select.",
+    "Comment": "Used for show/hide message as to when there are no past hearings to select.",
+    "Searchable": "N"
+  },
+{
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasFutureHearings",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide message as to when there are no future hearings to select.",
     "Searchable": "N"
   },
   {
@@ -420,7 +430,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "noHearingsToEditLabel",
+    "ID": "noPastHearingsToEditLabel",
+    "Label": "There are no past hearings to edit",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noFutureHearingsToEditLabel",
     "Label": "There are no future hearings to edit",
     "FieldType": "Label",
     "SecurityClassification": "Public",

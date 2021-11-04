@@ -2298,14 +2298,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hasPastOrFutureHearings",
+    "CaseFieldID": "hasPastHearings",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "noHearingsToEditLabel",
+    "CaseFieldID": "hasFutureHearings",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noPastHearingsToEditLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noFutureHearingsToEditLabel",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
