@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
@@ -53,7 +53,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .build());
 
         CaseData initialCaseData = CaseData.builder()
-            .hearingOption(EDIT_HEARING)
+            .hearingOption(EDIT_FUTURE_HEARING)
             .hearingDateList(hearing2.getId())
             .hearingDetails(List.of(hearing1, hearing2))
             .build();
@@ -71,7 +71,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         Element<HearingBooking> hearing2 = element(testHearing(now().plusDays(3)));
 
         CaseData initialCaseData = CaseData.builder()
-            .hearingOption(EDIT_HEARING)
+            .hearingOption(EDIT_FUTURE_HEARING)
             .hearingDateList(hearing1.getId())
             .hearingDetails(List.of(hearing1, hearing2))
             .build();

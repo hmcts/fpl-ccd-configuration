@@ -37,7 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
@@ -132,7 +132,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         Element<HearingBooking> hearingElement = element(existingHearing);
 
         CaseData initialCaseData = CaseData.builder()
-            .hearingOption(EDIT_HEARING)
+            .hearingOption(EDIT_FUTURE_HEARING)
             .hearingDateList(dynamicList(hearingElement.getId(), hearingElement))
             .hearingDetails(List.of(hearingElement))
             .hearingVenue(existingHearing.getVenue())

@@ -65,7 +65,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
@@ -1743,7 +1743,7 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldReturnFutureHearingsWhenHearingOptionIsEdit() {
-            CaseData caseData = caseData(EDIT_HEARING);
+            CaseData caseData = caseData(EDIT_FUTURE_HEARING);
 
             Object dynamicList = service.getHearingsDynamicList(caseData);
             assertThat(dynamicList).isEqualTo(caseData.getHearingDateList());
@@ -1814,7 +1814,7 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldReturnSelectedHearingIdWhenHearingOptionIsEdit() {
-            CaseData caseData = caseData(EDIT_HEARING);
+            CaseData caseData = caseData(EDIT_FUTURE_HEARING);
 
             UUID selectedHearingId = service.getSelectedHearingId(caseData);
             assertThat(selectedHearingId).isEqualTo(selectedHearing);

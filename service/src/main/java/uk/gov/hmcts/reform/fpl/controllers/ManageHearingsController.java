@@ -41,7 +41,8 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
@@ -49,8 +50,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
@@ -123,11 +124,29 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
             caseDetails.getData()
                 .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
-        } else if (EDIT_HEARING == caseData.getHearingOption()) {
+        } else if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
             final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            caseDetails.getData().put(HEARING_LIST,
-                hearingsService.asDynamicList(caseData.getAllNonCancelledHearings(), hearingBookingId));
+            caseDetails.getData().put(PAST_HEARING_LIST,
+                hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
+
+            HearingBooking hearingBooking = hearingsService
+                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                .orElse(HearingBooking.builder().build());
+
+            caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
+                hearingBooking, caseData.getAllocatedJudge()));
+
+            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
+                || hearingBooking.getPreviousHearingVenue() == null
+                || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
+                caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
+            }
+        } else if (EDIT_FUTURE_HEARING == caseData.getHearingOption()) {
+            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+
+            caseDetails.getData().put(FUTURE_HEARING_LIST,
+                hearingsService.asDynamicList(caseData.getFutureHearings(), hearingBookingId));
 
             HearingBooking hearingBooking = hearingsService
                 .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
@@ -305,7 +324,7 @@ public class ManageHearingsController extends CallbackController {
 
         hearingsService.findAndSetPreviousVenueId(caseData);
 
-        if (EDIT_HEARING == caseData.getHearingOption()) {
+        if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
             final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
             HearingBooking originalHearingBooking = hearingsService.findHearingBooking(hearingBookingId,
@@ -322,6 +341,15 @@ public class ManageHearingsController extends CallbackController {
 
             final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
 
+            hearingsService.addOrUpdate(hearingBookingElement, caseData);
+
+            data.put(SELECTED_HEARING_ID, hearingBookingId);
+
+        } else if (EDIT_FUTURE_HEARING == caseData.getHearingOption()) {
+            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+            HearingBooking editedHearingBooking = hearingsService.getCurrentHearingBooking(caseData);
+
+            final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
             hearingsService.addOrUpdate(hearingBookingElement, caseData);
 
             data.put(SELECTED_HEARING_ID, hearingBookingId);

@@ -85,6 +85,7 @@ public class ManageHearingsService {
     public static final String HAS_PAST_OR_FUTURE_HEARINGS = "hasPastOrFutureHearings";
     public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
     public static final String HEARING_LIST = "hearingDateList";
+    public static final String FUTURE_HEARING_LIST = "futureHearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     public static final String VACATE_HEARING_LIST = "vacateHearingDateList";
     public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
@@ -117,6 +118,7 @@ public class ManageHearingsService {
     public Map<String, Object> populateHearingLists(CaseData caseData) {
 
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
+        List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
         List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
         List<Element<HearingBooking>> sortedNonCancelledHearings = nonCancelledHearings
@@ -126,7 +128,8 @@ public class ManageHearingsService {
         Collections.reverse(sortedNonCancelledHearings);
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
-            HEARING_LIST, asDynamicList(nonCancelledHearings),
+            HEARING_LIST, asDynamicList(pastAndTodayHearings),
+            FUTURE_HEARING_LIST, asDynamicList(futureHearings),
             PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
             VACATE_HEARING_LIST, asDynamicList(sortedNonCancelledHearings),
             TO_RE_LIST_HEARING_LIST, asDynamicList(toBeReListedHearings)
@@ -339,8 +342,10 @@ public class ManageHearingsService {
                 return caseData.getPastAndTodayHearingDateList();
             case RE_LIST_HEARING:
                 return caseData.getToReListHearingDateList();
-            case EDIT_HEARING:
+            case EDIT_PAST_HEARING:
                 return caseData.getHearingDateList();
+            case EDIT_FUTURE_HEARING:
+                return caseData.getFutureHearingDateList();
             default:
                 return null;
         }
