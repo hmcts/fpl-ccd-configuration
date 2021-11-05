@@ -445,13 +445,20 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRE",
     "ListElement": "London Borough of Brent",
-    "DisplayOrder": 183
+    "DisplayOrder": 182
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRO",
     "ListElement": "London Borough of Bromley",
+    "DisplayOrder": 183
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CDN",
+    "ListElement": "London Borough of Camden",
     "DisplayOrder": 184
   },
   {
