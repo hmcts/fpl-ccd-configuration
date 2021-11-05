@@ -119,6 +119,7 @@ public class ManageHearingsService {
     public Map<String, Object> populateHearingLists(CaseData caseData) {
 
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
+        List<Element<HearingBooking>> pastHearings = caseData.getPastHearings();
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
         List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
@@ -129,7 +130,7 @@ public class ManageHearingsService {
         Collections.reverse(sortedNonCancelledHearings);
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
-            HEARING_LIST, asDynamicList(pastAndTodayHearings),
+            HEARING_LIST, asDynamicList(pastHearings),
             FUTURE_HEARING_LIST, asDynamicList(futureHearings),
             PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
             VACATE_HEARING_LIST, asDynamicList(sortedNonCancelledHearings),

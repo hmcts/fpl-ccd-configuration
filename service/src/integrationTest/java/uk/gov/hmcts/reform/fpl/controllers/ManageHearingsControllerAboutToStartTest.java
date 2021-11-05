@@ -84,7 +84,9 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
         assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo("No");
         assertThat(updatedCaseData.getHasExistingHearings()).isEqualTo("Yes");
         assertThat(updatedCaseData.getHearingDateList())
-            .isEqualTo(dynamicList(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2));
+            .isEqualTo(dynamicList(todayHearing, pastHearing1, pastHearing2));
+        assertThat(updatedCaseData.getFutureHearingDateList())
+            .isEqualTo(dynamicList(futureHearing1, futureHearing2));
         assertThat(updatedCaseData.getPastAndTodayHearingDateList())
             .isEqualTo(dynamicList(todayHearing, pastHearing1, pastHearing2));
         assertThat(updatedCaseData.getVacateHearingDateList())

@@ -38,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
@@ -124,7 +125,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
     }
 
     @Test
-    void shouldUpdateExistingHearingInHearingDetailsListWhenEditHearingSelected() {
+    void shouldUpdateExistingFutureHearingInHearingDetailsListWhenEditHearingSelected() {
         HearingBooking existingHearing = testHearing(now().plusDays(2)).toBuilder()
             .type(ISSUE_RESOLUTION)
             .build();
@@ -133,7 +134,8 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(EDIT_FUTURE_HEARING)
-            .hearingDateList(dynamicList(hearingElement.getId(), hearingElement))
+            .hearingType(ISSUE_RESOLUTION)
+            .futureHearingDateList(dynamicList(hearingElement.getId(), hearingElement))
             .hearingDetails(List.of(hearingElement))
             .hearingVenue(existingHearing.getVenue())
             .hearingVenueCustom(existingHearing.getVenueCustomAddress())
@@ -153,6 +155,37 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
     }
 
     @Test
+    void shouldUpdateExistingPastHearingInHearingDetailsListWhenEditHearingSelected() {
+        HearingBooking existingHearing = testHearing(now().minusDays(2)).toBuilder()
+            .type(ISSUE_RESOLUTION)
+            .build();
+
+        Element<HearingBooking> hearingElement = element(existingHearing);
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(EDIT_PAST_HEARING)
+            .hearingType(ISSUE_RESOLUTION)
+            .hearingDateList(dynamicList(hearingElement.getId(), hearingElement))
+            .hearingDetails(List.of(hearingElement))
+            .hearingVenue(existingHearing.getVenue())
+            .hearingVenueCustom(existingHearing.getVenueCustomAddress())
+            .hearingStartDate(existingHearing.getStartDate())
+            .hearingEndDate(existingHearing.getEndDate())
+            .hearingAttendance(existingHearing.getAttendance())
+            .judgeAndLegalAdvisor(existingHearing.getJudgeAndLegalAdvisor())
+            .noticeOfHearingNotes(existingHearing.getAdditionalNotes())
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+
+        HearingBooking expectedHearing = existingHearing.toBuilder().type(ISSUE_RESOLUTION).build();
+
+        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(expectedHearing);
+        assertThat(updatedCaseData.getSelectedHearingId()).isEqualTo(hearingElement.getId());
+    }
+
+
+    @Test
     void shouldAdjournAndReListHearing() {
         Element<HearingBooking> pastHearing = element(testHearing(LocalDateTime.now().minusDays(1)));
         Element<HearingBooking> pastHearingToBeAdjourned = element(testHearing(LocalDateTime.now().minusDays(2)));
@@ -168,7 +201,8 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(ADJOURN_HEARING)
             .hearingReListOption(RE_LIST_NOW)
-            .hearingDateList(dynamicList(futureHearing))
+            .hearingDateList(dynamicList(pastHearing, pastHearingToBeAdjourned))
+            .futureHearingDateList(dynamicList(futureHearing))
             .pastAndTodayHearingDateList(dynamicList(
                 pastHearingToBeAdjourned.getId(), pastHearing,
                 pastHearingToBeAdjourned))

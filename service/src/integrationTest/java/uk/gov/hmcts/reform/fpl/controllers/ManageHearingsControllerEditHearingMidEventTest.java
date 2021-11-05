@@ -13,6 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
@@ -44,7 +45,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
     }
 
     @Test
-    void shouldBuildHearingDateListAndResetFirstHearingFlagWhenNonFirstHearingSelected() {
+    void shouldBuildFutureHearingDateListAndResetFirstHearingFlagWhenNonFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().plusDays(3)).toBuilder()
             .previousHearingVenue(PreviousHearingVenue.builder()
@@ -54,6 +55,28 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(EDIT_FUTURE_HEARING)
+            .futureHearingDateList(hearing2.getId())
+            .hearingDetails(List.of(hearing1, hearing2))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
+
+        assertThat(updatedCaseData.getFutureHearingDateList()).isEqualTo(dynamicList(hearing2.getId(), hearing1, hearing2));
+        assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
+        assertHearingCaseFields(updatedCaseData, hearing2.getValue());
+    }
+
+    @Test
+    void shouldBuildHearingDateListAndResetFirstHearingFlagWhenNonFirstHearingSelected() {
+        Element<HearingBooking> hearing1 = element(testHearing(now().minusDays(2)));
+        Element<HearingBooking> hearing2 = element(testHearing(now().minusDays(3)).toBuilder()
+            .previousHearingVenue(PreviousHearingVenue.builder()
+                .previousVenue(hearing1.getValue().getVenue())
+                .build())
+            .build());
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(EDIT_PAST_HEARING)
             .hearingDateList(hearing2.getId())
             .hearingDetails(List.of(hearing1, hearing2))
             .build();
@@ -66,12 +89,30 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
     }
 
     @Test
-    void shouldBuildHearingDateListAndSetFirstHearingFlagWhenFirstHearingSelected() {
+    void shouldBuildFutureHearingDateListAndSetFirstHearingFlagWhenFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().plusDays(3)));
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(EDIT_FUTURE_HEARING)
+            .futureHearingDateList(hearing1.getId())
+            .hearingDetails(List.of(hearing1, hearing2))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
+
+        assertThat(updatedCaseData.getFutureHearingDateList()).isEqualTo(dynamicList(hearing1.getId(), hearing1, hearing2));
+        assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo("Yes");
+        assertHearingCaseFields(updatedCaseData, hearing1.getValue());
+    }
+
+    @Test
+    void shouldBuildHearingDateListAndSetFirstHearingFlagWhenFirstHearingSelected() {
+        Element<HearingBooking> hearing1 = element(testHearing(now().minusDays(2)));
+        Element<HearingBooking> hearing2 = element(testHearing(now().minusDays(3)));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(EDIT_PAST_HEARING)
             .hearingDateList(hearing1.getId())
             .hearingDetails(List.of(hearing1, hearing2))
             .build();
