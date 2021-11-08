@@ -61,13 +61,14 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
-        assertThat(updatedCaseData.getFutureHearingDateList()).isEqualTo(dynamicList(hearing2.getId(), hearing1, hearing2));
+        assertThat(updatedCaseData.getFutureHearingDateList()).isEqualTo(dynamicList(hearing2.getId(), hearing1,
+            hearing2));
         assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
         assertHearingCaseFields(updatedCaseData, hearing2.getValue());
     }
 
     @Test
-    void shouldBuildHearingDateListAndResetFirstHearingFlagWhenNonFirstHearingSelected() {
+    void shouldBuildPastHearingDateListAndResetFirstHearingFlagWhenNonFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().minusDays(3)).toBuilder()
             .previousHearingVenue(PreviousHearingVenue.builder()
@@ -77,13 +78,14 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(EDIT_PAST_HEARING)
-            .hearingDateList(hearing2.getId())
+            .pastHearingDateList(hearing2.getId())
             .hearingDetails(List.of(hearing1, hearing2))
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
-        assertThat(updatedCaseData.getHearingDateList()).isEqualTo(dynamicList(hearing2.getId(), hearing1, hearing2));
+        assertThat(updatedCaseData.getPastHearingDateList()).isEqualTo(dynamicList(hearing2.getId(), hearing1,
+            hearing2));
         assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
         assertHearingCaseFields(updatedCaseData, hearing2.getValue());
     }
@@ -101,25 +103,27 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
-        assertThat(updatedCaseData.getFutureHearingDateList()).isEqualTo(dynamicList(hearing1.getId(), hearing1, hearing2));
+        assertThat(updatedCaseData.getFutureHearingDateList()).isEqualTo(dynamicList(hearing1.getId(), hearing1,
+            hearing2));
         assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo("Yes");
         assertHearingCaseFields(updatedCaseData, hearing1.getValue());
     }
 
     @Test
-    void shouldBuildHearingDateListAndSetFirstHearingFlagWhenFirstHearingSelected() {
+    void shouldBuildPastHearingDateListAndSetFirstHearingFlagWhenFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().minusDays(3)));
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(EDIT_PAST_HEARING)
-            .hearingDateList(hearing1.getId())
+            .pastHearingDateList(hearing1.getId())
             .hearingDetails(List.of(hearing1, hearing2))
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
-        assertThat(updatedCaseData.getHearingDateList()).isEqualTo(dynamicList(hearing1.getId(), hearing1, hearing2));
+        assertThat(updatedCaseData.getPastHearingDateList()).isEqualTo(dynamicList(hearing1.getId(), hearing1,
+            hearing2));
         assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo("Yes");
         assertHearingCaseFields(updatedCaseData, hearing1.getValue());
     }

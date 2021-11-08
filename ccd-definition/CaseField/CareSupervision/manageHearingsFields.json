@@ -21,7 +21,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingDateList",
+    "ID": "pastHearingDateList",
     "Label": "Which draft hearing do you want to edit?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",

@@ -85,9 +85,9 @@ public class ManageHearingsService {
     public static final String HAS_PAST_HEARINGS = "hasPastHearings";
     public static final String HAS_FUTURE_HEARINGS = "hasFutureHearings";
     public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
-    public static final String HEARING_LIST = "hearingDateList";
+    public static final String PAST_HEARING_DATE_LIST = "pastHearingDateList";
     public static final String FUTURE_HEARING_LIST = "futureHearingDateList";
-    public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
+    public static final String PAST_AND_TODAY_HEARING_DATE_LIST = "pastAndTodayHearingDateList";
     public static final String VACATE_HEARING_LIST = "vacateHearingDateList";
     public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
     public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
@@ -130,9 +130,9 @@ public class ManageHearingsService {
         Collections.reverse(sortedNonCancelledHearings);
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
-            HEARING_LIST, asDynamicList(pastHearings),
+            PAST_HEARING_DATE_LIST, asDynamicList(pastHearings),
             FUTURE_HEARING_LIST, asDynamicList(futureHearings),
-            PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
+            PAST_AND_TODAY_HEARING_DATE_LIST, asDynamicList(pastAndTodayHearings),
             VACATE_HEARING_LIST, asDynamicList(sortedNonCancelledHearings),
             TO_RE_LIST_HEARING_LIST, asDynamicList(toBeReListedHearings)
         ));
@@ -349,7 +349,7 @@ public class ManageHearingsService {
             case RE_LIST_HEARING:
                 return caseData.getToReListHearingDateList();
             case EDIT_PAST_HEARING:
-                return caseData.getHearingDateList();
+                return caseData.getPastHearingDateList();
             case EDIT_FUTURE_HEARING:
                 return caseData.getFutureHearingDateList();
             default:
@@ -380,8 +380,9 @@ public class ManageHearingsService {
             "firstHearingFlag",
             "adjournmentReason",
             "vacatedReason",
-            HEARING_LIST,
-            PAST_HEARING_LIST,
+            PAST_HEARING_DATE_LIST,
+            FUTURE_HEARING_LIST,
+            PAST_AND_TODAY_HEARING_DATE_LIST,
             VACATE_HEARING_LIST,
             "vacatedHearingDate",
             HAS_HEARINGS_TO_ADJOURN,

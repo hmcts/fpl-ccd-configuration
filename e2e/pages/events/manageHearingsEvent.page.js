@@ -17,7 +17,7 @@ module.exports = {
     attendance: '#hearingAttendance',
     attendanceDetails: '#hearingAttendanceDetails',
     preAttendanceDetails: '#preHearingAttendanceDetails',
-    hearingDateList: '#hearingDateList',
+    pastHearingDateList: '#pastHearingDateList',
     futureHearingDateList: '#futureHearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     vacateHearingDateList: '#vacateHearingDateList',
@@ -63,7 +63,7 @@ module.exports = {
 
   selectEditPastHearing(hearing) {
     I.click(this.fields.hearingOptions.editPastHearing);
-    I.selectOption(this.fields.hearingDateList, hearing);
+    I.selectOption(this.fields.pastHearingDateList, hearing);
   },
 
   selectEditFutureHearing(hearing) {
