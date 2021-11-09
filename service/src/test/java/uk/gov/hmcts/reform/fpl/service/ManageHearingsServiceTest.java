@@ -255,6 +255,7 @@ class ManageHearingsServiceTest {
             assertThat(data)
                 .containsEntry(HAS_FUTURE_HEARINGS, "Yes")
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
+                .containsEntry(PAST_HEARING_DATE_LIST, emptyDynamicList)
                 .containsEntry(FUTURE_HEARING_LIST, expectedHearingList)
                 .containsEntry(PAST_AND_TODAY_HEARING_DATE_LIST, emptyDynamicList)
                 .containsEntry(VACATE_HEARING_LIST, expectedHearingList);
@@ -1807,6 +1808,7 @@ class ManageHearingsServiceTest {
 
         final UUID selectedPastAndTodayHearing = randomUUID();
         final UUID selectedFutureOrTodayHearing = randomUUID();
+        final UUID selectedFutureHearing = randomUUID();
         final UUID selectedToReListHearing = randomUUID();
         final UUID selectedHearing = randomUUID();
 
@@ -1827,11 +1829,19 @@ class ManageHearingsServiceTest {
         }
 
         @Test
-        void shouldReturnSelectedHearingIdWhenHearingOptionIsEdit() {
+        void shouldReturnSelectedPastHearingIdWhenHearingOptionIsEdit() {
+            CaseData caseData = caseData(EDIT_PAST_HEARING);
+
+            UUID selectedHearingId = service.getSelectedHearingId(caseData);
+            assertThat(selectedHearingId).isEqualTo(selectedHearing);
+        }
+
+        @Test
+        void shouldReturnSelectedFutureHearingIdWhenHearingOptionIsEdit() {
             CaseData caseData = caseData(EDIT_FUTURE_HEARING);
 
             UUID selectedHearingId = service.getSelectedHearingId(caseData);
-            assertThat(selectedHearingId).isEqualTo(selectedFutureOrTodayHearing);
+            assertThat(selectedHearingId).isEqualTo(selectedFutureHearing);
         }
 
         @Test
@@ -1854,7 +1864,7 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList(selectedPastAndTodayHearing))
-                .futureHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
+                .futureHearingDateList(randomDynamicList(selectedFutureHearing))
                 .vacateHearingDateList(randomDynamicList(selectedHearing))
                 .toReListHearingDateList(randomDynamicList(selectedToReListHearing))
                 .pastHearingDateList(randomDynamicList(selectedHearing))
