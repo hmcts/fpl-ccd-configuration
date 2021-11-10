@@ -14,6 +14,9 @@ let submittedAt;
 let hearingStartDate;
 let hearingEndDate;
 
+let correctedHearingStartDate;
+let correctedHearingEndDate;
+
 Feature('Hearing administration');
 
 async function setupScenario(I) {
@@ -300,8 +303,8 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   hearingStartDate = moment().subtract(10,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
-  const correctedHearingStartDate = moment().subtract(10,'m').toDate();
-  const correctedHearingEndDate = moment(correctedHearingStartDate).add(5,'m').toDate();
+  correctedHearingStartDate = moment().subtract(10,'m').toDate();
+  correctedHearingEndDate = moment(correctedHearingStartDate).add(5,'m').toDate();
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
@@ -338,6 +341,29 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   I.seeInTab(['Hearing 3', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
   I.seeInTab(['Hearing 3', 'Others notified'], 'Noah King');
+});
+
+Scenario('HMCTS admin updates past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+  await setupScenario(I);
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  manageHearingsEventPage.selectEditPastHearing(`Case management hearing, ${formatHearingDate(correctedHearingStartDate)}`);
+  await I.goToNextPage();
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+
+  I.seeInTab(['Hearing 3', 'Type of hearing'], hearingDetails[0].caseManagement);
+  I.seeInTab(['Hearing 3', 'Court'], hearingDetails[0].venue);
+  I.seeInTab(['Hearing 3', 'In person or remote'], hearingDetails[0].presence);
+  I.seeInTab(['Hearing 3', 'Start date and time'],  formatHearingTime(correctedHearingStartDate));
+  I.seeInTab(['Hearing 3', 'End date and time'], formatHearingTime(correctedHearingEndDate));
+  I.seeInTab(['Hearing 3', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
+  I.seeInTab(['Hearing 3', 'Hearing judge or magistrate'], 'Her Honour Judge Reed');
+  I.seeInTab(['Hearing 3', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 3', 'Hearing attendance'], hearingDetails[0].attendance);
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
+
 });
 
 const formatHearingTime = hearingDate => formatDate(hearingDate, 'd mmm yyyy, h:MM:ss TT');
