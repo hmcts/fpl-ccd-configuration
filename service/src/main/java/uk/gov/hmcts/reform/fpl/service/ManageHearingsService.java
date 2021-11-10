@@ -83,6 +83,7 @@ public class ManageHearingsService {
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
     public static final String HAS_HEARINGS_TO_ADJOURN = "hasHearingsToAdjourn";
     public static final String HAS_PAST_HEARINGS = "hasPastHearings";
+    public static final String HAS_HEARINGS_TO_VACATE = "hasHearingsToVacate";
     public static final String HAS_FUTURE_HEARINGS = "hasFutureHearings";
     public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
     public static final String PAST_HEARING_DATE_LIST = "pastHearingDateList";
@@ -105,6 +106,8 @@ public class ManageHearingsService {
     private static final String HEARING_MINUTES = "hearingMinutes";
     private static final String HEARING_HOURS = "hearingHours";
     private static final String HEARING_END_DATE_TIME = "hearingEndDateTime";
+    public static final String PRE_HEARING_ATTENDANCE_DETAILS_KEY = "preHearingAttendanceDetails";
+    public static final String PREVIOUS_HEARING_VENUE_KEY = "previousHearingVenue";
 
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -145,7 +148,11 @@ public class ManageHearingsService {
             listAndLabel.put(HAS_HEARINGS_TO_ADJOURN, YES.getValue());
         }
 
-        if (isNotEmpty(pastAndTodayHearings)) {
+        if (isNotEmpty(sortedNonCancelledHearings)) {
+            listAndLabel.put(HAS_HEARINGS_TO_VACATE, YES.getValue());
+        }
+
+        if (isNotEmpty(pastHearings)) {
             listAndLabel.put(HAS_PAST_HEARINGS, YES.getValue());
         }
 
@@ -220,13 +227,13 @@ public class ManageHearingsService {
         Address customAddress = "OTHER".equals(previousHearingVenue.getHearingVenueId())
             ? previousHearingVenue.getAddress() : null;
 
-        data.put("previousHearingVenue",
+        data.put(PREVIOUS_HEARING_VENUE_KEY,
             PreviousHearingVenue.builder()
                 .previousVenue(hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
                 .newVenueCustomAddress(customAddress)
                 .build());
 
-        data.put("preHearingAttendanceDetails", DEFAULT_PRE_ATTENDANCE);
+        data.put(PRE_HEARING_ATTENDANCE_DETAILS_KEY, DEFAULT_PRE_ATTENDANCE);
 
         return data;
     }
@@ -262,7 +269,7 @@ public class ManageHearingsService {
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
         caseFields.put("hearingAttendance", hearingBooking.getAttendance());
         caseFields.put("hearingAttendanceDetails", hearingBooking.getAttendanceDetails());
-        caseFields.put("preHearingAttendanceDetails", hearingBooking.getPreAttendanceDetails());
+        caseFields.put(PRE_HEARING_ATTENDANCE_DETAILS_KEY, hearingBooking.getPreAttendanceDetails());
         caseFields.put("sendNoticeOfHearingTranslationRequirements", hearingBooking.getTranslationRequirements());
 
         if (YES.getValue().equals(hearingBooking.getEndDateDerived())) {
@@ -284,7 +291,7 @@ public class ManageHearingsService {
             caseFields.put("hearingVenue", hearingBooking.getVenue());
             caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
         } else {
-            caseFields.put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
+            caseFields.put(PREVIOUS_HEARING_VENUE_KEY, hearingBooking.getPreviousHearingVenue());
         }
 
         return caseFields;
@@ -376,7 +383,7 @@ public class ManageHearingsService {
             "sendNoticeOfHearingTranslationRequirements",
             "judgeAndLegalAdvisor",
             "noticeOfHearingNotes",
-            "previousHearingVenue",
+            PREVIOUS_HEARING_VENUE_KEY,
             "firstHearingFlag",
             "adjournmentReason",
             "vacatedReason",
@@ -391,7 +398,7 @@ public class ManageHearingsService {
             HAS_EXISTING_HEARINGS_FLAG,
             "hearingReListOption",
             HEARING_START_DATE_LABEL,
-            "showConfirmPastHearingDatesPage",
+            SHOW_PAST_HEARINGS_PAGE,
             HEARING_DURATION_LABEL,
             "confirmHearingDate",
             "hearingStartDateConfirmation",
@@ -401,7 +408,7 @@ public class ManageHearingsService {
             "hasSession",
             "hearingAttendance",
             "hearingAttendanceDetails",
-            "preHearingAttendanceDetails",
+            PRE_HEARING_ATTENDANCE_DETAILS_KEY,
             "hearingOption",
             "hasOthers",
             "sendOrderToAllOthers",

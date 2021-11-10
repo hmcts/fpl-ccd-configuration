@@ -407,7 +407,7 @@
     "Comment": "Used for show/hide message as to when there are no past hearings to select.",
     "Searchable": "N"
   },
-{
+  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hasFutureHearings",
@@ -415,6 +415,16 @@
     "Label": " ",
     "SecurityClassification": "Public",
     "Comment": "Used for show/hide message as to when there are no future hearings to select.",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasHearingsToVacate",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide message as to when there are no hearings to vacate.",
     "Searchable": "N"
   },
   {

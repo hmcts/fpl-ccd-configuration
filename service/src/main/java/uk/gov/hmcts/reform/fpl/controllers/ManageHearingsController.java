@@ -351,6 +351,7 @@ public class ManageHearingsController extends CallbackController {
 
             final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
             hearingsService.addOrUpdate(hearingBookingElement, caseData);
+            hearingsService.sendNoticeOfHearing(caseData, editedHearingBooking);
 
             data.put(SELECTED_HEARING_ID, hearingBookingId);
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
