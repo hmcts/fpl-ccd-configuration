@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
