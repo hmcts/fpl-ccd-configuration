@@ -75,7 +75,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "addressKnow",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Current address know",
+    "ElementLabel": "*Current address known?",
     "SecurityClassification": "Public"
   },
   {
@@ -93,7 +93,7 @@
     "ListElementCode": "addressNotKnowReason",
     "FieldType": "FixedList",
     "FieldTypeParameter":  "AddressNotKnowType",
-    "ElementLabel": "Address not know reason",
+    "ElementLabel": "*Reason the address is not known",
     "SecurityClassification": "Public",
     "FieldShowCondition": "addressKnow=\"No\""
   },
