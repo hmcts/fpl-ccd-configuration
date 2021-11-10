@@ -744,6 +744,7 @@ class ManageHearingsServiceTest {
             .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
+            .hearingDays(9)
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
@@ -785,6 +786,8 @@ class ManageHearingsServiceTest {
             .others(SELECTED_OTHERS)
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
+            .hearingHours(9)
+            .hearingMinutes(45)
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);

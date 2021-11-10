@@ -599,6 +599,9 @@ public class ManageHearingsService {
             .preAttendanceDetails(caseData.getPreHearingAttendanceDetails())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
+            .hearingDays(caseData.getHearingDays())
+            .hearingHours(caseData.getHearingHours())
+            .hearingMinutes(caseData.getHearingMinutes())
             .hearingDuration(hearingDuration)
             .endDateDerived(endDateDerived)
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
