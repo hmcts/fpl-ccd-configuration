@@ -115,6 +115,14 @@ translation:
     sender: sender@example.com
     recipient: FamilyPublicLaw+translation@gmail.com
 
+cafcass:
+  notification:
+    sender: sender-cafcass@example.com
+    order: FamilyPublicLaw+cafcass@gmail.com
+    courtbundle: FamilyPublicLaw+cafcass@gmail.com
+    large: FamilyPublicLaw+cafcass@gmail.com
+    newApplication: FamilyPublicLaw+cafcass@gmail.com
+
 security:
   anonymousPaths:
   authorisedServices:
