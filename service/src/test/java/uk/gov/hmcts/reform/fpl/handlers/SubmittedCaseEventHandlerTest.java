@@ -189,7 +189,8 @@ class SubmittedCaseEventHandlerTest {
             "notifyAdmin",
             "notifyCafcass",
             "makePayment",
-            "notifyTranslationTeam"
+            "notifyTranslationTeam",
+            "notifyCafcassSendGrid"
         );
     }
 
