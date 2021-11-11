@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Set.of;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
@@ -89,10 +91,14 @@ public class SubmittedCaseEventHandler {
     public void notifyCafcassSendGrid(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
+        Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
+            .map(Set::of)
+            .orElse(of());
+
         NewApplicationCafcassData newApplicationCafcassData = cafcassEmailContentProvider
             .buildCafcassSubmissionSendGridData(caseData);
         cafcassNotificationService.sendEmail(caseData,
-            of(caseData.getC110A().getSubmittedForm()),
+            documentReferences,
             NEW_APPLICATION,
             newApplicationCafcassData);
     }
