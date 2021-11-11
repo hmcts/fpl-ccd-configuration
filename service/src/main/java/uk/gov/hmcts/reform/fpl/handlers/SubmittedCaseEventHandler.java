@@ -87,6 +87,7 @@ public class SubmittedCaseEventHandler {
         notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
+    @Async
     @EventListener
     public void notifyCafcassSendGrid(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
