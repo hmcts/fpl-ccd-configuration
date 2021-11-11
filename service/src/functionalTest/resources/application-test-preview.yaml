@@ -4,3 +4,8 @@ test-conf:
   placeholders:
     SwanseaOrganisationID: W9V61CP
     WiltshireOrganisationID: 11VOC93
+
+cafcass:
+  notification:
+    sender: sender-cafcass@example.com
+    newApplication: FamilyPublicLaw+cafcass@gmail.com
