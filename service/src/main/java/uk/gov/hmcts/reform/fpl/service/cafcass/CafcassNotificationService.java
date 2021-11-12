@@ -37,6 +37,10 @@ public class CafcassNotificationService {
             caseData.getId(),
             provider.name());
 
+        log.info("Provider name {} email to {}", CafcassRequestEmailContentProvider.ORDER.name(),
+            CafcassRequestEmailContentProvider.ORDER.getRecipient().apply(configuration));
+        log.info("Provider name {} email to {}", provider.name(), provider.getRecipient().apply(configuration));
+
         emailService.sendEmail(configuration.getSender(),
             EmailData.builder()
                 .recipient(provider.getRecipient().apply(configuration))
