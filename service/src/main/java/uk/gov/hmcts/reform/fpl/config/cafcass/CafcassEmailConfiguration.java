@@ -23,7 +23,7 @@ public class CafcassEmailConfiguration {
     private String courtbundle;
 
     @Getter(AccessLevel.NONE)
-    private String newApplication;
+    private String newapplication;
 
     public String getRecipientForOrder() {
         return order;
@@ -34,6 +34,6 @@ public class CafcassEmailConfiguration {
     }
 
     public String getRecipientForNewApplication() {
-        return newApplication;
+        return newapplication;
     }
 }
