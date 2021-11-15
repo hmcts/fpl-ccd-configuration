@@ -57,10 +57,13 @@ public class SendDocumentService {
             .filter(Recipient::isDeliverable)
             .collect(toList());
 
+
         if (recipients.size() != deliverableRecipients.size()) {
             log.error("Case {} has {} recipients with incomplete postal information", caseData.getId(),
                 recipients.size() - deliverableRecipients.size());
         }
+
+        log.info("Somesh -- Recipients deliverableRecipients to recieve post {} ", deliverableRecipients);
 
         if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
 
