@@ -15,7 +15,7 @@ properties([
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
     string(name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '2',
+      defaultValue: '4',
       description: 'Number of workers running functional tests'),
   ])
 ])
@@ -81,7 +81,7 @@ withNightlyPipeline(type, product, component) {
 
   enableSecurityScan()
   //enableMutationTest()
-  enableFullFunctionalTest(120)
+  enableFullFunctionalTest(150)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
   enableCrossBrowserTest(['chrome', 'firefox'])
   enableFortifyScan()
@@ -98,7 +98,7 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 2
+    env.TEST_RETRIES = 5
     env.TESTS_FOR_ACCESSIBILITY = true
     env.ENV = 'aat'
   }
@@ -111,7 +111,7 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('crossBrowserTest') {
-    env.TEST_RETRIES = 3
+    env.TEST_RETRIES = 5
   }
 
   after('crossBrowserTest') {
