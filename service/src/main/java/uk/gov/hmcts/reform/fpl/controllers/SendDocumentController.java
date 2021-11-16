@@ -52,8 +52,6 @@ public class SendDocumentController extends CallbackController {
         List<Recipient> representativesServedByPost =
             new ArrayList<>(caseData.getRepresentativesByServedPreference(POST));
 
-        log.info("Somesh -- Recipients to recieve post {} ", representativesServedByPost);
-
         if (!representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
                 .get(DOCUMENT_TO_BE_SENT_KEY), DocumentReference.class);

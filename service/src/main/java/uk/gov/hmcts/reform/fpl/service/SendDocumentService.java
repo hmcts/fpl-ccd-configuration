@@ -63,8 +63,6 @@ public class SendDocumentService {
                 recipients.size() - deliverableRecipients.size());
         }
 
-        log.info("Somesh -- Recipients deliverableRecipients to recieve post {} ", deliverableRecipients);
-
         if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
 
             List<SentDocument> docs = documentToBeSent.stream()

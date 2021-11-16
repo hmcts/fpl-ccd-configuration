@@ -40,8 +40,7 @@ public class NotificationService {
         try {
             notificationClient.sendEmail(templateId, recipient, personalisation, environment + SEPARATOR + reference);
         } catch (NotificationClientException e) {
-            //log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
-            log.error("Failed to send email (with template id: {}) to {}", templateId, recipient, e);
+            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
         }
     }
 
