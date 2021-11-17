@@ -1038,9 +1038,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WSX",
+    "ListElement": "West Sussex County Council",
+    "DisplayOrder": 428
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WMS",
     "ListElement": "Westminster City Council",
-    "DisplayOrder": 428
+    "DisplayOrder": 429
   },
   {
     "LiveFrom": "01/01/2017",
