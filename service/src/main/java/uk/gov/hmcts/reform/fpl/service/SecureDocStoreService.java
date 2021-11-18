@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -27,19 +28,14 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SecureDocStoreService {
 
     private final AuthTokenGenerator authTokenGenerator;
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final RequestData requestData;
 
-    @Autowired
-    public SecureDocStoreService(AuthTokenGenerator authTokenGenerator, CaseDocumentClientApi caseDocumentClientApi,
-                                 RequestData requestData) {
-        this.authTokenGenerator = authTokenGenerator;
-        this.caseDocumentClientApi = caseDocumentClientApi;
-        this.requestData = requestData;
-    }
+    public boolean enabled = true;
 
     public Document uploadDocument(byte[] pdf, String fileName, String contentType) {
 

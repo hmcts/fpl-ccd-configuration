@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -35,6 +35,10 @@ class DocumentDownloadServiceTest {
 
     @Mock
     private DocumentDownloadClientApi documentDownloadClient;
+
+    @Mock
+    private SecureDocStoreService secureDocStoreService;
+
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -71,7 +75,8 @@ class DocumentDownloadServiceTest {
         documentDownloadService = new DocumentDownloadService(authTokenGenerator,
             documentDownloadClient,
             idamClient,
-            requestData);
+            requestData,
+            secureDocStoreService);
     }
 
     @Test

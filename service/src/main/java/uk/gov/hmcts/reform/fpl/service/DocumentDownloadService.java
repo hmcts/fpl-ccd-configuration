@@ -30,26 +30,34 @@ public class DocumentDownloadService {
     private final IdamClient idamClient;
     private final RequestData requestData;
 
+    private final SecureDocStoreService secureDocStoreService;
+
     public byte[] downloadDocument(final String documentUrlString) {
-        final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
 
-        log.info("Download document {} by user {} with roles {}", documentUrlString, requestData.userId(), userRoles);
+        if (secureDocStoreService.enabled) {
+            return secureDocStoreService.downloadDocument(documentUrlString);
+        } else {
+            final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
 
-        ResponseEntity<Resource> documentDownloadResponse =
-            documentDownloadClient.downloadBinary(requestData.authorisation(),
-                authTokenGenerator.generate(),
-                userRoles,
-                requestData.userId(),
-                URI.create(documentUrlString).getPath());
+            log.info("Download document {} by user {} with roles {}", documentUrlString, requestData.userId(), userRoles);
 
-        if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
-            return Optional.of(documentDownloadResponse)
-                .map(HttpEntity::getBody)
-                .map(ByteArrayResource.class::cast)
-                .map(ByteArrayResource::getByteArray)
-                .orElseThrow(EmptyFileException::new);
+            ResponseEntity<Resource> documentDownloadResponse =
+                documentDownloadClient.downloadBinary(requestData.authorisation(),
+                    authTokenGenerator.generate(),
+                    userRoles,
+                    requestData.userId(),
+                    URI.create(documentUrlString).getPath());
+
+            if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
+                return Optional.of(documentDownloadResponse)
+                    .map(HttpEntity::getBody)
+                    .map(ByteArrayResource.class::cast)
+                    .map(ByteArrayResource::getByteArray)
+                    .orElseThrow(EmptyFileException::new);
+            }
+            throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
+                documentUrlString));
+
         }
-        throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
-            documentUrlString));
     }
 }

@@ -8,9 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,11 +30,11 @@ class UploadDocumentServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
-    private DocumentUploadClientApi documentUploadClient;
+    private CaseDocumentClientApi caseDocumentClientApi;
     @Mock
     private RequestData requestData;
 
-    @InjectMocks
+    @Mock
     private UploadDocumentService uploadDocumentService;
 
     @BeforeEach
@@ -47,17 +47,17 @@ class UploadDocumentServiceTest {
     @Test
     void shouldReturnFirstUploadedDocument() {
         UploadResponse request = successfulDocumentUploadResponse();
-        given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
+        given(caseDocumentClientApi.uploadDocuments(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), any()))
             .willReturn(request);
 
         Document document = uploadDocumentService.uploadPDF(new byte[0], "file");
 
-        Assertions.assertThat(document).isEqualTo(request.getEmbedded().getDocuments().get(0));
+        Assertions.assertThat(document).isEqualTo(request.getDocuments().get(0));
     }
 
     @Test
     void shouldThrowExceptionIfServerResponseContainsNoDocuments() {
-        given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
+        given(caseDocumentClientApi.uploadDocuments(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), any()))
             .willReturn(unsuccessfulDocumentUploadResponse());
 
         assertThatThrownBy(() -> uploadDocumentService.uploadPDF(new byte[0], "file"))
@@ -67,7 +67,7 @@ class UploadDocumentServiceTest {
 
     @Test
     void shouldRethrowExceptionIfServerCallThrownException() {
-        given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
+        given(caseDocumentClientApi.uploadDocuments(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), any()))
             .willThrow(new RuntimeException("Something bad happened"));
 
         assertThatThrownBy(() -> uploadDocumentService.uploadPDF(new byte[0], "file"))
