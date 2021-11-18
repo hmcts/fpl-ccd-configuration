@@ -445,6 +445,13 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "HN",
     "ListElement": "London Borough Hillingdon",
+    "DisplayOrder": 177
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BAD",
+    "ListElement": "London Borough of Barking and Dagenham",
     "DisplayOrder": 178
   },
   {
