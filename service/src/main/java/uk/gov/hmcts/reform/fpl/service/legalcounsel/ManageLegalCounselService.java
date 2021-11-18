@@ -76,7 +76,7 @@ public class ManageLegalCounselService {
         CaseData caseData = caseConverter.convert(caseDetails);
         Long caseId = caseData.getId();
         List<SolicitorRole> caseSolicitorRoles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseId);
-        log.info("Solicitor roles {} ", caseSolicitorRoles);
+        log.info("For case id {}, current user has solicitor roles: {} ", caseData.getId(), caseSolicitorRoles);
 
         List<Element<LegalCounsellor>> legalCounsellors = populateWithUserIds(
             caseData.getManageLegalCounselEventData().getLegalCounsellors()
