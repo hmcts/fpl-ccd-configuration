@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.legalcounsel;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class ManageLegalCounselService {
 
     private static final List<SolicitorRole.Representing> RELEVANT_REPRESENTED_PARTY_TYPES = asList(RESPONDENT, CHILD);
@@ -74,6 +76,7 @@ public class ManageLegalCounselService {
         CaseData caseData = caseConverter.convert(caseDetails);
         Long caseId = caseData.getId();
         List<SolicitorRole> caseSolicitorRoles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseId);
+        log.info("For case id {}, current user has solicitor roles: {} ", caseData.getId(), caseSolicitorRoles);
 
         List<Element<LegalCounsellor>> legalCounsellors = populateWithUserIds(
             caseData.getManageLegalCounselEventData().getLegalCounsellors()
