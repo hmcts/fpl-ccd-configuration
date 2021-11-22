@@ -53,7 +53,7 @@ async function setupScenario(I) {
   }
 }
 
-Scenario('Solicitor cannot request representation before case submission and Cafcass solicitor is set', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
+Scenario('Solicitor cannot request representation before case submission and Cafcass solicitor is set @flaky', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
   await setupScenario(I);
   await I.signIn(solicitor1);
   caseListPage.verifyCaseIsNotAccessible(caseId);
@@ -71,7 +71,7 @@ Scenario('Solicitor cannot request representation before case submission and Caf
   await attemptAndFailNoticeOfChange(I, noticeOfChangePage, solicitor2, children[0]);
 });
 
-Scenario('HMCTS Confirm that a main solicitor in not assigned for all the children yet', async ({I, caseViewPage, enterChildrenEventPage, noticeOfChangePage}) => {
+Scenario('HMCTS Confirm that a main solicitor in not assigned for all the children yet @flaky', async ({I, caseViewPage, enterChildrenEventPage, noticeOfChangePage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
@@ -82,7 +82,7 @@ Scenario('HMCTS Confirm that a main solicitor in not assigned for all the childr
   await attemptAndFailNoticeOfChange(I, noticeOfChangePage, solicitor2, children[0]);
 });
 
-Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseViewPage, enterChildrenEventPage}) => {
+Scenario('HMCTS assign a main solicitor for all the children @flaky', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
@@ -101,7 +101,7 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.changeOfRepresentatives);
 });
 
-Scenario('HMCTS assign a different solicitor for some of the children', async ({I, caseViewPage, enterChildrenEventPage}) => {
+Scenario('HMCTS assign a different solicitor for some of the children @flaky', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
@@ -137,7 +137,7 @@ Scenario('HMCTS assign a different solicitor for some of the children', async ({
   assertChangeOfRepresentative(I, 2, 'FPL', `${children[childWithUnregisteredSolicitorIdx].value.party.firstName} ${children[childWithUnregisteredSolicitorIdx].value.party.lastName}`, 'HMCTS', {removedUser: solicitor1.details, addedUser: unregisteredSolicitor.details });
 });
 
-Scenario('Solicitor can request representation via NOC only after case submission and Cafcass solicitor is set', async ({I, caseListPage, noticeOfChangePage, caseViewPage}) => {
+Scenario('Solicitor can request representation via NOC only after case submission and Cafcass solicitor is set @flaky', async ({I, caseListPage, noticeOfChangePage, caseViewPage}) => {
   await setupScenario(I);
   await I.signIn(solicitor3);
   caseListPage.verifyCaseIsNotAccessible(caseId);
