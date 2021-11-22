@@ -65,7 +65,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
@@ -85,13 +86,14 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARINGS;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARINGS_TO_ADJOURN;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARINGS_TO_VACATE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARING_TO_RE_LIST;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_PAST_HEARINGS;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_AND_TODAY_HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
@@ -155,9 +157,9 @@ class ManageHearingsServiceTest {
             Element<HearingBooking> pastHearing1 = hearingFromToday(-2);
             Element<HearingBooking> pastHearing2 = hearingFromToday(-3);
 
-            DynamicList expectedHearingList = dynamicList(futureHearing1, futureHearing2);
             DynamicList expectedPastHearingList = dynamicList(todayHearing, pastHearing1, pastHearing2);
-            DynamicList expectedVacateHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing,
+            DynamicList expectedFutureHearingList = dynamicList(futureHearing1, futureHearing2);
+            DynamicList expectedPastAndFutureHearingList = dynamicList(futureHearing1, futureHearing2, todayHearing,
                 pastHearing1, pastHearing2);
 
             CaseData initialCaseData = CaseData.builder()
@@ -168,12 +170,13 @@ class ManageHearingsServiceTest {
 
             assertThat(data)
                 .containsEntry(HAS_HEARINGS_TO_ADJOURN, "Yes")
-                .containsEntry(HAS_FUTURE_HEARING_FLAG, "Yes")
-                .containsEntry(HAS_HEARINGS_TO_VACATE, "Yes")
+                .containsEntry(HAS_PAST_HEARINGS, "Yes")
+                .containsEntry(HAS_FUTURE_HEARINGS, "Yes")
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(HEARING_DATE_LIST, expectedHearingList)
-                .containsEntry(PAST_HEARING_LIST, expectedPastHearingList)
-                .containsEntry(VACATE_HEARING_LIST, expectedVacateHearingList)
+                .containsEntry(PAST_HEARING_DATE_LIST, expectedPastHearingList)
+                .containsEntry(FUTURE_HEARING_LIST, expectedFutureHearingList)
+                .containsEntry(PAST_AND_TODAY_HEARING_DATE_LIST, expectedPastHearingList)
+                .containsEntry(VACATE_HEARING_LIST, expectedPastAndFutureHearingList)
                 .containsEntry(TO_RE_LIST_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARING_TO_RE_LIST)
                 .doesNotContainKeys(TO_RE_LIST_HEARING_LABEL);
@@ -209,16 +212,15 @@ class ManageHearingsServiceTest {
                         + "Case management hearing, 12 September 2020 - vacated")
                 .containsEntry(TO_RE_LIST_HEARING_LIST, expectedHearingList)
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(HEARING_DATE_LIST, emptyDynamicList)
-                .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
+                .containsEntry(PAST_HEARING_DATE_LIST, emptyDynamicList)
+                .containsEntry(PAST_AND_TODAY_HEARING_DATE_LIST, emptyDynamicList)
                 .containsEntry(VACATE_HEARING_LIST, emptyDynamicList)
                 .doesNotContainKeys(HAS_HEARINGS_TO_ADJOURN)
-                .doesNotContainKeys(HAS_FUTURE_HEARING_FLAG)
-                .doesNotContainKeys(HAS_HEARINGS_TO_VACATE);
+                .doesNotContainKeys(HAS_PAST_HEARINGS);
         }
 
         @Test
-        void shouldOnlyPopulatePastHearingDateListWhenOnlyHearingsInThePastExist() {
+        void shouldOnlyPopulatePastHearingDateListAndHearingDateListWhenOnlyHearingsInThePastExist() {
             Element<HearingBooking> pastHearing1 = hearingFromToday(-2);
             Element<HearingBooking> pastHearing2 = hearingFromToday(-3);
 
@@ -233,8 +235,8 @@ class ManageHearingsServiceTest {
             assertThat(data)
                 .containsEntry(HAS_HEARINGS_TO_ADJOURN, "Yes")
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(HEARING_DATE_LIST, emptyDynamicList)
-                .containsEntry(PAST_HEARING_LIST, expectedPastHearingList);
+                .containsEntry(PAST_HEARING_DATE_LIST, expectedPastHearingList)
+                .containsEntry(PAST_AND_TODAY_HEARING_DATE_LIST, expectedPastHearingList);
         }
 
         @Test
@@ -243,8 +245,6 @@ class ManageHearingsServiceTest {
             Element<HearingBooking> futureHearing2 = hearingFromToday(2);
 
             Object expectedHearingList = dynamicList(futureHearing1, futureHearing2);
-            Object expectedFutureHearingList = dynamicList(futureHearing1, futureHearing2);
-
 
             CaseData initialCaseData = CaseData.builder()
                 .hearingDetails(List.of(futureHearing1, futureHearing2))
@@ -253,12 +253,12 @@ class ManageHearingsServiceTest {
             Map<String, Object> data = service.populateHearingLists(initialCaseData);
 
             assertThat(data)
-                .containsEntry(HAS_FUTURE_HEARING_FLAG, "Yes")
-                .containsEntry(HAS_HEARINGS_TO_VACATE, "Yes")
+                .containsEntry(HAS_FUTURE_HEARINGS, "Yes")
                 .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
-                .containsEntry(HEARING_DATE_LIST, expectedHearingList)
-                .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
-                .containsEntry(VACATE_HEARING_LIST, expectedFutureHearingList);
+                .containsEntry(PAST_HEARING_DATE_LIST, emptyDynamicList)
+                .containsEntry(FUTURE_HEARING_LIST, expectedHearingList)
+                .containsEntry(PAST_AND_TODAY_HEARING_DATE_LIST, emptyDynamicList)
+                .containsEntry(VACATE_HEARING_LIST, expectedHearingList);
         }
 
         private Element<HearingBooking> hearingFromToday(int daysFromToday) {
@@ -1753,10 +1753,18 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldReturnFutureHearingsWhenHearingOptionIsEdit() {
-            CaseData caseData = caseData(EDIT_HEARING);
+            CaseData caseData = caseData(EDIT_FUTURE_HEARING);
 
             Object dynamicList = service.getHearingsDynamicList(caseData);
-            assertThat(dynamicList).isEqualTo(caseData.getHearingDateList());
+            assertThat(dynamicList).isEqualTo(caseData.getFutureHearingDateList());
+        }
+
+        @Test
+        void shouldReturnPastHearingsWhenHearingOptionIsEdit() {
+            CaseData caseData = caseData(EDIT_PAST_HEARING);
+
+            Object dynamicList = service.getHearingsDynamicList(caseData);
+            assertThat(dynamicList).isEqualTo(caseData.getPastHearingDateList());
         }
 
         @Test
@@ -1781,7 +1789,7 @@ class ManageHearingsServiceTest {
                 .pastAndTodayHearingDateList(randomDynamicList())
                 .vacateHearingDateList(randomDynamicList())
                 .toReListHearingDateList(randomDynamicList())
-                .hearingDateList(randomDynamicList())
+                .pastHearingDateList(randomDynamicList())
                 .build();
         }
 
@@ -1803,6 +1811,7 @@ class ManageHearingsServiceTest {
 
         final UUID selectedPastAndTodayHearing = randomUUID();
         final UUID selectedFutureOrTodayHearing = randomUUID();
+        final UUID selectedFutureHearing = randomUUID();
         final UUID selectedToReListHearing = randomUUID();
         final UUID selectedHearing = randomUUID();
 
@@ -1811,7 +1820,7 @@ class ManageHearingsServiceTest {
             CaseData caseData = caseData(VACATE_HEARING);
 
             UUID selectedHearingId = service.getSelectedHearingId(caseData);
-            assertThat(selectedHearingId).isEqualTo(selectedFutureOrTodayHearing);
+            assertThat(selectedHearingId).isEqualTo(selectedHearing);
         }
 
         @Test
@@ -1823,11 +1832,19 @@ class ManageHearingsServiceTest {
         }
 
         @Test
-        void shouldReturnSelectedHearingIdWhenHearingOptionIsEdit() {
-            CaseData caseData = caseData(EDIT_HEARING);
+        void shouldReturnSelectedPastHearingIdWhenHearingOptionIsEdit() {
+            CaseData caseData = caseData(EDIT_PAST_HEARING);
 
             UUID selectedHearingId = service.getSelectedHearingId(caseData);
             assertThat(selectedHearingId).isEqualTo(selectedHearing);
+        }
+
+        @Test
+        void shouldReturnSelectedFutureHearingIdWhenHearingOptionIsEdit() {
+            CaseData caseData = caseData(EDIT_FUTURE_HEARING);
+
+            UUID selectedHearingId = service.getSelectedHearingId(caseData);
+            assertThat(selectedHearingId).isEqualTo(selectedFutureHearing);
         }
 
         @Test
@@ -1850,9 +1867,10 @@ class ManageHearingsServiceTest {
             return CaseData.builder()
                 .hearingOption(hearingOptions)
                 .pastAndTodayHearingDateList(randomDynamicList(selectedPastAndTodayHearing))
-                .vacateHearingDateList(randomDynamicList(selectedFutureOrTodayHearing))
+                .futureHearingDateList(randomDynamicList(selectedFutureHearing))
+                .vacateHearingDateList(randomDynamicList(selectedHearing))
                 .toReListHearingDateList(randomDynamicList(selectedToReListHearing))
-                .hearingDateList(randomDynamicList(selectedHearing))
+                .pastHearingDateList(randomDynamicList(selectedHearing))
                 .build();
         }
 
@@ -1894,14 +1912,15 @@ class ManageHearingsServiceTest {
             "firstHearingFlag",
             "adjournmentReason",
             "vacatedReason",
-            "hearingDateList",
+            "pastHearingDateList",
+            "futureHearingDateList",
             "pastAndTodayHearingDateList",
             "vacateHearingDateList",
             "vacatedHearingDate",
             "hasHearingsToAdjourn",
-            "hasHearingsToVacate",
+            "hasPastHearings",
+            "hasFutureHearings",
             "hasExistingHearings",
-            "hasFutureHearingDateFlag",
             "hearingReListOption",
             "hearingStartDateLabel",
             "showConfirmPastHearingDatesPage",
