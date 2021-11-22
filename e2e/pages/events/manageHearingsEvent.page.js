@@ -7,7 +7,8 @@ module.exports = {
   fields: {
     hearingOptions: {
       addNewHearing: '#hearingOption-NEW_HEARING',
-      editHearing: '#hearingOption-EDIT_HEARING',
+      editFutureHearing: '#hearingOption-EDIT_FUTURE_HEARING',
+      editPastHearing: '#hearingOption-EDIT_PAST_HEARING',
       adjournHearing: '#hearingOption-ADJOURN_HEARING',
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
@@ -16,12 +17,16 @@ module.exports = {
     attendance: '#hearingAttendance',
     attendanceDetails: '#hearingAttendanceDetails',
     preAttendanceDetails: '#preHearingAttendanceDetails',
-    hearingDateList: '#hearingDateList',
+    pastHearingDateList: '#pastHearingDateList',
+    futureHearingDateList: '#futureHearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     vacateHearingDateList: '#vacateHearingDateList',
     toReListHearingDateList: '#toReListHearingDateList',
     hearingType: {
       caseManagement: '#hearingType-CASE_MANAGEMENT',
+    },
+    hearingDuration: {
+      dateTime: '#hearingDuration-DATE_TIME',
     },
     hearingVenue: '#hearingVenue',
     usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_Yes',
@@ -29,7 +34,7 @@ module.exports = {
     newVenue: '#previousHearingVenue_newVenue',
     newVenueCustomAddress: '#previousHearingVenue_newVenueCustomAddress_newVenueCustomAddress',
     startDate: '#hearingStartDate',
-    endDate: '#hearingEndDate',
+    endDate: '#hearingEndDateTime',
     sendNotice: '#sendNoticeOfHearing_Yes',
     dontSendNotice: '#sendNoticeOfHearing_No',
     noticeNotes: '#noticeOfHearingNotes',
@@ -56,9 +61,14 @@ module.exports = {
     I.click(this.fields.hearingOptions.addNewHearing);
   },
 
-  selectEditHearing(hearing) {
-    I.click(this.fields.hearingOptions.editHearing);
-    I.selectOption(this.fields.hearingDateList, hearing);
+  selectEditPastHearing(hearing) {
+    I.click(this.fields.hearingOptions.editPastHearing);
+    I.selectOption(this.fields.pastHearingDateList, hearing);
+  },
+
+  selectEditFutureHearing(hearing) {
+    I.click(this.fields.hearingOptions.editFutureHearing);
+    I.selectOption(this.fields.futureHearingDateList, hearing);
   },
 
   selectAdjournHearing(hearing) {
@@ -104,7 +114,6 @@ module.exports = {
     }
 
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
-    await I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
 
     if (hearingDetails.preAttendanceDetails) {
       I.fillField(this.fields.preAttendanceDetails, hearingDetails.preAttendanceDetails);
@@ -189,6 +198,11 @@ module.exports = {
 
   async grabPreHearingAttendance(){
     return await I.grabValueFrom(this.fields.preAttendanceDetails);
+  },
+
+  selectHearingDuration(hearingDetails) {
+    I.click(this.fields.hearingDuration.dateTime);
+    I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
   },
 
 };

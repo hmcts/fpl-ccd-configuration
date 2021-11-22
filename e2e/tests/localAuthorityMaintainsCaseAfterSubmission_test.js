@@ -85,9 +85,9 @@ Scenario('local authority provides a statements of service', async ({ I, caseVie
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('local authority upload placement application and court admin make order', async ({I, caseViewPage, placementEventPage, manageOrdersEventPage}) => {
+Scenario('local authority upload placement application and court admin make order @flaky', async ({I, caseViewPage, placementEventPage, manageOrdersEventPage}) => {
 
-  const placementFee = '£455.0';
+  const placementFee = '£490.0';
   await setupScenario(I);
 
   await caseViewPage.goToNewActions(config.administrationActions.placement);

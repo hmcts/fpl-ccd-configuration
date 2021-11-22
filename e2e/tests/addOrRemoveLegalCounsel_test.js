@@ -10,7 +10,7 @@ const solicitor2 = config.hillingdonLocalAuthorityUserOne;
 let caseId;
 let legalCounselAdded = false;
 
-Feature('Legal counsel');
+Feature('Legal counsel @legal');
 
 async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, enterChildrenEventPage) {
   if (!solicitor1.details) {
@@ -48,7 +48,7 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
   }
 }
 
-Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage, enterChildrenEventPage }) => {
+Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage, enterChildrenEventPage, returnApplicationEventPage }) => {
   await setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, enterChildrenEventPage);
 
   await I.navigateToCaseDetailsAs(solicitor1, caseId);
@@ -66,6 +66,9 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
   assertLegalCounsellorForParties(I, ['Respondents 1', 'Child 1']);
+
+  // After legal counsellor has been added, check that they are not shown in the 'check your answer page all Children and Respondents events (DFPL-126)
+  await checkLegalCounsellorsOnEvents(I, caseViewPage, submitApplicationEventPage, returnApplicationEventPage);
 
   legalCounselAdded = true;
 });
@@ -145,4 +148,63 @@ function assertChild(I, solicitor) {
 
   I.waitForText(solicitor.details.organisation, 40);
   I.seeOrganisationInTab([childElement, 'Representative', 'Name'], solicitor.details.organisation);
+}
+
+async function checkLegalCounsellorsOnEvents(I , caseViewPage, submitApplicationEventPage, returnApplicationEventPage) {
+  // Local authority checks legal counsellors not shown in the 'check your answer' page on 'Children' and 'Respondents' events
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await checkLegalCounsellorNotShownOnChildrenEvent(I, caseViewPage);
+  await checkLegalCounsellorNotShownOnRespondentsEvent(I, caseViewPage);
+
+  // Gatekeeper returns application
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.returnApplication);
+  await returnApplicationEventPage.selectApplicationIncorrect();
+  await returnApplicationEventPage.enterRejectionNote();
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+
+  // Local authority checks legal counsellors not shown in the 'check your answer' page on 'Child's details' and 'Respondents' details' events
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await checkLegalCounsellorNotShownOnEnterChildrenEvent(I, caseViewPage);
+  await checkLegalCounsellorNotShownOnEnterRespondentsEvent(I, caseViewPage);
+
+  // Local authority re-submits the case to return back to the intended state for subsequent tests
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  await submitApplicationEventPage.giveConsent();
+  await I.completeEvent('Submit', null, true);
+}
+
+async function checkLegalCounsellorNotShownOnChildrenEvent(I , caseViewPage) {
+  await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
+  await I.goToNextPage();
+  await I.goToNextPage();
+  assertNoLegalCounsellorOnCheckYourAnswers(I);
+  await I.submitEvent('Save and continue');
+}
+
+async function checkLegalCounsellorNotShownOnRespondentsEvent(I , caseViewPage) {
+  await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
+  await I.goToNextPage();
+  assertNoLegalCounsellorOnCheckYourAnswers(I);
+  await I.submitEvent('Save and continue');
+}
+
+async function checkLegalCounsellorNotShownOnEnterChildrenEvent(I , caseViewPage) {
+  await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+  await I.goToNextPage();
+  assertNoLegalCounsellorOnCheckYourAnswers(I);
+  await I.submitEvent('Save and continue');
+}
+
+async function checkLegalCounsellorNotShownOnEnterRespondentsEvent(I , caseViewPage) {
+  await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
+  await I.goToNextPage();
+  assertNoLegalCounsellorOnCheckYourAnswers(I);
+  await I.submitEvent('Save and continue');
+}
+
+function assertNoLegalCounsellorOnCheckYourAnswers(I) {
+  I.see('Check your answers');
+  I.see('Party');
+  I.dontSee('Legal Counsellor');
 }
