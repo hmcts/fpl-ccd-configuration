@@ -669,10 +669,10 @@ clone-response@^1.0.2:
   dependencies:
     mimic-response "^1.0.0"
 
-codeceptjs@^3.0.7:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.0.7.tgz#5d453630f8a4d3886993f423b3daad08c2491947"
-  integrity sha512-YtIhxfkgASI+mTvpxRYFiBUu2lXCNQXMKp8D9RWiYBT4sX3885yUU4FVIhFfpUaOeOUxDDkyUQRP9odW1boAiA==
+codeceptjs@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.2.2.tgz#d2cc2948098cb4db8f6117243d44b0deb288a7ca"
+  integrity sha512-mlShe0DuX+uGzyCx/49n5jOJNsv2Q4Uxzcf3kNJROm60GkEl+hP0aH3BWEgBdI4r4XkCuG5+VOU0KB6wFAgTdg==
   dependencies:
     "@codeceptjs/configure" "^0.6.2"
     "@codeceptjs/helper" "^1.0.2"
@@ -705,6 +705,7 @@ codeceptjs@^3.0.7:
     requireg "^0.2.2"
     resq "^1.10.0"
     sprintf-js "^1.1.1"
+    uuid "^8.3.2"
 
 color-convert@^1.9.0:
   version "1.9.3"
