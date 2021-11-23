@@ -445,34 +445,48 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "HN",
     "ListElement": "London Borough Hillingdon",
-    "DisplayOrder": 178
+    "DisplayOrder": 176
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BAD",
+    "ListElement": "London Borough of Barking and Dagenham",
+    "DisplayOrder": 177
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BNT",
     "ListElement": "London Borough of Barnet",
-    "DisplayOrder": 179
+    "DisplayOrder": 178
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRE",
     "ListElement": "London Borough of Brent",
-    "DisplayOrder": 180
+    "DisplayOrder": 179
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRO",
     "ListElement": "London Borough of Bromley",
-    "DisplayOrder": 181
+    "DisplayOrder": 180
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CDN",
     "ListElement": "London Borough of Camden",
+    "DisplayOrder": 181
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "ENF",
+    "ListElement": "London Borough of Enfield",
     "DisplayOrder": 182
   },
   {
