@@ -107,7 +107,7 @@ public class GeneratedOrderEventHandler {
         cafcassNotificationService.sendEmail(orderEvent.getCaseData(),
             of(orderEvent.getOrderDocument()),
             ORDER,
-            orderEvent.getOrderTitle());
+            orderEvent.getOrderDocument().getFilename());
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
