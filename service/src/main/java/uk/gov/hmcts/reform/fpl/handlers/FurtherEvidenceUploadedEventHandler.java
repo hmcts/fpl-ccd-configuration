@@ -9,12 +9,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -23,18 +25,23 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -47,6 +54,7 @@ public class FurtherEvidenceUploadedEventHandler {
     private final TranslationRequestService translationRequestService;
     private final SendDocumentService sendDocumentService;
     private static final String PDF = "pdf";
+    private final CafcassNotificationService cafcassNotificationService;
 
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
@@ -100,6 +108,30 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @EventListener
+    public void notifyCafcass(final FurtherEvidenceUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
+        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+
+        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
+            .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
+            .collect(groupingBy(CourtBundle::getHearing,
+                mapping(CourtBundle::getDocument, toSet())));
+
+        newCourtBundles
+            .forEach((key, value) ->
+                cafcassNotificationService.sendEmail(
+                    caseData,
+                    value,
+                    COURT_BUNDLE,
+                    key
+                )
+        );
+    }
+
+
     private List<SupportingEvidenceBundle> getNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore,
                                                                           DocumentUploaderType userType) {
 
@@ -117,7 +149,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private List<String> getDocumentNames(List<SupportingEvidenceBundle> documentBundle) {
-        return documentBundle.stream().map(SupportingEvidenceBundle::getName).collect(Collectors.toList());
+        return documentBundle.stream().map(SupportingEvidenceBundle::getName).collect(toList());
     }
 
     private List<DocumentReference> getDocumentReferences(List<SupportingEvidenceBundle> documentBundle) {
@@ -151,15 +183,15 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
         List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
-        caseData.getRespondentStatements().forEach(statement -> {
-            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle());
-        });
+        caseData.getRespondentStatements().forEach(statement ->
+            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle())
+        );
         return evidenceBundle;
     }
 
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
                                                                           List<Element<SupportingEvidenceBundle>> b2) {
-        return Stream.concat(b1.stream(), b2.stream()).collect(Collectors.toList());
+        return Stream.concat(b1.stream(), b2.stream()).collect(toList());
     }
 
     @Async
