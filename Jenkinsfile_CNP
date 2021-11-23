@@ -173,25 +173,6 @@ withPipeline(type, product, component) {
   }
 
   after('checkout') {
-    onMaster {
-      withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
-        try {
-          sh '''
-            set -e
-
-            git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
-
-            git fetch origin demo:demo
-            git push --force origin HEAD:demo
-
-            git fetch origin perftest:perftest
-            git push --force origin HEAD:perftest
-          '''
-        } catch (err) {
-          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo and perftest branch'
-        }
-      }
-    }
     sh """ git submodule update --init """
   }
 
@@ -223,8 +204,8 @@ withPipeline(type, product, component) {
     env.URL = "http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.SWANSEA_ORG_ID = "62LYJRF"
     env.MOCKED_PAYMENTS = false
-    env.PARALLEL_CHUNKS = 4
-    env.TEST_RETRIES = 2
+    env.PARALLEL_CHUNKS = 8
+    env.TEST_RETRIES = 5
   }
 
   after('smoketest:saat') {
@@ -285,4 +266,7 @@ withPipeline(type, product, component) {
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
     env.SMOKE_TESTS_SELECTOR = "@skip-smoke-test"
   }
+
+  def branchesToSync = ['demo', 'perftest', 'ithc']
+  syncBranchesWithMaster(branchesToSync)
 }
