@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 
 public class IsValidHearingEditValidator implements ConstraintValidator<IsValidHearingEdit, CaseData> {
@@ -20,7 +20,8 @@ public class IsValidHearingEditValidator implements ConstraintValidator<IsValidH
     }
 
     private boolean isInvalidHearingEdit(CaseData caseData) {
-        return EDIT_HEARING.equals(caseData.getHearingOption()) && isEmpty(caseData.getFutureHearings());
+        return EDIT_FUTURE_HEARING.equals(caseData.getHearingOption())
+            && isEmpty(caseData.getAllNonCancelledHearings());
     }
 
     private boolean isInvalidHearingAdjournment(CaseData caseData) {

@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -31,29 +31,9 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
     class EditingHearings {
         @Test
         void shouldReturnAnErrorWhenEditingAHearingButNoHearingsAreAvailable() {
-            CaseData caseData = CaseData.builder().hearingOption(EDIT_HEARING).build();
+            CaseData caseData = CaseData.builder().hearingOption(EDIT_FUTURE_HEARING).build();
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
 
-            assertThat(validationErrors).contains(ERROR_MESSAGE);
-        }
-
-        @Test
-        void shouldReturnAnErrorWhenEditingAHearingButFutureHearingsAreNotAvailable() {
-            List<Element<HearingBooking>> hearings = List.of(
-                element(HearingBooking.builder()
-                    .startDate(time.now())
-                    .build()),
-                element(HearingBooking.builder()
-                    .startDate(time.now().minusDays(1))
-                    .build())
-            );
-
-            CaseData caseData = CaseData.builder()
-                .hearingOption(EDIT_HEARING)
-                .hearingDetails(hearings)
-                .build();
-
-            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
@@ -62,14 +42,45 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
                     .startDate(time.now().plusDays(2))
-                    .build()),
-                element(HearingBooking.builder()
-                    .startDate(time.now().plusDays(1))
                     .build())
             );
 
             CaseData caseData = CaseData.builder()
-                .hearingOption(EDIT_HEARING)
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .hearingDetails(futureHearings)
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingAHearingWithPastHearingsAvailable() {
+            List<Element<HearingBooking>> futureHearings = List.of(
+                element(HearingBooking.builder()
+                    .startDate(time.now().minusDays(2))
+                    .build())
+                );
+
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .hearingDetails(futureHearings)
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingAHearingWithCurrentHearingsAvailable() {
+            List<Element<HearingBooking>> futureHearings = List.of(
+                element(HearingBooking.builder()
+                    .startDate(time.now())
+                    .build())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
                 .hearingDetails(futureHearings)
                 .build();
 
