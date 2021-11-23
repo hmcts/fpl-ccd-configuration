@@ -41,7 +41,8 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
@@ -49,9 +50,10 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_AND_TODAY_HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.BooleanHelper.booleanToYesNo;
@@ -123,12 +125,29 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
             caseDetails.getData()
                 .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
-        } else if (EDIT_HEARING == caseData.getHearingOption()) {
+        } else if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
             final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
-            final List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
 
-            caseDetails.getData()
-                .put(HEARING_DATE_LIST, hearingsService.asDynamicList(futureHearings, hearingBookingId));
+            caseDetails.getData().put(PAST_HEARING_DATE_LIST,
+                hearingsService.asDynamicList(caseData.getPastHearings(), hearingBookingId));
+
+            HearingBooking hearingBooking = hearingsService
+                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                .orElse(HearingBooking.builder().build());
+
+            caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
+                hearingBooking, caseData.getAllocatedJudge()));
+
+            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
+                || hearingBooking.getPreviousHearingVenue() == null
+                || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
+                caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
+            }
+        } else if (EDIT_FUTURE_HEARING == caseData.getHearingOption()) {
+            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+
+            caseDetails.getData().put(FUTURE_HEARING_LIST,
+                hearingsService.asDynamicList(caseData.getFutureHearings(), hearingBookingId));
 
             HearingBooking hearingBooking = hearingsService
                 .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
@@ -145,7 +164,7 @@ public class ManageHearingsController extends CallbackController {
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
-            caseDetails.getData().put(PAST_HEARING_LIST,
+            caseDetails.getData().put(PAST_AND_TODAY_HEARING_DATE_LIST,
                 hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
         } else if (VACATE_HEARING == caseData.getHearingOption()) {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
@@ -262,7 +281,6 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-
     @PostMapping("/hearing-in-past/mid-event")
     public CallbackResponse populateHearingDateIfIncorrect(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -306,13 +324,34 @@ public class ManageHearingsController extends CallbackController {
 
         hearingsService.findAndSetPreviousVenueId(caseData);
 
-        if (EDIT_HEARING == caseData.getHearingOption()) {
+        if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
             final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
-            final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(caseData);
-            final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, hearingBooking);
+
+            HearingBooking originalHearingBooking = hearingsService.findHearingBooking(hearingBookingId,
+                caseData.getHearingDetails()).orElse(HearingBooking.builder().build());
+
+            HearingBooking editedHearingBooking = hearingsService.getCurrentHearingBooking(caseData);
+
+            editedHearingBooking = originalHearingBooking.toBuilder()
+                .judgeAndLegalAdvisor(editedHearingBooking.getJudgeAndLegalAdvisor())
+                .allocatedJudgeLabel(editedHearingBooking.getAllocatedJudgeLabel())
+                .hearingJudgeLabel(editedHearingBooking.getHearingJudgeLabel())
+                .legalAdvisorLabel(editedHearingBooking.getLegalAdvisorLabel())
+                .build();
+
+            final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
 
             hearingsService.addOrUpdate(hearingBookingElement, caseData);
-            hearingsService.sendNoticeOfHearing(caseData, hearingBooking);
+
+            data.put(SELECTED_HEARING_ID, hearingBookingId);
+
+        } else if (EDIT_FUTURE_HEARING == caseData.getHearingOption()) {
+            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
+            HearingBooking editedHearingBooking = hearingsService.getCurrentHearingBooking(caseData);
+
+            final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
+            hearingsService.addOrUpdate(hearingBookingElement, caseData);
+            hearingsService.sendNoticeOfHearing(caseData, editedHearingBooking);
 
             data.put(SELECTED_HEARING_ID, hearingBookingId);
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {

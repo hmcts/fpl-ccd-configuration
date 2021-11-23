@@ -34,7 +34,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     }
 
     @ParameterizedTest
-    @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
+    @EnumSource(value = HearingOptions.class, names = {"EDIT_FUTURE_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
     void shouldThrowErrorsWhenInvalidHearingDatesEnteredOnHearingOption(HearingOptions hearingOption) {
         CaseData caseData = CaseData.builder()
             .id(nextLong())
@@ -204,7 +204,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     }
 
     @ParameterizedTest
-    @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "NEW_HEARING"})
+    @EnumSource(value = HearingOptions.class, names = {"EDIT_FUTURE_HEARING", "NEW_HEARING"})
     void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndDateIsBeforeStartDate(HearingOptions hearingOptions) {
         CaseData caseData = CaseData.builder()
             .id(nextLong())
@@ -221,7 +221,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     }
 
     @ParameterizedTest
-    @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "NEW_HEARING"})
+    @EnumSource(value = HearingOptions.class, names = {"EDIT_FUTURE_HEARING", "NEW_HEARING"})
     void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndTimeIsSameAsStartTime(HearingOptions hearingOptions) {
         CaseData caseData = CaseData.builder()
             .id(nextLong())
