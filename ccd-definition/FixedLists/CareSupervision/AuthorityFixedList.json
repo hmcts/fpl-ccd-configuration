@@ -576,9 +576,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WAF",
+    "ListElement": "London Borough of Waltham Forest",
+    "DisplayOrder": 195
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LBC",
     "ListElement": "Luton Borough Council",
-    "DisplayOrder": 195
+    "DisplayOrder": 196
   },
   {
     "LiveFrom": "01/01/2017",
