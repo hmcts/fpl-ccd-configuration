@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
@@ -39,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
@@ -105,6 +109,8 @@ class GeneratedOrderEventHandlerTest {
     private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+    @Captor
+    private ArgumentCaptor<OrderCafcassData> orderCaptor;
 
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
@@ -297,9 +303,11 @@ class GeneratedOrderEventHandlerTest {
         when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
         underTest.notifyCafcass(EVENT);
         verify(cafcassNotificationService).sendEmail(
-            CASE_DATA,
-            Set.of(TEST_DOCUMENT),
-            ORDER,
-            fileName);
+            eq(CASE_DATA),
+            eq(Set.of(TEST_DOCUMENT)),
+            eq(ORDER),
+            orderCaptor.capture());
+        OrderCafcassData orderCafcassData = orderCaptor.getValue();
+        assertThat(orderCafcassData.getDocumentName()).isEqualTo(fileName);
     }
 }
