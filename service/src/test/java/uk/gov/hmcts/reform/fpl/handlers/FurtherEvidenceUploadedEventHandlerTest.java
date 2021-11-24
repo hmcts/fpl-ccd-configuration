@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
@@ -88,6 +89,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Mock
     private FurtherEvidenceUploadDifferenceCalculator calculator;
+
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
 
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;

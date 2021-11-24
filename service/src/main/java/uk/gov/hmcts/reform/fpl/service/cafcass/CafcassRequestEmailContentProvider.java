@@ -32,7 +32,16 @@ public enum CafcassRequestEmailContentProvider {
 
     NEW_APPLICATION(CafcassRequestEmailContentProvider::getNewApplicationSubject,
         CafcassRequestEmailContentProvider::getNewApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForNewApplication);
+        CafcassEmailConfiguration::getRecipientForNewApplication),
+
+    NEW_DOCUMENT((caseData, cafcassData) -> String.format("Court Ref. %s.- %s",
+        caseData.getFamilyManCaseNumber(),
+        "new document"),
+        (caseData, cafcassData) ->
+            String.join("\n\n",
+                "Types of documents attached:",
+                cafcassData.getDocumentTypes()),
+        CafcassEmailConfiguration::getRecipientForOrder);
 
 
     private final BiFunction<CaseData, CafcassData, String> type;

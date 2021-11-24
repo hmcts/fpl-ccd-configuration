@@ -130,7 +130,7 @@ cafcass:
     courtbundle: FamilyPublicLaw+cafcass@gmail.com
     large: FamilyPublicLaw+cafcass@gmail.com
     newapplication: FamilyPublicLaw+cafcass@gmail.com
-
+    newdocument: FamilyPublicLaw+cafcass@gmail.com
 scheduler:
   enabled: false
 

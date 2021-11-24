@@ -76,11 +76,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
         EmailData data = emailData.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo(String.join("",
-            "Court Ref. ",
-            caseData.getFamilyManCaseNumber(),
-            ".- ",
-            "new order"));
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new order");
         assertThat(data.getAttachments()).containsExactly(
             document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
