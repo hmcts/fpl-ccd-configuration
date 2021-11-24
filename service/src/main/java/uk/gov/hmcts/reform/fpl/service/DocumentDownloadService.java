@@ -39,7 +39,8 @@ public class DocumentDownloadService {
         } else {
             final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
 
-            log.info("Download document {} by user {} with roles {}", documentUrlString, requestData.userId(), userRoles);
+            log.info("Download document {} by user {} with roles {}", documentUrlString, requestData.userId(),
+                userRoles);
 
             ResponseEntity<Resource> documentDownloadResponse =
                 documentDownloadClient.downloadBinary(requestData.authorisation(),

@@ -8,6 +8,9 @@ management:
   endpoint:
     health:
       show-details: "always"
+  health:
+    case-document-am-api:
+      enabled: true
 
 spring:
   application:

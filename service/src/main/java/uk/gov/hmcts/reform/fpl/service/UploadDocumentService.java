@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
@@ -46,7 +45,8 @@ public class UploadDocumentService {
                 .findFirst()
                 .orElseThrow(() ->
                     new RuntimeException("Document upload failed due to empty result"));
-            log.debug("Document upload resulted with links: {}, {}", document.links.self.href, document.links.binary.href);
+            log.debug("Document upload resulted with links: {}, {}", document.links.self.href,
+                document.links.binary.href);
 
             return oldToSecureDocument(document);
         }

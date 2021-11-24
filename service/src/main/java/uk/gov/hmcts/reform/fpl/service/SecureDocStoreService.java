@@ -41,7 +41,8 @@ public class SecureDocStoreService {
 
         MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, pdf);
 
-        DocumentUploadRequest request = new DocumentUploadRequest(Classification.RESTRICTED.toString(), "CARE_SUPERVISION_EPO", "PUBLICLAW", newArrayList(file));
+        DocumentUploadRequest request = new DocumentUploadRequest(Classification.PRIVATE.toString(),
+            "CARE_SUPERVISION_EPO", "PUBLICLAW", newArrayList(file));
 
         UploadResponse response = caseDocumentClientApi.uploadDocuments(requestData.authorisation(),
             authTokenGenerator.generate(), request);
@@ -57,9 +58,10 @@ public class SecureDocStoreService {
     }
 
     public byte[] downloadDocument(final String documentUrlString) {
-        UUID documentId = UUID.fromString(documentUrlString.substring(documentUrlString.length() - 36));
-        ResponseEntity<Resource> documentDownloadResponse = caseDocumentClientApi.getDocumentBinary(requestData.authorisation(),
-            authTokenGenerator.generate(), documentId);
+        String selfHref = documentUrlString.replace("/binary", "");
+        UUID documentId = UUID.fromString(selfHref.substring(selfHref.length() - 36));
+        ResponseEntity<Resource> documentDownloadResponse = caseDocumentClientApi.getDocumentBinary(
+            requestData.authorisation(), authTokenGenerator.generate(), documentId);
 
         if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
             return Optional.of(documentDownloadResponse)

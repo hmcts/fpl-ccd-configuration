@@ -24,9 +24,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -87,7 +89,7 @@ class TestingSupportControllerTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @MockBean
-    private DocumentUploadClientApi uploadClient;
+    private CaseDocumentClientApi caseDocumentClientApi;
 
     @BeforeEach
     void init() {
@@ -163,15 +165,15 @@ class TestingSupportControllerTest {
         byte[] pdf = ResourceReader.readBytes("documents/document.pdf");
         InMemoryMultipartFile file = new InMemoryMultipartFile("files", "mockFile.pdf", "application/pdf", pdf);
         UploadResponse uploadResponse = mock(UploadResponse.class);
-        UploadResponse.Embedded embedded = mock(UploadResponse.Embedded.class);
         Document uploadedDocument = testDocument();
         DocumentReference uploadedReference = DocumentReference.buildFromDocument(uploadedDocument);
 
+        DocumentUploadRequest req = new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+            "CARE_SUPERVISION_EPO", "PUBLICLAW", List.of(file));
 
-        when(uploadClient.upload(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, List.of(file)))
+        when(caseDocumentClientApi.uploadDocuments(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, req))
             .thenReturn(uploadResponse);
-        when(uploadResponse.getEmbedded()).thenReturn(embedded);
-        when(embedded.getDocuments()).thenReturn(List.of(uploadedDocument));
+        when(uploadResponse.getDocuments()).thenReturn(List.of(uploadedDocument));
 
         MockHttpServletResponse response = makeGetRequest(TEST_DOCUMENT_PATH).getResponse();
         DocumentReference responseReference = mapper.readValue(response.getContentAsString(), DocumentReference.class);
