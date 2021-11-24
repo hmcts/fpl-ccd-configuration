@@ -506,8 +506,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "HAF",
-    "ListElement": "London Borough of Hammersmith and Fulham",
+    "ListElementCode": "HRW",
+    "ListElement": "London Borough of Harrow",
     "DisplayOrder": 183
   },
   {
