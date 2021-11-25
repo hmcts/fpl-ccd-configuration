@@ -257,8 +257,8 @@ class CafcassNotificationServiceTest {
         );
         assertThat(data.getMessage()).isEqualTo(
                 String.join(" ",
-                        "Types of documents attached:\n\n" +
-                                "• Application statement")
+                        "Types of documents attached:\n\n"
+                                + "• Application statement")
         );
     }
 }

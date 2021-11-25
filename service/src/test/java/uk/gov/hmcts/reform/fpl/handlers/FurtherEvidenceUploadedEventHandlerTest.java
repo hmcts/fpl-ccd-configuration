@@ -567,8 +567,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
         assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Child's guardian reports\n" +
-                        "• Child's guardian reports");
+                .isEqualTo("• Child's guardian reports\n"
+                        + "• Child's guardian reports");
     }
 
 

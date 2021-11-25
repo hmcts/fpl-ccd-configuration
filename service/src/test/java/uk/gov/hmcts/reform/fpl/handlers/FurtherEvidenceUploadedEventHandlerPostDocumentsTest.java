@@ -134,7 +134,7 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(sendDocumentService).sendDocuments(caseData, new ArrayList<>(), RECIPIENTS_LIST);
     }
 
-     private static List<Recipient> createRecipientsList() {
+    private static List<Recipient> createRecipientsList() {
         final Representative representative = mock(Representative.class);
         final RespondentParty respondent = mock(RespondentParty.class);
         return List.of(representative, respondent);
