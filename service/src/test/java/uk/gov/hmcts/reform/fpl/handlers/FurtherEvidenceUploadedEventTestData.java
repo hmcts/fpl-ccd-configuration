@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class FurtherEvidenceUploadedEventTestData {
@@ -135,7 +136,8 @@ public class FurtherEvidenceUploadedEventTestData {
             .name(name)
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
-            .document(docRef);
+            .document(docRef)
+            .type(GUARDIAN_REPORTS);
 
         if (confidential) {
             document.confidential(List.of(CONFIDENTIAL_MARKER));

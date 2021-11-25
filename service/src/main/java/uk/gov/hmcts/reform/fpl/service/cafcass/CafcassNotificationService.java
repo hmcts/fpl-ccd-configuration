@@ -28,7 +28,7 @@ public class CafcassNotificationService {
     private final EmailService emailService;
     private final DocumentDownloadService documentDownloadService;
     private final CafcassEmailConfiguration configuration;
-
+    
     public void sendEmail(CaseData caseData,
                           Set<DocumentReference> documentReferences,
                           CafcassRequestEmailContentProvider provider,
@@ -36,10 +36,6 @@ public class CafcassNotificationService {
         log.info("For case id {} notifying Cafcass for {}",
             caseData.getId(),
             provider.name());
-
-        log.info("Provider name {} email to {}", CafcassRequestEmailContentProvider.ORDER.name(),
-            CafcassRequestEmailContentProvider.ORDER.getRecipient().apply(configuration));
-        log.info("Provider name {} email to {}", provider.name(), provider.getRecipient().apply(configuration));
 
         emailService.sendEmail(configuration.getSender(),
             EmailData.builder()

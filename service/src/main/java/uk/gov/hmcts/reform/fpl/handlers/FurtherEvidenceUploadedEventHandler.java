@@ -119,7 +119,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     @EventListener
-    public void notifyCafcass(final FurtherEvidenceUploadedEvent event) {
+    public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
@@ -154,21 +154,22 @@ public class FurtherEvidenceUploadedEventHandler {
             userType,
             (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
 
-
-        String documentTypes = supportingEvidenceBundles.stream()
-            .map(document -> String.join(" ", LIST, document.getType().getLabel()))
-            .collect(Collectors.joining("\n"));
-
         var documentReferences = supportingEvidenceBundles.stream()
-            .map(SupportingEvidenceBundle::getDocument)
-            .collect(Collectors.toSet());
+                .map(SupportingEvidenceBundle::getDocument)
+                .collect(Collectors.toSet());
 
-        cafcassNotificationService.sendEmail(
-            caseData,
-            documentReferences,
-            NEW_DOCUMENT,
-            NewDocumentData.builder().documentTypes(documentTypes).build()
-        );
+        if (!documentReferences.isEmpty()) {
+            var documentTypes = supportingEvidenceBundles.stream()
+                    .map(document -> String.join(" ", LIST, document.getType().getLabel()))
+                    .collect(Collectors.joining("\n"));
+
+            cafcassNotificationService.sendEmail(
+                    caseData,
+                    documentReferences,
+                    NEW_DOCUMENT,
+                    NewDocumentData.builder().documentTypes(documentTypes).build()
+            );
+        }
     }
 
     private List<SupportingEvidenceBundle> getDocuments(
