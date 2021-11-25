@@ -438,55 +438,62 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "LCC",
     "ListElement": "Liverpool County Council",
-    "DisplayOrder": 173
+    "DisplayOrder": 172
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HN",
     "ListElement": "London Borough Hillingdon",
-    "DisplayOrder": 174
+    "DisplayOrder": 173
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BAD",
     "ListElement": "London Borough of Barking and Dagenham",
-    "DisplayOrder": 175
+    "DisplayOrder": 174
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BNT",
     "ListElement": "London Borough of Barnet",
-    "DisplayOrder": 176
+    "DisplayOrder": 175
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRE",
     "ListElement": "London Borough of Brent",
-    "DisplayOrder": 177
+    "DisplayOrder": 176
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRO",
     "ListElement": "London Borough of Bromley",
-    "DisplayOrder": 178
+    "DisplayOrder": 177
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CDN",
     "ListElement": "London Borough of Camden",
-    "DisplayOrder": 179
+    "DisplayOrder": 178
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CRY",
     "ListElement": "London Borough of Croydon",
+    "DisplayOrder": 179
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CRY",
+    "ListElement": "London Borough of Ealing",
     "DisplayOrder": 180
   },
   {
