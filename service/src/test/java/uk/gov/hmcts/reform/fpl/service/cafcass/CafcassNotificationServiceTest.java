@@ -55,7 +55,7 @@ class CafcassNotificationServiceTest {
     private ArgumentCaptor<EmailData> emailData;
 
     @Test
-    void testNotifyOrderRequest() {
+    void shouldNotifyOrderRequest() {
         when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
@@ -92,7 +92,7 @@ class CafcassNotificationServiceTest {
     }
 
     @Test
-    void testNotifyUrgentNewApplicationRequest() {
+    void shouldNotifyUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
@@ -140,8 +140,57 @@ class CafcassNotificationServiceTest {
         );
     }
 
+
     @Test
-    void testNotifyNonUrgentNewApplicationRequest() {
+    void shouldNotifyNewApplicationRequestWhenNoTimeFramePresent() {
+        when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
+                .thenReturn(DOCUMENT_CONTENT);
+
+        String ordersAndDirections = "• Variation or discharge of care or supervision order\n• Care order";
+        NewApplicationCafcassData newApplicationCafcassData = NewApplicationCafcassData.builder()
+                .firstRespondentName("James Wright")
+                .eldestChildLastName("Oliver Wright")
+                .timeFrameValue("")
+                .timeFramePresent(false)
+                .localAuthourity("Swansea City Council")
+                .ordersAndDirections(ordersAndDirections)
+                .build();
+
+        CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .build();
+
+        underTest.sendEmail(caseData,
+                of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+                        .filename(DOCUMENT_FILENAME)
+                        .build()),
+                NEW_APPLICATION,
+                newApplicationCafcassData
+        );
+
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
+        EmailData data = emailData.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo(
+                "Application received, Oliver Wright");
+
+        assertThat(data.getAttachments()).containsExactly(
+                document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
+        );
+        assertThat(data.getMessage()).isEqualTo(
+                "Swansea City Council has made a new application for:\n\n"
+                        + "• Variation or discharge of care or supervision order\n"
+                        + "• Care order\n\n\n\n"
+                        + "Respondent's surname: James Wright\n\n"
+                        + "CCD case number: 12345"
+        );
+    }
+
+    @Test
+    void shouldNotifyNonUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
