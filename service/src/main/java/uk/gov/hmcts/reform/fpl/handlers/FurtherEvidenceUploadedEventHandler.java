@@ -154,13 +154,21 @@ public class FurtherEvidenceUploadedEventHandler {
             userType,
             (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
 
+        supportingEvidenceBundles.addAll(getRespondentDocuments(caseData,
+                caseDataBefore));
+
+        supportingEvidenceBundles.addAll(getCorrespondenceDocuments(caseData,
+                caseDataBefore));
+
         var documentReferences = supportingEvidenceBundles.stream()
                 .map(SupportingEvidenceBundle::getDocument)
                 .collect(Collectors.toSet());
 
         if (!documentReferences.isEmpty()) {
             var documentTypes = supportingEvidenceBundles.stream()
-                    .map(document -> String.join(" ", LIST, document.getType().getLabel()))
+                    .map(SupportingEvidenceBundle::getType)
+                    .filter(Objects::nonNull)
+                    .map(furtherEvidenceType -> String.join(" ", LIST, furtherEvidenceType.getLabel()))
                     .collect(Collectors.joining("\n"));
 
             cafcassNotificationService.sendEmail(
@@ -230,6 +238,35 @@ public class FurtherEvidenceUploadedEventHandler {
             evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle())
         );
         return evidenceBundle;
+    }
+
+    private List<SupportingEvidenceBundle> getRespondentDocuments(CaseData caseData, CaseData caseDataBefore) {
+        List<SupportingEvidenceBundle> oldBundle = getRespondentStatementsUploadedByHmtcs(caseDataBefore);
+        List<SupportingEvidenceBundle> newBundle = getRespondentStatementsUploadedByHmtcs(caseData);
+        return newBundle.stream()
+                .filter(bundle -> !oldBundle.contains(bundle))
+                .collect(Collectors.toList());
+    }
+
+    private List<SupportingEvidenceBundle> getCorrespondenceDocuments(CaseData caseData, CaseData caseDataBefore) {
+        List<SupportingEvidenceBundle> oldBundle = getCorrespondenceDocumentsUploadedByHmtcs(caseDataBefore);
+        List<SupportingEvidenceBundle> newBundle = getCorrespondenceDocumentsUploadedByHmtcs(caseData);
+        return newBundle.stream()
+                .filter(bundle -> !oldBundle.contains(bundle))
+                .collect(Collectors.toList());
+    }
+
+    private List<SupportingEvidenceBundle> getRespondentStatementsUploadedByHmtcs(CaseData caseData) {
+        return caseData.getRespondentStatements().stream()
+                .flatMap(statement -> unwrapElements(statement.getValue().getSupportingEvidenceBundle()).stream())
+                .filter(SupportingEvidenceBundle::isUploadedByHMCTS)
+                .collect(toList());
+    }
+
+    private List<SupportingEvidenceBundle> getCorrespondenceDocumentsUploadedByHmtcs(CaseData caseData) {
+        return unwrapElements(caseData.getCorrespondenceDocuments()).stream()
+                .filter(SupportingEvidenceBundle::isUploadedByHMCTS)
+                .collect(toList());
     }
 
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
