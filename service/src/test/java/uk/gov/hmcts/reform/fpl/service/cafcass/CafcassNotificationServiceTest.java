@@ -238,7 +238,7 @@ class CafcassNotificationServiceTest {
     }
 
     @Test
-    void testNotifyCourtBundle() {
+    void shouldNotifyCourtBundle() {
         when(configuration.getRecipientForCourtBundle()).thenReturn(RECIPIENT_EMAIL);
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
@@ -275,7 +275,7 @@ class CafcassNotificationServiceTest {
     }
 
     @Test
-    void testNotifyNewDocument() {
+    void shouldNotifyNewDocument() {
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
