@@ -43,9 +43,13 @@ public enum CafcassRequestEmailContentProvider {
         String timeFrame = "Urgent application – same day hearing";
 
         if (!SAME_DAY.equals(cafcassData.getTimeFrameValue())) {
-            timeFrame = String.join(" ",
-                "Application received – hearing",
-                cafcassData.getTimeFrameValue());
+            timeFrame = "Application received";
+            if (!"".equals(cafcassData.getTimeFrameValue())) {
+                timeFrame = String.join(" ",
+                        timeFrame,
+                        "– hearing",
+                        cafcassData.getTimeFrameValue());
+            }
         }
         return String.join(", ", timeFrame, cafcassData.getEldestChildLastName());
     }
