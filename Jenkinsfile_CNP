@@ -239,8 +239,12 @@ withPipeline(type, product, component) {
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
 
-  after('functionalTest:preview') {
+  before('functionalTest:preview') {
     env.PARALLEL_CHUNKS = 12
+    env.TESTS_SELECTOR = '(?=.*)^(?!.*(@smoke-tests|@flaky))'
+  }
+
+  after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
