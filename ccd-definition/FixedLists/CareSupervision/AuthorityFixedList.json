@@ -438,69 +438,90 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "LCC",
     "ListElement": "Liverpool County Council",
-    "DisplayOrder": 175
+    "DisplayOrder": 172
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HN",
     "ListElement": "London Borough Hillingdon",
-    "DisplayOrder": 176
+    "DisplayOrder": 173
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BAD",
     "ListElement": "London Borough of Barking and Dagenham",
-    "DisplayOrder": 177
+    "DisplayOrder": 174
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BNT",
     "ListElement": "London Borough of Barnet",
-    "DisplayOrder": 178
+    "DisplayOrder": 175
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRE",
     "ListElement": "London Borough of Brent",
-    "DisplayOrder": 179
+    "DisplayOrder": 176
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRO",
     "ListElement": "London Borough of Bromley",
-    "DisplayOrder": 180
+    "DisplayOrder": 177
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CDN",
     "ListElement": "London Borough of Camden",
-    "DisplayOrder": 181
+    "DisplayOrder": 178
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CRY",
+    "ListElement": "London Borough of Croydon",
+    "DisplayOrder": 179
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "EAL",
+    "ListElement": "London Borough of Ealing",
+    "DisplayOrder": 180
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "ENF",
     "ListElement": "London Borough of Enfield",
-    "DisplayOrder": 182
+    "DisplayOrder": 181
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HAF",
     "ListElement": "London Borough of Hammersmith and Fulham",
-    "DisplayOrder": 183
+    "DisplayOrder": 182
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HRW",
     "ListElement": "London Borough of Harrow",
+    "DisplayOrder": 183
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HAR",
+    "ListElement": "London Borough of Haringey",
     "DisplayOrder": 184
   },
   {
@@ -541,44 +562,58 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "RED",
+    "ListElement": "London Borough of Redbridge",
+    "DisplayOrder": 190
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "RMD",
     "ListElement": "London Borough of Richmond",
-    "DisplayOrder": 190
+    "DisplayOrder": 191
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SWK",
     "ListElement": "London Borough of Southwark",
-    "DisplayOrder": 191
+    "DisplayOrder": 192
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SUT",
     "ListElement": "London Borough of Sutton",
-    "DisplayOrder": 192
+    "DisplayOrder": 193
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LBTH",
     "ListElement": "London Borough of Tower Hamlets",
-    "DisplayOrder": 193
+    "DisplayOrder": 194
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WAD",
     "ListElement": "London Borough of Wandsworth",
-    "DisplayOrder": 194
+    "DisplayOrder": 195
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WAF",
+    "ListElement": "London Borough of Waltham Forest",
+    "DisplayOrder": 196
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LBC",
     "ListElement": "Luton Borough Council",
-    "DisplayOrder": 195
+    "DisplayOrder": 197
   },
   {
     "LiveFrom": "01/01/2017",
