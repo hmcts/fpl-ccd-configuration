@@ -438,76 +438,90 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "LCC",
     "ListElement": "Liverpool County Council",
-    "DisplayOrder": 174
+    "DisplayOrder": 172
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HN",
     "ListElement": "London Borough Hillingdon",
-    "DisplayOrder": 175
+    "DisplayOrder": 173
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BAD",
     "ListElement": "London Borough of Barking and Dagenham",
-    "DisplayOrder": 176
+    "DisplayOrder": 174
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BNT",
     "ListElement": "London Borough of Barnet",
-    "DisplayOrder": 177
+    "DisplayOrder": 175
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRE",
     "ListElement": "London Borough of Brent",
-    "DisplayOrder": 178
+    "DisplayOrder": 176
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BRO",
     "ListElement": "London Borough of Bromley",
-    "DisplayOrder": 179
+    "DisplayOrder": 177
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CDN",
     "ListElement": "London Borough of Camden",
-    "DisplayOrder": 180
+    "DisplayOrder": 178
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CRY",
     "ListElement": "London Borough of Croydon",
-    "DisplayOrder": 181
+    "DisplayOrder": 179
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "EAL",
+    "ListElement": "London Borough of Ealing",
+    "DisplayOrder": 180
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "ENF",
     "ListElement": "London Borough of Enfield",
-    "DisplayOrder": 182
+    "DisplayOrder": 181
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HAF",
     "ListElement": "London Borough of Hammersmith and Fulham",
-    "DisplayOrder": 183
+    "DisplayOrder": 182
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "HRW",
     "ListElement": "London Borough of Harrow",
+    "DisplayOrder": 183
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HAR",
+    "ListElement": "London Borough of Haringey",
     "DisplayOrder": 184
   },
   {

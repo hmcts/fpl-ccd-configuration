@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('0 18 * * *')]),
+  pipelineTriggers([cron('0 17 * * *')]),
   parameters([
     string(name: 'FRONTEND_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
       description: 'The URL you want to run the full functional tests against'),
@@ -86,6 +86,7 @@ withNightlyPipeline(type, product, component) {
   enableCrossBrowserTest(['chrome', 'firefox'])
   enableFortifyScan()
 
+
   //before('mutationTest') {
   //  setupSecretsForIntegrationTests(pipelineConf)
   //}
@@ -100,6 +101,12 @@ withNightlyPipeline(type, product, component) {
     env.MOCKED_PAYMENTS = false
     env.TEST_RETRIES = 5
     env.TESTS_FOR_ACCESSIBILITY = true
+    env.ENV = 'aat'
+  }
+
+  before('crossBrowserTest') {
+    env.TEST_RETRIES = 2
+    env.TESTS_FOR_ACCESSIBILITY = false
     env.ENV = 'aat'
   }
 
