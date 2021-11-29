@@ -35,8 +35,6 @@ public class SecureDocStoreService {
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final RequestData requestData;
 
-    public boolean enabled = true;
-
     public Document uploadDocument(byte[] pdf, String fileName, String contentType) {
 
         MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, pdf);

@@ -26,6 +26,8 @@ public class UploadDocumentService {
 
     private final SecureDocStoreService secureDocStoreService;
 
+    private final boolean secureDocStoreEnabled = false;
+
     // REFACTOR: 08/04/2021 Remove this method in subsequent PR
     public Document uploadPDF(byte[] pdf, String fileName) {
         return uploadDocument(pdf, fileName, MediaType.APPLICATION_PDF_VALUE);
@@ -33,7 +35,7 @@ public class UploadDocumentService {
 
     public Document uploadDocument(byte[] pdf, String fileName, String contentType) {
 
-        if (secureDocStoreService.enabled) {
+        if (secureDocStoreEnabled) {
             return secureDocStoreService.uploadDocument(pdf, fileName, contentType);
         } else {
             MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, pdf);

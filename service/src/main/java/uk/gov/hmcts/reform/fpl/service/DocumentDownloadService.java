@@ -31,10 +31,11 @@ public class DocumentDownloadService {
     private final RequestData requestData;
 
     private final SecureDocStoreService secureDocStoreService;
+    private final boolean secureDocStoreEnabled = false;
 
     public byte[] downloadDocument(final String documentUrlString) {
 
-        if (secureDocStoreService.enabled) {
+        if (secureDocStoreEnabled) {
             return secureDocStoreService.downloadDocument(documentUrlString);
         } else {
             final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
