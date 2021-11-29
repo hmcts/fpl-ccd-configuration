@@ -15,7 +15,7 @@ const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 const baseUrl = config.baseUrl;
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
-const maxRetries = 5;
+const maxRetries = 10;
 let currentUser = {};
 
 'use strict';
@@ -31,7 +31,7 @@ module.exports = {
         await this.goToPage(baseUrl);
 
         if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-          return;
+          await this.refreshPage();
         }
 
         if (await this.hasSelector(signedInSelector)) {
