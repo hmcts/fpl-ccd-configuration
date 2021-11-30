@@ -277,6 +277,7 @@ def versions = [
 ]
 
 dependencies {
+  compileOnly group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
 
