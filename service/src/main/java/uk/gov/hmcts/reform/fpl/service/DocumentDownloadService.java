@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
+import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -23,7 +25,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentDownloadService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentDownloadClientApi documentDownloadClient;
@@ -31,7 +32,23 @@ public class DocumentDownloadService {
     private final RequestData requestData;
 
     private final SecureDocStoreService secureDocStoreService;
-    private final boolean secureDocStoreEnabled = false;
+
+    private final boolean secureDocStoreEnabled;
+
+    public DocumentDownloadService(AuthTokenGenerator authTokenGenerator,
+                                 DocumentDownloadClientApi documentDownloadClient,
+                                 IdamClient idamClient,
+                                 RequestData requestData,
+                                 SecureDocStoreService secureDocStoreService,
+                                 @Value("${secure-doc-enabled:false}") boolean secureDocStoreEnabled) {
+        this.authTokenGenerator = authTokenGenerator;
+        this.documentDownloadClient = documentDownloadClient;
+        this.idamClient = idamClient;
+        this.requestData = requestData;
+        this.secureDocStoreService = secureDocStoreService;
+        this.secureDocStoreEnabled = secureDocStoreEnabled;
+    }
+
 
     public byte[] downloadDocument(final String documentUrlString) {
 

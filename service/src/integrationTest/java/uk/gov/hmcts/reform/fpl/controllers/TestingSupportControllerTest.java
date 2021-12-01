@@ -27,8 +27,9 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
-import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Classification;
+import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -52,7 +53,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.service.UploadDocumentService.oldToSecureDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOldDocument;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(TestingSupportController.class)
@@ -90,6 +93,9 @@ class TestingSupportControllerTest {
 
     @MockBean
     private CaseDocumentClientApi caseDocumentClientApi;
+
+    @MockBean
+    private DocumentUploadClientApi uploadClient;
 
     @BeforeEach
     void init() {
@@ -165,15 +171,14 @@ class TestingSupportControllerTest {
         byte[] pdf = ResourceReader.readBytes("documents/document.pdf");
         InMemoryMultipartFile file = new InMemoryMultipartFile("files", "mockFile.pdf", "application/pdf", pdf);
         UploadResponse uploadResponse = mock(UploadResponse.class);
-        Document uploadedDocument = testDocument();
-        DocumentReference uploadedReference = DocumentReference.buildFromDocument(uploadedDocument);
-
-        DocumentUploadRequest req = new DocumentUploadRequest(Classification.RESTRICTED.toString(),
-            "CARE_SUPERVISION_EPO", "PUBLICLAW", List.of(file));
-
-        when(caseDocumentClientApi.uploadDocuments(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, req))
+        UploadResponse.Embedded embedded = mock(UploadResponse.Embedded.class);
+        uk.gov.hmcts.reform.document.domain.Document uploadedDocument = testOldDocument();
+        DocumentReference uploadedReference = DocumentReference.buildFromDocument(oldToSecureDocument(uploadedDocument));
+        
+        when(uploadClient.upload(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, List.of(file)))
             .thenReturn(uploadResponse);
-        when(uploadResponse.getDocuments()).thenReturn(List.of(uploadedDocument));
+        when(uploadResponse.getEmbedded()).thenReturn(embedded);
+        when(embedded.getDocuments()).thenReturn(List.of(uploadedDocument));
 
         MockHttpServletResponse response = makeGetRequest(TEST_DOCUMENT_PATH).getResponse();
         DocumentReference responseReference = mapper.readValue(response.getContentAsString(), DocumentReference.class);

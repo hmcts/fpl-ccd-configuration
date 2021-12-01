@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.service.UploadDocumentService.oldToSecureDocument;
 
 @ExtendWith(SpringExtension.class)
 class UploadDocumentServiceTest {
@@ -32,8 +34,12 @@ class UploadDocumentServiceTest {
     private RequestData requestData;
     @Mock
     private DocumentUploadClientApi documentUploadClient;
+    @Mock
+    private CaseDocumentClientApi caseDocumentClientApi;
 
     @InjectMocks
+    private SecureDocStoreService secureDocStoreService;
+
     private UploadDocumentService uploadDocumentService;
 
     @BeforeEach
@@ -41,6 +47,10 @@ class UploadDocumentServiceTest {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
+
+        uploadDocumentService = new UploadDocumentService(
+            authTokenGenerator, documentUploadClient, requestData, secureDocStoreService, false
+        );
     }
 
     @Test
@@ -51,7 +61,7 @@ class UploadDocumentServiceTest {
 
         Document document = uploadDocumentService.uploadPDF(new byte[0], "file");
 
-        Document received = UploadDocumentService.oldToSecureDocument(request.getEmbedded().getDocuments().get(0));
+        Document received = oldToSecureDocument(request.getEmbedded().getDocuments().get(0));
         // Because old method returns old doc which needs to be converted, we can check equality per attribute, rather
         // than object equality
         Assertions.assertThat(document.classification).isEqualTo(received.classification);

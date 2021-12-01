@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,11 +15,12 @@ import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
+import java.util.Optional;
+
 import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentUploadClientApi documentUploadClient;
@@ -26,7 +28,19 @@ public class UploadDocumentService {
 
     private final SecureDocStoreService secureDocStoreService;
 
-    private final boolean secureDocStoreEnabled = false;
+    private final boolean secureDocStoreEnabled;
+
+    public UploadDocumentService(AuthTokenGenerator authTokenGenerator,
+                                 DocumentUploadClientApi documentUploadClient,
+                                 RequestData requestData,
+                                 SecureDocStoreService secureDocStoreService,
+                                 @Value("${secure-doc-enabled:false}") boolean secureDocStoreEnabled) {
+        this.authTokenGenerator = authTokenGenerator;
+        this.documentUploadClient = documentUploadClient;
+        this.requestData = requestData;
+        this.secureDocStoreService = secureDocStoreService;
+        this.secureDocStoreEnabled = secureDocStoreEnabled;
+    }
 
     // REFACTOR: 08/04/2021 Remove this method in subsequent PR
     public Document uploadPDF(byte[] pdf, String fileName) {
@@ -62,7 +76,8 @@ public class UploadDocumentService {
         links.self.href = document.links.self.href;
 
         return Document.builder()
-            .classification(Classification.valueOf(document.classification))
+            .classification(Classification.valueOf(Optional.ofNullable(document.classification)
+                .orElse(Classification.PRIVATE.name())))
             .size(document.size)
             .mimeType(document.mimeType)
             .originalDocumentName(document.originalDocumentName)

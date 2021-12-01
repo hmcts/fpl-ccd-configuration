@@ -76,7 +76,8 @@ class DocumentDownloadServiceTest {
             documentDownloadClient,
             idamClient,
             requestData,
-            secureDocStoreService);
+            secureDocStoreService,
+            false);
     }
 
     @Test
