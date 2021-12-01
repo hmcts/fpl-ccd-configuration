@@ -27,19 +27,19 @@ public class UploadDocumentService {
     private final RequestData requestData;
 
     private final SecureDocStoreService secureDocStoreService;
+    private final FeatureToggleService featureToggleService;
 
-    private final boolean secureDocStoreEnabled;
 
     public UploadDocumentService(AuthTokenGenerator authTokenGenerator,
                                  DocumentUploadClientApi documentUploadClient,
                                  RequestData requestData,
                                  SecureDocStoreService secureDocStoreService,
-                                 @Value("${secure-doc-enabled:false}") boolean secureDocStoreEnabled) {
+                                 FeatureToggleService featureToggleService) {
         this.authTokenGenerator = authTokenGenerator;
         this.documentUploadClient = documentUploadClient;
         this.requestData = requestData;
         this.secureDocStoreService = secureDocStoreService;
-        this.secureDocStoreEnabled = secureDocStoreEnabled;
+        this.featureToggleService = featureToggleService;
     }
 
     // REFACTOR: 08/04/2021 Remove this method in subsequent PR
@@ -49,7 +49,7 @@ public class UploadDocumentService {
 
     public Document uploadDocument(byte[] pdf, String fileName, String contentType) {
 
-        if (secureDocStoreEnabled) {
+        if (featureToggleService.isSecureDocstoreEnabled()) {
             return secureDocStoreService.uploadDocument(pdf, fileName, contentType);
         } else {
             MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, pdf);

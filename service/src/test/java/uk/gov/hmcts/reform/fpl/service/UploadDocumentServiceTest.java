@@ -36,6 +36,8 @@ class UploadDocumentServiceTest {
     private DocumentUploadClientApi documentUploadClient;
     @Mock
     private CaseDocumentClientApi caseDocumentClientApi;
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private SecureDocStoreService secureDocStoreService;
@@ -49,7 +51,7 @@ class UploadDocumentServiceTest {
         given(requestData.userId()).willReturn(USER_ID);
 
         uploadDocumentService = new UploadDocumentService(
-            authTokenGenerator, documentUploadClient, requestData, secureDocStoreService, false
+            authTokenGenerator, documentUploadClient, requestData, secureDocStoreService, featureToggleService
         );
     }
 
@@ -58,6 +60,7 @@ class UploadDocumentServiceTest {
         UploadResponse request = DocumentManagementStoreLoader.successfulDocumentUploadResponse();
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(request);
+        given(featureToggleService.isSecureDocstoreEnabled()).willReturn(false);
 
         Document document = uploadDocumentService.uploadPDF(new byte[0], "file");
 

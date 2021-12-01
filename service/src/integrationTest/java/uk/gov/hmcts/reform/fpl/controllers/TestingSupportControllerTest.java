@@ -174,7 +174,7 @@ class TestingSupportControllerTest {
         UploadResponse.Embedded embedded = mock(UploadResponse.Embedded.class);
         uk.gov.hmcts.reform.document.domain.Document uploadedDocument = testOldDocument();
         DocumentReference uploadedReference = DocumentReference.buildFromDocument(oldToSecureDocument(uploadedDocument));
-        
+
         when(uploadClient.upload(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, List.of(file)))
             .thenReturn(uploadResponse);
         when(uploadResponse.getEmbedded()).thenReturn(embedded);

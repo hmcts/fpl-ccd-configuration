@@ -32,27 +32,25 @@ public class DocumentDownloadService {
     private final RequestData requestData;
 
     private final SecureDocStoreService secureDocStoreService;
-
-    private final boolean secureDocStoreEnabled;
+    private final FeatureToggleService featureToggleService;
 
     public DocumentDownloadService(AuthTokenGenerator authTokenGenerator,
                                  DocumentDownloadClientApi documentDownloadClient,
                                  IdamClient idamClient,
                                  RequestData requestData,
                                  SecureDocStoreService secureDocStoreService,
-                                 @Value("${secure-doc-enabled:false}") boolean secureDocStoreEnabled) {
+                                 FeatureToggleService featureToggleService) {
         this.authTokenGenerator = authTokenGenerator;
         this.documentDownloadClient = documentDownloadClient;
         this.idamClient = idamClient;
         this.requestData = requestData;
         this.secureDocStoreService = secureDocStoreService;
-        this.secureDocStoreEnabled = secureDocStoreEnabled;
+        this.featureToggleService = featureToggleService;
     }
-
 
     public byte[] downloadDocument(final String documentUrlString) {
 
-        if (secureDocStoreEnabled) {
+        if (featureToggleService.isSecureDocstoreEnabled()) {
             return secureDocStoreService.downloadDocument(documentUrlString);
         } else {
             final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
