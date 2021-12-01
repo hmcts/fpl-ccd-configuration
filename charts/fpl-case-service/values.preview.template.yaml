@@ -275,3 +275,10 @@ aac-manage-case-assignment:
           - idam-noc-approver-username
           - idam-noc-approver-password
           - notify-mca-api-key-secret
+
+am-role-assignment-service:
+  java:
+    keyVaults:
+      am:
+        secrets:
+          - role-assignment-service-LD-SDK-KEY
