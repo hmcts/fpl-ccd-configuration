@@ -67,13 +67,6 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "BFO",
     "ListElement": "Bracknell Forest Council",
-    "DisplayOrder": 22
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AuthorityFixedList",
-    "ListElementCode": "BUR",
-    "ListElement": "Bury Metropolitan Borough Council",
     "DisplayOrder": 23
   },
   {
@@ -110,6 +103,13 @@
     "ListElementCode": "BSC",
     "ListElement": "Buckinghamshire Council",
     "DisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BUR",
+    "ListElement": "Bury Metropolitan Borough Council",
+    "DisplayOrder": 41
   },
   {
     "LiveFrom": "01/01/2017",
