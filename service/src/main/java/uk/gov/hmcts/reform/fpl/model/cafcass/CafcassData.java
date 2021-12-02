@@ -40,4 +40,8 @@ public interface CafcassData {
     default String getDocumentTypes() {
         throw new UnsupportedOperationException();
     }
+
+    default String getEmailSubjectInfo()  {
+        throw new UnsupportedOperationException();
+    }
 }

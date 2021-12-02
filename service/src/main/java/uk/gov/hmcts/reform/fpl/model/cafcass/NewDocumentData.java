@@ -8,5 +8,6 @@ import lombok.Data;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NewDocumentData implements CafcassData {
+    private String emailSubjectInfo;
     private String documentTypes;
 }

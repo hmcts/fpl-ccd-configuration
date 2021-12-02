@@ -292,6 +292,7 @@ class CafcassNotificationServiceTest {
                 NEW_DOCUMENT,
                 NewDocumentData.builder()
                         .documentTypes("• Application statement")
+                        .emailSubjectInfo("Further documents for main application")
                         .build()
         );
 
@@ -300,7 +301,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
         EmailData data = emailData.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new document");
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- Further documents for main application");
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );

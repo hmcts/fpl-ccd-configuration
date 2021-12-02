@@ -6,13 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -32,6 +36,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -148,37 +153,107 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final DocumentUploaderType userType = event.getUserType();
+        final Set<DocumentReference> documentReferences = new HashSet<>();
+        final Set<DocumentInfo> documentInfos = new HashSet<>();
 
-        var supportingEvidenceBundles = getDocuments(caseData,
-            caseDataBefore,
-            userType,
-            (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
+        Consumer<DocumentInfo> documentInfoConsumer = documentInfo -> {
+            documentReferences.addAll(documentInfo.getDocumentReferences());
+            documentInfos.add(documentInfo);
+        };
 
-        supportingEvidenceBundles.addAll(getRespondentDocuments(caseData,
+        documentInfoConsumer.accept(getGeneralEvidence(caseData, caseDataBefore, userType));
+
+        documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
                 caseDataBefore));
 
-        supportingEvidenceBundles.addAll(getCorrespondenceDocuments(caseData,
+        documentInfoConsumer.accept(getNewCorrespondenceDocumentsByHmtcs(caseData,
                 caseDataBefore));
 
-        var documentReferences = supportingEvidenceBundles.stream()
-                .map(SupportingEvidenceBundle::getDocument)
-                .collect(Collectors.toSet());
+        documentInfoConsumer.accept(getNewCorrespondenceDocumentsByLA(caseData,
+                caseDataBefore));
+
+        documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
+                caseDataBefore));
+
+        documentInfoConsumer.accept(getNewApplicationDocument(caseData,
+                caseDataBefore));
 
         if (!documentReferences.isEmpty()) {
-            var documentTypes = supportingEvidenceBundles.stream()
-                    .map(SupportingEvidenceBundle::getType)
-                    .filter(Objects::nonNull)
-                    .map(furtherEvidenceType -> String.join(" ", LIST, furtherEvidenceType.getLabel()))
+            String documentTypes = documentInfos.stream()
+                    .filter(documentInfo ->
+                            !documentInfo.getDocumentReferences().isEmpty())
+                    .flatMap(docs -> docs.getDocumentTypes().stream())
+                    .map(docType -> String.join(" ", LIST, docType))
                     .collect(Collectors.joining("\n"));
+
+            String subjectInfo = documentInfos.stream()
+                    .filter(documentInfo ->
+                            !documentInfo.getDocumentReferences().isEmpty())
+                    .map(DocumentInfo::getDocumentType)
+                    .findFirst().orElse("UNKNOWN");
+
 
             cafcassNotificationService.sendEmail(
                     caseData,
                     documentReferences,
                     NEW_DOCUMENT,
-                    NewDocumentData.builder().documentTypes(documentTypes).build()
+                    NewDocumentData.builder()
+                        .documentTypes(documentTypes)
+                        .emailSubjectInfo(subjectInfo)
+                    .build()
             );
         }
     }
+
+    private DocumentInfo getNewApplicationDocument(CaseData caseData, CaseData caseDataBefore) {
+        List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
+        List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
+
+        List<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
+                .filter(newDoc -> !oldApplicationDocuments.contains(newDoc))
+                .collect(toList());
+
+        List<DocumentReference> documentReferences = newlyAddedApplicationDocs.stream()
+                .map(ApplicationDocument::getDocument)
+                .collect(toList());
+
+        return newlyAddedApplicationDocs.stream()
+                .map(ApplicationDocument::getDocumentType)
+                .map(ApplicationDocumentType::getLabel)
+                .collect(Collectors.collectingAndThen(toList(),
+                    data ->
+                        DocumentInfo.builder()
+                                .documentReferences(documentReferences)
+                                .documentTypes(data)
+                                .documentType("Further documents for main application")
+                                .build())
+                );
+    }
+
+    private DocumentInfo getGeneralEvidence(CaseData caseData, CaseData caseDataBefore, DocumentUploaderType userType) {
+        var supportingEvidenceBundles = getDocuments(caseData,
+            caseDataBefore,
+            userType,
+            (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
+
+        var documentReferences = supportingEvidenceBundles.stream()
+                .map(SupportingEvidenceBundle::getDocument)
+                .collect(Collectors.toList());
+
+        return supportingEvidenceBundles.stream()
+                .map(SupportingEvidenceBundle::getType)
+                .filter(Objects::nonNull)
+                .map(FurtherEvidenceType::getLabel)
+                .collect(Collectors.collectingAndThen(toList(),
+                    data ->
+                        DocumentInfo.builder()
+                            .documentReferences(documentReferences)
+                            .documentTypes(data)
+                            .documentType("Further documents for main application")
+                    .build())
+                );
+    }
+
 
     private List<SupportingEvidenceBundle> getDocuments(
         CaseData caseData, CaseData caseDataBefore,
@@ -240,33 +315,52 @@ public class FurtherEvidenceUploadedEventHandler {
         return evidenceBundle;
     }
 
-    private List<SupportingEvidenceBundle> getRespondentDocuments(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> oldBundle = getRespondentStatementsUploadedByHmtcs(caseDataBefore);
-        List<SupportingEvidenceBundle> newBundle = getRespondentStatementsUploadedByHmtcs(caseData);
-        return newBundle.stream()
-                .filter(bundle -> !oldBundle.contains(bundle))
-                .collect(Collectors.toList());
-    }
-
-    private List<SupportingEvidenceBundle> getCorrespondenceDocuments(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> oldBundle = getCorrespondenceDocumentsUploadedByHmtcs(caseDataBefore);
-        List<SupportingEvidenceBundle> newBundle = getCorrespondenceDocumentsUploadedByHmtcs(caseData);
-        return newBundle.stream()
-                .filter(bundle -> !oldBundle.contains(bundle))
-                .collect(Collectors.toList());
-    }
-
-    private List<SupportingEvidenceBundle> getRespondentStatementsUploadedByHmtcs(CaseData caseData) {
-        return caseData.getRespondentStatements().stream()
+    private DocumentInfo getNewRespondentDocumentsUploaded(CaseData caseData, CaseData caseDataBefore) {
+        List<SupportingEvidenceBundle> oldBundle = caseDataBefore.getRespondentStatements().stream()
                 .flatMap(statement -> unwrapElements(statement.getValue().getSupportingEvidenceBundle()).stream())
-                .filter(SupportingEvidenceBundle::isUploadedByHMCTS)
                 .collect(toList());
+        List<SupportingEvidenceBundle> newBundle = caseData.getRespondentStatements().stream()
+                .flatMap(statement -> unwrapElements(statement.getValue().getSupportingEvidenceBundle()).stream())
+                .collect(toList());
+
+        return getDocumentInfo(oldBundle, newBundle, "Respondent statement", "Further documents for main application");
     }
 
-    private List<SupportingEvidenceBundle> getCorrespondenceDocumentsUploadedByHmtcs(CaseData caseData) {
-        return unwrapElements(caseData.getCorrespondenceDocuments()).stream()
-                .filter(SupportingEvidenceBundle::isUploadedByHMCTS)
-                .collect(toList());
+    private DocumentInfo  getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
+        List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocuments());
+        List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocuments());
+
+        return getDocumentInfo(oldBundle, newBundle, "Correspondence", "Correspondence");
+    }
+
+    private DocumentInfo getNewCorrespondenceDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
+        List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsLA());
+        List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsLA());
+
+        return getDocumentInfo(oldBundle, newBundle, "Correspondence", "Correspondence");
+    }
+
+    private DocumentInfo getNewCorrespondenceDocumentsBySolicitor(CaseData caseData, CaseData caseDataBefore) {
+        List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsSolicitor());
+        List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsSolicitor());
+
+        return getDocumentInfo(oldBundle, newBundle, "Correspondence", "Correspondence");
+    }
+
+    private DocumentInfo getDocumentInfo(List<SupportingEvidenceBundle> oldBundle,
+                                         List<SupportingEvidenceBundle> newBundle,
+                                         String documentType,
+                                         String type) {
+        return newBundle.stream()
+                .filter(bundle -> !oldBundle.contains(bundle))
+                .map(SupportingEvidenceBundle::getDocument)
+                .collect(Collectors.collectingAndThen(toList(),
+                    data -> DocumentInfo.builder()
+                        .documentReferences(data)
+                        .documentTypes(List.of(documentType))
+                        .documentType(type)
+                    .build())
+                );
     }
 
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
