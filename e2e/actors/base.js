@@ -83,7 +83,7 @@ module.exports = {
 
   async logInAndCreateCase(user, caseName, outsourcingLA) {
     await this.signIn(user);
-    await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction);
+    await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction, true, 10);
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     await this.completeEvent('Save and continue');
     this.waitForElement('.markdown h2', 5);
