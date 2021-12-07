@@ -4,7 +4,7 @@
 Feature('Smoke tests @smoke-tests');
 
 Scenario('Sign in as local authority and create a case', async ({I}) => {
-  await I.goToPage('https://www.google.co.uk/');
+  await I.goToPage('https://www.bbc.co.uk/');
   // const caseName = `Smoke test case (${moment().format('YYYY-MM-DD HH:MM')})`;
   // const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
   // I.navigateToCaseList();
