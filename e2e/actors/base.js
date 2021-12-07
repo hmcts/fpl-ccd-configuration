@@ -83,11 +83,14 @@ module.exports = {
 
   async logInAndCreateCase(user, caseName, outsourcingLA) {
     await this.signIn(user);
+    await this.waitForSelector('ccd-search-result', 60);
     await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction, true, 10);
+
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
+    pause();
     await this.completeEvent('Save and continue');
-    this.waitForElement('.markdown h2', 5);
-    const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
+    this.waitForElement('.alert-message', 60);
+    const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
     output.print(`Case created #${caseId}`);
     return caseId;
   },
@@ -375,7 +378,7 @@ module.exports = {
       } catch (error) {
         output.error(error);
       }
-      if (await this.waitForSelector(locator) != null) {
+      if (await this.waitForSelector(locator, 60) != null) {
         output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
         break;
       } else {
