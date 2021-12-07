@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -55,6 +56,9 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documentReferences;
+
+    @Captor
+    private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
 
     ManageDocumentsLAControllerSubmittedTest() {
         super("manage-documents-la");
@@ -147,7 +151,8 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
-            eq("hearing"));
+            isA(CourtBundleData.class));
+
         Set<DocumentReference> value = documentReferences.getValue();
         DocumentReference documentReference = value.stream().findFirst().orElseThrow();
         assertThat(documentReference.getFilename()).isEqualTo("filename");

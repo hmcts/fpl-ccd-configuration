@@ -7,10 +7,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -29,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirec
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {CafcassEmailContentProvider.class, LookupTestConfig.class})
@@ -97,5 +100,38 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .build();
 
         assertThat(underTest.buildCafcassSubmissionNotification(caseData)).isEqualTo(cafcassSubmissionTemplate);
+    }
+
+    @Test
+    void shouldReturnNewApplicationCafcassData() {
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_REFERENCE))
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .submittedForm(C110A)
+                .build())
+            .children1(wrapElements(Child.builder().party(ChildParty.builder().lastName("Lewis").build()).build()))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().lastName("Smith").build())
+                .build()))
+            .orders(Orders.builder()
+                .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
+                .directions(YES.getValue())
+                .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
+                .build())
+            .hearing(Hearing.builder()
+                .timeFrame("Same day")
+                .build())
+            .build();
+        NewApplicationCafcassData newApplicationCafcassData = underTest.buildCafcassSubmissionSendGridData(caseData);
+        assertThat(newApplicationCafcassData.getFirstRespondentName()).isEqualTo("Smith");
+        assertThat(newApplicationCafcassData.getEldestChildLastName()).isEqualTo(CHILD_LAST_NAME);
+        assertThat(newApplicationCafcassData.getLocalAuthourity()).isEqualTo(LOCAL_AUTHORITY_NAME);
+        assertThat(newApplicationCafcassData.getTimeFrameValue()).isEqualTo(SAME_DAY);
+        assertThat(newApplicationCafcassData.isTimeFramePresent()).isTrue();
+        assertThat(newApplicationCafcassData.getOrdersAndDirections()).isEqualTo(
+            "• Emergency protection order\n"
+                + "• Contact with any named person"
+        );
     }
 }

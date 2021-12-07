@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
@@ -126,7 +127,9 @@ public class FurtherEvidenceUploadedEventHandler {
                     caseData,
                     value,
                     COURT_BUNDLE,
-                    key
+                    CourtBundleData.builder()
+                        .hearingDetails(key)
+                    .build()
                 )
         );
     }

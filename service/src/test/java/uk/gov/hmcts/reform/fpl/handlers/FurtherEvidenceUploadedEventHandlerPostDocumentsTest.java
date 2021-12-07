@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -50,7 +54,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
+class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     private static final List<Recipient> RECIPIENTS_LIST = createRecipientsList();
 
@@ -59,6 +63,9 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+
+    @Captor
+    private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
 
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
@@ -173,10 +180,13 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             .map(CourtBundle::getDocument)
             .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(caseData,
-            documentReferences,
-            COURT_BUNDLE,
-            hearing);
+        verify(cafcassNotificationService).sendEmail(eq(caseData),
+            eq(documentReferences),
+            eq(COURT_BUNDLE),
+            courtBundleCaptor.capture());
+
+        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
     }
 
     @Test
@@ -202,7 +212,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
             any(),
             eq(COURT_BUNDLE),
-            eq(hearing));
+            any());
     }
 
     @Test
@@ -234,7 +244,10 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(cafcassNotificationService).sendEmail(eq(caseData),
             eq(documentReferences),
             eq(COURT_BUNDLE),
-            eq(hearing));
+            courtBundleCaptor.capture());
+
+        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
     }
 
 
@@ -281,7 +294,10 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(cafcassNotificationService).sendEmail(eq(caseData),
             eq(documentReferences),
             eq(COURT_BUNDLE),
-            eq(hearing));
+            courtBundleCaptor.capture());
+
+        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
 
         Set<DocumentReference> secDocBundle = secHearingBundle.stream()
             .map(courtBundle -> courtBundle.getValue().getDocument())
@@ -290,7 +306,10 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(cafcassNotificationService).sendEmail(eq(caseData),
             eq(secDocBundle),
             eq(COURT_BUNDLE),
-            eq(secHearing));
+            courtBundleCaptor.capture());
+
+        courtBundleData = courtBundleCaptor.getValue();
+        assertThat(courtBundleData.getHearingDetails()).isEqualTo(secHearing);
     }
 
     private static List<Recipient> createRecipientsList() {

@@ -22,11 +22,18 @@ public class CafcassEmailConfiguration {
     @Getter(AccessLevel.NONE)
     private String courtbundle;
 
+    @Getter(AccessLevel.NONE)
+    private String newapplication;
+
     public String getRecipientForOrder() {
         return order;
     }
 
     public String getRecipientForCourtBundle() {
         return courtbundle;
+    }
+
+    public String getRecipientForNewApplication() {
+        return newapplication;
     }
 }
