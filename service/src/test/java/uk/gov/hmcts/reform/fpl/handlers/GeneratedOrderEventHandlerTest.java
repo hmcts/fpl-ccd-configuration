@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -54,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,6 +103,8 @@ class GeneratedOrderEventHandlerTest {
     private OthersService othersService;
     @Mock
     private OtherRecipientsInbox otherRecipientsInbox;
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
 
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
@@ -284,5 +289,17 @@ class GeneratedOrderEventHandlerTest {
         underTest.sendOrderByPost(EVENT);
 
         verifyNoInteractions(sendDocumentService,notificationService);
+    }
+
+    @Test
+    void shouldSendNotificationToCafcass() {
+        String fileName = "dummyFile.doc";
+        when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
+        underTest.notifyCafcass(EVENT);
+        verify(cafcassNotificationService).sendEmail(
+            CASE_DATA,
+            Set.of(TEST_DOCUMENT),
+            ORDER,
+            fileName);
     }
 }

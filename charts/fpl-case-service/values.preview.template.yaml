@@ -51,6 +51,10 @@ java:
         - translation-notification-recipient
         - robotics-notification-sender
         - robotics-notification-recipient
+        - cafcass-notification-sender
+        - cafcass-notification-recipient-order
+        - cafcass-notification-recipient-courtbundle
+        - cafcass-notification-recipient-large-file
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox
@@ -70,7 +74,7 @@ xui-webapp:
     imagePullPolicy: Always
     replicas: 2
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:prod-1bb910f-20211102100052
+    image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     readinessPeriod: 5
     livenessPeriod: 3
@@ -95,7 +99,7 @@ xui-webapp:
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
       NOW: false
-      REDISCLOUD_URL: redis://ignore:fake-password@${SERVICE_NAME}-redis-master:6379
+      REDISCLOUD_URL: redis://${SERVICE_NAME}-redis-master:6379
       PROTOCOL: http
     keyVaults:
       rpx:
@@ -240,6 +244,12 @@ ccd:
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     livenessProbe:
       initialDelaySeconds: 90
+  am-role-assignment-service:
+    java:
+      keyVaults:
+        am:
+          secrets:
+            - role-assignment-service-LD-SDK-KEY
 
 aac-manage-case-assignment:
   enabled: true

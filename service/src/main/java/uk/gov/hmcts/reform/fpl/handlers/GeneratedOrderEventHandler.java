@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -31,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Set.of;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -38,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 
 @Slf4j
 @Component
@@ -53,6 +56,7 @@ public class GeneratedOrderEventHandler {
     private final SealedOrderHistoryService sealedOrderHistoryService;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final TranslationRequestService translationRequestService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -96,6 +100,14 @@ public class GeneratedOrderEventHandler {
         translationRequestService.sendRequest(event.getCaseData(),
             event.getLanguageTranslationRequirement(),
             event.getOrderDocument(), event.getOrderTitle());
+    }
+
+    @EventListener
+    public void notifyCafcass(GeneratedOrderEvent orderEvent) {
+        cafcassNotificationService.sendEmail(orderEvent.getCaseData(),
+            of(orderEvent.getOrderDocument()),
+            ORDER,
+            orderEvent.getOrderDocument().getFilename());
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
