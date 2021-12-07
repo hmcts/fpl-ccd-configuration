@@ -11,7 +11,11 @@ import java.util.function.Function;
 public enum CafcassRequestEmailContentProvider {
     ORDER("new order",
         "A new order for this case was uploaded to the Public Law Portal entitled %s",
-        CafcassEmailConfiguration::getRecipientForOrder);
+        CafcassEmailConfiguration::getRecipientForOrder),
+
+    COURT_BUNDLE("new court bundle",
+        "A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
+        CafcassEmailConfiguration::getRecipientForCourtBundle);
 
     private final String type;
     private final String content;

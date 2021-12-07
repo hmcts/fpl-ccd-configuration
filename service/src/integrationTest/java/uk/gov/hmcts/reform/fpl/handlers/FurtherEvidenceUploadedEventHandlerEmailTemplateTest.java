@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
@@ -82,6 +83,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @MockBean
     private CaseAccessDataStoreApi caseAccessDataStoreApi;
+
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
 
     @MockBean
     private FeatureToggleService featureToggleService;
