@@ -4,7 +4,7 @@ const config = require('../config');
 Feature('Smoke tests @smoke-tests');
 
 Scenario('Sign in as local authority and create a case', async ({I}) => {
-  // await I.goToPage(config.baseUrl);
+  await I.goToPage('https://www.google.co.uk/');
   // const caseName = `Smoke test case (${moment().format('YYYY-MM-DD HH:MM')})`;
   // const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
   // I.navigateToCaseList();
