@@ -107,6 +107,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BUR",
+    "ListElement": "Bury Metropolitan Borough Council",
+    "DisplayOrder": 41
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CDF",
     "ListElement": "Cardiff Council",
     "DisplayOrder": 45
