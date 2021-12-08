@@ -121,6 +121,7 @@ cafcass:
     order: FamilyPublicLaw+cafcass@gmail.com
     courtbundle: FamilyPublicLaw+cafcass@gmail.com
     large: FamilyPublicLaw+cafcass@gmail.com
+    newapplication: FamilyPublicLaw+cafcass@gmail.com
 
 security:
   anonymousPaths:

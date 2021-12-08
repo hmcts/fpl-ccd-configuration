@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -107,7 +108,10 @@ public class GeneratedOrderEventHandler {
         cafcassNotificationService.sendEmail(orderEvent.getCaseData(),
             of(orderEvent.getOrderDocument()),
             ORDER,
-            orderEvent.getOrderDocument().getFilename());
+            OrderCafcassData.builder()
+                .documentName(orderEvent.getOrderDocument().getFilename())
+            .build()
+        );
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,

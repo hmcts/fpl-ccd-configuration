@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public abstract class SharedNotifyContentProvider extends AbstractEmailContentProvider {
 
     @Autowired
-    private EmailNotificationHelper helper;
+    protected EmailNotificationHelper helper;
 
     protected <T extends SharedNotifyTemplate> T buildNotifyTemplate(T template, CaseData caseData) {
         Long caseId = caseData.getId();
@@ -52,7 +52,7 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
     }
 
 
-    private List<String> buildOrdersAndDirections(Orders optionalOrders) {
+    protected List<String> buildOrdersAndDirections(Orders optionalOrders) {
         ImmutableList.Builder<String> ordersAndDirectionsBuilder = ImmutableList.builder();
 
         Optional.ofNullable(optionalOrders).ifPresent(orders -> {
