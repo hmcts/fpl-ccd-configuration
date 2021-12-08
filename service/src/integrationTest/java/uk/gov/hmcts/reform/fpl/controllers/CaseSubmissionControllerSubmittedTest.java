@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,6 +36,8 @@ import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresent
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
@@ -41,7 +45,6 @@ import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreatio
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -53,9 +56,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -137,6 +142,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
 
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
+
+    @Captor
+    private ArgumentCaptor<CafcassRequestEmailContentProvider> cafcassRequestEmailContentProviderArgumentCaptor;
+
     CaseSubmissionControllerSubmittedTest() {
         super("case-submission");
     }
@@ -181,6 +192,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -214,6 +226,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 SOLICITOR_EMAIL,
                 registeredSolicitorParameters,
                 notificationReference(CASE_ID)));
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -243,7 +256,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
 
         verifyEmailSentToTranslation();
-        verifyNoMoreNotificationsSentToTranslationTeam();
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -272,6 +285,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
 
         verifyNoMoreNotificationsSentToTranslationTeam();
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -309,7 +323,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
-
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -336,6 +350,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 expectedIncompleteHmctsParameters,
                 notificationReference(CASE_ID)
             ));
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -397,6 +412,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 expectedParameters,
                 notificationReference(CASE_ID)
             ));
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -434,6 +450,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 expectedUnregisteredSolicitorParameters,
                 notificationReference(CASE_ID)
             ));
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -445,6 +462,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         checkUntil(() -> verify(paymentService).makePaymentForCaseOrders(caseConverter.convert(caseDetails)));
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -456,6 +474,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         checkThat(() -> verify(paymentService, never()).makePaymentForCaseOrders(any()));
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -482,6 +501,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 expectedCtscNotificationParameters(),
                 notificationReference(CASE_ID));
         });
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -504,6 +524,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 expectedCtscNotificationParameters(),
                 notificationReference(CASE_ID));
         });
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -527,6 +548,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 expectedCtscNotificationParameters(),
                 notificationReference(CASE_ID));
         });
+        verifyCafcassOrderNotification();
     }
 
     @Test
@@ -548,6 +570,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         assertThat(response).extracting("confirmationHeader", "confirmationBody")
             .containsExactly(expectedHeader, expectedBody);
+        verifyCafcassOrderNotification();
     }
 
     @Nested
@@ -738,10 +761,20 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void verifyEmailSentToTranslation() {
-        checkUntil(() -> verify(emailService).sendEmail(eq("sender@example.com"), any()));
+        checkUntil(() -> verify(emailService, times(1)).sendEmail(eq("sender@example.com"), any()));
     }
 
     private void verifyNoMoreNotificationsSentToTranslationTeam() {
-        checkThat(() -> verifyNoMoreInteractions(emailService), Duration.ofSeconds(2));
+        checkUntil(() -> verify(emailService, never()).sendEmail(eq("sender@example.com"), any()));
+        verifyCafcassOrderNotification();
+    }
+
+
+    private void verifyCafcassOrderNotification() {
+        checkUntil(() -> verify(cafcassNotificationService).sendEmail(
+            isA(CaseData.class), any(), cafcassRequestEmailContentProviderArgumentCaptor.capture(), any()
+        ));
+        assertThat(cafcassRequestEmailContentProviderArgumentCaptor.getValue())
+            .isEqualTo(CafcassRequestEmailContentProvider.NEW_APPLICATION);
     }
 }

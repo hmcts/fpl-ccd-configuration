@@ -67,6 +67,9 @@ const setupConfig = {
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
     },
+    StepListener: {
+      require: './e2e/helpers/stepListener.js',
+    },
     Mochawesome: {
       uniqueScreenshotNames: true,
     },
