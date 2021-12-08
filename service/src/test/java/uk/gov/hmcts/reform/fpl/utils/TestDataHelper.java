@@ -125,16 +125,20 @@ public class TestDataHelper {
     }
 
     public static uk.gov.hmcts.reform.document.domain.Document testOldDocument() {
-        final uk.gov.hmcts.reform.document.domain.Document.Link binaryLink = new uk.gov.hmcts.reform.document.domain.Document.Link();
+        final uk.gov.hmcts.reform.document.domain.Document.Link binaryLink =
+            new uk.gov.hmcts.reform.document.domain.Document.Link();
         binaryLink.href = randomAlphanumeric(10);
-        final uk.gov.hmcts.reform.document.domain.Document.Link selfLink = new uk.gov.hmcts.reform.document.domain.Document.Link();
+        final uk.gov.hmcts.reform.document.domain.Document.Link selfLink =
+            new uk.gov.hmcts.reform.document.domain.Document.Link();
         selfLink.href = randomAlphanumeric(10);
 
-        final uk.gov.hmcts.reform.document.domain.Document.Links links = new uk.gov.hmcts.reform.document.domain.Document.Links();
+        final uk.gov.hmcts.reform.document.domain.Document.Links links =
+            new uk.gov.hmcts.reform.document.domain.Document.Links();
         links.binary = binaryLink;
         links.self = selfLink;
 
-        final uk.gov.hmcts.reform.document.domain.Document document = new uk.gov.hmcts.reform.document.domain.Document();
+        final uk.gov.hmcts.reform.document.domain.Document document =
+            new uk.gov.hmcts.reform.document.domain.Document();
         document.links = links;
         document.originalDocumentName = randomAlphanumeric(10);
 

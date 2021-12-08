@@ -10,6 +10,10 @@ import java.util.Map;
 
 public class SecureDocumentManagementStoreLoader {
 
+    private SecureDocumentManagementStoreLoader() {
+        // NO-OP
+    }
+
     public static Document document() {
         Document.Links links = new Document.Links();
         links.self = new Document.Link();

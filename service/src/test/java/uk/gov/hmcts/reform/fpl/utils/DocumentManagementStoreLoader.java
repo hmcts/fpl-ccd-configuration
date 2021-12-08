@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.document.domain.UploadResponse;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
