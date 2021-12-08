@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -38,6 +39,9 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
 
     ManageDocumentsControllerSubmittedTest() {
         super("manage-documents");

@@ -37,7 +37,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
@@ -56,6 +57,8 @@ import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 
 class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsControllerTest {
+
+    public static final String TEST_REASON = "Test reason";
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -124,16 +127,48 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
     }
 
     @Test
-    void shouldUpdateExistingHearingInHearingDetailsListWhenEditHearingSelected() {
-        HearingBooking existingHearing = testHearing(now().plusDays(2));
+    void shouldUpdateExistingFutureHearingInHearingDetailsListWhenEditHearingSelected() {
+        HearingBooking existingHearing = testHearing(now().plusDays(2)).toBuilder()
+            .type(ISSUE_RESOLUTION)
+            .build();
 
         Element<HearingBooking> hearingElement = element(existingHearing);
 
         CaseData initialCaseData = CaseData.builder()
-            .hearingOption(EDIT_HEARING)
-            .hearingDateList(dynamicList(hearingElement.getId(), hearingElement))
-            .hearingDetails(List.of(hearingElement))
+            .hearingOption(EDIT_FUTURE_HEARING)
             .hearingType(ISSUE_RESOLUTION)
+            .futureHearingDateList(dynamicList(hearingElement.getId(), hearingElement))
+            .hearingDetails(List.of(hearingElement))
+            .hearingVenue(existingHearing.getVenue())
+            .hearingVenueCustom(existingHearing.getVenueCustomAddress())
+            .hearingStartDate(existingHearing.getStartDate())
+            .hearingEndDate(existingHearing.getEndDate())
+            .hearingAttendance(existingHearing.getAttendance())
+            .judgeAndLegalAdvisor(existingHearing.getJudgeAndLegalAdvisor())
+            .noticeOfHearingNotes(existingHearing.getAdditionalNotes())
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+
+        HearingBooking expectedHearing = existingHearing.toBuilder().type(ISSUE_RESOLUTION).build();
+
+        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(expectedHearing);
+        assertThat(updatedCaseData.getSelectedHearingId()).isEqualTo(hearingElement.getId());
+    }
+
+    @Test
+    void shouldUpdateExistingPastHearingInHearingDetailsListWhenEditHearingSelected() {
+        HearingBooking existingHearing = testHearing(now().minusDays(2)).toBuilder()
+            .type(ISSUE_RESOLUTION)
+            .build();
+
+        Element<HearingBooking> hearingElement = element(existingHearing);
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(EDIT_PAST_HEARING)
+            .hearingType(ISSUE_RESOLUTION)
+            .pastHearingDateList(dynamicList(hearingElement.getId(), hearingElement))
+            .hearingDetails(List.of(hearingElement))
             .hearingVenue(existingHearing.getVenue())
             .hearingVenueCustom(existingHearing.getVenueCustomAddress())
             .hearingStartDate(existingHearing.getStartDate())
@@ -161,13 +196,14 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
 
         HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
-            .reason("Test reason")
+            .reason(TEST_REASON)
             .build();
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(ADJOURN_HEARING)
             .hearingReListOption(RE_LIST_NOW)
-            .hearingDateList(dynamicList(futureHearing))
+            .pastHearingDateList(dynamicList(pastHearing, pastHearingToBeAdjourned))
+            .futureHearingDateList(dynamicList(futureHearing))
             .pastAndTodayHearingDateList(dynamicList(
                 pastHearingToBeAdjourned.getId(), pastHearing,
                 pastHearingToBeAdjourned))
@@ -219,7 +255,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         LocalDate vacatedHearingDate = now().minusDays(1).toLocalDate();
 
         HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
-            .reason("Test reason")
+            .reason(TEST_REASON)
             .build();
 
         HearingOrder draftCMO = HearingOrder.builder()
@@ -237,10 +273,8 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(RE_LIST_NOW)
-            .hearingDateList(dynamicList(futureHearing))
             .vacateHearingDateList(dynamicList(
-                futureHearingToBeVacated.getId(), futureHearing,
-                futureHearingToBeVacated))
+                futureHearingToBeVacated.getId(), pastHearing, futureHearingToBeVacated, futureHearing))
             .hearingDetails(List.of(pastHearing, futureHearingToBeVacated, futureHearing))
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(futureHearingToBeVacated.getValue().getVenue())
@@ -331,7 +365,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         Element<HearingBooking> pastHearingToBeAdjourned = element(testHearing(LocalDateTime.now().minusDays(2)));
 
         HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
-            .reason("Test reason")
+            .reason(TEST_REASON)
             .build();
 
         CaseData initialCaseData = CaseData.builder()
@@ -364,7 +398,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         LocalDate vacatedHearingDate = now().minusDays(1).toLocalDate();
 
         HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
-            .reason("Test reason")
+            .reason(TEST_REASON)
             .build();
 
         CaseData initialCaseData = CaseData.builder()

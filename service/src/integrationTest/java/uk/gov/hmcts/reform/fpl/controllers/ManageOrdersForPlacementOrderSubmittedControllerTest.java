@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -117,6 +118,9 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;

@@ -509,7 +509,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     }
 
     @ParameterizedTest
-    @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
+    @EnumSource(value = HearingOptions.class, names = {"EDIT_FUTURE_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
     void shouldNotTriggerTemporaryHearingJudgeEventWhenAdjourningOrVacatingAHearingWithoutReListing(
         HearingOptions hearingOption) {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()

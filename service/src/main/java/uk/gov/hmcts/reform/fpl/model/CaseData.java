@@ -953,8 +953,9 @@ public class CaseData {
     private final PreviousHearingVenue previousHearingVenue;
     private String previousVenueId;
     private final String noticeOfHearingNotes;
-    private final Object hearingDateList;
+    private final Object pastHearingDateList;
     private final Object pastAndTodayHearingDateList;
+    private final Object futureHearingDateList;
     private final Object vacateHearingDateList;
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
@@ -1111,7 +1112,6 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
-
 
     @JsonUnwrapped
     @Builder.Default
