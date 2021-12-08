@@ -50,9 +50,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
-import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElementsId;
+import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 
 class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsControllerTest {

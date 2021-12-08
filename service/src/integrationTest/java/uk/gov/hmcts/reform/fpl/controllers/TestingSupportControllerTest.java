@@ -25,10 +25,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
-import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -54,7 +51,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.service.UploadDocumentService.oldToSecureDocument;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOldDocument;
 
 @ActiveProfiles("integration-test")
@@ -173,7 +169,9 @@ class TestingSupportControllerTest {
         UploadResponse uploadResponse = mock(UploadResponse.class);
         UploadResponse.Embedded embedded = mock(UploadResponse.Embedded.class);
         uk.gov.hmcts.reform.document.domain.Document uploadedDocument = testOldDocument();
-        DocumentReference uploadedReference = DocumentReference.buildFromDocument(oldToSecureDocument(uploadedDocument));
+        DocumentReference uploadedReference = DocumentReference.buildFromDocument(
+            oldToSecureDocument(uploadedDocument)
+        );
 
         when(uploadClient.upload(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, List.of(file)))
             .thenReturn(uploadResponse);

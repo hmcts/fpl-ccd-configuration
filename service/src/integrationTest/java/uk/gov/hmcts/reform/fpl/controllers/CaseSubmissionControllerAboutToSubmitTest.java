@@ -49,9 +49,9 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @WebMvcTest(CaseSubmissionController.class)
