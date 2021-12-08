@@ -173,7 +173,7 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.notifyCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
 
         List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
         Set<DocumentReference> documentReferences = courtBundles.stream()
@@ -207,7 +207,7 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.notifyCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
             any(),
@@ -236,7 +236,7 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.notifyCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
         Set<DocumentReference> documentReferences = courtBundleList.stream()
             .map(courtBundle -> courtBundle.getValue().getDocument())
             .collect(toSet());
@@ -283,7 +283,7 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.notifyCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
         List<Element<CourtBundle>> expectedBundle = new ArrayList<>(hearing1);
         expectedBundle.addAll(hearing2);
 
