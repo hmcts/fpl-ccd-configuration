@@ -59,6 +59,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FurtherEvidenceUploadedEventHandler {
+    public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
+    public static final String CORRESPONDENCE = "Correspondence";
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private final FurtherEvidenceUploadDifferenceCalculator furtherEvidenceDifferenceCalculator;
     private final TranslationRequestService translationRequestService;
@@ -224,8 +226,9 @@ public class FurtherEvidenceUploadedEventHandler {
                     data ->
                         DocumentInfo.builder()
                                 .documentReferences(documentReferences)
+
                                 .documentTypes(data)
-                                .documentType("Further documents for main application")
+                                .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                                 .build())
                 );
     }
@@ -249,7 +252,7 @@ public class FurtherEvidenceUploadedEventHandler {
                         DocumentInfo.builder()
                             .documentReferences(documentReferences)
                             .documentTypes(data)
-                            .documentType("Further documents for main application")
+                            .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                     .build())
                 );
     }
@@ -323,28 +326,28 @@ public class FurtherEvidenceUploadedEventHandler {
                 .flatMap(statement -> unwrapElements(statement.getValue().getSupportingEvidenceBundle()).stream())
                 .collect(toList());
 
-        return getDocumentInfo(oldBundle, newBundle, "Respondent statement", "Further documents for main application");
+        return getDocumentInfo(oldBundle, newBundle, "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION);
     }
 
     private DocumentInfo  getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
         List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocuments());
         List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocuments());
 
-        return getDocumentInfo(oldBundle, newBundle, "Correspondence", "Correspondence");
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
     }
 
     private DocumentInfo getNewCorrespondenceDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
         List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsLA());
         List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsLA());
 
-        return getDocumentInfo(oldBundle, newBundle, "Correspondence", "Correspondence");
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
     }
 
     private DocumentInfo getNewCorrespondenceDocumentsBySolicitor(CaseData caseData, CaseData caseDataBefore) {
         List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsSolicitor());
         List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsSolicitor());
 
-        return getDocumentInfo(oldBundle, newBundle, "Correspondence", "Correspondence");
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
     }
 
     private DocumentInfo getDocumentInfo(List<SupportingEvidenceBundle> oldBundle,
