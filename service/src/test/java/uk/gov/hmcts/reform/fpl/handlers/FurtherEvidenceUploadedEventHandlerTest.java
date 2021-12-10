@@ -643,6 +643,31 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotEmailCafcassWhenNoApplicationDocumentIsUploaded() {
+        CaseData caseData = buildCaseDataWithApplicationDocuments();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        caseData,
+                        DESIGNATED_LOCAL_AUTHORITY,
+                        userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
+                .stream()
+                .map(ApplicationDocument::getDocument)
+                .collect(toSet());
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
+    }
+
+    @Test
     void shouldNotSendEmailToCafcassWhenRespondentStatementIsUploaded() {
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
