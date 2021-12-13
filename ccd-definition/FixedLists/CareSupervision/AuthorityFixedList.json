@@ -1026,6 +1026,13 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "TWB",
     "ListElement": "Telford and Wrekin Borough Council",
+    "DisplayOrder": 399
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "THK",
+    "ListElement": "Thurrock Council",
     "DisplayOrder": 400
   },
   {
