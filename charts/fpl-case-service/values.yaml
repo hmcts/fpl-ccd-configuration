@@ -66,6 +66,7 @@ java:
         - cafcass-notification-recipient-courtbundle
         - cafcass-notification-recipient-large-file
         - cafcass-notification-recipient-new-application
+        - cafcass-notification-recipient-new-document
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox

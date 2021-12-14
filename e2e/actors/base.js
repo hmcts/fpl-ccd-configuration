@@ -87,7 +87,6 @@ module.exports = {
     await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction, true, 10);
 
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
-    pause();
     await this.completeEvent('Save and continue');
     this.waitForElement('.alert-message', 60);
     const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
