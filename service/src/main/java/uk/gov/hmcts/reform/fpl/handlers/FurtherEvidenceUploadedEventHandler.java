@@ -226,7 +226,6 @@ public class FurtherEvidenceUploadedEventHandler {
                     data ->
                         DocumentInfo.builder()
                                 .documentReferences(documentReferences)
-
                                 .documentTypes(data)
                                 .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                                 .build())
