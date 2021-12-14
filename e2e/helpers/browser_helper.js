@@ -53,6 +53,7 @@ module.exports = class BrowserHelpers extends Helper {
    * Finds element described by locator.
    * If element cannot be found immediately function waits specified amount of time or globally configured `waitForTimeout` period.
    * If element still cannot be found after the waiting time an undefined is returned.
+   * @todo jason update this
    *
    * @param locator - element CSS locator
    * @param sec - optional time in seconds to wait
@@ -61,17 +62,25 @@ module.exports = class BrowserHelpers extends Helper {
   async waitForSelector(locator, sec) {
     const helper = this.getHelper();
 
-    try {
-      if (this.isPuppeteer()) {
-        const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
-        const context = await helper._getContext();
-        return await context.waitForSelector(locator, {timeout: waitTimeout});
-      } else {
-        const waitTimeout = sec ? sec : helper.options.waitForTimeout;
-        return await helper.waitForElement(locator, waitTimeout);
+    const retryInterval = 5;
+    const numberOfRetries = sec > retryInterval ? 1 : Math.floor(sec / retryInterval);
+
+    let result = undefined;
+    for (let tryNumber = 0; tryNumber < numberOfRetries; tryNumber++) {
+      // console.log('waitForSelector ' + locator + ' try number ' + (tryNumber+1));
+      try {
+        if (this.isPuppeteer()) {
+          const context = await helper._getContext();
+          result = await context.waitForSelector(locator, {timeout: retryInterval * 1000});
+        } else {
+          result = await helper.waitForElement(locator, retryInterval);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      return undefined;
+      if (result !== undefined) {
+        return result;
+      }
     }
   }
 
