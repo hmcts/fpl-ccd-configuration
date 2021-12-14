@@ -36,4 +36,12 @@ public interface CafcassData {
     default String getEldestChildLastName() {
         throw new UnsupportedOperationException();
     }
+
+    default String getDocumentTypes() {
+        throw new UnsupportedOperationException();
+    }
+
+    default String getEmailSubjectInfo()  {
+        throw new UnsupportedOperationException();
+    }
 }
