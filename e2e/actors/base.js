@@ -84,7 +84,8 @@ module.exports = {
   async logInAndCreateCase(user, caseName, outsourcingLA) {
     await this.signIn(user);
     await this.waitForSelector('ccd-search-result', 60);
-    await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction, true, 10);
+    await this.waitForSelector('a[href="/cases/case-filter"]', 60);
+    await this.retryUntilExists(() => this.click('a[href="/cases/case-filter"]'), openApplicationEventPage.fields.jurisdiction, true, 10);
 
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     await this.completeEvent('Save and continue');

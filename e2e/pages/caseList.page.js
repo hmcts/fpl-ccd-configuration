@@ -12,7 +12,7 @@ module.exports = {
     caseId: 'CCD Case Number',
     caseName: '#caseName',
     search: 'Apply',
-    caseList: 'Case list',
+    caseList: 'Find case',
     spinner: 'xuilib-loading-spinner',
   },
 
@@ -44,17 +44,18 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  async searchForCasesWithName(caseName, state = 'Any') {
+  searchForCasesWithName(caseName, state = 'Any') {
     this.setInitialSearchFields(state);
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
-    await I.runAccessibilityTest();
+    I.runAccessibilityTest();
   },
 
   setInitialSearchFields(state = 'Any') {
     // wait for initial filters to load
+    pause();
     I.waitForVisible(this.fields.jurisdiction, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);

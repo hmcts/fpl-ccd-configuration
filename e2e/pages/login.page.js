@@ -10,6 +10,7 @@ module.exports = {
 
   async signIn(user) {
     await I.waitForSelector(this.fields.username, 30);
+    I.grabCurrentUrl();
     I.fillField(this.fields.username, user.email);
     I.fillField(this.fields.password, user.password);
 
