@@ -1,5 +1,6 @@
 const testConfig = require('../config.js');
 const {runAccessibility} = require('./accessibility/runner');
+const {TimeoutError} = require('puppeteer');
 
 module.exports = class BrowserHelpers extends Helper {
 
@@ -71,7 +72,7 @@ module.exports = class BrowserHelpers extends Helper {
 
     let result = undefined;
     for (let tryNumber = 0; tryNumber <= numberOfRetries; tryNumber++) {
-      console.log('waitForSelector ' + locator + ' try number ' + (tryNumber+1));
+      // console.log('waitForSelector ' + locator + ' try number ' + (tryNumber+1));
       try {
         if (this.isPuppeteer()) {
           const context = await helper._getContext();
@@ -80,8 +81,10 @@ module.exports = class BrowserHelpers extends Helper {
           result = await helper.waitForElement(locator, retryInterval);
         }
       } catch (e) {
-        if (e.name !== 'TimeoutError') {
-          throw e;
+        if (e instanceof TimeoutError) {
+          // legitimate exception, carry on
+        } else {
+          throw e;  // re-throw the error unchanged
         }
       }
       if (result !== undefined) {
