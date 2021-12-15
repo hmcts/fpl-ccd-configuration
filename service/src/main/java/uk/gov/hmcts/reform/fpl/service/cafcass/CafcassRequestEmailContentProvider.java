@@ -41,7 +41,8 @@ public enum CafcassRequestEmailContentProvider {
             String.join("\n\n",
                 "Types of documents attached:",
                 cafcassData.getDocumentTypes()),
-        CafcassEmailConfiguration::getRecipientForNewDocument),
+        CafcassEmailConfiguration::getRecipientForNewDocument);
+        CafcassEmailConfiguration::getRecipientForNewApplication),
 
     ADDITIONAL_DOCUMENT((caseData, cafcassData) -> String.format(getSubject(),
         caseData.getFamilyManCaseNumber(),
@@ -90,7 +91,7 @@ public enum CafcassRequestEmailContentProvider {
             respondent,
             caseNumber);
     }
-    
+
     private static String getSubject() {
         return "Court Ref. %s.- %s";
     }

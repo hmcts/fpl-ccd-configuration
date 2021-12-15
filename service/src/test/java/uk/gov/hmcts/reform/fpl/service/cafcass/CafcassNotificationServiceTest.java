@@ -313,6 +313,8 @@ class CafcassNotificationServiceTest {
         );
     }
 
+
+
     @Test
     void shouldNotifyAdditionalDocument() {
         when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
