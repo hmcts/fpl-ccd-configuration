@@ -41,7 +41,16 @@ public enum CafcassRequestEmailContentProvider {
             String.join("\n\n",
                 "Types of documents attached:",
                 cafcassData.getDocumentTypes()),
-        CafcassEmailConfiguration::getRecipientForNewDocument);
+        CafcassEmailConfiguration::getRecipientForNewDocument),
+
+    ADDITIONAL_DOCUMENT((caseData, cafcassData) -> String.format(getSubject(),
+        caseData.getFamilyManCaseNumber(),
+        cafcassData.getEmailSubjectInfo()),
+        (caseData, cafcassData) ->
+            String.join("\n\n",
+                "Types of documents attached:",
+                cafcassData.getDocumentTypes()),
+        CafcassEmailConfiguration::getRecipientForAdditionlDocument);
 
 
     private final BiFunction<CaseData, CafcassData, String> type;
