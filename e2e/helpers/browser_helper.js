@@ -1,5 +1,6 @@
 const testConfig = require('../config.js');
 const {runAccessibility} = require('./accessibility/runner');
+const {TimeoutError} = require('puppeteer');
 
 module.exports = class BrowserHelpers extends Helper {
 
@@ -51,7 +52,7 @@ module.exports = class BrowserHelpers extends Helper {
 
   /**
    * Finds element described by locator.
-   * If element cannot be found immediately function waits specified amount of time or globally configured `waitForTimeout` period.
+   * If element cannot be found immediately function retries ever `retryInterval` seconds until `sec` seconds is reached.
    * If element still cannot be found after the waiting time an undefined is returned.
    * @todo jason update this
    *
@@ -66,7 +67,7 @@ module.exports = class BrowserHelpers extends Helper {
     const numberOfRetries = sec > retryInterval ? 1 : Math.floor(sec / retryInterval);
 
     let result = undefined;
-    for (let tryNumber = 0; tryNumber < numberOfRetries; tryNumber++) {
+    for (let tryNumber = 0; tryNumber <= numberOfRetries; tryNumber++) {
       // console.log('waitForSelector ' + locator + ' try number ' + (tryNumber+1));
       try {
         if (this.isPuppeteer()) {
@@ -75,8 +76,12 @@ module.exports = class BrowserHelpers extends Helper {
         } else {
           result = await helper.waitForElement(locator, retryInterval);
         }
-      } catch (error) {
-        console.log(error);
+      } catch (e) {
+        if (e instanceof TimeoutError) {
+          // legitimate exception, carry on
+        } else {
+          throw e;  // re-throw the error unchanged
+        }
       }
       if (result !== undefined) {
         return result;
