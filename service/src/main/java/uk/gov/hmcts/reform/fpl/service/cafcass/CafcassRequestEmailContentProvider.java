@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 @Getter
 @RequiredArgsConstructor
 public enum CafcassRequestEmailContentProvider {
-    ORDER((caseData, cafcassData) -> String.format("Court Ref. %s.- %s",
+    ORDER((caseData, cafcassData) -> String.format(getSubject(),
                 caseData.getFamilyManCaseNumber(),
                 "new order"),
         (caseData, cafcassData) ->
@@ -22,7 +22,7 @@ public enum CafcassRequestEmailContentProvider {
                 cafcassData.getDocumentName()),
         CafcassEmailConfiguration::getRecipientForOrder),
 
-    COURT_BUNDLE((caseData, cafcassData) -> String.format("Court Ref. %s.- %s",
+    COURT_BUNDLE((caseData, cafcassData) -> String.format(getSubject(),
                 caseData.getFamilyManCaseNumber(),
                 "new court bundle"),
         (caseData, cafcassData) ->
@@ -32,7 +32,16 @@ public enum CafcassRequestEmailContentProvider {
 
     NEW_APPLICATION(CafcassRequestEmailContentProvider::getNewApplicationSubject,
         CafcassRequestEmailContentProvider::getNewApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForNewApplication);
+        CafcassEmailConfiguration::getRecipientForNewApplication),
+
+    NEW_DOCUMENT((caseData, cafcassData) -> String.format(getSubject(),
+        caseData.getFamilyManCaseNumber(),
+        cafcassData.getEmailSubjectInfo()),
+        (caseData, cafcassData) ->
+            String.join("\n\n",
+                "Types of documents attached:",
+                cafcassData.getDocumentTypes()),
+        CafcassEmailConfiguration::getRecipientForNewDocument);
 
 
     private final BiFunction<CaseData, CafcassData, String> type;
@@ -71,5 +80,9 @@ public enum CafcassRequestEmailContentProvider {
             timeFrame,
             respondent,
             caseNumber);
+    }
+    
+    private static String getSubject() {
+        return "Court Ref. %s.- %s";
     }
 }
