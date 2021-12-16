@@ -1,6 +1,6 @@
 ARG APP_INSIGHTS_AGENT_VERSION=2.6.1
 
-FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.4
+FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.5.2
 
 EXPOSE 4000
 
