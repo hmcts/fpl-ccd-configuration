@@ -248,6 +248,8 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
+      environment:
+        ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults:
         am:
           secrets:
