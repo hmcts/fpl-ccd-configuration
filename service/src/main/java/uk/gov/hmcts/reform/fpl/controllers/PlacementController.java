@@ -13,14 +13,19 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
@@ -31,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 public class PlacementController extends CallbackController {
 
     private final PlacementService placementService;
+    private final RespondentService respondentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -51,6 +57,13 @@ public class PlacementController extends CallbackController {
         caseProperties.putIfNotEmpty("placementChildrenList", eventData.getPlacementChildrenList());
 
         putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+
+        if (isNotEmpty(caseData.getAllRespondents())) {
+            caseProperties.put("hasOthers", "Yes");
+            caseProperties.put("others_label", respondentService.buildRespondentLabel(caseData.getAllRespondents()));
+            caseProperties.put("othersSelector", newSelector(caseData.getAllRespondents().size()));
+
+        }
 
         return respond(caseProperties);
     }
@@ -77,6 +90,7 @@ public class PlacementController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
 
         final List<String> errors = placementService.checkDocuments(caseData);
+
 
         return respond(caseProperties, errors);
     }
