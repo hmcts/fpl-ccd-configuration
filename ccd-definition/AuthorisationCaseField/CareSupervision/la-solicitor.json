@@ -1933,6 +1933,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hasRespondents",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hasRespondentsOrOthers",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
@@ -1941,6 +1948,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "othersSelector",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentsSelector",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },
@@ -2398,7 +2412,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "sendOrderToAllOthers",
+    "CaseFieldID": "sendPlacementNoticeToAllRespondents",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   }

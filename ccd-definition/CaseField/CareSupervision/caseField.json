@@ -1756,6 +1756,16 @@
     "Searchable": "N"
   },
   {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasRespondents",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide respondent selection as to when there are no respondents to notify",
+    "Searchable": "N"
+  },
+  {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "paymentDetailsLabel",
@@ -1906,6 +1916,15 @@
     "ID": "othersSelector",
     "Label": "Select who should get the order",
     "FieldType": "OthersSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsSelector",
+    "Label": "Select who should be notified",
+    "FieldType": "RespondentsSelector",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

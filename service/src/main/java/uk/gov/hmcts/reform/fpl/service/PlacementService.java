@@ -78,6 +78,7 @@ public class PlacementService {
     private final FeeService feeService;
     private final PbaNumberService pbaNumberService;
     private final DocumentSealingService sealingService;
+    private final RespondentService respondentService;
 
     public PlacementEventData prepareChildren(CaseData caseData) {
 
@@ -171,6 +172,19 @@ public class PlacementService {
         return errors;
     }
 
+    public PlacementEventData prepareNotification(CaseData caseData) {
+
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+
+        placementData.setSendPlacementNoticeToAllRespondents(YesNo.fromString(caseData.getSendPlacementNoticeToAllRespondents()));
+        placementData.setPlacementRespondentsToNotify(
+            respondentService.getSelectedRespondents(caseData, caseData.getSendPlacementNoticeToAllRespondents())
+        );
+
+        return placementData;
+
+    }
+
     public List<String> checkPayment(CaseData caseData) {
 
         final PBAPayment pbaPayment = Optional.ofNullable(caseData.getPlacementEventData())
@@ -209,6 +223,10 @@ public class PlacementService {
             .findFirst();
 
         currentPlacement.setNoticeDocuments(getListOfNotices(placementData));
+
+        currentPlacement.setPlacementRespondentsToNotify(
+            respondentService.getSelectedRespondents(caseData, caseData.getSendPlacementNoticeToAllRespondents())
+        );
 
         if (existingPlacement.isPresent()) {
             existingPlacement.get().setValue(currentPlacement);
