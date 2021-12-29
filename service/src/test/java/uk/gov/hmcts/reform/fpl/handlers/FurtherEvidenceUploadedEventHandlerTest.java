@@ -710,6 +710,32 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotSendEmailToCafcassWhenCafcassIsNotEnlang() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.empty()
+            );
+
+        CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        caseData,
+
+                        DESIGNATED_LOCAL_AUTHORITY,
+                        userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
+    }
+
+    @Test
     void shouldEmailCafcassWhendCaseDataWithCorrespondencesIsUploadedByHmtcs() {
         CaseData caseData = buildCaseDataWithCorrespondencesByHmtcs();
         verifyCorresspondences(caseData,  caseData.getCorrespondenceDocuments());

@@ -322,4 +322,20 @@ class GeneratedOrderEventHandlerTest {
         OrderCafcassData orderCafcassData = orderCaptor.getValue();
         assertThat(orderCafcassData.getDocumentName()).isEqualTo(fileName);
     }
+
+    @Test
+    void shouldNotSendNotificationWhenCafcassIsNotEngland() {
+        String fileName = "dummyFile.doc";
+        when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.empty()
+            );
+        underTest.notifyCafcass(EVENT);
+        verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
+    }
 }
