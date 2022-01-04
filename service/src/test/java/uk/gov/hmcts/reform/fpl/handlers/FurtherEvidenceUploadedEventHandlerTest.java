@@ -675,7 +675,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 new FurtherEvidenceUploadedEvent(
                         caseData,
                         caseData,
-
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
