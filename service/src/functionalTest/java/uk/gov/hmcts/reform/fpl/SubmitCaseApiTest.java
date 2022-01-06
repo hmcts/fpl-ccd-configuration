@@ -58,7 +58,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
             Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE),
                     "age", getAge(LocalDate.of(2020, Month.JANUARY, 1))));
 
-        //assertThat(response.getCaseData().getAmountToPay()).isEqualTo("221500");
+        assertThat(response.getCaseData().getAmountToPay()).isEqualTo("221500");
         assertThat(actualApplication).isEqualToNormalizingWhitespace(expectedApplication);
 
         return response.getCaseData();
