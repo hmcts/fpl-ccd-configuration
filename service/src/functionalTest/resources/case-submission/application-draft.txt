@@ -40,7 +40,7 @@ Something else                                                      -
 Child 1
 
 Name                                                                Alex White
-Age                                                                 1 year old
+Age                                                                 2 years old
 Date of birth                                                       1 January 2020
 Gender                                                              Boy
 Child’s living situation                                            -
@@ -59,7 +59,7 @@ Confidential contact details                                        -
 Child 2
 
 Name                                                                Emma White
-Age                                                                 1 year old
+Age                                                                 2 years old
 Date of birth                                                       1 January 2020
 Gender                                                              Girl
 Child’s living situation                                            -
