@@ -39,7 +39,7 @@ Something else                                                      -
 
 Child 1
 
-Name                                                                REPLACE White
+Name                                                                Alex White
 Age                                                                 2 years old
 Date of birth                                                       1 January 2020
 Gender                                                              Boy
