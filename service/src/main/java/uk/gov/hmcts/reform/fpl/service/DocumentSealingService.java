@@ -68,7 +68,7 @@ public class DocumentSealingService {
                     SEAL_HEIGHT);
             }
             return getBinary(document);
-        } catch (IllegalStateException ste) {
+        } catch (IllegalStateException ise) {
             if (defaultIfNull(ise.getMessage(), "").startsWith("PDF contains an encryption dictionary")) {
                 throw new EncryptedPdfUploadedException("Encrypted PDF was uploaded.");
             } else {
