@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.exceptions;
 
-// extends AboutToStartOrSubmitCallbackException
+//extends AboutToStartOrSubmitCallbackException
 public class EncryptedPdfUploadedException extends LogAsWarningException {
 
     public EncryptedPdfUploadedException(String message) {
