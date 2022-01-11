@@ -37,9 +37,9 @@ public class CafcassNotificationService {
             caseData.getId(),
             provider.name());
 
-        log.info("Please remove after testing email recipient: {}, with subject {}"
-                , provider.getRecipient().apply(configuration)
-                , provider.getType().apply(caseData, cafcassData));
+        log.info("Please remove after testing email recipient: {}, with subject {}",
+            provider.getRecipient().apply(configuration),
+            provider.getType().apply(caseData, cafcassData));
 
         emailService.sendEmail(configuration.getSender(),
             EmailData.builder()
