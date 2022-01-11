@@ -5,9 +5,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.EncryptedPdfUploadedException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -16,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -65,7 +68,17 @@ public class DocumentSealingService {
                     SEAL_HEIGHT);
             }
 
-            return getBinary(document);
+            try {
+                return getBinary(document);
+            } catch (IllegalStateException ise) {
+                if (defaultIfNull(ise.getMessage(), "").startsWith("PDF contains an encryption dictionary")) {
+                    throw new EncryptedPdfUploadedException("Encrypted PDF was uploaded.");
+                } else {
+                    throw ise;
+                }
+            }
+        } catch (InvalidPasswordException ipe) {
+            throw new EncryptedPdfUploadedException("Password protected PDF was uploaded.");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
