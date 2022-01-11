@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.exceptions;
 
 //extends AboutToStartOrSubmitCallbackException
+@SuppressWarnings("squid:S110")
 public class EncryptedPdfUploadedException extends LogAsWarningException {
 
     public EncryptedPdfUploadedException(String message) {
