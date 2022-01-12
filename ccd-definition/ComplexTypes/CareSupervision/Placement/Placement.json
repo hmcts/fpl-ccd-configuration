@@ -86,6 +86,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
     "ElementLabel": "Respondent to notify",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "isSubmitted = \"DO_NOT_SHOW\""
   }
 ]

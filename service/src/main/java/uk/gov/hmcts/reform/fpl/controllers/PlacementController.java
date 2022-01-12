@@ -61,9 +61,8 @@ public class PlacementController extends CallbackController {
 
         if (isNotEmpty(caseData.getAllRespondents())) {
             caseProperties.put("hasRespondents", "Yes");
-            caseProperties.put("others_label", respondentService.buildRespondentLabel(caseData.getAllRespondents()));
+            caseProperties.put("placementRespondentsLabel", respondentService.buildRespondentLabel(caseData.getAllRespondents()));
             caseProperties.put("respondentsSelector", newSelector(caseData.getAllRespondents().size()));
-
         }
 
         return respond(caseProperties);

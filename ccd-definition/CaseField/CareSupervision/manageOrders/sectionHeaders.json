@@ -127,10 +127,28 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementRespondentsSectionHeader",
+    "FieldType": "Label",
+    "Label": "## Confirm recipients",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "otherDetailsSectionSubHeader",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Label",
     "Label": "You must check to see if there are restrictions on who should be sent the order.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "placementRespondentsSectionSubHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "You must check to see if there are restrictions on who should be notified about the placement application.",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
