@@ -83,8 +83,8 @@ module.exports = {
 
   async logInAndCreateCase(user, caseName, outsourcingLA) {
     await this.signIn(user);
-    await this.waitForSelector('ccd-search-result', 60);
-    await this.waitForSelector('a[href="/cases/case-filter"]', 60);
+    await this.waitForSelector('ccd-search-result');
+    await this.waitForSelector('a[href="/cases/case-filter"]');
     await this.retryUntilExists(() => this.click('a[href="/cases/case-filter"]'), openApplicationEventPage.fields.jurisdiction, true, 10);
 
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
@@ -378,7 +378,7 @@ module.exports = {
       } catch (error) {
         output.error(error);
       }
-      if (await this.waitForSelector(locator, 60) != null) {
+      if (await this.waitForSelector(locator) != null) {
         output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
         break;
       } else {
