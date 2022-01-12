@@ -26,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthenticationService {
 
-    private static final String DEFAULT_PASSWORD = "Password12";
+    private static final String DEFAULT_PASSWORD = "Pa55word11";
 
     private final ConcurrentMap<User, String> usersAccessTokens = new ConcurrentHashMap<>();
 

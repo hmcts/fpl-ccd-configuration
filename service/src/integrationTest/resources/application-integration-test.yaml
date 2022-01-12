@@ -102,7 +102,7 @@ fpl:
     mapping: 'ORG-LA-2=>test1'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
-    password: 'Password12'
+    password: 'Pa55word11'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
 
 robotics:
