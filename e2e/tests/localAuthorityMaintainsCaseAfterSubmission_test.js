@@ -318,7 +318,6 @@ Scenario('local authority upload placement application and court admin make orde
   await I.goToNextPage();
   manageOrdersEventPage.selectIsFinalOrder();
   manageOrdersEventPage.fillPlacementOrderSpecificFields({
-    serialNumber: '123',
     birthCertificateNumber: 'BC-123',
     birthCertificateDate: '12-Dec-2019',
     birthCertificateDistrict: 'My District',
