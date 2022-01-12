@@ -20,16 +20,24 @@ module.exports = {
     I.runAccessibilityTest();
     I.waitForElement(`${this.fields.jurisdiction} > option[value="${config.definition.jurisdiction}"]`, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.grabCurrentUrl();
     I.waitForElement(`${this.fields.caseType} > option[value="${config.definition.caseType}"]`, 30);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
+    I.grabCurrentUrl();
     I.waitForElement(`${this.fields.event} > option[value="openCase"]`, 30);
     I.selectOption(this.fields.event, 'Start application');
+    I.grabCurrentUrl();
     if(outsourcingLA) {
-      I.retryUntilExists(() => I.goToNextPage(this.startButton), this.fields.outsourcingLAs);
+      I.click(this.startButton);
+      I.waitForSelector(this.fields.outsourcingLAs);
       I.selectOption(this.fields.outsourcingLAs, outsourcingLA);
-      I.retryUntilExists(() => I.goToNextPage(), this.enterCaseNamePage.caseName);
+      I.click('Continue');
+      I.grabCurrentUrl();
+      I.waitForSelector(this.enterCaseNamePage.caseName);
     } else {
-      I.retryUntilExists(() => I.goToNextPage(this.startButton), this.enterCaseNamePage.caseName);
+      I.click(this.startButton);
+      I.grabCurrentUrl();
+      I.waitForSelector(this.enterCaseNamePage.caseName);
     }
     this.enterCaseName(caseName);
   },
