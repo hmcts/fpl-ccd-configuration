@@ -55,7 +55,7 @@ module.exports = {
 
   setInitialSearchFields(state = 'Any') {
     // wait for initial filters to load
-    pause();
+    // pause();
     I.waitForVisible(this.fields.jurisdiction, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
