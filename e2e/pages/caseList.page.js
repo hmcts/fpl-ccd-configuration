@@ -12,7 +12,7 @@ module.exports = {
     caseId: 'CCD Case Number',
     caseName: '#caseName',
     search: 'Apply',
-    caseList: 'Find case',
+    caseList: 'Case list',
     spinner: 'xuilib-loading-spinner',
   },
 
