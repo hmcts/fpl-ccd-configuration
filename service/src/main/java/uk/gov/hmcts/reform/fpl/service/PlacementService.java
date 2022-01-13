@@ -176,10 +176,10 @@ public class PlacementService {
 
         final PlacementEventData placementData = caseData.getPlacementEventData();
 
-        placementData.setSendPlacementNoticeToAllRespondents(YesNo.fromString(caseData.getSendPlacementNoticeToAllRespondents()));
+        placementData.setSendPlacementNoticeToAllRespondents(
+            YesNo.fromString(caseData.getSendPlacementNoticeToAllRespondents()));
         placementData.setPlacementRespondentsToNotify(
-            respondentService.getSelectedRespondents(caseData, caseData.getSendPlacementNoticeToAllRespondents())
-        );
+            respondentService.getSelectedRespondents(caseData, caseData.getSendPlacementNoticeToAllRespondents()));
 
         return placementData;
 

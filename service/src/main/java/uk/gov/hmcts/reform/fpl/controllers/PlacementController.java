@@ -11,17 +11,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
@@ -61,7 +58,8 @@ public class PlacementController extends CallbackController {
 
         if (isNotEmpty(caseData.getAllRespondents())) {
             caseProperties.put("hasRespondents", "Yes");
-            caseProperties.put("placementRespondentsLabel", respondentService.buildRespondentLabel(caseData.getAllRespondents()));
+            caseProperties.put("placementRespondentsLabel",
+                respondentService.buildRespondentLabel(caseData.getAllRespondents()));
             caseProperties.put("respondentsSelector", newSelector(caseData.getAllRespondents().size()));
         }
 
