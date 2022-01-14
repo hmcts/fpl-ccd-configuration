@@ -851,6 +851,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementRespondentsSectionHeader",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementRespondentsSectionSubHeader",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "people_label",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
