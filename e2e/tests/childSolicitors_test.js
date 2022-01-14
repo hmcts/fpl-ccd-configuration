@@ -32,12 +32,17 @@ const unregisteredSolicitor = {
 };
 
 let caseId;
+let dummyCaseCreated = false;
 
-Feature('Child solicitors');
+Feature('Child solicitors @flay-local-ok');
 
 async function setupScenario(I) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMaxChildren);
+  }
+  // In order to search by case number on "Case List" page, a case created by the testing account is required. Otherwise, CCD will throw "case type not found" exception
+  if(!dummyCaseCreated){
+    await I.logInAndCreateCase(solicitor1, `solicitor1_dummy_${moment().format('YYYY-MM-DD HH:MM')}`, 'Swansea City Council');
   }
   if (!solicitor1.details) {
     solicitor1.details = await apiHelper.getUser(solicitor1);

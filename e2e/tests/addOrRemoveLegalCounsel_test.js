@@ -10,7 +10,7 @@ const solicitor2 = config.hillingdonLocalAuthorityUserOne;
 let caseId;
 let legalCounselAdded = false;
 
-Feature('Legal counsel @legal @flaky');
+Feature('Legal counsel @legal @flaky-local-ok');
 
 async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, enterChildrenEventPage) {
   if (!solicitor1.details) {

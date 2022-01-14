@@ -25,9 +25,9 @@ module.exports = {
     I.waitForElement(`${this.fields.event} > option[value="openCase"]`, 30);
     I.selectOption(this.fields.event, 'Start application');
     if(outsourcingLA) {
-      await I.retryUntilExists(() => I.goToNextPage(this.startButton), this.fields.outsourcingLAs);
+      await I.retryUntilExists(async () => await I.goToNextPage(this.startButton), this.fields.outsourcingLAs);
       I.selectOption(this.fields.outsourcingLAs, outsourcingLA);
-      await I.retryUntilExists(() => I.goToNextPage(), this.enterCaseNamePage.caseName);
+      await I.retryUntilExists(async () => await I.goToNextPage(), this.enterCaseNamePage.caseName);
     } else {
       await I.retryUntilExists(() => I.goToNextPage(this.startButton), this.enterCaseNamePage.caseName);
     }
