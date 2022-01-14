@@ -332,6 +332,7 @@ module.exports = {
           }
           return;
         } else {
+          // @todo flaky
           this.wait(1);
         }
       }
@@ -362,6 +363,8 @@ module.exports = {
    */
   async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
     const originalUrl = await this.grabCurrentUrl();
+    // override this for now
+    maxNumberOfTries = 1;
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
