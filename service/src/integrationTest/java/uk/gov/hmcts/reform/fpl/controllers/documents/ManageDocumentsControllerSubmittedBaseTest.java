@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -56,7 +57,8 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .name("dummy document")
             .uploadedBy("user who uploaded")
             .dateTimeUploaded(LocalDateTime.now())
-            .document(TestDataHelper.testDocumentReference());
+            .document(TestDataHelper.testDocumentReference())
+            .type(FurtherEvidenceType.GUARDIAN_REPORTS);
 
         if (confidential) {
             document.confidential(List.of(CONFIDENTIAL_MARKER));

@@ -28,7 +28,7 @@ public class CafcassNotificationService {
     private final EmailService emailService;
     private final DocumentDownloadService documentDownloadService;
     private final CafcassEmailConfiguration configuration;
-
+    
     public void sendEmail(CaseData caseData,
                           Set<DocumentReference> documentReferences,
                           CafcassRequestEmailContentProvider provider,

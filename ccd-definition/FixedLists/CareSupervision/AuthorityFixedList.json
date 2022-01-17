@@ -107,6 +107,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BUR",
+    "ListElement": "Bury Metropolitan Borough Council",
+    "DisplayOrder": 41
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CDF",
     "ListElement": "Cardiff Council",
     "DisplayOrder": 45
@@ -278,6 +285,13 @@
     "ListElementCode": "ESX",
     "ListElement": "East Sussex County Council ",
     "DisplayOrder": 111
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "ESS",
+    "ListElement": "Essex County Council",
+    "DisplayOrder": 112
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1019,6 +1033,13 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "TWB",
     "ListElement": "Telford and Wrekin Borough Council",
+    "DisplayOrder": 399
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "THK",
+    "ListElement": "Thurrock Council",
     "DisplayOrder": 400
   },
   {
