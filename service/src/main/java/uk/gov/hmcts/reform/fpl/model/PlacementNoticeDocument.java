@@ -25,11 +25,6 @@ public class PlacementNoticeDocument {
     private String recipientName;
     private UUID respondentId;
 
-
-    public boolean getUploaded() {
-        return this.response != null;
-    }
-
     @Getter
     @RequiredArgsConstructor
     public enum RecipientType {

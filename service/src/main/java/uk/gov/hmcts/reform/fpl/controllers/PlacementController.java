@@ -89,7 +89,6 @@ public class PlacementController extends CallbackController {
 
         final List<String> errors = placementService.checkDocuments(caseData);
 
-
         return respond(caseProperties, errors);
     }
 
@@ -103,11 +102,11 @@ public class PlacementController extends CallbackController {
         putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
 
         eventData = placementService.preparePayment(caseData);
-        caseDetails.getData().put("placement", eventData.getPlacement());
-        caseDetails.getData().put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
-        caseDetails.getData().put("placementFee", eventData.getPlacementFee());
+        caseProperties.put("placement", eventData.getPlacement());
+        caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
+        caseProperties.put("placementFee", eventData.getPlacementFee());
 
-        return respond(caseDetails);
+        return respond(caseProperties);
     }
 
     @PostMapping("payment-details/mid-event")
