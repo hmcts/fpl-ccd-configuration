@@ -20,7 +20,7 @@ properties([
   ])
 ])
 
-@Library('Infrastructure')
+@Library("Infrastructure@fpl-long-ft-timeout")
 import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = 'java'
