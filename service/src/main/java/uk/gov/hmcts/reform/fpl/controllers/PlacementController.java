@@ -98,10 +98,7 @@ public class PlacementController extends CallbackController {
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
         final CaseData caseData = getCaseData(caseDetails);
 
-        PlacementEventData eventData = placementService.prepareNotification(caseData);
-        putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
-
-        eventData = placementService.preparePayment(caseData);
+        PlacementEventData eventData = placementService.preparePayment(caseData);
         caseProperties.put("placement", eventData.getPlacement());
         caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
         caseProperties.put("placementFee", eventData.getPlacementFee());

@@ -172,19 +172,6 @@ public class PlacementService {
         return errors;
     }
 
-    public PlacementEventData prepareNotification(CaseData caseData) {
-
-        final PlacementEventData placementData = caseData.getPlacementEventData();
-
-        placementData.setSendPlacementNoticeToAllRespondents(
-            YesNo.fromString(caseData.getSendPlacementNoticeToAllRespondents()));
-        placementData.setPlacementRespondentsToNotify(
-            respondentService.getSelectedRespondents(caseData, caseData.getSendPlacementNoticeToAllRespondents()));
-
-        return placementData;
-
-    }
-
     public List<String> checkPayment(CaseData caseData) {
 
         final PBAPayment pbaPayment = Optional.ofNullable(caseData.getPlacementEventData())
