@@ -18,35 +18,46 @@ const signedOutSelector = '#global-header';
 const maxRetries = 10;
 let currentUser = {};
 
+const { I } = inject();
+
 'use strict';
 
 module.exports = {
   async signIn(user) {
+    console.log('base signIn');
     if (!(this.isPuppeteer() &&  (currentUser === user))) {
+      console.log(`Logging in as ${user.email}`);
       output.debug(`Logging in as ${user.email}`);
       currentUser = {}; // reset in case the login fails
 
       await this.retryUntilExists(async () => {
         //To mitigate situation when idam response with blank page
         await this.goToPage(baseUrl);
+        I.grabCurrentUrl();
 
         if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
           await this.refreshPage();
+          I.grabCurrentUrl();
         }
 
         if (await this.hasSelector(signedInSelector)) {
           await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
+          I.grabCurrentUrl();
         }
 
         await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+        I.grabCurrentUrl();
 
       }, signedInSelector, false, 10);
       await this.rejectCookies();
+      I.grabCurrentUrl();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
     } else {
+      console.log(`Already logged in as ${user.email}`);
       output.debug(`Already logged in as ${user.email}`);
     }
+    I.grabCurrentUrl();
   },
 
   async goToPage(url) {

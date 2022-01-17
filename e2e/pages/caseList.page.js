@@ -35,8 +35,11 @@ module.exports = {
 
   searchForCasesWithId(caseId, state = 'Any') {
     this.setInitialSearchFields(state);
+    I.grabCurrentUrl();
     I.fillField(this.fields.caseId, caseId);
+    I.grabCurrentUrl();
     I.click(this.fields.search);
+    I.grabCurrentUrl();
   },
 
   searchForCasesWithUnhandledEvidences() {
@@ -50,12 +53,11 @@ module.exports = {
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
-    I.runAccessibilityTest();
+    I.runAccessibilityTest().then(() => {});
   },
 
   setInitialSearchFields(state = 'Any') {
     // wait for initial filters to load
-    // pause();
     I.waitForVisible(this.fields.jurisdiction, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
@@ -80,8 +82,10 @@ module.exports = {
 
   verifyCaseIsNotAccessible(caseId) {
     I.navigateToCaseList();
+    I.grabCurrentUrl();
     this.searchForCasesWithId(caseId);
-    I.waitForInvisible(this.fields.spinner, 20);
+    I.waitForInvisible(this.fields.spinner, 30);
+    I.grabCurrentUrl();
     I.see('No cases found. Try using different filters.');
   },
 

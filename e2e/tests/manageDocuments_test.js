@@ -155,6 +155,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 });
 
+// @flaky?
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
