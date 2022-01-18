@@ -51,6 +51,9 @@ public class Placement implements SelectableItem {
     @JsonProperty("placementUploadDateTime")
     public LocalDateTime placementUploadDateTime;
 
+    @JsonProperty("placementNotice")
+    private DocumentReference placementNotice;
+
     @JsonIgnore
     public Placement nonConfidential(boolean withNoticesResponses) {
 

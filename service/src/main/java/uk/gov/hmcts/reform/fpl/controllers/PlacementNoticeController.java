@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.HEARING_GRO
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
@@ -82,13 +83,28 @@ public class PlacementNoticeController extends CallbackController {
 
         return respond(caseProperties);
     }
-
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+    @PostMapping("notice-draft/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleConfirmDraftNotice(@RequestBody CallbackRequest request) {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         return respond(caseProperties);
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
+
+        final PlacementEventData eventData = placementService.savePlacement(caseData);
+
+        caseDetails.getData().put("placements", eventData.getPlacements());
+        caseDetails.getData().put("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
+        caseDetails.getData().put("placementsNonConfidentialNotices", eventData.getPlacementsNonConfidential(true));
+
+        removeTemporaryFields(caseDetails, PlacementEventData.class);
+
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")

@@ -26,7 +26,6 @@
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
-  ,
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -59,7 +58,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementNotice",
-    "Label": "Notice of Hearing for Placement",
+    "Label": "Notice of hearing for placement",
     "FieldType": "Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
