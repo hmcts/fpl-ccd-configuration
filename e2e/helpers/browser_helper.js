@@ -55,18 +55,18 @@ module.exports = class BrowserHelpers extends Helper {
    * If element still cannot be found after the waiting time an undefined is returned.
    *
    * @param locator - element CSS locator
-   * @param sec - optional time in seconds to wait
+   * @param timeout - optional time in seconds to wait
    * @returns {Promise<undefined|*>} - promise holding either an element or undefined if element is not found
    */
-  async waitForSelector(locator, sec = 30) {
+  async waitForSelector(locator, timeout = 30) {
     const helper = this.getHelper();
 
     const retryInterval = 5;
-    const numberOfRetries = sec < retryInterval ? 1 : Math.floor(sec / retryInterval);
-    // console.log('sec: ' + sec);
+    const numberOfRetries = timeout < retryInterval ? 1 : Math.floor(timeout / retryInterval);
+    // console.log('timeout: ' + timeout);
     // console.log('retryInterval: ' + retryInterval);
-    // console.log('sec / retryInterval: ' + (sec / retryInterval));
-    // console.log('Math.floor(sec / retryInterval): ' + Math.floor(sec / retryInterval));
+    // console.log('timeout / retryInterval: ' + (timeout / retryInterval));
+    // console.log('Math.floor(timeout / retryInterval): ' + Math.floor(timeout / retryInterval));
     // console.log('numberOfRetries: ' + numberOfRetries);
 
     let result = undefined;
@@ -89,7 +89,7 @@ module.exports = class BrowserHelpers extends Helper {
         return result;
       }
     }
-    console.log('not found it after ' + (numberOfRetries + 1) + ' tries (' + sec + 's)');
+    console.log('not found it after ' + (numberOfRetries + 1) + ' tries (' + timeout + 's)');
     return result;
   }
 
@@ -155,7 +155,7 @@ module.exports = class BrowserHelpers extends Helper {
     const url = await helper.grabCurrentUrl();
     const {page} = await helper;
 
-    runAccessibility(url, page);
+    await runAccessibility(url, page);
   }
 
   async canClick(selector){
