@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -419,6 +420,79 @@ class SendDocumentServiceTest {
                     representedRespondentOne,
                     representedRespondentTwo,
                     notRepresentedRespondent))
+                .build();
+
+            final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
+
+            assertThat(actualRecipients).size().isEqualTo(1);
+            assertThat(actualRecipients.get(0)).isEqualTo(notRepresentedRespondent.getParty());
+        }
+
+        @Test
+        void shouldNotReturnNotRepresentedRespondentMarkedDeceasedNorNFA() {
+            final Respondent notRepresentedRespondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Not Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(null)
+                .build();
+
+            final Respondent notRepresentedDeceasedRespondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Not Represented Deceased")
+                    .lastName("Respondent")
+                    .addressKnow(NO.getValue())
+                    .addressNotKnowReason(AddressNotKnowReason.DECEASED.getType())
+                    .build())
+                .legalRepresentation(null)
+                .build();
+
+            final Respondent notRepresentedNFARespondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Not Represented NFA")
+                    .lastName("Respondent")
+                    .addressKnow(NO.getValue())
+                    .addressNotKnowReason(AddressNotKnowReason.NO_FIXED_ABODE.getType())
+                    .build())
+                .legalRepresentation(null)
+                .build();
+
+            final Element<Representative> representativeServedByPostService = element(Representative.builder()
+                .fullName("Representative 1")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
+
+            final Respondent representedDeceasedRespondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented Deceased")
+                    .lastName("Respondent")
+                    .addressKnow(NO.getValue())
+                    .addressNotKnowReason(AddressNotKnowReason.DECEASED.getType())
+                    .build())
+                .legalRepresentation(null)
+                .representedBy(wrapElements(representativeServedByPostService.getId()))
+                .build();
+
+            final Respondent representedNFARespondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented NFA")
+                    .lastName("Respondent")
+                    .addressKnow(NO.getValue())
+                    .addressNotKnowReason(AddressNotKnowReason.NO_FIXED_ABODE.getType())
+                    .build())
+                .legalRepresentation(YES.getValue())
+                .representedBy(wrapElements(representativeServedByPostService.getId()))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .representatives(List.of(representativeServedByPostService))
+                .respondents1(wrapElements(
+                    notRepresentedRespondent,
+                    notRepresentedDeceasedRespondent,
+                    notRepresentedNFARespondent,
+                    representedDeceasedRespondent,
+                    representedNFARespondent))
                 .build();
 
             final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
