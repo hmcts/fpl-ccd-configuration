@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -109,5 +110,12 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
                 .partyId(randomUUID().toString())
                 .build())
             .build();
+    }
+
+    @JsonIgnore
+    public boolean isDeceasedOrNFA() {
+        return isNotEmpty(party)
+            && (AddressNotKnowReason.DECEASED.getType().equals(party.getAddressNotKnowReason())
+                || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(party.getAddressNotKnowReason()));
     }
 }
