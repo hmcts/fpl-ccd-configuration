@@ -12,9 +12,11 @@ Scenario('Private solicitor creates case on behalf of local authority ', async (
   await caseListPage.verifyCaseIsShareable(caseId);
 
   await I.signIn(config.privateSolicitorTwo);
+  I.grabCurrentUrl();
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await I.signIn(config.swanseaLocalAuthorityUserOne);
+  I.grabCurrentUrl();
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
