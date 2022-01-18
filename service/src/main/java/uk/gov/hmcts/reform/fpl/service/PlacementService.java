@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
@@ -17,11 +19,15 @@ import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfPlacementHearing;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -46,6 +52,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
@@ -58,6 +65,11 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIR
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.toCCDMoneyGBP;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -78,6 +90,8 @@ public class PlacementService {
     private final FeeService feeService;
     private final PbaNumberService pbaNumberService;
     private final DocumentSealingService sealingService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
 
     public PlacementEventData prepareChildren(CaseData caseData) {
 
@@ -115,6 +129,13 @@ public class PlacementService {
         final Element<Child> child = getElement(childrenList.getValueCodeAsUUID(), caseData.getAllChildren());
 
         placementData.setPlacement(getChildPlacement(placementData, child));
+
+        return flattenNotices(caseData);
+    }
+
+    public PlacementEventData preparePlacementFromExisting(CaseData caseData) {
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+        placementData.setPlacement(getPlacementById(caseData, caseData.getPlacementList().getValueCodeAsUUID()));
 
         return flattenNotices(caseData);
     }
@@ -229,6 +250,30 @@ public class PlacementService {
 
         return placementData;
     }
+
+    public PlacementEventData generateA92(CaseData caseData) {
+        final PlacementEventData placementEventData = caseData.getPlacementEventData();
+
+        DocmosisNoticeOfPlacementHearing hearing = DocmosisNoticeOfPlacementHearing.builder()
+            .child(DocmosisChild.builder().build())
+            .courtName(caseData.getCourt().getName())
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .hearingDate(formatLocalDateTimeBaseUsingFormat(placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX)
+                .formatted(getDayOfMonthSuffix(placementEventData.getPlacementNoticeDateTime().getDayOfMonth())))
+            .hearingDuration(placementEventData.getPlacementNoticeDuration())
+            .hearingVenue(placementEventData.getPlacementNoticeVenue())
+            .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
+            .build();
+
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(hearing, A92, RenderFormat.PDF);
+        Document document = uploadDocumentService.uploadDocument(docmosisDocument.getBytes(),
+            A92.getDocumentTitle(time.now().toLocalDate()), RenderFormat.PDF.getMediaType());
+
+        placementEventData.setPlacementNotice(DocumentReference.buildFromDocument(document));
+
+        return placementEventData;
+    }
+
 
     public List<Object> getEvents(CaseData caseData, CaseData caseDataBefore) {
 

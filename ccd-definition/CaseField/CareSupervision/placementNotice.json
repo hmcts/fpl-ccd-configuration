@@ -25,5 +25,43 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  ,
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementNoticeDateTime",
+    "Label": "Date and time of the hearing",
+    "FieldType": "DateTime",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementNoticeDuration",
+    "Label": "Hearing duration (hours)",
+    "FieldType": "Number",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementNoticeVenue",
+    "Label": "Hearing venue",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HearingVenue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementNotice",
+    "Label": "Notice of Hearing for Placement",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
