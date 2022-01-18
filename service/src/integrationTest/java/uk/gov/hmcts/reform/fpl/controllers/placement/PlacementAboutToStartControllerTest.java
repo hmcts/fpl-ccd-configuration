@@ -136,7 +136,6 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
             .type(PARENT_SECOND)
             .recipientName("Adam Green")
             .respondentId(father.getId())
-            .notice(testDocumentReference())
             .noticeDescription("Second parent description")
             .response(testDocumentReference())
             .noticeDescription("Second parent response description")

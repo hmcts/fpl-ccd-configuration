@@ -401,6 +401,7 @@ public class MessageJudgeService {
         final List<DocumentReference> relatedDocuments = new ArrayList<>();
 
         relatedDocuments.add(placement.getApplication());
+        relatedDocuments.add(placement.getPlacementNotice());
 
         unwrapElements(placement.getSupportingDocuments()).stream()
             .map(PlacementSupportingDocument::getDocument)
@@ -408,11 +409,6 @@ public class MessageJudgeService {
 
         unwrapElements(placement.getConfidentialDocuments()).stream()
             .map(PlacementConfidentialDocument::getDocument)
-            .collect(toCollection(() -> relatedDocuments));
-
-        unwrapElements(placement.getNoticeDocuments()).stream()
-            .map(PlacementNoticeDocument::getNotice)
-            .filter(Objects::nonNull)
             .collect(toCollection(() -> relatedDocuments));
 
         unwrapElements(placement.getNoticeDocuments()).stream()
@@ -450,12 +446,6 @@ public class MessageJudgeService {
             .map(DocumentReference::getFilename)
             .collect(toList());
 
-        final List<String> notices = unwrapElements(placement.getNoticeDocuments()).stream()
-            .map(PlacementNoticeDocument::getNotice)
-            .filter(Objects::nonNull)
-            .map(DocumentReference::getFilename)
-            .collect(toList());
-
         final List<String> noticesResponses = unwrapElements(placement.getNoticeDocuments()).stream()
             .map(PlacementNoticeDocument::getResponse)
             .filter(Objects::nonNull)
@@ -465,6 +455,7 @@ public class MessageJudgeService {
         final StringBuilder fileNamesBuilder = new StringBuilder();
 
         fileNamesBuilder.append("Application: " + placement.application.getFilename());
+        fileNamesBuilder.append("Notice: " + placement.getPlacementNotice().getFilename());
 
         if (ObjectUtils.isNotEmpty(supportingDocuments)) {
             fileNamesBuilder.append("\nSupporting documents: " + join(", ", supportingDocuments));
@@ -472,10 +463,6 @@ public class MessageJudgeService {
 
         if (ObjectUtils.isNotEmpty(confidentialDocuments)) {
             fileNamesBuilder.append("\nConfidential documents: " + join(", ", confidentialDocuments));
-        }
-
-        if (ObjectUtils.isNotEmpty(notices)) {
-            fileNamesBuilder.append("\nNotices: " + join(", ", notices));
         }
 
         if (ObjectUtils.isNotEmpty(noticesResponses)) {

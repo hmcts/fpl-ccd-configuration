@@ -113,6 +113,9 @@ public class ManageDocumentsLAController extends CallbackController {
                 }
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
+            case PLACEMENT_NOTICE_RESPONSE:
+                caseDetails.getData().putAll(manageDocumentLAService.initialisePlacementHearingResponseFields(caseData));
+                break;
         }
 
         caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_KEY, supportingEvidence);

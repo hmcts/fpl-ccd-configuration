@@ -10,8 +10,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +24,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -29,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageDocumentLAService {
     private final ObjectMapper mapper;
+    private final PlacementService placementService;
 
     public static final String MANAGE_DOCUMENT_LA_KEY = "manageDocumentLA";
     public static final String COURT_BUNDLE_HEARING_LIST_KEY = "courtBundleHearingList";
@@ -49,6 +54,7 @@ public class ManageDocumentLAService {
             .toBuilder()
             .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
             .hasC2s(YesNo.from(caseData.hasApplicationBundles()).getValue())
+            .hasPlacementNotices(YesNo.from(caseData.getPlacementEventData().getPlacements().stream().anyMatch(el -> el.getValue().getPlacementNotice() != null)).getValue())
             .build();
 
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
@@ -65,6 +71,11 @@ public class ManageDocumentLAService {
             listAndLabel.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
         }
 
+        if (isNotEmpty(caseData.getPlacementEventData().getPlacements())) {
+            DynamicList list = asDynamicList(caseData.getPlacementEventData().getPlacements(), null, Placement::toLabel);
+            listAndLabel.put("manageDocumentsPlacementList", list);
+        }
+
         return listAndLabel;
     }
 
@@ -72,6 +83,13 @@ public class ManageDocumentLAService {
         Map<String, Object> map = new HashMap<>();
         map.put(COURT_BUNDLE_HEARING_LIST_KEY, initialiseCourtBundleHearingList((caseData)));
         map.put(COURT_BUNDLE_KEY, getCourtBundleForHearing((caseData)));
+        return map;
+    }
+
+    public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData) {
+        Map<String, Object> map = new HashMap<>();
+        PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
+        map.put("placement", data.getPlacement());
         return map;
     }
 

@@ -18,8 +18,6 @@ import static java.util.Arrays.asList;
 public class PlacementNoticeDocument {
 
     private RecipientType type;
-    private DocumentReference notice;
-    private String noticeDescription;
     private DocumentReference response;
     private String responseDescription;
     private String recipientName;

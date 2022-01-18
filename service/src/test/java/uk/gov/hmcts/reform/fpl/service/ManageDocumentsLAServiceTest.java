@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -48,7 +49,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(MockitoExtension.class)
 class ManageDocumentsLAServiceTest {
 
-    private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(new ObjectMapper());
+    @Mock
+    private PlacementService placementService;
+
+    private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(new ObjectMapper(), placementService);
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final LocalDateTime futureDate = time.now().plusDays(1);

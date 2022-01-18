@@ -34,5 +34,14 @@
     "ElementLabel": "Hidden to control display of the next field when there are no C2s and Other applications",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "hasPlacementNotices",
+    "FieldType": "Text",
+    "ElementLabel": "Hidden to control display of the next field when there are no placement notices",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
   }
 ]

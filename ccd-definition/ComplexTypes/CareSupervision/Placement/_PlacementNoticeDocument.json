@@ -10,22 +10,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PlacementNoticeDocument",
-    "ListElementCode": "notice",
-    "FieldType": "Document",
-    "ElementLabel": "Notice of placement",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "PlacementNoticeDocument",
-    "ListElementCode": "noticeDescription",
-    "FieldType": "TextArea",
-    "ElementLabel": "Notice of placement description",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "PlacementNoticeDocument",
     "ListElementCode": "response",
     "FieldType": "Document",
     "ElementLabel": "Notice of placement response",
@@ -45,7 +29,7 @@
     "ListElementCode": "respondentId",
     "FieldType": "Text",
     "ElementLabel": "Respondent id",
-    "FieldShowCondition": "notice=\"DO NOT SHOW\"",
+    "FieldShowCondition": "response=\"DO NOT SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -55,7 +39,7 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "PlacementNoticeRecipientType",
     "ElementLabel": "Recipient type",
-    "FieldShowCondition": "notice = \"DO NOT SHOW\"",
+    "FieldShowCondition": "response = \"DO NOT SHOW\"",
     "SecurityClassification": "Public"
   }
 ]

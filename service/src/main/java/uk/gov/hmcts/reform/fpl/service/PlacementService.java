@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toSet;
@@ -53,13 +52,8 @@ import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_FIRST;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_SECOND;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
@@ -105,8 +99,6 @@ public class PlacementService {
             final Element<Child> child = childrenWithoutPlacement.get(0);
 
             placementData.setPlacement(getChildPlacement(placementData, child));
-
-            flattenNotices(caseData);
         }
 
         if (placementData.getPlacementChildrenCardinality() == MANY) {
@@ -130,7 +122,7 @@ public class PlacementService {
 
         placementData.setPlacement(getChildPlacement(placementData, child));
 
-        return flattenNotices(caseData);
+        return placementData;
     }
 
     public PlacementEventData preparePlacementFromExisting(CaseData caseData) {
@@ -230,8 +222,6 @@ public class PlacementService {
             .filter(pl -> Objects.equals(pl.getValue().getChildId(), currentPlacement.getChildId()))
             .findFirst();
 
-        currentPlacement.setNoticeDocuments(getListOfNotices(placementData));
-
         currentPlacement.setPlacementNotice(placementData.getPlacementNotice());
 
         if (existingPlacement.isPresent()) {
@@ -318,15 +308,6 @@ public class PlacementService {
         return events;
     }
 
-    private UUID getNoticeId(List<Element<PlacementNoticeDocument>> notices, RecipientType type) {
-        return defaultIfNull(notices, new ArrayList<Element<PlacementNoticeDocument>>())
-            .stream()
-            .filter(notice -> Objects.equals(notice.getValue().getType(), type))
-            .map(Element::getId)
-            .findFirst()
-            .orElse(null);
-    }
-
     private boolean isPaymentRequired(PlacementEventData eventData) {
 
         return ofNullable(eventData)
@@ -371,192 +352,12 @@ public class PlacementService {
             .build();
     }
 
-    private DynamicList respondentsList(CaseData caseData) {
-        return respondentsList(caseData, null);
-    }
-
     private DynamicList respondentsList(CaseData caseData, UUID selected) {
         final Function<Respondent, String> stringifier = respondent -> format("%s - %s",
             respondent.getParty().getFullName(),
             respondent.getParty().getRelationshipToChild());
 
         return asDynamicList(caseData.getAllRespondents(), selected, stringifier);
-    }
-
-    private PlacementEventData flattenNotices(CaseData caseData) {
-
-        final PlacementEventData placementData = caseData.getPlacementEventData();
-
-        final Placement placement = placementData.getPlacement();
-
-        final Optional<PlacementNoticeDocument> localAuthorityNotice = findPlacementNotice(placement, LOCAL_AUTHORITY);
-        final Optional<PlacementNoticeDocument> cafcassNotice = findPlacementNotice(placement, CAFCASS);
-        final Optional<PlacementNoticeDocument> firstParentNotice = findPlacementNotice(placement, PARENT_FIRST);
-        final Optional<PlacementNoticeDocument> secondParentNotice = findPlacementNotice(placement, PARENT_SECOND);
-
-        if (localAuthorityNotice.isPresent()) {
-            placementData.setPlacementNoticeForLocalAuthorityRequired(YES);
-            placementData.setPlacementNoticeForLocalAuthority(localAuthorityNotice
-                .get().getNotice());
-            placementData.setPlacementNoticeForLocalAuthorityDescription(localAuthorityNotice
-                .get().getNoticeDescription());
-            placementData.setPlacementNoticeResponseFromLocalAuthorityReceived(YesNo.from(nonNull(localAuthorityNotice
-                .get().getResponse())));
-            placementData.setPlacementNoticeResponseFromLocalAuthority(localAuthorityNotice
-                .get().getResponse());
-            placementData.setPlacementNoticeResponseFromLocalAuthorityDescription(localAuthorityNotice
-                .get().getResponseDescription());
-        } else {
-            placementData.setPlacementNoticeForLocalAuthorityRequired(NO);
-            placementData.setPlacementNoticeResponseFromLocalAuthorityReceived(NO);
-        }
-
-        if (cafcassNotice.isPresent()) {
-            placementData.setPlacementNoticeForCafcassRequired(YES);
-            placementData.setPlacementNoticeForCafcass(cafcassNotice
-                .get().getNotice());
-            placementData.setPlacementNoticeForCafcassDescription(cafcassNotice
-                .get().getNoticeDescription());
-            placementData.setPlacementNoticeResponseFromCafcassReceived(YesNo.from(nonNull(cafcassNotice
-                .get().getResponse())));
-            placementData.setPlacementNoticeResponseFromCafcass(cafcassNotice
-                .get().getResponse());
-            placementData.setPlacementNoticeResponseFromCafcassDescription(cafcassNotice
-                .get().getResponseDescription());
-        } else {
-            placementData.setPlacementNoticeForCafcassRequired(NO);
-            placementData.setPlacementNoticeResponseFromCafcassReceived(NO);
-        }
-
-        if (firstParentNotice.isPresent()) {
-            placementData.setPlacementNoticeForFirstParentRequired(YES);
-            placementData.setPlacementNoticeForFirstParent(firstParentNotice
-                .get().getNotice());
-            placementData.setPlacementNoticeForFirstParentDescription(firstParentNotice
-                .get().getNoticeDescription());
-            placementData.setPlacementNoticeResponseFromFirstParentReceived(YesNo.from(nonNull(firstParentNotice
-                .get().getResponse())));
-            placementData.setPlacementNoticeResponseFromFirstParent(firstParentNotice
-                .get().getResponse());
-            placementData.setPlacementNoticeResponseFromFirstParentDescription(firstParentNotice
-                .get().getResponseDescription());
-
-            placementData.setPlacementNoticeForFirstParentParentsList(respondentsList(caseData, firstParentNotice
-                .get().getRespondentId()));
-        } else {
-            placementData.setPlacementNoticeForFirstParentRequired(NO);
-            placementData.setPlacementNoticeResponseFromFirstParentReceived(NO);
-            placementData.setPlacementNoticeForFirstParentParentsList(respondentsList(caseData));
-        }
-
-        if (secondParentNotice.isPresent()) {
-            placementData.setPlacementNoticeForSecondParentRequired(YES);
-            placementData.setPlacementNoticeForSecondParent(secondParentNotice
-                .get().getNotice());
-            placementData.setPlacementNoticeForSecondParentDescription(secondParentNotice
-                .get().getNoticeDescription());
-            placementData.setPlacementNoticeResponseFromSecondParentReceived(YesNo.from(nonNull(secondParentNotice
-                .get().getResponse())));
-            placementData.setPlacementNoticeResponseFromSecondParent(secondParentNotice
-                .get().getResponse());
-            placementData.setPlacementNoticeResponseFromSecondParentDescription(secondParentNotice
-                .get().getResponseDescription());
-
-            placementData.setPlacementNoticeForSecondParentParentsList(respondentsList(caseData, secondParentNotice
-                .get().getRespondentId()));
-        } else {
-            placementData.setPlacementNoticeForSecondParentRequired(NO);
-            placementData.setPlacementNoticeResponseFromSecondParentReceived(NO);
-            placementData.setPlacementNoticeForSecondParentParentsList(respondentsList(caseData));
-        }
-
-        return placementData;
-    }
-
-    private List<Element<PlacementNoticeDocument>> getListOfNotices(PlacementEventData placementData) {
-
-
-        final List<Element<PlacementNoticeDocument>> oldNotices = placementData.getPlacement().getNoticeDocuments();
-
-        final List<Element<PlacementNoticeDocument>> noticeDocuments = new ArrayList<>();
-
-        if (YES == placementData.getPlacementNoticeForLocalAuthorityRequired()) {
-
-            PlacementNoticeDocument.PlacementNoticeDocumentBuilder noticeBuilder = PlacementNoticeDocument.builder()
-                .notice(placementData.getPlacementNoticeForLocalAuthority())
-                .noticeDescription(placementData.getPlacementNoticeForLocalAuthorityDescription())
-                .recipientName("Local authority")
-                .type(LOCAL_AUTHORITY);
-
-            if (YES == placementData.getPlacementNoticeResponseFromLocalAuthorityReceived()) {
-                noticeBuilder.response(placementData.getPlacementNoticeResponseFromLocalAuthority())
-                    .responseDescription(placementData.getPlacementNoticeResponseFromLocalAuthorityDescription());
-            }
-
-            noticeDocuments.add(element(getNoticeId(oldNotices, LOCAL_AUTHORITY), noticeBuilder.build()));
-        }
-
-        if (YES == placementData.getPlacementNoticeForCafcassRequired()) {
-            PlacementNoticeDocument.PlacementNoticeDocumentBuilder noticeBuilder = PlacementNoticeDocument.builder()
-                .notice(placementData.getPlacementNoticeForCafcass())
-                .noticeDescription(placementData.getPlacementNoticeForCafcassDescription())
-                .recipientName("Cafcass")
-                .type(CAFCASS);
-
-            if (YES == placementData.getPlacementNoticeResponseFromCafcassReceived()) {
-                noticeBuilder.response(placementData.getPlacementNoticeResponseFromCafcass())
-                    .responseDescription(placementData.getPlacementNoticeResponseFromCafcassDescription());
-            }
-
-            noticeDocuments.add(element(getNoticeId(oldNotices, CAFCASS), noticeBuilder.build()));
-        }
-
-        if (YES == placementData.getPlacementNoticeForFirstParentRequired()) {
-
-            PlacementNoticeDocument.PlacementNoticeDocumentBuilder noticeBuilder = PlacementNoticeDocument.builder()
-                .notice(placementData.getPlacementNoticeForFirstParent())
-                .noticeDescription(placementData.getPlacementNoticeForFirstParentDescription())
-                .recipientName(placementData.getPlacementNoticeForFirstParentParentsList().getValueLabel())
-                .respondentId(placementData.getPlacementNoticeForFirstParentParentsList().getValueCodeAsUUID())
-                .type(PARENT_FIRST);
-
-            if (YES == placementData.getPlacementNoticeResponseFromFirstParentReceived()) {
-                noticeBuilder.response(placementData.getPlacementNoticeResponseFromFirstParent())
-                    .responseDescription(placementData.getPlacementNoticeResponseFromFirstParentDescription());
-            }
-
-            noticeDocuments.add(element(getNoticeId(oldNotices, PARENT_FIRST), noticeBuilder.build()));
-        }
-
-        if (YES == placementData.getPlacementNoticeForSecondParentRequired()) {
-            PlacementNoticeDocument.PlacementNoticeDocumentBuilder noticeBuilder = PlacementNoticeDocument.builder()
-                .notice(placementData.getPlacementNoticeForSecondParent())
-                .noticeDescription(placementData.getPlacementNoticeForSecondParentDescription())
-                .recipientName(placementData.getPlacementNoticeForSecondParentParentsList().getValueLabel())
-                .respondentId(placementData.getPlacementNoticeForSecondParentParentsList().getValueCodeAsUUID())
-                .type(PARENT_SECOND);
-
-            if (YES == placementData.getPlacementNoticeResponseFromSecondParentReceived()) {
-                noticeBuilder.response(placementData.getPlacementNoticeResponseFromSecondParent())
-                    .responseDescription(placementData.getPlacementNoticeResponseFromSecondParentDescription());
-            }
-
-            noticeDocuments.add(element(getNoticeId(oldNotices, PARENT_SECOND), noticeBuilder.build()));
-        }
-
-        return noticeDocuments;
-    }
-
-    private Optional<PlacementNoticeDocument> findPlacementNotice(Placement placement,
-                                                                  PlacementNoticeDocument.RecipientType type) {
-
-        if (isNull(placement)) {
-            return Optional.empty();
-        }
-
-        return unwrapElements(placement.getNoticeDocuments()).stream()
-            .filter(placementNotice -> Objects.equals(placementNotice.getType(), type))
-            .findFirst();
     }
 
     public List<Element<String>> getPlacements(CaseData caseData) {

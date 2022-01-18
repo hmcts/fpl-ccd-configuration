@@ -55,6 +55,32 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsPlacementList",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocumentLA.type=\"PLACEMENT_NOTICE_RESPONSE\" AND manageDocumentLA.hasPlacementNotices=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsNoPlacementNoticesLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocumentLA.type=\"PLACEMENT_NOTICE_RESPONSE\" AND manageDocumentLA.hasPlacementNotices=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsSupportingC2List",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
@@ -260,5 +286,18 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "placementNoticeResponses",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "PlacementNoticeResponses",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "manageDocumentLA.type=\"PLACEMENT_NOTICE_RESPONSE\""
   }
 ]
