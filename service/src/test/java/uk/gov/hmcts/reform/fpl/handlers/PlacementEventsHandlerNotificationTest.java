@@ -181,7 +181,7 @@ class PlacementEventsHandlerNotificationTest {
             final PlacementNoticeChanged event = new PlacementNoticeChanged(caseData, placement, notice);
             final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
 
-            when(contentProvider.getNoticeChangedCafcassData(caseData, placement, notice)).thenReturn(notifyData);
+            when(contentProvider.getNoticeChangedCafcassData(caseData, placement)).thenReturn(notifyData);
             when(cafcassLookupConfiguration.getCafcass("LA1")).thenReturn(cafcass);
 
             underTest.notifyParties(event);

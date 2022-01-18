@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
+import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -89,6 +90,16 @@ public class PlacementEventsHandler {
         }
     }
 
+    @EventListener
+    public void noticeUploaded(PlacementNoticeAdded event) {
+        // Notify LA
+        notifyLocalAuthority(event.getCaseData(), event.getPlacement());
+        // Notify Cafcass
+        notifyCafcass(event.getCaseData(), event.getPlacement());
+        // Notify selected respondents
+        // TODO - need to merge DFPL-328 in to notify only the selected respondents
+    }
+
     @Async
     @EventListener
     public void notifyCourt(PlacementApplicationSubmitted event) {
@@ -115,7 +126,7 @@ public class PlacementEventsHandler {
         }
 
         if (type == RecipientType.CAFCASS) {
-            notifyCafcass(caseData, placement, notice);
+            notifyCafcass(caseData, placement);
         }
 
         if (type == RecipientType.PARENT_FIRST || type == RecipientType.PARENT_SECOND) {
@@ -151,11 +162,11 @@ public class PlacementEventsHandler {
             .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, recipients, notifyData, caseData.getId());
     }
 
-    private void notifyCafcass(CaseData caseData, Placement placement, PlacementNoticeDocument notice) {
+    private void notifyCafcass(CaseData caseData, Placement placement) {
 
         log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
-        final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement, notice);
+        final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
 
         final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 

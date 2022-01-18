@@ -30,10 +30,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
 
     private final Placement placement = Placement.builder()
         .childName("Alex Brown")
-        .build();
-
-    private final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-        .notice(testDocument)
+        .placementNotice(testDocument)
         .build();
 
     @Test
@@ -71,7 +68,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
 
         when(documentDownloadService.downloadDocument(testDocument.getBinaryUrl())).thenReturn(result);
 
-        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement, notice);
+        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement);
 
         final PlacementNotifyData expected = PlacementNotifyData.builder()
             .childName(placement.getChildName())
@@ -96,7 +93,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
             .notice(testDocument)
             .build();
 
-        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement, notice);
+        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement);
 
         final PlacementNotifyData expected = PlacementNotifyData.builder()
             .childName(placement.getChildName())

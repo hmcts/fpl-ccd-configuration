@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
-import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
+import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -304,58 +303,19 @@ public class PlacementService {
         if (placementBefore.isEmpty()) {
             events.add(new PlacementApplicationSubmitted(caseData, placement));
         } else if (!placement.equals(placementBefore.get())) {
-            events.add(new PlacementApplicationChanged(caseData, placement));
+            if (!placementBefore.get().getPlacementNotice().equals(placement.getPlacementNotice())) {
+                // Placement notice changed
+                events.add(new PlacementNoticeAdded(caseData, placement));
+            } else {
+                // Something else updated
+                events.add(new PlacementApplicationChanged(caseData, placement));
+            }
         } else {
             log.info("No changes in placement application");
             return emptyList();
         }
 
-        final List<PlacementNoticeDocument> noticeDocuments = unwrapElements(placement.getNoticeDocuments());
-        final List<PlacementNoticeDocument> noticeDocumentsBefore = placementBefore
-            .map(Placement::getNoticeDocuments)
-            .map(ElementUtils::unwrapElements)
-            .orElse(emptyList());
-
-        final PlacementNoticeDocument localAuthorityNotice = getNotice(noticeDocuments, LOCAL_AUTHORITY);
-        final PlacementNoticeDocument localAuthorityNoticeBefore = getNotice(noticeDocumentsBefore, LOCAL_AUTHORITY);
-
-        final PlacementNoticeDocument cafcassNotice = getNotice(noticeDocuments, CAFCASS);
-        final PlacementNoticeDocument cafcassNoticeBefore = getNotice(noticeDocumentsBefore, CAFCASS);
-
-        final PlacementNoticeDocument firstParentNotice = getNotice(noticeDocuments, PARENT_FIRST);
-        final PlacementNoticeDocument firstParentNoticeBefore = getNotice(noticeDocumentsBefore, PARENT_FIRST);
-
-        final PlacementNoticeDocument secondParentNotice = getNotice(noticeDocuments, PARENT_SECOND);
-        final PlacementNoticeDocument secondParentNoticeBefore = getNotice(noticeDocumentsBefore, PARENT_SECOND);
-
-        if (nonNull(localAuthorityNotice) && !localAuthorityNotice.equals(localAuthorityNoticeBefore)) {
-            events.add(new PlacementNoticeChanged(caseData, placement, localAuthorityNotice));
-        }
-
-        if (nonNull(cafcassNotice) && !cafcassNotice.equals(cafcassNoticeBefore)) {
-            events.add(new PlacementNoticeChanged(caseData, placement, cafcassNotice));
-        }
-
-        if (nonNull(firstParentNotice) && !firstParentNotice.equals(firstParentNoticeBefore)
-            && !firstParentNotice.equals(secondParentNoticeBefore)) {
-
-            events.add(new PlacementNoticeChanged(caseData, placement, firstParentNotice));
-        }
-
-        if (nonNull(secondParentNotice) && !secondParentNotice.equals(secondParentNoticeBefore)
-            && !secondParentNotice.equals(firstParentNoticeBefore)) {
-
-            events.add(new PlacementNoticeChanged(caseData, placement, secondParentNotice));
-        }
-
         return events;
-    }
-
-    private PlacementNoticeDocument getNotice(List<PlacementNoticeDocument> notices, RecipientType type) {
-        return notices.stream()
-            .filter(notice -> Objects.equals(notice.getType(), type))
-            .findFirst()
-            .orElse(null);
     }
 
     private UUID getNoticeId(List<Element<PlacementNoticeDocument>> notices, RecipientType type) {

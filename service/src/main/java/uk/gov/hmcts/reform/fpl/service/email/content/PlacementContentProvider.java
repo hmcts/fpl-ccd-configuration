@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.PlacementNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
@@ -35,16 +34,14 @@ public class PlacementContentProvider extends AbstractEmailContentProvider {
             .build();
     }
 
-    public PlacementNotifyData getNoticeChangedCafcassData(CaseData caseData, Placement placement,
-                                                           PlacementNoticeDocument notice) {
-
-        final Object documentDownloadUrl = getDocumentDownloadLink(notice.getNotice());
+    public PlacementNotifyData getNoticeChangedCafcassData(CaseData caseData, Placement placement) {
+        final Object documentDownloadUrl = getDocumentDownloadLink(placement.getPlacementNotice());
 
         return PlacementNotifyData.builder()
             .childName(placement.getChildName())
             .localAuthority(caseData.getCaseLocalAuthorityName())
             .ccdNumber(caseData.getId().toString())
-            .documentUrl(getDocumentUrl(notice.getNotice()))
+            .documentUrl(getDocumentUrl(placement.getPlacementNotice()))
             .documentDownloadUrl(documentDownloadUrl)
             .hasDocumentDownloadUrl(isEmpty(documentDownloadUrl) ? "no" : "yes")
             .build();
