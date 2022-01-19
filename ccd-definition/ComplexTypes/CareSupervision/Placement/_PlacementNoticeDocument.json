@@ -39,7 +39,6 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "PlacementNoticeRecipientType",
     "ElementLabel": "Recipient type",
-    "FieldShowCondition": "response = \"DO NOT SHOW\"",
     "SecurityClassification": "Public"
   }
 ]

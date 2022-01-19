@@ -222,7 +222,13 @@ public class PlacementService {
             .filter(pl -> Objects.equals(pl.getValue().getChildId(), currentPlacement.getChildId()))
             .findFirst();
 
-        currentPlacement.setPlacementNotice(placementData.getPlacementNotice());
+        if (placementData.getPlacementNotice() != null) {
+            currentPlacement.setPlacementNotice(placementData.getPlacementNotice());
+        }
+
+        if (caseData.getPlacementNoticeResponses() != null) {
+            currentPlacement.setNoticeDocuments(caseData.getPlacementNoticeResponses());
+        }
 
         if (existingPlacement.isPresent()) {
             existingPlacement.get().setValue(currentPlacement);
@@ -293,7 +299,7 @@ public class PlacementService {
         if (placementBefore.isEmpty()) {
             events.add(new PlacementApplicationSubmitted(caseData, placement));
         } else if (!placement.equals(placementBefore.get())) {
-            if (!placementBefore.get().getPlacementNotice().equals(placement.getPlacementNotice())) {
+            if (!Objects.equals(placementBefore.get().getPlacementNotice(), placement.getPlacementNotice())) {
                 // Placement notice changed
                 events.add(new PlacementNoticeAdded(caseData, placement));
             } else {

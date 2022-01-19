@@ -1119,7 +1119,7 @@ public class CaseData {
 
     private final DynamicList placementList;
 
-    private final List<Element<PlacementNoticeDocument>> manageDocumentPlacementNoticeResponses;
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
 
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {

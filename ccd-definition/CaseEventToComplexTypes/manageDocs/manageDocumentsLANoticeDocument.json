@@ -4,11 +4,22 @@
     "ID": "PlacementNoticeDocument",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "placementNoticeResponses",
-    "ListElementCode": "recipientName",
+    "ListElementCode": "type",
     "EventElementLabel": "Party",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "EventHintText": "Your document will be stored in the corresponding tab"
+    "EventHintText": "Who's response is this?"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "placementNoticeResponses",
+    "ListElementCode": "recipientName",
+    "EventElementLabel": "Respondent's name",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "type = \"RESPONDENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +40,7 @@
     "ListElementCode": "responseDescription",
     "EventElementLabel": "Notice of placement response description",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "EventHintText": "Your document will be stored in the corresponding tab"
+    "DisplayContext": "OPTIONAL",
+    "EventHintText": "Description of this response"
   }
 ]

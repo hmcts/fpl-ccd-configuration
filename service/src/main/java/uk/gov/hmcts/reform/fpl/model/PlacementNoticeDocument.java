@@ -29,7 +29,8 @@ public class PlacementNoticeDocument {
         LOCAL_AUTHORITY("Local authority"),
         CAFCASS("Cafcass"),
         PARENT_FIRST("First parent"),
-        PARENT_SECOND("Second parent");
+        PARENT_SECOND("Second parent"),
+        RESPONDENT("Respondent");
 
         private final String name;
 

@@ -45,6 +45,7 @@ public class ManageDocumentLAService {
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
+    public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
@@ -73,7 +74,7 @@ public class ManageDocumentLAService {
 
         if (isNotEmpty(caseData.getPlacementEventData().getPlacements())) {
             DynamicList list = asDynamicList(caseData.getPlacementEventData().getPlacements(), null, Placement::toLabel);
-            listAndLabel.put("manageDocumentsPlacementList", list);
+            listAndLabel.put(PLACEMENT_LIST_KEY, list);
         }
 
         return listAndLabel;
@@ -90,6 +91,7 @@ public class ManageDocumentLAService {
         Map<String, Object> map = new HashMap<>();
         PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
         map.put("placement", data.getPlacement());
+        map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments());
         return map;
     }
 
@@ -140,5 +142,9 @@ public class ManageDocumentLAService {
 
             return CourtBundle.builder().hearing(hearingBooking.get().getValue().toLabel()).build();
         }
+    }
+
+    public PlacementEventData updatePlacementNotices(CaseData caseData) {
+        return placementService.savePlacement(caseData);
     }
 }
