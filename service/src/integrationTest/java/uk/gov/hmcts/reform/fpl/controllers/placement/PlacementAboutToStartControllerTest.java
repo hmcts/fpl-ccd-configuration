@@ -17,8 +17,6 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_FIRST;
@@ -50,8 +48,6 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
             .hasSize(2)
             .hasElement(child1.getId(), "Alex Brown")
             .hasElement(child2.getId(), "George White");
-        assertThat(actualPlacementData.getPlacementNoticeForFirstParent()).isNull();
-        assertThat(actualPlacementData.getPlacementNoticeForSecondParent()).isNull();
     }
 
     @Test
@@ -78,27 +74,6 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
             .confidentialDocuments(wrapElements(defaultAnnexB))
             .build());
 
-        assertThat(actualPlacementData.getPlacementNoticeForCafcassRequired()).isEqualTo(NO);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromCafcassReceived()).isEqualTo(NO);
-
-        assertThat(actualPlacementData.getPlacementNoticeForLocalAuthorityRequired()).isEqualTo(NO);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromLocalAuthorityReceived()).isEqualTo(NO);
-
-        assertThat(actualPlacementData.getPlacementNoticeForFirstParentRequired()).isEqualTo(NO);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromFirstParentReceived()).isEqualTo(NO);
-        assertThatDynamicList(actualPlacementData.getPlacementNoticeForFirstParentParentsList())
-            .hasSize(2)
-            .hasNoSelectedValue()
-            .hasElement(mother.getId(), "Emma Green - mother")
-            .hasElement(father.getId(), "Adam Green - father");
-
-        assertThat(actualPlacementData.getPlacementNoticeForSecondParentRequired()).isEqualTo(NO);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParentReceived()).isEqualTo(NO);
-        assertThatDynamicList(actualPlacementData.getPlacementNoticeForSecondParentParentsList())
-            .hasSize(2)
-            .hasNoSelectedValue()
-            .hasElement(mother.getId(), "Emma Green - mother")
-            .hasElement(father.getId(), "Adam Green - father");
 
         assertThat(actualPlacementData.getPlacementChildrenList()).isNull();
     }
@@ -108,37 +83,30 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
 
         final PlacementNoticeDocument localAuthorityNotice = PlacementNoticeDocument.builder()
             .type(LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
-            .noticeDescription("Local authority description")
             .response(testDocumentReference())
             .responseDescription("Local authority response description")
             .build();
 
         final PlacementNoticeDocument cafcassNotice = PlacementNoticeDocument.builder()
             .type(CAFCASS)
-            .notice(testDocumentReference())
-            .noticeDescription("Cafcass description")
             .response(testDocumentReference())
-            .noticeDescription("Cafcass response description")
+            .responseDescription("Cafcass response description")
             .build();
 
         final PlacementNoticeDocument firstParentNotice = PlacementNoticeDocument.builder()
             .type(PARENT_FIRST)
             .recipientName("Emma Green")
             .respondentId(mother.getId())
-            .notice(testDocumentReference())
-            .noticeDescription("First parent description")
             .response(testDocumentReference())
-            .noticeDescription("First parent response description")
+            .responseDescription("First parent response description")
             .build();
 
         final PlacementNoticeDocument secondParentNotice = PlacementNoticeDocument.builder()
             .type(PARENT_SECOND)
             .recipientName("Adam Green")
             .respondentId(father.getId())
-            .noticeDescription("Second parent description")
             .response(testDocumentReference())
-            .noticeDescription("Second parent response description")
+            .responseDescription("Second parent response description")
             .build();
 
         final Placement existingPlacement = Placement.builder()
@@ -168,68 +136,6 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
         assertThat(actualPlacementData.getPlacementChildName()).isEqualTo("Alex Brown");
 
         assertThat(actualPlacementData.getPlacement()).isEqualTo(existingPlacement);
-
-        assertThat(actualPlacementData.getPlacementNoticeForLocalAuthorityRequired())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeForLocalAuthority())
-            .isEqualTo(localAuthorityNotice.getNotice());
-        assertThat(actualPlacementData.getPlacementNoticeForLocalAuthorityDescription())
-            .isEqualTo(localAuthorityNotice.getNoticeDescription());
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromLocalAuthorityReceived())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromLocalAuthority())
-            .isEqualTo(localAuthorityNotice.getResponse());
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromLocalAuthorityDescription())
-            .isEqualTo(localAuthorityNotice.getResponseDescription());
-
-        assertThat(actualPlacementData.getPlacementNoticeForCafcassRequired())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeForCafcass())
-            .isEqualTo(cafcassNotice.getNotice());
-        assertThat(actualPlacementData.getPlacementNoticeForCafcassDescription())
-            .isEqualTo(cafcassNotice.getNoticeDescription());
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromCafcassReceived())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromCafcass())
-            .isEqualTo(cafcassNotice.getResponse());
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromCafcassDescription())
-            .isEqualTo(cafcassNotice.getResponseDescription());
-
-        assertThat(actualPlacementData.getPlacementNoticeForFirstParentRequired())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeForFirstParent())
-            .isEqualTo(firstParentNotice.getNotice());
-        assertThat(actualPlacementData.getPlacementNoticeForFirstParentDescription())
-            .isEqualTo(firstParentNotice.getNoticeDescription());
-        assertThatDynamicList(actualPlacementData.getPlacementNoticeForFirstParentParentsList())
-            .hasSize(2)
-            .hasSelectedValue(mother.getId(), "Emma Green - mother")
-            .hasElement(mother.getId(), "Emma Green - mother")
-            .hasElement(father.getId(), "Adam Green - father");
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromFirstParentReceived())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromFirstParent())
-            .isEqualTo(firstParentNotice.getResponse());
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromFirstParentDescription())
-            .isEqualTo(firstParentNotice.getResponseDescription());
-
-        assertThat(actualPlacementData.getPlacementNoticeForSecondParentRequired())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeForSecondParent())
-            .isEqualTo(secondParentNotice.getNotice());
-        assertThat(actualPlacementData.getPlacementNoticeForSecondParentDescription())
-            .isEqualTo(secondParentNotice.getNoticeDescription());
-        assertThatDynamicList(actualPlacementData.getPlacementNoticeForSecondParentParentsList())
-            .hasSize(2)
-            .hasSelectedValue(father.getId(), "Adam Green - father")
-            .hasElement(mother.getId(), "Emma Green - mother")
-            .hasElement(father.getId(), "Adam Green - father");
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParentReceived())
-            .isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParent())
-            .isEqualTo(secondParentNotice.getResponse());
-        assertThat(actualPlacementData.getPlacementNoticeResponseFromSecondParentDescription())
-            .isEqualTo(secondParentNotice.getResponseDescription());
 
         assertThat(actualPlacementData.getPlacementChildrenList()).isNull();
     }

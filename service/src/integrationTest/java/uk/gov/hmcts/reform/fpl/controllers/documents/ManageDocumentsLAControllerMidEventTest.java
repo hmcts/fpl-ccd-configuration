@@ -100,6 +100,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .type(FURTHER_EVIDENCE_DOCUMENTS)
             .hasHearings("Yes")
             .hasC2s("No")
+            .hasPlacementNotices("No")
             .build());
     }
 
@@ -121,6 +122,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .type(CORRESPONDENCE)
             .hasHearings("No")
             .hasC2s("No")
+            .hasPlacementNotices("No")
             .build());
     }
 
@@ -158,6 +160,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .type(COURT_BUNDLE)
             .hasHearings("Yes")
             .hasC2s("No")
+            .hasPlacementNotices("No")
             .build());
     }
 
@@ -192,6 +195,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
             .hasHearings("No")
             .hasC2s("Yes")
+            .hasPlacementNotices("No")
             .build());
     }
 

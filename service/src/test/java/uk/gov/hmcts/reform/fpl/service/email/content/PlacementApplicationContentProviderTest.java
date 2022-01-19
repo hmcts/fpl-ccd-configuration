@@ -90,7 +90,6 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
         when(documentDownloadService.downloadDocument(testDocument.getBinaryUrl())).thenReturn(result);
 
         final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-            .notice(testDocument)
             .build();
 
         final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement);

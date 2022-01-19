@@ -23,7 +23,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -70,7 +69,11 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
     @Test
     void shouldSaveNewPlacementApplication() {
 
-        final DocumentReference localAuthorityNotice = testDocumentReference();
+        final List<Element<PlacementNoticeDocument>> noticeResponses = wrapElements(PlacementNoticeDocument.builder()
+            .type(LOCAL_AUTHORITY)
+            .recipientName("Local authority")
+            .response(testDocumentReference())
+            .build());
 
         final Placement newPlacement = Placement.builder()
             .childId(child1.getId())
@@ -79,6 +82,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementUploadDateTime(now())
             .supportingDocuments(wrapElements(statementOfFacts))
             .confidentialDocuments(wrapElements(annexB))
+            .noticeDocuments(noticeResponses)
             .build();
 
         final Placement existingPlacement = Placement.builder()
@@ -92,9 +96,6 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementEventData(PlacementEventData.builder()
                 .placement(newPlacement)
                 .placements(wrapElements(existingPlacement))
-                .placementNoticeForLocalAuthorityRequired(YES)
-                .placementNoticeForLocalAuthority(localAuthorityNotice)
-                .placementNoticeForLocalAuthorityDescription("Test description")
                 .build())
             .build();
 
@@ -104,12 +105,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
 
         final Placement expectedNewPlacement = newPlacement.toBuilder()
             .application(sealedApplication)
-            .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                .type(LOCAL_AUTHORITY)
-                .recipientName("Local authority")
-                .notice(localAuthorityNotice)
-                .noticeDescription("Test description")
-                .build()))
+            .noticeDocuments(noticeResponses)
             .placementUploadDateTime(now())
             .build();
 
@@ -129,7 +125,12 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
     @Test
     void shouldUpdateExistingPlacement() {
 
-        final DocumentReference localAuthorityNotice = testDocumentReference();
+        final List<Element<PlacementNoticeDocument>> noticeResponses = wrapElements(PlacementNoticeDocument.builder()
+            .type(LOCAL_AUTHORITY)
+            .recipientName("Local authority")
+            .response(testDocumentReference())
+            .build());
+
 
         final Placement existingApplicationForChild1 = Placement.builder()
             .childId(child1.getId())
@@ -151,6 +152,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
         final Placement newPlacementForChild1 = existingApplicationForChild1.toBuilder()
             .supportingDocuments(wrapElements(statementOfFacts))
             .confidentialDocuments(wrapElements(annexB))
+            .noticeDocuments(noticeResponses)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -158,9 +160,6 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementEventData(PlacementEventData.builder()
                 .placement(newPlacementForChild1)
                 .placements(wrapElements(existingApplicationForChild1, existingApplicationForChild2))
-                .placementNoticeForLocalAuthorityRequired(YES)
-                .placementNoticeForLocalAuthority(localAuthorityNotice)
-                .placementNoticeForLocalAuthorityDescription("Test description")
                 .build())
             .build();
 
@@ -169,12 +168,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
         final Placement expectedNewPlacementForChild1 = newPlacementForChild1.toBuilder()
-            .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                .type(LOCAL_AUTHORITY)
-                .recipientName("Local authority")
-                .notice(localAuthorityNotice)
-                .noticeDescription("Test description")
-                .build()))
+            .noticeDocuments(noticeResponses)
             .build();
 
         final Placement expectedNewNonConfidentialPlacementForChild1 = expectedNewPlacementForChild1.toBuilder()

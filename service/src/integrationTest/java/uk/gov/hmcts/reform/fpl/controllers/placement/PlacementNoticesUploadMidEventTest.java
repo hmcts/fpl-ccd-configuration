@@ -29,24 +29,16 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @OverrideAutoConfiguration(enabled = true)
 class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest {
 
+    // TODO - Remove these tests (The admin no longer upload notices in this flow)
+
     @MockBean
     private FeesRegisterApi feesRegisterApi;
 
     @Test
     void shouldReturnErrorsWhenRequiredDocumentsNotPresent() {
 
-        final DynamicList parentList1 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
-
-        final DynamicList parentList2 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
-
         final PlacementEventData placementData = PlacementEventData.builder()
             .placement(Placement.builder().build())
-            .placementNoticeForFirstParentParentsList(parentList1)
-            .placementNoticeForSecondParentParentsList(parentList2)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -78,8 +70,6 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
                 .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
                 .confidentialDocuments(wrapElements(annexB))
                 .build())
-            .placementNoticeForFirstParentParentsList(parentList1)
-            .placementNoticeForSecondParentParentsList(parentList2)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -118,8 +108,6 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
                 .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
                 .confidentialDocuments(wrapElements(annexB))
                 .build())
-            .placementNoticeForFirstParentParentsList(parentList1)
-            .placementNoticeForSecondParentParentsList(parentList2)
             .build();
 
         final CaseData caseData = CaseData.builder()

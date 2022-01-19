@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientTyp
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {PlacementEventsHandler.class, PlacementContentProvider.class,
     EmailNotificationHelper.class, CaseUrlService.class
@@ -55,9 +54,17 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
 
     private final Element<Child> child = testChild("Alex", "Green");
 
+    private final DocumentReference noticeDocument = DocumentReference.builder()
+        .filename("doc.pdf")
+        .url("http://dm-store/100")
+        .binaryUrl("http://dm-store/100/binary")
+        .build();
+
+
     private final Placement placement = Placement.builder()
         .childId(child.getId())
         .childName(child.getValue().asLabel())
+        .placementNotice(noticeDocument)
         .build();
 
     private final CaseData caseData = CaseData.builder()
@@ -98,7 +105,6 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
 
         final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
             .type(LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
             .build();
 
         underTest.notifyParties(new PlacementNoticeChanged(caseData, placement, notice));
@@ -119,15 +125,9 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
     @Test
     void cafcassNotification() {
 
-        final DocumentReference noticeDocument = DocumentReference.builder()
-            .filename("doc.pdf")
-            .url("http://dm-store/100")
-            .binaryUrl("http://dm-store/100/binary")
-            .build();
 
         final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
             .type(CAFCASS)
-            .notice(noticeDocument)
             .build();
 
         underTest.notifyParties(new PlacementNoticeChanged(caseData, placement, notice));

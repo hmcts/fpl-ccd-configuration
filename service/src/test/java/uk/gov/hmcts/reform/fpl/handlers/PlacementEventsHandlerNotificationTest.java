@@ -40,7 +40,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_
 import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class PlacementEventsHandlerNotificationTest {
@@ -129,7 +128,6 @@ class PlacementEventsHandlerNotificationTest {
 
         private final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
             .build();
 
         private final CaseData caseData = CaseData.builder()
@@ -165,7 +163,6 @@ class PlacementEventsHandlerNotificationTest {
 
         private final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.CAFCASS)
-            .notice(testDocumentReference())
             .build();
 
         private final CaseData caseData = CaseData.builder()
@@ -226,7 +223,6 @@ class PlacementEventsHandlerNotificationTest {
 
             final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
                 .type(PlacementNoticeDocument.RecipientType.PARENT_FIRST)
-                .notice(testDocumentReference())
                 .recipientName("Alex Smith")
                 .respondentId(respondent.getId())
                 .build();
@@ -261,7 +257,6 @@ class PlacementEventsHandlerNotificationTest {
 
             final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
                 .type(PlacementNoticeDocument.RecipientType.PARENT_SECOND)
-                .notice(testDocumentReference())
                 .recipientName("Alex Smith")
                 .respondentId(respondent.getId())
                 .build();
@@ -293,7 +288,6 @@ class PlacementEventsHandlerNotificationTest {
 
             final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
                 .type(PlacementNoticeDocument.RecipientType.PARENT_FIRST)
-                .notice(testDocumentReference())
                 .recipientName("Alex Smith")
                 .respondentId(respondent.getId())
                 .build();
@@ -303,8 +297,8 @@ class PlacementEventsHandlerNotificationTest {
             underTest.notifyParties(event);
 
             verifyNoInteractions(notificationService, contentProvider);
-            verify(sendDocumentService)
-                .sendDocuments(caseData, List.of(notice.getNotice()), List.of(respondent.getValue().getParty()));
+            verify(sendDocumentService).sendDocuments(
+                caseData, List.of(placement.getPlacementNotice()), List.of(respondent.getValue().getParty()));
         }
     }
 }

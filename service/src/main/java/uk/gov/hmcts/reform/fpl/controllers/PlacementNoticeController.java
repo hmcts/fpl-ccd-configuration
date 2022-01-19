@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.HEARING_GROUP;
-import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -66,7 +64,7 @@ public class PlacementNoticeController extends CallbackController {
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         final PlacementEventData eventData = placementService.preparePlacementFromExisting(caseData);
-        putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+        putFields(caseProperties, eventData, PLACEMENT_GROUP);
 
         return respond(caseProperties);
 
@@ -83,6 +81,7 @@ public class PlacementNoticeController extends CallbackController {
 
         return respond(caseProperties);
     }
+
     @PostMapping("notice-draft/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleConfirmDraftNotice(@RequestBody CallbackRequest request) {
         final CaseDetails caseDetails = request.getCaseDetails();

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -47,13 +46,11 @@ import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
@@ -166,25 +163,6 @@ public class PlacementService {
         return errors;
     }
 
-    public List<String> checkNotices(CaseData caseData) {
-
-        final List<String> errors = new ArrayList<>();
-
-        final PlacementEventData placementData = caseData.getPlacementEventData();
-
-        final Optional<UUID> firstParentId = ofNullable(placementData.getPlacementNoticeForFirstParentParentsList())
-            .map(DynamicList::getValueCodeAsUUID);
-
-        final Optional<UUID> secondParentId = ofNullable(placementData.getPlacementNoticeForSecondParentParentsList())
-            .map(DynamicList::getValueCodeAsUUID);
-
-        if (firstParentId.isPresent() && secondParentId.isPresent() && firstParentId.equals(secondParentId)) {
-            errors.add("First and second parents can not be same");
-        }
-
-        return errors;
-    }
-
     public List<String> checkPayment(CaseData caseData) {
 
         final PBAPayment pbaPayment = Optional.ofNullable(caseData.getPlacementEventData())
@@ -270,18 +248,23 @@ public class PlacementService {
                 .build())
             .courtName(caseData.getCourt().getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .hearingDate(formatLocalDateTimeBaseUsingFormat(placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX)
+            .hearingDate(formatLocalDateTimeBaseUsingFormat(
+                placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX)
                 .formatted(getDayOfMonthSuffix(placementEventData.getPlacementNoticeDateTime().getDayOfMonth())))
             .hearingDuration(placementEventData.getPlacementNoticeDuration())
-            .hearingVenue(hearingVenueLookUpService.getHearingVenue(placementEventData.getPlacementNoticeVenue()).getVenue())
+            .hearingVenue(hearingVenueLookUpService.getHearingVenue(
+                placementEventData.getPlacementNoticeVenue()).getVenue())
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .build();
 
-        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(hearing, A92, RenderFormat.PDF);
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            hearing, A92, RenderFormat.PDF
+        );
         Document document = uploadDocumentService.uploadDocument(docmosisDocument.getBytes(),
             A92.getDocumentTitle(time.now().toLocalDate()), RenderFormat.PDF.getMediaType());
         placementEventData.setPlacementNotice(DocumentReference.buildFromDocument(document));
-        return placementEventData;    }
+        return placementEventData;
+    }
 
 
     public List<Object> getEvents(CaseData caseData, CaseData caseDataBefore) {

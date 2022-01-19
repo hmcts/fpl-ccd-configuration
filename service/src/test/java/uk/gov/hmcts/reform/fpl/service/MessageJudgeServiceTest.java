@@ -813,10 +813,8 @@ class MessageJudgeServiceTest {
                     .build()))
             .noticeDocuments(wrapElements(
                 PlacementNoticeDocument.builder()
-                    .notice(notice1)
                     .build(),
                 PlacementNoticeDocument.builder()
-                    .notice(notice2)
                     .response(notice2Response)
                     .build()))
             .build());

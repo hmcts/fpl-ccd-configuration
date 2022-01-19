@@ -116,7 +116,8 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
-                caseDetails.getData().putAll(manageDocumentLAService.initialisePlacementHearingResponseFields(caseData));
+                caseDetails.getData().putAll(
+                    manageDocumentLAService.initialisePlacementHearingResponseFields(caseData));
                 break;
         }
 

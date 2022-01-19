@@ -52,7 +52,8 @@ class ManageDocumentsLAServiceTest {
     @Mock
     private PlacementService placementService;
 
-    private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(new ObjectMapper(), placementService);
+    private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(
+        new ObjectMapper(), placementService);
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final LocalDateTime futureDate = time.now().plusDays(1);

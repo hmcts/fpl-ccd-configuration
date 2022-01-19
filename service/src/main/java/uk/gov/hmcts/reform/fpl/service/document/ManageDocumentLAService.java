@@ -55,7 +55,9 @@ public class ManageDocumentLAService {
             .toBuilder()
             .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
             .hasC2s(YesNo.from(caseData.hasApplicationBundles()).getValue())
-            .hasPlacementNotices(YesNo.from(caseData.getPlacementEventData().getPlacements().stream().anyMatch(el -> el.getValue().getPlacementNotice() != null)).getValue())
+            .hasPlacementNotices(YesNo.from(caseData.getPlacementEventData().getPlacements().stream().anyMatch(
+                el -> el.getValue().getPlacementNotice() != null
+            )).getValue())
             .build();
 
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
@@ -73,7 +75,8 @@ public class ManageDocumentLAService {
         }
 
         if (isNotEmpty(caseData.getPlacementEventData().getPlacements())) {
-            DynamicList list = asDynamicList(caseData.getPlacementEventData().getPlacements(), null, Placement::toLabel);
+            DynamicList list = asDynamicList(
+                caseData.getPlacementEventData().getPlacements(), null, Placement::toLabel);
             listAndLabel.put(PLACEMENT_LIST_KEY, list);
         }
 
