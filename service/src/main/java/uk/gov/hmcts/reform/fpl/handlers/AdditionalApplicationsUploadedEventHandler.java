@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
@@ -75,11 +76,15 @@ public class AdditionalApplicationsUploadedEventHandler {
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
         final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
-        documents.forEach(document -> log.info("Sending additional application by post for case ID {} and document {}.",
-            caseData.getId(), document.getFilename()));
-
         Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
-        sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
+
+        try {
+            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
+        } catch(HttpClientErrorException exception) {
+            documents.forEach(document -> log.info("Exception sending additional application by post for case ID {}" +
+                    " and document {}.",
+                caseData.getId(), document.getFilename()));
+        }
     }
 
     private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
