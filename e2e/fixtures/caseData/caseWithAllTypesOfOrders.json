@@ -441,6 +441,7 @@
       },
       "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
     },
+    "caseLocalAuthorityName": "Swansea City Council",
     "urgentHearingOrder": {
       "order": {
         "document_url": "${TEST_DOCUMENT_URL}",

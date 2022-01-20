@@ -310,6 +310,7 @@
       },
       "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
     },
+    "caseLocalAuthorityName": "Swansea City Council",
     "displayAmountToPay": "Yes",
     "familyManCaseNumber": "mockcaseID",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
