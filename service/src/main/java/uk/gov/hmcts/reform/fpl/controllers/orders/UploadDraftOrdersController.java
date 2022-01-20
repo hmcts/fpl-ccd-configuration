@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -32,6 +33,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -44,6 +46,7 @@ public class UploadDraftOrdersController extends CallbackController {
     private final DraftOrderService service;
     private final CaseConverter caseConverter;
     private final DocumentListService documentListService;
+    private final OthersService othersService;
 
     @PostMapping("/populate-initial-data/mid-event")
     public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
@@ -61,6 +64,14 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
+
+        if (isNotEmpty(caseData.getAllOthers())) {
+            caseDetailsMap.put("hasOthers", "Yes");
+            caseDetailsMap.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
+            caseDetailsMap.put("othersSelector", newSelector(caseData.getAllOthers().size()));
+
+            caseDetailsMap.put("reviewCMOShowOthers", "Yes");
+        }
 
         caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getDraftsInfo(caseData)));
 

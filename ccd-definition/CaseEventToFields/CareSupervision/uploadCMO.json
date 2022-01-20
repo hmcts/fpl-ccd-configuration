@@ -200,11 +200,98 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
+    "CaseFieldID": "reviewCMOShowOthers",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "showReplacementCMO=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "hasOthers",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "showReplacementCMO=\"DO_NOT_SHOW\"",
+    "PageShowCondition": "reviewCMOShowOthers=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "otherDetailsSectionHeader",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "otherDetailsSectionSubHeader",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "othersToNotifyTitle",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "others_label",
+    "PageFieldDisplayOrder": 6,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "othersSelector",
+    "PageFieldDisplayOrder": 7,
+    "DisplayContext": "COMPLEX",
+    "PageID": "SelectOthers",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
     "CaseFieldID": "orderToSendOptionCount",
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
     "PageID": "Review",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "FieldShowCondition": "hearingOrderDraftKind=\"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "N"
@@ -217,7 +304,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "Review",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "FieldShowCondition": "hearingOrderDraftKind=\"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "N"
@@ -230,7 +317,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "Review",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
   },
@@ -242,7 +329,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
   },
@@ -254,7 +341,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND cmoUploadType=\"AGREED\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -267,7 +354,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"0*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -280,7 +367,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"0*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -293,7 +380,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"01*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -306,7 +393,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 7,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"01*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -319,7 +406,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 8,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"012*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -332,7 +419,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 9,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"012*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -345,7 +432,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 10,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"0123*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -358,7 +445,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 11,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"0123*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -371,7 +458,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 12,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"01234*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -384,7 +471,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 13,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"01234*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -397,7 +484,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 14,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"012345*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -410,7 +497,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 15,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"012345*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -423,7 +510,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 16,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"0123456*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -436,7 +523,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 17,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"0123456*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -449,7 +536,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 18,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"01234567*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -462,7 +549,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 19,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"01234567*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -475,7 +562,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 20,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"012345678*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -488,7 +575,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 21,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"012345678*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -501,7 +588,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 22,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "orderToSendOptionCount=\"0123456789*\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -514,7 +601,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 23,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "languageRequirement=\"Yes\" AND orderToSendOptionCount=\"0123456789*\"",
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "N"
@@ -527,7 +614,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 30,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
   }
