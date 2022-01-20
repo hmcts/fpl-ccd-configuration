@@ -30,7 +30,7 @@
     "EventElementLabel": "Notice of placement response",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "EventHintText": "Your document will be stored in the corresponding tab"
+    "EventHintText": "This response will be stored under the placement application this is for, in the placement tab"
   },
   {
     "LiveFrom": "01/01/2017",
