@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -54,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdditionalApplicationsUploadedEventHandler {
     private final RequestData requestData;
@@ -72,6 +74,9 @@ public class AdditionalApplicationsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
         final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
+
+        documents.forEach(document -> log.info("Sending additional application by post for case ID {} and document {}.",
+            caseData.getId(), document.getFilename()));
 
         Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
