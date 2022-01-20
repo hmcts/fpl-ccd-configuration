@@ -113,7 +113,8 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
         final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
-        log.info("Welsh LA {} : {}",
+        log.info("case {} Welsh LA {} : {}",
+                caseData.getId(),
                 caseData.getCaseLocalAuthority(),
                 recipientIsWelsh.isPresent());
 
@@ -142,7 +143,8 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
         final Optional<Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        log.info("England LA {} : {}",
+        log.info("case {} England LA {} : {}",
+                caseData.getId(),
                 caseData.getCaseLocalAuthority(),
                 recipientIsEngland.isPresent());
 
