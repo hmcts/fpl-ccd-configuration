@@ -433,6 +433,14 @@
     "allocationProposal": {
       "proposal": "District judge"
     },
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
     "urgentHearingOrder": {
       "order": {
         "document_url": "${TEST_DOCUMENT_URL}",

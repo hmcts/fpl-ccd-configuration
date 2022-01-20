@@ -145,6 +145,14 @@
     "allocationProposal": {
       "proposal": "District judge"
     },
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
     "displayAmountToPay": "Yes",
     "applicationDocuments": [
       {
