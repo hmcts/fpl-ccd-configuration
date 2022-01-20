@@ -80,8 +80,9 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         try {
             sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
-        } catch(HttpClientErrorException exception) {
-            documents.forEach(document -> log.info("Exception sending additional application by post for case ID {}" +
+        } catch (HttpClientErrorException exception) {
+            documents.forEach(document -> log.info("Exception sending additional application by post for case ID {}"
+                    +
                     " and document {}.",
                 caseData.getId(), document.getFilename()));
         }
