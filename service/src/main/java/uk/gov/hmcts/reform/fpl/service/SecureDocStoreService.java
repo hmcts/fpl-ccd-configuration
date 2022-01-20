@@ -39,7 +39,7 @@ public class SecureDocStoreService {
 
         MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, pdf);
 
-        DocumentUploadRequest request = new DocumentUploadRequest(Classification.PRIVATE.toString(),
+        DocumentUploadRequest request = new DocumentUploadRequest(Classification.RESTRICTED.toString(),
             "CARE_SUPERVISION_EPO", "PUBLICLAW", newArrayList(file));
 
         UploadResponse response = caseDocumentClientApi.uploadDocuments(requestData.authorisation(),

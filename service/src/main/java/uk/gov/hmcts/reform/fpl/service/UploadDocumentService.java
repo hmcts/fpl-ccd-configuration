@@ -74,7 +74,7 @@ public class UploadDocumentService {
 
         return Document.builder()
             .classification(Classification.valueOf(Optional.ofNullable(document.classification)
-                .orElse(Classification.PRIVATE.name())))
+                .orElse(Classification.RESTRICTED.name())))
             .size(document.size)
             .mimeType(document.mimeType)
             .originalDocumentName(document.originalDocumentName)
