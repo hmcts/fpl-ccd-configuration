@@ -55,6 +55,7 @@ public class SendLetterService {
                 recipient, language).getBytes();
 
             String coverDocumentEncoded = Base64.getEncoder().encodeToString(coverDocument);
+            var coversheet = uploadDocument(coverDocument, COVERSHEET_FILENAME);
             String letterId = EMPTY;
             try {
                 SendLetterResponse response = sendLetterApi.sendLetter(authTokenGenerator.generate(),
@@ -62,12 +63,10 @@ public class SendLetterService {
                         SEND_LETTER_TYPE,
                         Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
                 letterId = Optional.ofNullable(response).map(r -> r.letterId.toString()).orElse(EMPTY);
-            } catch (HttpClientErrorException exception) {
-                log.info("Exception raised when sending letter for case id {} and document {}.",
-                    caseId, mainDocument.getFilename());
+            } catch (Exception exception) {
+                log.error("Exception raised when sending letter for case id {} and document {}.",
+                    caseId, mainDocument.getFilename(), exception);
             }
-
-            var coversheet = uploadDocument(coverDocument, COVERSHEET_FILENAME);
 
             sentDocuments.add(SentDocument.builder()
                 .partyName(recipient.getFullName())
