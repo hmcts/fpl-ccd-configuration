@@ -460,7 +460,7 @@ class SendDocumentServiceTest {
 
             final Element<Representative> representativeServedByPostService = element(Representative.builder()
                 .fullName("Representative 1")
-                .servingPreferences(DIGITAL_SERVICE)
+                .servingPreferences(POST)
                 .build());
 
             final Respondent representedDeceasedRespondent = Respondent.builder()
@@ -497,8 +497,9 @@ class SendDocumentServiceTest {
 
             final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
 
-            assertThat(actualRecipients).size().isEqualTo(1);
-            assertThat(actualRecipients.get(0)).isEqualTo(notRepresentedRespondent.getParty());
+            assertThat(actualRecipients).size().isEqualTo(2);
+            assertThat(actualRecipients).contains(notRepresentedRespondent.getParty());
+            assertThat(actualRecipients).contains(representativeServedByPostService.getValue());
         }
     }
 
