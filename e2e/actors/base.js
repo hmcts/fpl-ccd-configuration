@@ -396,14 +396,7 @@ module.exports = {
     await this.waitForText(caseListPage.fields.caseList);
     this.navigateToCaseList();
     this.waitForInvisible(caseListPage.fields.spinner, 20);
-
-    pause();
     const caseIdField = await this.grabNumberOfVisibleElements(locate('label').withText(caseListPage.fields.caseId));
-    // const caseIdField = await this.grabNumberOfVisibleElements('#[CASE_REFERENCE]');
-    console.log(caseIdField);
-    console.log(typeof caseIdField);
-    console.log(caseIdField === 0);
-    console.log(caseIdField === '0');
     if(caseIdField === 0){
       await this.logInAndCreateCase(user, `dummy_${moment().format('YYYY-MM-DD HH:MM')}`, outsourcingLA);
     }
