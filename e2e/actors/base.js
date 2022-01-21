@@ -388,4 +388,24 @@ module.exports = {
       }
     }
   },
+  async createCaseIfCaseIdFieldNotFound(user, outsourcingLA){
+    // In order to search by case number on "Case List" page, a case created by the testing account is required.
+    // Otherwise, CCD will throw "case type not found" exception
+    // Remarks: maybe CCD bug?
+    await this.signIn(user);
+    await this.waitForText(caseListPage.fields.caseList);
+    this.navigateToCaseList();
+    this.waitForInvisible(caseListPage.fields.spinner, 20);
+
+    pause();
+    const caseIdField = await this.grabNumberOfVisibleElements(locate('label').withText(caseListPage.fields.caseId));
+    // const caseIdField = await this.grabNumberOfVisibleElements('#[CASE_REFERENCE]');
+    console.log(caseIdField);
+    console.log(typeof caseIdField);
+    console.log(caseIdField === 0);
+    console.log(caseIdField === '0');
+    if(caseIdField === 0){
+      await this.logInAndCreateCase(user, `dummy_${moment().format('YYYY-MM-DD HH:MM')}`, outsourcingLA);
+    }
+  },
 };

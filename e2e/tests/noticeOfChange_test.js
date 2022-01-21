@@ -13,7 +13,7 @@ Feature('Notice of change');
 // from the start on a fresh case
 
 
-async function setupScenario() {
+async function setupScenario(I) {
   if (!solicitor1.details) {
     solicitor1.details = await apiHelper.getUser(solicitor1);
     solicitor1.details.organisation = 'Private solicitors';
@@ -26,10 +26,14 @@ async function setupScenario() {
     solicitor3.details = await apiHelper.getUser(solicitor3);
     solicitor3.details.organisation = 'Wiltshire County Council';
   }
+
+  await I.createCaseIfCaseIdFieldNotFound(solicitor1, 'London Borough Hillingdon');
+  await I.createCaseIfCaseIdFieldNotFound(solicitor2);
+  await I.createCaseIfCaseIdFieldNotFound(solicitor3, 'Wiltshire County Council');
 }
 
-Scenario('Solicitor can request representation of a respondent @flaky', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage}) => {
-  await setupScenario();
+Scenario('Solicitor can request representation of a respondent @flaky-local-ok', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage}) => {
+  await setupScenario(I);
   let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
 
   I.say('Checking Solicitor can request representation only after case submission...');
