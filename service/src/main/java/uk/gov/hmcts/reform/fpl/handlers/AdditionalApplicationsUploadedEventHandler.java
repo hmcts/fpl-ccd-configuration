@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
@@ -56,7 +54,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
-@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdditionalApplicationsUploadedEventHandler {
     private final RequestData requestData;
@@ -77,15 +74,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
         Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
-
-        try {
-            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
-        } catch (HttpClientErrorException exception) {
-            documents.forEach(document -> log.info("Exception sending additional application by post for case ID {}"
-                    +
-                    " and document {}.",
-                caseData.getId(), document.getFilename()));
-        }
+        sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
     }
 
     private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {

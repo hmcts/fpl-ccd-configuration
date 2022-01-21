@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -25,6 +27,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendLetterService {
@@ -52,13 +55,18 @@ public class SendLetterService {
                 recipient, language).getBytes();
 
             String coverDocumentEncoded = Base64.getEncoder().encodeToString(coverDocument);
+            String letterId = EMPTY;
+            try {
+                SendLetterResponse response = sendLetterApi.sendLetter(authTokenGenerator.generate(),
+                    new LetterWithPdfsRequest(List.of(coverDocumentEncoded, mainDocumentEncoded),
+                        SEND_LETTER_TYPE,
+                        Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
+                letterId = Optional.ofNullable(response).map(r -> r.letterId.toString()).orElse(EMPTY);
+            } catch (HttpClientErrorException exception) {
+                log.info("Exception raised when sending letter for case id {} and document {}.",
+                    caseId, mainDocument.getFilename());
+            }
 
-            SendLetterResponse response = sendLetterApi.sendLetter(authTokenGenerator.generate(),
-                new LetterWithPdfsRequest(List.of(coverDocumentEncoded, mainDocumentEncoded),
-                    SEND_LETTER_TYPE,
-                    Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
-
-            String letterId = Optional.ofNullable(response).map(r -> r.letterId.toString()).orElse(EMPTY);
             var coversheet = uploadDocument(coverDocument, COVERSHEET_FILENAME);
 
             sentDocuments.add(SentDocument.builder()
