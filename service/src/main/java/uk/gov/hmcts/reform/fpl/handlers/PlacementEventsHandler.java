@@ -176,10 +176,12 @@ public class PlacementEventsHandler {
 
             notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData,
                 caseData.getId());
-        } else {
+        } else if (!parent.isDeceasedOrNFA()){
             log.info("Send letter to parent about {} child placement notice", placement.getChildName());
 
             sendDocumentService.sendDocuments(caseData, List.of(notice.getNotice()), List.of(parent.getParty()));
+        } else {
+            log.debug("Parent is marked as deceased or NFA, so letter is not sent, ");
         }
 
     }
