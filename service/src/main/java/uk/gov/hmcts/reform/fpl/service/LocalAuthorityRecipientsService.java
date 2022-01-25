@@ -63,6 +63,9 @@ public class LocalAuthorityRecipientsService {
     private List<String> getDesignatedLocalAuthorityContacts(CaseData caseData) {
         final List<String> recipients = new ArrayList<>();
 
+        localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority())
+            .ifPresent(recipients::add);
+
         if (isNotEmpty(caseData.getLocalAuthorities())) {
             final Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(caseData);
 
@@ -71,11 +74,7 @@ public class LocalAuthorityRecipientsService {
             if (featureToggles.emailsToSolicitorEnabled(caseData.getCaseLocalAuthority())) {
                 localAuthority.map(LocalAuthority::getContactEmails).ifPresent(recipients::addAll);
             }
-
         } else {
-            localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority())
-                .ifPresent(recipients::add);
-
             ofNullable(caseData.getSolicitor())
                 .map(Solicitor::getEmail)
                 .filter(StringUtils::isNotBlank)
