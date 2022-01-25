@@ -19,5 +19,12 @@
     "ListElementCode": "ADDITIONAL_APPLICATIONS_DOCUMENTS",
     "ListElement": "Documents for additional applications",
     "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeListLA",
+    "ListElementCode": "PLACEMENT_NOTICE_RESPONSE",
+    "ListElement": "Placement responses",
+    "DisplayOrder": 4
   }
 ]

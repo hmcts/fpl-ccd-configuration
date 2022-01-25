@@ -26,5 +26,14 @@
     "ElementLabel": "Controls display of manageDocumentsSupportingC2List and manageDocumentsNoC2sLabel",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "hasPlacementNotices",
+    "FieldType": "Text",
+    "ElementLabel": "Hidden to control display of the next field when there are no placement notices",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
   }
 ]

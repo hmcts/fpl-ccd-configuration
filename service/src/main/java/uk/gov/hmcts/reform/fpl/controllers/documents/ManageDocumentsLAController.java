@@ -47,13 +47,13 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.C
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.DOCUMENT_SUB_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RELATED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_KEY;
@@ -117,7 +117,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
                 caseDetails.getData().putAll(
-                    manageDocumentLAService.initialisePlacementHearingResponseFields(caseData));
+                    manageDocumentService.initialisePlacementHearingResponseFields(caseData));
                 break;
         }
 
@@ -219,7 +219,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     .buildCourtBundleList(caseData));
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
-                PlacementEventData eventData = manageDocumentLAService.updatePlacementNotices(caseData);
+                PlacementEventData eventData = manageDocumentService.updatePlacementNotices(caseData);
                 caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
                 break;
         }

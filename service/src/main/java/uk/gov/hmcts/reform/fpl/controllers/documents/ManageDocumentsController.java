@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
@@ -105,6 +106,8 @@ public class ManageDocumentsController extends CallbackController {
             }
             caseDetails.getData().putAll(documentService.initialiseApplicationBundlesListAndLabel(caseData));
             supportingEvidence = documentService.getApplicationsSupportingEvidenceBundles(caseData);
+        } else if (PLACEMENT_NOTICE_RESPONSE == type) {
+            caseDetails.getData().putAll(documentService.initialisePlacementHearingResponseFields(caseData));
         }
 
         caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_KEY, supportingEvidence);

@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -33,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageDocumentLAService {
     private final ObjectMapper mapper;
-    private final PlacementService placementService;
 
     public static final String MANAGE_DOCUMENT_LA_KEY = "manageDocumentLA";
     public static final String COURT_BUNDLE_HEARING_LIST_KEY = "courtBundleHearingList";
@@ -45,7 +45,6 @@ public class ManageDocumentLAService {
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
-    public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
@@ -90,13 +89,6 @@ public class ManageDocumentLAService {
         return map;
     }
 
-    public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData) {
-        Map<String, Object> map = new HashMap<>();
-        PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
-        map.put("placement", data.getPlacement());
-        map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments());
-        return map;
-    }
 
     public List<Element<CourtBundle>> buildCourtBundleList(CaseData caseData) {
         List<Element<CourtBundle>> courtBundleList = caseData.getCourtBundleList();
@@ -147,7 +139,4 @@ public class ManageDocumentLAService {
         }
     }
 
-    public PlacementEventData updatePlacementNotices(CaseData caseData) {
-        return placementService.savePlacement(caseData);
-    }
 }
