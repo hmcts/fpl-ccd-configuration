@@ -89,14 +89,6 @@ xui-webapp:
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
-    keyVaults:
-      rpx:
-        resourceGroup: rpx
-        secrets:
-          - mc-s2s-client-secret
-          - mc-idam-client-secret
-          - system-user-name
-          - system-user-password
 ccd:
   ccd:
     adminWeb:
