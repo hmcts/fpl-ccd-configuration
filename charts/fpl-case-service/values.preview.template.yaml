@@ -71,18 +71,12 @@ idam-pr:
 
 xui-webapp:
   enabled: true
-  redis:
-    enabled: true
   nodejs:
     imagePullPolicy: Always
     replicas: 1
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    readinessPeriod: 5
-    livenessPeriod: 3
-    livenessDelay: 10
-    livenessFailureThreshold: 2
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
@@ -94,24 +88,6 @@ xui-webapp:
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
-      FEATURE_REDIS_ENABLED: true
-      FEATURE_APP_INSIGHTS_ENABLED: false
-      FEATURE_SECURE_COOKIE_ENABLED: false
-      FEATURE_PROXY_ENABLED: false
-      FEATURE_TERMS_AND_CONDITIONS_ENABLED: false
-      FEATURE_HELMET_ENABLED: false
-      FEATURE_OIDC_ENABLED: false
-      NOW: false
-      REDISCLOUD_URL: redis://${SERVICE_NAME}-redis-master:6379
-      PROTOCOL: http
-    keyVaults:
-      rpx:
-        resourceGroup: rpx
-        secrets:
-          - mc-s2s-client-secret
-          - mc-idam-client-secret
-          - system-user-name
-          - system-user-password
 ccd:
   ccd:
     adminWeb:
@@ -249,10 +225,6 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
-      Image: hmctspublic.azurecr.io/am/role-assignment-service:latest
-      Image ID: hmctspublic.azurecr.io/am/role-assignment-service@sha256:6a4df2d17cb67ad610d8d3946b64fcfc99b30b52c43440643d7fcf0775606097
-      readinessDelay: 120
-      livenessDelay: 120
       environment:
         ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults:
