@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
@@ -36,7 +38,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -51,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.SECONDARY_LOCAL_AUTHOR
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
@@ -65,6 +70,8 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final RepresentativeNotificationService representativeNotificationService;
     private final SendDocumentService sendDocumentService;
+    private final CafcassNotificationService cafcassNotificationService;
+    private static final String LIST = "•";
 
     @EventListener
     @Async
@@ -75,6 +82,37 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
+    }
+
+    @EventListener
+    @Async
+    public void sendDocumentsToCafcass(final AdditionalApplicationsUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+        AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+        AdditionalApplicationsBundle oldBundle = Optional.ofNullable(caseDataBefore.getAdditionalApplicationsBundle())
+                .filter(Predicate.not(List::isEmpty))
+                .map(additionalApplicationsBundle -> additionalApplicationsBundle.get(0).getValue())
+                .orElse(null);
+
+        if (!uploadedBundle.equals(oldBundle)) {
+            String documentTypes = contentProvider.getApplicationTypes(uploadedBundle).stream()
+                    .map(docType -> String.join(" ", LIST, docType))
+                    .collect(Collectors.joining("\n"));
+
+            final Set<DocumentReference> documentReferences = Set.copyOf(getApplicationDocuments(uploadedBundle));
+
+            cafcassNotificationService.sendEmail(
+                    caseData,
+                    documentReferences,
+                    ADDITIONAL_DOCUMENT,
+                    NewDocumentData.builder()
+                        .documentTypes(documentTypes)
+                        .emailSubjectInfo("additional documents")
+                    .build()
+            );
+        }
     }
 
     private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
