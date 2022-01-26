@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -66,6 +67,7 @@ public class FurtherEvidenceUploadedEventHandler {
     private final TranslationRequestService translationRequestService;
     private final SendDocumentService sendDocumentService;
     private final CafcassNotificationService cafcassNotificationService;
+    private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private static final String PDF = "pdf";
     private static final String LIST = "•";
 
@@ -128,83 +130,95 @@ public class FurtherEvidenceUploadedEventHandler {
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        final CaseData caseDataBefore = event.getCaseDataBefore();
-        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
 
-        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
-                .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
-                .collect(groupingBy(CourtBundle::getHearing,
-                        mapping(CourtBundle::getDocument, toSet())));
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        newCourtBundles
-            .forEach((key, value) ->
-                cafcassNotificationService.sendEmail(
-                        caseData,
-                        value,
-                        COURT_BUNDLE,
-                        CourtBundleData.builder()
-                                .hearingDetails(key)
-                                .build()
-                )
-        );
+        if (recipientIsEngland.isPresent()) {
+            final CaseData caseDataBefore = event.getCaseDataBefore();
+            List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
+            List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+
+            Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
+                    .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
+                    .collect(groupingBy(CourtBundle::getHearing,
+                            mapping(CourtBundle::getDocument, toSet())));
+
+            newCourtBundles
+                    .forEach((key, value) ->
+                            cafcassNotificationService.sendEmail(
+                                    caseData,
+                                    value,
+                                    COURT_BUNDLE,
+                                    CourtBundleData.builder()
+                                            .hearingDetails(key)
+                                            .build()
+                            ));
+        }
     }
 
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        final CaseData caseDataBefore = event.getCaseDataBefore();
-        final DocumentUploaderType userType = event.getUserType();
-        final Set<DocumentReference> documentReferences = new HashSet<>();
-        final Set<DocumentInfo> documentInfos = new HashSet<>();
 
-        Consumer<DocumentInfo> documentInfoConsumer = documentInfo -> {
-            documentReferences.addAll(documentInfo.getDocumentReferences());
-            documentInfos.add(documentInfo);
-        };
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        documentInfoConsumer.accept(getGeneralEvidence(caseData, caseDataBefore, userType));
+        if (recipientIsEngland.isPresent()) {
+            final CaseData caseDataBefore = event.getCaseDataBefore();
+            final DocumentUploaderType userType = event.getUserType();
+            final Set<DocumentReference> documentReferences = new HashSet<>();
+            final Set<DocumentInfo> documentInfos = new HashSet<>();
 
-        documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
-                caseDataBefore));
+            Consumer<DocumentInfo> documentInfoConsumer = documentInfo -> {
+                documentReferences.addAll(documentInfo.getDocumentReferences());
+                documentInfos.add(documentInfo);
+            };
 
-        documentInfoConsumer.accept(getNewCorrespondenceDocumentsByHmtcs(caseData,
-                caseDataBefore));
+            documentInfoConsumer.accept(getGeneralEvidence(caseData, caseDataBefore, userType));
 
-        documentInfoConsumer.accept(getNewCorrespondenceDocumentsByLA(caseData,
-                caseDataBefore));
+            documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
+                    caseDataBefore));
 
-        documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
-                caseDataBefore));
+            documentInfoConsumer.accept(getNewCorrespondenceDocumentsByHmtcs(caseData,
+                    caseDataBefore));
 
-        documentInfoConsumer.accept(getNewApplicationDocument(caseData,
-                caseDataBefore));
+            documentInfoConsumer.accept(getNewCorrespondenceDocumentsByLA(caseData,
+                    caseDataBefore));
 
-        if (!documentReferences.isEmpty()) {
-            String documentTypes = documentInfos.stream()
-                    .filter(documentInfo ->
-                            !documentInfo.getDocumentReferences().isEmpty())
-                    .flatMap(docs -> docs.getDocumentTypes().stream())
-                    .map(docType -> String.join(" ", LIST, docType))
-                    .collect(Collectors.joining("\n"));
+            documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
+                    caseDataBefore));
 
-            String subjectInfo = documentInfos.stream()
-                    .filter(documentInfo ->
-                            !documentInfo.getDocumentReferences().isEmpty())
-                    .map(DocumentInfo::getDocumentType)
-                    .findFirst().orElse("UNKNOWN");
+            documentInfoConsumer.accept(getNewApplicationDocument(caseData,
+                    caseDataBefore));
+
+            if (!documentReferences.isEmpty()) {
+                String documentTypes = documentInfos.stream()
+                        .filter(documentInfo ->
+                                !documentInfo.getDocumentReferences().isEmpty())
+                        .flatMap(docs -> docs.getDocumentTypes().stream())
+                        .map(docType -> String.join(" ", LIST, docType))
+                        .collect(Collectors.joining("\n"));
+
+                String subjectInfo = documentInfos.stream()
+                        .filter(documentInfo ->
+                                !documentInfo.getDocumentReferences().isEmpty())
+                        .map(DocumentInfo::getDocumentType)
+                        .findFirst().orElse("UNKNOWN");
 
 
-            cafcassNotificationService.sendEmail(
-                    caseData,
-                    documentReferences,
-                    NEW_DOCUMENT,
-                    NewDocumentData.builder()
-                        .documentTypes(documentTypes)
-                        .emailSubjectInfo(subjectInfo)
-                    .build()
-            );
+                cafcassNotificationService.sendEmail(
+                        caseData,
+                        documentReferences,
+                        NEW_DOCUMENT,
+                        NewDocumentData.builder()
+                                .documentTypes(documentTypes)
+                                .emailSubjectInfo(subjectInfo)
+                                .build()
+                );
+            }
         }
+
     }
 
     private DocumentInfo getNewApplicationDocument(CaseData caseData, CaseData caseDataBefore) {

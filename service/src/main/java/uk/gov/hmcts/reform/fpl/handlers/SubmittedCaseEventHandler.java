@@ -81,27 +81,35 @@ public class SubmittedCaseEventHandler {
     public void notifyCafcass(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
-        String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+            .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
-        notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
+        if (recipientIsWelsh.isPresent()) {
+            NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
+            notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
+                    notifyData, caseData.getId());
+        }
     }
 
     @Async
     @EventListener
     public void notifyCafcassSendGrid(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
-            .map(Set::of)
-            .orElse(of());
+        if (recipientIsEngland.isPresent()) {
+            Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
+                    .map(Set::of)
+                    .orElse(of());
 
-        NewApplicationCafcassData newApplicationCafcassData = cafcassEmailContentProvider
-            .buildCafcassSubmissionSendGridData(caseData);
-        cafcassNotificationService.sendEmail(caseData,
-            documentReferences,
-            NEW_APPLICATION,
-            newApplicationCafcassData);
+            NewApplicationCafcassData newApplicationCafcassData = cafcassEmailContentProvider
+                    .buildCafcassSubmissionSendGridData(caseData);
+            cafcassNotificationService.sendEmail(caseData,
+                    documentReferences,
+                    NEW_APPLICATION,
+                    newApplicationCafcassData);
+        }
     }
 
     @EventListener
