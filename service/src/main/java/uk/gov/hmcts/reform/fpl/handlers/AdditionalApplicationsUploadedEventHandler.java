@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
@@ -71,6 +72,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final SendDocumentService sendDocumentService;
     private final CafcassNotificationService cafcassNotificationService;
+    private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private static final String LIST = "•";
 
     @EventListener
@@ -88,30 +90,36 @@ public class AdditionalApplicationsUploadedEventHandler {
     @Async
     public void sendDocumentsToCafcass(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        final CaseData caseDataBefore = event.getCaseDataBefore();
-        AdditionalApplicationsBundle oldBundle = Optional.ofNullable(caseDataBefore.getAdditionalApplicationsBundle())
-                .filter(Predicate.not(List::isEmpty))
-                .map(additionalApplicationsBundle -> additionalApplicationsBundle.get(0).getValue())
-                .orElse(null);
+        if (recipientIsEngland.isPresent()) {
+            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
-        if (!uploadedBundle.equals(oldBundle)) {
-            String documentTypes = contentProvider.getApplicationTypes(uploadedBundle).stream()
-                    .map(docType -> String.join(" ", LIST, docType))
-                    .collect(Collectors.joining("\n"));
+            final CaseData caseDataBefore = event.getCaseDataBefore();
+            AdditionalApplicationsBundle oldBundle =
+                    Optional.ofNullable(caseDataBefore.getAdditionalApplicationsBundle())
+                    .filter(Predicate.not(List::isEmpty))
+                    .map(additionalApplicationsBundle -> additionalApplicationsBundle.get(0).getValue())
+                    .orElse(null);
 
-            final Set<DocumentReference> documentReferences = Set.copyOf(getApplicationDocuments(uploadedBundle));
+            if (!uploadedBundle.equals(oldBundle)) {
+                String documentTypes = contentProvider.getApplicationTypes(uploadedBundle).stream()
+                        .map(docType -> String.join(" ", LIST, docType))
+                        .collect(Collectors.joining("\n"));
 
-            cafcassNotificationService.sendEmail(
-                    caseData,
-                    documentReferences,
-                    ADDITIONAL_DOCUMENT,
-                    NewDocumentData.builder()
-                        .documentTypes(documentTypes)
-                        .emailSubjectInfo("additional documents")
-                    .build()
-            );
+                final Set<DocumentReference> documentReferences = Set.copyOf(getApplicationDocuments(uploadedBundle));
+
+                cafcassNotificationService.sendEmail(
+                        caseData,
+                        documentReferences,
+                        ADDITIONAL_DOCUMENT,
+                        NewDocumentData.builder()
+                                .documentTypes(documentTypes)
+                                .emailSubjectInfo("additional documents")
+                                .build()
+                );
+            }
         }
     }
 

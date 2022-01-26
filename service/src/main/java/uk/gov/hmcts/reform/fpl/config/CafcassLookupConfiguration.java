@@ -5,13 +5,15 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
+import static java.util.function.Predicate.not;
 
 @Configuration
 public class CafcassLookupConfiguration {
-
+    private static final String WELSH_CAFCASS = "Cafcass Cymru";
     private final Map<String, Cafcass> mapping;
 
     public CafcassLookupConfiguration(@Value("${fpl.local_authority_code_to_cafcass.mapping}") String config) {
@@ -28,6 +30,16 @@ public class CafcassLookupConfiguration {
         checkNotNull(localAuthorityCode, "Local authority code cannot be null");
 
         return checkNotNull(mapping.get(localAuthorityCode), "Local authority '" + localAuthorityCode + "' not found");
+    }
+
+    public Optional<Cafcass> getCafcassWelsh(String localAuthorityCode) {
+        return Optional.of(getCafcass(localAuthorityCode))
+                .filter(cafcass -> WELSH_CAFCASS.equals(cafcass.name));
+    }
+
+    public Optional<Cafcass> getCafcassEngland(String localAuthorityCode) {
+        return Optional.of(getCafcass(localAuthorityCode))
+                .filter(not(cafcass -> WELSH_CAFCASS.equals(cafcass.name)));
     }
 
     public static class Cafcass {
