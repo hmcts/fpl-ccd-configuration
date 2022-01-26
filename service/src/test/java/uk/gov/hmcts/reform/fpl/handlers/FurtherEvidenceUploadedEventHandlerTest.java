@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
@@ -67,6 +68,8 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsHMCTS;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsRespondentSolicitor;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -117,6 +120,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Captor
     private ArgumentCaptor<NewDocumentData> newDocumentDataCaptor;
+
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByLA() {
@@ -392,38 +398,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldEmailCafcassWhenNewBundleAdded() {
-        String hearing = "Hearing";
-        CaseData caseData = buildCaseDataWithCourtBundleList(
-                2,
-                hearing,
-                "LA");
-        CaseData caseDataBefore = commonCaseBuilder().build();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseDataBefore,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA()
-                );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
-
-        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-        Set<DocumentReference> documentReferences = courtBundles.stream()
-                .map(CourtBundle::getDocument)
-                .collect(toSet());
-
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
-                eq(documentReferences),
-                eq(COURT_BUNDLE),
-                courtBundleCaptor.capture());
-
-        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
-    }
-
-    @Test
     void shouldNotEmailCafcassWhenNoNewBundle() {
         String hearing = "Hearing";
         CaseData caseData = buildCaseDataWithCourtBundleList(
@@ -451,6 +425,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundleIsAdded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
         String hearing = "Hearing";
         CaseData caseData = buildCaseDataWithCourtBundleList(
                 2,
@@ -487,6 +467,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
         String hearing = "Hearing";
         String secHearing = "secHearing";
         String hearingOld = "Old";
@@ -548,6 +534,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenDocsIsUploadedByLA() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
         CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -580,6 +573,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenRespondentStatementIsUploaded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -612,6 +612,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenApplicationDocumentIsUploaded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
         CaseData caseData = buildCaseDataWithApplicationDocuments();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -644,6 +651,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotEmailCafcassWhenNoApplicationDocumentIsUploaded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
         CaseData caseData = buildCaseDataWithApplicationDocuments();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -669,6 +683,39 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendEmailToCafcassWhenRespondentStatementIsUploaded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+        CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        caseData,
+
+                        DESIGNATED_LOCAL_AUTHORITY,
+                        userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
+    }
+
+    @Test
+    void shouldNotSendEmailToCafcassWhenCafcassIsNotEnlang() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.empty()
+            );
+
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -707,6 +754,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     private void verifyCorresspondences(CaseData caseData, List<Element<SupportingEvidenceBundle>> correspondence) {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
                         caseData,
@@ -737,6 +791,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendEmailToCafcassWhenNoNewDocIsUploadedByLA() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
         CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =

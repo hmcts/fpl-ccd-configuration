@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.asser
 @ExtendWith(MockitoExtension.class)
 class SubmittedCaseEventHandlerTest {
 
+    public static final String EMAIL = "test@test.com";
     private static final long CASE_ID = 12345L;
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
         LanguageTranslationRequirement.ENGLISH_TO_WELSH;
@@ -111,17 +112,16 @@ class SubmittedCaseEventHandlerTest {
         final CaseData caseDataBefore = mock(CaseData.class);
 
         final SubmitCaseCafcassTemplate parameters = mock(SubmitCaseCafcassTemplate.class);
-        final String email = "test@test.com";
 
         when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
         when(caseData.getId()).thenReturn(CASE_ID);
-        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .thenReturn(new Cafcass(LOCAL_AUTHORITY_CODE, email));
+        when(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
+            .thenReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, EMAIL)));
         when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData)).thenReturn(parameters);
 
         submittedCaseEventHandler.notifyCafcass(new SubmittedCaseEvent(caseData, caseDataBefore));
 
-        verify(notificationService).sendEmail(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, CASE_ID);
+        verify(notificationService).sendEmail(CAFCASS_SUBMISSION_TEMPLATE, EMAIL, parameters, CASE_ID);
     }
 
     @Test
@@ -135,8 +135,11 @@ class SubmittedCaseEventHandlerTest {
 
         final NewApplicationCafcassData parameters = mock(NewApplicationCafcassData.class);
 
+        when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
         when(cafcassEmailContentProvider.buildCafcassSubmissionSendGridData(caseData)).thenReturn(parameters);
         when(caseData.getC110A()).thenReturn(c110A);
+        when(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
+                .thenReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, EMAIL)));
 
         submittedCaseEventHandler.notifyCafcassSendGrid(new SubmittedCaseEvent(caseData, caseDataBefore));
 
