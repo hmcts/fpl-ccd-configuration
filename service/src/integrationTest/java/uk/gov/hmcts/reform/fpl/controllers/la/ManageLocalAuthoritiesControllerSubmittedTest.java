@@ -150,7 +150,9 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .sharedLocalAuthorityPolicy(secondaryOrganisationPolicy)
             .localAuthorityPolicy(designatedOrganisationPolicy)
-            .localAuthorities(wrapElements(designatedLocalAuthority, secondaryLocalAuthority))
+            .localAuthorities(wrapElements(
+                designatedLocalAuthority,
+                secondaryLocalAuthority.toBuilder().email(LOCAL_AUTHORITY_2_USER_EMAIL).build()))
             .build();
 
         final CaseData caseData = caseDataBefore.toBuilder()
@@ -168,11 +170,19 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE,
-            LOCAL_AUTHORITY_2_INBOX,
-            toMap(secondaryLocalAuthorityData),
-            notificationReference(CASE_ID)));
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE,
+                LOCAL_AUTHORITY_2_INBOX,
+                toMap(secondaryLocalAuthorityData),
+                notificationReference(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE,
+                LOCAL_AUTHORITY_2_USER_EMAIL,
+                toMap(secondaryLocalAuthorityData),
+                notificationReference(CASE_ID));
+        });
 
         verifyNoMoreInteractions(notificationClient, coreCaseDataService);
     }
