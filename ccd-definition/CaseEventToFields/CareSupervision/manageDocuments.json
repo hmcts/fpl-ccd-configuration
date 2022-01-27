@@ -142,7 +142,7 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\"",
-    "PageShowCondition": "manageDocument.type!=\"\"",
+    "PageShowCondition": "manageDocument.type!=\"\" AND manageDocument.type!=\"PLACEMENT_NOTICE_RESPONSE\"",
     "Comment": "PageShowCondition condition added to force redirect to first page when page refreshed",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/validate-supporting-evidence/mid-event"
   },
@@ -231,7 +231,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "PlacementNoticeResponses",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "manageDocument.type=\"PLACEMENT_NOTICE_RESPONSE\""
@@ -244,7 +244,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "PlacementNoticeResponses",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""

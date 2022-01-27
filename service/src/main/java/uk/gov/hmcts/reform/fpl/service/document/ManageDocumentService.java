@@ -91,11 +91,14 @@ public class ManageDocumentService {
         final YesNo hasHearings = YesNo.from(isNotEmpty(caseData.getHearingDetails()));
         final YesNo hasC2s = YesNo.from(caseData.hasApplicationBundles());
         final YesNo hasRespondents = YesNo.from(isNotEmpty(caseData.getAllRespondents()));
+        final YesNo hasPlacementNotices = YesNo.from(caseData.getPlacementEventData().getPlacements().stream()
+            .anyMatch(el -> el.getValue().getPlacementNotice() != null));
 
         ManageDocument manageDocument = defaultIfNull(caseData.getManageDocument(), ManageDocument.builder().build())
             .toBuilder()
             .hasHearings(hasHearings.getValue())
             .hasC2s(hasC2s.getValue())
+            .hasPlacementNotices(hasPlacementNotices.getValue())
             .build();
 
         eventData.put(MANAGE_DOCUMENT_KEY, manageDocument);
@@ -112,7 +115,7 @@ public class ManageDocumentService {
             eventData.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
         }
 
-        if (isNotEmpty(caseData.getPlacementEventData().getPlacements())) {
+        if (hasPlacementNotices == YES) {
             DynamicList list = asDynamicList(
                 caseData.getPlacementEventData().getPlacements(), null, Placement::toLabel);
             eventData.put(PLACEMENT_LIST_KEY, list);

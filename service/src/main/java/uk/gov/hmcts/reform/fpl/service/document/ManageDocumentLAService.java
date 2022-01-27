@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -49,14 +50,15 @@ public class ManageDocumentLAService {
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
+        final YesNo hasPlacementNotices = YesNo.from(caseData.getPlacementEventData().getPlacements().stream()
+            .anyMatch(el -> el.getValue().getPlacementNotice() != null));
+
         ManageDocumentLA manageDocument = defaultIfNull(caseData.getManageDocumentLA(),
             ManageDocumentLA.builder().build())
             .toBuilder()
             .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
             .hasC2s(YesNo.from(caseData.hasApplicationBundles()).getValue())
-            .hasPlacementNotices(YesNo.from(caseData.getPlacementEventData().getPlacements().stream().anyMatch(
-                el -> el.getValue().getPlacementNotice() != null
-            )).getValue())
+            .hasPlacementNotices(hasPlacementNotices.getValue())
             .build();
 
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
@@ -73,7 +75,7 @@ public class ManageDocumentLAService {
             listAndLabel.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
         }
 
-        if (isNotEmpty(caseData.getPlacementEventData().getPlacements())) {
+        if (hasPlacementNotices == YES) {
             DynamicList list = asDynamicList(
                 caseData.getPlacementEventData().getPlacements(), null, Placement::toLabel);
             listAndLabel.put(PLACEMENT_LIST_KEY, list);

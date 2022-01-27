@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -49,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEA
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_KEY;
@@ -107,6 +109,10 @@ public class ManageDocumentsController extends CallbackController {
             caseDetails.getData().putAll(documentService.initialiseApplicationBundlesListAndLabel(caseData));
             supportingEvidence = documentService.getApplicationsSupportingEvidenceBundles(caseData);
         } else if (PLACEMENT_NOTICE_RESPONSE == type) {
+            if (caseDetails.getData().getOrDefault(PLACEMENT_LIST_KEY, null) == null) {
+                return respond(caseDetails,
+                    List.of("There are no notices of hearing issued for any placement application"));
+            }
             caseDetails.getData().putAll(documentService.initialisePlacementHearingResponseFields(caseData));
         }
 
@@ -120,7 +126,6 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData.getId()));
-        ;
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
@@ -214,12 +219,17 @@ public class ManageDocumentsController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty(
                     documentService.buildFinalApplicationBundleSupportingDocuments(caseData, isSolicitor));
                 break;
+            case PLACEMENT_NOTICE_RESPONSE:
+                PlacementEventData eventData = documentService.updatePlacementNotices(caseData);
+                caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
+                break;
         }
 
         removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_KEY, MANAGE_DOCUMENT_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
-            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, "manageDocumentSubtypeList",
-            "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP");
+            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, PLACEMENT_LIST_KEY,
+            "placementNoticeResponses", "placement", "manageDocumentSubtypeList", "manageDocumentsRelatedToHearing",
+            "furtherEvidenceDocumentsTEMP");
 
         CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
         caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
