@@ -73,6 +73,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
             .party(RespondentParty.builder()
                 .firstName(this.party.getFirstName())
                 .lastName(this.party.getLastName())
+                .addressKnow(this.party.getAddressKnow())
                 .address(this.party.getAddress())
                 .telephoneNumber(this.party.getTelephoneNumber())
                 .email(this.party.getEmail())
