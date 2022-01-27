@@ -20,6 +20,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,7 +34,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
@@ -138,6 +141,9 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
             .data(buildCourtBundleData())
             .build();
 
+        caseDetails.getData().put("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
+        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME);
+
         CaseDetails caseDetailsBefore = CaseDetails.builder()
             .data(Map.of("dummy", "some dummy data"))
             .id(TEST_CASE_ID)
@@ -159,16 +165,16 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     }
 
     private Map<String, Object> buildCourtBundleData() {
-        return Map.of(
+        return new HashMap<>(Map.of(
         "courtBundleList", wrapElements(
-            CourtBundle.builder()
-                .document(getPDFDocument())
-                .hearing("hearing")
-                .dateTimeUploaded(LocalDateTime.now())
-                .uploadedBy("LA")
-                .build()
-        )
-    );
+                CourtBundle.builder()
+                    .document(getPDFDocument())
+                    .hearing("hearing")
+                    .dateTimeUploaded(LocalDateTime.now())
+                    .uploadedBy("LA")
+                    .build()
+                )
+            ));
     }
 
     private DocumentReference getPDFDocument() {

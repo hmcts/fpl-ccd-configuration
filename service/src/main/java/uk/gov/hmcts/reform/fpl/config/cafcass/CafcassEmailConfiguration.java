@@ -28,6 +28,9 @@ public class CafcassEmailConfiguration {
     @Getter(AccessLevel.NONE)
     private String newdocument;
 
+    @Getter(AccessLevel.NONE)
+    private String additionaldocument;
+
     public String getRecipientForOrder() {
         return order;
     }
@@ -42,5 +45,9 @@ public class CafcassEmailConfiguration {
 
     public String getRecipientForNewDocument() {
         return newdocument;
+    }
+
+    public String getRecipientForAdditionlDocument() {
+        return additionaldocument;
     }
 }
