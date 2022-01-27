@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -51,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans({
     @MockBean(RequestData.class), @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
-    @MockBean(OtherRecipientsInbox.class), @MockBean(Time.class)
+    @MockBean(OtherRecipientsInbox.class), @MockBean(Time.class), @MockBean(CafcassNotificationService.class)
 })
 class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
@@ -104,7 +105,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     void notifyAdmin() {
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
@@ -131,7 +132,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyParties() {
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, APPLICANT));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
