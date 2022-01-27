@@ -24,11 +24,9 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 
 @Api
 @RestController
