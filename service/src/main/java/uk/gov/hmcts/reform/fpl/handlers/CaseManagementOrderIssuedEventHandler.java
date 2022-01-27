@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -42,7 +41,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CaseManagementOrderIssuedEventHandler {
@@ -88,10 +86,6 @@ public class CaseManagementOrderIssuedEventHandler {
 
         final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
-        log.info("case {} Welsh LA {} : {}",
-                caseData.getId(),
-                caseData.getCaseLocalAuthority(),
-                recipientIsWelsh.isPresent());
 
         if (recipientIsWelsh.isPresent()) {
             HearingOrder issuedCmo = event.getCmo();
@@ -115,15 +109,8 @@ public class CaseManagementOrderIssuedEventHandler {
         HearingOrder issuedCmo = event.getCmo();
         final Optional<Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        log.info("case {} England LA {} : {}",
-                caseData.getId(),
-                caseData.getCaseLocalAuthority(),
-                recipientIsEngland.isPresent());
-
 
         if (recipientIsEngland.isPresent()) {
-            log.info("Content {} ", issuedCmo.getOrder().getFilename());
-
             cafcassNotificationService.sendEmail(caseData,
                     of(issuedCmo.getOrder()),
                     ORDER,

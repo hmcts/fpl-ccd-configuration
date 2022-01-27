@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -53,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftOrdersApprovedEventHandler {
@@ -113,10 +111,6 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
         final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
-        log.info("case {} Welsh LA {} : {}",
-                caseData.getId(),
-                caseData.getCaseLocalAuthority(),
-                recipientIsWelsh.isPresent());
 
         if (recipientIsWelsh.isPresent()) {
             List<HearingOrder> approvedOrders = event.getApprovedOrders();
@@ -143,10 +137,6 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
         final Optional<Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        log.info("case {} England LA {} : {}",
-                caseData.getId(),
-                caseData.getCaseLocalAuthority(),
-                recipientIsEngland.isPresent());
 
         if (recipientIsEngland.isPresent()) {
             List<HearingOrder> approvedOrders = event.getApprovedOrders();
@@ -156,8 +146,6 @@ public class DraftOrdersApprovedEventHandler {
                     approvedOrders.stream()
                         .map(HearingOrder::getTitle)
                         .collect(joining(lineSeparator())));
-
-            log.info("Content {} ", content);
 
             cafcassNotificationService.sendEmail(caseData,
                     approvedOrders.stream().map(HearingOrder::getOrder).collect(toSet()),
