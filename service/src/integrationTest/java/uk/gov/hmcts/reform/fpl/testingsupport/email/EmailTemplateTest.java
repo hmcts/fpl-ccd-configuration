@@ -27,6 +27,7 @@ import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 public class EmailTemplateTest {
 
     protected static final String CAFCASS_NAME = "cafcass";
+    protected static final String CAFCASS_NAME_WELSH = "Cafcass Cymru";
     protected static final String CAFCASS_EMAIL = "cafcass@example.com";
     protected static final String GOV_NOTIFY_DOC_URL = "https://documents.service.gov.uk/d/";
 
@@ -99,6 +101,8 @@ public class EmailTemplateTest {
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(cafcassLookupConfiguration.getCafcass(anyString()))
             .thenReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL));
+        when(cafcassLookupConfiguration.getCafcassWelsh(anyString()))
+            .thenReturn(Optional.of(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME_WELSH, CAFCASS_EMAIL)));
         when(ctscTeamLeadLookupConfiguration.getEmail()).thenReturn("ctsc-team-lead@example.com");
     }
 

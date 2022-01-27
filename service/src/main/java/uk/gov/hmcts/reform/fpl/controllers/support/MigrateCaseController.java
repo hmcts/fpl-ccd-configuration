@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -41,14 +42,18 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.List.of;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
@@ -58,7 +63,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private static final List<State> IGNORED_STATES = List.of(State.OPEN, State.RETURNED, State.CLOSED, State.DELETED);
+    private static final List<State> IGNORED_STATES = of(State.OPEN, State.RETURNED, State.CLOSED, State.DELETED);
     private static final int MAX_CHILDREN = 15;
 
     private final TaskListService taskListService;
@@ -68,8 +73,7 @@ public class MigrateCaseController extends CallbackController {
     private final NoticeOfChangeFieldPopulator populator;
     private final DocumentListService documentListService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "FPLA-3238", this::run3238,
-        "DFPL-164", this::run164
+        "DFPL-465", this::run465
     );
 
     @PostMapping("/about-to-submit")
@@ -92,35 +96,57 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
+    private void run465(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+
+        if (caseId != 1639997900244470L) {
+            throw new AssertionError(format(
+                "Migration {id = DFPL-465, case reference = %s}, expected case id 1639997900244470",
+                caseId
+            ));
+        }
+        List<String> namesToRemove = of("Stacey Halbert", "Della Phillips", "Natalie Beardsmore", "Donna Bird");
+
+        List<LegalRepresentative> legalRepresentatives = unwrapElements(caseData.getLegalRepresentatives());
+
+        List<LegalRepresentative> legalRepresentativesToRemain = legalRepresentatives.stream()
+                .filter(not(legalRepresentative -> namesToRemove.contains(legalRepresentative.getFullName())))
+                .collect(Collectors.toList());
+
+        List<Element<LegalRepresentative>> filteredLegalRepresentatives = wrapElements(legalRepresentativesToRemain);
+
+        caseDetails.getData().put("legalRepresentatives", filteredLegalRepresentatives);
+    }
+
     private void run164(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
 
         if (caseId != 1626258358022834L) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-164, case reference = %s}, expected case id 1626258358022834",
-                caseId
+                    "Migration {id = DFPL-164, case reference = %s}, expected case id 1626258358022834",
+                    caseId
             ));
         }
 
         List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
 
         Element<CourtAdminDocument> documentElement = otherCourtAdminDocuments.stream()
-            .filter(documents ->
-                "LA Certificate.pdf".equals(documents.getValue().getDocument().getFilename()))
-            .findFirst()
-            .orElseThrow();
+                .filter(documents ->
+                        "LA Certificate.pdf".equals(documents.getValue().getDocument().getFilename()))
+                .findFirst()
+                .orElseThrow();
 
         log.info("Migration {id = DFPL-164, case reference = {}} Certificate document found",
-            caseId);
+                caseId);
         boolean removed = otherCourtAdminDocuments.remove(documentElement);
         log.info("Migration {id = DFPL-164, case reference = {}} Certificate document removed {} ",
-            caseId,
-            removed);
+                caseId,
+                removed);
         caseDetails.getData().put("otherCourtAdminDocuments", otherCourtAdminDocuments);
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
-
 
     private void run3238(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
