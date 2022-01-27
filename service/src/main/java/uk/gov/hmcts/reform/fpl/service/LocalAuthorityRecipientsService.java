@@ -91,8 +91,8 @@ public class LocalAuthorityRecipientsService {
         var secondaryLocalAuthority = getSecondaryLocalAuthority(caseData);
         secondaryLocalAuthority.ifPresent(la -> {
             final String localAuthorityCode = localAuthorityIds.getLocalAuthorityCode(la.getId()).orElse(null);
+            ofNullable(localAuthorityCode).flatMap(localAuthorityInboxes::getSharedInbox).ifPresent(recipients::add);
 
-            localAuthorityInboxes.getSharedInbox(localAuthorityCode).ifPresent(recipients::add);
             ofNullable(la.getEmail()).ifPresent(recipients::add);
 
             if (featureToggles.emailsToSolicitorEnabled(localAuthorityCode)) {
