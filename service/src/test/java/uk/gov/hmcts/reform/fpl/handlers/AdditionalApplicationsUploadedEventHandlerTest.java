@@ -7,11 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -33,24 +37,30 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -62,9 +72,12 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -116,7 +129,15 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Mock
     private CaseData caseData;
     @Mock
+    private CaseData caseDataBefore;
+    @Mock
     private AdditionalApplicationsUploadedTemplate notifyData;
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
+    @Captor
+    private ArgumentCaptor<NewDocumentData> newDocumentDataArgumentCaptor;
 
     @InjectMocks
     private AdditionalApplicationsUploadedEventHandler underTest;
@@ -148,7 +169,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         )).willReturn(Collections.emptySet());
 
         underTest.notifyDigitalRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -175,7 +196,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(Collections.emptySet());
 
         underTest.notifyEmailServedRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -197,7 +218,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(caseData.getCaseLocalAuthorityName()).willReturn(LOCAL_AUTHORITY_NAME);
         given(localAuthorityRecipients.getRecipients(any())).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
+        underTest.notifyApplicant(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
@@ -220,8 +242,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .build()
         ));
 
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData,
-            OrderApplicant.builder().type(OTHER).name(applicantName).build())
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
+                OrderApplicant.builder().type(OTHER).name(applicantName).build())
         );
 
         verifyNoInteractions(notificationService);
@@ -248,7 +270,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(caseData.getRespondents1()).willReturn(wrapElements(respondent));
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(
-            caseData, OrderApplicant.builder().type(RESPONDENT).name(applicantName).build())
+            caseData, caseDataBefore, OrderApplicant.builder().type(RESPONDENT).name(applicantName).build())
         );
 
         verifyNoInteractions(notificationService);
@@ -279,7 +301,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         OrderApplicant applicant = OrderApplicant.builder().name("John Smith").type(RESPONDENT).build();
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, applicant));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of("respondent1@test.com"),
@@ -301,7 +323,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(Collections.emptySet());
 
         underTest.notifyEmailServedRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verifyNoMoreInteractions(representativeNotificationService);
@@ -329,7 +351,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(Set.of(representative2));
 
         underTest.sendAdditionalApplicationsByPost(
-            new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verify(sendDocumentService).sendDocuments(caseData, documents, List.of(representative2, otherRespondent));
@@ -344,7 +366,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(courtService.getCourtEmail(caseData)).willReturn("hmcts-non-admin@test.com");
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
@@ -370,7 +392,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
@@ -383,9 +405,95 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             new HashSet<>(Set.of("caseworker", "caseworker-publiclaw", "caseworker-publiclaw-courtadmin"))
         );
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, ORDER_APPLICANT_LA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         verifyNoInteractions(notificationService);
+    }
+
+    @ParameterizedTest
+    @MethodSource("applicationDataParams")
+    void shouldNotifyCafcassWhenAdditionalDocumentsUploaded(AdditionalApplicationsBundle additionalApplicationsBundle,
+                                                        List<DocumentReference> documents) {
+        CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+                .build();
+
+        verifyInvocation(documents, caseData, caseDataBefore);
+    }
+
+    @ParameterizedTest
+    @MethodSource("applicationDataParams")
+    void shouldNotifyCafcassWhenFirstAdditionalDocumentsUploaded(
+            AdditionalApplicationsBundle additionalApplicationsBundle,
+            List<DocumentReference> documents) {
+        CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+                .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .build();
+
+        verifyInvocation(documents, caseData, caseDataBefore);
+    }
+
+    private void verifyInvocation(List<DocumentReference> documents, CaseData caseData, CaseData caseDataBefore) {
+        given(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .willReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+        given(contentProvider.getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
+                .willReturn(Arrays.asList("C2 (With notice) - Appointment of a guardian",
+                        "C13A - Special guardianship order",
+                        "C20 - Secure accommodation (England)",
+                        "C1 - Parental responsibility by the father",
+                        "C13A - Special guardianship order",
+                        "C20 - Secure accommodation (England)"));
+
+        underTest.sendDocumentsToCafcass(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+
+        verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(Set.copyOf(documents)),
+                same(ADDITIONAL_DOCUMENT),
+                newDocumentDataArgumentCaptor.capture()
+        );
+
+        NewDocumentData newDocumentData = newDocumentDataArgumentCaptor.getValue();
+        assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("additional documents");
+        assertThat(newDocumentData.getDocumentTypes())
+                .isEqualTo("• C2 (With notice) - Appointment of a guardian\n"
+                        + "• C13A - Special guardianship order\n"
+                        + "• C20 - Secure accommodation (England)\n"
+                        + "• C1 - Parental responsibility by the father\n"
+                        + "• C13A - Special guardianship order\n"
+                        + "• C20 - Secure accommodation (England)");
+    }
+
+    @ParameterizedTest
+    @MethodSource("applicationDataParams")
+    void shouldNotNotifyCafcassWhenNoAdditionalDocumentsUploaded(
+            AdditionalApplicationsBundle additionalApplicationsBundle) {
+        CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+                .build();
+
+        underTest.sendDocumentsToCafcass(
+                new AdditionalApplicationsUploadedEvent(caseData, caseData, ORDER_APPLICANT_LA));
+        verify(cafcassNotificationService, never()).sendEmail(
+                any(), any(), any(), any()
+        );
     }
 
     private static Stream<Arguments> applicationDataParams() {

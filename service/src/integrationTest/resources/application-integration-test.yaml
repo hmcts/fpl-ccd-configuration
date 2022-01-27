@@ -88,7 +88,7 @@ fpl:
   local_authority_code_to_hmcts_court:
     mapping: 'test1=>Family Court:court1@family-court.com:11;test2=>Family Court 2:court2@family-court.com:22;test3=>Family Court 3 A:court3a@family-court.com:31|Family Court 3 B:court3b@family-court.com:32'
   local_authority_code_to_cafcass:
-    mapping: 'test1=>cafcass:cafcass@cafcass.com;test2=>cafcass:cafcass@cafcass.com'
+    mapping: 'test1=>cafcass:cafcass@cafcass.com;test2=>cafcass:cafcass@cafcass.com;test3=>Cafcass Cymru:cafcass@cafcass.com'
   local_authority_code_to_shared_inbox:
     mapping: 'test1=>shared@test1.org.uk;test2=>shared@test2.org.uk'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
@@ -123,6 +123,7 @@ cafcass:
     large: FamilyPublicLaw+cafcass@gmail.com
     newapplication: FamilyPublicLaw+cafcass@gmail.com
     newdocument: FamilyPublicLaw+cafcass@gmail.com
+    additionaldocument: FamilyPublicLaw+cafcass@gmail.com
 
 security:
   anonymousPaths:
