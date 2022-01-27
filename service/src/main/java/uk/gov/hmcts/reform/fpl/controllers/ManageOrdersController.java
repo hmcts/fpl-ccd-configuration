@@ -96,12 +96,14 @@ public class ManageOrdersController extends CallbackController {
 
         List<String> errors = orderValidator.validate(order, currentSection, caseData);
 
-        @SuppressWarnings("unchecked") Map<String, Object> manageOrdersAmendedOrder = (Map<String, Object>) data.get("manageOrdersAmendedOrder");
+        @SuppressWarnings("unchecked") Map<String, Object> manageOrdersAmendedOrder =
+            (Map<String, Object>) data.get("manageOrdersAmendedOrder");
         if (manageOrdersAmendedOrder != null) {
             String uploadedFilename = (String) manageOrdersAmendedOrder.get("document_filename");
             if (PDF.equals(getExtension(uploadedFilename)) == false) {
-                String userMessage = MessageFormat.format("Can only amend documents that are {0}, requested document was of type: {1}",
-                    PDF, getExtension(uploadedFilename));
+                String userMessage = MessageFormat.format(
+                    "Can only amend documents that are {0}, requested document was of type: {1}", PDF,
+                    getExtension(uploadedFilename));
                 errors.add(userMessage);
             }
         }
