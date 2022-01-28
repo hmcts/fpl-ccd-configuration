@@ -6,17 +6,20 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
@@ -30,11 +33,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Set.of;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -48,6 +53,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final SendDocumentService sendDocumentService;
     private final TranslationRequestService translationRequestService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @EventListener
     @Async
@@ -77,15 +83,43 @@ public class CaseManagementOrderIssuedEventHandler {
     @Async
     public void notifyCafcass(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
+
+        final Optional<Cafcass> recipientIsWelsh =
+                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
+
+        if (recipientIsWelsh.isPresent()) {
+            HearingOrder issuedCmo = event.getCmo();
+
+            final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
+                    caseData, issuedCmo, EMAIL);
+
+            notificationService.sendEmail(
+                    CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
+                    recipientIsWelsh.get().getEmail(),
+                    cafcassParameters,
+                    caseData.getId()
+            );
+        }
+    }
+
+    @EventListener
+    @Async
+    public void notifyCafcassViaSendGrid(final CaseManagementOrderIssuedEvent event) {
+        CaseData caseData = event.getCaseData();
         HearingOrder issuedCmo = event.getCmo();
+        final Optional<Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
-            caseData, issuedCmo, EMAIL);
-        final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+        if (recipientIsEngland.isPresent()) {
+            cafcassNotificationService.sendEmail(caseData,
+                    of(issuedCmo.getOrder()),
+                    ORDER,
+                    OrderCafcassData.builder()
+                            .documentName(issuedCmo.getOrder().getFilename())
+                            .build()
+            );
+        }
 
-        notificationService.sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters, caseData.getId()
-        );
     }
 
     @EventListener
