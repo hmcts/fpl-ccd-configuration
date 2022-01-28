@@ -639,9 +639,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "COL",
+    "ListElement": "City of London Corporation",
+    "DisplayOrder": 198
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LBC",
     "ListElement": "Luton Borough Council",
-    "DisplayOrder": 198
+    "DisplayOrder": 199
   },
   {
     "LiveFrom": "01/01/2017",
