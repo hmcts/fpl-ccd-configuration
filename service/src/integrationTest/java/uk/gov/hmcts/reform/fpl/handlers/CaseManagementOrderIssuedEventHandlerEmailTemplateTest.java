@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -13,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
@@ -23,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProviderTypeOfOrderCalculator;
@@ -45,9 +49,15 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -75,6 +85,13 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
     private static final long CASE_ID = 123456L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
 
+    @Captor
+    private ArgumentCaptor<OrderCafcassData> orderCafcassDataArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<Set<DocumentReference>> documArgumentCaptor;
+
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
     @Autowired
     private CaseManagementOrderIssuedEventHandler underTest;
 
@@ -95,7 +112,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         .lastHearingOrderDraftsHearingId(HEARING_ID)
         .build();
     public static final HearingOrder CMO = HearingOrder.builder()
-        .order(DocumentReference.builder().binaryUrl("/some-url/binary").build())
+        .order(DocumentReference.builder().binaryUrl("/some-url/binary").filename("Test").build())
         .hearing("some hearing")
         .build();
 
@@ -176,5 +193,24 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
+    }
+
+    @Test
+    void notifyCafcassViaSendGrid() {
+        underTest.notifyCafcassViaSendGrid(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
+
+        verify(cafcassNotificationService).sendEmail(
+                isA(CaseData.class),
+                documArgumentCaptor.capture(),
+                same(ORDER),
+                orderCafcassDataArgumentCaptor.capture()
+        );
+
+        assertThat(documArgumentCaptor.getValue())
+                .containsExactlyElementsOf(
+                        Set.of(CMO.getOrder()));
+        assertThat(orderCafcassDataArgumentCaptor.getValue()
+                        .getDocumentName())
+                .isEqualTo("Test");
     }
 }

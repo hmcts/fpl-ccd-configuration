@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -30,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
@@ -41,11 +45,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -55,8 +63,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_3A;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
@@ -70,6 +81,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -115,7 +127,15 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     private EmailService emailService;
 
     @MockBean
+    private CafcassNotificationService cafcassNotificationService;
+
+    @MockBean
     DocmosisHelper docmosisHelper;
+
+    @Captor
+    private ArgumentCaptor<OrderCafcassData> orderCafcassDataArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<Set<DocumentReference>> documArgumentCaptor;
 
     ApproveDraftOrdersControllerSubmittedTest() {
         super("approve-draft-orders");
@@ -145,7 +165,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
+    void shouldSendCMOIssuedNotificationsViaSendGridCafcassIfJudgeApproves() {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
         HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
@@ -158,8 +178,75 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
+                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                    eq(LOCAL_AUTHORITY_1_INBOX),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient,never()).sendEmail(
+                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                    eq(IntegrationTestConstants.CAFCASS_EMAIL),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient).sendEmail(
+                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                    eq("robert@example.com"),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient).sendEmail(
+                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                    eq("charlie@example.com"),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient).sendEmail(
+                    eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                    eq(COURT_1.getEmail()),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+            verify(cafcassNotificationService).sendEmail(
+                    isA(CaseData.class),
+                    documArgumentCaptor.capture(),
+                    same(ORDER),
+                    orderCafcassDataArgumentCaptor.capture()
+            );
+
+            assertThat(documArgumentCaptor.getValue())
+                    .containsAll(
+                            Set.of(
+                                    orderDocumentCmo
+                            ));
+            assertThat(orderCafcassDataArgumentCaptor.getValue()
+                    .getDocumentName())
+                    .isEqualTo("cmo.pdf");
+        });
+        verifyNoMoreNotificationsSent();
+    }
+
+    @Test
+    void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
+        given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+
+        HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
+
+        CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
+        caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
+
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                eq(LOCAL_AUTHORITY_1_INBOX),
+                eq(LOCAL_AUTHORITY_3_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
@@ -187,9 +274,15 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(COURT_1.getEmail()),
+                eq(COURT_3A.getEmail()),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
+            );
+            verify(cafcassNotificationService, never()).sendEmail(
+                    any(),
+                    any(),
+                    any(),
+                    any()
             );
         });
         verifyNoMoreNotificationsSent();
@@ -222,6 +315,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         HearingOrder c21 = buildOrder(C21, APPROVED, orderDocumentC21);
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
+        caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
 
         final List<Recipient> recipientsWithOthers = List.of(createRespondentParty(), createOther().toParty());
 
@@ -232,7 +326,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                eq(LOCAL_AUTHORITY_1_INBOX),
+                eq(LOCAL_AUTHORITY_3_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
@@ -260,7 +354,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                eq(COURT_1.getEmail()),
+                eq(COURT_3A.getEmail()),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
@@ -278,12 +372,108 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 CASE_ID,
                 FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
+            verify(cafcassNotificationService, never()).sendEmail(
+                    any(),
+                    any(),
+                    any(),
+                    any()
+            );
+            verifyNoMoreInteractions(notificationClient);
+            verifyNoMoreInteractions(sendLetters);
+        });
+        verifyNoMoreNotificationsSentToTraslation();
+    }
+
+    @Test
+    void shouldSendDraftOrdersIssuedNotificationsViaSendGridIfJudgeApprovesMultipleOrders() {
+        given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+
+        HearingOrder cmo = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
+        cmo.setTitle("Agreed CMO discussed at hearing");
+        HearingOrder c21 = buildOrder(C21, APPROVED, orderDocumentC21);
+        c21.setTitle("C21 test order");
+
+        CaseDetails caseDetails = buildCaseDetails(cmo, c21);
+
+        final List<Recipient> recipientsWithOthers = List.of(createRespondentParty(), createOther().toParty());
+
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                    eq(LOCAL_AUTHORITY_1_INBOX),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient,never()).sendEmail(
+                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                    eq(IntegrationTestConstants.CAFCASS_EMAIL),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient).sendEmail(
+                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                    eq("robert@example.com"),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient).sendEmail(
+                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                    eq("charlie@example.com"),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(notificationClient).sendEmail(
+                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                    eq(COURT_1.getEmail()),
+                    anyMap(),
+                    eq(notificationReference(CASE_ID))
+            );
+
+            verify(sendLetters).send(
+                    cmo.getOrder(),
+                    recipientsWithOthers,
+                    CASE_ID,
+                    FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
+            );
+
+            verify(sendLetters).send(
+                    c21.getOrder(),
+                    recipientsWithOthers,
+                    CASE_ID,
+                    FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
+            );
+            verify(cafcassNotificationService).sendEmail(
+                    isA(CaseData.class),
+                    documArgumentCaptor.capture(),
+                    same(ORDER),
+                    orderCafcassDataArgumentCaptor.capture()
+            );
+
+            assertThat(documArgumentCaptor.getValue())
+                    .containsAll(
+                            Set.of(
+                                    orderDocumentCmo,
+                                    orderDocumentC21
+                            ));
+            assertThat(orderCafcassDataArgumentCaptor.getValue()
+                    .getDocumentName())
+                    .isEqualTo("\nAgreed CMO discussed at hearing\nC21 test order");
 
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(sendLetters);
         });
         verifyNoMoreNotificationsSentToTraslation();
     }
+
 
     @Test
     void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrdersWithTranslation() {
@@ -292,9 +482,11 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         HearingOrder cmo = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo).toBuilder()
             .translationRequirements(ENGLISH_TO_WELSH)
+            .title("Agreed CMO discussed at hearing")
             .build();
         HearingOrder c21 = buildOrder(C21, APPROVED, orderDocumentC21).toBuilder()
             .translationRequirements(ENGLISH_TO_WELSH)
+            .title("C21 test order")
             .build();
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
@@ -302,6 +494,22 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(CallbackRequest.builder().caseDetails(caseDetails).build());
 
         verifyEmailSentToTranslation(2);
+        verify(cafcassNotificationService).sendEmail(
+                isA(CaseData.class),
+                documArgumentCaptor.capture(),
+                same(ORDER),
+                orderCafcassDataArgumentCaptor.capture()
+        );
+
+        assertThat(documArgumentCaptor.getValue())
+                .containsAll(
+                        Set.of(
+                                orderDocumentCmo,
+                                orderDocumentC21
+                        ));
+        assertThat(orderCafcassDataArgumentCaptor.getValue()
+                        .getDocumentName())
+                .isEqualTo("\nAgreed CMO discussed at hearing\nC21 test order");
         verifyNoMoreNotificationsSentToTraslation();
     }
 
