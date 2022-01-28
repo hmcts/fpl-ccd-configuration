@@ -90,7 +90,7 @@ fpl:
   local_authority_code_to_cafcass:
     mapping: 'test1=>cafcass:cafcass@cafcass.com;test2=>cafcass:cafcass@cafcass.com;test3=>Cafcass Cymru:cafcass@cafcass.com'
   local_authority_code_to_shared_inbox:
-    mapping: 'test1=>shared@test1.org.uk;test2=>shared@test2.org.uk'
+    mapping: 'test1=>shared@test1.org.uk;test2=>shared@test2.org.uk;test3=>shared@test3.org.uk'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   local_authority_user:
     mapping: 'test1=>1,2,3'

@@ -101,6 +101,8 @@ public class EmailTemplateTest {
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(cafcassLookupConfiguration.getCafcass(anyString()))
             .thenReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL));
+        when(cafcassLookupConfiguration.getCafcassEngland(anyString()))
+            .thenReturn(Optional.of(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL)));
         when(cafcassLookupConfiguration.getCafcassWelsh(anyString()))
             .thenReturn(Optional.of(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME_WELSH, CAFCASS_EMAIL)));
         when(ctscTeamLeadLookupConfiguration.getEmail()).thenReturn("ctsc-team-lead@example.com");
