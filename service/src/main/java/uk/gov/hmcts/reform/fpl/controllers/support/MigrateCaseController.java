@@ -51,8 +51,6 @@ public class MigrateCaseController extends CallbackController {
     private final NoticeOfChangeFieldPopulator populator;
     private final DocumentListService documentListService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "FPLA-3238", this::run3238,
-        "DFPL-164", this::run164,
         "DFPL-465", this::run465
     );
 
