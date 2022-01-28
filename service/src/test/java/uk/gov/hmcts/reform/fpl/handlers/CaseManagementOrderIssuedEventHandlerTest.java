@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
@@ -23,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -39,8 +42,11 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
@@ -86,6 +92,9 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private SendDocumentService sendDocumentService;
     @Mock
     private TranslationRequestService translationRequestService;
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
+
 
     @InjectMocks
     private CaseManagementOrderIssuedEventHandler underTest;
@@ -121,10 +130,10 @@ class CaseManagementOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCafcass() {
+    void shouldGovNotifyCafcassWelsh() {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
-        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS));
+        given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
+            .willReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, EMAIL))
             .willReturn(EMAIL_REP_CMO_TEMPLATE_DATA);
 
@@ -133,6 +142,52 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+cafcass@gmail.com",
             EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
+        );
+    }
+
+    @Test
+    void shouldNotGovNotifyCafcassWhenCafcassIsEngland() {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
+                .willReturn(Optional.empty());
+
+        underTest.notifyCafcass(EVENT);
+
+        verify(notificationService, never()).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+cafcass@gmail.com",
+            EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
+        );
+    }
+
+    @Test
+    void shouldSendGridNotifyToCafcassEngland() {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
+            .willReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
+
+        underTest.notifyCafcassViaSendGrid(EVENT);
+
+        verify(cafcassNotificationService).sendEmail(
+            isA(CaseData.class),
+                any(),
+                same(CafcassRequestEmailContentProvider.ORDER),
+            isA(OrderCafcassData.class)
+        );
+    }
+
+    @Test
+    void shouldNotSendGridNotifyToCafcassWhenCafcassIsNotEngland() {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
+                .willReturn(Optional.empty());
+
+        underTest.notifyCafcassViaSendGrid(EVENT);
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                isA(CaseData.class),
+                any(),
+                same(CafcassRequestEmailContentProvider.ORDER),
+                isA(OrderCafcassData.class)
         );
     }
 
