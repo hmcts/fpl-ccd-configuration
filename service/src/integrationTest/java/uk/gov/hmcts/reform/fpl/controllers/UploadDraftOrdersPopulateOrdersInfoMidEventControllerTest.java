@@ -5,18 +5,22 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(UploadDraftOrdersController.class)
@@ -180,5 +185,23 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         assertThat(updatedEventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 17 March 2021");
         assertThat(updatedEventData.getFutureHearingsForCMO()).isEqualTo(hearingListAsMap);
         assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
+    }
+
+    @Test
+    void othersSelectedToBeNotifiedForDraftOrder() {
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(Other.builder().name("test1").build())
+                .additionalOthers(wrapElements(Other.builder().name("test2").build()))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "populate-drafts-info");
+
+        assertThat(String.valueOf(callbackResponse.getData().get("hasOthers"))).isEqualTo("Yes");
+        assertThat(String.valueOf(callbackResponse.getData().get("reviewCMOShowOthers"))).isEqualTo("Yes");
+        assertThat(String.valueOf(callbackResponse.getData().get("others_label")))
+            .contains("Other 1: test1", "Other 2: test2");
+        assertThat(extractCaseData(callbackResponse).getOthersSelector()).isEqualTo(Selector.newSelector(2));
     }
 }
