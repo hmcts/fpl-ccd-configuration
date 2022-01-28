@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Set.of;
@@ -58,6 +60,7 @@ public class GeneratedOrderEventHandler {
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final TranslationRequestService translationRequestService;
     private final CafcassNotificationService cafcassNotificationService;
+    private final CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -105,13 +108,20 @@ public class GeneratedOrderEventHandler {
 
     @EventListener
     public void notifyCafcass(GeneratedOrderEvent orderEvent) {
-        cafcassNotificationService.sendEmail(orderEvent.getCaseData(),
-            of(orderEvent.getOrderDocument()),
-            ORDER,
-            OrderCafcassData.builder()
-                .documentName(orderEvent.getOrderDocument().getFilename())
-            .build()
-        );
+        CaseData caseData = orderEvent.getCaseData();
+
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            cafcassNotificationService.sendEmail(caseData,
+                    of(orderEvent.getOrderDocument()),
+                    ORDER,
+                    OrderCafcassData.builder()
+                            .documentName(orderEvent.getOrderDocument().getFilename())
+                            .build()
+            );
+        }
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,

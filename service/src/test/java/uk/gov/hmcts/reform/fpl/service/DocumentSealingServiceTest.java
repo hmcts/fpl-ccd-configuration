@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.exceptions.EncryptedPdfUploadedException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -101,6 +102,36 @@ class DocumentSealingServiceTest {
         when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(notPdf);
 
         assertThrows(UncheckedIOException.class, () ->
+            documentSealingService.sealDocument(inputDocumentReference, SealType.ENGLISH));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsKeyEncryptedPdf() {
+        final String fileName = "test.pdf";
+
+        final byte[] inputDocumentBinaries = readBytes("documents/document-secured_256bitaes.pdf");
+        final DocumentReference inputDocumentReference = testDocumentReference(fileName);
+
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+        when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(inputDocumentBinaries);
+
+        assertThrows(EncryptedPdfUploadedException.class, () ->
+            documentSealingService.sealDocument(inputDocumentReference, SealType.ENGLISH));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsPasswordProtectedPdf() {
+        final String fileName = "test.pdf";
+
+        final byte[] inputDocumentBinaries = readBytes("documents/document-password-protected.pdf");
+        final DocumentReference inputDocumentReference = testDocumentReference(fileName);
+
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+        when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(inputDocumentBinaries);
+
+        assertThrows(EncryptedPdfUploadedException.class, () ->
             documentSealingService.sealDocument(inputDocumentReference, SealType.ENGLISH));
     }
 }

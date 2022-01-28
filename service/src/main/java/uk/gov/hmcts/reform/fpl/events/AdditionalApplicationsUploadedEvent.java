@@ -9,5 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 @RequiredArgsConstructor
 public class AdditionalApplicationsUploadedEvent {
     private final CaseData caseData;
+    private final CaseData caseDataBefore;
     private final OrderApplicant applicant;
 }

@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -50,11 +52,13 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsRespondentSolicitor;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
+class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     private static final List<Recipient> RECIPIENTS_LIST = createRecipientsList();
 
@@ -63,6 +67,9 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Captor
     private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
@@ -159,6 +166,12 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundleAdded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
         String hearing = "Hearing";
         CaseData caseData = buildCaseDataWithCourtBundleList(
             2,
@@ -191,6 +204,12 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldNotEmailCafcassWhenNoNewBundle() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
         String hearing = "Hearing";
         CaseData caseData = buildCaseDataWithCourtBundleList(
             2,
@@ -217,6 +236,12 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundleIsAdded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
         String hearing = "Hearing";
         CaseData caseData = buildCaseDataWithCourtBundleList(
             2,
@@ -253,6 +278,12 @@ class   FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
         String hearing = "Hearing";
         String secHearing = "secHearing";
         String hearingOld = "Old";
