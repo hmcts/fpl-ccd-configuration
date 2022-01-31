@@ -82,7 +82,7 @@ Scenario('Designated local authority solicitor can see all local authorities but
 Scenario('Secondary local authority solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
 
   const hillingdonLocalAuthorityUpdates = {
-    pbaNumber: 'PBA1234567',
+    pbaNumber: 'PBAFUNC12345',
     phone: '777777',
   };
 
