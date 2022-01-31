@@ -1,4 +1,4 @@
-const defaultPassword = 'Password12';
+const defaultPassword = 'Pa55word11';
 
 module.exports = {
   swanseaLocalAuthorityUserOne: {
