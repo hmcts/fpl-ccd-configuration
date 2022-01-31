@@ -205,7 +205,7 @@ withPipeline(type, product, component) {
     env.SWANSEA_ORG_ID = "62LYJRF"
     env.MOCKED_PAYMENTS = false
     env.PARALLEL_CHUNKS = 12
-    env.TEST_RETRIES = 5
+    env.TEST_RETRIES = 3
   }
 
   after('smoketest:saat') {

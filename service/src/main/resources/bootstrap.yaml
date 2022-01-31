@@ -34,5 +34,6 @@ spring:
         cafcass-notification-recipient-large-file: cafcass.notification.large
         cafcass-notification-recipient-new-application: cafcass.notification.newapplication
         cafcass-notification-recipient-new-document: cafcass.notification.newdocument
+        cafcass-notification-recipient-additional-document: cafcass.notification.additionaldocument
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         scheduler-db-password: SCHEDULER_DB_PASSWORD
