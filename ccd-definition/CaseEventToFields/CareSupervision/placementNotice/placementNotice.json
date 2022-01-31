@@ -72,6 +72,7 @@
     "PageID": "noticeDetails",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
+    "FieldShowCondition": "placementChildNameLabel = \"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "N"
   },
   {

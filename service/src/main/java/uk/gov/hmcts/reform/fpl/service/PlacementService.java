@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisImages;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
@@ -53,6 +55,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
@@ -221,6 +225,19 @@ public class PlacementService {
         return placementData;
     }
 
+    public PlacementEventData savePlacementNotice(CaseData caseData) {
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+        final Placement currentPlacement = placementData.getPlacement();
+        currentPlacement.setPlacementNotice(createA92Document(caseData, SEALED));
+
+        final Optional<Element<Placement>> existingPlacement = placementData.getPlacements().stream()
+            .filter(pl -> Objects.equals(pl.getValue().getChildId(), currentPlacement.getChildId()))
+            .findFirst();
+
+        existingPlacement.ifPresent(placementElement -> placementElement.setValue(currentPlacement));
+        return placementData;
+    }
+
     public PlacementEventData savePlacement(CaseData caseData) {
 
         final PlacementEventData placementData = caseData.getPlacementEventData();
@@ -255,7 +272,7 @@ public class PlacementService {
         return placementData;
     }
 
-    public PlacementEventData generateA92(CaseData caseData) {
+    private DocumentReference createA92Document(CaseData caseData, OrderStatus status) {
         final PlacementEventData placementEventData = caseData.getPlacementEventData();
         final Optional<Element<Child>> child = caseData.getAllChildren().stream().filter(
             element -> element.getId().equals(placementEventData.getPlacement().getChildId())
@@ -280,13 +297,20 @@ public class PlacementService {
             .hearingDuration(placementEventData.getPlacementNoticeDuration())
             .hearingVenue(hearingVenueLookUpService.getHearingVenue(placementEventData.getPlacementNoticeVenue()).getVenue())
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
+            .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
             .build();
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(hearing, A92, RenderFormat.PDF);
         Document document = uploadDocumentService.uploadDocument(docmosisDocument.getBytes(),
             A92.getDocumentTitle(time.now().toLocalDate()), RenderFormat.PDF.getMediaType());
-        placementEventData.setPlacementNotice(DocumentReference.buildFromDocument(document));
-        return placementEventData;    }
+        return DocumentReference.buildFromDocument(document);
+    }
+
+    public PlacementEventData generateA92(CaseData caseData) {
+        final PlacementEventData placementEventData = caseData.getPlacementEventData();
+        placementEventData.setPlacementNotice(createA92Document(caseData, DRAFT));
+        return placementEventData;
+    }
 
 
     public List<Object> getEvents(CaseData caseData, CaseData caseDataBefore) {

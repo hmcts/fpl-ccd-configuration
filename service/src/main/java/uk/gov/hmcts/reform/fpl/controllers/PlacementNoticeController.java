@@ -96,7 +96,7 @@ public class PlacementNoticeController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        final PlacementEventData eventData = placementService.savePlacement(caseData);
+        final PlacementEventData eventData = placementService.savePlacementNotice(caseData);
 
         caseDetails.getData().put("placements", eventData.getPlacements());
         caseDetails.getData().put("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
