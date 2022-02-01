@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,50 +27,23 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest {
+class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTest {
 
+    public static final String EMMA_GREEN_MOTHER = "Emma Green - mother";
+    public static final String ADAM_GREEN_FATHER = "Adam Green - father";
     @MockBean
     private FeesRegisterApi feesRegisterApi;
-
-    @Test
-    void shouldReturnErrorsWhenRequiredDocumentsNotPresent() {
-
-        final DynamicList parentList1 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
-
-        final DynamicList parentList2 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
-
-        final PlacementEventData placementData = PlacementEventData.builder()
-            .placement(Placement.builder().build())
-            .placementNoticeForFirstParentParentsList(parentList1)
-            .placementNoticeForSecondParentParentsList(parentList2)
-            .build();
-
-        final CaseData caseData = CaseData.builder()
-            .respondents1(List.of(mother, father))
-            .placementEventData(placementData)
-            .build();
-
-        final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "notices-upload");
-
-        assertThat(response.getErrors()).containsExactly("First and second parents can not be same");
-
-        verifyNoMoreInteractions(feesRegisterApi);
-    }
 
     @Test
     void shouldFetchPlacementFeeWhenPaymentIsRequired() {
 
         final DynamicList parentList1 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
+            Pair.of(EMMA_GREEN_MOTHER, mother.getId()),
+            Pair.of(ADAM_GREEN_FATHER, father.getId()));
 
         final DynamicList parentList2 = dynamicLists.from(1,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
+            Pair.of(EMMA_GREEN_MOTHER, mother.getId()),
+            Pair.of(ADAM_GREEN_FATHER, father.getId()));
 
         final PlacementEventData placementData = PlacementEventData.builder()
             .placement(Placement.builder()
@@ -90,7 +63,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
         when(feesRegisterApi.findFee("default", "miscellaneous", "family", "family court", "Placement", "adoption"))
             .thenReturn(feeResponse(455.5));
 
-        final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "notices-upload"));
+        final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "notices-respondents"));
 
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
@@ -102,12 +75,12 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
     void shouldNoFetchPlacementFeeWhenPaymentHasBeenAlreadyTakenOnSameDay() {
 
         final DynamicList parentList1 = dynamicLists.from(0,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
+            Pair.of(EMMA_GREEN_MOTHER, mother.getId()),
+            Pair.of(ADAM_GREEN_FATHER, father.getId()));
 
         final DynamicList parentList2 = dynamicLists.from(1,
-            Pair.of("Emma Green - mother", mother.getId()),
-            Pair.of("Adam Green - father", father.getId()));
+            Pair.of(EMMA_GREEN_MOTHER, mother.getId()),
+            Pair.of(ADAM_GREEN_FATHER, father.getId()));
 
         final LocalDateTime earlierToday = dateNow().atTime(0, 0, 1);
 
@@ -120,6 +93,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
                 .build())
             .placementNoticeForFirstParentParentsList(parentList1)
             .placementNoticeForSecondParentParentsList(parentList2)
+            .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -127,7 +101,7 @@ class PlacementNoticesUploadMidEventTest extends AbstractPlacementControllerTest
             .placementEventData(placementData)
             .build();
 
-        final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "notices-upload"));
+        final CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "notices-respondents"));
 
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 

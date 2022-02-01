@@ -97,6 +97,7 @@ public class PlacementService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final RespondentService respondentService;
 
     public PlacementEventData prepareChildren(CaseData caseData) {
 
@@ -249,6 +250,10 @@ public class PlacementService {
             .findFirst();
 
         currentPlacement.setNoticeDocuments(getListOfNotices(placementData));
+
+        currentPlacement.setPlacementRespondentsToNotify(
+            respondentService.getSelectedRespondents(caseData, caseData.getSendPlacementNoticeToAllRespondents())
+        );
 
         currentPlacement.setPlacementNotice(placementData.getPlacementNotice());
 

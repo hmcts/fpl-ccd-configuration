@@ -872,6 +872,16 @@
     "Searchable": "N",
     "Comment": "Displays a list of names for others"
   },
+ {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementRespondentsLabel",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of names for respondents"
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -1756,6 +1766,16 @@
     "Searchable": "N"
   },
   {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasRespondents",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide respondent selection as to when there are no respondents to notify",
+    "Searchable": "N"
+  },
+  {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "paymentDetailsLabel",
@@ -1912,6 +1932,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsSelector",
+    "Label": "Select who should be notified",
+    "FieldType": "RespondentsSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "personSelector",
     "Label": "Select who should be notified",
     "FieldType": "PersonSelector",
@@ -1954,6 +1983,24 @@
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementRespondentsSectionHeader",
+    "FieldType": "Label",
+    "Label": "## Confirm recipients",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "placementRespondentsSectionSubHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "You must check to see if there are restrictions on who should be notified about the placement application.",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   }
 ]

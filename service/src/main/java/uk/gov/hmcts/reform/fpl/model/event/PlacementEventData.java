@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.FieldsGroup;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.TempNullify;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -211,4 +212,13 @@ public class PlacementEventData {
     @Temp
     @FieldsGroup(HEARING_GROUP)
     private final String placementNoticeVenue;
+
+    @Temp
+    @FieldsGroup(NOTICE_GROUP)
+    private List<Element<Respondent>> placementRespondentsToNotify;
+
+    @Temp
+    @FieldsGroup(NOTICE_GROUP)
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    private YesNo sendPlacementNoticeToAllRespondents;
 }

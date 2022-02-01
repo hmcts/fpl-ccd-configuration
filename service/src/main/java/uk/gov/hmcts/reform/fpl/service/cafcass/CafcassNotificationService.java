@@ -33,7 +33,7 @@ public class CafcassNotificationService {
                           Set<DocumentReference> documentReferences,
                           CafcassRequestEmailContentProvider provider,
                           CafcassData cafcassData) {
-        log.info("For case id {} notifying Cafcass for {}",
+        log.info("For case id: {} notifying Cafcass for: {}",
             caseData.getId(),
             provider.name());
 
@@ -45,7 +45,7 @@ public class CafcassNotificationService {
                 .message(provider.getContent().apply(caseData, cafcassData))
                 .build());
 
-        log.info("For case id {} notification sent to Cafcass for {}",
+        log.info("For case id: {} notification sent to Cafcass for: {}",
             caseData.getId(),
             provider.name());
     }
