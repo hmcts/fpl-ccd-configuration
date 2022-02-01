@@ -4,7 +4,7 @@ const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmiss
 
 Feature('Case outsourcing');
 
-Scenario('Private solicitor creates case on behalf of local authority ', async ({I, caseListPage}) => {
+Scenario('Private solicitor creates case on behalf of local authority @flaky', async ({I, caseListPage}) => {
   const localAuthority = 'Swansea City Council';
   const caseName = `On behalf of ${localAuthority}`;
 

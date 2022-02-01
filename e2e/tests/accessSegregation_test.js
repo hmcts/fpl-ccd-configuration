@@ -14,7 +14,7 @@ Scenario('Different user in the same local authority can see case created', asyn
   I.see(caseId);
 });
 
-Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
+Scenario('Different user in a different local authority cannot see case created @flaky', async ({I, caseListPage}) => {
   await setupScenario(I);
   await I.signIn(config.hillingdonLocalAuthorityUserTwo);
   caseListPage.verifyCaseIsNotAccessible(caseId);
