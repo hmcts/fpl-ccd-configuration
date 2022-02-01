@@ -8,7 +8,7 @@ Scenario('Sign in as local authority and create a case', async ({I, caseListPage
   output.print('Smoke test triggered now');
   await I.goToPage(config.baseUrl);
   const caseName = `Smoke test case (${moment().format('YYYY-MM-DD HH:MM')})`;
-  const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserTwo, caseName);
+  const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
   I.navigateToCaseList();
   I.grabCurrentUrl();
   caseListPage.searchForCasesWithName(caseName, 'Open');
