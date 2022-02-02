@@ -94,7 +94,18 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        notifyLocalAuthority(caseData, placement);
+        log.info("Send email to local authority about {} child placement notice", placement.getChildName());
+
+        final NotifyData notifyData = contentProvider.getNoticeChangedData(caseData, placement);
+
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
+
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+        notificationService
+            .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, recipients, notifyData, caseData.getId());
     }
 
     @Async
@@ -103,7 +114,14 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        notifyCafcass(caseData, placement);
+        log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
+
+        final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
+
+        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+
+        notificationService
+            .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @Async
@@ -115,8 +133,8 @@ public class PlacementEventsHandler {
         if (placement.getPlacementRespondentsToNotify() != null) {
             for (Element<Respondent> respondent : placement.getPlacementRespondentsToNotify()) {
                 Optional<Element<Respondent>> resp = caseData.getAllRespondents().stream().filter(
-                    el -> el.getId() == respondent.getId()).findFirst();
-                log.warn("Notifying respondent ", respondent.getValue().getParty().getFullName());
+                    el -> el.getId().equals(respondent.getId())).findFirst();
+
                 resp.ifPresent(respondentElement -> notifyRespondent(
                     caseData, placement, respondentElement.getValue()));
             }
@@ -147,48 +165,22 @@ public class PlacementEventsHandler {
             .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
-    private void notifyLocalAuthority(CaseData caseData, Placement placement) {
-
-        log.info("Send email to local authority about {} child placement notice", placement.getChildName());
-
-        final NotifyData notifyData = contentProvider.getNoticeChangedData(caseData, placement);
-
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .build();
-
-        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
-
-        notificationService
-            .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, recipients, notifyData, caseData.getId());
-    }
-
-    private void notifyCafcass(CaseData caseData, Placement placement) {
-
-        log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
-
-        final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
-
-        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
-
-        notificationService
-            .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipient, notifyData, caseData.getId());
-    }
-
     private void notifyRespondent(CaseData caseData, Placement placement, Respondent respondent) {
 
         final RespondentSolicitor parentSolicitor = respondent.getSolicitor();
 
         if (nonNull(parentSolicitor)) {
 
-            log.info("Send email to parent solicitor about {} child placement notice", placement.getChildName());
+            log.info("Send email to respondent ({}) solicitor about {} child placement notice",
+                respondent.getParty().getFullName(), placement.getChildName());
 
             final NotifyData notifyData = contentProvider.getNoticeChangedData(caseData, placement);
 
             notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData,
                 caseData.getId());
         } else {
-            log.info("Send letter to parent about {} child placement notice", placement.getChildName());
+            log.info("Send letter to respondent ({}) about {} child placement notice",
+                respondent.getParty().getFullName(), placement.getChildName());
 
             sendDocumentService.sendDocuments(
                 caseData, List.of(placement.getPlacementNotice()), List.of(respondent.getParty()));
