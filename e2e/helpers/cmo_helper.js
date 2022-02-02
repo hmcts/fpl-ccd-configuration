@@ -55,6 +55,8 @@ const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportin
     await uploadCMOEventPage.attachC21({name: c21s.title, file: c21s.file, orderNumber: c21s.number});
     await I.goToNextPage();
   }
+  uploadCMOEventPage.selectOthers(0);
+  await I.goToNextPage();
   uploadCMOEventPage.reviewInfo('mockFile.docx', 'Her Honour Judge Reed');
   if (cmoTranslation) {
     uploadCMOEventPage.requestTranslationForCmo(cmoTranslation);
@@ -77,6 +79,8 @@ const uploadC21 = async (I, caseViewPage, uploadCMOEventPage, c21s, hearing) => 
   uploadCMOEventPage.selectDraftHearing(hearing);
   await I.goToNextPage();
   await uploadCMOEventPage.attachC21({name: c21s.title, file: c21s.file, orderNumber:  c21s.number});
+  await I.goToNextPage();
+  uploadCMOEventPage.selectOthers(0);
   await I.goToNextPage();
   uploadCMOEventPage.reviewInfo('mockFile.docx', hearing ? 'Her Honour Judge Reed' : null);
   await I.completeEvent('Submit');

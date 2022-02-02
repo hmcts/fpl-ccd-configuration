@@ -109,4 +109,8 @@ module.exports = {
     I.attachFile(fields.document, file);
     await I.runAccessibilityTest();
   },
+
+  selectOthers(index) {
+    I.checkOption(`#othersSelector_option${index}-SELECTED`);
+  },
 };
