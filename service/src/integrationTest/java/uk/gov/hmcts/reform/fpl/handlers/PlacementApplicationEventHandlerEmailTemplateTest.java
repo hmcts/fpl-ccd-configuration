@@ -6,12 +6,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
-import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
+import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -30,8 +28,6 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.PLACEMENT;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -58,6 +54,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
     private final Placement placement = Placement.builder()
         .childId(child.getId())
         .childName(child.getValue().asLabel())
+        .placementNotice(testDocumentReference())
         .build();
 
     private final CaseData caseData = CaseData.builder()
@@ -96,12 +93,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
     @Test
     void localAuthorityNotification() {
 
-        final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-            .type(LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
-            .build();
-
-        underTest.notifyParties(new PlacementNoticeChanged(caseData, placement, notice));
+        underTest.notifyLocalAuthorityOfNewNotice(new PlacementNoticeAdded(caseData, placement));
 
         assertThat(response())
             .hasSubject("New notice of placement order, Alex Green")
@@ -119,18 +111,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
     @Test
     void cafcassNotification() {
 
-        final DocumentReference noticeDocument = DocumentReference.builder()
-            .filename("doc.pdf")
-            .url("http://dm-store/100")
-            .binaryUrl("http://dm-store/100/binary")
-            .build();
-
-        final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-            .type(CAFCASS)
-            .notice(noticeDocument)
-            .build();
-
-        underTest.notifyParties(new PlacementNoticeChanged(caseData, placement, notice));
+        underTest.notifyCafcassOfNewNotice(new PlacementNoticeAdded(caseData, placement));
 
         assertThat(response())
             .hasSubject("New notice of placement order, Alex Green")

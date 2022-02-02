@@ -298,17 +298,20 @@ public class PlacementService {
                 .build())
             .courtName(caseData.getCourt().getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .hearingDate(formatLocalDateTimeBaseUsingFormat(placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX)
+            .hearingDate(formatLocalDateTimeBaseUsingFormat(
+                placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX)
                 .formatted(getDayOfMonthSuffix(placementEventData.getPlacementNoticeDateTime().getDayOfMonth())))
             .hearingDuration(placementEventData.getPlacementNoticeDuration())
-            .hearingVenue(hearingVenueLookUpService.getHearingVenue(placementEventData.getPlacementNoticeVenue()).getVenue())
+            .hearingVenue(hearingVenueLookUpService.getHearingVenue(
+                placementEventData.getPlacementNoticeVenue()).getVenue())
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
             .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue(caseData.getImageLanguage()) : null)
             .build();
 
-        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(hearing, A92, RenderFormat.PDF);
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            hearing, A92, RenderFormat.PDF);
         Document document = uploadDocumentService.uploadDocument(docmosisDocument.getBytes(),
             A92.getDocumentTitle(time.now().toLocalDate()), RenderFormat.PDF.getMediaType());
         return DocumentReference.buildFromDocument(document);

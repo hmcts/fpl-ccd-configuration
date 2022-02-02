@@ -190,7 +190,8 @@ public class PlacementEventsHandler {
         } else {
             log.info("Send letter to parent about {} child placement notice", placement.getChildName());
 
-            sendDocumentService.sendDocuments(caseData, List.of(placement.getPlacementNotice()), List.of(respondent.getParty()));
+            sendDocumentService.sendDocuments(
+                caseData, List.of(placement.getPlacementNotice()), List.of(respondent.getParty()));
         }
 
     }

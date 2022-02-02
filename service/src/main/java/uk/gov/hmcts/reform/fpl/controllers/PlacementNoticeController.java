@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +82,7 @@ public class PlacementNoticeController extends CallbackController {
 
         return respond(caseProperties);
     }
+
     @PostMapping("notice-draft/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleConfirmDraftNotice(@RequestBody CallbackRequest request) {
         final CaseDetails caseDetails = request.getCaseDetails();
