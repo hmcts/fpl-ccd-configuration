@@ -110,9 +110,8 @@ public class PlacementNoticeController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         final CaseData caseData = getCaseData(request);
-        final CaseData caseDataBefore = getCaseDataBefore(request);
 
-        publishEvents(placementService.getEvents(caseData, caseDataBefore));
+        publishEvent(placementService.getNoticeAddedEvent(caseData));
     }
 
     public DynamicList asDynamicList(List<Element<Placement>> placements) {

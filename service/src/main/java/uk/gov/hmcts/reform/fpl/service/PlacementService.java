@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
+import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -302,7 +303,9 @@ public class PlacementService {
             .hearingDuration(placementEventData.getPlacementNoticeDuration())
             .hearingVenue(hearingVenueLookUpService.getHearingVenue(placementEventData.getPlacementNoticeVenue()).getVenue())
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
+            .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
+            .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue(caseData.getImageLanguage()) : null)
             .build();
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(hearing, A92, RenderFormat.PDF);
@@ -378,6 +381,15 @@ public class PlacementService {
         }
 
         return events;
+    }
+
+    public PlacementNoticeAdded getNoticeAddedEvent(CaseData caseData) {
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+
+        final UUID childId = placementData.getPlacement().getChildId();
+        final Placement placement = findChildPlacement(placementData, childId).orElseThrow();
+
+        return new PlacementNoticeAdded(caseData, placement);
     }
 
     private PlacementNoticeDocument getNotice(List<PlacementNoticeDocument> notices, RecipientType type) {
