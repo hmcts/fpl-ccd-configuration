@@ -79,7 +79,7 @@ Scenario('Designated local authority solicitor can see all local authorities but
   assert.strictEqual(await enterLocalAuthorityEventPage.getLocalAuthorityEmail(), swanseaLocalAuthority.email);
 });
 
-Scenario('Secondary local authority solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+Scenario('Secondary local authority solicitor can see all local authorities but updates only his own @flaky-local-ok', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
 
   const hillingdonLocalAuthorityUpdates = {
     pbaNumber: 'PBA1234567',
@@ -202,7 +202,7 @@ Scenario('HMCTS admin transfer case to new local authority', async ({I, caseView
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin transfer case to secondary local authority @flaky', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
+Scenario('HMCTS admin transfer case to secondary local authority @flaky-local-ok', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
 
   await setupScenario(I);
 
