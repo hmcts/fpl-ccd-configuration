@@ -119,7 +119,7 @@ public class PlacementNoticeController extends CallbackController {
     }
 
     public DynamicList asDynamicList(List<Element<Placement>> placements, UUID selectedId) {
-        return ElementUtils.asDynamicList(placements, selectedId, Placement::toLabel);
+        return ElementUtils.asDynamicList(placements, selectedId, Placement::getChildName);
     }
 
 
