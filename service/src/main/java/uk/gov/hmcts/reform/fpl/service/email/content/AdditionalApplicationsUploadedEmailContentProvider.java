@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildUnformattedCalloutWithNextHearing;
 
 @Component
+
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AdditionalApplicationsUploadedEmailContentProvider extends AbstractEmailContentProvider {
     private final Time time;
@@ -48,7 +49,7 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
             .build();
     }
 
-    private List<String> getApplicationTypes(AdditionalApplicationsBundle additionalApplicationsBundle) {
+    public List<String> getApplicationTypes(AdditionalApplicationsBundle additionalApplicationsBundle) {
         List<String> applicationTypes = new ArrayList<>();
         C2DocumentBundle c2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
         OtherApplicationsBundle otherDocumentBundle = additionalApplicationsBundle.getOtherApplicationsBundle();
