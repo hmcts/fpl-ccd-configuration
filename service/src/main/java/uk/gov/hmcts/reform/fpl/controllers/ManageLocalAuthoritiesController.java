@@ -11,22 +11,24 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.ManageLocalAuthoritiesService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
-import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
-import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
+import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.*;
 
 @Api
 @RestController
@@ -36,12 +38,18 @@ public class ManageLocalAuthoritiesController extends CallbackController {
 
     private final ManageLocalAuthoritiesService service;
     private final CaseAssignmentService assignmentService;
+    private final UserService userService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
 
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
+
+        Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+        if (caseRoles.contains(LASOLICITOR)) {
+            caseDetails.getData().put("isLaSolicitor", YesNo.YES);
+        }
 
         caseDetails.getData().put("localAuthoritiesToShare", service.getLocalAuthoritiesToShare(caseData));
         caseDetails.getData().put("sharedLocalAuthority", service.getSharedLocalAuthorityName(caseData));
@@ -188,6 +196,9 @@ public class ManageLocalAuthoritiesController extends CallbackController {
     }
 
     private static LocalAuthorityAction getAction(CaseData caseData) {
+        if (YesNo.YES.equals(caseData.getLocalAuthoritiesEventData().getIsLaSolicitor())) {
+            return caseData.getLocalAuthoritiesEventData().getLocalAuthorityActionLA();
+        }
 
         return caseData.getLocalAuthoritiesEventData().getLocalAuthorityAction();
     }

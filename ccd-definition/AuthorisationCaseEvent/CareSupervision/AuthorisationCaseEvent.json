@@ -1379,14 +1379,14 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "[LASOLICITOR]"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-solicitor",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
