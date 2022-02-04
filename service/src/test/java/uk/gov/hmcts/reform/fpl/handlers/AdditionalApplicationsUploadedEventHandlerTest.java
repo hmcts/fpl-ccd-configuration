@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -47,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -70,7 +72,9 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
@@ -130,6 +134,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private AdditionalApplicationsUploadedTemplate notifyData;
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
     @Captor
     private ArgumentCaptor<NewDocumentData> newDocumentDataArgumentCaptor;
 
@@ -436,6 +442,13 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     private void verifyInvocation(List<DocumentReference> documents, CaseData caseData, CaseData caseDataBefore) {
+        given(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .willReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
         given(contentProvider.getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
                 .willReturn(Arrays.asList("C2 (With notice) - Appointment of a guardian",
                         "C13A - Special guardianship order",

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -27,6 +28,8 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
@@ -40,15 +43,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.System.lineSeparator;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -101,6 +107,8 @@ class DraftOrdersApprovedEventHandlerTest {
     private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
     private TranslationRequestService translationRequestService;
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
 
     @InjectMocks
     private DraftOrdersApprovedEventHandler underTest;
@@ -139,7 +147,7 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCafcass() {
+    void shouldGovNotifyCafcassWelsh() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
@@ -151,7 +159,8 @@ class DraftOrdersApprovedEventHandlerTest {
         CafcassLookupConfiguration.Cafcass cafcass =
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
 
-        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(cafcass);
+        given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
+                .willReturn(Optional.of(cafcass));
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, HEARING.getValue(), orders, EMAIL)).willReturn(EXPECTED_TEMPLATE);
 
@@ -162,6 +171,94 @@ class DraftOrdersApprovedEventHandlerTest {
             CAFCASS_EMAIL_ADDRESS,
             EXPECTED_TEMPLATE,
             caseData.getId());
+    }
+
+    @Test
+    void shouldNotGovNotifyCafcassWhenCafcassIsEngland() {
+        CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .hearingDetails(List.of(HEARING))
+                .lastHearingOrderDraftsHearingId(HEARING_ID)
+                .build();
+
+        List<HearingOrder> orders = List.of(hearingOrder());
+
+        given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
+                .willReturn(Optional.empty());
+
+        underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, orders));
+
+        verify(notificationService, never()).sendEmail(
+                JUDGE_APPROVES_DRAFT_ORDERS,
+                CAFCASS_EMAIL_ADDRESS,
+                EXPECTED_TEMPLATE,
+                caseData.getId());
+    }
+
+    @Test
+    void shouldSendGridNotifyToCafcassEngland() {
+        CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .hearingDetails(List.of(HEARING))
+                .lastHearingOrderDraftsHearingId(HEARING_ID)
+                .build();
+
+        List<HearingOrder> orders = List.of(
+                HearingOrder.builder()
+                    .order(TestDataHelper.testDocumentReference())
+                    .title("Test 1")
+                    .build(),
+                HearingOrder.builder()
+                    .order(TestDataHelper.testDocumentReference())
+                    .title("Test 2")
+                    .build());
+        CafcassLookupConfiguration.Cafcass cafcass =
+                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
+
+        given(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
+                .willReturn(Optional.of(cafcass));
+
+
+        underTest.sendNotificationToCafcassViaSendGrid(new DraftOrdersApproved(caseData, orders));
+
+        String content = String.join(lineSeparator(),
+                "",
+                    "Test 1",
+                    "Test 2"
+                );
+
+        verify(cafcassNotificationService).sendEmail(
+                caseData,
+                orders.stream().map(HearingOrder::getDocument).collect(Collectors.toSet()),
+                CafcassRequestEmailContentProvider.ORDER,
+                OrderCafcassData.builder()
+                    .documentName(content)
+                    .build());
+    }
+
+    @Test
+    void shouldNotSendGridNotifyToCafcassWhenCafcassIsNotEngland() {
+        CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .hearingDetails(List.of(HEARING))
+                .lastHearingOrderDraftsHearingId(HEARING_ID)
+                .build();
+
+        List<HearingOrder> orders = List.of(hearingOrder());
+
+        given(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
+                .willReturn(Optional.empty());
+
+        underTest.sendNotificationToCafcassViaSendGrid(new DraftOrdersApproved(caseData, orders));
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
     }
 
     @Test
@@ -420,6 +517,7 @@ class DraftOrdersApprovedEventHandlerTest {
     private HearingOrder hearingOrder() {
         return HearingOrder.builder()
             .order(TestDataHelper.testDocumentReference())
+            .title("Test")
             .build();
     }
 
