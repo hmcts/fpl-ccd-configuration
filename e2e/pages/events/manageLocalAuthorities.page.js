@@ -2,6 +2,15 @@ const {I} = inject();
 
 module.exports = {
   fields: {
+    localAuthorityAction: {
+      add: '#localAuthorityAction-ADD',
+      remove: '#localAuthorityAction-REMOVE',
+      transfer: '#localAuthorityAction-TRANSFER',
+    },
+    localAuthorityActionLA: {
+      add: '#localAuthorityActionLA-ADD',
+      remove: '#localAuthorityActionLA-REMOVE',
+    },
     localAuthoritiesList: '#localAuthoritiesToShare',
     localAuthorityEmail: '#localAuthorityEmail',
     transfer: {
@@ -20,15 +29,23 @@ module.exports = {
   },
 
   selectAddLocalAuthority() {
-    I.click('Give case access to another local authority');
+    I.click(this.fields.localAuthorityAction.add);
   },
 
   selectRemoveLocalAuthority() {
-    I.click('Remove case access from local authority');
+    I.click(this.fields.localAuthorityAction.remove);
   },
 
   selectTransferLocalAuthority() {
-    I.click('Transfer the case to another local authority');
+    I.click(this.fields.localAuthorityAction.transfer);
+  },
+
+  selectAddLocalAuthorityForLASolicitor() {
+    I.click(this.fields.localAuthorityActionLA.add);
+  },
+
+  selectRemoveLocalAuthorityForLASolicitor() {
+    I.click(this.fields.localAuthorityActionLA.remove);
   },
 
   async selectLocalAuthority(name) {
