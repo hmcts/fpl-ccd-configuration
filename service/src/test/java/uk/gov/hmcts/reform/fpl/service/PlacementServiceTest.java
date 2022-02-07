@@ -327,8 +327,8 @@ class PlacementServiceTest {
     class PreparePlacement {
 
         final LocalDate today = LocalDate.of(2020, 1, 10);
-        final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
-        final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
+        final byte[] document = readBytes("documents/document1.pdf");
+        final DocmosisDocument docmosisDocument = testDocmosisDocument(document)
             .toBuilder().documentTitle("pdf.pdf").build();
 
         @Test
@@ -339,7 +339,7 @@ class PlacementServiceTest {
             when(hearingVenueLookUpService.getHearingVenue(any(String.class))).thenReturn(HearingVenue.builder()
                 .venue("name").build());
             when(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any(), any()))
-                .thenReturn(DOCMOSIS_PDF_DOCUMENT);
+                .thenReturn(docmosisDocument);
             when(uploadDocumentService.uploadDocument(any(), any(), any())).thenReturn(testDocument());
 
 
