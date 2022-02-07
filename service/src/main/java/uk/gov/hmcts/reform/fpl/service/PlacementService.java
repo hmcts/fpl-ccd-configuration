@@ -298,9 +298,9 @@ public class PlacementService {
                 .build())
             .courtName(caseData.getCourt().getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .hearingDate(formatLocalDateTimeBaseUsingFormat(
-                placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX)
-                .formatted(getDayOfMonthSuffix(placementEventData.getPlacementNoticeDateTime().getDayOfMonth())))
+            .hearingDate(String.format(formatLocalDateTimeBaseUsingFormat(
+                placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX),
+                getDayOfMonthSuffix(placementEventData.getPlacementNoticeDateTime().getDayOfMonth())))
             .hearingDuration(placementEventData.getPlacementNoticeDuration())
             .hearingVenue(hearingVenueLookUpService.getHearingVenue(
                 placementEventData.getPlacementNoticeVenue()).getVenue())
