@@ -240,49 +240,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                     "localAuthority", LOCAL_AUTHORITY_1_NAME),
                 notificationReference(CASE_ID));
 
-            verify(notificationClient).sendEmail(
-                PLACEMENT_NOTICE_UPLOADED_TEMPLATE,
-                LOCAL_AUTHORITY_1_INBOX,
-                Map.of(
-                    "caseUrl", getPlacementTabUrl(CASE_ID),
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME),
-                notificationReference(CASE_ID));
-
-            verify(notificationClient).sendEmail(
-                PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE,
-                DEFAULT_CAFCASS_EMAIL,
-                Map.of(
-                    "ccdNumber", CASE_ID.toString(),
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME,
-                    "documentUrl", "http://fake-url/binary",
-                    "documentDownloadUrl", Map.of(
-                        "is_csv", false,
-                        "file", getEncoder().encodeToString(CAFCASS_NOTICE_BINARIES)),
-                    "hasDocumentDownloadUrl", "yes"),
-                notificationReference(CASE_ID));
-
-            verify(notificationClient).sendEmail(
-                PLACEMENT_NOTICE_UPLOADED_TEMPLATE,
-                "solicitor1@test.com",
-                Map.of(
-                    "caseUrl", getPlacementTabUrl(CASE_ID),
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME),
-                notificationReference(CASE_ID));
-
-            verify(sendLetterApi).sendLetter(eq(SERVICE_AUTH_TOKEN), sendLetterRequestCaptor.capture());
-
-            final LetterWithPdfsRequest actualSendLetterRequest = sendLetterRequestCaptor.getValue();
-
-            assertThat(actualSendLetterRequest.getType()).isEqualTo("FPLA001");
-
-            assertThat(actualSendLetterRequest.getDocuments()).containsExactly(
-                getEncoder().encodeToString(COVERSHEET_BINARIES),
-                getEncoder().encodeToString(FIRST_PARENT_NOTICE_BINARIES));
-
-            assertThat(actualSendLetterRequest.getAdditionalData()).contains(
-                entry("caseId", CASE_ID),
-                entry("documentName", firstParentNotice.getNotice().getFilename()));
-
             verifyNoMoreInteractions(notificationClient);
         });
     }

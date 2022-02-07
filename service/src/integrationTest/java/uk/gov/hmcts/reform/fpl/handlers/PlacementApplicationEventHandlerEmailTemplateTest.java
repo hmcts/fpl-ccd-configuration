@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -51,10 +52,16 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
 
     private final Element<Child> child = testChild("Alex", "Green");
 
+    final DocumentReference noticeDocument = DocumentReference.builder()
+        .filename("doc.pdf")
+        .url("http://dm-store/100")
+        .binaryUrl("http://dm-store/100/binary")
+        .build();
+
     private final Placement placement = Placement.builder()
         .childId(child.getId())
         .childName(child.getValue().asLabel())
-        .placementNotice(testDocumentReference())
+        .placementNotice(noticeDocument)
         .build();
 
     private final CaseData caseData = CaseData.builder()
