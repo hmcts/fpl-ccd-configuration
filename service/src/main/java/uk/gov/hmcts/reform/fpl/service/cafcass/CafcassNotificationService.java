@@ -43,7 +43,7 @@ public class CafcassNotificationService {
                                       CafcassEmailConfiguration configuration,
                                       CaseUrlService caseUrlService,
                                       DocumentMetadataDownloadService documentMetadataDownloadService,
-                                      @Value("${cafcass.notification.maxMbAttachementSize:25}")
+                                      @Value("${cafcass.notification.maxMbAttachementSize:1}")
                                       long maxAttachementSize) {
         this.emailService = emailService;
         this.documentDownloadService = documentDownloadService;
@@ -67,9 +67,6 @@ public class CafcassNotificationService {
                 .map(documentMetadataDownloadService::getDocumentMetadata)
                 .mapToLong(DocumentReference::getSize)
                 .sum();
-        log.info("111 For case id {}, sum of file size {}",
-                caseData.getId(),
-                totalDocSize);
 
         if (totalDocSize / MEGABYTE  <= maxAttachementSize) {
             emailService.sendEmail(configuration.getSender(),
@@ -80,8 +77,11 @@ public class CafcassNotificationService {
                     .message(provider.getContent().apply(caseData, cafcassData))
                     .build()
             );
+            log.info("For case id {} notification sent to Cafcass for {}",
+                    caseData.getId(),
+                    provider.name());
         } else {
-            log.info("222 For case id {}, sum of file size {}",
+            log.info("For case id {}, sum of file size {}",
                     caseData.getId(),
                     totalDocSize);
             LargeFilesNotificationData largFileNotificationData = getLargFileNotificationData(
@@ -94,11 +94,10 @@ public class CafcassNotificationService {
                     .message(LARGE_ATTACHEMENTS.getContent().apply(caseData, largFileNotificationData))
                     .build()
             );
+            log.info("For case id {} notification sent to Cafcass for {}",
+                    caseData.getId(),
+                    LARGE_ATTACHEMENTS.name());
         }
-
-        log.info("For case id {} notification sent to Cafcass for {}",
-            caseData.getId(),
-            provider.name());
     }
 
     private LargeFilesNotificationData getLargFileNotificationData(CaseData caseData,
