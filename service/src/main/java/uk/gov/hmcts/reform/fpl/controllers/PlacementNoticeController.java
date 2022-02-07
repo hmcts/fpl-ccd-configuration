@@ -53,7 +53,7 @@ public class PlacementNoticeController extends CallbackController {
         caseProperties.putIfNotEmpty("hasExistingPlacements",
             YesNo.from(!caseData.getPlacementEventData().getPlacements().isEmpty())
         );
-        caseProperties.putIfNotEmpty("placementList", asDynamicList(caseData.getPlacementEventData().getPlacements()));
+        caseProperties.put("placementList", asDynamicList(caseData.getPlacementEventData().getPlacements()));
 
         return respond(caseProperties);
     }
@@ -68,7 +68,6 @@ public class PlacementNoticeController extends CallbackController {
         putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
 
         return respond(caseProperties);
-
     }
 
     @PostMapping("notice-details/mid-event")
@@ -79,14 +78,6 @@ public class PlacementNoticeController extends CallbackController {
 
         final PlacementEventData eventData = placementService.generateA92(caseData);
         putFields(caseProperties, eventData, HEARING_GROUP);
-
-        return respond(caseProperties);
-    }
-
-    @PostMapping("notice-draft/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleConfirmDraftNotice(@RequestBody CallbackRequest request) {
-        final CaseDetails caseDetails = request.getCaseDetails();
-        final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         return respond(caseProperties);
     }
