@@ -543,7 +543,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
