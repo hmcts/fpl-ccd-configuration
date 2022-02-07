@@ -512,7 +512,6 @@ const uploadAmendedOrder = amendedOrder => {
 const selectPlacementApplication = childName => I.selectOption(placement.application, childName);
 
 function fillPlacementOrderSpecificFields(values) {
-  I.fillField(placement.serialNumber, values.serialNumber);
   I.fillField(placement.birthCertificateNumber, values.birthCertificateNumber);
   I.fillField(placement.birthCertificateDate, values.birthCertificateDate);
   I.fillField(placement.birthCertificateDistrict, values.birthCertificateDistrict);
