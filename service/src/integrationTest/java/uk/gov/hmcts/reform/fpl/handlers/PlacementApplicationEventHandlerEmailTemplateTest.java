@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {PlacementEventsHandler.class, PlacementContentProvider.class,
     EmailNotificationHelper.class, CaseUrlService.class
