@@ -7,12 +7,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
@@ -36,11 +39,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.System.lineSeparator;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -59,6 +66,7 @@ public class DraftOrdersApprovedEventHandler {
     private final SendDocumentService sendDocumentService;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final TranslationRequestService translationRequestService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @Async
     @EventListener
@@ -101,23 +109,52 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void sendNotificationToCafcass(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        final Optional<Cafcass> recipientIsWelsh =
+                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
 
-        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
-            caseData.getHearingDetails())
-            .map(Element::getValue)
-            .orElse(null);
+        if (recipientIsWelsh.isPresent()) {
+            List<HearingOrder> approvedOrders = event.getApprovedOrders();
 
-        NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
+            final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+                caseData.getHearingDetails())
+                .map(Element::getValue)
+                .orElse(null);
 
-        final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
 
-        notificationService.sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
-            cafcassEmail,
-            content,
-            caseData.getId()
-        );
+            notificationService.sendEmail(
+                    JUDGE_APPROVES_DRAFT_ORDERS,
+                    recipientIsWelsh.get().getEmail(),
+                    content,
+                    caseData.getId()
+            );
+        }
+    }
+
+    @Async
+    @EventListener
+    public void sendNotificationToCafcassViaSendGrid(final DraftOrdersApproved event) {
+        CaseData caseData = event.getCaseData();
+        final Optional<Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            List<HearingOrder> approvedOrders = event.getApprovedOrders();
+
+            String content = String.join("",
+                    lineSeparator(),
+                    approvedOrders.stream()
+                        .map(HearingOrder::getTitle)
+                        .collect(joining(lineSeparator())));
+
+            cafcassNotificationService.sendEmail(caseData,
+                    approvedOrders.stream().map(HearingOrder::getOrder).collect(toSet()),
+                    ORDER,
+                    OrderCafcassData.builder()
+                        .documentName(content)
+                        .build()
+            );
+        }
     }
 
     @Async
