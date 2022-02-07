@@ -67,6 +67,9 @@ public class CafcassNotificationService {
                 .map(documentMetadataDownloadService::getDocumentMetadata)
                 .mapToLong(DocumentReference::getSize)
                 .sum();
+        log.info("111 For case id {}, sum of file size {}",
+                caseData.getId(),
+                totalDocSize);
 
         if (totalDocSize / MEGABYTE  <= maxAttachementSize) {
             emailService.sendEmail(configuration.getSender(),
@@ -78,7 +81,7 @@ public class CafcassNotificationService {
                     .build()
             );
         } else {
-            log.info("For case id {}, sum of file size {}",
+            log.info("222 For case id {}, sum of file size {}",
                     caseData.getId(),
                     totalDocSize);
             LargeFilesNotificationData largFileNotificationData = getLargFileNotificationData(
