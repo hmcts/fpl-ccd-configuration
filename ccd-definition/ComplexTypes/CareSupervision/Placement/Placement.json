@@ -78,5 +78,15 @@
     "FieldTypeParameter": "PlacementNoticeDocument",
     "ElementLabel": "Notice of placement",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "ListElementCode": "placementRespondentsToNotify",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "ElementLabel": "Respondent to notify",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "isSubmitted = \"DO_NOT_SHOW\""
   }
 ]
