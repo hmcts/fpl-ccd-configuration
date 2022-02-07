@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
@@ -91,11 +92,19 @@ public class ManageLocalAuthoritiesService {
         return dynamicListService.asDynamicList(courts);
     }
 
+    public LocalAuthorityAction getLocalAuthorityAction(CaseData caseData) {
+        if (YesNo.YES.equals(caseData.getLocalAuthoritiesEventData().getIsLaSolicitor())) {
+            return caseData.getLocalAuthoritiesEventData().getLocalAuthorityActionLA();
+        }
+
+        return caseData.getLocalAuthoritiesEventData().getLocalAuthorityAction();
+    }
+
     public List<String> validateAction(CaseData caseData) {
 
         boolean isCaseShared = getSharedOrganisation(caseData).isPresent();
 
-        final LocalAuthorityAction action = caseData.getLocalAuthoritiesEventData().getLocalAuthorityAction();
+        final LocalAuthorityAction action = getLocalAuthorityAction(caseData);
 
         if (ADD == action && isCaseShared) {
             return List.of("Case access has already been given to local authority. Remove their access to continue.");

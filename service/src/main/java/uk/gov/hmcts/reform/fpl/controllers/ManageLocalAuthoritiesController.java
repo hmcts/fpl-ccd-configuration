@@ -28,7 +28,9 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.*;
+import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
+import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
+import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
 
 @Api
 @RestController
@@ -63,7 +65,7 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthoritiesEventData eventData = caseData.getLocalAuthoritiesEventData();
-        final LocalAuthorityAction action = getAction(caseData);
+        final LocalAuthorityAction action = service.getLocalAuthorityAction(caseData);
 
         final List<String> errors = service.validateAction(caseData);
 
@@ -139,7 +141,7 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        final LocalAuthorityAction action = getAction(caseData);
+        final LocalAuthorityAction action = service.getLocalAuthorityAction(caseData);
 
         if (ADD == action) {
             caseDetails.getData().put("sharedLocalAuthorityPolicy", service.getSharedLocalAuthorityPolicy(caseData));
@@ -193,14 +195,6 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         final CaseData caseData = getCaseData(request);
 
         service.getChangeEvent(caseData, caseDataBefore).forEach(this::publishEvent);
-    }
-
-    private static LocalAuthorityAction getAction(CaseData caseData) {
-        if (YesNo.YES.equals(caseData.getLocalAuthoritiesEventData().getIsLaSolicitor())) {
-            return caseData.getLocalAuthoritiesEventData().getLocalAuthorityActionLA();
-        }
-
-        return caseData.getLocalAuthoritiesEventData().getLocalAuthorityAction();
     }
 
     private static CaseDetails removeTemporaryFields(CaseDetails caseDetails) {
