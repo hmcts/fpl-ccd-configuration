@@ -33,7 +33,7 @@ class PlacementNoticeAboutToStartControllerTest extends AbstractPlacementNoticeC
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
         assertThat(actualPlacementData.getHasExistingPlacements()).isEqualTo(NO);
-        assertThat(updatedCaseData.getPlacementList().getListItems().size()).isEqualTo(0);
+        assertThat(updatedCaseData.getPlacementList().getListItems()).isEmpty();
         assertThat(actualPlacementData.getPlacement()).isNull();
     }
 
@@ -61,7 +61,7 @@ class PlacementNoticeAboutToStartControllerTest extends AbstractPlacementNoticeC
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
         assertThat(actualPlacementData.getHasExistingPlacements()).isEqualTo(YES);
-        assertThat(actualPlacementData.getPlacements().size()).isEqualTo(1);
+        assertThat(actualPlacementData.getPlacements()).isNotEmpty();
     }
 
 }
