@@ -121,8 +121,7 @@
     "PageID": "notice-draft",
     "PageLabel": "Notices of placement",
     "PageDisplayOrder": 3,
-    "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placementNotice/notice-draft/mid-event"
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",
