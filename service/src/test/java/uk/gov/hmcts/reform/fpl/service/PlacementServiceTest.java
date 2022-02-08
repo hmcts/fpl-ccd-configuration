@@ -92,6 +92,9 @@ class PlacementServiceTest {
     @Mock
     private DocumentSealingService sealingService;
 
+    @Mock
+    private RespondentService respondentService;
+
     @InjectMocks
     private PlacementService underTest;
 
