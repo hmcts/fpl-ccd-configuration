@@ -5,8 +5,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
@@ -48,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
@@ -72,22 +78,36 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @SuppressWarnings("unchecked")
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
 
+    @Spy
     private final Time time = new FixedTimeConfiguration().stoppedTime();
-    private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
-    private final UserService userService = mock(UserService.class);
+
+    @Spy
     private final LocalDateTime futureDate = time.now().plusDays(1);
 
+    @Spy
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Mock
+    private DocumentUploadHelper documentUploadHelper;
+
+    @Mock
+    private PlacementService placementService;
+
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
     private ManageDocumentService underTest;
 
     @BeforeEach
     void before() {
-        underTest = new ManageDocumentService(new ObjectMapper(), time, documentUploadHelper, userService);
-
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
         given(userService.isHmctsUser()).willReturn(true);
     }
@@ -132,6 +152,7 @@ class ManageDocumentServiceTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -161,6 +182,7 @@ class ManageDocumentServiceTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);

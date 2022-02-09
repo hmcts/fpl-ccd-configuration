@@ -793,13 +793,13 @@ class MessageJudgeServiceTest {
         final DocumentReference supportingDocument2 = testDocumentReference("second supporting document");
         final DocumentReference confidentialDocument1 = testDocumentReference("first confidential document");
         final DocumentReference notice1 = testDocumentReference("first notice document");
-        final DocumentReference notice2 = testDocumentReference("second notice document");
-        final DocumentReference notice2Response = testDocumentReference("second notice response");
+        final DocumentReference notice1Response = testDocumentReference("first notice response");
 
         final Element<Placement> placement = element(Placement.builder()
             .childName("Alex Green")
             .placementUploadDateTime(LocalDateTime.of(2020, 10, 12, 13, 0))
             .application(placementApplication)
+            .placementNotice(notice1)
             .supportingDocuments(wrapElements(
                 PlacementSupportingDocument.builder()
                     .document(supportingDocument1)
@@ -813,9 +813,7 @@ class MessageJudgeServiceTest {
                     .build()))
             .noticeDocuments(wrapElements(
                 PlacementNoticeDocument.builder()
-                    .build(),
-                PlacementNoticeDocument.builder()
-                    .response(notice2Response)
+                    .response(notice1Response)
                     .build()))
             .build());
 
@@ -846,8 +844,8 @@ class MessageJudgeServiceTest {
             "Application: placement application\n"
                 + "Supporting documents: first supporting document, second supporting document\n"
                 + "Confidential documents: first confidential document\n"
-                + "Notices: first notice document, second notice document\n"
-                + "Notices responses: second notice response");
+                + "Notice: first notice document\n"
+                + "Notice responses: first notice response");
 
         assertThat(newMessage.getRelatedDocuments()).extracting(Element::getValue).containsExactly(
             placementApplication,
@@ -855,8 +853,7 @@ class MessageJudgeServiceTest {
             supportingDocument2,
             confidentialDocument1,
             notice1,
-            notice2,
-            notice2Response);
+            notice1Response);
     }
 
     @Test

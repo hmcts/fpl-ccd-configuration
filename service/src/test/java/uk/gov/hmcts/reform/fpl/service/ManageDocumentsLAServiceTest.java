@@ -52,8 +52,7 @@ class ManageDocumentsLAServiceTest {
     @Mock
     private PlacementService placementService;
 
-    private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(
-        new ObjectMapper(), placementService);
+    private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(new ObjectMapper());
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final LocalDateTime futureDate = time.now().plusDays(1);
@@ -112,6 +111,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
@@ -129,6 +129,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
@@ -144,6 +145,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
