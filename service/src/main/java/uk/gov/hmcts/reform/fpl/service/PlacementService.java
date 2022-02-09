@@ -197,7 +197,8 @@ public class PlacementService {
         return placementData;
     }
 
-    public PlacementEventData savePlacementNoticeResponses(CaseData caseData, PlacementNoticeDocument.RecipientType type) {
+    public PlacementEventData savePlacementNoticeResponses(CaseData caseData,
+                                                           PlacementNoticeDocument.RecipientType type) {
         final PlacementEventData placementData = caseData.getPlacementEventData();
         final Placement currentPlacement = placementData.getPlacement();
 

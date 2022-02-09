@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
-import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Placement;

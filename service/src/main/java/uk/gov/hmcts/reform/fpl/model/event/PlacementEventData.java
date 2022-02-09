@@ -88,6 +88,11 @@ public class PlacementEventData {
 
     @Temp
     @FieldsGroup(HEARING_GROUP)
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    private YesNo hasExistingPlacements;
+
+    @Temp
+    @FieldsGroup(HEARING_GROUP)
     private LocalDateTime placementNoticeDateTime;
 
     @Temp

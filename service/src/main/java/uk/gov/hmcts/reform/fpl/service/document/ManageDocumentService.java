@@ -498,7 +498,8 @@ public class ManageDocumentService {
             .orElseThrow(() -> new RespondentNotFoundException(respondentId));
     }
 
-    public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData, PlacementNoticeDocument.RecipientType type) {
+    public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData,
+                                                                        PlacementNoticeDocument.RecipientType type) {
         Map<String, Object> map = new HashMap<>();
         PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
         map.put("placement", data.getPlacement());
