@@ -118,7 +118,7 @@ public class ManageDocumentService {
 
         if (hasPlacementNotices == YES) {
             DynamicList list = asDynamicList(
-                caseData.getPlacementEventData().getPlacements(), null, Placement::toLabel);
+                caseData.getPlacementEventData().getPlacements(), null, Placement::getChildName);
             eventData.put(PLACEMENT_LIST_KEY, list);
         }
 
