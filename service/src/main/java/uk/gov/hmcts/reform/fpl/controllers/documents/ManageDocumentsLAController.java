@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -116,8 +118,9 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
-                caseDetails.getData().putAll(
-                    manageDocumentService.initialisePlacementHearingResponseFields(caseData));
+                Map<String, Object> fields = manageDocumentService.initialisePlacementHearingResponseFields(
+                    caseData, PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+                caseDetails.getData().putAll(fields);
                 break;
         }
 
@@ -219,7 +222,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     .buildCourtBundleList(caseData));
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
-                PlacementEventData eventData = manageDocumentService.updatePlacementNotices(caseData);
+                PlacementEventData eventData = manageDocumentService.updatePlacementNoticesLA(caseData);
                 caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
                 break;
         }

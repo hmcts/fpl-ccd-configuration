@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -497,6 +498,16 @@ public class ManageDocumentService {
             .orElseThrow(() -> new RespondentNotFoundException(respondentId));
     }
 
+    public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData, PlacementNoticeDocument.RecipientType type) {
+        Map<String, Object> map = new HashMap<>();
+        PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
+        map.put("placement", data.getPlacement());
+        map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments().stream().filter(
+            doc -> doc.getValue().getType() == type
+        ));
+        return map;
+    }
+
     public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData) {
         Map<String, Object> map = new HashMap<>();
         PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
@@ -505,8 +516,18 @@ public class ManageDocumentService {
         return map;
     }
 
-    public PlacementEventData updatePlacementNotices(CaseData caseData) {
-        return placementService.savePlacement(caseData);
+    public PlacementEventData updatePlacementNoticesLA(CaseData caseData) {
+        return placementService.savePlacementNoticeResponses(
+            caseData, PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+    }
+
+    public PlacementEventData updatePlacementNoticesSolicitor(CaseData caseData) {
+        return placementService.savePlacementNoticeResponses(
+            caseData, PlacementNoticeDocument.RecipientType.RESPONDENT);
+    }
+
+    public PlacementEventData updatePlacementNoticesAdmin(CaseData caseData) {
+        return placementService.savePlacementNoticeResponsesAdmin(caseData);
     }
 
 }

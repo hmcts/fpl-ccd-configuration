@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -195,6 +196,49 @@ public class PlacementService {
         return placementData;
     }
 
+    public PlacementEventData savePlacementNoticeResponses(CaseData caseData, PlacementNoticeDocument.RecipientType type) {
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+        final Placement currentPlacement = placementData.getPlacement();
+
+        final Optional<Element<Placement>> existingPlacement = placementData.getPlacements().stream()
+            .filter(pl -> Objects.equals(pl.getValue().getChildId(), currentPlacement.getChildId()))
+            .findFirst();
+
+        List<Element<PlacementNoticeDocument>> responses = caseData.getPlacementNoticeResponses();
+        for (Element<PlacementNoticeDocument> response : responses) {
+            // As LAs/Solicitors can only upload their own we've hidden the type value on exUI - so manually add it now
+            response.getValue().setType(type);
+        }
+
+        // Get all other notice responses - we cannot have edited these
+        List<Element<PlacementNoticeDocument>> otherDocs = currentPlacement.getNoticeDocuments().stream().filter(
+            el -> el.getValue().getType() != type
+        ).collect(Collectors.toList());
+
+        // merge the existing notices with the LA/Solicitor list of responses
+        otherDocs.addAll(responses);
+        currentPlacement.setNoticeDocuments(otherDocs);
+
+        existingPlacement.ifPresent(placementElement -> placementElement.setValue(currentPlacement));
+        return placementData;
+    }
+
+    public PlacementEventData savePlacementNoticeResponsesAdmin(CaseData caseData) {
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+        final Placement currentPlacement = placementData.getPlacement();
+
+        final Optional<Element<Placement>> existingPlacement = placementData.getPlacements().stream()
+            .filter(pl -> Objects.equals(pl.getValue().getChildId(), currentPlacement.getChildId()))
+            .findFirst();
+
+        // we edit all responses as an admin so update the whole collection
+        List<Element<PlacementNoticeDocument>> responses = caseData.getPlacementNoticeResponses();
+        currentPlacement.setNoticeDocuments(responses);
+
+        existingPlacement.ifPresent(placementElement -> placementElement.setValue(currentPlacement));
+        return placementData;
+    }
+
     public PlacementEventData savePlacementNotice(CaseData caseData) {
         final PlacementEventData placementData = caseData.getPlacementEventData();
         final Placement currentPlacement = placementData.getPlacement();
@@ -320,6 +364,15 @@ public class PlacementService {
         }
 
         return events;
+    }
+
+    public PlacementNoticeAdded getNoticeAddedEvent(CaseData caseData) {
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+
+        final UUID childId = placementData.getPlacement().getChildId();
+        final Placement placement = findChildPlacement(placementData, childId).orElseThrow();
+
+        return new PlacementNoticeAdded(caseData, placement);
     }
 
     private boolean isPaymentRequired(PlacementEventData eventData) {

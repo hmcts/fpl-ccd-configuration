@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -113,7 +114,14 @@ public class ManageDocumentsController extends CallbackController {
                 return respond(caseDetails,
                     List.of("There are no notices of hearing issued for any placement application"));
             }
-            caseDetails.getData().putAll(documentService.initialisePlacementHearingResponseFields(caseData));
+            if (isSolicitor) {
+                // Only obtain respondent responses
+                caseDetails.getData().putAll(documentService.initialisePlacementHearingResponseFields(
+                    caseData, PlacementNoticeDocument.RecipientType.RESPONDENT));
+            } else {
+                // Obtain everyone's responses
+                caseDetails.getData().putAll(documentService.initialisePlacementHearingResponseFields(caseData));
+            }
         }
 
         caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_KEY, supportingEvidence);
@@ -220,8 +228,13 @@ public class ManageDocumentsController extends CallbackController {
                     documentService.buildFinalApplicationBundleSupportingDocuments(caseData, isSolicitor));
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
-                PlacementEventData eventData = documentService.updatePlacementNotices(caseData);
-                caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
+                if (isSolicitor) {
+                    PlacementEventData eventData = documentService.updatePlacementNoticesSolicitor(caseData);
+                    caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
+                } else {
+                    PlacementEventData eventData = documentService.updatePlacementNoticesAdmin(caseData);
+                    caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
+                }
                 break;
         }
 

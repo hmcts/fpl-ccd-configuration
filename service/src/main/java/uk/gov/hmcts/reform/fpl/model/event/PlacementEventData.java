@@ -88,11 +88,6 @@ public class PlacementEventData {
 
     @Temp
     @FieldsGroup(HEARING_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo hasExistingPlacements;
-
-    @Temp
-    @FieldsGroup(HEARING_GROUP)
     private LocalDateTime placementNoticeDateTime;
 
     @Temp
@@ -104,11 +99,11 @@ public class PlacementEventData {
     private final String placementNoticeVenue;
 
     @Temp
-    @FieldsGroup(NOTICE_GROUP)
+    @FieldsGroup(HEARING_GROUP)
     private List<Element<Respondent>> placementRespondentsToNotify;
 
     @Temp
-    @FieldsGroup(NOTICE_GROUP)
+    @FieldsGroup(HEARING_GROUP)
     @JsonDeserialize(using = YesNoDeserializer.class)
     private YesNo sendPlacementNoticeToAllRespondents;
 }
