@@ -61,6 +61,13 @@ java:
         - robotics-notification-recipient
         - translation-notification-sender
         - translation-notification-recipient
+        - cafcass-notification-sender
+        - cafcass-notification-recipient-order
+        - cafcass-notification-recipient-courtbundle
+        - cafcass-notification-recipient-large-file
+        - cafcass-notification-recipient-new-application
+        - cafcass-notification-recipient-new-document
+        - cafcass-notification-recipient-additional-document
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox

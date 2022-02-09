@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderNotificationDocumentService;
@@ -73,11 +74,12 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     OthersService.class, OrderIssuedEmailContentProviderTypeOfOrderCalculator.class,
     SealedOrderHistoryService.class, IdentityService.class, C43ChildArrangementOrderTitleGenerator.class,
     ChildrenSmartSelector.class, ChildrenSmartFinalOrderUpdater.class, ChildSelectionUtils.class, CourtService.class,
-    PlacementService.class})
+    PlacementService.class, RespondentService.class})
 @MockBeans({
     @MockBean(OrderCreationService.class), @MockBean(SealedOrderHistoryExtraTitleGenerator.class),
     @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(OrderNotificationDocumentService.class),
-    @MockBean(FeeService.class), @MockBean(PbaNumberService.class), @MockBean(DocumentSealingService.class)
+    @MockBean(FeeService.class), @MockBean(PbaNumberService.class), @MockBean(DocumentSealingService.class),
+    @MockBean(RespondentService.class)
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 

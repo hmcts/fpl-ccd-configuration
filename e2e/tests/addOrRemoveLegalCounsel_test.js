@@ -10,7 +10,7 @@ const solicitor2 = config.hillingdonLocalAuthorityUserOne;
 let caseId;
 let legalCounselAdded = false;
 
-Feature('Legal counsel @legal');
+Feature('Legal counsel @legal @flaky');
 
 async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, enterChildrenEventPage) {
   if (!solicitor1.details) {
@@ -73,7 +73,7 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
   legalCounselAdded = true;
 });
 
-Scenario('Legal counsel to be removed when respondent representative is removed through NoC', async ({ I, caseViewPage, noticeOfChangePage }) => {
+Scenario('Legal counsel to be removed when respondent representative is removed through NoC @flaky', async ({ I, caseViewPage, noticeOfChangePage }) => {
   checkLegalCounselWasAdded();
 
   await I.signIn(solicitor2);
@@ -86,7 +86,7 @@ Scenario('Legal counsel to be removed when respondent representative is removed 
   assertLegalCounsellorForParties(I, ['Child 1']);
 });
 
-Scenario('Legal counsel to be removed when child representative is updated', async ({ I, caseViewPage, enterChildrenEventPage }) => {
+Scenario('Legal counsel to be removed when child representative is updated @flaky', async ({ I, caseViewPage, enterChildrenEventPage }) => {
   checkLegalCounselWasAdded();
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor2);

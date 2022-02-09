@@ -51,28 +51,46 @@ module.exports = class BrowserHelpers extends Helper {
 
   /**
    * Finds element described by locator.
-   * If element cannot be found immediately function waits specified amount of time or globally configured `waitForTimeout` period.
+   * If element cannot be found immediately function retries ever `retryInterval` seconds until `sec` seconds is reached.
    * If element still cannot be found after the waiting time an undefined is returned.
    *
    * @param locator - element CSS locator
-   * @param sec - optional time in seconds to wait
+   * @param timeout - optional time in seconds to wait
    * @returns {Promise<undefined|*>} - promise holding either an element or undefined if element is not found
    */
-  async waitForSelector(locator, sec) {
+  async waitForSelector(locator, timeout = 30) {
     const helper = this.getHelper();
 
-    try {
-      if (this.isPuppeteer()) {
-        const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
-        const context = await helper._getContext();
-        return await context.waitForSelector(locator, {timeout: waitTimeout});
-      } else {
-        const waitTimeout = sec ? sec : helper.options.waitForTimeout;
-        return await helper.waitForElement(locator, waitTimeout);
+    const retryInterval = 5;
+    const numberOfRetries = timeout < retryInterval ? 1 : Math.floor(timeout / retryInterval);
+    // console.log('timeout: ' + timeout);
+    // console.log('retryInterval: ' + retryInterval);
+    // console.log('timeout / retryInterval: ' + (timeout / retryInterval));
+    // console.log('Math.floor(timeout / retryInterval): ' + Math.floor(timeout / retryInterval));
+    // console.log('numberOfRetries: ' + numberOfRetries);
+
+    let result = undefined;
+    for (let tryNumber = 0; tryNumber <= numberOfRetries; tryNumber++) {
+      console.log('waitForSelector ' + locator + ' try number ' + (tryNumber+1));
+      try {
+        if (this.isPuppeteer()) {
+          const context = await helper._getContext();
+          result = await context.waitForSelector(locator, {timeout: retryInterval * 1000});
+        } else {
+          result = await helper.waitForElement(locator, retryInterval);
+        }
+      } catch (e) {
+        if (e.name !== 'TimeoutError') {
+          throw e;
+        }
       }
-    } catch (error) {
-      return undefined;
+      if (result !== undefined) {
+        console.log('found it!');
+        return result;
+      }
     }
+    console.log('not found it after ' + (numberOfRetries + 1) + ' tries (' + timeout + 's)');
+    return result;
   }
 
   async waitForAnySelector(selectors, maxWaitInSecond) {
@@ -137,7 +155,7 @@ module.exports = class BrowserHelpers extends Helper {
     const url = await helper.grabCurrentUrl();
     const {page} = await helper;
 
-    runAccessibility(url, page);
+    await runAccessibility(url, page);
   }
 
   async canClick(selector){

@@ -15,38 +15,49 @@ const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 const baseUrl = config.baseUrl;
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
-const maxRetries = 5;
+const maxRetries = 10;
 let currentUser = {};
+
+const { I } = inject();
 
 'use strict';
 
 module.exports = {
   async signIn(user) {
+    console.log('base signIn');
     if (!(this.isPuppeteer() &&  (currentUser === user))) {
+      console.log(`Logging in as ${user.email}`);
       output.debug(`Logging in as ${user.email}`);
       currentUser = {}; // reset in case the login fails
 
       await this.retryUntilExists(async () => {
         //To mitigate situation when idam response with blank page
         await this.goToPage(baseUrl);
+        I.grabCurrentUrl();
 
         if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-          return;
+          await this.refreshPage();
+          I.grabCurrentUrl();
         }
 
         if (await this.hasSelector(signedInSelector)) {
           await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
+          I.grabCurrentUrl();
         }
 
         await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+        I.grabCurrentUrl();
 
       }, signedInSelector, false, 10);
       await this.rejectCookies();
+      I.grabCurrentUrl();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
     } else {
+      console.log(`Already logged in as ${user.email}`);
       output.debug(`Already logged in as ${user.email}`);
     }
+    I.grabCurrentUrl();
   },
 
   async goToPage(url) {
@@ -83,11 +94,14 @@ module.exports = {
 
   async logInAndCreateCase(user, caseName, outsourcingLA) {
     await this.signIn(user);
-    await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction);
+    await this.waitForSelector('ccd-search-result');
+    await this.waitForSelector('a[href="/cases/case-filter"]');
+    await this.retryUntilExists(() => this.click('a[href="/cases/case-filter"]'), openApplicationEventPage.fields.jurisdiction, true, 10);
+
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     await this.completeEvent('Save and continue');
-    this.waitForElement('.markdown h2', 5);
-    const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
+    this.waitForElement('.alert-message', 60);
+    const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
     output.print(`Case created #${caseId}`);
     return caseId;
   },
@@ -329,6 +343,7 @@ module.exports = {
           }
           return;
         } else {
+          // @todo flaky
           this.wait(1);
         }
       }
@@ -359,6 +374,8 @@ module.exports = {
    */
   async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
     const originalUrl = await this.grabCurrentUrl();
+    // override this for now
+    maxNumberOfTries = 1;
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);

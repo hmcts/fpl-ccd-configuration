@@ -1322,8 +1322,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]", "[SOLICITORE]", "[SOLICITORF]",
-          "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
+          "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]", "[SOLICITORE]",
+          "[SOLICITORF]","[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
           "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
           "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
@@ -1461,6 +1461,22 @@
           "caseworker-publiclaw-solicitor"
         ],
         "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addCaseFlag",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper"
+        ],
+        "CRUD": "CR"
       }
     ]
   }

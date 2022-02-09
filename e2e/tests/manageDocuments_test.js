@@ -155,6 +155,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 });
 
+// @flaky?
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
@@ -250,7 +251,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   assertC2SupportingDocuments(I, 'C2 application', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
+Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents @flaky', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await setupScenario(I);
   await manageDocumentsForLAHelper.uploadOtherApplications(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);

@@ -12,6 +12,9 @@ import uk.gov.hmcts.reform.fpl.service.EmailService;
 import uk.gov.hmcts.reform.fpl.service.PaymentService;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +55,8 @@ public class SubmitCaseApiTest extends AbstractApiTest {
             LA_SWANSEA_USER_1, "C110A");
 
         final String expectedApplication = readString("case-submission/application-draft.txt",
-            Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE)));
+            Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE),
+                    "age", getAge(LocalDate.of(2020, Month.JANUARY, 1))));
 
         assertThat(response.getCaseData().getAmountToPay()).isEqualTo("221500");
         assertThat(actualApplication).isEqualToNormalizingWhitespace(expectedApplication);
@@ -90,7 +94,8 @@ public class SubmitCaseApiTest extends AbstractApiTest {
             .getPdfContent(response.getCaseData().getC110A().getSubmittedForm(), LA_SWANSEA_USER_1, "C110A");
 
         final String expectedApplication = readString("case-submission/application.txt",
-            Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE)));
+            Map.of("id", caseData.getId(), "issueDate", formatLocalDateToString(now(), DATE),
+                    "age", getAge(LocalDate.of(2020, Month.JANUARY, 1))));
 
         assertThat(response.getCaseData().getDateSubmitted()).isEqualTo(now());
         assertThat(actualApplication).isEqualToNormalizingWhitespace(expectedApplication);
@@ -116,4 +121,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
             .contains("Urgent application – same day hearing, White");
     }
 
+    private int getAge(LocalDate birthDate) {
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
 }

@@ -1,19 +1,26 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class FurtherEvidenceUploadedEventTestData {
@@ -94,6 +101,25 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
+    public static CaseData buildCaseDataWithCorrespondencesByHmtcs() {
+        return commonCaseBuilder()
+                .correspondenceDocuments((buildNonConfidentialPdfDocumentList(HMCTS_USER)))
+                .build();
+    }
+
+    public static CaseData buildCaseDataWithCorrespondencesByLA() {
+        return commonCaseBuilder()
+                .correspondenceDocumentsLA((buildNonConfidentialPdfDocumentList(LA_USER)))
+                .build();
+    }
+
+    public static CaseData buildCaseDataWithCorrespondencesBySolicitor() {
+        return commonCaseBuilder()
+                .correspondenceDocumentsSolicitor((buildNonConfidentialPdfDocumentList(REP_SOLICITOR_USER_EMAIL)))
+                .build();
+    }
+
+
     public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
             .respondentStatements(buildRespondentStatementsList(buildNonConfidentialNonPDFDocumentList(REP_USER)))
@@ -103,6 +129,17 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildCaseDataWithConfidentialRespondentStatementsSolicitor() {
         return commonCaseBuilder()
             .respondentStatements(buildRespondentStatementsList(buildConfidentialDocumentList(REP_USER)))
+            .build();
+    }
+
+    public static CaseData buildCaseDataWithApplicationDocuments() {
+        return commonCaseBuilder()
+                .applicationDocuments(
+                    wrapElements(
+                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1),
+                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1)
+                    )
+                )
             .build();
     }
 
@@ -124,20 +161,55 @@ public class FurtherEvidenceUploadedEventTestData {
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, NON_PDF_DOCUMENT_1));
     }
 
-    public static SupportingEvidenceBundle createDummyEvidenceBundle(final String name, final String uploadedBy,
+    public static SupportingEvidenceBundle  createDummyEvidenceBundle(final String name, final String uploadedBy,
                                                                       boolean confidential, DocumentReference docRef) {
         SupportingEvidenceBundle.SupportingEvidenceBundleBuilder document
             = SupportingEvidenceBundle.builder()
             .name(name)
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
-            .document(docRef);
+            .document(docRef)
+            .type(GUARDIAN_REPORTS);
 
         if (confidential) {
             document.confidential(List.of(CONFIDENTIAL_MARKER));
         }
 
         return document.build();
+    }
+
+    public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
+                                                                     DocumentReference docRef) {
+        return ApplicationDocument.builder()
+                .documentName(name)
+                .documentType(BIRTH_CERTIFICATE)
+                .uploadedBy(uploadedBy)
+                .document(docRef)
+                .dateTimeUploaded(LocalDateTime.now())
+                .build();
+    }
+
+    public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
+        return commonCaseBuilder()
+            .courtBundleList(
+                createCourtBundleList(count, hearing, uploadedBy)
+            ).build();
+    }
+
+    public static List<Element<CourtBundle>> createCourtBundleList(int count, String hearing, String uploadedBy) {
+        return IntStream.rangeClosed(1, count)
+            .boxed()
+            .map(value -> ElementUtils.element(createDummyCourtBundle(hearing, uploadedBy)))
+            .collect(Collectors.toList());
+    }
+
+    public static CourtBundle createDummyCourtBundle(String hearing, String uploadedBy) {
+        return CourtBundle.builder()
+            .document(getPDFDocument())
+            .hearing(hearing)
+            .dateTimeUploaded(LocalDateTime.now())
+            .uploadedBy(uploadedBy)
+            .build();
     }
 
     private static List<Element<RespondentStatement>> buildRespondentStatementsList(

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper;
@@ -517,6 +518,33 @@ class RespondentServiceTest {
             assertThat(changes).containsExactly(expected1, expected2);
         }
 
+    }
+
+    @Test
+    void shouldSelectAllWhenAskedToSelectAll() {
+        Respondent firstRespondent = Respondent.builder().legalRepresentation("0").build();
+        Respondent secondRespondent = Respondent.builder().legalRepresentation("1").build();
+
+        List<Element<Respondent>> allRespondents = List.of(element(firstRespondent), element(secondRespondent));
+        Selector selector = Selector.builder().selected(List.of(0, 1)).build().setNumberOfOptions(2);
+
+        List<Element<Respondent>> selected = service.getSelectedRespondents(allRespondents, selector, "Yes");
+
+        assertThat(selected).isEqualTo(allRespondents);
+    }
+
+    @Test
+    void shouldSelectSomeWhenAskedToNotSelectAll() {
+        Element<Respondent> firstRespondent = element(Respondent.builder().legalRepresentation("0").build());
+        Element<Respondent> secondRespondent = element(Respondent.builder().legalRepresentation("1").build());
+
+        List<Element<Respondent>> allRespondents = List.of(firstRespondent, secondRespondent);
+        List<Element<Respondent>> expected = List.of(firstRespondent);
+        Selector selector = Selector.builder().selected(List.of(0)).build().setNumberOfOptions(2);
+
+        List<Element<Respondent>> selected = service.getSelectedRespondents(allRespondents, selector, "No");
+
+        assertThat(selected).isEqualTo(expected);
     }
 
 }

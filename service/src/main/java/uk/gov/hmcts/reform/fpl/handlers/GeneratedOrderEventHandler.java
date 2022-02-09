@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -29,8 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Set.of;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -38,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 
 @Slf4j
 @Component
@@ -53,6 +59,8 @@ public class GeneratedOrderEventHandler {
     private final SealedOrderHistoryService sealedOrderHistoryService;
     private final OtherRecipientsInbox otherRecipientsInbox;
     private final TranslationRequestService translationRequestService;
+    private final CafcassNotificationService cafcassNotificationService;
+    private final CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -96,6 +104,24 @@ public class GeneratedOrderEventHandler {
         translationRequestService.sendRequest(event.getCaseData(),
             event.getLanguageTranslationRequirement(),
             event.getOrderDocument(), event.getOrderTitle());
+    }
+
+    @EventListener
+    public void notifyCafcass(GeneratedOrderEvent orderEvent) {
+        CaseData caseData = orderEvent.getCaseData();
+
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            cafcassNotificationService.sendEmail(caseData,
+                    of(orderEvent.getOrderDocument()),
+                    ORDER,
+                    OrderCafcassData.builder()
+                            .documentName(orderEvent.getOrderDocument().getFilename())
+                            .build()
+            );
+        }
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
