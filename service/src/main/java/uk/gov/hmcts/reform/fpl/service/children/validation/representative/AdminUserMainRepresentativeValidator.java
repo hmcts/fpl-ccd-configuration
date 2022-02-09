@@ -57,9 +57,9 @@ public final class AdminUserMainRepresentativeValidator extends AdminUserValidat
         }
 
         // was set previously, cannot unset
-//        if (UNSET_VALUES.contains(currentRepresentation)) {
-//            return List.of(MAIN_REP_REMOVAL_ERROR);
-//        }
+        // if (UNSET_VALUES.contains(currentRepresentation)) {
+        //     return List.of(MAIN_REP_REMOVAL_ERROR);
+        // }
 
         // can update so just validate contents
         return mainRepValidator.validate(caseData);
