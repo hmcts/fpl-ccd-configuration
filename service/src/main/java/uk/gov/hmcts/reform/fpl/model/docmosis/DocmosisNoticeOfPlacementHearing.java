@@ -17,4 +17,8 @@ public class DocmosisNoticeOfPlacementHearing implements DocmosisData {
     private final String hearingDate;
     private final String hearingVenue;
     private final String hearingDuration;
+
+    private final String draftbackground;
+    private final String courtseal;
+    private final String crest;
 }

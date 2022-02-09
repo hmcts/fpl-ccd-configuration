@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,6 +108,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .application(sealedApplication)
             .noticeDocuments(noticeResponses)
             .placementUploadDateTime(now())
+            .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
         final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
@@ -137,6 +139,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .childName("Alex Brown")
             .application(testDocumentReference())
             .placementUploadDateTime(LocalDateTime.of(2020, 10, 10, 12, 0))
+            .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
         final Placement existingApplicationForChild2 = Placement.builder()
@@ -147,6 +150,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
                 .type(ANNEX_B)
                 .document(testDocumentReference())
                 .build()))
+            .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
         final Placement newPlacementForChild1 = existingApplicationForChild1.toBuilder()

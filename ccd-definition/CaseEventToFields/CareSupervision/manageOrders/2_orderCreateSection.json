@@ -71,7 +71,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
     "CaseFieldID": "manageOrdersUploadTypeOtherTitle",
-    "PageFieldDisplayOrder": 4,
+    "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderSelection",
     "PageDisplayOrder": 2,

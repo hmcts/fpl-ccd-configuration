@@ -73,18 +73,28 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "ListElementCode": "placementNotice",
-    "FieldType": "Document",
-    "ElementLabel": "Notice of hearing for placement",
+    "ListElementCode": "placementNoticeDocuments",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PlacementNoticeDocument",
+    "ElementLabel": "Notice of placement response",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "ListElementCode": "placementNoticeDocuments",
+    "ListElementCode": "placementRespondentsToNotify",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PlacementNoticeDocument",
-    "ElementLabel": "Notice of placement response",
+    "FieldTypeParameter": "RespondentNew",
+    "ElementLabel": "Respondent to notify",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "isSubmitted = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
+    "ListElementCode": "placementNotice",
+    "FieldType": "Document",
+    "ElementLabel": "Notice of hearing for placement",
     "SecurityClassification": "Public"
   }
 ]

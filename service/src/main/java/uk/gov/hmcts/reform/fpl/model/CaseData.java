@@ -451,6 +451,7 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
     private final Selector othersSelector;
+    private final Selector respondentsSelector;
     private final Selector personSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
@@ -458,6 +459,8 @@ public class CaseData {
 
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
+    private final String sendPlacementNoticeToAllRespondents;
+    private final List<Element<Respondent>> placementRespondentsToNotify;
 
     private final String notifyApplicationsToAllOthers;
 

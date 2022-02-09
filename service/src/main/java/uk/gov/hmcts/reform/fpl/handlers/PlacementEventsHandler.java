@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE;
@@ -45,9 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.A50_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 
 @Slf4j
 @Service
@@ -90,63 +89,11 @@ public class PlacementEventsHandler {
         }
     }
 
-    @EventListener
-    public void noticeUploaded(PlacementNoticeAdded event) {
-        // Notify LA
-        notifyLocalAuthority(event.getCaseData(), event.getPlacement());
-        // Notify Cafcass
-        notifyCafcass(event.getCaseData(), event.getPlacement());
-        // Notify selected respondents
-        // TODO - need to merge DFPL-328 in to notify only the selected respondents
-    }
-
     @Async
     @EventListener
-    public void notifyCourt(PlacementApplicationSubmitted event) {
-        notifyAdmin(event.getCaseData(), event.getPlacement());
-    }
-
-    @Async
-    @EventListener
-    public void notifyCourt(PlacementApplicationChanged event) {
-        notifyAdmin(event.getCaseData(), event.getPlacement());
-    }
-
-    @Async
-    @EventListener
-    public void notifyParties(PlacementNoticeChanged event) {
+    public void notifyLocalAuthorityOfNewNotice(PlacementNoticeAdded event) {
         final CaseData caseData = event.getCaseData();
-
         final Placement placement = event.getPlacement();
-        final PlacementNoticeDocument notice = event.getNotice();
-        final PlacementNoticeDocument.RecipientType type = notice.getType();
-
-        if (type == RecipientType.LOCAL_AUTHORITY) {
-            notifyLocalAuthority(caseData, placement);
-        }
-
-        if (type == RecipientType.CAFCASS) {
-            notifyCafcass(caseData, placement);
-        }
-
-        if (type == RecipientType.PARENT_FIRST || type == RecipientType.PARENT_SECOND) {
-            notifyParent(caseData, placement, notice);
-        }
-    }
-
-    private void notifyAdmin(CaseData caseData, Placement placement) {
-
-        log.info("Send email to admin about {} child placement", placement.getChildName());
-
-        final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
-
-        final String recipient = courtService.getCourtEmail(caseData);
-
-        notificationService
-            .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipient, notifyData, caseData.getId());
-    }
-
-    private void notifyLocalAuthority(CaseData caseData, Placement placement) {
 
         log.info("Send email to local authority about {} child placement notice", placement.getChildName());
 
@@ -162,7 +109,11 @@ public class PlacementEventsHandler {
             .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, recipients, notifyData, caseData.getId());
     }
 
-    private void notifyCafcass(CaseData caseData, Placement placement) {
+    @Async
+    @EventListener
+    public void notifyCafcassOfNewNotice(PlacementNoticeAdded event) {
+        final CaseData caseData = event.getCaseData();
+        final Placement placement = event.getPlacement();
 
         log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
@@ -174,24 +125,66 @@ public class PlacementEventsHandler {
             .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
-    private void notifyParent(CaseData caseData, Placement placement, PlacementNoticeDocument notice) {
+    @Async
+    @EventListener
+    public void notifyRespondentsOfNewNotice(PlacementNoticeAdded event) {
+        final CaseData caseData = event.getCaseData();
+        final Placement placement = event.getPlacement();
 
-        final Respondent parent = getElement(notice.getRespondentId(), caseData.getAllRespondents()).getValue();
-        final RespondentSolicitor parentSolicitor = parent.getSolicitor();
+        if (placement.getPlacementRespondentsToNotify() != null) {
+            for (Element<Respondent> respondent : placement.getPlacementRespondentsToNotify()) {
+                Optional<Element<Respondent>> resp = caseData.getAllRespondents().stream().filter(
+                    el -> el.getId().equals(respondent.getId())).findFirst();
+
+                resp.ifPresent(respondentElement -> notifyRespondent(
+                    caseData, placement, respondentElement.getValue()));
+            }
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyCourt(PlacementApplicationSubmitted event) {
+        notifyAdmin(event.getCaseData(), event.getPlacement());
+    }
+
+    @Async
+    @EventListener
+    public void notifyCourt(PlacementApplicationChanged event) {
+        notifyAdmin(event.getCaseData(), event.getPlacement());
+    }
+
+    private void notifyAdmin(CaseData caseData, Placement placement) {
+
+        log.info("Send email to admin about {} child placement", placement.getChildName());
+
+        final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
+
+        final String recipient = courtService.getCourtEmail(caseData);
+
+        notificationService
+            .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipient, notifyData, caseData.getId());
+    }
+
+    private void notifyRespondent(CaseData caseData, Placement placement, Respondent respondent) {
+
+        final RespondentSolicitor parentSolicitor = respondent.getSolicitor();
 
         if (nonNull(parentSolicitor)) {
 
-            log.info("Send email to parent solicitor about {} child placement notice", placement.getChildName());
+            log.info("Send email to respondent ({}) solicitor about {} child placement notice",
+                respondent.getParty().getFullName(), placement.getChildName());
 
             final NotifyData notifyData = contentProvider.getNoticeChangedData(caseData, placement);
 
             notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData,
                 caseData.getId());
         } else {
-            log.info("Send letter to parent about {} child placement notice", placement.getChildName());
+            log.info("Send letter to respondent ({}) about {} child placement notice",
+                respondent.getParty().getFullName(), placement.getChildName());
 
-            //sendDocumentService.sendDocuments(caseData, List.of(notice.getNotice()), List.of(parent.getParty()));
-            // TODO - fix
+            sendDocumentService.sendDocuments(
+                caseData, List.of(placement.getPlacementNotice()), List.of(respondent.getParty()));
         }
 
     }
