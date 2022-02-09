@@ -63,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientTyp
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_FIRST;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_SECOND;
+import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.MAINTENANCE_AGREEMENT_AWARD;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.PARENTS_CONSENT_FOR_ADOPTION;
@@ -902,32 +903,39 @@ class PlacementServiceTest {
         }
 
         @Test
-        void shouldAddLocalAuthorityPlacementNoticeWithResponse() {
+        void shouldAddLocalAuthorityPlacementNoticeResponse() {
 
             final Placement currentPlacement = Placement.builder()
-                .application(application)
+                .application(sealedApplication)
+                .noticeDocuments(emptyList())
                 .build();
 
-            final DocumentReference localAuthorityNotice = testDocumentReference();
-            final DocumentReference localAuthorityNoticeResponse = testDocumentReference();
+            final DocumentReference laResponseDocument = testDocumentReference();
+
+            final PlacementNoticeDocument localAuthorityResponse = PlacementNoticeDocument.builder()
+                .response(laResponseDocument)
+                .responseDescription("Local authority response description")
+                .build();
 
             final PlacementEventData placementEventData = PlacementEventData.builder()
                 .placement(currentPlacement)
+                .placements(wrapElements(currentPlacement))
                 .build();
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
+                .placementNoticeResponses(wrapElements(localAuthorityResponse))
                 .build();
 
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
+            final PlacementEventData actualPlacementData = underTest.savePlacementNoticeResponses(
+                caseData, LOCAL_AUTHORITY);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
                 .application(sealedApplication)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(LOCAL_AUTHORITY)
-                    .recipientName("Local authority")
-                    .response(localAuthorityNoticeResponse)
-                    .responseDescription("LA response")
+                    .response(laResponseDocument)
+                    .responseDescription("Local authority response description")
                     .build()))
                 .build();
 
@@ -940,166 +948,38 @@ class PlacementServiceTest {
         }
 
         @Test
-        void shouldAddLocalAuthorityPlacementNoticeWithoutResponse() {
+        void shouldAddCafcassPlacementNoticeResponse() {
 
             final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference localAuthorityNotice = testDocumentReference();
-            final DocumentReference localAuthorityNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                    .type(LOCAL_AUTHORITY)
-                    .recipientName("Local authority")
-                    .build()))
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldNotAddLocalAuthorityPlacementNotice() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference localAuthorityNotice = testDocumentReference();
-            final DocumentReference localAuthorityNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
                 .application(sealedApplication)
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
+            final DocumentReference cafcassNoticeDocument = testDocumentReference();
+            final PlacementNoticeDocument cafcassNoticeResponse = PlacementNoticeDocument.builder()
+                .type(CAFCASS)
+                .response(cafcassNoticeDocument)
+                .responseDescription("Cafcass response description")
                 .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldAddCafcassPlacementNoticeWithResponse() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference cafcassNotice = testDocumentReference();
-            final DocumentReference cafcassNoticeResponse = testDocumentReference();
 
             final PlacementEventData placementEventData = PlacementEventData.builder()
                 .placement(currentPlacement)
+                .placements(wrapElements(currentPlacement))
                 .build();
 
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
+                .placementNoticeResponses(wrapElements(cafcassNoticeResponse))
                 .build();
 
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
+            final PlacementEventData actualPlacementData = underTest.savePlacementNoticeResponsesAdmin(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
                 .application(sealedApplication)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(CAFCASS)
-                    .recipientName("Cafcass")
+                    .response(cafcassNoticeDocument)
+                    .responseDescription("Cafcass response description")
                     .build()))
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldAddCafcassPlacementNoticeWithoutResponse() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference cafcassNotice = testDocumentReference();
-            final DocumentReference cafcassNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                    .type(CAFCASS)
-                    .recipientName("Cafcass")
-                    .build()))
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldNotAddCafcassPlacementNotice() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference cafcassNotice = testDocumentReference();
-            final DocumentReference cafcassNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
                 .build();
 
             final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
@@ -1114,260 +994,100 @@ class PlacementServiceTest {
         void shouldAddFirstParentPlacementNoticeWithResponse() {
 
             final Placement currentPlacement = Placement.builder()
-                .application(application)
+                .application(sealedApplication)
                 .build();
 
-            final DocumentReference firstParentNotice = testDocumentReference();
+            final DocumentReference respondentResponseDocument = testDocumentReference();
+            final PlacementNoticeDocument respondentResponse = PlacementNoticeDocument.builder()
+                .response(respondentResponseDocument)
+                .responseDescription("Respondent notice description")
+                .build();
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placement(currentPlacement)
+                .placements(wrapElements(currentPlacement))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .placementEventData(placementEventData)
+                .placementNoticeResponses(wrapElements(respondentResponse))
+                .build();
+
+            final PlacementEventData actualPlacementData = underTest.savePlacementNoticeResponses(caseData, RESPONDENT);
+
+            final Placement expectedPlacement = currentPlacement.toBuilder()
+                .application(sealedApplication)
+                .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
+                    .type(RESPONDENT)
+                    .response(respondentResponseDocument)
+                    .responseDescription("Respondent notice description")
+                    .build()))
+                .build();
+
+            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
+                .placement(expectedPlacement)
+                .placements(wrapElements(currentPlacement))
+                .build();
+
+            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+        }
+
+        @Test
+        void shouldAddMultipleNoticeOfPlacementResponses() {
+
+            final Placement currentPlacement = Placement.builder()
+                .application(sealedApplication)
+                .build();
+
+            final DocumentReference localAuthorityNoticeResponse = testDocumentReference();
+            final DocumentReference cafcassNoticeResponse = testDocumentReference();
             final DocumentReference firstParentNoticeResponse = testDocumentReference();
 
+            final PlacementNoticeDocument laResponse = PlacementNoticeDocument.builder()
+                .type(LOCAL_AUTHORITY)
+                .response(localAuthorityNoticeResponse)
+                .responseDescription("LA response description")
+                .build();
+            final PlacementNoticeDocument cafcassResponse = PlacementNoticeDocument.builder()
+                .type(CAFCASS)
+                .response(cafcassNoticeResponse)
+                .responseDescription("Cafcass response description")
+                .build();
+            final PlacementNoticeDocument firstParentResponse = PlacementNoticeDocument.builder()
+                .type(RESPONDENT)
+                .response(firstParentNoticeResponse)
+                .responseDescription("First parent response description")
+                .build();
+
             final PlacementEventData placementEventData = PlacementEventData.builder()
                 .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                    .type(PARENT_FIRST)
-                    .recipientName("John Smith - father")
-                    .respondentId(respondent1.getId())
-                    .response(firstParentNoticeResponse)
-                    .responseDescription("First parent response")
-                    .build()))
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
                 .placements(wrapElements(currentPlacement))
                 .build();
 
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldAddFirstParentPlacementNoticeWithoutResponse() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference firstParentNotice = testDocumentReference();
-            final DocumentReference firstParentNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
             final CaseData caseData = CaseData.builder()
                 .placementEventData(placementEventData)
+                .placementNoticeResponses(wrapElements(laResponse, cafcassResponse, firstParentResponse))
                 .build();
 
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                    .type(PARENT_FIRST)
-                    .recipientName("John Smith - father")
-                    .respondentId(respondent1.getId())
-                    .build()))
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldNotAddFirstParentPlacementNotice() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference firstParentNotice = testDocumentReference();
-            final DocumentReference firstParentNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldAddSecondParentPlacementNoticeWithResponse() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference secondParentNotice = testDocumentReference();
-            final DocumentReference secondParentNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                    .type(PARENT_SECOND)
-                    .recipientName("Eva Smith - mother")
-                    .respondentId(respondent2.getId())
-                    .response(secondParentNoticeResponse)
-                    .responseDescription("Second parent response")
-                    .build()))
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldAddSecondParentPlacementNoticeWithoutResponse() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference secondParentNotice = testDocumentReference();
-            final DocumentReference secondParentNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
-                    .type(PARENT_SECOND)
-                    .recipientName("Eva Smith - mother")
-                    .respondentId(respondent2.getId())
-                    .build()))
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldNotAddSecondParentPlacementNotice() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference secondParentNotice = testDocumentReference();
-            final DocumentReference secondParentNoticeResponse = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
-
-            final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
-                .build();
-
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
-        }
-
-        @Test
-        void shouldAddMultipleNoticesOfPlacement() {
-
-            final Placement currentPlacement = Placement.builder()
-                .application(application)
-                .build();
-
-            final DocumentReference localAuthorityNotice = testDocumentReference();
-            final DocumentReference cafcassNotice = testDocumentReference();
-            final DocumentReference firstParentNotice = testDocumentReference();
-            final DocumentReference secondParentNotice = testDocumentReference();
-
-            final PlacementEventData placementEventData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .placementEventData(placementEventData)
-                .build();
-
-            final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
+            final PlacementEventData actualPlacementData = underTest.savePlacementNoticeResponsesAdmin(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
                 .application(sealedApplication)
                 .noticeDocuments(wrapElements(
                     PlacementNoticeDocument.builder()
                         .type(LOCAL_AUTHORITY)
-                        .recipientName("Local authority")
+                        .response(localAuthorityNoticeResponse)
+                        .responseDescription("LA response description")
                         .build(),
                     PlacementNoticeDocument.builder()
                         .type(CAFCASS)
-                        .recipientName("Cafcass")
+                        .response(cafcassNoticeResponse)
+                        .responseDescription("Cafcass response description")
                         .build(),
                     PlacementNoticeDocument.builder()
-                        .type(PARENT_FIRST)
-                        .recipientName("John Smith - father")
-                        .respondentId(respondent1.getId())
-                        .build(),
-                    PlacementNoticeDocument.builder()
-                        .type(PARENT_SECOND)
-                        .recipientName("Eva Smith - mother")
-                        .respondentId(respondent2.getId())
+                        .type(RESPONDENT)
+                        .response(firstParentNoticeResponse)
+                        .responseDescription("First parent response description")
                         .build()))
                 .build();
 

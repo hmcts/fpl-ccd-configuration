@@ -49,6 +49,7 @@ import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
@@ -210,8 +211,11 @@ public class PlacementService {
             response.getValue().setType(type);
         }
 
+        List<Element<PlacementNoticeDocument>> allCurrentNotices = defaultIfNull(
+            currentPlacement.getNoticeDocuments(), emptyList());
+
         // Get all other notice responses - we cannot have edited these
-        List<Element<PlacementNoticeDocument>> otherDocs = currentPlacement.getNoticeDocuments().stream().filter(
+        List<Element<PlacementNoticeDocument>> otherDocs = allCurrentNotices.stream().filter(
             el -> el.getValue().getType() != type
         ).collect(Collectors.toList());
 
