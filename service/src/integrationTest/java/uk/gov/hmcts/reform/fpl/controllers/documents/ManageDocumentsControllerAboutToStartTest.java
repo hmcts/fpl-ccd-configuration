@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
@@ -100,6 +101,7 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);

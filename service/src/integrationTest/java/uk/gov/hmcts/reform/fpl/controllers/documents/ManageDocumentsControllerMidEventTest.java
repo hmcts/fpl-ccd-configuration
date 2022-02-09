@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -90,8 +91,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -113,8 +115,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -145,8 +148,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings("No")
-            .hasC2s("Yes")
+            .hasHearings(NO.getValue())
+            .hasC2s(YES.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
