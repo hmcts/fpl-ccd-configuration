@@ -26,5 +26,13 @@
     "Label": "Local authority",
     "DisplayOrder": 4,
     "UseCase": "orgcases"
+  },
+  {
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "[LAST_MODIFIED_DATE]",
+    "Label": "Last modified date",
+    "DisplayOrder": 5,
+    "ResultsOrdering": "1:DESC",
+    "UseCase": "orgcases"
   }
 ]
