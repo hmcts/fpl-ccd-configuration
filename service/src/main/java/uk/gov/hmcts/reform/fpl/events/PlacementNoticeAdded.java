@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 
 @Data
 @Builder(toBuilder = true)
@@ -12,5 +12,5 @@ import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 public class PlacementNoticeAdded {
 
     private final CaseData caseData;
-    private final PlacementNoticeDocument notice;
+    private final Placement placement;
 }

@@ -18,7 +18,8 @@ public enum DocmosisTemplates {
     COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "FL-PLW-LET-WEL-00752.doc", "cover_documents"),
     TRANSLATION_REQUEST("FL-PLW-LET-ENG-00748.doc", null, "translation_request"),
     A70("FL-PLW-GOR-ENG-00763.doc", null, "placement_order_a70"),
-    A206("FL-PLW-LET-ENG-00768.doc", null, "placement_order_notification_a206");
+    A206("FL-PLW-LET-ENG-00768.doc", null, "placement_order_notification_a206"),
+    A92("FL-PLW-HNO-ENG-00814.doc", null, "notice_of_hearing_placement");
 
     private final String template;
     private final String welshTemplate;
