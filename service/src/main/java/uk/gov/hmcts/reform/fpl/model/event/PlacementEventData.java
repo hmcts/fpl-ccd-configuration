@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.json.deserializer.YesNoDeserializer;
 import uk.gov.hmcts.reform.fpl.model.FieldsGroup;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.TempNullify;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -36,6 +37,7 @@ public class PlacementEventData {
 
     public static final String NOTICE_GROUP = "Notice";
     public static final String PLACEMENT_GROUP = "Placement";
+    public static final String HEARING_GROUP = "Hearing";
 
     @Temp
     private Cardinality placementChildrenCardinality;
@@ -194,4 +196,34 @@ public class PlacementEventData {
     @Temp
     @FieldsGroup(NOTICE_GROUP)
     private String placementNoticeResponseFromSecondParentDescription;
+
+    @Temp
+    @FieldsGroup(HEARING_GROUP)
+    private DocumentReference placementNotice;
+
+    @Temp
+    @FieldsGroup(HEARING_GROUP)
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    private YesNo hasExistingPlacements;
+
+    @Temp
+    @FieldsGroup(HEARING_GROUP)
+    private LocalDateTime placementNoticeDateTime;
+
+    @Temp
+    @FieldsGroup(HEARING_GROUP)
+    private String placementNoticeDuration;
+
+    @Temp
+    @FieldsGroup(HEARING_GROUP)
+    private final String placementNoticeVenue;
+
+    @Temp
+    @FieldsGroup(NOTICE_GROUP)
+    private List<Element<Respondent>> placementRespondentsToNotify;
+
+    @Temp
+    @FieldsGroup(NOTICE_GROUP)
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    private YesNo sendPlacementNoticeToAllRespondents;
 }
