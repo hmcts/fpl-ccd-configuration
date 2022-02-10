@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildId",
     "ElementLabel": "Child id",
@@ -13,7 +13,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildName",
     "SecurityClassification": "Public",
@@ -23,7 +23,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "isSubmitted",
     "SecurityClassification": "Public",
@@ -33,7 +33,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementUploadDateTime",
     "EventElementLabel": "Date and time of submission",
@@ -44,7 +44,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementApplication",
     "EventElementLabel": "Application document",
@@ -55,7 +55,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementApplicationCopy",
     "EventElementLabel": "Application document",
@@ -66,7 +66,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments",
     "SecurityClassification": "Public",
@@ -76,7 +76,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments",
     "SecurityClassification": "Public",
@@ -86,12 +86,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
-    "CaseEventID": "placement",
+    "CaseEventID": "placementNotice",
     "CaseFieldID": "placement",
     "ListElementCode": "placementNotice",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 5,
-    "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "placementChildId = \"DO NOT SHOW\""
+    "DisplayContext": "OPTIONAL"
   }
 ]
