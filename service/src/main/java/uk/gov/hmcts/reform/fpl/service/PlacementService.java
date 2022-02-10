@@ -317,7 +317,7 @@ public class PlacementService {
         return DocumentReference.buildFromDocument(document);
     }
 
-    public PlacementEventData generateA92(CaseData caseData) {
+    public PlacementEventData generateDraftA92(CaseData caseData) {
         final PlacementEventData placementEventData = caseData.getPlacementEventData();
         placementEventData.setPlacementNotice(createA92Document(caseData, DRAFT));
         return placementEventData;
