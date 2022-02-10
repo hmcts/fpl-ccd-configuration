@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,12 +23,17 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -300,6 +308,53 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         });
 
         assertThat(response.getData().get("orderPreview")).isEqualTo(mappedDocument);
+    }
+
+    private static final UUID ORDER_ID = UUID.randomUUID();
+    private static final String PDF_FILENAME = "pdf-file.pdf";
+    private static final String NON_PDF_FILENAME = "non-pdf-file.docx";
+    private static final DocumentReference DOCUMENT_TO_STAMP = testDocumentReference("uploaded.pdf");
+    private static final DocumentReference PDF_DOCUMENT_UPLOADED = testDocumentReference(PDF_FILENAME);
+    private static final DocumentReference NON_PDF_DOCUMENT_UPLOADED = testDocumentReference(NON_PDF_FILENAME);
+    private static final GeneratedOrder ORDER = GeneratedOrder.builder().document(testDocumentReference("order.pdf"))
+        .others(emptyList()).build();
+
+    @Test
+    void shouldThrowExceptionWhenUploadingNonPdfFile() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperation(OrderOperation.AMEND)
+                .manageOrdersAmendmentList(DynamicList.builder()
+                    .value(DynamicListElement.builder().code(ORDER_ID).build())
+                    .build())
+                .manageOrdersAmendedOrder(NON_PDF_DOCUMENT_UPLOADED)
+                .manageOrdersOrderToAmend(DOCUMENT_TO_STAMP)
+                .build())
+            .orderCollection(List.of(element(ORDER_ID, ORDER)))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+        assertThat(response.getErrors()).contains(
+            MessageFormat.format("Can only amend documents that are pdf, requested document was of type: {0}",
+                FilenameUtils.getExtension(NON_PDF_FILENAME)));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUploadingPdfFile() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersOperation(OrderOperation.AMEND)
+                .manageOrdersAmendmentList(DynamicList.builder()
+                    .value(DynamicListElement.builder().code(ORDER_ID).build())
+                    .build())
+                .manageOrdersAmendedOrder(PDF_DOCUMENT_UPLOADED)
+                .manageOrdersOrderToAmend(DOCUMENT_TO_STAMP)
+                .build())
+            .orderCollection(List.of(element(ORDER_ID, ORDER)))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+        assertThat(response.getErrors().isEmpty());
     }
 
     @Test
