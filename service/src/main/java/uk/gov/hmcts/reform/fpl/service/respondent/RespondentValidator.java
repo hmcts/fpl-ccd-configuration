@@ -85,24 +85,25 @@ public class RespondentValidator {
                 List<String> addErrs = new ArrayList<>();
                 if (isEmpty(address)) {
                     addErrs.add("Enter respondent's address");
-                }
-                if (isBlank(address.getAddressLine1())) {
-                    addErrs.add("Building and Street is required");
-                }
-                if (isBlank(address.getAddressLine2())) {
-                    addErrs.add("Address Line 2 is required");
-                }
-                if (isBlank(address.getPostTown())) {
-                    addErrs.add("Town or City is required");
-                }
-                if (isBlank(address.getCounty())) {
-                    addErrs.add("County is required");
-                }
-                if (isBlank(address.getPostcode())) {
-                    addErrs.add("Postcode/Zipcode is required");
-                }
-                if (isBlank(address.getCountry())) {
-                    addErrs.add("Country is required");
+                } else {
+                    if (isBlank(address.getAddressLine1())) {
+                        addErrs.add("Building and Street is required");
+                    }
+                    if (isBlank(address.getAddressLine2())) {
+                        addErrs.add("Address Line 2 is required");
+                    }
+                    if (isBlank(address.getPostTown())) {
+                        addErrs.add("Town or City is required");
+                    }
+                    if (isBlank(address.getCounty())) {
+                        addErrs.add("County is required");
+                    }
+                    if (isBlank(address.getPostcode())) {
+                        addErrs.add("Postcode/Zipcode is required");
+                    }
+                    if (isBlank(address.getCountry())) {
+                        addErrs.add("Country is required");
+                    }
                 }
                 return addErrs;
             }).flatMap(List::stream).collect(Collectors.toList());
