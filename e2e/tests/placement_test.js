@@ -3,8 +3,7 @@ const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWit
 const placementResponses = require('../fixtures/placementResponses.js');
 
 let caseId;
-const placementFee = '455.0';
-
+const placementFee = '490.0';
 const childName = 'Timothy Jones';
 
 Feature('Placement');
@@ -21,14 +20,14 @@ async function createPlacementApplication(I, placementEventPage, caseViewPage) {
   await I.goToNextPage();
   await placementEventPage.addApplication(config.testWordFile);
 
-  placementEventPage.attachSupportingDocument(0, config.testFile);
-  placementEventPage.attachSupportingDocument(1, config.testFile2, 'Description 1');
+  await placementEventPage.attachSupportingDocument(0, config.testFile);
+  await placementEventPage.attachSupportingDocument(1, config.testFile2, 'Description 1');
   await placementEventPage.addSupportingDocument(2, 'Maintenance agreement/award', config.testFile3);
-  placementEventPage.attachConfidentialDocument(0, config.testFile4);
+  await placementEventPage.attachConfidentialDocument(0, config.testFile4);
   await placementEventPage.addConfidentialDocument(1, 'Other confidential documents', config.testFile5, 'Description 2');
 
   await I.goToNextPage();
-  placementEventPage.selectNotifyAllRespondents();
+  await placementEventPage.selectNotifyAllRespondents();
 
   await I.goToNextPage();
   I.see(placementFee);

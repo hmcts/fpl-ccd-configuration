@@ -75,7 +75,7 @@ public class PlacementNoticeController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-        final PlacementEventData eventData = placementService.generateA92(caseData);
+        final PlacementEventData eventData = placementService.generateDraftA92(caseData);
         putFields(caseProperties, eventData, HEARING_GROUP);
 
         return respond(caseProperties);

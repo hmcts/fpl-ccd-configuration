@@ -329,7 +329,7 @@ class PlacementServiceTest {
                     asDynamicList(placementEventData.getPlacements(), placement.getId(), Placement::getChildName))
                 .build();
 
-            final PlacementEventData actualPlacementData = underTest.generateA92(caseData);
+            final PlacementEventData actualPlacementData = underTest.generateDraftA92(caseData);
 
             assertThat(actualPlacementData.getPlacementNotice()).isNotNull();
         }
