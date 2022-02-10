@@ -3,9 +3,12 @@ package uk.gov.hmcts.reform.fpl.service.respondent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -14,7 +17,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
 @Component
@@ -35,6 +41,7 @@ public class RespondentValidator {
         validateMaximumSize(caseData).ifPresent(errors::add);
 
         errors.addAll(validateDob(caseData));
+        errors.addAll(validateAddress(caseData));
 
         List<Respondent> respondentsWithLegalRep =
             respondentService.getRespondentsWithLegalRepresentation(caseData.getRespondents1());
@@ -70,4 +77,35 @@ public class RespondentValidator {
         return Optional.empty();
     }
 
+    private List<String> validateAddress(CaseData caseData) {
+        return caseData.getAllRespondents().stream()
+            .map(Element::getValue).map(Respondent::getParty)
+            .filter(party -> YesNo.YES.getValue().equals(party.getAddressKnow()))
+            .map(Party::getAddress)
+            .map(address -> {
+                List<String> addErrs = new ArrayList<>();
+                if (isEmpty(address)) {
+                    addErrs.add("Enter respondent's address");
+                }
+                if (isBlank(address.getAddressLine1())) {
+                    addErrs.add("Building and Street is required");
+                }
+                if (isBlank(address.getAddressLine2())) {
+                    addErrs.add("Address Line 2 is required");
+                }
+                if (isBlank(address.getPostTown())) {
+                    addErrs.add("Town or City is required");
+                }
+                if (isBlank(address.getCounty())) {
+                    addErrs.add("County is required");
+                }
+                if (isBlank(address.getPostcode())) {
+                    addErrs.add("Postcode/Zipcode is required");
+                }
+                if (isBlank(address.getCountry())) {
+                    addErrs.add("Country is required");
+                }
+                return addErrs;
+            }).flatMap(List::stream).collect(Collectors.toList());
+    }
 }
