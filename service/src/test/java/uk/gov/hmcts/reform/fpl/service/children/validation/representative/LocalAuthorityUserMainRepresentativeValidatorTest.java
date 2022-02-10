@@ -151,7 +151,7 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     //
     //     when(currentEventData.getChildrenHaveRepresentation()).thenReturn("No");
     //     when(previousEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
-    //
+    // 
     //     assertThat(underTest.validate(caseData, caseDataBefore))
     //         .isEqualTo(List.of("You cannot remove the main representative from the case"));
     // }
