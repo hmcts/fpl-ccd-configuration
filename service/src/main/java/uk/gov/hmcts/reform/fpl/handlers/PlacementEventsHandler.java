@@ -178,7 +178,7 @@ public class PlacementEventsHandler {
 
             notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData,
                 caseData.getId());
-        } else if (!parent.isDeceasedOrNFA()) {
+        } else if (!respondent.isDeceasedOrNFA()) {
             log.info("Send letter to respondent ({}) about {} child placement notice",
                 respondent.getParty().getFullName(), placement.getChildName());
 
