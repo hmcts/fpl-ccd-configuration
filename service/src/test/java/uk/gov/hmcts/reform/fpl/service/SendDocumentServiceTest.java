@@ -498,8 +498,8 @@ class SendDocumentServiceTest {
             final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
 
             assertThat(actualRecipients).size().isEqualTo(2);
-            assertThat(actualRecipients).contains(notRepresentedRespondent.getParty());
-            assertThat(actualRecipients).contains(representativeServedByPostService.getValue());
+            assertThat(actualRecipients).contains(notRepresentedRespondent.getParty(),
+                representativeServedByPostService.getValue());
         }
     }
 
