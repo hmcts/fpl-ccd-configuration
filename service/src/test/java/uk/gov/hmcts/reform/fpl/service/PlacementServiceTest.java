@@ -15,18 +15,22 @@ import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -37,12 +41,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -61,11 +67,15 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIR
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.MAINTENANCE_AGREEMENT_AWARD;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.PARENTS_CONSENT_FOR_ADOPTION;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
@@ -91,6 +101,15 @@ class PlacementServiceTest {
 
     @Mock
     private DocumentSealingService sealingService;
+
+    @Mock
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
+    @Mock
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @Mock
+    private UploadDocumentService uploadDocumentService;
 
     @Mock
     private RespondentService respondentService;
@@ -306,6 +325,87 @@ class PlacementServiceTest {
 
     @Nested
     class PreparePlacement {
+
+        final LocalDate today = LocalDate.of(2020, 1, 10);
+        final byte[] document = readBytes("documents/document1.pdf");
+        final DocmosisDocument docmosisDocument = testDocmosisDocument(document)
+            .toBuilder().documentTitle("pdf.pdf").build();
+
+        @Test
+        void shouldGenerateA92Document() {
+            final LocalDateTime now = today.atTime(23, 10);
+
+            when(time.now()).thenReturn(now);
+            when(hearingVenueLookUpService.getHearingVenue(any(String.class))).thenReturn(HearingVenue.builder()
+                .venue("name").build());
+            when(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any(), any()))
+                .thenReturn(docmosisDocument);
+            when(uploadDocumentService.uploadDocument(any(), any(), any())).thenReturn(testDocument());
+
+
+
+            final DynamicList childrenList = childrenDynamicList(1, child1, child2, child3);
+
+            final Element<Placement> placement = element(Placement.builder()
+                .childId(child2.getId())
+                .childName(child2.getValue().getParty().getFullName())
+                .placementRespondentsToNotify(newArrayList(respondent1, respondent2))
+                .build());
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placementChildrenCardinality(MANY)
+                .placementChildrenList(childrenList)
+                .placement(placement.getValue())
+                .placements(newArrayList(placement))
+                .placementNoticeVenue("82")
+                .placementNoticeDateTime(time.now())
+                .placementNoticeDuration("1")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .children1(List.of(child1, child2, child3))
+                .court(Court.builder().name("Test court").build())
+                .familyManCaseNumber("familymanid")
+                .respondents1(List.of(respondent1, respondent2))
+                .placementEventData(placementEventData)
+                .placementList(
+                    asDynamicList(placementEventData.getPlacements(), placement.getId(), Placement::getChildName))
+                .build();
+
+            final PlacementEventData actualPlacementData = underTest.generateDraftA92(caseData);
+
+            assertThat(actualPlacementData.getPlacementNotice()).isNotNull();
+        }
+
+        @Test
+        void shouldPreparePlacementFromExisting() {
+            final DynamicList childrenList = childrenDynamicList(1, child1, child2, child3);
+
+            final Element<Placement> placement = element(Placement.builder()
+                .childId(child2.getId())
+                .childName(child2.getValue().getParty().getFullName())
+                .placementRespondentsToNotify(newArrayList(respondent1, respondent2))
+                .build());
+
+            final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placementChildrenCardinality(MANY)
+                .placementChildrenList(childrenList)
+                .placements(newArrayList(placement))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .children1(List.of(child1, child2, child3))
+                .respondents1(List.of(respondent1, respondent2))
+                .placementEventData(placementEventData)
+                .placementList(
+                    asDynamicList(placementEventData.getPlacements(), placement.getId(), Placement::getChildName))
+                .build();
+
+            final PlacementEventData actualPlacementData = underTest.preparePlacement(caseData);
+
+            assertThat(actualPlacementData.getPlacement()).isNotNull();
+            assertThat(actualPlacementData.getPlacement().getChildId()).isEqualTo(child2.getId());
+        }
 
         @Test
         void shouldPreparePlacementForSelectedChild() {
