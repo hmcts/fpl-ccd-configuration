@@ -73,7 +73,7 @@ public final class LocalAuthorityUserMainRepresentativeValidator extends LocalAu
         RespondentSolicitor oldRepresentative = sanitizer.sanitize(oldData.getChildrenMainRepresentative());
         RespondentSolicitor currentRepresentative = sanitizer.sanitize(currentData.getChildrenMainRepresentative());
         return !Objects.equals(oldRepresentative, currentRepresentative)
-            ? List.of(MAIN_REP_MODIFICATION_ERROR)
-            : List.of();
+               ? List.of(MAIN_REP_MODIFICATION_ERROR)
+               : List.of();
     }
 }
