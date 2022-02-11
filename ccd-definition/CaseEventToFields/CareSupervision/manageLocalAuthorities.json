@@ -68,7 +68,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageLocalAuthorities",
     "CaseFieldID": "localAuthoritiesToShare",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "Action",
     "PageDisplayOrder": 1,
