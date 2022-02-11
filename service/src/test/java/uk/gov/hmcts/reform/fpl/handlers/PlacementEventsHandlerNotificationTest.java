@@ -10,10 +10,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
-import uk.gov.hmcts.reform.fpl.events.PlacementNoticeChanged;
+import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -71,6 +70,7 @@ class PlacementEventsHandlerNotificationTest {
 
     private final Placement placement = Placement.builder()
         .childId(randomUUID())
+        .placementNotice(testDocumentReference())
         .build();
 
     private final PlacementEventData placementEventData = PlacementEventData.builder()
@@ -127,11 +127,6 @@ class PlacementEventsHandlerNotificationTest {
     @Nested
     class LocalAuthorityNotification {
 
-        private final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
-            .build();
-
         private final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_NAME)
@@ -141,7 +136,7 @@ class PlacementEventsHandlerNotificationTest {
         @Test
         void shouldSendNotificationToLocalAuthority() {
 
-            final PlacementNoticeChanged event = new PlacementNoticeChanged(caseData, placement, notice);
+            final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placement);
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
                 .caseData(caseData)
@@ -152,7 +147,7 @@ class PlacementEventsHandlerNotificationTest {
             when(contentProvider.getNoticeChangedData(caseData, placement)).thenReturn(notifyData);
             when(localAuthorityRecipients.getRecipients(recipientsRequest)).thenReturn(recipients);
 
-            underTest.notifyParties(event);
+            underTest.notifyLocalAuthorityOfNewNotice(event);
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, recipients, notifyData, CASE_ID);
@@ -162,11 +157,6 @@ class PlacementEventsHandlerNotificationTest {
 
     @Nested
     class CafcassNotification {
-
-        private final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
-            .notice(testDocumentReference())
-            .build();
 
         private final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -178,13 +168,13 @@ class PlacementEventsHandlerNotificationTest {
         @Test
         void shouldSendNotificationToCafcass() {
 
-            final PlacementNoticeChanged event = new PlacementNoticeChanged(caseData, placement, notice);
+            final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placement);
             final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
 
-            when(contentProvider.getNoticeChangedCafcassData(caseData, placement, notice)).thenReturn(notifyData);
+            when(contentProvider.getNoticeChangedCafcassData(caseData, placement)).thenReturn(notifyData);
             when(cafcassLookupConfiguration.getCafcass("LA1")).thenReturn(cafcass);
 
-            underTest.notifyParties(event);
+            underTest.notifyCafcassOfNewNotice(event);
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, cafcass.getEmail(), notifyData, CASE_ID);
@@ -195,19 +185,18 @@ class PlacementEventsHandlerNotificationTest {
     @Nested
     class ParentsNotification {
 
+        private final RespondentSolicitor parentSolicitor = RespondentSolicitor.builder()
+            .email("solicitor@test.com")
+            .build();
+
         private final PlacementEventData placementEventData = PlacementEventData.builder()
             .placementPaymentRequired(YES)
             .placement(placement)
             .build();
 
-        private final RespondentSolicitor parentSolicitor = RespondentSolicitor.builder()
-            .email("solicitor@test.com")
-            .build();
-
         @Test
-        void shouldSendNotificationToFirstParentSolicitor() {
-
-            final Element<Respondent> respondent = element(Respondent.builder()
+        void shouldSendNotificationToRespondentSolicitor() {
+            Element<Respondent> respondent = element(Respondent.builder()
                 .party(RespondentParty.builder()
                     .firstName("Alex")
                     .lastName("Smith")
@@ -222,53 +211,15 @@ class PlacementEventsHandlerNotificationTest {
                 .placementEventData(placementEventData)
                 .build();
 
-            when(contentProvider.getNoticeChangedData(caseData, placement)).thenReturn(notifyData);
-
-            final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-                .type(PlacementNoticeDocument.RecipientType.PARENT_FIRST)
-                .notice(testDocumentReference())
-                .recipientName("Alex Smith")
-                .respondentId(respondent.getId())
+            Placement placementNotifyParent = placement.toBuilder()
+                .placementRespondentsToNotify(List.of(respondent))
                 .build();
 
-            final PlacementNoticeChanged event = new PlacementNoticeChanged(caseData, placement, notice);
+            when(contentProvider.getNoticeChangedData(caseData, placementNotifyParent)).thenReturn(notifyData);
 
-            underTest.notifyParties(event);
+            final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placementNotifyParent);
 
-            verify(notificationService)
-                .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData, CASE_ID);
-        }
-
-        @Test
-        void shouldSendNotificationToSecondParentSolicitor() {
-
-            final Element<Respondent> respondent = element(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("Alex")
-                    .lastName("Smith")
-                    .build())
-                .solicitor(parentSolicitor)
-                .build());
-
-            final CaseData caseData = CaseData.builder()
-                .id(CASE_ID)
-                .respondents1(List.of(respondent))
-                .caseLocalAuthorityName(LOCAL_AUTHORITY_NAME)
-                .placementEventData(placementEventData)
-                .build();
-
-            when(contentProvider.getNoticeChangedData(caseData, placement)).thenReturn(notifyData);
-
-            final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-                .type(PlacementNoticeDocument.RecipientType.PARENT_SECOND)
-                .notice(testDocumentReference())
-                .recipientName("Alex Smith")
-                .respondentId(respondent.getId())
-                .build();
-
-            final PlacementNoticeChanged event = new PlacementNoticeChanged(caseData, placement, notice);
-
-            underTest.notifyParties(event);
+            underTest.notifyRespondentsOfNewNotice(event);
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData, CASE_ID);
@@ -276,10 +227,9 @@ class PlacementEventsHandlerNotificationTest {
 
         @Test
         void shouldSendLetterWhenParentNotRepresented() {
-
-            final Element<Respondent> respondent = element(Respondent.builder()
+            Element<Respondent> respondent = element(Respondent.builder()
                 .party(RespondentParty.builder()
-                    .firstName("Alex")
+                    .firstName("Jodie")
                     .lastName("Smith")
                     .build())
                 .build());
@@ -291,20 +241,18 @@ class PlacementEventsHandlerNotificationTest {
                 .placementEventData(placementEventData)
                 .build();
 
-            final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-                .type(PlacementNoticeDocument.RecipientType.PARENT_FIRST)
-                .notice(testDocumentReference())
-                .recipientName("Alex Smith")
-                .respondentId(respondent.getId())
+            Placement placementNotifyParent = placement.toBuilder()
+                .placementRespondentsToNotify(List.of(respondent))
                 .build();
 
-            final PlacementNoticeChanged event = new PlacementNoticeChanged(caseData, placement, notice);
+            final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placementNotifyParent);
 
-            underTest.notifyParties(event);
+            underTest.notifyRespondentsOfNewNotice(event);
 
             verifyNoInteractions(notificationService, contentProvider);
             verify(sendDocumentService)
-                .sendDocuments(caseData, List.of(notice.getNotice()), List.of(respondent.getValue().getParty()));
+                .sendDocuments(caseData, List.of(placementNotifyParent.getPlacementNotice()),
+                    List.of(respondent.getValue().getParty()));
         }
     }
 }
