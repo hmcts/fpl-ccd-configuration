@@ -81,6 +81,16 @@ module.exports = {
               clientCode: '#placementPayment_clientCode',
               customerReference: '#placementPayment_fileReference',
             },
+        allRespondents: {
+          group: '#sendPlacementNoticeToAllRespondents',
+          options: {
+            all: 'Yes',
+            select: 'No',
+          },
+        },
+        respondentsSelector: {
+          selector: index => `#respondentsSelector_option${index}-SELECTED`,
+        },
       },
 
   async selectChild(childName) {
@@ -231,6 +241,10 @@ module.exports = {
     if (description) {
       I.fillField(this.fields.notice.secondParent.response.description, description);
     }
+  },
+
+  selectNotifyAllRespondents() {
+    I.click(`${this.fields.allRespondents.group}_${this.fields.allRespondents.options.all}`);
   },
 
   async setPaymentDetails(pbaNumber, clientCode, customerReference) {

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -13,9 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +28,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -191,6 +196,30 @@ public class RespondentService {
             .map(RespondentSolicitor::getOrganisation)
             .filter(org -> isNotEmpty(org.getOrganisationID()))
             .orElse(null);
+    }
+
+    public List<Element<Respondent>> getSelectedRespondents(CaseData caseData, String allRespondentsSelected) {
+        return getSelectedRespondents(caseData.getAllRespondents(), caseData.getRespondentsSelector(),
+            allRespondentsSelected);
+    }
+
+    public List<Element<Respondent>> getSelectedRespondents(List<Element<Respondent>> respondents, Selector selector,
+                                                  String allRespondentsSelected) {
+
+        if (useAllRespondents(allRespondentsSelected)) {
+            return respondents;
+        } else {
+            if (isNull(selector) || isEmpty(selector.getSelected())) {
+                return Collections.emptyList();
+            }
+            return selector.getSelected().stream()
+                .map(respondents::get)
+                .collect(toList());
+        }
+    }
+
+    private boolean useAllRespondents(String sendPlacementNoticeToAllRespondents) {
+        return "Yes".equals(sendPlacementNoticeToAllRespondents);
     }
 
 }
