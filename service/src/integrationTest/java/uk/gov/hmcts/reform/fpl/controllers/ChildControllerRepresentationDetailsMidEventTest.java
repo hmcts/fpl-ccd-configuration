@@ -53,28 +53,6 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         super("enter-children");
     }
 
-    /*
-    @ParameterizedTest(name = "with role {0}")
-    @ValueSource(strings = {SOLICITOR_ROLE, ADMIN_ROLE})
-    void shouldReturnErrorsIfRepresentativeIsSetFromYesToNo(String role) {
-        CaseData caseData = CaseData.builder()
-            .state(SUBMITTED)
-            .childrenEventData(ChildrenEventData.builder().childrenHaveRepresentation("No").build())
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .state(SUBMITTED)
-            .childrenEventData(ChildrenEventData.builder().childrenHaveRepresentation("Yes").build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-            toCallBackRequest(caseData, caseDataBefore), "representation-details", role
-        );
-
-        assertThat(response.getErrors()).isEqualTo(List.of("You cannot remove the main representative from the case"));
-    }
-    */
-
     @Test
     void shouldReturnErrorsIfRepresentativeIsUpdatedAndUserIsSolicitor() {
         CaseData caseData = CaseData.builder()

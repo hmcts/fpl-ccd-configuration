@@ -143,21 +143,6 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
 
-    /*
-    @DisplayName("Validate with errors when the children representation was set to Yes and is now No")
-    @Test
-    void validateSetToNotSet() {
-        when(caseData.getChildrenEventData()).thenReturn(currentEventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);
-
-        when(currentEventData.getChildrenHaveRepresentation()).thenReturn("No");
-        when(previousEventData.getChildrenHaveRepresentation()).thenReturn("Yes");
-
-        assertThat(underTest.validate(caseData, caseDataBefore))
-            .isEqualTo(List.of("You cannot remove the main representative from the case"));
-    }
-     */
-
     @DisplayName("Validate with no errors when the main solicitor was not changed")
     @Test
     void validateSolicitorNotChanged() {

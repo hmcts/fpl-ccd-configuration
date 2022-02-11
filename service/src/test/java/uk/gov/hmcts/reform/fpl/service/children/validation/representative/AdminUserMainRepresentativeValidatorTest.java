@@ -132,20 +132,6 @@ class AdminUserMainRepresentativeValidatorTest {
         assertThat(underTest.validate(caseData, caseDataBefore)).isEmpty();
     }
 
-    /*
-    @DisplayName("Validate with errors when the children representation was set to Yes and is now No")
-    @Test
-    void validateSetToNotSet() {
-        when(caseData.getChildrenEventData()).thenReturn(eventData);
-        when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
-
-        when(eventData.getChildrenHaveRepresentation()).thenReturn("Yes", "No");
-
-        assertThat(underTest.validate(caseData, caseDataBefore))
-            .isEqualTo(List.of("You cannot remove the main representative from the case"));
-    }
-    */
-
     @DisplayName("Validate with errors when the children representation was not set and solicitor has invalid details")
     @Test
     void validateInvalidDetailWhenSetPreviously() {

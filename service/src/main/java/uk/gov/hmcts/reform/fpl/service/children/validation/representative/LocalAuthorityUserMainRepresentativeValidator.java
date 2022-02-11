@@ -62,13 +62,6 @@ public final class LocalAuthorityUserMainRepresentativeValidator extends LocalAu
             return mainRepValidator.validate(caseData);
         }
 
-        // was set previously, cannot unset
-        /*
-        if (UNSET_VALUES.contains(currentRepresentation)) {
-            return List.of(MAIN_REP_REMOVAL_ERROR);
-        }
-        */
-
         // already set so just need to check if the representatives are equal
         RespondentSolicitor oldRepresentative = sanitizer.sanitize(oldData.getChildrenMainRepresentative());
         RespondentSolicitor currentRepresentative = sanitizer.sanitize(currentData.getChildrenMainRepresentative());
