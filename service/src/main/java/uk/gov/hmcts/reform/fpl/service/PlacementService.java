@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisImages;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
