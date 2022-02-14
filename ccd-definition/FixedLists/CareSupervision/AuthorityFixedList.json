@@ -562,93 +562,100 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "HAV",
+    "ListElement": "London Borough of Havering",
+    "DisplayOrder": 186
+  },  
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "HLW",
     "ListElement": "London Borough of Hounslow",
-    "DisplayOrder": 186
+    "DisplayOrder": 187
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "ISL",
     "ListElement": "London Borough of Islington",
-    "DisplayOrder": 187
+    "DisplayOrder": 188
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "KGN",
     "ListElement": "London Borough of Kingston",
-    "DisplayOrder": 188
+    "DisplayOrder": 189
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LEW",
     "ListElement": "London Borough of Lewisham",
-    "DisplayOrder": 189
+    "DisplayOrder": 190
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LBM",
     "ListElement": "London Borough of Merton",
-    "DisplayOrder": 190
+    "DisplayOrder": 191
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "RED",
     "ListElement": "London Borough of Redbridge",
-    "DisplayOrder": 191
+    "DisplayOrder": 192
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "RMD",
     "ListElement": "London Borough of Richmond",
-    "DisplayOrder": 192
+    "DisplayOrder": 193
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SWK",
     "ListElement": "London Borough of Southwark",
-    "DisplayOrder": 193
+    "DisplayOrder": 194
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SUT",
     "ListElement": "London Borough of Sutton",
-    "DisplayOrder": 194
+    "DisplayOrder": 195
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LBTH",
     "ListElement": "London Borough of Tower Hamlets",
-    "DisplayOrder": 195
+    "DisplayOrder": 196
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WAD",
     "ListElement": "London Borough of Wandsworth",
-    "DisplayOrder": 196
+    "DisplayOrder": 197
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WAF",
     "ListElement": "London Borough of Waltham Forest",
-    "DisplayOrder": 197
+    "DisplayOrder": 198
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LBC",
     "ListElement": "Luton Borough Council",
-    "DisplayOrder": 198
+    "DisplayOrder": 199
   },
   {
     "LiveFrom": "01/01/2017",
