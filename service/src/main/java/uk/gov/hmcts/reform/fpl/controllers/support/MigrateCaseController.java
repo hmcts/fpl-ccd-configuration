@@ -35,9 +35,9 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-500", this::run500
+        "DFPL-500", this::run500,
+        "DFPL-482", this::run482
     );
-
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -72,12 +72,33 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
 
+        updateDocumentsSentToParties(caseDetails, caseData, docIds);
+    }
+
+    private void run482(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        var expectedCaseId = 1636970654155393L;
+        List<UUID> docIds = List.of(UUID.fromString("75dcdc34-7f13-4c56-aad6-8dcf7b2261b6"),
+                UUID.fromString("401d9cd0-50ae-469d-b355-d467742d7ef3"));
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                    "Migration {id = DFPL-482, case reference = %s}, expected case id %d",
+                    caseId, expectedCaseId
+            ));
+        }
+
+        updateDocumentsSentToParties(caseDetails, caseData, docIds);
+    }
+
+    private void updateDocumentsSentToParties(CaseDetails caseDetails, CaseData caseData, List<UUID> docIds) {
         List<Element<SentDocuments>> sentDocuments = caseData.getDocumentsSentToParties();
 
         for (Element<SentDocuments> docsSentToParties : sentDocuments) {
             List<Element<SentDocument>> filteredList =
                 getDocToRemove(docsSentToParties.getValue().getDocumentsSentToParty(),
-                            docIds);
+                    docIds);
             docsSentToParties.getValue().getDocumentsSentToParty().removeAll(filteredList);
         }
 
