@@ -94,13 +94,6 @@ public class ManageDocumentLAService {
         return courtBundleList;
     }
 
-    private HearingCourtBundle constructHearingCourtBundle(Element<HearingBooking> hearingBooking, List<Element<CourtBundle>> courtBundle) {
-        return HearingCourtBundle.builder()
-            .hearing(hearingBooking.getValue().toLabel())
-            .courtBundle(courtBundle)
-            .build();
-    }
-
     public Map<String, Object> initialiseCourtBundleHearingListAndLabel(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
