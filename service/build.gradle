@@ -331,7 +331,7 @@ dependencies {
 
   implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.12.4'
 
-  implementation group: 'net.minidev', name:'json-smart', version: '2.4.7'
+  implementation group: 'net.minidev', name:'json-smart', version: '2.4.8'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
