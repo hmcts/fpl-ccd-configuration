@@ -112,6 +112,7 @@ exports.config = {
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
     addGatekeepingOrderEventPage: './e2e/pages/events/addGatekeepingOrderEvent.page.js',
     placementEventPage: './e2e/pages/events/placementEvent.page.js',
+    placementHearingEventPage: './e2e/pages/events/placementHearingEvent.page.js',
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
     attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
