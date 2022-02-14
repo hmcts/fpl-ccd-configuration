@@ -12,27 +12,19 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
-import uk.gov.hmcts.reform.fpl.service.TaskListService;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
-import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
-import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.List.of;
-import static java.util.function.Predicate.not;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @RestController
@@ -41,18 +33,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private static final List<State> IGNORED_STATES = of(State.OPEN, State.RETURNED, State.CLOSED, State.DELETED);
-    private static final int MAX_CHILDREN = 15;
 
-    private final TaskListService taskListService;
-    private final TaskListRenderer taskListRenderer;
-    private final CaseSubmissionChecker caseSubmissionChecker;
-
-    private final NoticeOfChangeFieldPopulator populator;
-    private final DocumentListService documentListService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-465", this::run465
+        "DFPL-500", this::run500
     );
+
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -74,26 +59,36 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run465(CaseDetails caseDetails) {
+    private void run500(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
+        List<UUID> docIds = List.of(UUID.fromString("ad5c738e-d7aa-4ccf-b53b-0b1e40a19182"),
+                UUID.fromString("61f97374-360b-4759-9329-af10fae1317e"));
 
-        if (caseId != 1639997900244470L) {
+        if (caseId != 1643728359576136L) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-465, case reference = %s}, expected case id 1639997900244470",
-                caseId
+                    "Migration {id = DFPL-500, case reference = %s}, expected case id 1643728359576136",
+                    caseId
             ));
         }
-        List<String> namesToRemove = of("Stacey Halbert", "Della Phillips", "Natalie Beardsmore", "Donna Bird");
 
-        List<LegalRepresentative> legalRepresentatives = unwrapElements(caseData.getLegalRepresentatives());
+        List<Element<SentDocuments>> sentDocuments = caseData.getDocumentsSentToParties();
 
-        List<LegalRepresentative> legalRepresentativesToRemain = legalRepresentatives.stream()
-            .filter(not(legalRepresentative -> namesToRemove.contains(legalRepresentative.getFullName())))
-            .collect(Collectors.toList());
+        for (Element<SentDocuments> docsSentToParties : sentDocuments) {
+            List<Element<SentDocument>> filteredList =
+                getDocToRemove(docsSentToParties.getValue().getDocumentsSentToParty(),
+                            docIds);
+            docsSentToParties.getValue().getDocumentsSentToParty().removeAll(filteredList);
+        }
 
-        List<Element<LegalRepresentative>> filteredLegalRepresentatives = wrapElements(legalRepresentativesToRemain);
-
-        caseDetails.getData().put("legalRepresentatives", filteredLegalRepresentatives);
+        caseDetails.getData().put("documentsSentToParties", sentDocuments);
     }
+
+    private List<Element<SentDocument>> getDocToRemove(List<Element<SentDocument>> sentDocument,
+                                                       List<UUID> docIds) {
+        return sentDocument.stream()
+                .filter(element -> docIds.contains(element.getId()))
+                .collect(Collectors.toList());
+    }
+
 }
