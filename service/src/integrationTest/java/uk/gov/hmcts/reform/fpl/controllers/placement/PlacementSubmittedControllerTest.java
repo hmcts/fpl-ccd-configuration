@@ -38,11 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Base64.getEncoder;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,7 +54,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_UPDATE_EVENT;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
@@ -65,8 +61,6 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -239,49 +233,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                     "caseUrl", getPlacementTabUrl(CASE_ID),
                     "localAuthority", LOCAL_AUTHORITY_1_NAME),
                 notificationReference(CASE_ID));
-
-            verify(notificationClient).sendEmail(
-                PLACEMENT_NOTICE_UPLOADED_TEMPLATE,
-                LOCAL_AUTHORITY_1_INBOX,
-                Map.of(
-                    "caseUrl", getPlacementTabUrl(CASE_ID),
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME),
-                notificationReference(CASE_ID));
-
-            verify(notificationClient).sendEmail(
-                PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE,
-                DEFAULT_CAFCASS_EMAIL,
-                Map.of(
-                    "ccdNumber", CASE_ID.toString(),
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME,
-                    "documentUrl", "http://fake-url/binary",
-                    "documentDownloadUrl", Map.of(
-                        "is_csv", false,
-                        "file", getEncoder().encodeToString(CAFCASS_NOTICE_BINARIES)),
-                    "hasDocumentDownloadUrl", "yes"),
-                notificationReference(CASE_ID));
-
-            verify(notificationClient).sendEmail(
-                PLACEMENT_NOTICE_UPLOADED_TEMPLATE,
-                "solicitor1@test.com",
-                Map.of(
-                    "caseUrl", getPlacementTabUrl(CASE_ID),
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME),
-                notificationReference(CASE_ID));
-
-            verify(sendLetterApi).sendLetter(eq(SERVICE_AUTH_TOKEN), sendLetterRequestCaptor.capture());
-
-            final LetterWithPdfsRequest actualSendLetterRequest = sendLetterRequestCaptor.getValue();
-
-            assertThat(actualSendLetterRequest.getType()).isEqualTo("FPLA001");
-
-            assertThat(actualSendLetterRequest.getDocuments()).containsExactly(
-                getEncoder().encodeToString(COVERSHEET_BINARIES),
-                getEncoder().encodeToString(FIRST_PARENT_NOTICE_BINARIES));
-
-            assertThat(actualSendLetterRequest.getAdditionalData()).contains(
-                entry("caseId", CASE_ID),
-                entry("documentName", firstParentNotice.getNotice().getFilename()));
 
             verifyNoMoreInteractions(notificationClient);
         });
