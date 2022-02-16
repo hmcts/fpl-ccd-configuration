@@ -237,6 +237,120 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl482 {
+        private final String migrationId = "DFPL-482";
+        private final long validCaseId = 1636970654155393L;
+        private final long invalidCaseId = 1643728359576136L;
+
+        @Test
+        void shouldPerformMigrationWhenNameMatches() {
+            List<UUID> uuidsToBeRetained = List.of(UUID.randomUUID(), UUID.randomUUID());
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .documentsSentToParties(
+                    wrapElements(
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        uuidsToBeRetained.get(0),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRetained1.doc")
+                                                    .build()
+                                            ).build()
+                                    ),
+                                    element(
+                                        UUID.fromString("75dcdc34-7f13-4c56-aad6-8dcf7b2261b6"),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRemoved1.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build(),
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        uuidsToBeRetained.get(1),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRetained2.doc")
+                                                    .build()
+                                            ).build()
+                                    ),
+                                    element(
+                                        UUID.fromString("401d9cd0-50ae-469d-b355-d467742d7ef3"),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRemoved2.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build()
+                    )
+                ).build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            List<Element<SentDocuments>> documentsSentToParties = responseData.getDocumentsSentToParties();
+
+            List<UUID> retainedUUIDs = documentsSentToParties.stream()
+                .map(Element::getValue)
+                .flatMap(value -> value.getDocumentsSentToParty().stream())
+                .map(Element::getId)
+                .collect(toList());
+
+            assertThat(retainedUUIDs).isEqualTo(uuidsToBeRetained);
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .documentsSentToParties(
+                    wrapElements(
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        UUID.randomUUID(),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("DocSent.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build()
+                    )
+                ).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-482, case reference = 1643728359576136},"
+                    + " expected case id 1636970654155393");
+        }
+
+    }
+
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
