@@ -210,6 +210,7 @@ module.exports = {
 
   async navigateToCaseDetailsAs(user, caseId) {
     await this.signIn(user);
+    I.grabCurrentUrl();
     await this.navigateToCaseDetails(caseId);
   },
 
