@@ -358,6 +358,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .placementEventData(eventData)
             .manageDocument(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
             .placementNoticeResponses(wrapElements(laResponseNew, cafcassResponse, respondentResponse))
@@ -402,6 +403,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .placementEventData(eventData)
             .manageDocument(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
             .placementNoticeResponses(wrapElements(respondentResponseNew))
@@ -411,7 +413,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         Placement after = responseData.getPlacementEventData().getPlacements().get(0).getValue();
 
-        // TODO - Identify why the old placement notice responses are being overridden
         assertThat(after.getNoticeDocuments()).hasSize(3);
         assertThat(after.getNoticeDocuments())
             .extracting(Element::getValue)
