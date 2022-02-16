@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
@@ -457,6 +458,47 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
     void shouldNotOverrideExistingCafcassRespondentNotices() {
         // TODO - add test similar to solicitor where cafcass + respondent notices are already present
         //  so we don't override them when we just add LA ones
+        //given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), TEST_CASE_ID)).willReturn(true);
+        //given(userService.isHmctsUser()).willReturn(false);
+        //given(userService.getCaseRoles(eq(TEST_CASE_ID))).willReturn(newHashSet(SOLICITORA));
+
+        PlacementNoticeDocument laResponseNew = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .build();
+        PlacementNoticeDocument cafcassResponseExisting = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
+            .build();
+        PlacementNoticeDocument respondentResponseExisting = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.RESPONDENT)
+            .build();
+
+        Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .noticeDocuments(wrapElements(cafcassResponseExisting, respondentResponseExisting))
+            .build();
+
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .placementEventData(eventData)
+            .manageDocumentLA(buildManagementDocument(ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE))
+            .placementNoticeResponses(wrapElements(laResponseNew))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, SOLICITORA.name()));
+
+        Placement after = responseData.getPlacementEventData().getPlacements().get(0).getValue();
+
+        assertThat(after.getNoticeDocuments()).hasSize(3);
+        assertThat(after.getNoticeDocuments())
+            .extracting(Element::getValue)
+            .containsAll(newArrayList(laResponseNew, cafcassResponseExisting, respondentResponseExisting));
+
+        assertExpectedFieldsAreRemoved(responseData);
     }
 
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
