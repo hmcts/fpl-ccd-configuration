@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -53,7 +56,10 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
@@ -65,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADD
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -84,6 +91,8 @@ class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
+
+
 
     @Spy
     private final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -110,6 +119,41 @@ class ManageDocumentServiceTest {
     void before() {
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
         given(userService.isHmctsUser()).willReturn(true);
+    }
+
+    @Test
+    void shouldPopulateFieldsWhenPlacementNoticesArePresentOnCaseData() {
+        Placement placement = Placement.builder()
+            .childName("Test Child")
+            .placementNotice(testDocumentReference())
+            .build();
+
+        List<Element<Placement>> placements = wrapElements(placement);
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placements(placements)
+                .build())
+            .build();
+
+        Map<String, Object> updates = underTest.baseEventData(caseData);
+
+        ManageDocument expectedManageDocument = ManageDocument.builder()
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(YES.getValue())
+            .build();
+
+        DynamicList expectedPlacementList = asDynamicList(placements, null, Placement::getChildName);
+
+        assertThat(updates)
+            .extracting(MANAGE_DOCUMENT_KEY)
+            .isEqualTo(expectedManageDocument);
+
+        assertThat(updates)
+            .extracting(PLACEMENT_LIST_KEY)
+            .isEqualTo(expectedPlacementList);
+
     }
 
     @Test
@@ -1542,6 +1586,65 @@ class ManageDocumentServiceTest {
 
         assertThat(underTest.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
     }
+
+    @Test
+    void shouldUpdatePlacementNoticesForLA() {
+        final DocumentReference laResponseRef = testDocumentReference();
+
+        final PlacementNoticeDocument laResponse = PlacementNoticeDocument.builder()
+            .response(laResponseRef)
+            .responseDescription("LA response")
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .build();
+
+        final Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .childName("Test Child")
+            .noticeDocuments(wrapElements(laResponse))
+            .build();
+
+        final PlacementEventData uploadLAData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+
+        when(placementService.savePlacementNoticeResponses(any(),
+            eq(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)))
+            .thenReturn(uploadLAData);
+
+
+        Placement placementBefore = Placement.builder()
+            .placementNotice(placement.getPlacementNotice())
+            .childName("Test Child")
+            .build();
+
+        PlacementNoticeDocument toAdd = PlacementNoticeDocument.builder()
+            .response(laResponseRef)
+            .responseDescription("LA response")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placements(wrapElements(placementBefore))
+                .placement(placementBefore)
+                .build())
+            .placementNoticeResponses(wrapElements(toAdd))
+            .build();
+
+        PlacementEventData after = underTest.updatePlacementNoticesLA(caseData);
+
+        Placement updated = after.getPlacements().get(0).getValue();
+        PlacementNoticeDocument updatedNoticeDocument = updated.getNoticeDocuments().get(0).getValue();
+
+        assertThat(after.getPlacements()).hasSize(1);
+        assertThat(updated.getChildName()).contains("Test Child");
+        assertThat(updated.getNoticeDocuments()).hasSize(1);
+        assertThat(updatedNoticeDocument.getType()).isEqualTo(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+        assertThat(updatedNoticeDocument.getResponse()).isEqualTo(laResponseRef);
+        assertThat(updatedNoticeDocument.getResponseDescription()).isEqualTo("LA response");
+    }
+
+
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()

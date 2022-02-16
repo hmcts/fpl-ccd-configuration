@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -31,17 +34,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -321,6 +330,97 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(furtherEvidenceDocumentsNC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
     }
 
+    @Test
+    void shouldUpdatePlacementsForAdmin() {
+        PlacementNoticeDocument laResponseOld = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .responseDescription("la response old")
+            .build();
+        PlacementNoticeDocument laResponseNew = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .responseDescription("la response new")
+            .build();
+        PlacementNoticeDocument cafcassResponse = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
+            .build();
+        PlacementNoticeDocument respondentResponse = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.RESPONDENT)
+            .build();
+
+        Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .noticeDocuments(wrapElements(laResponseOld))
+            .build();
+
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(eventData)
+            .manageDocument(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
+            .placementNoticeResponses(wrapElements(laResponseNew, cafcassResponse, respondentResponse))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+
+        Placement after = responseData.getPlacementEventData().getPlacements().get(0).getValue();
+        assertThat(after.getNoticeDocuments()).hasSize(3);
+        assertThat(after.getNoticeDocuments())
+            .extracting(Element::getValue)
+            .doesNotContain(laResponseOld);
+
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    @Test
+    void shouldUpdatePlacementsForSolicitor() {
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), CASE_ID)).willReturn(true);
+        given(userService.isHmctsUser()).willReturn(false);
+        given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(SOLICITORA));
+
+        PlacementNoticeDocument laResponseExisting = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .build();
+        PlacementNoticeDocument cafcassResponseExisting = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
+            .build();
+        PlacementNoticeDocument respondentResponseNew = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.RESPONDENT)
+            .build();
+
+        Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .noticeDocuments(wrapElements(laResponseExisting, cafcassResponseExisting))
+            .build();
+
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(eventData)
+            .manageDocument(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
+            .placementNoticeResponses(wrapElements(respondentResponseNew))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, SOLICITORA.name()));
+
+        Placement after = responseData.getPlacementEventData().getPlacements().get(0).getValue();
+
+        // TODO - Identify why the old placement notice responses are being overridden
+        assertThat(after.getNoticeDocuments()).hasSize(3);
+        assertThat(after.getNoticeDocuments())
+            .extracting(Element::getValue)
+            .containsAll(newArrayList(laResponseExisting, cafcassResponseExisting, respondentResponseNew));
+
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
     private HearingBooking buildFinalHearingBooking() {
         return HearingBooking.builder()
             .type(HearingType.FINAL)
@@ -356,6 +456,8 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseData.getC2SupportingDocuments()).isNull();
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
         assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
+        assertThat(caseData.getPlacementNoticeResponses()).isNull();
+        assertThat(caseData.getPlacementList()).isNull();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

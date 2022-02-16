@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -48,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -424,6 +428,37 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
+    @Test
+    void shouldUpdatePlacements() {
+        Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .build();
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
+            .placementEventData(eventData)
+            .placementNoticeResponses(wrapElements(PlacementNoticeDocument.builder()
+                .responseDescription("LA response")
+                .response(testDocumentReference())
+                .build()))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+        assertThat(responseData.getPlacementEventData().getPlacements().get(0).getValue().getNoticeDocuments())
+            .hasSize(1);
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    @Test
+    void shouldNotOverrideExistingCafcassRespondentNotices() {
+        // TODO - add test similar to solicitor where cafcass + respondent notices are already present
+        //  so we don't override them when we just add LA ones
+    }
+
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
         assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEmpty();
         assertThat(caseData.getManageDocumentLA()).isNull();
@@ -432,6 +467,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
         assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
         assertThat(caseData.getRespondentStatementList()).isNull();
+        assertThat(caseData.getPlacementNoticeResponses()).isNull();
+        assertThat(caseData.getPlacementList()).isNull();
     }
 
     private HearingBooking buildFinalHearingBooking() {
