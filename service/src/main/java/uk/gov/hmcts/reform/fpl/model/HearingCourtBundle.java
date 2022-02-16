@@ -20,15 +20,14 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class HearingCourtBundle {
     private String hearing;
     private List<Element<CourtBundle>> courtBundle;
+    private List<Element<CourtBundle>> courtBundleNC;
 
     public List<Element<CourtBundle>> getCourtBundle() {
         return defaultIfNull(this.courtBundle, new ArrayList<>());
     }
 
-    @JsonIgnore
     public List<Element<CourtBundle>> getCourtBundleNC() {
-        return courtBundle.stream()
-            .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
+        return defaultIfNull(this.courtBundleNC, new ArrayList<>());
     }
+
 }

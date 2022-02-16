@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -86,9 +87,14 @@ public class ManageDocumentLAService {
         }
 
         if (isNotEmpty(caseData.getHearingDetails())) {
+            List<Element<CourtBundle>> courtBundleNC = caseData.getManageDocumentsCourtBundle().stream()
+                .filter(doc -> !doc.getValue().isConfidentialDocument())
+                .collect(Collectors.toList());
+
             return List.of(element(selectedHearingId, HearingCourtBundle.builder()
                 .hearing(hearingBooking.get().getValue().toLabel())
                 .courtBundle(caseData.getManageDocumentsCourtBundle())
+                .courtBundleNC(courtBundleNC)
                 .build()));
         }
         return courtBundleList;
