@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -191,26 +192,34 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
         return commonCaseBuilder()
-            .courtBundleList(
+            .courtBundleListV2(
                 createCourtBundleList(count, hearing, uploadedBy)
             ).build();
     }
 
-    public static List<Element<CourtBundle>> createCourtBundleList(int count, String hearing, String uploadedBy) {
+    public static List<Element<HearingCourtBundle>> createCourtBundleList(int count, String hearing, String uploadedBy) {
         return IntStream.rangeClosed(1, count)
             .boxed()
-            .map(value -> ElementUtils.element(createDummyCourtBundle(hearing, uploadedBy)))
+            .map(value -> {
+                Element<CourtBundle> courtBundleElement = ElementUtils.element(createDummyCourtBundle(uploadedBy));
+                return ElementUtils.element(HearingCourtBundle.builder()
+                        .hearing(hearing)
+                        .courtBundle(List.of(courtBundleElement))
+                        .build()
+                );
+
+            })
             .collect(Collectors.toList());
     }
 
-    public static CourtBundle createDummyCourtBundle(String hearing, String uploadedBy) {
+    public static CourtBundle createDummyCourtBundle(String uploadedBy) {
         return CourtBundle.builder()
             .document(getPDFDocument())
-            .hearing(hearing)
             .dateTimeUploaded(LocalDateTime.now())
             .uploadedBy(uploadedBy)
             .build();
     }
+
 
     private static List<Element<RespondentStatement>> buildRespondentStatementsList(
         List<Element<SupportingEvidenceBundle>> bundle

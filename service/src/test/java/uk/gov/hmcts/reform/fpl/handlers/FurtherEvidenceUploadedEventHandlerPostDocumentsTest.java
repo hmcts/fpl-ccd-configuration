@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -188,8 +189,9 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             );
         furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
 
-        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
+        List<HearingCourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleListV2());
         Set<DocumentReference> documentReferences = courtBundles.stream()
+            .flatMap(hearingCourtBunlde -> unwrapElements(hearingCourtBunlde.getCourtBundle()).stream())
             .map(CourtBundle::getDocument)
             .collect(toSet());
 
@@ -216,7 +218,7 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             hearing,
             "LA");
         CaseData caseDataBefore = commonCaseBuilder()
-            .courtBundleList(caseData.getCourtBundleList())
+            .courtBundleListV2(caseData.getCourtBundleListV2())
             .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -234,6 +236,7 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             any());
     }
 
+
     @Test
     void shouldEmailCafcassWhenNewBundleIsAdded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
@@ -247,11 +250,11 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             2,
             hearing,
             "LA");
-        List<Element<CourtBundle>> courtBundleList = caseData.getCourtBundleList();
-        Element<CourtBundle> existingBundle = courtBundleList.remove(1);
+        List<Element<HearingCourtBundle>> courtBundleList = caseData.getCourtBundleListV2();
+        Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
 
         CaseData caseDataBefore = commonCaseBuilder()
-            .courtBundleList(List.of(existingBundle))
+            .courtBundleListV2(List.of(existingBundle))
             .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -263,7 +266,47 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             );
         furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
         Set<DocumentReference> documentReferences = courtBundleList.stream()
-            .map(courtBundle -> courtBundle.getValue().getDocument())
+            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
+            .collect(toSet());
+
+        verify(cafcassNotificationService).sendEmail(eq(caseData),
+            eq(documentReferences),
+            eq(COURT_BUNDLE),
+            courtBundleCaptor.capture());
+
+        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+    }
+
+    @Test
+    void shouldEmailCafcassWhenFirstBundleIsAdded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+        String hearing = "Hearing";
+        CaseData caseData = buildCaseDataWithCourtBundleList(
+            2,
+            hearing,
+            "LA");
+        List<Element<HearingCourtBundle>> courtBundleList = caseData.getCourtBundleListV2();
+        Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
+
+        CaseData caseDataBefore = commonCaseBuilder()
+            .build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsLA()
+            );
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        Set<DocumentReference> documentReferences = courtBundleList.stream()
+            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
             .collect(toSet());
 
         verify(cafcassNotificationService).sendEmail(eq(caseData),
@@ -287,12 +330,12 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         String hearing = "Hearing";
         String secHearing = "secHearing";
         String hearingOld = "Old";
-        List<Element<CourtBundle>> hearing1 = createCourtBundleList(2, hearing, "LA");
-        List<Element<CourtBundle>> oldHearing = createCourtBundleList(1, hearingOld, "LA");
-        List<Element<CourtBundle>> hearing2 = createCourtBundleList(3, hearing, "LA");
-        List<Element<CourtBundle>> secHearingBundle = createCourtBundleList(2, secHearing, "LA");
+        List<Element<HearingCourtBundle>>  hearing1 = createCourtBundleList(2, hearing, "LA");
+        List<Element<HearingCourtBundle>> oldHearing = createCourtBundleList(1, hearingOld, "LA");
+        List<Element<HearingCourtBundle>>  hearing2 = createCourtBundleList(3, hearing, "LA");
+        List<Element<HearingCourtBundle>> secHearingBundle = createCourtBundleList(2, secHearing, "LA");
 
-        List<Element<CourtBundle>> totalHearing = new ArrayList<>(hearing1);
+        List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>(hearing1);
         totalHearing.addAll(oldHearing);
         totalHearing.addAll(hearing2);
         totalHearing.addAll(secHearingBundle);
@@ -300,11 +343,11 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         Collections.shuffle(totalHearing);
 
         CaseData caseData = commonCaseBuilder()
-            .courtBundleList(totalHearing)
+            .courtBundleListV2(totalHearing)
             .build();
 
         CaseData caseDataBefore = commonCaseBuilder()
-            .courtBundleList(oldHearing)
+            .courtBundleListV2(oldHearing)
             .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -315,11 +358,11 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
                 userDetailsLA()
             );
         furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
-        List<Element<CourtBundle>> expectedBundle = new ArrayList<>(hearing1);
+        List<Element<HearingCourtBundle>> expectedBundle = new ArrayList<>(hearing1);
         expectedBundle.addAll(hearing2);
 
         Set<DocumentReference> documentReferences = expectedBundle.stream()
-            .map(courtBundle -> courtBundle.getValue().getDocument())
+            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
             .collect(toSet());
 
         verify(cafcassNotificationService).sendEmail(eq(caseData),
@@ -331,7 +374,7 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
 
         Set<DocumentReference> secDocBundle = secHearingBundle.stream()
-            .map(courtBundle -> courtBundle.getValue().getDocument())
+            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
             .collect(toSet());
 
         verify(cafcassNotificationService).sendEmail(eq(caseData),
