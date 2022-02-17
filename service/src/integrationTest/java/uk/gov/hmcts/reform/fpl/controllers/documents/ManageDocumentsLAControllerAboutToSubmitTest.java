@@ -43,7 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
@@ -458,9 +457,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
     void shouldNotOverrideExistingCafcassRespondentNotices() {
         // TODO - add test similar to solicitor where cafcass + respondent notices are already present
         //  so we don't override them when we just add LA ones
-        //given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), TEST_CASE_ID)).willReturn(true);
-        //given(userService.isHmctsUser()).willReturn(false);
-        //given(userService.getCaseRoles(eq(TEST_CASE_ID))).willReturn(newHashSet(SOLICITORA));
 
         PlacementNoticeDocument laResponseNew = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
@@ -489,7 +485,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .placementNoticeResponses(wrapElements(laResponseNew))
             .build();
 
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, SOLICITORA.name()));
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         Placement after = responseData.getPlacementEventData().getPlacements().get(0).getValue();
 
