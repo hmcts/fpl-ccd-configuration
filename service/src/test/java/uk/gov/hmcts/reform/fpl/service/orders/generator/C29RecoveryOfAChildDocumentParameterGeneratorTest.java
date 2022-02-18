@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -134,8 +136,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    @Test
-    void shouldGenerateDocumentWithInformMessage() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldGenerateDocumentWithInformMessage(String officerName) {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_CODE)
             .caseLocalAuthorityName(LA_NAME)
@@ -144,6 +147,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.INFORM))
                 .manageOrdersIsExParte("No")
+                .manageOrdersOfficerName(officerName)
                 .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
                 .build())
             .build();

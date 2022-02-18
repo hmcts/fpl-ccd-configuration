@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
@@ -165,7 +165,7 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
     }
 
     private String getOfficerReferenceMessage(ManageOrdersEventData eventData) {
-        return isNull(eventData.getManageOrdersOfficerName())
+        return isEmpty(eventData.getManageOrdersOfficerName())
             ? "a police constable"
             : eventData.getManageOrdersOfficerName();
     }

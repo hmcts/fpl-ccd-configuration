@@ -669,7 +669,7 @@
     "CaseEventID": "manageOrders",
     "CaseFieldID": "manageOrdersOfficerName",
     "PageFieldDisplayOrder": 29,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
