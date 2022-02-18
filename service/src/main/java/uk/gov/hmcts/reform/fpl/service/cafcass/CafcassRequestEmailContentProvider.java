@@ -50,8 +50,13 @@ public enum CafcassRequestEmailContentProvider {
             String.join("\n\n",
                 "Types of documents attached:",
                 cafcassData.getDocumentTypes()),
-        CafcassEmailConfiguration::getRecipientForAdditionlDocument);
+        CafcassEmailConfiguration::getRecipientForAdditionlDocument),
 
+    LARGE_ATTACHEMENTS((caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new large document added"),
+        CafcassRequestEmailContentProvider::getLargeApplicationMessage,
+        CafcassEmailConfiguration::getRecipientForLargeAttachements);
 
     private final BiFunction<CaseData, CafcassData, String> type;
     private final BiFunction<CaseData, CafcassData, String> content;
@@ -89,6 +94,16 @@ public enum CafcassRequestEmailContentProvider {
             timeFrame,
             respondent,
             caseNumber);
+    }
+
+    private static String getLargeApplicationMessage(CaseData caseData, CafcassData cafcassData) {
+        return String.join("",
+                "Large document(s) for this case was uploaded to the Public Law Portal entitled ",
+                cafcassData.getDocumentName(),
+                ". As this could not be sent by email you will need to download it from ",
+                "the Portal using this link.",
+                System.lineSeparator(),
+                cafcassData.getCaseUrl());
     }
 
     private static String getSubject() {
