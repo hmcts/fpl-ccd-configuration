@@ -1,26 +1,31 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
+import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
@@ -36,6 +41,7 @@ class CafcassNotificationServiceTest {
     private static final String SENDER_EMAIL = "senderEmail";
     private static final String RECIPIENT_EMAIL = "recipientEmail";
     private static final String DOCUMENT_BINARY_URL = "originalDocumentBinaryUrl";
+    private static final String DOCUMENT_URL = "originalDocumentUrl";
     private static final byte[] DOCUMENT_CONTENT = "OriginalDocumentContent".getBytes();
     private static final String DOCUMENT_FILENAME = "fileToSend.pdf";
     private static final String FAMILY_MAN = "FM1234";
@@ -47,13 +53,33 @@ class CafcassNotificationServiceTest {
     @Mock
     private DocumentDownloadService documentDownloadService;
     @Mock
+    private DocumentMetadataDownloadService documentMetadataDownloadService;
+    @Mock
     private CafcassEmailConfiguration configuration;
+    @Mock
+    private CaseUrlService caseUrlService;
 
-    @InjectMocks
     private CafcassNotificationService underTest;
 
     @Captor
-    private ArgumentCaptor<EmailData> emailData;
+    private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<LargeFilesNotificationData> largeFilesNotificationDataArgumentCaptor;
+
+    @BeforeEach
+    void setUp() {
+        underTest = new CafcassNotificationService(
+                emailService,
+                documentDownloadService,
+                configuration,
+                caseUrlService,
+                documentMetadataDownloadService,
+                25L
+        );
+        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
+                .thenReturn(DocumentReference.builder().size(10L).build());
+    }
 
     @Test
     void shouldNotifyOrderRequest() {
@@ -67,9 +93,7 @@ class CafcassNotificationServiceTest {
             .build();
 
         underTest.sendEmail(caseData,
-            of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                .filename(DOCUMENT_FILENAME)
-                .build()),
+            of(getDocumentReference()),
             ORDER,
             OrderCafcassData.builder()
                 .documentName(TITLE)
@@ -78,8 +102,8 @@ class CafcassNotificationServiceTest {
 
         verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
 
-        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
-        EmailData data = emailData.getValue();
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new order");
         assertThat(data.getAttachments()).containsExactly(
@@ -90,6 +114,13 @@ class CafcassNotificationServiceTest {
                 "A new order for this case was uploaded to the Public Law Portal entitled",
                 TITLE)
         );
+    }
+
+    private DocumentReference getDocumentReference() {
+        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+                .url(DOCUMENT_URL)
+                .filename(DOCUMENT_FILENAME)
+                .build();
     }
 
     @Test
@@ -114,16 +145,14 @@ class CafcassNotificationServiceTest {
             .build();
 
         underTest.sendEmail(caseData,
-            of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                .filename(DOCUMENT_FILENAME)
-                .build()),
+            of(getDocumentReference()),
             NEW_APPLICATION,
             newApplicationCafcassData
         );
 
 
-        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
-        EmailData data = emailData.getValue();
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo(
             "Urgent application – same day hearing, Oliver Wright");
@@ -164,16 +193,14 @@ class CafcassNotificationServiceTest {
                 .build();
 
         underTest.sendEmail(caseData,
-                of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                        .filename(DOCUMENT_FILENAME)
-                        .build()),
+                of(getDocumentReference()),
                 NEW_APPLICATION,
                 newApplicationCafcassData
         );
 
 
-        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
-        EmailData data = emailData.getValue();
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo(
                 "Application received, Oliver Wright");
@@ -212,16 +239,14 @@ class CafcassNotificationServiceTest {
             .build();
 
         underTest.sendEmail(caseData,
-            of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                .filename(DOCUMENT_FILENAME)
-                .build()),
+            of(getDocumentReference()),
             NEW_APPLICATION,
             newApplicationCafcassData
         );
 
 
-        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
-        EmailData data = emailData.getValue();
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo(
             "Application received – hearing within 7 days, Oliver Wright");
@@ -250,9 +275,7 @@ class CafcassNotificationServiceTest {
                 .build();
 
         underTest.sendEmail(caseData,
-                of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                        .filename(DOCUMENT_FILENAME)
-                        .build()),
+                of(getDocumentReference()),
                 COURT_BUNDLE,
                 CourtBundleData.builder()
                         .hearingDetails(TITLE)
@@ -261,8 +284,8 @@ class CafcassNotificationServiceTest {
 
         verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
 
-        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
-        EmailData data = emailData.getValue();
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new court bundle");
         assertThat(data.getAttachments()).containsExactly(
@@ -287,9 +310,7 @@ class CafcassNotificationServiceTest {
                 .build();
 
         underTest.sendEmail(caseData,
-                of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                        .filename(DOCUMENT_FILENAME)
-                        .build()),
+                of(getDocumentReference()),
                 NEW_DOCUMENT,
                 NewDocumentData.builder()
                         .documentTypes("• Application statement")
@@ -299,8 +320,8 @@ class CafcassNotificationServiceTest {
 
         verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
 
-        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
-        EmailData data = emailData.getValue();
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- Further documents for main application");
         assertThat(data.getAttachments()).containsExactly(
@@ -312,8 +333,6 @@ class CafcassNotificationServiceTest {
                                 + "• Application statement")
         );
     }
-
-
 
     @Test
     void shouldNotifyAdditionalDocument() {
@@ -327,9 +346,7 @@ class CafcassNotificationServiceTest {
                 .build();
 
         underTest.sendEmail(caseData,
-                of(DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                        .filename(DOCUMENT_FILENAME)
-                        .build()),
+                of(getDocumentReference()),
                 ADDITIONAL_DOCUMENT,
                 NewDocumentData.builder()
                         .documentTypes("• Additional statement")
@@ -339,8 +356,8 @@ class CafcassNotificationServiceTest {
 
         verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
 
-        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailData.capture());
-        EmailData data = emailData.getValue();
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- additional documents");
         assertThat(data.getAttachments()).containsExactly(
@@ -350,6 +367,49 @@ class CafcassNotificationServiceTest {
                 String.join(" ",
                         "Types of documents attached:\n\n"
                                 + "• Additional statement")
+        );
+    }
+
+    @Test
+    void shouldNotifyLargeDocumentsWhenIsLargerThanConfiguredLimit() {
+        long caseId = 200L;
+        String caseLink = "http://localhost:8080/cases/case-details/200";
+
+        when(configuration.getRecipientForLargeAttachements()).thenReturn(RECIPIENT_EMAIL);
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(caseUrlService.getCaseUrl(caseId)).thenReturn(caseLink);
+        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
+                .thenReturn(DocumentReference.builder().size(Long.MAX_VALUE).build());
+
+
+        CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(FAMILY_MAN)
+                .id(caseId)
+                .build();
+
+        underTest.sendEmail(caseData,
+                of(getDocumentReference()),
+                ADDITIONAL_DOCUMENT,
+                NewDocumentData.builder()
+                        .documentTypes("• Additional statement")
+                        .emailSubjectInfo("additional documents")
+                        .build()
+        );
+
+        verify(documentDownloadService, never()).downloadDocument(DOCUMENT_BINARY_URL);
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added");
+        assertThat(data.getMessage()).isEqualTo(
+                String.join("", "Large document(s) for this case was uploaded to the ",
+                    "Public Law Portal entitled fileToSend.pdf. As this could ",
+                    "not be sent by email you will need to download it ",
+                    "from the Portal using this link.",
+                    System.lineSeparator(),
+                    "http://localhost:8080/cases/case-details/200")
         );
     }
 }
