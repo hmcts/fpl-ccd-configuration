@@ -47,7 +47,7 @@ Scenario('HMCTS admin adds secondary local authority', async ({I, caseViewPage, 
   await manageLocalAuthoritiesEventPage.setEmailAddress(hillingdonLocalAuthority.email);
 
   await I.completeEvent('Save and continue');
-  //I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
@@ -118,7 +118,7 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
   await I.completeEvent('Save and continue');
   // await I.retryUntilExists(() => I.click('Save and continue'), '.mat-tab-label');
   //await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-  //I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
@@ -150,7 +150,7 @@ Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPag
   I.see(hillingdonLocalAuthority.name);
 
   await I.completeEvent('Save and continue');
-  //I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
@@ -183,7 +183,7 @@ Scenario('HMCTS admin transfer case to new local authority', async ({I, caseView
   manageLocalAuthoritiesEventPage.selectCourt(hillingdonLocalAuthority.court);
   await I.completeEvent('Save and continue');
 
-  //I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
@@ -210,7 +210,7 @@ Scenario('HMCTS admin transfer case to secondary local authority @flaky-fix-Feb'
   manageLocalAuthoritiesEventPage.selectLocalAuthority(swanseaLocalAuthority.name);
   await I.goToNextPage();
   await I.completeEvent('Save and continue');
-  //I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
 
   await organisationAdminGrantAccess(config.swanseaLocalAuthorityUserOne, SHARED_LA_ROLE);
 
@@ -230,7 +230,7 @@ Scenario('HMCTS admin transfer case to secondary local authority @flaky-fix-Feb'
   manageLocalAuthoritiesEventPage.selectSameCourt();
   await I.completeEvent('Save and continue');
 
-  //I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageLocalAuthorities);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 

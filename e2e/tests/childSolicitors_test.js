@@ -33,7 +33,7 @@ const unregisteredSolicitor = {
 
 let caseId;
 
-Feature('Child solicitors @flay-local-ok');
+Feature('Child solicitors @flaky-fix-Feb');
 
 async function setupScenario(I) {
   if (!caseId) {
@@ -53,10 +53,10 @@ async function setupScenario(I) {
     solicitor3.details.organisation = 'Wiltshire County Council';
   }
 
-  await I.createCaseIfCaseIdFieldNotFound(solicitor1);
+  await I.createCaseIfCaseIdFieldNotFound(solicitor1, 'Swansea City Council');
 }
 
-Scenario('Solicitor cannot request representation before case submission and Cafcass solicitor is set @flaky', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
+Scenario('Solicitor cannot request representation before case submission and Cafcass solicitor is set @flaky-fix-Feb', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
   await setupScenario(I);
   await I.signIn(solicitor1);
   caseListPage.verifyCaseIsNotAccessible(caseId);
@@ -71,10 +71,11 @@ Scenario('Solicitor cannot request representation before case submission and Caf
   await submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit', null, true);
 
+  I.grabCurrentUrl();
   await attemptAndFailNoticeOfChange(I, noticeOfChangePage, solicitor2, children[0]);
 });
 
-Scenario('HMCTS Confirm that a main solicitor in not assigned for all the children yet @flaky', async ({I, caseViewPage, enterChildrenEventPage, noticeOfChangePage}) => {
+Scenario('HMCTS Confirm that a main solicitor in not assigned for all the children yet @flaky-fix-Feb', async ({I, caseViewPage, enterChildrenEventPage, noticeOfChangePage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
@@ -85,7 +86,7 @@ Scenario('HMCTS Confirm that a main solicitor in not assigned for all the childr
   await attemptAndFailNoticeOfChange(I, noticeOfChangePage, solicitor2, children[0]);
 });
 
-Scenario('HMCTS assign a main solicitor for all the children @flaky', async ({I, caseViewPage, enterChildrenEventPage}) => {
+Scenario('HMCTS assign a main solicitor for all the children @flaky-fix-Feb', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
@@ -104,7 +105,7 @@ Scenario('HMCTS assign a main solicitor for all the children @flaky', async ({I,
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.changeOfRepresentatives);
 });
 
-Scenario('HMCTS assign a different solicitor for some of the children @flaky', async ({I, caseViewPage, enterChildrenEventPage}) => {
+Scenario('HMCTS assign a different solicitor for some of the children @flaky-fix-Feb', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
@@ -140,7 +141,7 @@ Scenario('HMCTS assign a different solicitor for some of the children @flaky', a
   assertChangeOfRepresentative(I, 2, 'FPL', `${children[childWithUnregisteredSolicitorIdx].value.party.firstName} ${children[childWithUnregisteredSolicitorIdx].value.party.lastName}`, 'HMCTS', {removedUser: solicitor1.details, addedUser: unregisteredSolicitor.details });
 });
 
-Scenario('Solicitor can request representation via NOC only after case submission and Cafcass solicitor is set @flaky', async ({I, caseListPage, noticeOfChangePage, caseViewPage}) => {
+Scenario('Solicitor can request representation via NOC only after case submission and Cafcass solicitor is set @flaky-fix-Feb', async ({I, caseListPage, noticeOfChangePage, caseViewPage}) => {
   await setupScenario(I);
   await I.signIn(solicitor3);
   caseListPage.verifyCaseIsNotAccessible(caseId);
@@ -195,7 +196,7 @@ async function attemptAndFailNoticeOfChange(I, noticeOfChangePage, solicitor, ch
   await I.signIn(solicitor);
   await noticeOfChangePage.userFillsNoC(caseId, 'Swansea City Council', child.value.party.firstName, child.value.party.lastName);
   I.click('Continue');
-  I.waitForText('Enter the client details exactly as they’re written on the case, including any mistakes');
+  I.waitForText('Enter the client details exactly as they\'re written on the case, including any mistakes');
 }
 
 const assertChangeOfRepresentative = (I, index, method, respondentName, actingUserEmail, change) => {
