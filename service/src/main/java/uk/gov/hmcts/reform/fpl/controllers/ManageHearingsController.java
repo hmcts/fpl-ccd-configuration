@@ -30,16 +30,11 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.*;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
@@ -254,11 +249,41 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
+    public boolean isInvalidField(Object s) {
+        if (s == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(s.toString());
+            return false;
+        } catch (NumberFormatException ex) {
+            return true;
+        }
+    }
+
+    public List<String> validateIntegers(CaseDetails caseDetails) {
+        List<String> errors = new ArrayList<>();
+        if (isInvalidField(caseDetails.getData().get("hearingHours"))) {
+            errors.add("Hearing length, in hours should be a whole number");
+        }
+        if (isInvalidField(caseDetails.getData().get("hearingMinutes"))) {
+            errors.add("Hearing length, in minutes should be a whole number");
+        }
+        if (isInvalidField(caseDetails.getData().get("hearingDays"))) {
+            errors.add("Hearing length, in days should be a whole number");
+        }
+        return errors;
+    }
+
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
         List<String> errors;
+        errors = validateIntegers(caseDetails);
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
+        CaseData caseData = getCaseData(caseDetails);
 
         if (isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
