@@ -34,7 +34,6 @@ class ChangeStateControllerAboutToStartTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder().state(CLOSED).build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
-
-        assertThat(response.getData()).extracting("nextStateLabelContent").isNull();
+        assertThat(response.getData()).doesNotContainKey("nextStateLabelContent");
     }
 }
