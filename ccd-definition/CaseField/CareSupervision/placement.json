@@ -417,5 +417,33 @@
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sendPlacementNoticeToAllRespondents",
+    "Label": "Send notice of hearing for placement to all respondents?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementRespondentsToNotify",
+    "Label": "Respondents to notify",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementRespondentsTitle",
+    "FieldType": "Label",
+    "Label": "### Respondents in the case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

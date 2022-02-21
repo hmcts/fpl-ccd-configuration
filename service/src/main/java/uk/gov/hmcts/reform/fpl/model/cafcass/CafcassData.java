@@ -44,4 +44,8 @@ public interface CafcassData {
     default String getEmailSubjectInfo()  {
         throw new UnsupportedOperationException();
     }
+
+    default String getCaseUrl()  {
+        throw new UnsupportedOperationException();
+    }
 }
