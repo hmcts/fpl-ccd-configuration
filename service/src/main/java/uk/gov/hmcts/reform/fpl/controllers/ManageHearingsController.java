@@ -249,37 +249,13 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
-    public boolean isInvalidField(Object s) {
-        if (s == null) {
-            return false;
-        }
-        try {
-            Integer.parseInt(s.toString());
-            return false;
-        } catch (NumberFormatException ex) {
-            return true;
-        }
-    }
 
-    public List<String> validateIntegers(CaseDetails caseDetails) {
-        List<String> errors = new ArrayList<>();
-        if (isInvalidField(caseDetails.getData().get("hearingHours"))) {
-            errors.add("Hearing length, in hours should be a whole number");
-        }
-        if (isInvalidField(caseDetails.getData().get("hearingMinutes"))) {
-            errors.add("Hearing length, in minutes should be a whole number");
-        }
-        if (isInvalidField(caseDetails.getData().get("hearingDays"))) {
-            errors.add("Hearing length, in days should be a whole number");
-        }
-        return errors;
-    }
 
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         List<String> errors;
-        errors = validateIntegers(caseDetails);
+        errors = pastHearingDatesValidatorService.validateHearingIntegers(caseDetails);
         if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
         }

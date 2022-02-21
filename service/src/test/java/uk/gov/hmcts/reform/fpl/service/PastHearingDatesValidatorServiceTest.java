@@ -9,11 +9,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -99,6 +101,35 @@ class PastHearingDatesValidatorServiceTest {
         assertThat(validationErrors).isEmpty();
     }
 
+    @Test
+    void shouldReturnNoErrorsWhenHearingDurationsAreValid() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("hearingHours","1","hearingMinutes","30"))
+            .build();
+        final List<String> errorList = service.validateHearingIntegers(caseDetails);
+
+        assertThat(errorList).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenHearingDaysAreInvalid() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("hearingDays", "0.75"))
+            .build();
+        final List<String> errorList = service.validateHearingIntegers(caseDetails);
+
+        assertThat(errorList).containsExactly("Hearing length, in days should be a whole number");
+    }
+
+    @Test
+    void shouldReturnErrorsWhenHearingHoursMinutesAreInvalid() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("hearingHours", "1.5","hearingMinutes", "120.6"))
+            .build();
+        final List<String> errorList = service.validateHearingIntegers(caseDetails);
+
+        assertThat(errorList).containsExactlyInAnyOrder("Hearing length, in hours should be a whole number", "Hearing length, in minutes should be a whole number");
+    }
 
     @ParameterizedTest
     @MethodSource("invalidHoursMinutesSource")
@@ -134,6 +165,4 @@ class PastHearingDatesValidatorServiceTest {
             Arguments.of("Hearing end date time and start date time are same", startTime, startTime)
         );
     }
-
-
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
@@ -26,8 +27,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @OverrideAutoConfiguration(enabled = true)
 @WebMvcTest(ManageHearingsController.class)
 class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractCallbackTest {
-    private static LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
-    private static LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
+    private final static LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
+    private final static LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
 
     ManageHearingsControllerValidateHearingDatesMidEventTest() {
         super("manage-hearings");
@@ -286,5 +287,15 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldThrowErrorsWhenInvalidHearingDurationEntered() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("hearingDays", "0.75"))
+            .build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+
+        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder("Hearing length, in days should be a whole number");
     }
 }
