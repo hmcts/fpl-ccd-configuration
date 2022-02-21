@@ -25,6 +25,7 @@ public class HearingCourtBundleTest {
     private static final UUID TEST_ID = UUID.randomUUID();
     private static final String TEST_HEARING = "Test hearing";
     private static final String CONFIDENTIAL = "CONFIDENTIAL";
+    private static final String NONCONFIDENTIAL = "NONCONFIDENTIAL";
 
     private static final CourtBundle CONFIDENTIAL_COURT_BUNDLE = CourtBundle.builder()
         .document(DocumentReference.builder()
@@ -55,6 +56,10 @@ public class HearingCourtBundleTest {
                 TEST_ID,
                 CONFIDENTIAL_COURT_BUNDLE
             )))
+            .courtBundleNC(List.of(element(
+                TEST_ID,
+                NON_CONFIDENTIAL_COURT_BUNDLE
+            )))
             .build();
 
         Map<String, Object> serialised = objectMapper.convertValue(initialHearingCourtBundle, new TypeReference<>() {});
@@ -72,9 +77,21 @@ public class HearingCourtBundleTest {
                 ))
             )));
 
+        List<Map<String, Object>> expectedNCCourtBundle = List.of(Map.of(
+            "id", TEST_ID.toString(),
+            "value", Map.ofEntries(
+                Map.entry("confidential", List.of()),
+                Map.entry("document", Map.of(
+                    "document_binary_url", "binaryUrl",
+                    "document_filename", "filename",
+                    "document_url", "url"
+                ))
+            )));
+
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
-            "courtBundle", expectedCourtBundle
+            "courtBundle", expectedCourtBundle,
+            "courtBundleNC", expectedNCCourtBundle
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);
