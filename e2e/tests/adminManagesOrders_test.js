@@ -58,7 +58,7 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
   });
 });
 
-Scenario('Create 32b discharge of care order @flaky', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create 32b discharge of care order @flaky-fix-Feb', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -82,6 +82,7 @@ Scenario('Create 32b discharge of care order @flaky', async ({ I, caseViewPage, 
   await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  I.grabCurrentUrl();
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
     orderType: 'Discharge of care order (C32B)',

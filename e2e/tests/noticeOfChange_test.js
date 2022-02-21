@@ -32,7 +32,7 @@ async function setupScenario(I) {
   await I.createCaseIfCaseIdFieldNotFound(solicitor3, 'Wiltshire County Council');
 }
 
-Scenario('Solicitor can request representation of a respondent @flaky-local-ok', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage}) => {
+Scenario('Solicitor can request representation of a respondent @flaky-fix-Feb', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage}) => {
   await setupScenario(I);
   let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
 
