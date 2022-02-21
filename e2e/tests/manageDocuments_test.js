@@ -405,16 +405,16 @@ function getFilename(file) {
 const assertCourtBundleTabForHMCTSAndLA = (I) => {
   const courtBundle = 'Court bundle 1';
   I.seeInTab([courtBundle, 'Hearing'], 'Case management hearing, ' + formatHearingDate(hearingStartDate));
-  I.seeInTab([courtBundle, 'Documents 1', 'Document'], getFilename(config.testPdfFile));
+  I.seeInTab([courtBundle, 'Documents 1', 'Court bundle'], getFilename(config.testPdfFile));
   I.seeTagInTab([courtBundle, 'Documents 1', 'Confidential']);
-  I.seeInTab([courtBundle, 'Documents 2', 'Document'], getFilename(config.testWordFile));
+  I.seeInTab([courtBundle, 'Documents 2', 'Court bundle'], getFilename(config.testWordFile));
   I.dontSeeTagInTab([courtBundle, 'Documents 2', 'Confidential']);
 };
 
 const assertCourtBundleTabForSolicitor = (I) => {
   const courtBundle = 'Court bundle 1';
   I.seeInTab([courtBundle, 'Hearing'], 'Case management hearing, ' + formatHearingDate(hearingStartDate));
-  I.seeInTab([courtBundle, 'Documents 1', 'Document'], getFilename(config.testWordFile));
+  I.seeInTab([courtBundle, 'Documents 1', 'Court bundle'], getFilename(config.testWordFile));
   I.dontSeeTagInTab([courtBundle, 'Documents 1', 'Confidential']);
   I.dontSeeInTab([courtBundle, 'Documents 2', 'Document']);
 };
