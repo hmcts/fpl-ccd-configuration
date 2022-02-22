@@ -56,8 +56,7 @@ public class SecureDocStoreService {
     }
 
     public byte[] downloadDocument(final String documentUrlString) {
-        String selfHref = documentUrlString.replace("/binary", "");
-        UUID documentId = UUID.fromString(selfHref.substring(selfHref.length() - 36));
+        UUID documentId = getDocumentIdFromUrl(documentUrlString);
         ResponseEntity<Resource> documentDownloadResponse = caseDocumentClientApi.getDocumentBinary(
             requestData.authorisation(), authTokenGenerator.generate(), documentId);
 
@@ -71,5 +70,21 @@ public class SecureDocStoreService {
         throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
             documentUrlString));
 
+    }
+
+    public Document getDocumentMetadata(final String documentUrlString){
+        UUID documentId = getDocumentIdFromUrl(documentUrlString);
+        return caseDocumentClientApi.getMetadataForDocument(
+            requestData.authorisation(),
+            authTokenGenerator.generate(),
+            documentId
+        );
+    }
+
+    private UUID getDocumentIdFromUrl(final String documentUrlString){
+        String selfHref = documentUrlString.replace("/binary", "");
+        UUID documentId = UUID.fromString(selfHref.substring(selfHref.length() - 36));
+
+        return documentId;
     }
 }

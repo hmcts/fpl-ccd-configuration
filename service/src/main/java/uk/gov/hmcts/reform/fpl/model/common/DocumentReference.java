@@ -18,6 +18,15 @@ public class DocumentReference {
     @JsonIgnore
     private Long size;
 
+    @Deprecated
+    public static DocumentReference buildFromDocument(uk.gov.hmcts.reform.document.domain.Document document) {
+        return DocumentReference.builder()
+            .url(document.links.self.href)
+            .binaryUrl(document.links.binary.href)
+            .filename(document.originalDocumentName)
+            .build();
+    }
+
     public static DocumentReference buildFromDocument(Document document) {
         return DocumentReference.builder()
             .url(document.links.self.href)
