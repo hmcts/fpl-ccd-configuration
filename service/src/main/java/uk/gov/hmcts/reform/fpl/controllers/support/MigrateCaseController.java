@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -36,6 +37,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-500", this::run500,
+        "DFPL-466", this::run466,
         "DFPL-482", this::run482
     );
 
@@ -57,6 +59,22 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run466(CaseDetails caseDetails) {
+        var caseId = caseDetails.getId();
+        if (caseId != 1611613172339094L) {
+            throw new AssertionError(format(
+                "Migration {id = DFPL-466, case reference = %s}, expected case id 1611613172339094",
+                caseId
+            ));
+        }
+
+        if (isNotEmpty(caseDetails.getData().get("hearingOption"))) {
+            caseDetails.getData().remove("hearingOption");
+        } else {
+            throw new IllegalStateException(format("Case %s does not have hearing option", caseId));
+        }
     }
 
     private void run500(CaseDetails caseDetails) {
