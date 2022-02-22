@@ -37,11 +37,11 @@ public class NotificationService {
         Map<String, Object> personalisation = mapper.convertValue(data, new TypeReference<>() {
         });
         log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(recipient));
-//        try {
-//            notificationClient.sendEmail(templateId, recipient, personalisation, environment + SEPARATOR + reference);
-//        } catch (NotificationClientException e) {
-//            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
-//        }
+        try {
+            notificationClient.sendEmail(templateId, recipient, personalisation, environment + SEPARATOR + reference);
+        } catch (NotificationClientException e) {
+            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
+        }
     }
 
     public void sendEmail(String templateId, Collection<String> emails, NotifyData data, String reference) {
