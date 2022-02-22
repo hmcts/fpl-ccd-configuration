@@ -25,7 +25,6 @@ public class HearingCourtBundleTest {
     private static final UUID TEST_ID = UUID.randomUUID();
     private static final String TEST_HEARING = "Test hearing";
     private static final String CONFIDENTIAL = "CONFIDENTIAL";
-    private static final String NONCONFIDENTIAL = "NONCONFIDENTIAL";
 
     private static final CourtBundle CONFIDENTIAL_COURT_BUNDLE = CourtBundle.builder()
         .document(DocumentReference.builder()
