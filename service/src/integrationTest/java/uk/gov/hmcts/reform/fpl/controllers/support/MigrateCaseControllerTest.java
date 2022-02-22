@@ -49,7 +49,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         private final String migrationId = "DFPL-82";
         private static final String CONFIDENTIAL = "CONFIDENTIAL";
 
-        private CourtBundle createCourtBundle(String hearing, String fileName, String fileUrl, String binaryUrl) {
+        private CourtBundle createCourtBundle(String hearing, String fileName, String fileUrl, String binaryUrl,
+                                              boolean isConfidential) {
             return CourtBundle.builder()
                 .hearing(hearing)
                 .document(DocumentReference.builder()
@@ -57,7 +58,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .url(fileUrl)
                     .binaryUrl(binaryUrl)
                     .build())
-                .confidential(List.of(CONFIDENTIAL))
+                .confidential(isConfidential ? List.of(CONFIDENTIAL) : List.of())
                 .build();
         }
 
@@ -65,11 +66,11 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldPerformMigration() {
             List<CourtBundle> courtBundles = List.of(
                 createCourtBundle("hearing 1",
-                    "doc1", "url", "binaryUrl"),
+                    "doc1", "url", "binaryUrl", true),
                 createCourtBundle("hearing 2",
-                    "doc2", "url2", "binaryUrl2"),
+                    "doc2", "url2", "binaryUrl2", true),
                 createCourtBundle("hearing 1",
-                    "doc3", "url3", "binaryUrl3")
+                    "doc3", "url3", "binaryUrl3", false)
             );
 
             CaseData caseData = CaseData.builder()
@@ -92,15 +93,19 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                         .hearing("hearing 1")
                         .courtBundle(wrapElements(List.of(
                             createCourtBundle("hearing 1",
-                                "doc1", "url", "binaryUrl"),
+                                "doc1", "url", "binaryUrl", true),
                             createCourtBundle("hearing 1",
-                                "doc3", "url3", "binaryUrl3"))))
+                                "doc3", "url3", "binaryUrl3", false))))
+                        .courtBundleNC(wrapElements(List.of(
+                            createCourtBundle("hearing 1",
+                                "doc3", "url3", "binaryUrl3", false)
+                        )))
                         .build(),
                     HearingCourtBundle.builder()
                         .hearing("hearing 2")
                         .courtBundle(wrapElements(List.of(
                             createCourtBundle("hearing 2",
-                                "doc2", "url2", "binaryUrl2"))))
+                                "doc2", "url2", "binaryUrl2", true))))
                         .build()
 
                 );

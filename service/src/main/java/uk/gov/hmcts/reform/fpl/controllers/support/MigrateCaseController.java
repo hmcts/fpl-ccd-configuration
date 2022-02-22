@@ -101,6 +101,10 @@ public class MigrateCaseController extends CallbackController {
                         HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
                             .hearing(entry.getKey())
                             .courtBundle(entry.getValue())
+                            .courtBundleNC(entry.getValue().stream()
+                                .filter(e -> !e.getValue().isConfidentialDocument())
+                                .collect(toList())
+                            )
                             .build();
                         return Element.<HearingCourtBundle>builder().value(hearingCourtBundle).build();
                     }
