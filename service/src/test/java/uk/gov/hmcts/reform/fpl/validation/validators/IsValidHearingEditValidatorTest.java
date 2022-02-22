@@ -17,6 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -29,6 +30,32 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
 
     @Nested
     class EditingHearings {
+        @Test
+        void shouldReturnAnErrorWhenEditingAHearingButNoPastHearingsAreAvailable() {
+            CaseData caseData = CaseData.builder().hearingOption(EDIT_PAST_HEARING).build();
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingAHearingButNoPastHearingsAreAvailable2() {
+            List<Element<HearingBooking>> pastHearings = List.of(
+                element(HearingBooking.builder()
+                    .startDate(time.now().plusDays(1))
+                    .build())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .hearingDetails(pastHearings)
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
         @Test
         void shouldReturnAnErrorWhenEditingAHearingButNoHearingsAreAvailable() {
             CaseData caseData = CaseData.builder().hearingOption(EDIT_FUTURE_HEARING).build();
@@ -56,15 +83,15 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
 
         @Test
         void shouldNotReturnAnErrorWhenEditingAHearingWithPastHearingsAvailable() {
-            List<Element<HearingBooking>> futureHearings = List.of(
+            List<Element<HearingBooking>> pastHearings = List.of(
                 element(HearingBooking.builder()
                     .startDate(time.now().minusDays(2))
                     .build())
                 );
 
             CaseData caseData = CaseData.builder()
-                .hearingOption(EDIT_FUTURE_HEARING)
-                .hearingDetails(futureHearings)
+                .hearingOption(EDIT_PAST_HEARING)
+                .hearingDetails(pastHearings)
                 .build();
 
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
