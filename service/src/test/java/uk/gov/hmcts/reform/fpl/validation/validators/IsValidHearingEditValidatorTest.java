@@ -176,6 +176,19 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
             assertThat(validationErrors).isEmpty();
         }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingFutureHearingWithCurrentHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .hearingDetails(List.of(element(HearingBooking.builder()
+                    .startDate(time.now())
+                    .build())))
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
     }
 
     @Nested
@@ -288,6 +301,19 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
                 .hearingDetails(getFutureAndPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingPastHearingWithCurrentHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .hearingDetails(List.of(element(HearingBooking.builder()
+                    .startDate(time.now())
+                    .build())))
                 .build();
 
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
