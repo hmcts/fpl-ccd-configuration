@@ -28,87 +28,266 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
 
     private static final String ERROR_MESSAGE = "There are no relevant hearings to change.";
 
-    @Nested
-    class EditingHearings {
-        @Test
-        void shouldReturnAnErrorWhenEditingAHearingButNoPastHearingsAreAvailable() {
-            CaseData caseData = CaseData.builder().hearingOption(EDIT_PAST_HEARING).build();
-            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
 
+    HearingBooking getTomorrowHearingBooking() {
+        return HearingBooking.builder()
+            .startDate(time.now().plusDays(1))
+            .build();
+    }
+
+    HearingBooking getYesterdayHearingBooking() {
+        return HearingBooking.builder()
+            .startDate(time.now().minusDays(1))
+            .build();
+    }
+
+    List<Element<HearingBooking>> getFutureHearings() {
+        return List.of(
+            element(getTomorrowHearingBooking())
+        );
+    }
+
+    List<Element<HearingBooking>> getPastHearings() {
+        return List.of(
+            element(getYesterdayHearingBooking())
+        );
+    }
+
+    List<Element<HearingBooking>> getFutureAndPastHearings() {
+        return List.of(
+            element(getYesterdayHearingBooking()),
+            element(getTomorrowHearingBooking())
+        );
+    }
+
+    @Nested
+    class EditFutureHearings {
+
+        @Test
+        void shouldReturnAnErrorWhenEditingFutureHearingButHearingsAreNotAvailable() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
             assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingFutureHearingWithPastHearingAvailable() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .hearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingFutureHearingButHearingsAreNotAvailableHavingCancelledFutureHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .cancelledHearingDetails(getFutureHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingFutureHearingWithPastHearingAndCancelledFutureHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .cancelledHearingDetails(getFutureHearings())
+                .hearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingFutureHearingButHearingsAreNotAvailableHavingCancelledPastHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .cancelledHearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingFutureHearingWithPastHearingsAndCancelledPastHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .cancelledHearingDetails(getPastHearings())
+                .hearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingsAvailable() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .hearingDetails(getFutureHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingsAvailableHavingCancelledFutureHearing()
+        {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .cancelledHearingDetails(getFutureHearings())
+                .hearingDetails(getFutureHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingsAvailableHavingCancelledPastHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .cancelledHearingDetails(getPastHearings())
+                .hearingDetails(getFutureHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingFutureHearingWithPastAndFutureHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_FUTURE_HEARING)
+                .hearingDetails(getFutureAndPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+    }
+
+    @Nested
+    class EditingPastHearings {
+        @Test
+        void shouldReturnAnErrorWhenEditingPastHearingButHearingsAreNotAvailable() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingPastHearingWithPastHearingAvailable() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .hearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingPastHearingButHearingsAreNotAvailableHavingCancelledFutureHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .cancelledHearingDetails(getFutureHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingPastHearingButHearingsWithPastHearingAndCancelledFutureHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .cancelledHearingDetails(getFutureHearings())
+                .hearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenEditingPastHearingButHearingsAreNotAvailableHavingCancelledPastHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .cancelledHearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
+        }
+
+
+        @Test
+        void shouldNotReturnAnErrorWhenEditingPastHearingWithPastHearingsAndCancelledPastHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .cancelledHearingDetails(getPastHearings())
+                .hearingDetails(getPastHearings())
+                .build();
+
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+            assertThat(validationErrors).isEmpty();
         }
 
         @Test
         void shouldReturnAnErrorWhenEditingPastHearingButOnlyFutureHearingsAvailable() {
-            List<Element<HearingBooking>> pastHearings = List.of(
-                element(HearingBooking.builder()
-                    .startDate(time.now().plusDays(1))
-                    .build())
-            );
-
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
-                .hearingDetails(pastHearings)
+                .hearingDetails(getFutureHearings())
                 .build();
 
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
-
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
         @Test
-        void shouldReturnAnErrorWhenEditingAHearingButNoHearingsAreAvailable() {
-            CaseData caseData = CaseData.builder().hearingOption(EDIT_FUTURE_HEARING).build();
-            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
+        void shouldReturnAnErrorWhenEditingPastHearingButOnlyFutureHearingsAvailableHavingCancelledFutureHearing() {
+            CaseData caseData = CaseData.builder()
+                .hearingOption(EDIT_PAST_HEARING)
+                .cancelledHearingDetails(getFutureHearings())
+                .hearingDetails(getFutureHearings())
+                .build();
 
+            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
         @Test
-        void shouldNotReturnAnErrorWhenEditingAHearingWithFutureHearingsAvailable() {
-            List<Element<HearingBooking>> futureHearings = List.of(
-                element(HearingBooking.builder()
-                    .startDate(time.now().plusDays(2))
-                    .build())
-            );
-
-            CaseData caseData = CaseData.builder()
-                .hearingOption(EDIT_FUTURE_HEARING)
-                .hearingDetails(futureHearings)
-                .build();
-
-            List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
-            assertThat(validationErrors).isEmpty();
-        }
-
-        @Test
-        void shouldNotReturnAnErrorWhenEditingAHearingWithPastHearingsAvailable() {
-            List<Element<HearingBooking>> pastHearings = List.of(
-                element(HearingBooking.builder()
-                    .startDate(time.now().minusDays(2))
-                    .build())
-                );
-
+        void shouldReturnAnErrorWhenEditingPastHearingButOnlyFutureHearingsAvailableHavingCancelledPastHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
-                .hearingDetails(pastHearings)
+                .cancelledHearingDetails(getPastHearings())
+                .hearingDetails(getFutureHearings())
                 .build();
 
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
-            assertThat(validationErrors).isEmpty();
+            assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
         @Test
-        void shouldNotReturnAnErrorWhenEditingAHearingWithCurrentHearingsAvailable() {
-            List<Element<HearingBooking>> futureHearings = List.of(
-                element(HearingBooking.builder()
-                    .startDate(time.now())
-                    .build())
-            );
-
+        void shouldNotReturnAnErrorWhenEditingPastHearingWithPastAndFutureHearing() {
             CaseData caseData = CaseData.builder()
-                .hearingOption(EDIT_FUTURE_HEARING)
-                .hearingDetails(futureHearings)
+                .hearingOption(EDIT_PAST_HEARING)
+                .hearingDetails(getFutureAndPastHearings())
                 .build();
 
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
