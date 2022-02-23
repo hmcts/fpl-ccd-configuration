@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.validation.validators;
 
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -8,9 +11,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
-
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
 
 public class IsValidHearingEditValidator implements ConstraintValidator<IsValidHearingEdit, CaseData> {
     @Override
