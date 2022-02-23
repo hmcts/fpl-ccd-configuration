@@ -39,7 +39,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
         }
 
         @Test
-        void shouldReturnAnErrorWhenEditingAHearingButNoPastHearingsAreAvailable2() {
+        void shouldReturnAnErrorWhenEditingPastHearingButOnlyFutureHearingsAvailable() {
             List<Element<HearingBooking>> pastHearings = List.of(
                 element(HearingBooking.builder()
                     .startDate(time.now().plusDays(1))
