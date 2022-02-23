@@ -142,8 +142,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
         }
 
         @Test
-        void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingsAvailableHavingCancelledFutureHearing()
-        {
+        void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingAvailableHavingCancelledFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
                 .cancelledHearingDetails(getFutureHearings())
