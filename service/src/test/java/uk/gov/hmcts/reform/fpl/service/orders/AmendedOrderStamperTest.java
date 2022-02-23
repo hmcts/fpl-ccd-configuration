@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import uk.gov.hmcts.reform.fpl.exceptions.EncryptedPdfUploadedException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendedOrderStamper;
@@ -18,9 +19,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith({TestLogsExtension.class})
 class AmendedOrderStamperTest {
@@ -73,5 +76,33 @@ class AmendedOrderStamperTest {
         assertThatThrownBy(() -> underTest.amendDocument(inputPDF)).isInstanceOf(UncheckedIOException.class);
 
         assertThat(logs.getErrors()).isEqualTo(List.of("Could not add amendment text to " + inputPDF));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsPasswordProtectedPdf() {
+        final String fileName = "test.pdf";
+
+        final byte[] inputDocumentBinaries = readBytes("documents/document-password-protected.pdf");
+        final DocumentReference inputDocumentReference = testDocumentReference(fileName);
+
+        when(downloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+
+        assertThrows(EncryptedPdfUploadedException.class, () ->
+            underTest.amendDocument(inputDocumentReference));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsKeyEncryptedPdf() {
+        final String fileName = "test.pdf";
+
+        final byte[] inputDocumentBinaries = readBytes("documents/document-secured_256bitaes.pdf");
+        final DocumentReference inputDocumentReference = testDocumentReference(fileName);
+
+        when(downloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+
+        assertThrows(EncryptedPdfUploadedException.class, () ->
+            underTest.amendDocument(inputDocumentReference));
     }
 }
