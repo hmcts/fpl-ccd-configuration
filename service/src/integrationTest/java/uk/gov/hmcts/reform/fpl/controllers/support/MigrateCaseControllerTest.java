@@ -47,6 +47,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @Nested
     class Dfpl82 {
         private final String migrationId = "DFPL-82";
+        private final String rollBackMigrationId = "DFPL-82-rollback";
         private static final String CONFIDENTIAL = "CONFIDENTIAL";
 
         private CourtBundle createCourtBundle(String hearing, String fileName, String fileUrl, String binaryUrl) {
@@ -63,14 +64,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldPerformMigration() {
-            List<CourtBundle> courtBundles = List.of(
-                createCourtBundle("hearing 1",
-                    "doc1", "url", "binaryUrl"),
-                createCourtBundle("hearing 2",
-                    "doc2", "url2", "binaryUrl2"),
-                createCourtBundle("hearing 1",
-                    "doc3", "url3", "binaryUrl3")
-            );
+            CourtBundle courtBundle1 = createCourtBundle("hearing 1",
+                "doc1", "url", "binaryUrl");
+            CourtBundle courtBundle2 = createCourtBundle("hearing 1",
+                "doc3", "url3", "binaryUrl3");
+            CourtBundle courtBundle3 = createCourtBundle("hearing 2",
+                "doc2", "url2", "binaryUrl2");
+
+            List<CourtBundle> courtBundles = List.of(courtBundle1, courtBundle2, courtBundle3);
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
@@ -83,13 +84,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
 
             CaseData responseData = extractCaseData(response);
-
-            CourtBundle courtBundle1 = createCourtBundle("hearing 1",
-                "doc1", "url", "binaryUrl");
-            CourtBundle courtBundle2 = createCourtBundle("hearing 1",
-                "doc3", "url3", "binaryUrl3");
-            CourtBundle courtBundle3 = createCourtBundle("hearing 2",
-                "doc2", "url2", "binaryUrl2");
 
             assertThat(responseData.getCourtBundleList()).isNull();
             assertThat(responseData.getCourtBundleListV2())
@@ -105,8 +99,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                         .courtBundle(wrapElements(List.of(courtBundle3)))
                         .courtBundleNC(wrapElements(List.of(courtBundle3)))
                         .build()
-
                 );
+
+            // now roll back the migration
+            AboutToStartOrSubmitCallbackResponse rollBackResponse = postAboutToSubmitEvent(
+                buildCaseDetails(responseData, rollBackMigrationId)
+            );
+
+            CaseData rollbackResponseData = extractCaseData(rollBackResponse);
+            assertThat(rollbackResponseData.getCourtBundleListV2()).isEmpty(); // default value of courtBundleListV2 is empty
+            assertThat(rollbackResponseData.getCourtBundleList().equals(List.of(courtBundle1, courtBundle2, courtBundle3)));
         }
 
         @Test

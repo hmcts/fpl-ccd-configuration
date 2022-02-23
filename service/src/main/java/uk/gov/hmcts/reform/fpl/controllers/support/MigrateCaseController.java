@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,11 +32,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
 import static java.util.List.of;
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.*;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -57,7 +56,8 @@ public class MigrateCaseController extends CallbackController {
     private final DocumentListService documentListService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-465", this::run465,
-        "DFPL-82", this::run82
+        "DFPL-82", this::run82,
+        "DFPL-82-rollback", this::run82Rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -115,6 +115,30 @@ public class MigrateCaseController extends CallbackController {
                 caseId, caseData.getState().getValue());
         }
     }
+
+    private void run82Rollback(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        List<Element<HearingCourtBundle>> newCourtBundles = caseData.getCourtBundleListV2();
+
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        if (newCourtBundles != null) {
+            log.info("Migration {id = DFPL-82-Rollback, case reference = {}} courtbundles start", caseId);
+            List<Element<CourtBundle>> courtBundles = newCourtBundles.stream()
+                .map(Element::getValue)
+                .map(HearingCourtBundle::getCourtBundle)
+                .flatMap(Collection::stream)
+                .collect(toList());
+
+            caseDetailsData.remove("courtBundleListV2");
+            caseDetailsData.put("courtBundleList", courtBundles);
+            log.info("Migration {id = DFPL-82-rollback, case reference = {}} courtbundles finish", caseId);
+        } else {
+            log.warn("Migration {id = DFPL-82-rollback, case reference = {}, case state = {}} doesn't have hearing court bundles ",
+                caseId, caseData.getState().getValue());
+        }
+    }
+
 
     private void run465(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
