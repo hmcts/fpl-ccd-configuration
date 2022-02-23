@@ -15,13 +15,6 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-   			file name: spring-security-core-5.4.7.jar
-   		]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
-    <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
    file name: tomcat-embed-core-9.0.54.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
