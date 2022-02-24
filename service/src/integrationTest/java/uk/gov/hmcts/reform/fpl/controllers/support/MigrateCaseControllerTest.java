@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -47,8 +46,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @Nested
     class Dfpl82 {
         private final String migrationId = "DFPL-82";
-        private final String rollBackMigrationId = "DFPL-82-rollback";
-        private static final String CONFIDENTIAL = "CONFIDENTIAL";
 
         private CourtBundle createCourtBundle(String hearing, String fileName, String fileUrl, String binaryUrl) {
             return CourtBundle.builder()
@@ -102,13 +99,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 );
 
             // now roll back the migration
+            String rollBackMigrationId = "DFPL-82-rollback";
             AboutToStartOrSubmitCallbackResponse rollBackResponse = postAboutToSubmitEvent(
                 buildCaseDetails(responseData, rollBackMigrationId)
             );
 
             CaseData rollbackResponseData = extractCaseData(rollBackResponse);
             assertThat(rollbackResponseData.getCourtBundleListV2()).isEmpty(); // default value of courtBundleListV2 is empty
-            assertThat(rollbackResponseData.getCourtBundleList().equals(List.of(courtBundle1, courtBundle2, courtBundle3)));
+            assertThat(unwrapElements(rollbackResponseData.getCourtBundleList())).containsExactlyInAnyOrder(courtBundle1, courtBundle2, courtBundle3);
         }
 
         @Test
@@ -127,87 +125,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(responseData.getCourtBundleList()).isNull();
             assertThat(responseData.getCourtBundleListV2()).isEmpty();
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl465 {
-        private final String migrationId = "DFPL-465";
-        private final long validCaseId = 1639997900244470L;
-        private final long invalidCaseId = 1626258358022000L;
-
-        @Test
-        void shouldPerformMigrationWhenNameMatches() {
-            CaseData caseData = CaseData.builder()
-                    .id(validCaseId)
-                    .state(State.SUBMITTED)
-                    .legalRepresentatives(
-                        wrapElements(
-                            LegalRepresentative.builder()
-                                    .fullName("Stacey Halbert")
-                                    .email("first@gamil.com")
-                                    .build(),
-                            LegalRepresentative.builder()
-                                    .fullName("Della Phillips")
-                                    .email("second@gamil.com")
-                                    .build(),
-                            LegalRepresentative.builder()
-                                    .fullName("Natalie Beardsmore")
-                                    .email("first@gamil.com")
-                                    .build(),
-                            LegalRepresentative.builder()
-                                    .fullName("Donna Bird")
-                                    .email("second@gamil.com")
-                                    .build(),
-                            LegalRepresentative.builder()
-                                    .fullName("First User")
-                                    .email("first@gamil.com")
-                                    .build(),
-                            LegalRepresentative.builder()
-                                    .fullName("Second User")
-                                    .email("second@gamil.com")
-                                    .build()
-                        )
-                    )
-                    .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                    buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getLegalRepresentatives()).hasSize(2);
-            List<LegalRepresentative> legalRepresentatives = unwrapElements(responseData.getLegalRepresentatives());
-
-            assertThat(legalRepresentatives).extracting("fullName")
-                    .contains("First User", "Second User");
-        }
-
-        @Test
-        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .state(State.SUBMITTED)
-                    .legalRepresentatives(
-                        wrapElements(
-                            LegalRepresentative.builder()
-                                    .fullName("First User")
-                                    .email("first@gamil.com")
-                                    .build(),
-                            LegalRepresentative.builder()
-                                    .fullName("Second User")
-                                    .email("second@gamil.com")
-                                    .build()
-                        )
-                    )
-                    .build();
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-465, case reference = 1626258358022000},"
-                    + " expected case id 1639997900244470");
         }
     }
 
