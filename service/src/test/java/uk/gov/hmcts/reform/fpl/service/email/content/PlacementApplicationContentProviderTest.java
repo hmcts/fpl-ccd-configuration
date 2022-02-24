@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.notify.PlacementNotifyData;
 
 import java.util.Map;
@@ -30,10 +29,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
 
     private final Placement placement = Placement.builder()
         .childName("Alex Brown")
-        .build();
-
-    private final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-        .notice(testDocument)
+        .placementNotice(testDocument)
         .build();
 
     @Test
@@ -71,7 +67,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
 
         when(documentDownloadService.downloadDocument(testDocument.getBinaryUrl())).thenReturn(result);
 
-        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement, notice);
+        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement);
 
         final PlacementNotifyData expected = PlacementNotifyData.builder()
             .childName(placement.getChildName())
@@ -92,11 +88,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
 
         when(documentDownloadService.downloadDocument(testDocument.getBinaryUrl())).thenReturn(result);
 
-        final PlacementNoticeDocument notice = PlacementNoticeDocument.builder()
-            .notice(testDocument)
-            .build();
-
-        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement, notice);
+        final PlacementNotifyData actual = underTest.getNoticeChangedCafcassData(caseData, placement);
 
         final PlacementNotifyData expected = PlacementNotifyData.builder()
             .childName(placement.getChildName())

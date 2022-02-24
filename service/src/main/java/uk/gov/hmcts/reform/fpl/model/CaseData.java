@@ -1125,6 +1125,8 @@ public class CaseData {
     @Builder.Default
     private final PlacementEventData placementEventData = PlacementEventData.builder().build();
 
+    private final DynamicList placementList;
+
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
 

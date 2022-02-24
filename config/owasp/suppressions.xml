@@ -8,37 +8,58 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: tomcat-embed-core-9.0.52.jar
+   file name: spring-core-5.3.12.jar
+   ]]></notes>
+    <sha1>662e6536968246af9baa84fbac2d3eb56a04fda9</sha1>
+    <cve>CVE-2021-22060</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   			file name: spring-security-core-5.4.7.jar
+   		]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
+    <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-embed-core-9.0.54.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-    <cve>CVE-2020-0822</cve>
+    <cve>CVE-2022-23181</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: tomcat-embed-websocket-9.0.52.jar
+   file name: tomcat-embed-websocket-9.0.54.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-    <cve>CVE-2020-0822</cve>
+    <cve>CVE-2022-23181</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: tomcat-embed-core-9.0.52.jar
+   file name: log4j-api-2.16.0.jar
    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-    <cve>CVE-2021-42340</cve>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-api@.*$</packageUrl>
+    <cpe>cpe:/a:apache:log4j</cpe>
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: tomcat-embed-websocket-9.0.52.jar
+   file name: log4j-to-slf4j-2.16.0.jar
    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-    <cve>CVE-2021-42340</cve>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-to\-slf4j@.*$</packageUrl>
+    <cpe>cpe:/a:apache:log4j</cpe>
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: spring-core-5.3.9.jar
+   file name: logback-classic-1.2.6.jar
    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
-    <cve>CVE-2021-22096</cve>
+    <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-classic@.*$</packageUrl>
+    <cpe>cpe:/a:qos:logback</cpe>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: logback-core-1.2.6.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-core@.*$</packageUrl>
+    <cve>CVE-2021-42550</cve>
   </suppress>
 </suppressions>

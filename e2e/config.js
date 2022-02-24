@@ -156,6 +156,7 @@ module.exports = {
     addGatekeepingOrder: 'Add the gatekeeping order',
     createOrder: 'Create or upload an order',
     placement: 'Placement',
+    placementHearing: 'Notice of Placement - Hearing',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
     bulkScan: 'Attach scanned docs',
     addNote: 'Add a case note',
