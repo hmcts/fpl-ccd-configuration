@@ -105,8 +105,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             );
 
             CaseData rollbackResponseData = extractCaseData(rollBackResponse);
-            assertThat(rollbackResponseData.getCourtBundleListV2()).isEmpty(); // default value of courtBundleListV2 is empty
-            assertThat(unwrapElements(rollbackResponseData.getCourtBundleList())).containsExactlyInAnyOrder(courtBundle1, courtBundle2, courtBundle3);
+            assertThat(rollbackResponseData.getCourtBundleListV2()).isEmpty();
+            assertThat(unwrapElements(rollbackResponseData.getCourtBundleList()))
+                .containsExactlyInAnyOrder(courtBundle1, courtBundle2, courtBundle3);
         }
 
         @Test

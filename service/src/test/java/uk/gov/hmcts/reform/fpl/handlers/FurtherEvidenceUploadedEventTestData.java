@@ -197,7 +197,8 @@ public class FurtherEvidenceUploadedEventTestData {
             ).build();
     }
 
-    public static List<Element<HearingCourtBundle>> createCourtBundleList(int count, String hearing, String uploadedBy) {
+    public static List<Element<HearingCourtBundle>> createCourtBundleList(int count, String hearing,
+                                                                          String uploadedBy) {
         return IntStream.rangeClosed(1, count)
             .boxed()
             .map(value -> {

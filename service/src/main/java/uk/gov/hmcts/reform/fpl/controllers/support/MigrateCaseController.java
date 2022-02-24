@@ -12,16 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
-import uk.gov.hmcts.reform.fpl.service.TaskListService;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
-import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
-import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,8 +23,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-import static java.util.List.of;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 @Api
 @RestController
@@ -118,7 +113,9 @@ public class MigrateCaseController extends CallbackController {
             caseDetailsData.put("courtBundleList", courtBundles);
             log.info("Migration {id = DFPL-82-rollback, case reference = {}} courtbundles finish", caseId);
         } else {
-            log.warn("Migration {id = DFPL-82-rollback, case reference = {}, case state = {}} doesn't have hearing court bundles ",
+            log.warn("Migration {id = DFPL-82-rollback, case reference = {}, case state = {}} doesn't have hearing"
+                    +
+                    " court bundles ",
                 caseId, caseData.getState().getValue());
         }
     }
