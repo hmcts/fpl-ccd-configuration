@@ -204,7 +204,6 @@ Scenario('HMCTS admin transfer case to new local authority', async ({I, caseView
 
 Scenario('HMCTS admin transfer case to secondary local authority @fix-flaky-Feb', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
   await setupScenario(I);
-
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectAddLocalAuthority();
   manageLocalAuthoritiesEventPage.selectLocalAuthority(swanseaLocalAuthority.name);
@@ -218,7 +217,9 @@ Scenario('HMCTS admin transfer case to secondary local authority @fix-flaky-Feb'
 
   manageLocalAuthoritiesEventPage.selectTransferLocalAuthority();
   await I.goToNextPage();
-
+  await I.goToPreviousPage();
+  manageLocalAuthoritiesEventPage.selectTransferLocalAuthority();
+  await I.goToNextPage();
   manageLocalAuthoritiesEventPage.selectSharedLocalAuthorityToTransfer();
   I.see(`The case will be transferred to ${swanseaLocalAuthority.name}`);
   await I.goToNextPage();
