@@ -27,8 +27,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @OverrideAutoConfiguration(enabled = true)
 @WebMvcTest(ManageHearingsController.class)
 class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractCallbackTest {
-    private final static LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
-    private final static LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
+    private static final LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
+    private static final LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
 
     ManageHearingsControllerValidateHearingDatesMidEventTest() {
         super("manage-hearings");
@@ -296,6 +296,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
             .build();
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
 
-        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder("Hearing length, in days should be a whole number");
+        assertThat(callbackResponse.getErrors())
+            .containsExactlyInAnyOrder("Hearing length, in days should be a whole number");
     }
 }

@@ -128,7 +128,9 @@ class PastHearingDatesValidatorServiceTest {
             .build();
         final List<String> errorList = service.validateHearingIntegers(caseDetails);
 
-        assertThat(errorList).containsExactlyInAnyOrder("Hearing length, in hours should be a whole number", "Hearing length, in minutes should be a whole number");
+        assertThat(errorList)
+            .containsExactlyInAnyOrder("Hearing length, in hours should be a whole number",
+                                       "Hearing length, in minutes should be a whole number");
     }
 
     @ParameterizedTest
