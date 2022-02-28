@@ -105,9 +105,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(FURTHER_EVIDENCE_DOCUMENTS)
-            .hasHearings("Yes")
-            .hasC2s("No")
-            .hasPlacementNotices("No")
+            .hasHearings(YES.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -127,9 +127,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
-            .hasPlacementNotices("No")
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -165,9 +165,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(COURT_BUNDLE)
-            .hasHearings("Yes")
-            .hasC2s("No")
-            .hasPlacementNotices("No")
+            .hasHearings(YES.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -200,9 +200,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings("No")
-            .hasC2s("Yes")
-            .hasPlacementNotices("No")
+            .hasHearings(NO.getValue())
+            .hasC2s(YES.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 

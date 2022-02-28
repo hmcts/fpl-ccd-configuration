@@ -455,9 +455,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
     @Test
     void shouldNotOverrideExistingCafcassRespondentNotices() {
-        // TODO - add test similar to solicitor where cafcass + respondent notices are already present
-        //  so we don't override them when we just add LA ones
-
         PlacementNoticeDocument laResponseNew = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
             .build();
