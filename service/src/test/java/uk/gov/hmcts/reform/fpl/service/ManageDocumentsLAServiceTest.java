@@ -129,8 +129,10 @@ class ManageDocumentsLAServiceTest {
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
-            .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
-            .containsExactly(null, null, expectedManageDocument);
+            .extracting(MANAGE_DOCUMENT_LA_KEY)
+            .isEqualTo(expectedManageDocument);
+
+        assertThat(listAndLabel).doesNotContainKeys(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY);
     }
 
     @Test
@@ -144,8 +146,10 @@ class ManageDocumentsLAServiceTest {
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
-            .extracting(RESPONDENTS_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
-            .containsExactly(null, expectedManageDocument);
+            .extracting(MANAGE_DOCUMENT_LA_KEY)
+            .isEqualTo(expectedManageDocument);
+
+        assertThat(listAndLabel).doesNotContainKey(RESPONDENTS_LIST_KEY);
     }
 
     @Test
