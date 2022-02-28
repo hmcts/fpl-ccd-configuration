@@ -231,9 +231,13 @@ public class ManageDocumentsController extends CallbackController {
                 if (isSolicitor) {
                     PlacementEventData eventData = documentService.updatePlacementNoticesSolicitor(caseData);
                     caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
+                    caseDetailsMap.putIfNotEmpty("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
+                    caseDetailsMap.putIfNotEmpty("placementsNonConfidentialNotices", eventData.getPlacementsNonConfidential(true));
                 } else {
                     PlacementEventData eventData = documentService.updatePlacementNoticesAdmin(caseData);
                     caseDetailsMap.putIfNotEmpty("placements", eventData.getPlacements());
+                    caseDetailsMap.putIfNotEmpty("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
+                    caseDetailsMap.putIfNotEmpty("placementsNonConfidentialNotices", eventData.getPlacementsNonConfidential(true));
                 }
                 break;
         }

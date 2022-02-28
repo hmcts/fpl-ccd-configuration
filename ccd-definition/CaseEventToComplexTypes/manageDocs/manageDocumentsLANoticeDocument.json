@@ -4,17 +4,6 @@
     "ID": "PlacementNoticeDocument",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "placementNoticeResponses",
-    "ListElementCode": "recipientName",
-    "EventElementLabel": "Respondent's name",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "type = \"RESPONDENT\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "PlacementNoticeDocument",
-    "CaseEventID": "manageDocumentsLA",
-    "CaseFieldID": "placementNoticeResponses",
     "ListElementCode": "response",
     "EventElementLabel": "Notice of placement response",
     "FieldDisplayOrder": 3,
