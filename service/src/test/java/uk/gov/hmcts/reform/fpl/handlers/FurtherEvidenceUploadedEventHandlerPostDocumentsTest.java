@@ -191,7 +191,7 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
         List<HearingCourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleListV2());
         Set<DocumentReference> documentReferences = courtBundles.stream()
-            .flatMap(hearingCourtBunlde -> unwrapElements(hearingCourtBunlde.getCourtBundle()).stream())
+            .flatMap(hearingCourtBundle -> unwrapElements(hearingCourtBundle.getCourtBundle()).stream())
             .map(CourtBundle::getDocument)
             .collect(toSet());
 
