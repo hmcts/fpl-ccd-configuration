@@ -26,7 +26,6 @@ public class PaymentClient {
     @Retryable(value = {RetryablePaymentException.class}, label = "payment api call")
     public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
-            log.info("CreditAccountPaymentRequest: {}", creditAccountPaymentRequest);
             paymentApi.createCreditAccountPayment(requestData.authorisation(),
                 authTokenGenerator.generate(),
                 creditAccountPaymentRequest);
