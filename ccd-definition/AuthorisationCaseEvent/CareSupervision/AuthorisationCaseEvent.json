@@ -974,7 +974,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LABARRISTER]",
-          "[BARRISTER]"
+          "[BARRISTER]",
+          "[LASHARED]"
         ],
         "CRUD": "CR"
       },
