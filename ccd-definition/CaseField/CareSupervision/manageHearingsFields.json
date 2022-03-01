@@ -241,6 +241,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasPreviousHearingVenue",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Used for show/hide logic for unexpectedly missing previous hearing venue regarding NPE found in DFPL-495"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "proceedingType",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ProceedingType",
