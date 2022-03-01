@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -65,7 +66,7 @@ public class MigrateCaseController extends CallbackController {
         List<Element<CourtBundle>> oldCourBundles = caseData.getCourtBundleList();
 
         Map<String, Object> caseDetailsData = caseDetails.getData();
-        if (oldCourBundles != null) {
+        if (isNotEmpty(oldCourBundles)) {
             log.info("Migration {id = DFPL-82, case reference = {}} courtbundles start", caseId);
             Map<String, List<Element<CourtBundle>>> courtBundles = oldCourBundles.stream()
                 .map(Element::getValue)
@@ -90,7 +91,7 @@ public class MigrateCaseController extends CallbackController {
             caseDetailsData.put("courtBundleListV2", hearingBundles);
             log.info("Migration {id = DFPL-82, case reference = {}} courtbundles finish", caseId);
         } else {
-            log.warn("Migration {id = DFPL-82, case reference = {}, case state = {}} doesn't have court bundles ",
+            log.warn("Migration {id = DFPL-82, case reference = {}, case staøte = {}} doesn't have court bundles ",
                 caseId, caseData.getState().getValue());
         }
     }
@@ -101,7 +102,7 @@ public class MigrateCaseController extends CallbackController {
         List<Element<HearingCourtBundle>> newCourtBundles = caseData.getCourtBundleListV2();
 
         Map<String, Object> caseDetailsData = caseDetails.getData();
-        if (newCourtBundles != null) {
+        if (isNotEmpty(newCourtBundles)) {
             log.info("Migration {id = DFPL-82-Rollback, case reference = {}} courtbundles start", caseId);
             List<Element<CourtBundle>> courtBundles = newCourtBundles.stream()
                 .map(Element::getValue)
