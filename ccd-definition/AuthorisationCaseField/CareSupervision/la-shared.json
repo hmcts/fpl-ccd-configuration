@@ -1172,6 +1172,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "legalRepresentatives",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD",
+    "Comment": "Requires idam role otherwise cannot add to"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageLegalRepresentativesLink",
     "UserRole": "[LASHARED]",
     "CRUD": "R"

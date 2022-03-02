@@ -694,15 +694,10 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "[LAMANAGING]",
           "[LASHARED]"
         ],
-        "CRUD": "R"
+        "CRUD": "CR"
       }
     ]
   },
