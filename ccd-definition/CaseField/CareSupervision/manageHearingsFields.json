@@ -246,7 +246,7 @@
     "Label": " ",
     "SecurityClassification": "Public",
     "Searchable": "N",
-    "Comment": "Used for show/hide logic for unexpectedly missing previous hearing venue regarding NPE found in DFPL-495"
+    "Comment": "Used for show/hide logic surrounding venue+previousVenue dedicated for unexpected missing previous hearings venue in previous hearings."
   },
   {
     "LiveFrom": "01/01/2017",
