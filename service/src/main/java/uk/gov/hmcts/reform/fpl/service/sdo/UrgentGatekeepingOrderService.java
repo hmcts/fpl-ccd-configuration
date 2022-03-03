@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class UrgentGatekeepingOrderService {
 
     private final CourtLevelAllocationService allocationService;
     private final DocumentSealingService sealingService;
+    private final CoreCaseDataService coreCaseDataService;
     private final Time time;
 
     public GatekeepingOrderEventData prePopulate(CaseData caseData) {
@@ -60,7 +62,7 @@ public class UrgentGatekeepingOrderService {
         }
 
         final UrgentHearingOrder order = UrgentHearingOrder.builder()
-            .order(sealingService.sealDocument(orderDocument, caseData.getSealType()))
+            .order(orderDocument)
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
             .translationRequirements(eventData.getUrgentGatekeepingTranslationRequirements())
@@ -82,6 +84,22 @@ public class UrgentGatekeepingOrderService {
         }
 
         return templates;
+    }
+
+    public void sealDocumentAfterEventSubmitted(CaseData caseData){
+        Map<String, Object> updates = new HashMap<>();
+
+        final UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
+        final UrgentHearingOrder sealedOrder = UrgentHearingOrder.builder()
+            .order(sealingService.sealDocument(urgentHearingOrder.getUnsealedOrder(), caseData.getSealType()))
+            .unsealedOrder(urgentHearingOrder.getUnsealedOrder())
+            .dateAdded(urgentHearingOrder.getDateAdded())
+            .translationRequirements(urgentHearingOrder.getTranslationRequirements())
+            .allocation(urgentHearingOrder.getAllocation())
+            .build();
+
+        updates.put("urgentHearingOrder", sealedOrder);
+        coreCaseDataService.updateCase(caseData.getId(), updates);
     }
 
     private boolean noPreExistingAllocationDecision(CaseData caseData) {

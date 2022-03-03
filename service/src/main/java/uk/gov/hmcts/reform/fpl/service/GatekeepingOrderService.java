@@ -24,7 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -32,10 +34,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -69,6 +68,7 @@ public class GatekeepingOrderService {
     private final DocumentSealingService sealingService;
     private final OrdersLookupService ordersLookupService;
     private final GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
+    private final CoreCaseDataService coreCaseDataService;
 
     public GatekeepingOrderSealDecision buildSealDecision(CaseData caseData) {
         DocumentReference order = getOrderDocument(caseData);
@@ -86,9 +86,7 @@ public class GatekeepingOrderService {
 
         final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData.getGatekeepingOrderSealDecision();
 
-        DocumentReference draftDocument = decision.getDraftDocument();
-        DocumentReference document = decision.isSealed()
-            ? sealingService.sealDocument(draftDocument, caseData.getSealType()) : draftDocument;
+        DocumentReference document = decision.getDraftDocument();
 
         LanguageTranslationRequirement translationRequirements =
             gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
@@ -96,7 +94,6 @@ public class GatekeepingOrderService {
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
             .orderDoc(document)
-            .lastUploadedOrder(decision.isSealed() ? draftDocument : null)
             .translationRequirements(translationRequirements)
             .build();
     }
@@ -272,6 +269,25 @@ public class GatekeepingOrderService {
         eventData.setStandardDirections(wrapElements(standardDirections));
 
         return caseData;
+    }
+
+    public void sealDocumentAfterEventSubmitted(CaseData caseData){
+        if(caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision().isSealed()) {
+            Map<String, Object> updates = new HashMap<>();
+            StandardDirectionOrder order = caseData.getStandardDirectionOrder();
+            DocumentReference orderDoc = order.getOrderDoc();
+
+            StandardDirectionOrder sealedOrder = buildBaseGatekeepingOrder(caseData).toBuilder()
+                .dateOfUpload(order.getDateOfUpload())
+                .uploader(order.getUploader())
+                .orderDoc(sealingService.sealDocument(orderDoc, caseData.getSealType()))
+                .lastUploadedOrder(orderDoc)
+                .translationRequirements(order.getTranslationRequirements())
+                .build();
+
+            updates.put("standardDirectionOrder", sealedOrder);
+            coreCaseDataService.updateCase(caseData.getId(), updates);
+        }
     }
 
     private Optional<StandardDirection> getCurrentStandardDirection(DirectionType type, CaseDetails caseDetails) {

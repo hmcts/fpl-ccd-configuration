@@ -216,6 +216,17 @@ public class AddGatekeepingOrderController extends CallbackController {
         CaseData caseData = getCaseData(request);
         CaseData caseDataBefore = getCaseDataBefore(request);
 
+        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+
+        switch (sdoRouter) {
+            case URGENT:
+                urgentOrderService.sealDocumentAfterEventSubmitted(caseData);
+                break;
+            case UPLOAD:
+                orderService.sealDocumentAfterEventSubmitted(caseData);
+                break;
+        }
+
         notificationDecider.buildEventToPublish(caseData, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
