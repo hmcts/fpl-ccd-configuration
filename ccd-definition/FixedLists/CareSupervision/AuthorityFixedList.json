@@ -565,7 +565,7 @@
     "ListElementCode": "HAV",
     "ListElement": "London Borough of Havering",
     "DisplayOrder": 186
-  },  
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
@@ -607,7 +607,7 @@
     "ListElementCode": "NEW",
     "ListElement": "London Borough of Newham",
     "DisplayOrder": 192
-  }, 
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
@@ -905,9 +905,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "RTL",
+    "ListElement": "Rutland County Council",
+    "DisplayOrder": 320
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SAL",
     "ListElement": "Salford City Council",
-    "DisplayOrder": 320
+    "DisplayOrder": 321
   },
   {
     "LiveFrom": "01/01/2017",
