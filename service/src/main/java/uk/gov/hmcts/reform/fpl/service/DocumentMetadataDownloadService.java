@@ -50,7 +50,8 @@ public class DocumentMetadataDownloadService {
                     )
                 );
         } else {
-            uk.gov.hmcts.reform.document.domain.Document document = documentMetadataDownloadClient.getDocumentMetadata(requestData.authorisation(),
+            uk.gov.hmcts.reform.document.domain.Document document = documentMetadataDownloadClient.getDocumentMetadata(
+                requestData.authorisation(),
                 authTokenGenerator.generate(),
                 userRoles,
                 requestData.userId(),

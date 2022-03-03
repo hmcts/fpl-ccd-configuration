@@ -72,7 +72,7 @@ public class SecureDocStoreService {
 
     }
 
-    public Document getDocumentMetadata(final String documentUrlString){
+    public Document getDocumentMetadata(final String documentUrlString) {
         UUID documentId = getDocumentIdFromUrl(documentUrlString);
         return caseDocumentClientApi.getMetadataForDocument(
             requestData.authorisation(),
@@ -81,7 +81,7 @@ public class SecureDocStoreService {
         );
     }
 
-    private UUID getDocumentIdFromUrl(final String documentUrlString){
+    private UUID getDocumentIdFromUrl(final String documentUrlString) {
         String selfHref = documentUrlString.replace("/binary", "");
         UUID documentId = UUID.fromString(selfHref.substring(selfHref.length() - 36));
 

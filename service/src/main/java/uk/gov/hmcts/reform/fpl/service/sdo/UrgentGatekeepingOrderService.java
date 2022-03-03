@@ -86,7 +86,7 @@ public class UrgentGatekeepingOrderService {
         return templates;
     }
 
-    public void sealDocumentAfterEventSubmitted(CaseData caseData){
+    public void sealDocumentAfterEventSubmitted(CaseData caseData) {
         Map<String, Object> updates = new HashMap<>();
 
         final UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();

@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
@@ -271,8 +270,8 @@ public class GatekeepingOrderService {
         return caseData;
     }
 
-    public void sealDocumentAfterEventSubmitted(CaseData caseData){
-        if(caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision().isSealed()) {
+    public void sealDocumentAfterEventSubmitted(CaseData caseData) {
+        if (caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision().isSealed()) {
             Map<String, Object> updates = new HashMap<>();
             StandardDirectionOrder order = caseData.getStandardDirectionOrder();
             DocumentReference orderDoc = order.getOrderDoc();
