@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
@@ -48,6 +49,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +115,9 @@ class GatekeepingOrderServiceTest {
 
     @MockBean
     private GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private GatekeepingOrderService underTest;
@@ -900,7 +905,13 @@ class GatekeepingOrderServiceTest {
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
+            final CaseData caseDataWithOrderAttached = caseData.toBuilder()
+                .standardDirectionOrder(actualOrder)
+                .build();
+            underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
+
             verifyNoInteractions(sealingService);
+            verifyNoInteractions(coreCaseDataService);
         }
 
         @Test
@@ -923,14 +934,31 @@ class GatekeepingOrderServiceTest {
                 .orderStatus(SEALED)
                 .dateOfUpload(time.now().toLocalDate())
                 .uploader(userName)
-                .orderDoc(sealedOrder)
-                .lastUploadedOrder(uploadedOrder)
+                .orderDoc(uploadedOrder)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
+            final CaseData caseDataWithOrderAttached = caseData.toBuilder()
+                .standardDirectionOrder(actualOrder)
+                .build();
+            underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
+
             verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
+
+            final StandardDirectionOrder expectedSealedOrder = StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .dateOfUpload(time.now().toLocalDate())
+                .uploader(userName)
+                .orderDoc(sealedOrder)
+                .lastUploadedOrder(uploadedOrder)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                .build();
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("standardDirectionOrder", expectedSealedOrder);
+
+            verify(coreCaseDataService).updateCase(caseData.getId(), updates);
         }
 
         @Test
@@ -954,15 +982,33 @@ class GatekeepingOrderServiceTest {
                 .orderStatus(SEALED)
                 .dateOfUpload(time.now().toLocalDate())
                 .uploader(userName)
-                .orderDoc(sealedOrder)
-                .lastUploadedOrder(uploadedOrder)
+                .orderDoc(uploadedOrder)
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
+            final CaseData caseDataWithOrderAttached = caseData.toBuilder()
+                .standardDirectionOrder(actualOrder)
+                .build();
+            underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
+
             verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
+
+            final StandardDirectionOrder expectedSealedOrder = StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .dateOfUpload(time.now().toLocalDate())
+                .uploader(userName)
+                .orderDoc(sealedOrder)
+                .lastUploadedOrder(uploadedOrder)
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                .build();
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("standardDirectionOrder", expectedSealedOrder);
+            verify(coreCaseDataService).updateCase(caseData.getId(), updates);
         }
     }
 

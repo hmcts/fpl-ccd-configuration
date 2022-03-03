@@ -37,6 +37,10 @@ class DocumentMetadataDownloadServiceTest {
     private IdamClient idamClient;
     @Mock
     private RequestData requestData;
+    @Mock
+    private SecureDocStoreService secureDocStoreService;
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     private DocumentMetadataDownloadService documentMetadataDownloadService;
 
@@ -56,7 +60,9 @@ class DocumentMetadataDownloadServiceTest {
         documentMetadataDownloadService = new DocumentMetadataDownloadService(authTokenGenerator,
                 documentMetadataDownloadClient,
                 idamClient,
-                requestData);
+                requestData,
+                featureToggleService,
+                secureDocStoreService);
     }
 
     @Test
