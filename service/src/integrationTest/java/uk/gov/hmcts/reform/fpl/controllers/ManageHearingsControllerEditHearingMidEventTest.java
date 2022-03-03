@@ -42,7 +42,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(updatedCaseData.getPreviousHearingVenue()).isEqualTo(PreviousHearingVenue.builder()
             .previousVenue("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH")
             .build());
-        assertThat("Yes".equals(updatedCaseData.getHasPreviousHearingVenue()));
+        assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("Yes");
     }
 
     @Test
@@ -55,7 +55,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
-        assertThat("No".equals(updatedCaseData.getHasPreviousHearingVenue()));
+        assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("No");
     }
 
     @Test
