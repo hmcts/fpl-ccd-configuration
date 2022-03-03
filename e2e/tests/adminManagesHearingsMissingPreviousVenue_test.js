@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const hearingDetails = require('"../fixtures/hearingTypeDetails.js');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 const gatekeepingWithPastHearingDetailsAndMissingVenueId = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndMissingVenueId.json');
