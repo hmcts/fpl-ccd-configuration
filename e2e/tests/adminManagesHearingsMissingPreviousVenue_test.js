@@ -24,6 +24,22 @@ async function setupScenario(I, missingVenueId) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
+Scenario('HMCTS admin is not able to see last court when previous hearings venue exist', async ({I, caseViewPage, manageHearingsEventPage}) => {
+  await setupScenario(I, true);
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  manageHearingsEventPage.selectAddNewHearing();
+  await I.goToNextPage();
+  I.dontSee('Last Court');
+});
+
+Scenario('HMCTS admin is able to see last court when previous hearings venue exist', async ({I, caseViewPage, manageHearingsEventPage}) => {
+  await setupScenario(I, false);
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  manageHearingsEventPage.selectAddNewHearing();
+  await I.goToNextPage();
+  I.see('Last Court');
+});
+
 Scenario('HMCTS admin creates subsequent hearings with previous hearing not having hearing venue', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await setupScenario(I, true);
   hearingStartDate = moment().add(5,'m').toDate();
