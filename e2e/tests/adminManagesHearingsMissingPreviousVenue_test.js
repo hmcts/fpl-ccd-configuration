@@ -1,9 +1,10 @@
 const config = require('../config.js');
-const gatekeepingWithPastHearingDetailsAndMissingVenueId = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndMissingVenueId.json');
-const gatekeepingWithPastHearingDetails = require('../fixtures/caseData/gatekeepingWithPastHearingDetails.json');
-const hearingDetails = require('"../fixtures/hearingTypeDetails');
+const hearingDetails = require('"../fixtures/hearingTypeDetails.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
+const gatekeepingWithPastHearingDetailsAndMissingVenueId = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndMissingVenueId.json');
+const gatekeepingWithPastHearingDetails = require('../fixtures/caseData/gatekeepingWithPastHearingDetails.json');
+
 const api = require('../helpers/api_helper');
 const moment = require('moment');
 
