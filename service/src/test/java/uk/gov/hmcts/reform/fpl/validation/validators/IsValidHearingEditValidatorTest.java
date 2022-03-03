@@ -28,32 +28,31 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
 
     private static final String ERROR_MESSAGE = "There are no relevant hearings to change.";
 
-
-    HearingBooking getTomorrowHearingBooking() {
+    private HearingBooking getTomorrowHearingBooking() {
         return HearingBooking.builder()
             .startDate(time.now().plusDays(1))
             .build();
     }
 
-    HearingBooking getYesterdayHearingBooking() {
+    private HearingBooking getYesterdayHearingBooking() {
         return HearingBooking.builder()
             .startDate(time.now().minusDays(1))
             .build();
     }
 
-    List<Element<HearingBooking>> getFutureHearings() {
+    private List<Element<HearingBooking>> getFutureHearings() {
         return List.of(
             element(getTomorrowHearingBooking())
         );
     }
 
-    List<Element<HearingBooking>> getPastHearings() {
+    private List<Element<HearingBooking>> getPastHearings() {
         return List.of(
             element(getYesterdayHearingBooking())
         );
     }
 
-    List<Element<HearingBooking>> getFutureAndPastHearings() {
+    private List<Element<HearingBooking>> getFutureAndPastHearings() {
         return List.of(
             element(getYesterdayHearingBooking()),
             element(getTomorrowHearingBooking())
