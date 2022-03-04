@@ -296,7 +296,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         AssertionsForClassTypes.assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
             UrgentHearingOrder.builder()
                 .allocation("Section 9 circuit judge")
-                .order(sealedUrgentReference)
+                .order(urgentReference)
                 .unsealedOrder(urgentReference)
                 .dateAdded(dateNow())
                 .translationRequirements(translationRequirements)
@@ -306,17 +306,14 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
 
     @Test
     void shouldUpdateStateAndOrderDocWhenSDOIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings() {
-        DocumentReference sealedDocument = DocumentReference.builder().filename("sealed.pdf").build();
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
 
         givenCurrentUserWithName("adam");
-        given(sealingService.sealDocument(document, SealType.ENGLISH)).willReturn(sealedDocument);
 
         CaseData responseCaseData = extractCaseData(
             postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, SEALED))
         );
 
-        assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder()).isEqualTo(document);
         assertThat(responseCaseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
