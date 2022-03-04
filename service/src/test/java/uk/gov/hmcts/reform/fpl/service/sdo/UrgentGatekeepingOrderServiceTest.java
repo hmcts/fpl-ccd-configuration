@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
@@ -155,7 +157,7 @@ class UrgentGatekeepingOrderServiceTest {
     }
 
     @Test
-    void sealDocumentAfterEventSubmitted(){
+    void sealDocumentAfterEventSubmitted() {
         UrgentHearingOrder order = UrgentHearingOrder.builder()
             .order(UPLOADED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
