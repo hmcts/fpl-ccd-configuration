@@ -256,7 +256,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         StandardDirectionOrder order = StandardDirectionOrder.builder().build();
         switch (sdoRouter) {
             case URGENT:
-                caseDetails.getData().putAll(urgentOrderService.finalise(caseData));
+                caseDetails.getData().putAll(urgentOrderService.finaliseAndSeal(caseData));
                 break;
             case SERVICE:
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(

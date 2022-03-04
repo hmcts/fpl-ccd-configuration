@@ -74,6 +74,36 @@ public class UrgentGatekeepingOrderService {
         return returnedData;
     }
 
+    public Map<String, Object> finaliseAndSeal(CaseData caseData) {
+        final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        final DocumentReference orderDocument = eventData.getUrgentHearingOrderDocument();
+        final Map<String, Object> returnedData = new HashMap<>();
+
+        String allocation = null;
+
+        if (noPreExistingAllocationDecision(caseData)) {
+            Allocation allocationDecision = allocationService.setAllocationDecisionIfNull(
+                caseData, eventData.getUrgentHearingAllocation()
+            );
+
+            allocation = allocationDecision.getProposal();
+
+            returnedData.put("allocationDecision", allocationDecision);
+        }
+
+        final UrgentHearingOrder order = UrgentHearingOrder.builder()
+            .order(sealingService.sealDocument(orderDocument, caseData.getSealType()))
+            .unsealedOrder(orderDocument)
+            .dateAdded(time.now().toLocalDate())
+            .translationRequirements(eventData.getUrgentGatekeepingTranslationRequirements())
+            .allocation(allocation)
+            .build();
+
+        returnedData.put("urgentHearingOrder", order);
+
+        return returnedData;
+    }
+
     @Deprecated
     public List<DocmosisTemplates> getNoticeOfProceedingsTemplates(CaseData caseData) {
         List<DocmosisTemplates> templates = new ArrayList<>();
