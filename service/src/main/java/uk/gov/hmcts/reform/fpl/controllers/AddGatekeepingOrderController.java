@@ -213,7 +213,6 @@ public class AddGatekeepingOrderController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
         CaseData caseData = getCaseData(request);
-        CaseData caseDataBefore = getCaseDataBefore(request);
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
@@ -236,6 +235,8 @@ public class AddGatekeepingOrderController extends CallbackController {
                 coreCaseDataService.updateCase(caseData.getId(), data);
                 break;
         }
+
+        CaseData caseDataBefore = getCaseDataBefore(request);
 
         notificationDecider.buildEventToPublish(caseData, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
