@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ public class UrgentGatekeepingOrderService {
 
     private final CourtLevelAllocationService allocationService;
     private final DocumentSealingService sealingService;
-    private final CoreCaseDataService coreCaseDataService;
     private final Time time;
 
     public GatekeepingOrderEventData prePopulate(CaseData caseData) {
@@ -116,9 +116,8 @@ public class UrgentGatekeepingOrderService {
         return templates;
     }
 
-    public void sealDocumentAfterEventSubmitted(CaseData caseData) {
+    public Map<String, Object> sealDocumentAfterEventSubmitted(CaseData caseData) {
         Map<String, Object> updates = new HashMap<>();
-
         final UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
         final UrgentHearingOrder sealedOrder = UrgentHearingOrder.builder()
             .order(sealingService.sealDocument(urgentHearingOrder.getUnsealedOrder(), caseData.getSealType()))
@@ -129,7 +128,7 @@ public class UrgentGatekeepingOrderService {
             .build();
 
         updates.put("urgentHearingOrder", sealedOrder);
-        coreCaseDataService.updateCase(caseData.getId(), updates);
+        return updates;
     }
 
     private boolean noPreExistingAllocationDecision(CaseData caseData) {

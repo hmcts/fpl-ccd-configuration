@@ -197,7 +197,6 @@ public class AddGatekeepingOrderController extends CallbackController {
             "useServiceRoute",
             "useUploadRoute",
             "judgeAndLegalAdvisor",
-            "gatekeepingOrderSealDecision",
             "gatekeepingOrderHearingDate1",
             "gatekeepingOrderHearingDate2",
             "gatekeepingOrderHasHearing1",
@@ -205,7 +204,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         );
 
         if (decision.isSealed() || sdoRouter == URGENT) {
-            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "gatekeepingOrderRouter", "customDirections");
+            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
         }
 
         return respond(data);
@@ -215,15 +214,26 @@ public class AddGatekeepingOrderController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
         CaseData caseData = getCaseData(request);
         CaseData caseDataBefore = getCaseDataBefore(request);
+        final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
 
+        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
+            .getGatekeepingOrderSealDecision();
+
+        removeTemporaryFields(data, "gatekeepingOrderSealDecision");
+        if (decision.isSealed() || sdoRouter == URGENT) {
+            removeTemporaryFields(data, "gatekeepingOrderRouter");
+        }
+
         switch (sdoRouter) {
             case URGENT:
-                urgentOrderService.sealDocumentAfterEventSubmitted(caseData);
+                data.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
+                coreCaseDataService.updateCase(caseData.getId(), data);
                 break;
             case UPLOAD:
-                orderService.sealDocumentAfterEventSubmitted(caseData);
+                data.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+                coreCaseDataService.updateCase(caseData.getId(), data);
                 break;
         }
 

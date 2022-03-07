@@ -35,13 +35,12 @@ class UrgentGatekeepingOrderServiceTest {
     private final Time time = new FixedTime();
     private final DocumentSealingService sealingService = mock(DocumentSealingService.class);
     private final CourtLevelAllocationService allocationService = mock(CourtLevelAllocationService.class);
-    private final CoreCaseDataService coreCaseDataService  = mock(CoreCaseDataService.class);
 
     private UrgentGatekeepingOrderService underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new UrgentGatekeepingOrderService(allocationService, sealingService, coreCaseDataService, time);
+        underTest = new UrgentGatekeepingOrderService(allocationService, sealingService, time);
         when(sealingService.sealDocument(UPLOADED_ORDER, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
     }
 

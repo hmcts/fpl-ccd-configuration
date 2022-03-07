@@ -72,7 +72,6 @@ public class GatekeepingOrderService {
     private final DocumentSealingService sealingService;
     private final OrdersLookupService ordersLookupService;
     private final GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
-    private final CoreCaseDataService coreCaseDataService;
 
     public GatekeepingOrderSealDecision buildSealDecision(CaseData caseData) {
         DocumentReference order = getOrderDocument(caseData);
@@ -275,10 +274,9 @@ public class GatekeepingOrderService {
         return caseData;
     }
 
-    public void sealDocumentAfterEventSubmitted(CaseData caseData) {
+    public StandardDirectionOrder sealDocumentAfterEventSubmitted(CaseData caseData) {
+        StandardDirectionOrder order = caseData.getStandardDirectionOrder();
         if (caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision().isSealed()) {
-            Map<String, Object> updates = new HashMap<>();
-            StandardDirectionOrder order = caseData.getStandardDirectionOrder();
             DocumentReference orderDoc = order.getOrderDoc();
 
             StandardDirectionOrder sealedOrder = buildBaseGatekeepingOrder(caseData).toBuilder()
@@ -288,9 +286,9 @@ public class GatekeepingOrderService {
                 .lastUploadedOrder(orderDoc)
                 .translationRequirements(order.getTranslationRequirements())
                 .build();
-
-            updates.put("standardDirectionOrder", sealedOrder);
-            coreCaseDataService.updateCase(caseData.getId(), updates);
+            return sealedOrder;
+        } else {
+            return order;
         }
     }
 

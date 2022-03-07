@@ -946,19 +946,6 @@ class GatekeepingOrderServiceTest {
             underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
 
             verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
-
-            final StandardDirectionOrder expectedSealedOrder = StandardDirectionOrder.builder()
-                .orderStatus(SEALED)
-                .dateOfUpload(time.now().toLocalDate())
-                .uploader(userName)
-                .orderDoc(sealedOrder)
-                .lastUploadedOrder(uploadedOrder)
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
-                .build();
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("standardDirectionOrder", expectedSealedOrder);
-
-            verify(coreCaseDataService).updateCase(caseData.getId(), updates);
         }
 
         @Test
@@ -995,20 +982,6 @@ class GatekeepingOrderServiceTest {
             underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
 
             verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
-
-            final StandardDirectionOrder expectedSealedOrder = StandardDirectionOrder.builder()
-                .orderStatus(SEALED)
-                .dateOfUpload(time.now().toLocalDate())
-                .uploader(userName)
-                .orderDoc(sealedOrder)
-                .lastUploadedOrder(uploadedOrder)
-                .translationRequirements(ENGLISH_TO_WELSH)
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
-                .build();
-
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("standardDirectionOrder", expectedSealedOrder);
-            verify(coreCaseDataService).updateCase(caseData.getId(), updates);
         }
     }
 
