@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -36,6 +37,7 @@ import uk.gov.service.notify.NotificationClient;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +88,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final DocumentReference C6_DOCUMENT = testDocumentReference("notice_of_proceedings_c6.pdf");
     private static final DocumentReference C6A_DOCUMENT = testDocumentReference("notice_of_proceedings_c6a.pdf");
     private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference();
+    private static final DocumentReference SEALED_DOCUMENT = testDocumentReference();
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
         .toBuilder().documentTitle("pdf.pdf").build();
@@ -95,6 +98,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
     private static final CaseData GATEKEEPING_CASE_DATA = CaseData.builder().state(GATEKEEPING).build();
     private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
+
+    private static final String DOC_UPLOADER_NAME = "MOCK";
 
     @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
@@ -130,6 +135,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
+        when(sealingService.sealDocument(eq(SDO_DOCUMENT), any())).thenReturn(SEALED_DOCUMENT);
     }
 
     @Test
@@ -264,11 +270,13 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldSealUploadedDocumentIfOrderStatusIsSealed() {
+        CaseData caseData = buildCaseDataWithUploadedSDO(SEALED);
         postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUploadedSDO(SEALED), GATEKEEPING_CASE_DATA
+            caseData, GATEKEEPING_CASE_DATA
         ));
 
         verify(sealingService).sealDocument(SDO_DOCUMENT, SealType.ENGLISH);
+        verify(coreCaseDataService).updateCase(eq(caseData.getId()), any());
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
@@ -317,7 +325,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
                 .orderStatus(status)
                 .orderDoc(SDO_DOCUMENT)
                 .unsealedDocumentCopy(SDO_DOCUMENT)
-                .uploader("MOCK")
+                .uploader(DOC_UPLOADER_NAME)
                 .dateOfUpload(DATE_ADDED)
                 .translationRequirements(LanguageTranslationRequirement.NO)
                 .build())
