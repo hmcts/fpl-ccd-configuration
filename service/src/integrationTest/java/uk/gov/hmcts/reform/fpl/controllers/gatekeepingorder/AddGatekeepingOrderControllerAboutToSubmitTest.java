@@ -242,8 +242,8 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
                 .translationRequirements(expectedTranslationRequirements)
                 .build());
-        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "customDirections",
-            "standardDirections", "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
+        assertThat(response.getData()).doesNotContainKeys("customDirections",
+            "standardDirections", "gatekeepingOrderIssuingJudge");
     }
 
 
