@@ -29,6 +29,10 @@ module "fpl-performance-alert" {
   trigger_threshold          = 2
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  environment                = var.env
+  application                = var.application
+  builtFrom                  = var.builtFrom
+  businessArea               = var.businessArea
 }
 
 module "fpl-exceptions-alert" {
@@ -47,6 +51,10 @@ module "fpl-exceptions-alert" {
   trigger_threshold          = 0
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  environment                = var.env
+  application                = var.application
+  builtFrom                  = var.builtFrom
+  businessArea               = var.businessArea
 }
 
 module "fpl-health-failure-alert" {
@@ -65,6 +73,10 @@ module "fpl-health-failure-alert" {
   trigger_threshold          = 3
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  environment                = var.env
+  application                = var.application
+  builtFrom                  = var.builtFrom
+  businessArea               = var.businessArea
 }
 
 module "fpl-upcoming-hearings-job-alert" {
@@ -83,6 +95,10 @@ module "fpl-upcoming-hearings-job-alert" {
   trigger_threshold          = 0
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  environment                = var.env
+  application                = var.application
+  builtFrom                  = var.builtFrom
+  businessArea               = var.businessArea
 }
 
 module "fpl-summary-tab-job-alert" {
@@ -101,4 +117,8 @@ module "fpl-summary-tab-job-alert" {
   trigger_threshold          = 0
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  environment                = var.env
+  application                = var.application
+  builtFrom                  = var.builtFrom
+  businessArea               = var.businessArea
 }
