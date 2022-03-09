@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -53,7 +51,6 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final UserService user;
     private final DocumentUploadHelper documentUploadHelper;
-    private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
     private final PeopleInCaseService peopleInCaseService;
 
@@ -141,14 +138,14 @@ public class UploadAdditionalApplicationsService {
 
         List<Element<Supplement>> updatedSupplementsBundle =
             getSupplementsBundle(temporaryC2Document.getSupplementsBundle(),
-                uploadedBy, uploadedTime, SealType.ENGLISH);
+                uploadedBy, uploadedTime);
 
 
         return temporaryC2Document.toBuilder()
             .id(UUID.randomUUID())
             .applicantName(applicantName)
             .author(uploadedBy)
-            .document(getDocumentToStore(temporaryC2Document.getDocument(), SealType.ENGLISH))
+            .document(getDocumentToStore(temporaryC2Document.getDocument()))
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
@@ -173,7 +170,7 @@ public class UploadAdditionalApplicationsService {
         );
 
         List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
-            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime, SealType.ENGLISH);
+            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime);
 
 
         return temporaryOtherApplicationsBundle.toBuilder()
@@ -182,7 +179,7 @@ public class UploadAdditionalApplicationsService {
             .applicantName(applicantName)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument(), SealType.ENGLISH))
+            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument()))
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .supplementsBundle(updatedSupplementsBundle)
             .respondents(selectedRespondents)
@@ -204,15 +201,13 @@ public class UploadAdditionalApplicationsService {
     }
 
     private List<Element<Supplement>> getSupplementsBundle(
-        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime, SealType sealType) {
+        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime) {
 
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
-            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
-                sealType);
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(sealedDocument)
+                .document(incomingSupplement.getDocument())
                 .dateTimeUploaded(dateTime)
                 .uploadedBy(uploadedBy)
                 .build();
@@ -222,8 +217,7 @@ public class UploadAdditionalApplicationsService {
 
     }
 
-    private DocumentReference getDocumentToStore(DocumentReference originalDoc, SealType sealType) {
-        return user.isHmctsUser() ? documentSealingService.sealDocument(originalDoc, sealType)
-                                  : documentConversionService.convertToPdf(originalDoc);
+    private DocumentReference getDocumentToStore(DocumentReference originalDoc) {
+        return documentConversionService.convertToPdf(originalDoc);
     }
 }
