@@ -65,7 +65,6 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[LASHARED]",
-          "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
@@ -84,6 +83,7 @@
       {
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
+          "[LABARRISTER]",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -126,6 +126,7 @@
       {
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
+          "[LABARRISTER]",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -165,7 +166,6 @@
           "caseworker-publiclaw-cafcass",
           "[LASOLICITOR]",
           "[LASHARED]",
-          "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
