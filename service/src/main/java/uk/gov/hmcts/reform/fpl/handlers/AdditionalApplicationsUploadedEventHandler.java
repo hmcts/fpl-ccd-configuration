@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdditionalApplicationsUploadedEventHandler {
@@ -92,6 +94,8 @@ public class AdditionalApplicationsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+        log.info("case local authority = " + caseData.getCaseLocalAuthority());
+        log.info("recipientIsEngland.isPresent() = " + recipientIsEngland.isPresent());
 
         if (recipientIsEngland.isPresent()) {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
@@ -102,6 +106,8 @@ public class AdditionalApplicationsUploadedEventHandler {
                     .filter(Predicate.not(List::isEmpty))
                     .map(additionalApplicationsBundle -> additionalApplicationsBundle.get(0).getValue())
                     .orElse(null);
+
+            log.info("!uploadedBundle.equals(oldBundle) = " + (!uploadedBundle.equals(oldBundle)));
 
             if (!uploadedBundle.equals(oldBundle)) {
                 String documentTypes = contentProvider.getApplicationTypes(uploadedBundle).stream()
