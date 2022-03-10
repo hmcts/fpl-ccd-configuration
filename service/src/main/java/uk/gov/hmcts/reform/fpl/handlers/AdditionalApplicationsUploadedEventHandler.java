@@ -198,6 +198,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
 
         if (isNotEmpty(recipients)) {
+            recipients.forEach((r) -> log.info("{}: notifyApplicant - {}", caseData.getId(), r));
             sendNotification(caseData, recipients);
         }
     }
@@ -232,6 +233,7 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
 
+        digitalRepresentativesEmails.forEach((r) -> log.info("{}: notifyDigitalRepresentatives - {}", caseData.getId(), r));
         representativeNotificationService.sendNotificationToRepresentatives(
             caseData.getId(),
             notifyData,
@@ -271,6 +273,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
 
         if (!emailRepresentatives.isEmpty()) {
+            emailRepresentatives.forEach((r) -> log.info("{}: notifyDigitalRepresentatives - {}", caseData.getId(), r));
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
                 notifyData,
