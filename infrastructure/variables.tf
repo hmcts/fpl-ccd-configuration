@@ -59,18 +59,3 @@ variable "docmosis_vault" {
 variable "enable_alerts" {
   default = false
 }
-
-variable "application" {
-  description = "Enter name of the application"
-  default = "family-public-law"
-}
-
-variable "builtFrom"{
-  description = "Name of the GitHub repository this application is being built from."
-  default = "https://github.com/hmcts/fpl-ccd-configuration"
-}
-
-variable "businessArea"{
-  description = "Enter Business Area this application belongs to"
-  default = "CFT"
-}
