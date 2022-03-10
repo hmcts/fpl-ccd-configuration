@@ -3,7 +3,7 @@ const config = require('../config');
 
 const paymentsLocator = '//span[text()="Payments"]';
 
-const buildPaymentLocator = amount => config.mockedPayment ? `${paymentsLocator}/../table//tr[.//td[text()="Success"]]` : `${paymentsLocator}/../table//tr[.//td[text()="${amount}"] and .//td[text()="Success"]]`;
+const buildPaymentLocator = amount => config.mockedPayment ? `${paymentsLocator}/../table//tr[.//td[text()="Success"]]` : `${paymentsLocator}/../table//tr[.//td[contains(text(),"${amount}")] and .//td[text()="Success"]]`;
 
 const buildPbaLocator = pba => `//tr[.//td[text()="PBA number"] and .//td[text()="${pba}"]]`;
 

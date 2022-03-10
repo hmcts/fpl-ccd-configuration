@@ -58,7 +58,7 @@ module.exports = class BrowserHelpers extends Helper {
    * @param timeout - optional time in seconds to wait
    * @returns {Promise<undefined|*>} - promise holding either an element or undefined if element is not found
    */
-  async waitForSelector(locator, timeout = 30) {
+  async waitForSelector(locator, timeout = 45) {
     const helper = this.getHelper();
 
     const retryInterval = 5;

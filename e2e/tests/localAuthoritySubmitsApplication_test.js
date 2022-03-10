@@ -723,5 +723,5 @@ Scenario('HMCTS admin check the payment', async ({I, caseViewPage, paymentHistor
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
-  await paymentHistoryPage.checkPayment(feeToPay, applicant.pbaNumber);
+  await paymentHistoryPage.checkPayment(Number(feeToPay).toLocaleString(), applicant.pbaNumber);
 }).retry(1); // retry due to async nature of the payment and the payment could be still processing..
