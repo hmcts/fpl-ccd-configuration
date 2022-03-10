@@ -94,7 +94,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        log.info("{}: case local authority = {}", caseData.getId() , caseData.getCaseLocalAuthority());
+        log.info("{}: case local authority = {}", caseData.getId(), caseData.getCaseLocalAuthority());
         log.info("{}: recipientIsEngland.isPresent() = {}", caseData.getId(), recipientIsEngland.isPresent());
 
         if (recipientIsEngland.isPresent()) {
@@ -233,7 +233,8 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
 
-        digitalRepresentativesEmails.forEach((r) -> log.info("{}: notifyDigitalRepresentatives - {}", caseData.getId(), r));
+        digitalRepresentativesEmails.forEach((r) ->
+            log.info("{}: notifyDigitalRepresentatives - {}", caseData.getId(), r));
         representativeNotificationService.sendNotificationToRepresentatives(
             caseData.getId(),
             notifyData,
