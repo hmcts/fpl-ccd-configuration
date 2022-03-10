@@ -7,11 +7,13 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.util.Matrix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.EncryptedPdfUploadedException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -24,6 +26,7 @@ import java.io.UncheckedIOException;
 import java.time.LocalDate;
 
 import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
@@ -96,6 +99,8 @@ public class AmendedOrderStamper {
             content.close();
 
             return save(document);
+        } catch (InvalidPasswordException ipe) {
+            throw new EncryptedPdfUploadedException("Password protected PDF was uploaded.");
         }
     }
 
@@ -103,6 +108,12 @@ public class AmendedOrderStamper {
         try (final ByteArrayOutputStream outputBytes = new ByteArrayOutputStream()) {
             document.save(outputBytes);
             return outputBytes.toByteArray();
+        } catch (IllegalStateException ise) {
+            if (defaultIfNull(ise.getMessage(), "").startsWith("PDF contains an encryption dictionary")) {
+                throw new EncryptedPdfUploadedException("Encrypted PDF was uploaded.");
+            } else {
+                throw ise;
+            }
         }
     }
 }
