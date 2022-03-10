@@ -94,8 +94,8 @@ public class AdditionalApplicationsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        log.info("case local authority = " + caseData.getCaseLocalAuthority());
-        log.info("recipientIsEngland.isPresent() = " + recipientIsEngland.isPresent());
+        log.info("{}: case local authority = {}", caseData.getId() , caseData.getCaseLocalAuthority());
+        log.info("{}: recipientIsEngland.isPresent() = {}", caseData.getId(), recipientIsEngland.isPresent());
 
         if (recipientIsEngland.isPresent()) {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
@@ -107,7 +107,8 @@ public class AdditionalApplicationsUploadedEventHandler {
                     .map(additionalApplicationsBundle -> additionalApplicationsBundle.get(0).getValue())
                     .orElse(null);
 
-            log.info("!uploadedBundle.equals(oldBundle) = " + (!uploadedBundle.equals(oldBundle)));
+            log.info("{}: !uploadedBundle.equals(oldBundle) = {}", caseData.getId(),
+                (!uploadedBundle.equals(oldBundle)));
 
             if (!uploadedBundle.equals(oldBundle)) {
                 String documentTypes = contentProvider.getApplicationTypes(uploadedBundle).stream()
