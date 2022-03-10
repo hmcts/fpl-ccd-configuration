@@ -964,7 +964,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final PlacementEventData expectedPlacementData = PlacementEventData.builder()
@@ -1068,7 +1068,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(LOCAL_AUTHORITY)
                     .recipientName("Local authority")
@@ -1114,7 +1114,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(LOCAL_AUTHORITY)
                     .recipientName("Local authority")
@@ -1158,7 +1158,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
@@ -1196,7 +1196,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(CAFCASS)
                     .recipientName("Cafcass")
@@ -1242,7 +1242,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(CAFCASS)
                     .recipientName("Cafcass")
@@ -1286,7 +1286,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
@@ -1325,7 +1325,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_FIRST)
                     .recipientName("John Smith - father")
@@ -1373,7 +1373,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_FIRST)
                     .recipientName("John Smith - father")
@@ -1419,7 +1419,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
@@ -1458,7 +1458,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_SECOND)
                     .recipientName("Eva Smith - mother")
@@ -1506,7 +1506,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_SECOND)
                     .recipientName("Eva Smith - mother")
@@ -1552,7 +1552,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
@@ -1604,7 +1604,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(
                     PlacementNoticeDocument.builder()
                         .type(LOCAL_AUTHORITY)

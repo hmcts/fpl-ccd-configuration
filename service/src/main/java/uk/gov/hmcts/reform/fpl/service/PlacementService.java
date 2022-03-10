@@ -268,8 +268,6 @@ public class PlacementService {
                 throw new IllegalStateException("Missing placement application document");
             }
 
-            currentPlacement.setApplication(sealingService.sealDocument(applicationDocument, SealType.ENGLISH));
-
             currentPlacement.setPlacementUploadDateTime(time.now());
 
             placementData.getPlacements().add(newElement(currentPlacement));
