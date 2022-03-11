@@ -34,7 +34,7 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
 
     //Add child representation (required for noc)
     await addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor2);
-    // I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
+    I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
     caseViewPage.selectTab(caseViewPage.tabs.casePeople);
     assertChild(I, solicitor2);
 
@@ -62,7 +62,7 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
   await manageLegalCounsellorsEventPage.addLegalCounsellor(legalCounsellors.legalCounsellor);
   await I.completeEvent('Save and continue');
 
-  // I.seeEventSubmissionConfirmation(config.applicationActions.addOrRemoveLegalCounsel);
+  I.seeEventSubmissionConfirmation(config.applicationActions.addOrRemoveLegalCounsel);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
