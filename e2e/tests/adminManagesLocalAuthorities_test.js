@@ -114,10 +114,7 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
   await I.goToNextPage();
   await enterLocalAuthorityEventPage.enterColleague(hillingdonColleague);
 
-  // await I.retryUntilExists(() => I.click('Continue'), '.check-your-answers');
   await I.completeEvent('Save and continue');
-  // await I.retryUntilExists(() => I.click('Save and continue'), '.mat-tab-label');
-  //await I.seeCheckAnswersAndCompleteEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
