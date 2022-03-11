@@ -21,14 +21,18 @@ public class UploadedOrderDocumentGenerator {
     private final DocumentDownloadService documentDownloadService;
 
     public OrderDocumentGeneratorResult generate(CaseData caseData, OrderStatus status, RenderFormat format) {
+        return generate(caseData, status, format, needSealing(caseData, status));
+    }
 
+    public OrderDocumentGeneratorResult generate(CaseData caseData, OrderStatus status, RenderFormat format,
+                                                 boolean needSealing) {
         DocumentReference documentReference = caseData.getManageOrdersEventData().getManageOrdersUploadOrderFile();
         byte[] bytes = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
 
         if (RenderFormat.PDF == format) {
             bytes = documentConversionService.convertToPdf(bytes, documentReference.getFilename());
 
-            if (needSealing(caseData, status)) {
+            if (needSealing) {
                 bytes = documentSealingService.sealDocument(bytes, caseData.getSealType());
             }
 

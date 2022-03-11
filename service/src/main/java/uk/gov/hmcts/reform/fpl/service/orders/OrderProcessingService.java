@@ -27,4 +27,13 @@ public class OrderProcessingService {
         );
         return AMEND == operation ? amendOrderService.updateOrder(caseData) : historyService.generate(caseData);
     }
+
+    public Map<String, Object> postProcessDocument(CaseData caseData) {
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+        OrderOperation operation = defaultIfNull(
+            eventData.getManageOrdersOperation(), eventData.getManageOrdersOperationClosedState()
+        );
+        return AMEND == operation
+            ? amendOrderService.updateOrder(caseData) : historyService.processUploadedOrder(caseData);
+    }
 }

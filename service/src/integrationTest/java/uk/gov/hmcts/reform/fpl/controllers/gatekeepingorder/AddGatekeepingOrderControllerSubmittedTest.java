@@ -286,15 +286,15 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         ));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(ctcsTemplate),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(laTemplate),
+            eq("shared@test1.org.uk"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(laTemplate),
-            eq("shared@test1.org.uk"),
+            eq(ctcsTemplate),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));

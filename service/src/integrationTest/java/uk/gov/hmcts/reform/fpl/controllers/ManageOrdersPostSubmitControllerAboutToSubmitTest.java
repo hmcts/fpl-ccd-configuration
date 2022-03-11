@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -18,9 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -28,8 +25,10 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,26 +40,25 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO_V2;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
+import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BOURNEMOUTH;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@WebMvcTest(ManageOrdersController.class)
+@WebMvcTest(ManageOrderPostSubmitController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
+class ManageOrdersPostSubmitControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final Child CHILD_1 = Child.builder()
         .party(ChildParty.builder().firstName("first1").lastName("last1").build())
@@ -94,8 +92,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     @MockBean
     private IdentityService identityService;
 
-    ManageOrdersAboutToSubmitControllerTest() {
-        super("manage-orders");
+    ManageOrdersPostSubmitControllerAboutToSubmitTest() {
+        super("manage-orders/post-submit-callback");
     }
 
     @BeforeEach
@@ -123,117 +121,71 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldBuildNewOrderObject() {
-        UUID linkedApplicationId = UUID.randomUUID();
-        DynamicList selectedLinkedApplicationList = buildDynamicList(0, Pair.of(linkedApplicationId, "My application"));
-        CaseData caseData = buildCaseData().toBuilder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C21_BLANK_ORDER)
-                .manageOrdersApprovalDate(dateNow())
-                .manageOrdersFurtherDirections("Some further directions")
-                .manageOrdersLinkedApplication(selectedLinkedApplicationList)
-                .build())
+    void shouldRemoveTransientFields() {
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
+                ManageOrdersEventData.builder()
+                    .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
+                    .manageOrdersEpoType(EPOType.REMOVE_TO_ACCOMMODATION)
+                    .manageOrdersApprovalDateTime(now())
+                    .manageOrdersEndDateTime(now().plusDays(1))
+                    .manageOrdersPowerOfArrest(UPLOADED_POWER_OF_ARREST)
+                    .manageOrdersFurtherDirections("further directions")
+                    .manageOrdersCafcassRegion("ENGLAND")
+                    .manageOrdersCafcassOfficesEngland(BOURNEMOUTH).build())
             .build();
 
-        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+        CaseDetails caseDetails = asCaseDetails(caseData);
 
-        assertThat(responseCaseData.getOrderCollection()).containsOnly(
-            element(ELEMENT_ID, GeneratedOrder.builder()
-                .orderType("C21_BLANK_ORDER")
-                .type("Blank order (C21)")
-                .children(CHILDREN)
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Dredd")
-                    .build())
-                .dateTimeIssued(now())
-                .markedFinal(NO.getValue())
-                .approvalDate(dateNow())
-                .childrenDescription("first1 last1, first2 last2")
-                .document(DOCUMENT_PDF_REFERENCE)
-                .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
-                .linkedApplicationId(linkedApplicationId.toString())
-                .othersNotified("")
-                .others(Collections.emptyList())
-                .build())
-        );
-    }
+        // dummy data set for the front end that is dirtying case data
+        caseDetails.getData().putAll(Map.of(
+            "manageOrdersOperation", "CREATE",
+            "manageOrdersOperationClosedState", "CREATE",
+            "orderTempQuestions", Map.of("holderObject", "forQuestionConditions"),
+            "hearingDetailsSectionSubHeader", "some heading",
+            "issuingDetailsSectionSubHeader", "some heading",
+            "childrenDetailsSectionSubHeader", "some heading",
+            "children_label", "some label about the children",
+            "orderDetailsSectionSubHeader", "some heading",
+            "orderPreview", DOCUMENT_PDF_REFERENCE
+        ));
 
-    @Test
-    void shouldBuildNewEPO() {
-        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
-            .manageOrdersApprovalDateTime(now())
-            .manageOrdersEndDateTime(now().plusDays(1))
-            .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
-            .manageOrdersEpoType(EPOType.PREVENT_REMOVAL)
-            .manageOrdersEpoRemovalAddress(Address.builder().addressLine1("address1").postcode("postcode").build())
-            .manageOrdersChildrenDescription("first1 last1")
-            .manageOrdersFurtherDirections("test directions")
-            .manageOrdersExclusionRequirement("Yes")
-            .manageOrdersWhoIsExcluded("John")
-            .manageOrdersExclusionStartDate(dateNow().plusDays(2))
-            .manageOrdersPowerOfArrest(UPLOADED_POWER_OF_ARREST)
-            .build();
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(manageOrdersEventData).build();
-
-        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        assertThat(responseCaseData.getOrderCollection()).containsOnly(
-            element(ELEMENT_ID, GeneratedOrder.builder()
-                .orderType("C23_EMERGENCY_PROTECTION_ORDER")
-                .type("Emergency protection order (C23)")
-                .children(CHILDREN)
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Dredd")
-                    .build())
-                .dateTimeIssued(now())
-                .markedFinal(NO.getValue())
-                .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
-                .childrenDescription("first1 last1, first2 last2")
-                .document(DOCUMENT_PDF_REFERENCE)
-                .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
-                .othersNotified("")
-                .others(Collections.emptyList())
-                .build()));
-    }
-
-    @Test
-    void shouldBuildNewBlankOrderForClosedCase() {
-        CaseData caseData = buildCaseData().toBuilder()
-            .state(State.CLOSED)
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersOperationClosedState(OrderOperation.CREATE)
-                .manageOrdersApprovalDate(dateNow())
-                .manageOrdersDirections("Some directions")
-                .build())
-            .build();
-
-        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        assertThat(responseCaseData.getOrderCollection()).containsOnly(
-            element(ELEMENT_ID, GeneratedOrder.builder()
-                .orderType("C21_BLANK_ORDER")
-                .type("Blank order (C21)")
-                .children(CHILDREN)
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Dredd")
-                    .build())
-                .dateTimeIssued(now())
-                .approvalDate(dateNow())
-                .markedFinal(NO.getValue())
-                .childrenDescription("first1 last1, first2 last2")
-                .document(DOCUMENT_PDF_REFERENCE)
-                .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
-                .othersNotified("")
-                .others(Collections.emptyList())
-                .build())
+        assertThat(response.getData()).doesNotContainKeys(
+            "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
+            "childSelector", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
+            "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader",
+            "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
+            "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
+            "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",
+            "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement", "manageOrdersWhoIsExcluded",
+            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest", "manageOrdersTitle",
+            "manageOrdersDirections", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassRegion"
         );
     }
 
     private CaseData buildCaseData() {
+        List<Element<GeneratedOrder>> orderCollection = new ArrayList<>();
+
+        orderCollection.add(element(GeneratedOrder.builder()
+            .orderType("C21_BLANK_ORDER")
+            .type("Blank order (C21)")
+            .children(CHILDREN)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Dredd")
+                .build())
+            .dateTimeIssued(now())
+            .markedFinal(NO.getValue())
+            .approvalDate(dateNow())
+            .childrenDescription("first1 last1, first2 last2")
+            .document(DOCUMENT_PDF_REFERENCE)
+            .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
+            .linkedApplicationId(UUID.randomUUID().toString())
+            .othersNotified("")
+            .others(Collections.emptyList())
+            .build()));
+
         return CaseData.builder()
             .id(1234123412341234L)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
@@ -243,6 +195,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .childSelector(Selector.builder().count("3").selected(List.of(0,1)).build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
             .allocatedJudge(Judge.builder().judgeLastName("Dredd").judgeTitle(HIS_HONOUR_JUDGE).build())
+            .orderCollection(orderCollection)
             .build();
     }
 }

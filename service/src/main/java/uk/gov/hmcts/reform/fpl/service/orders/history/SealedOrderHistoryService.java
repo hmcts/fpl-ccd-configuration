@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
@@ -60,13 +61,18 @@ public class SealedOrderHistoryService {
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
 
     public Map<String, Object> generate(CaseData caseData) {
-        List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
         List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData);
 
-        DocumentReference sealedPdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
-        DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
+        DocumentReference order;
+        DocumentReference plainWordOrder;
+        if (OrderSourceType.MANUAL_UPLOAD == manageOrdersEventData.getManageOrdersType().getSourceType()) {
+            order = plainWordOrder = caseData.getManageOrdersEventData().getManageOrdersUploadOrderFile();
+        } else {
+            order = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
+            plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
+        }
 
         GeneratedOrder.GeneratedOrderBuilder generatedOrderBuilder = GeneratedOrder.builder()
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
@@ -82,7 +88,7 @@ public class SealedOrderHistoryService {
             .childrenDescription(getChildrenForOrder(selectedChildren, caseData))
             .specialGuardians(appointedGuardianFormatter.getGuardiansNamesForTab(caseData))
             .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
-            .document(sealedPdfOrder)
+            .document(order)
             .translationRequirements(languageRequirementGenerator.translationRequirements(caseData))
             .unsealedDocumentCopy(plainWordOrder);
 
@@ -92,6 +98,8 @@ public class SealedOrderHistoryService {
         Optional.ofNullable(manageOrdersEventData.getManageOrdersLinkedApplication())
             .map(DynamicList::getValueCode)
             .ifPresent(generatedOrderBuilder::linkedApplicationId);
+
+        List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
 
         pastOrders.add(element(identityService.generateId(), generatedOrderBuilder.build()));
 
@@ -107,6 +115,39 @@ public class SealedOrderHistoryService {
             .min(legacyLastAndThenByDateAndTimeIssuedDesc())
             .orElseThrow(() -> new IllegalStateException("Element not present"))
             .getValue();
+    }
+
+    public Map<String, Object> processUploadedOrder(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+        // get the latest order just created in about-to-submit callback;
+        List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
+        GeneratedOrder order = caseData.getOrderCollection().get(0).getValue();
+
+        DocumentReference sealedPDForder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
+        DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
+
+        GeneratedOrder sealedOrder = GeneratedOrder.builder()
+            .orderType(order.getOrderType()) // hidden field, to store the type
+            .title(order.getTitle())
+            .type(order.getType())
+            .markedFinal(order.getMarkedFinal())
+            .children(order.getChildren())
+            .others(order.getOthers()) // hidden field, to store the selected others for notify
+            .judgeAndLegalAdvisor(order.getJudgeAndLegalAdvisor())
+            .dateTimeIssued(order.getDateTimeIssued())
+            .approvalDate(order.getApprovalDate())
+            .approvalDateTime(order.getApprovalDateTime())
+            .childrenDescription(order.getChildrenDescription())
+            .specialGuardians(order.getSpecialGuardians())
+            .othersNotified(order.getOthersNotified())
+            .document(sealedPDForder)
+            .translationRequirements(order.getTranslationRequirements())
+            .unsealedDocumentCopy(plainWordOrder)
+            .build();
+
+        pastOrders.set(0, element(sealedOrder));
+        data.put("orderCollection", pastOrders);
+        return data;
     }
 
     private Comparator<Element<GeneratedOrder>> legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc() {

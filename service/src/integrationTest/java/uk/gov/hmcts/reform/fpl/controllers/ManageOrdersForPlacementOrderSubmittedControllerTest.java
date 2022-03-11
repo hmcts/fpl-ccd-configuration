@@ -73,7 +73,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentedRespondentWithAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondentWithAddress;
 
-@WebMvcTest(ManageOrdersController.class)
+@WebMvcTest(ManageOrderPostSubmitController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallbackTest {
 
@@ -126,7 +126,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;
 
     ManageOrdersForPlacementOrderSubmittedControllerTest() {
-        super("manage-orders");
+        super("manage-orders/post-submit-callback");
     }
 
     @BeforeEach

@@ -40,6 +40,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "internal-change-manage-order",
+    "Name": "Post-process of Manage order",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/post-submit-callback/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/post-submit-callback/submitted"
+  },,
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "handleSupplementaryEvidence",
     "Name": "Handle supplementary evidence",
     "Description": "Handle supplementary evidence",
