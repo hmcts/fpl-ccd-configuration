@@ -10,17 +10,6 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class SwaggerConfiguration {
 
-// TODO - remove this before merge
-//    @Bean
-//    public Docket api() {
-//        return new Docket(DocumentationType.SWAGGER_2)
-//            .useDefaultResponseMessages(false)
-//            .select()
-//            .apis(RequestHandlerSelectors.basePackage(Application.class.getPackage().getName() + ".controllers"))
-//            .paths(PathSelectors.any())
-//            .build();
-//    }
-
     @Bean
     public OpenAPI api() {
         return new OpenAPI()

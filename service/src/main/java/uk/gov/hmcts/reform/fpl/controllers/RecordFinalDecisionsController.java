@@ -25,7 +25,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Tag(name="Record final decisions")
+@Tag(name = "Record final decisions")
 @RestController
 @RequestMapping("/callback/record-final-decisions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

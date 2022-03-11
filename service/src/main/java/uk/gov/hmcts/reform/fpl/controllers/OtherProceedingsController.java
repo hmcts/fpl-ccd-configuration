@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-@Tag(name="Enter other proceedings")
+@Tag(name = "Enter other proceedings")
 @RestController
 @RequestMapping("callback/enter-other-proceedings")
 public class OtherProceedingsController extends CallbackController {
