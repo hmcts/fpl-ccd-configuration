@@ -377,7 +377,6 @@ async function setupHearing(I, caseViewPage, manageHearingsEventPage) {
   await I.goToNextPage();
   await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 }
 
 async function uploadDocumentsToCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage) {
@@ -388,7 +387,6 @@ async function uploadDocumentsToCourtBundleEvent(I, caseViewPage, manageDocument
   await manageDocumentsLAEventPage.uploadCourtBundleDocument(config.testWordFile);
 
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
 }
 
 async function selectCourtBundleEventForHearing(I, caseViewPage, manageDocumentsLAEventPage) {
