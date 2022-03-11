@@ -31,12 +31,15 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     await submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit', null, true);
+    I.say('setupScenario() - Submitted case');
 
     //Add child representation (required for noc)
     await addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor2);
     I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
     caseViewPage.selectTab(caseViewPage.tabs.casePeople);
     assertChild(I, solicitor2);
+    I.grabCurrentUrl();
+    I.say('setupScenario() - Added child representation');
 
     //Use NoC to change representative for respondent and child
     await I.signIn(solicitor1);
@@ -47,6 +50,7 @@ async function setupScenario(I, caseViewPage, noticeOfChangePage, submitApplicat
     //Solicitor completes Notice of Change - for respondent
     await performNoC(I, caseViewPage, noticeOfChangePage, 'Swansea City Council', 'Joe', 'Bloggs', 'Respondents 1', solicitor1);
   }
+  I.say('setupScenario done');
 }
 
 Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, submitApplicationEventPage, manageLegalCounsellorsEventPage, enterChildrenEventPage, returnApplicationEventPage }) => {
