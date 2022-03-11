@@ -15,8 +15,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
+import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -33,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -61,6 +66,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -77,6 +83,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -205,28 +212,39 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityWhenApplicantIsLocalAuthority() {
+    void shouldNotifyAllLocalAuthoritiesOnAdditionalApplicationsUpload() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
-                    .applicantName(LOCAL_AUTHORITY_NAME)
+                    .respondents(emptyList())
                     .others(emptyList())
                     .build())
                 .build()
         ));
-        given(caseData.getCaseLocalAuthorityName()).willReturn(LOCAL_AUTHORITY_NAME);
-        given(localAuthorityRecipients.getRecipients(any())).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        underTest.notifyApplicant(
-                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+        Set<OrderApplicant> allApplicants = new HashSet<OrderApplicant>();
+        for (ApplicantType at : ApplicantType.values()) {
+            allApplicants.add(OrderApplicant.builder()
+                .type(at)
+                .name(at.name())
+                .build());
+        }
 
-        final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .secondaryLocalAuthorityExcluded(true)
-            .build();
+        for (OrderApplicant applicant : allApplicants){
+            underTest.notifyAllLocalAuthorities(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant)
+            );
+        }
 
-        verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
+        verify(notificationService, times(allApplicants.size())).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            notifyData, CASE_ID.toString()
+        );
     }
 
     @Test
