@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.isAlphanumeric;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-@Api
+@Tag(name = "Add case number")
 @Slf4j
 @RestController
 @RequestMapping("/callback/add-case-number")

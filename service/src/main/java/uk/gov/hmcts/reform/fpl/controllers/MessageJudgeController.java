@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transien
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
-@Api
+@Tag(name = "Message judge")
 @RestController
 @RequestMapping("/callback/message-judge")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

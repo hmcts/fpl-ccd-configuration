@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
-@Api
+@Tag(name = "Notice of proceedings")
 @RestController
 @RequestMapping("/callback/notice-of-proceedings")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

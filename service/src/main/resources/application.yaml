@@ -281,3 +281,6 @@ resources:
 send-grid:
   host: smtp.sendgrid.net
   port: 587
+
+springdoc:
+  packages-to-scan: uk.gov.hmcts.reform.fpl.testingsupport.controllers, uk.gov.hmcts.reform.fpl.controllers

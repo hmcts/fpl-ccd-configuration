@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslatableItemService;
 
-@Api
+@Tag(name = "Upload translations")
 @RestController
 @RequestMapping("/callback/upload-translations")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

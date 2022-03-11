@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.legalcounsel.ManageLegalCounselService;
 
 import java.util.List;
 
-@Api
+@Tag(name = "Manage legal council")
 @RestController
 @RequestMapping("/callback/manage-legal-counsel")
 @RequiredArgsConstructor

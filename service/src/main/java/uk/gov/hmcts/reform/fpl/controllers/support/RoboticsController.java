@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import static java.util.List.of;
 import static uk.gov.hmcts.reform.fpl.enums.State.DELETED;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
-@Api
+@Tag(name = "Robotics")
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsController {

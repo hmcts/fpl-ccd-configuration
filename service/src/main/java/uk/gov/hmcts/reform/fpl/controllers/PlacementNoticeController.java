@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_G
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
+@Tag(name = "Placement notice")
 @RestController
 @RequestMapping("/callback/placementNotice")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

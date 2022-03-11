@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +22,7 @@ import java.util.List;
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 
-@Api
+@Tag(name = "Enter others")
 @RestController
 @RequestMapping("/callback/enter-others")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

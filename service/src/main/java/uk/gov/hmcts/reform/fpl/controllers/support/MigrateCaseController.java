@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-@Api
+@Tag(name = "Migrate case controller")
 @RestController
 @RequestMapping("/callback/migrate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,7 +54,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEM
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
-@Api
+@Tag(name = "Manage documents")
 @RestController
 @RequestMapping("/callback/manage-documents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Slf4j
-@Api
+@Tag(name = "Enter respondents")
 @RestController
 @RequestMapping("/callback/enter-respondents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
