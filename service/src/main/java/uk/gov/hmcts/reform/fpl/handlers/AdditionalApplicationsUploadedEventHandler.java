@@ -171,23 +171,9 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         final Set<String> recipients = new HashSet<>();
 
-        if (applicant.getType() == LOCAL_AUTHORITY) {
-
-            final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-                .caseData(caseData)
-                .secondaryLocalAuthorityExcluded(true)
-                .build();
-
-            recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
-
-        } else if (applicant.getType() == SECONDARY_LOCAL_AUTHORITY) {
-
-            final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-                .caseData(caseData)
-                .designatedLocalAuthorityExcluded(true)
-                .build();
-
-            recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
+        if (applicant.getType() == LOCAL_AUTHORITY || applicant.getType() == SECONDARY_LOCAL_AUTHORITY) {
+            // do nothing
+            // they should be notified in notifyAllLocalAuthorities()
         } else {
 
             final Map<String, String> respondentsEmails = getRespondentsEmails(caseData);
@@ -199,6 +185,25 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         if (isNotEmpty(recipients)) {
             recipients.forEach((r) -> log.info("{}: notifyApplicant - {}", caseData.getId(), r));
+            sendNotification(caseData, recipients);
+        }
+    }
+
+    @EventListener
+    @Async
+    public void notifyAllLocalAuthorities(final AdditionalApplicationsUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+        final OrderApplicant applicant = event.getApplicant();
+
+        final Set<String> recipients = new HashSet<>();
+
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
+        recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
+
+        if (isNotEmpty(recipients)) {
+            recipients.forEach((r) -> log.info("{}: notifyAllLocalAuthorities - {}", caseData.getId(), r));
             sendNotification(caseData, recipients);
         }
     }
