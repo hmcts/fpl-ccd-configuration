@@ -213,8 +213,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
-                    .respondents(emptyList())
-                    .others(emptyList())
                     .build())
                 .build()
         ));
