@@ -60,7 +60,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdditionalApplicationsUploadedEventHandler {
@@ -94,8 +93,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        log.info("{}: case local authority = {}", caseData.getId(), caseData.getCaseLocalAuthority());
-        log.info("{}: recipientIsEngland.isPresent() = {}", caseData.getId(), recipientIsEngland.isPresent());
 
         if (recipientIsEngland.isPresent()) {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
@@ -106,9 +103,6 @@ public class AdditionalApplicationsUploadedEventHandler {
                     .filter(Predicate.not(List::isEmpty))
                     .map(additionalApplicationsBundle -> additionalApplicationsBundle.get(0).getValue())
                     .orElse(null);
-
-            log.info("{}: !uploadedBundle.equals(oldBundle) = {}", caseData.getId(),
-                (!uploadedBundle.equals(oldBundle)));
 
             if (!uploadedBundle.equals(oldBundle)) {
                 String documentTypes = contentProvider.getApplicationTypes(uploadedBundle).stream()
@@ -184,7 +178,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
 
         if (isNotEmpty(recipients)) {
-            recipients.forEach((r) -> log.info("{}: notifyApplicant - {}", caseData.getId(), r));
             sendNotification(caseData, recipients);
         }
     }
@@ -203,7 +196,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
 
         if (isNotEmpty(recipients)) {
-            recipients.forEach((r) -> log.info("{}: notifyAllLocalAuthorities - {}", caseData.getId(), r));
             sendNotification(caseData, recipients);
         }
     }
@@ -238,8 +230,6 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
 
-        digitalRepresentativesEmails.forEach((r) ->
-            log.info("{}: notifyDigitalRepresentatives - {}", caseData.getId(), r));
         representativeNotificationService.sendNotificationToRepresentatives(
             caseData.getId(),
             notifyData,
@@ -279,7 +269,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
 
         if (!emailRepresentatives.isEmpty()) {
-            emailRepresentatives.forEach((r) -> log.info("{}: notifyDigitalRepresentatives - {}", caseData.getId(), r));
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
                 notifyData,
