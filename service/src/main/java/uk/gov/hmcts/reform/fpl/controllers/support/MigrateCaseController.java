@@ -37,7 +37,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-500", this::run500,
-        "DFPL-466", this::run466,
+        "DFPL-451", this::run451,
         "DFPL-482", this::run482
     );
 
@@ -61,13 +61,14 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run466(CaseDetails caseDetails) {
+    private void run451(CaseDetails caseDetails) {
+        var casesWithHearingOption = List.of(
+            1603370139459131L, 1618403849028418L, 1592492643062277L, 1615809514849016L, 1605537316992153L);
+
         var caseId = caseDetails.getId();
-        if (caseId != 1611613172339094L) {
-            throw new AssertionError(format(
-                "Migration {id = DFPL-466, case reference = %s}, expected case id 1611613172339094",
-                caseId
-            ));
+        if (!casesWithHearingOption.contains(caseId)) {
+            throw new AssertionError(
+                format("Migration {id = DFPL-451, case reference = %s}, Unexpected case reference", caseId));
         }
 
         if (isNotEmpty(caseDetails.getData().get("hearingOption"))) {
