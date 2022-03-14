@@ -95,7 +95,7 @@ Scenario('Legal counsel to be removed when child representative is updated @fix-
   checkLegalCounselWasAdded();
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await addChildMainRepresentative(I, caseViewPage, enterChildrenEventPage, solicitor2);
-  // I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.dontSeeInTab(['Child 1', 'Legal Counsellor']);
