@@ -199,7 +199,7 @@ Scenario('HMCTS admin transfer case to new local authority', async ({I, caseView
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin transfer case to secondary local authority @fix-flaky-Feb', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
+Scenario('HMCTS admin transfer case to secondary local authority @flaky', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectAddLocalAuthority();
@@ -212,9 +212,14 @@ Scenario('HMCTS admin transfer case to secondary local authority @fix-flaky-Feb'
 
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
 
+  // @flaky
+  // The LocalAuthority name is not shown properly at the first time.
+  // But it can be shown if user go back to the previous page and renter to this page.
+  // The FPL code looks fine to me, not sure it is XUI bug or not.
   manageLocalAuthoritiesEventPage.selectTransferLocalAuthority();
   await I.goToNextPage();
   await I.goToPreviousPage();
+
   manageLocalAuthoritiesEventPage.selectTransferLocalAuthority();
   await I.goToNextPage();
   manageLocalAuthoritiesEventPage.selectSharedLocalAuthorityToTransfer();
