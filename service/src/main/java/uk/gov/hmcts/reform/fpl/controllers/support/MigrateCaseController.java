@@ -114,9 +114,9 @@ public class MigrateCaseController extends CallbackController {
     private void run551(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
-        var expectedCaseId = 1642077834805293L;
+        var expectedCaseId = 1641312631808724L;
 
-        var expectedDocId = UUID.fromString("6ac68da6-05d1-4616-970a-bc53346173b3");
+        var expectedDocId = UUID.fromString("0de3ba95-e383-41b4-8a66-52bf0dce834e");
 
         if (caseId != expectedCaseId) {
             throw new AssertionError(format(
