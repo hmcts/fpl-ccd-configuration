@@ -126,7 +126,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;
 
     ManageOrdersForPlacementOrderSubmittedControllerTest() {
-        super("manage-orders/post-submit-callback");
+        super("manage-orders");
     }
 
     @BeforeEach
@@ -327,6 +327,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
 
     @AfterEach
     void tearDown() {
+        verify(coreCaseDataService).triggerEvent(any(), eq("internal-change-manage-order"), any());
         verifyNoMoreInteractions(notificationClient, coreCaseDataService, sendLetterApi);
     }
 

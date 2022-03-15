@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrdersEventBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderProcessingService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.list.AmendableOrderListBuilder;
@@ -44,6 +45,7 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
     private final AmendableOrderListBuilder amendableOrderListBuilder;
     private final CoreCaseDataService coreCaseDataService;
+    private final ManageOrdersEventBuilder eventBuilder;
     private static final String PDF = "pdf";
 
     @PostMapping("/about-to-start")
@@ -134,10 +136,28 @@ public class ManageOrdersController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = getCaseData(callbackRequest);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
+        Map<String, Object> data = updatedDetails.getData();
+        CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
+
+        CaseData caseData;
+        Map<String, Object> updates = orderProcessing.postProcessDocument(fixedCaseData);
+        if (updates.isEmpty()) {
+            caseData = getCaseData(callbackRequest);
+        } else {
+            data.putAll(updates);
+
+            caseData = getCaseData(updatedDetails);
+            //coreCaseDataService.updateCase(caseData.getId(), data);
+        }
         coreCaseDataService.triggerEvent(caseData.getId(),
             "internal-change-manage-order",
-            callbackRequest.getCaseDetails().getData());
+            data);
+
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+        publishEvent(eventBuilder.build(caseData, caseDataBefore));
     }
 
     private CaseData fixAndRetrieveCaseData(CaseDetails caseDetails) {

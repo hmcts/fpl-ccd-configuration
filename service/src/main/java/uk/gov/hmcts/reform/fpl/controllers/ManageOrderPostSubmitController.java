@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrdersEventBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderProcessingService;
@@ -33,22 +32,10 @@ public class ManageOrderPostSubmitController extends CallbackController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
-
         Map<String, Object> data = updatedDetails.getData();
-        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
-
-        data.putAll(orderProcessing.postProcessDocument(caseData));
 
         fieldsCalculator.calculate().forEach(data::remove);
 
         return respond(caseDetails);
-    }
-
-    @PostMapping("/submitted")
-    public void postHandleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = getCaseData(callbackRequest);
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-
-        publishEvent(eventBuilder.build(caseData, caseDataBefore));
     }
 }
