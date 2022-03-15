@@ -4,6 +4,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
@@ -100,15 +103,18 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
     }
 
-    @Test
-    void shouldAddSecondaryLocalAuthority() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldAddSecondaryLocalAuthority(Boolean isUserLaSolicitor) {
 
         final DynamicList localAuthorities = dynamicLists.from(0,
             Pair.of(LOCAL_AUTHORITY_2_NAME, LOCAL_AUTHORITY_2_CODE),
             Pair.of(LOCAL_AUTHORITY_3_NAME, LOCAL_AUTHORITY_3_CODE));
 
         final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
-            .localAuthorityAction(ADD)
+            .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+            .localAuthorityAction(isUserLaSolicitor ? null : ADD)
+            .localAuthorityActionLA(isUserLaSolicitor ? ADD : null)
             .localAuthoritiesToShare(localAuthorities)
             .localAuthorityEmail("test@test.com")
             .build();
@@ -150,14 +156,18 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
         verifyNoInteractions(caseAssignmentApi);
     }
 
-    @Test
-    void shouldRemoveSecondaryLocalAuthority() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldRemoveSecondaryLocalAuthority(Boolean isUserLaSolicitor) {
 
         final AboutToStartOrSubmitCallbackResponse nocResponse = AboutToStartOrSubmitCallbackResponse.builder()
             .data(Map.of("key", "value"))
             .build();
 
         final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+            .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+            .localAuthorityAction(isUserLaSolicitor ? null : REMOVE)
+            .localAuthorityActionLA(isUserLaSolicitor ? REMOVE : null)
             .localAuthorityAction(REMOVE)
             .localAuthorityToRemove(LOCAL_AUTHORITY_2_NAME)
             .build();
