@@ -165,7 +165,8 @@ public class AdditionalApplicationsUploadedEventHandler {
         final Set<String> recipients = new HashSet<>();
 
         // DFPL-498 notify all LAs
-        recipients.addAll(getAllLocalAuthoritiesRecipients(caseData));
+        recipients.addAll(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
+            .caseData(caseData).build()));
 
         if (applicant.getType() != LOCAL_AUTHORITY && applicant.getType() != SECONDARY_LOCAL_AUTHORITY) {
             final Map<String, String> respondentsEmails = getRespondentsEmails(caseData);
@@ -177,15 +178,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         if (isNotEmpty(recipients)) {
             sendNotification(caseData, recipients);
         }
-    }
-
-    private Set<String> getAllLocalAuthoritiesRecipients(CaseData caseData) {
-        final Set<String> recipients = new HashSet<>();
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .build();
-        recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
-        return recipients;
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
