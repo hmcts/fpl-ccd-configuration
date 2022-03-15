@@ -38,7 +38,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-500", this::run500,
         "DFPL-466", this::run466,
-        "DFPL-482", this::run482
+        "DFPL-482", this::run482,
+        "DFPL-551", this::run551
     );
 
     @PostMapping("/about-to-submit")
@@ -108,6 +109,31 @@ public class MigrateCaseController extends CallbackController {
         }
 
         updateDocumentsSentToParties(caseDetails, caseData, docIds);
+    }
+
+    private void run551(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        var expectedCaseId = 1642077834805293L;
+
+        var expectedDocId = UUID.fromString("6ac68da6-05d1-4616-970a-bc53346173b3");
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = DFPL-551, case reference = %s}, expected case id %d",
+                caseId, expectedCaseId
+            ));
+        }
+
+        var documentUrl = caseData.getC110A().getDocument().getUrl();
+        var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
+        if (!docId.equals(expectedDocId)) {
+            throw new AssertionError(format(
+                "Migration {id = DFPL-551, case reference = %s}, expected c110a document id %s",
+                caseId, expectedDocId
+            ));
+        }
+        caseDetails.getData().put("submittedForm", null);
     }
 
     private void updateDocumentsSentToParties(CaseDetails caseDetails, CaseData caseData, List<UUID> docIds) {
