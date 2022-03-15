@@ -208,7 +208,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllLocalAuthoritiesOnAdditionalApplicationsUpload() {
+    void shouldNotifyAllLAs() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder()
@@ -229,7 +229,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         }
 
         for (OrderApplicant applicant : allApplicants) {
-            underTest.notifyAllLocalAuthorities(
+            underTest.notifyApplicant(
                 new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant)
             );
         }
@@ -237,6 +237,48 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         verify(notificationService, times(allApplicants.size())).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            notifyData, CASE_ID.toString()
+        );
+    }
+
+    @Test
+    void shouldNotifyAllLAsAndRespondentWhenApplicantIsRespondent() {
+        final String RESPONDENT1_FIRST_NAME = "John";
+        final String RESPONDENT1_LAST_NAME = "Smith";
+        final String RESPONDENT1_FULL_NAME = RESPONDENT1_FIRST_NAME + " " + RESPONDENT1_LAST_NAME;
+        final String RESPONDENT1_EMAIL_ADDRESS = "respondent1@test.com";
+        List<Element<Respondent>> respondents = wrapElements(
+            Respondent.builder()
+                .party(RespondentParty.builder().firstName(RESPONDENT1_FIRST_NAME).lastName(RESPONDENT1_LAST_NAME)
+                    .build())
+                .solicitor(RespondentSolicitor.builder().email(RESPONDENT1_EMAIL_ADDRESS).build())
+                .build(),
+            Respondent.builder()
+                .party(RespondentParty.builder().firstName("Ross").lastName("Bob").build())
+                .solicitor(RespondentSolicitor.builder().build())
+                .build()
+        );
+
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(caseData.getAllRespondents()).willReturn(respondents);
+        given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .document(TEST_DOCUMENT)
+                    .applicantName(RESPONDENT1_FULL_NAME)
+                    .others(emptyList())
+                    .build())
+                .build()
+        ));
+
+        OrderApplicant applicant = OrderApplicant.builder().name(RESPONDENT1_FULL_NAME).type(RESPONDENT).build();
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
+
+        verify(notificationService).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, RESPONDENT1_EMAIL_ADDRESS),
             notifyData, CASE_ID.toString()
         );
     }

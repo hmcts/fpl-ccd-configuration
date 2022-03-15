@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -165,13 +164,11 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         final Set<String> recipients = new HashSet<>();
 
-        if (applicant.getType() == LOCAL_AUTHORITY || applicant.getType() == SECONDARY_LOCAL_AUTHORITY) {
-            // do nothing
-            // they should be notified in notifyAllLocalAuthorities()
-        } else {
+        // DFPL-498 notify all LAs
+        recipients.addAll(getAllLocalAuthoritiesRecipients(caseData));
 
+        if (applicant.getType() != LOCAL_AUTHORITY && applicant.getType() != SECONDARY_LOCAL_AUTHORITY) {
             final Map<String, String> respondentsEmails = getRespondentsEmails(caseData);
-
             if (isNotEmpty(respondentsEmails.get(applicant.getName()))) {
                 recipients.add(respondentsEmails.get(applicant.getName()));
             }
@@ -182,22 +179,13 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
-    @EventListener
-    @Async
-    public void notifyAllLocalAuthorities(final AdditionalApplicationsUploadedEvent event) {
-        final CaseData caseData = event.getCaseData();
-        final OrderApplicant applicant = event.getApplicant();
-
+    private Set<String> getAllLocalAuthoritiesRecipients(CaseData caseData) {
         final Set<String> recipients = new HashSet<>();
-
         final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
             .build();
         recipients.addAll(localAuthorityRecipients.getRecipients(recipientsRequest));
-
-        if (isNotEmpty(recipients)) {
-            sendNotification(caseData, recipients);
-        }
+        return recipients;
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
