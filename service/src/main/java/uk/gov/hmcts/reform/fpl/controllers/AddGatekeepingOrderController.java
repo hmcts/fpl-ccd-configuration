@@ -213,28 +213,22 @@ public class AddGatekeepingOrderController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
         CaseData caseData = getCaseData(request);
-        final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final Map<String, Object> data = caseDetails.getData();
 
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
-
-        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
-            .getGatekeepingOrderSealDecision();
-
-        removeTemporaryFields(data, "gatekeepingOrderSealDecision");
-        if (decision.isSealed() || sdoRouter == URGENT) {
-            removeTemporaryFields(data, "gatekeepingOrderRouter");
-        }
 
         switch (sdoRouter) {
             case URGENT:
                 data.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
-                coreCaseDataService.updateCase(caseData.getId(), data);
                 break;
             case UPLOAD:
                 data.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
-                coreCaseDataService.updateCase(caseData.getId(), data);
                 break;
         }
+        coreCaseDataService.triggerEvent(caseData.getId(),
+            "internal-change-add-gatekeeping",
+            data);
 
         CaseData caseDataBefore = getCaseDataBefore(request);
 
@@ -249,5 +243,22 @@ public class AddGatekeepingOrderController extends CallbackController {
 
                 publishEvent(eventToPublish);
             });
+    }
+
+
+    @PostMapping("/post-submit-callback/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handlePostSubmittedEvent(@RequestBody CallbackRequest request) {
+        final CaseData caseData = getCaseData(request);
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
+            .getGatekeepingOrderSealDecision();
+        removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
+
+        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+        if (decision.isSealed() || sdoRouter == URGENT) {
+            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter");
+        }
+
+        return respond(caseDetails);
     }
 }

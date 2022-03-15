@@ -274,7 +274,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         ));
 
         verify(sealingService).sealDocument(SDO_DOCUMENT, SealType.ENGLISH);
-        verify(coreCaseDataService).updateCase(eq(caseData.getId()), any());
+        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()),eq("internal-change-add-gatekeeping"), any());
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
