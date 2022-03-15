@@ -1,63 +1,33 @@
 package uk.gov.hmcts.reform.fpl.controllers.gatekeepingorder;
 
-import org.assertj.core.api.AssertionsForClassTypes;
-import org.assertj.core.api.AssertionsForInterfaceTypes;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
-import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
-import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -65,24 +35,18 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ATTEND_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.CUSTOM;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testHearing;
 
 @WebMvcTest(AddGatekeepingOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class AddGatekeepingOrderControllerPostSubmitedTest extends AbstractCallbackTest {
+class AddGatekeepingOrderControllerPostSubmittedTest extends AbstractCallbackTest {
 
-    AddGatekeepingOrderControllerPostSubmitedTest() {
+    AddGatekeepingOrderControllerPostSubmittedTest() {
         super("add-gatekeeping-order/post-submit-callback");
     }
 

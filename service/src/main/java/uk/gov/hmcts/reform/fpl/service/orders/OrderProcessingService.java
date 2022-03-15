@@ -27,7 +27,7 @@ public class OrderProcessingService {
         OrderOperation operation = defaultIfNull(
             eventData.getManageOrdersOperation(), eventData.getManageOrdersOperationClosedState()
         );
-        return AMEND == operation ? amendOrderService.updateOrder(caseData) : historyService.generate(caseData);
+        return AMEND == operation ? new HashMap<>() : historyService.generate(caseData);
     }
 
     public Map<String, Object> postProcessDocument(CaseData caseData) {
