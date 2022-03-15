@@ -45,7 +45,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -129,6 +129,8 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
+
+        verify(conversionService).convertToPdf(DOCUMENT);
     }
 
     @Test
