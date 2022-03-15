@@ -131,8 +131,8 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     }
 
     @Test
-    void notifyAllLocalAuthorities() {
-        underTest.notifyAllLocalAuthorities(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT));
+    void notifyParties() {
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
