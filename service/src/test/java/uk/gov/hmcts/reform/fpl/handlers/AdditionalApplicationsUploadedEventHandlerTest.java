@@ -208,7 +208,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllLAs() {
+    void shouldNotifyAllLAsNoMatterWhoIsTheApplicant() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder()
