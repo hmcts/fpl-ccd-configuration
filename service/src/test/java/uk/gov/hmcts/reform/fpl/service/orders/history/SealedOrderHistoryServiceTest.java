@@ -83,6 +83,7 @@ class SealedOrderHistoryServiceTest {
             .approvalDate(null)
             .build());
     private static final UUID GENERATED_ORDER_UUID = java.util.UUID.randomUUID();
+    private static final DocumentReference UPLOADED_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference SEALED_PDF_DOCUMENT = mock(DocumentReference.class);
     private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private static final String EXTRA_TITLE = "ExtraTitle";
@@ -447,6 +448,60 @@ class SealedOrderHistoryServiceTest {
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
                             .specialGuardians("Guardians names")
                             .build())
+                    )
+                ));
+            }
+        }
+
+        @Test
+        void shouldNotProcessUploadedDocument() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData()
+                    .manageOrdersEventData(startBuildingCommonEventData()
+                        .manageOrdersType(Order.OTHER_ORDER)
+                        .manageOrdersUploadOrderFile(UPLOADED_DOCUMENT)
+                        .build())
+                    .build();
+                mockDocumentUpload(caseData);
+                mockGenerators(caseData);
+                when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(othersService.getSelectedOthers(caseData)).thenReturn(List.of(element(other1ID, other1),
+                    element(other2ID, other2)));
+                when(othersNotifiedGenerator.getOthersNotified(List.of(element(other1ID, other1),
+                    element(other2ID, other2)))).thenReturn(OTHERS_NOTIFIED);
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .orderType(Order.OTHER_ORDER.name())
+                            .document(UPLOADED_DOCUMENT)
+                            .unsealedDocumentCopy(UPLOADED_DOCUMENT)
+                            .build())
+                    )
+                ));
+            }
+        }
+
+        @Test
+        void postProcessUploadedOrder() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+
+                List<Element<GeneratedOrder>> orderCollections =
+                    wrapElements(startCommonExpectedGeneratedOrderBuilder().build());
+                CaseData caseData = caseData().orderCollection(orderCollections).build();
+                mockDocumentUpload(caseData);
+
+                Map<String, Object> actual = underTest.processUploadedOrder(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(orderCollections.get(0).getId(), expectedGeneratedOrder().build())
                     )
                 ));
             }
