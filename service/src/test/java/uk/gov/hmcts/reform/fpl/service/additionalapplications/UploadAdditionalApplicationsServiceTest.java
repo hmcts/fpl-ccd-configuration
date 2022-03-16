@@ -76,8 +76,10 @@ class UploadAdditionalApplicationsServiceTest {
     );
 
     private static final DocumentReference DOCUMENT = testDocumentReference("TestDocument.doc");
+    private static final DocumentReference CONVERTED_DOCUMENT = testDocumentReference("TestDocument.pdf");
 
     private static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
+    private static final DocumentReference CONVERTED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
@@ -96,6 +98,8 @@ class UploadAdditionalApplicationsServiceTest {
 
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
+        given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
             time, user, uploadHelper, conversionService, peopleInCaseService
         );
@@ -134,13 +138,11 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldOnlyConvertApplicationsWhenNotHMCTS() {
+    void shouldConvertApplicationsWhenNotHMCTS() {
         given(user.isHmctsUser()).willReturn(false);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
-
-        // Returning the same doc simulating the upload pdf flow
-        given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(SUPPLEMENT_DOCUMENT);
-        given(conversionService.convertToPdf(DOCUMENT)).willReturn(DOCUMENT);
+        given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
+        given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
 
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
@@ -162,7 +164,45 @@ class UploadAdditionalApplicationsServiceTest {
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(USER_EMAIL);
-        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(DOCUMENT);
+        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(CONVERTED_DOCUMENT);
+        assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
+            .first()
+            .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
+            .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+    }
+
+    @Test
+    void shouldConvertApplicationsWhenHMCTS() {
+        given(user.isHmctsUser()).willReturn(true);
+        given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
+        given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
+        given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
+
+        Supplement supplement = createSupplementsBundle();
+        SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
+        PBAPayment pbaPayment = buildPBAPayment();
+
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(C2_ORDER))
+            .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
+            .temporaryPbaPayment(pbaPayment)
+            .applicantsList(applicantsList)
+            .c2Type(WITH_NOTICE)
+            .build();
+
+        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
+
+        assertThat(actual.getAuthor()).isEqualTo(USER_EMAIL);
+        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(CONVERTED_DOCUMENT);
+        assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
+            .first()
+            .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
+            .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test
@@ -354,6 +394,7 @@ class UploadAdditionalApplicationsServiceTest {
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
         assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
@@ -367,6 +408,7 @@ class UploadAdditionalApplicationsServiceTest {
     private void assertOtherDocumentBundle(OtherApplicationsBundle actual, Supplement expectedSupplement,
                                            SupportingEvidenceBundle expectedSupportingDocument) {
         assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
         assertThat(actual.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
         assertThat(actual.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
@@ -383,7 +425,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement expectedSupplement = exampleOfExpectedSupplement.toBuilder()
             .dateTimeUploaded(time.now())
             .uploadedBy(HMCTS)
-            .document(SUPPLEMENT_DOCUMENT)
+            .document(CONVERTED_SUPPLEMENT_DOCUMENT)
             .build();
 
         assertThat(actual).isEqualTo(expectedSupplement);
