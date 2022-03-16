@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
@@ -137,43 +138,10 @@ class UploadAdditionalApplicationsServiceTest {
         verify(conversionService).convertToPdf(DOCUMENT);
     }
 
-    @Test
-    void shouldConvertApplicationsWhenNotHMCTS() {
-        given(user.isHmctsUser()).willReturn(false);
-        given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
-        given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
-        given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
-
-        Supplement supplement = createSupplementsBundle();
-        SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
-        PBAPayment pbaPayment = buildPBAPayment();
-
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(0))
-            .listItems(DYNAMIC_LIST_ELEMENTS)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(C2_ORDER))
-            .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
-            .c2Type(WITH_NOTICE)
-            .build();
-
-        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
-
-        assertThat(actual.getAuthor()).isEqualTo(USER_EMAIL);
-        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(CONVERTED_DOCUMENT);
-        assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
-            .first()
-            .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
-            .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-    }
-
-    @Test
-    void shouldConvertApplicationsWhenHMCTS() {
-        given(user.isHmctsUser()).willReturn(true);
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldConvertApplications(boolean isHmctsUser) {
+        given(user.isHmctsUser()).willReturn(isHmctsUser);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
