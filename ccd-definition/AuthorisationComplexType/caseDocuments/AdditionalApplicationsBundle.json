@@ -1031,6 +1031,7 @@
           "[LABARRISTER]",
           "[SOLICITOR]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass",
@@ -1119,7 +1120,8 @@
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
-          "[BARRISTER]"
+          "[BARRISTER]",
+          "[LASHARED]"
         ],
         "CRUD": "CU"
       },
@@ -1182,6 +1184,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[LABARRISTER]",
+          "[LASHARED]",
           "[BARRISTER]"
         ],
         "CRUD": "CRU"
@@ -1212,7 +1215,8 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[LASHARED]"
         ],
         "CRUD": "CU"
       },
@@ -1435,6 +1439,7 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass",
@@ -1488,6 +1493,7 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass",
@@ -1514,6 +1520,7 @@
       {
         "UserRoles": [
           "[LABARRISTER]",
+          "[LASHARED]",
           "[SOLICITOR]",
           "[SOLICITORA]",
           "[SOLICITORB]",
@@ -1567,6 +1574,7 @@
       {
         "UserRoles": [
           "[LABARRISTER]",
+          "[LASHARED]",
           "[SOLICITOR]",
           "[SOLICITORA]",
           "[SOLICITORB]",
@@ -1647,6 +1655,7 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass",
@@ -1685,6 +1694,7 @@
           "[SOLICITORI]",
           "[SOLICITORJ]",
           "[LASOLICITOR]",
+          "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "[CHILDSOLICITORA]",
           "[CHILDSOLICITORB]",
