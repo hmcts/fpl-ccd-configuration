@@ -206,8 +206,9 @@ public class UploadAdditionalApplicationsService {
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
+            DocumentReference pdfDocument = getDocumentToStore(incomingSupplement.getDocument());
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(incomingSupplement.getDocument())
+                .document(pdfDocument)
                 .dateTimeUploaded(dateTime)
                 .uploadedBy(uploadedBy)
                 .build();
