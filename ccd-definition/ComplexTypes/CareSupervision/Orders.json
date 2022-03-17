@@ -132,7 +132,7 @@
     "ListElementCode": "court",
     "FieldType": "FixedList",
     "FieldTypeParameter": "Court",
-    "ElementLabel": "*Which court are you issuing for?",
+    "ElementLabel": "Which court are you issuing for?",
     "SecurityClassification": "Public"
   }
 ]
