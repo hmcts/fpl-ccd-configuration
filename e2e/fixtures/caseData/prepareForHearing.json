@@ -208,7 +208,8 @@
                 "notificationRecipient": "Yes"
               }
             }
-          ]
+          ],
+          "designated": "Yes"
         }
       }
     ],

@@ -133,7 +133,8 @@
                 "notificationRecipient": "Yes"
               }
             }
-          ]
+          ],
+          "designated": "Yes"
         }
       }
     ],
