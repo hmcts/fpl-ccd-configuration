@@ -60,7 +60,6 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
 
   await I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
   caseViewPage.seeInCaseTitle('New case name');
-  console.log(caseViewPage.formatCaseId(caseId));
   caseViewPage.seeInCaseTitle(caseViewPage.formatCaseId(caseId));
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
