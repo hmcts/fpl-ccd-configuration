@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -348,6 +349,78 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage("Migration {id = DFPL-482, case reference = 1643728359576136},"
                     + " expected case id 1636970654155393");
         }
+
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl551 {
+        private final String migrationId = "DFPL-551";
+        private final long validCaseId = 1641312631808724L;
+        private final long invalidCaseId = 1643728359576136L;
+
+        private final UUID validDocId = UUID.fromString("0de3ba95-e383-41b4-8a66-52bf0dce834e");
+        private final UUID invalidDocId = UUID.randomUUID();
+
+        @Test
+        void shouldPerformMigrationWhenDocIdMatches() {
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .c110A(C110A.builder()
+                    .submittedForm(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getC110A().getSubmittedForm()).isNull();
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .c110A(C110A.builder()
+                    .submittedForm(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-551, case reference = 1643728359576136},"
+                    + " expected case id 1641312631808724");
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .c110A(C110A.builder()
+                    .submittedForm(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", invalidDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-551, case reference = 1641312631808724},"
+                    + " expected c110a document id 0de3ba95-e383-41b4-8a66-52bf0dce834e");
+        }
+
 
     }
 
