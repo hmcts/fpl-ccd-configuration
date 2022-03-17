@@ -104,6 +104,38 @@ class ManageLocalAuthoritiesServiceTest {
     private ManageLocalAuthoritiesService underTest;
 
     @Nested
+    class LocalAuthoritiesAction {
+
+        @Test
+        void shouldReturnLocalAuthorityActionForCourtAdminRole() {
+
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .isLaSolicitor(null)
+                .localAuthorityAction(ADD)
+                .localAuthorityActionLA(null)
+                .build();
+
+            final CaseData caseData = CaseData.builder().localAuthoritiesEventData(eventData).build();
+
+            assertThat(underTest.getLocalAuthorityAction(caseData)).isEqualTo(ADD);
+        }
+
+        @Test
+        void shouldReturnLocalAuthorityActionForSolicitorRole() {
+
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .isLaSolicitor(YES)
+                .localAuthorityAction(null)
+                .localAuthorityActionLA(REMOVE)
+                .build();
+
+            final CaseData caseData = CaseData.builder().localAuthoritiesEventData(eventData).build();
+
+            assertThat(underTest.getLocalAuthorityAction(caseData)).isEqualTo(REMOVE);
+        }
+    }
+
+    @Nested
     class ValidateAction {
 
         @Test
