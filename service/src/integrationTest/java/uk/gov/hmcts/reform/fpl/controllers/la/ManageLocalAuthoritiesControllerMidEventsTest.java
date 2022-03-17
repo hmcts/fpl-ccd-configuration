@@ -4,12 +4,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
+import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
@@ -63,15 +68,11 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
 
         private final String callback = "action-selection";
 
-        @Test
-        void shouldReturnErrorWhenUserTriesToRemoveNonExistingSecondaryLocalAuthority() {
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnErrorWhenUserTriesToRemoveNonExistingSecondaryLocalAuthority(Boolean isUserLaSolicitor) {
 
-            final CaseData caseData = CaseData.builder()
-                .sharedLocalAuthorityPolicy(null)
-                .localAuthoritiesEventData(LocalAuthoritiesEventData.builder()
-                    .localAuthorityAction(REMOVE)
-                    .build())
-                .build();
+            final CaseData caseData = buildCaseData(isUserLaSolicitor, REMOVE, null);
 
             final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callback);
 
@@ -79,15 +80,25 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
                 "There are no other local authorities to remove from this case");
         }
 
-        @Test
-        void shouldReturnErrorWhenUserTriesToAddAnotherSharedLocalAuthority() {
-
-            final CaseData caseData = CaseData.builder()
-                .sharedLocalAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASHARED))
+        private CaseData buildCaseData(Boolean isUserLaSolicitor,
+                                       LocalAuthorityAction localAuthorityAction,
+                                       OrganisationPolicy organisationPolicy) {
+            return CaseData.builder()
+                .sharedLocalAuthorityPolicy(organisationPolicy)
                 .localAuthoritiesEventData(LocalAuthoritiesEventData.builder()
-                    .localAuthorityAction(ADD)
+                    .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+                    .localAuthorityAction(isUserLaSolicitor ? null : localAuthorityAction)
+                    .localAuthorityActionLA(isUserLaSolicitor ? localAuthorityAction : null)
                     .build())
                 .build();
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnErrorWhenUserTriesToAddAnotherSharedLocalAuthority(Boolean isUserLaSolicitor) {
+
+            final CaseData caseData = buildCaseData(
+                isUserLaSolicitor, ADD, organisationPolicy("ORG", "ORG name", LASHARED));
 
             final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callback);
 
@@ -95,30 +106,28 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
                 "Case access has already been given to local authority. Remove their access to continue.");
         }
 
-        @Test
-        void shouldAddNameOfLocalAuthorityToBeRemoved() {
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldAddNameOfLocalAuthorityToBeRemoved(Boolean isUserLaSolicitor) {
 
-            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
-                .localAuthorityAction(REMOVE)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .sharedLocalAuthorityPolicy(organisationPolicy("ORG", "ORG name", LASHARED))
-                .localAuthoritiesEventData(eventData)
-                .build();
+            final CaseData caseData = buildCaseData(
+                isUserLaSolicitor, REMOVE, organisationPolicy("ORG", "ORG name", LASHARED));
 
             final CaseData updated = extractCaseData(postMidEvent(caseData, callback));
 
             final LocalAuthoritiesEventData expectedEventData = LocalAuthoritiesEventData.builder()
-                .localAuthorityAction(REMOVE)
+                .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+                .localAuthorityAction(isUserLaSolicitor ? null : REMOVE)
+                .localAuthorityActionLA(isUserLaSolicitor ? REMOVE : null)
                 .localAuthorityToRemove("ORG name")
                 .build();
 
             assertThat(updated.getLocalAuthoritiesEventData()).isEqualTo(expectedEventData);
         }
 
-        @Test
-        void shouldAddEmailOfLocalAuthorityToBeShared() {
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldAddEmailOfLocalAuthorityToBeShared(Boolean isUserLaSolicitor) {
 
             final DynamicList localAuthorities = dynamicLists.from(1,
                 Pair.of(LOCAL_AUTHORITY_1_NAME, LOCAL_AUTHORITY_1_CODE),
@@ -126,7 +135,9 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
                 Pair.of(LOCAL_AUTHORITY_3_NAME, LOCAL_AUTHORITY_3_CODE));
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
-                .localAuthorityAction(ADD)
+                .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+                .localAuthorityAction(isUserLaSolicitor ? null : ADD)
+                .localAuthorityActionLA(isUserLaSolicitor ? ADD : null)
                 .localAuthoritiesToShare(localAuthorities)
                 .build();
 
@@ -137,7 +148,9 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
             final CaseData updated = extractCaseData(postMidEvent(caseData, callback));
 
             final LocalAuthoritiesEventData expectedEventData = LocalAuthoritiesEventData.builder()
-                .localAuthorityAction(ADD)
+                .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+                .localAuthorityAction(isUserLaSolicitor ? null : ADD)
+                .localAuthorityActionLA(isUserLaSolicitor ? ADD : null)
                 .localAuthoritiesToShare(localAuthorities)
                 .localAuthorityEmail(LOCAL_AUTHORITY_2_INBOX)
                 .build();
@@ -178,11 +191,14 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
 
         private final String callback = "add/la-details";
 
-        @Test
-        void shouldReturnValidateErrorsWhenProvidedEmailIsNotValid() {
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnValidateErrorsWhenProvidedEmailIsNotValid(Boolean isUserLaSolicitor) {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
-                .localAuthorityAction(ADD)
+                .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+                .localAuthorityAction(isUserLaSolicitor ? null : ADD)
+                .localAuthorityActionLA(isUserLaSolicitor ? ADD : null)
                 .localAuthorityEmail("test")
                 .build();
 
@@ -197,11 +213,14 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
 
         }
 
-        @Test
-        void shouldNotReturnErrorsWhenProvidedEmailIsValid() {
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldNotReturnErrorsWhenProvidedEmailIsValid(Boolean isUserLaSolicitor) {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
-                .localAuthorityAction(ADD)
+                .isLaSolicitor(isUserLaSolicitor ? YesNo.YES : null)
+                .localAuthorityAction(isUserLaSolicitor ? null : ADD)
+                .localAuthorityActionLA(isUserLaSolicitor ? ADD : null)
                 .localAuthorityEmail("test@test.com")
                 .build();
 
