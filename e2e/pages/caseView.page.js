@@ -172,4 +172,17 @@ module.exports = {
   seeInCaseTitle(titleValue) {
     I.seeElement(locate(this.caseTitle).withText(titleValue));
   },
+
+  formatCaseId(caseId) {
+    if (caseId) {
+      if (caseId.length == 16){
+        const first = caseId.substring(0, 4) ;
+        const second = caseId.substring(4, 8) ;
+        const third = caseId.substring(8, 12) ;
+        const fourth = caseId.substring(12, 16);
+        return `${first}-${second}-${third}-${fourth}`;
+      }
+    }
+    return caseId;
+  },
 };
