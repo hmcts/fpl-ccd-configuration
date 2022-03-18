@@ -7,8 +7,8 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/core": "^7.11.0",
     "codeceptjs": "^3.3.0",
-    "dateformat": "^5.0.3",
-    "eslint": "8.10.0",
+    "dateformat": "^4.6.2",
+    "eslint": "8.11.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
     "glob": "^7.1.7",
     "html_codesniffer": "^2.5.1",
@@ -18,9 +18,9 @@
     "mocha-multi": "^1.1.3",
     "mochawesome": "^7.1.2",
     "moment": "2.29.1",
-    "node-fetch": "^3.2.1",
-    "puppeteer": "13.5.1",
-    "webdriverio": "^7.16.16"
+    "node-fetch": "^2.6.7",
+    "puppeteer": "^13.5.1",
+    "webdriverio": "^7.18.1"
   },
   "scripts": {
     "lint": "eslint e2e",
