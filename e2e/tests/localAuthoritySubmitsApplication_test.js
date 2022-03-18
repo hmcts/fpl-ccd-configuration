@@ -9,12 +9,20 @@ const otherProceedings = require('../fixtures/otherProceedingData');
 const ordersAndDirectionsNeeded = require('../fixtures/ordersAndDirectionsNeeded.js');
 
 let caseId;
+let nonReuseCaseId;
 
 Feature('Local authority creates application');
 
-async function setupScenario(I) {
-  if (!caseId) { caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne); }
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+async function setupScenario(I, reuse = true) {
+  if (reuse == false) {
+    nonReuseCaseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
+    await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, nonReuseCaseId);
+  } else {
+    if (!caseId) {
+      caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
+    }
+    await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  }
 }
 
 Scenario('local authority sees task list', async ({I, caseViewPage}) => {
@@ -70,6 +78,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
 
 Scenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await setupScenario(I);
+  await setupScenario(I, false);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
@@ -92,7 +101,6 @@ Scenario('Local authority request discharge of order @cross-browser', async ({I,
 });
 
 Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
-  caseId = null; // reset the case
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
