@@ -331,5 +331,14 @@
     "ElementLabel": " ",
     "FieldShowCondition": "childPlacementQuestions=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "manageOrdersEducationSupervision",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "manageOrdersEducationSupervision=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]
