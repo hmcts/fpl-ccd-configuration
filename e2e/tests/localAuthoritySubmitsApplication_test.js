@@ -710,7 +710,7 @@ Scenario('local authority adds multiple application documents @cross-browser', a
   }
 });
 
-let feeToPay = '2055'; //Need to remember this between tests.. default in case the test below fails
+let feeToPay = '2215'; //Need to remember this between tests.. default in case the test below fails
 
 Scenario('local authority submits application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, submitApplicationEventPage}) => {
   await setupScenario(I);
