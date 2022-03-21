@@ -62,10 +62,4 @@
     <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-core@.*$</packageUrl>
     <cve>CVE-2021-42550</cve>
   </suppress>
-  <suppress>
-    <notes><![CDATA[
-      Jackson data binding
-  ]]></notes>
-    <cve>CVE-2020-36518</cve>
-  </suppress>
 </suppressions>
