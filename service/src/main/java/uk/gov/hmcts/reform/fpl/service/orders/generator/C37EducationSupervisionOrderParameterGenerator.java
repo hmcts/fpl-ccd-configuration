@@ -47,7 +47,7 @@ public class C37EducationSupervisionOrderParameterGenerator implements DocmosisP
             .build();
     }
 
-    private String buildOrderDetails(CaseData caseData){
+    private String buildOrderDetails(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -60,7 +60,7 @@ public class C37EducationSupervisionOrderParameterGenerator implements DocmosisP
             .append(" local education authority to supervise the ${childOrChildren} ");
 
 
-        switch(eventData.getManageOrdersEndDateWithEducationAge()){
+        switch (eventData.getManageOrdersEndDateWithEducationAge()) {
             case TWELVE_MONTHS_FROM_DATE_OF_ORDER:
                 stringBuilder.append("for a period of 12 months beginning on the date of this order.");
                 break;
