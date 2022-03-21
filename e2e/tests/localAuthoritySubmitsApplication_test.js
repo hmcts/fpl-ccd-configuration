@@ -1,3 +1,4 @@
+const assert = require('assert');
 const config = require('../config.js');
 
 const children = require('../fixtures/children.js');
@@ -711,6 +712,7 @@ Scenario('local authority adds multiple application documents @cross-browser', a
 });
 
 let feeToPay = '2215'; //Need to remember this between tests.. default in case the test below fails
+let isCaseSubmitted = false;
 
 Scenario('local authority submits application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, submitApplicationEventPage}) => {
   await setupScenario(I);
@@ -725,9 +727,15 @@ Scenario('local authority submits application @create-case-with-mandatory-sectio
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.see('New_case_name.pdf');
+  isCaseSubmitted = true;
 });
 
 Scenario('HMCTS admin check the payment', async ({I, caseViewPage, paymentHistoryPage}) => {
+  // Cannot be run independently. It depends on the case submitted in previous scenario.
+  if (isCaseSubmitted == false) {
+    assert.fail('[DEPENDENCY] local authority submits application @create-case-with-mandatory-sections-only must be run');
+    return;
+  }
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
