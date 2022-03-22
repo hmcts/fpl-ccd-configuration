@@ -719,7 +719,7 @@ Scenario('local authority submits application @create-case-with-mandatory-sectio
 Scenario('HMCTS admin check the payment', async ({I, caseViewPage, paymentHistoryPage}) => {
   // Cannot be run independently. It depends on the case submitted in previous scenario.
   if (isCaseSubmitted == false) {
-    assert.fail('[DEPENDENCY] local authority submits application @create-case-with-mandatory-sections-only must be run');
+    assert.fail('Depends on scenario - "local authority submits application @create-case-with-mandatory-sections-only"');
     return;
   }
   await setupScenario(I);
