@@ -715,8 +715,10 @@ let feeToPay = '2215'; //Need to remember this between tests.. default in case t
 let isCaseSubmitted = false;
 
 Scenario('local authority submits application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, submitApplicationEventPage}) => {
+  // Cannot be run independently. It depends on the scenarios marked as @create-case-with-mandatory-sections
   await setupScenario(I);
   await caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  await caseViewPage.checkTasksHaveErrors([]);
   await caseViewPage.startTask(config.applicationActions.submitCase);
 
   feeToPay = await submitApplicationEventPage.getFeeToPay();
