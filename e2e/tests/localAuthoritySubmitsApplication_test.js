@@ -499,9 +499,8 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   await setupScenario(I);
   // Cannot be run independently. It depends on the previous test case executions
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  await caseViewPage.checkTasksHaveErrors([
-    'Add the grounds for the application in the Grounds for the application',
-    'Add the allocation proposal in the Allocation proposal']);
+  await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  await caseViewPage.checkTasksDoesNotContainError('Add the orders and directions sought in the Orders and directions sought');
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Variation or discharge of care or supervision order']);
   await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
@@ -517,9 +516,7 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
-  await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-
-  await caseViewPage.checkTasksHaveErrors(['Add the allocation proposal in the Allocation proposal']);
+  await caseViewPage.checkTasksDoesNotContainError('Add the grounds for the application in the Grounds for the application');
 });
 
 Scenario('local authority enters risk and harm to children', async ({I, caseViewPage, enterRiskAndHarmToChildrenEventPage}) => {
