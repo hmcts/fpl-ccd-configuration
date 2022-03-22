@@ -125,7 +125,7 @@ module.exports = {
   async checkTaskIsUnavailable(task) {
     this.checkTaskStatus(task, 'Cannot send yet');
     const taskTarget = await I.grabAttribute(`//p/a[text()="${task}"]`, 'href');
-    assert.strictEqual(!!taskTarget, false);
+    assert.strictEqual(!!taskTarget, false, 'It is not expected as task is ready for submission');
   },
 
   async checkTasksHaveErrors(tasksErrors) {
@@ -136,14 +136,14 @@ module.exports = {
 
   async checkTasksDoesNotContainError(error) {
     const errors = await this.getTaskListErrors();
-
-    assert.strictEqual(errors.includes(error), false);
+    if (errors.length != 0)
+      assert.strictEqual(errors.includes(error), false, 'Should not contain: ' + error);
   },
 
   async checkTasksContainsError(error) {
     const errors = await this.getTaskListErrors();
 
-    assert.strictEqual(errors.includes(error), true);
+    assert.strictEqual(errors.includes(error), true, 'Should contain: ' + error);
   },
 
   async checkTasksHaveNoErrors() {
