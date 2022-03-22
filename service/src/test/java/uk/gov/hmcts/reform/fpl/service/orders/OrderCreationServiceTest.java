@@ -94,10 +94,14 @@ class OrderCreationServiceTest {
 
     @Test
     void shouldThrowIllegalStateExceptionIfOrderTypeIsNullWhenTryingToCreateDraftOrderDocument() {
-        when(documentGenerator.generate(order, caseDataWithNoManageOrdersOrderType, OrderStatus.DRAFT, format)).thenReturn(DOCMOSIS_DOCUMENT);
+        when(documentGenerator.generate(order, caseDataWithNoManageOrdersOrderType, OrderStatus.DRAFT, format))
+            .thenReturn(DOCMOSIS_DOCUMENT);
         when(format.getMediaType()).thenReturn(MEDIA_TYPE);
         when(uploadService.uploadDocument(BYTES, DRAFT_FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
 
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> underTest.createOrderDocument(caseDataWithNoManageOrdersOrderType, OrderStatus.DRAFT, format)).withMessageContaining("Unexpected null order type.");
+        assertThatExceptionOfType(IllegalStateException.class)
+            .isThrownBy(() -> underTest.createOrderDocument(
+                caseDataWithNoManageOrdersOrderType, OrderStatus.DRAFT, format))
+            .withMessageContaining("Unexpected null order type.");
     }
 }
