@@ -177,7 +177,7 @@
         "value": {
           "party": {
             "email": {
-              "email": "applicant@email.com"
+              "email": "swansea@test.com"
             },
             "address": {
               "County": "United Kingdom",
@@ -198,7 +198,7 @@
               "telephoneNumber": "00000000000",
               "contactDirection": "Jonathon Walker"
             },
-            "organisationName": "John Smith",
+            "organisationName": "Swansea City Council",
             "customerReference": "Example reference"
           },
           "leadApplicantIndicator": "Yes"
