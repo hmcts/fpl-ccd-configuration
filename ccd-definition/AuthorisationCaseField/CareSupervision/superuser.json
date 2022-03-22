@@ -1153,5 +1153,12 @@
     "CaseFieldID": "draftSDOLinkDraftOrdersTab",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CaseFieldID": "refusedHearingOrders",
+    "CRUD": "R"
   }
 ]

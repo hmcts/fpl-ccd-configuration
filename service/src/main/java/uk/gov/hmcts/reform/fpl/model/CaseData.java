@@ -806,6 +806,7 @@ public class CaseData {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore
