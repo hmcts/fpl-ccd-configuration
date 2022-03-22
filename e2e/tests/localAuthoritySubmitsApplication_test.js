@@ -632,7 +632,7 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterAllocationProposal);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAllocationProposal);
 
-  await caseViewPage.checkTasksHaveNoErrors();
+  await caseViewPage.checkTasksDoesNotContainError('Add the allocation proposal in the Allocation proposal');
 });
 
 Scenario('local authority enters attending hearing', async ({I, caseViewPage, enterAttendingHearingEventPage}) => {
