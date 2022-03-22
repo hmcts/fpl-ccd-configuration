@@ -3635,7 +3635,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageOrdersLedName",
+    "CaseFieldID": "manageOrdersLeaName",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },

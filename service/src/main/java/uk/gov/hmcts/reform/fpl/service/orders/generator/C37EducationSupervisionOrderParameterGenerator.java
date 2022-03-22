@@ -56,7 +56,7 @@ public class C37EducationSupervisionOrderParameterGenerator implements DocmosisP
             .append("and ${childWasOrWere} not being properly educated.\n\n");
 
         stringBuilder.append("The Court orders ")
-            .append(eventData.getManageOrdersLedName())
+            .append(eventData.getManageOrdersLeaName())
             .append(" local education authority to supervise the ${childOrChildren} ");
 
 

@@ -90,7 +90,7 @@ public class ManageOrdersEventData {
     String manageOrdersBirthCertificateRegistrationDistrict;
     String manageOrdersBirthCertificateRegistrationSubDistrict;
     String manageOrdersBirthCertificateRegistrationCounty;
-    String manageOrdersLedName;
+    String manageOrdersLeaName;
     ManageOrderEndDateOption manageOrdersEndDateWithEducationAge;
 
     @JsonIgnore
