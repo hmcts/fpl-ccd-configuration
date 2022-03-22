@@ -497,6 +497,13 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
 
 Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterGroundsForApplicationEventPage}) => {
   await setupScenario(I);
+  // Cannot be run independently. It depends on the previous test case executions
+  caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the grounds for the application in the Grounds for the application',
+    'Add the allocation proposal in the Allocation proposal']);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
+  I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Variation or discharge of care or supervision order']);
   await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   await enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
   await enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
