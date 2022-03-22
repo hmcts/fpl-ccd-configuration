@@ -86,7 +86,9 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersBirthCertificateDate",
             "manageOrdersBirthCertificateRegistrationDistrict",
             "manageOrdersBirthCertificateRegistrationSubDistrict",
-            "manageOrdersBirthCertificateRegistrationCounty"
+            "manageOrdersBirthCertificateRegistrationCounty",
+            "manageOrdersLeaName",
+            "manageOrdersEndDateWithEducationAge"
         );
     }
 }
