@@ -105,7 +105,7 @@ class C37EducationSupervisionOrderParameterGeneratorTest {
                 orderDetails += "for a period of 12 months beginning on the date of this order.";
                 break;
             case UNTIL_END_OF_COMPULSORY_EDUCATION_AGE:
-                orderDetails += "until the child was no longer of compulsory school age.";
+                orderDetails += "until the child is no longer of compulsory school age.";
                 break;
         }
 

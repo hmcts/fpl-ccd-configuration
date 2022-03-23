@@ -66,7 +66,7 @@ public class C37EducationSupervisionOrderParameterGenerator implements DocmosisP
                 break;
             case UNTIL_END_OF_COMPULSORY_EDUCATION_AGE:
                 stringBuilder.append(orderMessageGenerator.formatOrderMessage(caseData,
-                    "until the ${childOrChildren} ${childWasOrWere} no longer of compulsory school age."));
+                    "until the ${childOrChildren} ${childIsOrAre} no longer of compulsory school age."));
                 break;
         }
 

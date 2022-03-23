@@ -58,7 +58,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
-    "ListElementCode": "C33_INTERIM_CARE  _ORDER",
+    "ListElementCode": "C33_INTERIM_CARE_ORDER",
     "ListElement": "Interim care order (C33)",
     "DisplayOrder": 9
   },
