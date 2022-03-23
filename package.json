@@ -20,7 +20,7 @@
     "moment": "2.29.1",
     "node-fetch": "^2.6.7",
     "puppeteer": "^13.5.1",
-    "webdriverio": "^7.18.1"
+    "webdriverio": "^7.19.0"
   },
   "scripts": {
     "lint": "eslint e2e",
