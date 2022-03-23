@@ -103,6 +103,7 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
     config.applicationActions.enterLocalAuthority,
     config.administrationActions.uploadAdditionalApplications,
     config.administrationActions.manageDocuments,
+    config.applicationActions.manageLegalRepresentatives,
   ]);
 
   await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
