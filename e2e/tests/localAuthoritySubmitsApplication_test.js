@@ -10,20 +10,20 @@ const otherProceedings = require('../fixtures/otherProceedingData');
 const ordersAndDirectionsNeeded = require('../fixtures/ordersAndDirectionsNeeded.js');
 
 let caseId;
-let nonReuseCaseId;
 
 Feature('Local authority creates application');
 
 async function setupScenario(I, reuse = true) {
+  let navigateCaseId;
   if (reuse == false) {
-    nonReuseCaseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
-    await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, nonReuseCaseId);
+    navigateCaseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
   } else {
     if (!caseId) {
       caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
     }
-    await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+    navigateCaseId = caseId;
   }
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, navigateCaseId);
 }
 
 Scenario('local authority sees task list', async ({I, caseViewPage}) => {
