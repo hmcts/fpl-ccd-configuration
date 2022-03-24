@@ -363,6 +363,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
 });
 
 Scenario('local authority enters its details @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+  // Cannot be run independently. It depends on the previous test case executions
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
   await enterLocalAuthorityEventPage.enterDetails(localAuthority);
