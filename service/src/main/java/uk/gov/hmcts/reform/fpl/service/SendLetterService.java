@@ -46,7 +46,8 @@ public class SendLetterService {
     public List<SentDocument> send(DocumentReference mainDocument, List<Recipient> recipients, Long caseId,
                                    String familyManCaseNumber, Language language) {
         List<SentDocument> sentDocuments = new ArrayList<>();
-        DocumentReference mainDocumentPDF = documentConversionService.convertToPdf(mainDocument); // make sure mainDocument is in PDF format
+        // make sure mainDocument is in PDF format
+        DocumentReference mainDocumentPDF = documentConversionService.convertToPdf(mainDocument);
         byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocumentPDF.getBinaryUrl());
         var mainDocumentCopy = uploadDocument(mainDocumentBinary, mainDocumentPDF.getFilename());
 
