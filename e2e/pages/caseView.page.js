@@ -136,8 +136,7 @@ module.exports = {
 
   async checkTasksDoesNotContainError(error) {
     const errors = await this.getTaskListErrors();
-    if (errors.length != 0)
-      assert.strictEqual(errors.includes(error), false, 'Should not contain: ' + error);
+    assert.strictEqual(errors.includes(error), false, 'Should not contain: ' + error);
   },
 
   async checkTasksContainsError(error) {
