@@ -85,6 +85,7 @@ Scenario('Secondary LA solicitor can see all local authorities but updates only 
     config.applicationActions.enterLocalAuthority,
     config.administrationActions.uploadAdditionalApplications,
     config.administrationActions.manageDocuments,
+    config.applicationActions.manageLegalRepresentatives,
   ]);
 
   await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
