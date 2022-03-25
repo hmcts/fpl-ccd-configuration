@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -56,9 +57,13 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     private static final String FAMILY_MAN_NO = RandomStringUtils.randomAlphabetic(10);
     private static final Document COVERSHEET_DOCUMENT = testDocument();
     private static final Document MAIN_DOCUMENT = testDocument();
+    private static final DocumentReference DOCUMENT_TO_BE_SENT = testDocumentReference();
     private static final byte[] COVERSHEET_BINARIES = testDocumentBinaries();
     private static final byte[] MAIN_DOCUMENT_BINARIES = testDocumentBinaries();
     private static final UUID LETTER_ID = UUID.randomUUID();
+
+    @MockBean
+    private DocumentConversionService documentConversionService;
 
     @MockBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
@@ -79,6 +84,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     @BeforeEach
     void setup() {
         givenFplService();
+        given(documentConversionService.convertToPdf(DOCUMENT_TO_BE_SENT)).willReturn(DOCUMENT_TO_BE_SENT);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BINARIES);
         given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any(), any()))
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
@@ -94,15 +100,14 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
         Representative representative2 = testRepresentative(EMAIL);
         Representative representative3 = testRepresentative(DIGITAL_SERVICE);
 
-        DocumentReference documentToBeSent = testDocumentReference();
         DocumentReference coversheet = buildFromDocument(COVERSHEET_DOCUMENT);
         DocumentReference mainDocument = buildFromDocument(MAIN_DOCUMENT);
 
-        CaseDetails caseDetails = buildCaseData(documentToBeSent, representative1, representative2, representative3);
+        CaseDetails caseDetails = buildCaseData(DOCUMENT_TO_BE_SENT, representative1, representative2, representative3);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-        verify(documentDownloadService).downloadDocument(documentToBeSent.getBinaryUrl());
+        verify(documentDownloadService).downloadDocument(DOCUMENT_TO_BE_SENT.getBinaryUrl());
         verify(sendLetterApi).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
         verify(uploadDocumentService).uploadPDF(COVERSHEET_BINARIES, COVERSHEET_PDF);
         verify(docmosisCoverDocumentsService).createCoverDocuments(FAMILY_MAN_NO, caseDetails.getId(), representative1,
