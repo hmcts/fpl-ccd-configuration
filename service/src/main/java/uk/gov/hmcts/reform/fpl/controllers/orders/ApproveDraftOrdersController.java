@@ -111,7 +111,7 @@ public class ApproveDraftOrdersController extends CallbackController {
             approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
             // update list of rejected orders
-            approveDraftOrdersService.updateRejectedHearingOrders(caseData, data, selectedOrdersBundle);
+            approveDraftOrdersService.updateRejectedHearingOrders(data);
 
             caseDetails.getData().put("lastHearingOrderDraftsHearingId",
                 selectedOrdersBundle.getValue().getHearingId());

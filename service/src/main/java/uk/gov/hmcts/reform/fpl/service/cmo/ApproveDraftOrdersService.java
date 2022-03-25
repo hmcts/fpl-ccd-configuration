@@ -278,8 +278,7 @@ public class ApproveDraftOrdersService {
     }
 
     @SuppressWarnings("unchecked")
-    public void updateRejectedHearingOrders(CaseData caseData, Map<String, Object> data,
-                                            Element<HearingOrdersBundle> selectedOrdersBundle){
+    public void updateRejectedHearingOrders(Map<String, Object> data){
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
             List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
 
