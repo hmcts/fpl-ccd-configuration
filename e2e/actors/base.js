@@ -33,31 +33,31 @@ module.exports = {
       await this.retryUntilExists(async () => {
         //To mitigate situation when idam response with blank page
         await this.goToPage(baseUrl);
-        I.grabCurrentUrl();
+        await I.grabCurrentUrl();
 
         if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
           await this.refreshPage();
-          I.grabCurrentUrl();
+          await I.grabCurrentUrl();
         }
 
         if (await this.hasSelector(signedInSelector)) {
           await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
-          I.grabCurrentUrl();
+          await I.grabCurrentUrl();
         }
 
         await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
-        I.grabCurrentUrl();
+        await I.grabCurrentUrl();
 
       }, signedInSelector, false, 10);
       await this.rejectCookies();
-      I.grabCurrentUrl();
+      await I.grabCurrentUrl();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
     } else {
       console.log(`Already logged in as ${user.email}`);
       output.debug(`Already logged in as ${user.email}`);
     }
-    I.grabCurrentUrl();
+    await I.grabCurrentUrl();
   },
 
   async goToPage(url) {
@@ -414,8 +414,9 @@ module.exports = {
     await this.waitForText(caseListPage.fields.caseList);
     this.navigateToCaseList();
     this.waitForInvisible(caseListPage.fields.spinner, 20);
+    await this.grabCurrentUrl();
     const caseIdField = await this.grabNumberOfVisibleElements(locate('label').withText(caseListPage.fields.caseId));
-    if(caseIdField === 0){
+    if(caseIdField == 0){
       await this.logInAndCreateCase(user, `dummy_${moment().format('YYYY-MM-DD HH:MM')}`, outsourcingLA);
     }
   },
