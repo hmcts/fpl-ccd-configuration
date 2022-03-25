@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.verification.NoInteractions;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -32,11 +33,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -51,7 +48,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class DraftsOrdersUploadedEventHandlerTest {
-    private static final String HMCTS_ADMIN_EMAIL = "admin@hmcts.gov.uk";
     private static final Long CASE_ID = 12345L;
     private static final CMOReadyToSealTemplate CMO_READY_TO_SEAL_TEMPLATE_DATA = mock(CMOReadyToSealTemplate.class);
     private static final DraftOrdersUploadedTemplate DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA = mock(
@@ -175,91 +171,6 @@ class DraftsOrdersUploadedEventHandlerTest {
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         verifyNoInteractions(notificationService);
-    }
-
-    @Test
-    void shouldNotSendNotificationForAdminWhenNoOrdersPresent() {
-        CaseData caseData = CaseData.builder().build();
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verifyNoInteractions(notificationService, agreedCMOContentProvider);
-    }
-
-    @Test
-    void shouldNotSendNotificationForAdminWhenNoAgreedCMOPresent() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(hearing))
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .build();
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verifyNoInteractions(notificationService, agreedCMOContentProvider);
-    }
-
-    @Test
-    void shouldSendNotificationForAdminWhenTemporaryHearingJudgeAssigned() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO);
-        final Judge judge = allocatedJudge();
-
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .allocatedJudge(judge)
-            .hearingDetails(List.of(hearing))
-            .lastHearingOrderDraftsHearingId(hearing.getId())
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .respondents1(createRespondents())
-            .familyManCaseNumber("12345")
-            .build();
-
-        when(courtService.getCourtEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
-        when(agreedCMOContentProvider.buildTemplate(
-            hearing.getValue(), hearing.getValue().getJudgeAndLegalAdvisor(), caseData
-        )).thenReturn(CMO_READY_TO_SEAL_TEMPLATE_DATA);
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verify(notificationService).sendEmail(
-            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-            HMCTS_ADMIN_EMAIL,
-            CMO_READY_TO_SEAL_TEMPLATE_DATA,
-            CASE_ID
-        );
-    }
-
-    @Test
-    void shouldSendNotificationForAdminWhenNoTemporaryHearingJudgeAssigned() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail(null);
-        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO);
-        final Judge judge = allocatedJudge();
-
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .allocatedJudge(judge)
-            .hearingDetails(List.of(hearing))
-            .lastHearingOrderDraftsHearingId(hearing.getId())
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .respondents1(createRespondents())
-            .familyManCaseNumber("12345")
-            .build();
-
-        when(courtService.getCourtEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
-        when(agreedCMOContentProvider.buildTemplate(hearing.getValue(), judge, caseData))
-            .thenReturn(CMO_READY_TO_SEAL_TEMPLATE_DATA);
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verify(notificationService).sendEmail(
-            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-            HMCTS_ADMIN_EMAIL,
-            CMO_READY_TO_SEAL_TEMPLATE_DATA,
-            CASE_ID
-        );
     }
 
     private Element<HearingBooking> hearingWithJudgeEmail(String email) {
