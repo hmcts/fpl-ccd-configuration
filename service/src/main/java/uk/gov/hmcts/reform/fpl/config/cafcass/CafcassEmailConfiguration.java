@@ -17,6 +17,9 @@ public class CafcassEmailConfiguration {
     private String sender;
 
     @Getter(AccessLevel.NONE)
+    private String changeofaddress;
+
+    @Getter(AccessLevel.NONE)
     private String order;
 
     @Getter(AccessLevel.NONE)
@@ -33,6 +36,10 @@ public class CafcassEmailConfiguration {
 
     @Getter(AccessLevel.NONE)
     private String large;
+
+    public String getRecipientForChangeOfAddress() {
+        return changeofaddress;
+    }
 
     public String getRecipientForOrder() {
         return order;

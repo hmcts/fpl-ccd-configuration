@@ -22,6 +22,15 @@ public enum CafcassRequestEmailContentProvider {
                 cafcassData.getDocumentName()),
         CafcassEmailConfiguration::getRecipientForOrder),
 
+    CHANGE_OF_ADDRESS((caseData, cafcassData) -> String.format(getSubject(),
+        caseData.getFamilyManCaseNumber(),
+        "change of address"),
+        (caseData, cafcassData) ->
+            String.format("A change of address has been added to this case "
+                    + "which was uploaded to the Public Law Portal entitled [%s].",
+                caseData.getCaseName()),
+        CafcassEmailConfiguration::getRecipientForChangeOfAddress),
+
     COURT_BUNDLE((caseData, cafcassData) -> String.format(getSubject(),
                 caseData.getFamilyManCaseNumber(),
                 "new court bundle"),
