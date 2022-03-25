@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -28,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
@@ -41,6 +45,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
@@ -50,7 +55,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -58,7 +66,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -77,6 +86,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
@@ -149,11 +159,23 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
         .build();
 
+    private static final Child CHILDREN = Child.builder()
+        .party(ChildParty.builder()
+            .firstName("Jade")
+            .lastName("Connor")
+            .dateOfBirth(LocalDate.now())
+            .address(testAddress())
+            .build())
+        .build();
+
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseCaptor;
 
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> printRequestCaptor;
+
+    @Captor
+    private ArgumentCaptor<NoticeOfHearingCafcassData> noticeOfHearingCafcassDataCaptor;
 
     @MockBean
     private BankHolidaysApi bankHolidaysApi;
@@ -178,6 +200,9 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     @MockBean
     private OtherRecipientsInbox otherRecipientsInbox;
+
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
 
     ManageHearingsControllerSubmittedTest() {
         super("manage-hearings");
@@ -282,7 +307,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         final CaseData cdb = CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(FAMILY_MAN_NUMBER)
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_3_CODE)
             .hearingDetails(List.of(existingHearing))
             .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
             .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
@@ -327,7 +352,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
-            eq(LOCAL_AUTHORITY_1_INBOX),
+            eq(LOCAL_AUTHORITY_3_INBOX),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
@@ -380,7 +405,92 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
+        verify(cafcassNotificationService,never()).sendEmail(any(), any(), any(), any());
+
         verifyNoMoreInteractions(coreCaseDataService);
+    }
+
+    @Test
+    void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresentEnglandLa()
+            throws NotificationClientException {
+        final DocumentReference noticeOfHearing = testDocumentReference();
+
+        final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
+                .type(CASE_MANAGEMENT)
+                .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+                .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
+                .noticeOfHearing(noticeOfHearing)
+                .venue("96")
+                .build());
+
+        final Element<HearingBooking> existingHearing = element(HearingBooking.builder()
+                .type(ISSUE_RESOLUTION)
+                .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
+                .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
+                .noticeOfHearing(testDocumentReference())
+                .venue("162")
+                .others(emptyList())
+                .build());
+
+        final CaseData cdb = CaseData.builder()
+                .id(CASE_ID)
+                .familyManCaseNumber(FAMILY_MAN_NUMBER)
+                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+                .hearingDetails(List.of(existingHearing))
+                .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
+                .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
+                .children1(wrapElements(CHILDREN))
+                .build();
+
+        final CaseData cd = cdb.toBuilder()
+                .hearingDetails(List.of(hearingWithNotice, existingHearing))
+                .selectedHearingId(hearingWithNotice.getId())
+                .build();
+
+        givenFplService();
+
+        given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
+                .willReturn(NOTICE_OF_HEARING_BINARY);
+
+        given(otherRecipientsInbox.getNonSelectedRecipients(
+            EMAIL,
+            cdb,
+            emptyList(),
+            element -> element.getValue().getEmail())
+        ).willReturn(emptySet());
+
+
+        postSubmittedEvent(toCallBackRequest(cd, cdb));
+
+
+        verify(notificationClient, never()).sendEmail(
+                eq(NOTICE_OF_NEW_HEARING),
+                eq(CAFCASS_EMAIL),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE));
+
+        verify(cafcassNotificationService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+                isA(CaseData.class),
+                eq(Set.of(noticeOfHearing)),
+                same(NOTICE_OF_HEARING),
+                noticeOfHearingCafcassDataCaptor.capture()
+        );
+
+        NoticeOfHearingCafcassData noticeOfHearingCafcassData = noticeOfHearingCafcassDataCaptor.getValue();
+        assertThat(noticeOfHearingCafcassData.getFirstRespondentName())
+                .isEqualTo("Jones");
+        assertThat(noticeOfHearingCafcassData.getEldestChildLastName())
+                .isEqualTo("Connor");
+        assertThat(noticeOfHearingCafcassData.getHearingType())
+                .isEqualTo("case management");
+        assertThat(noticeOfHearingCafcassData.getHearingDate())
+                .isEqualTo("20 May 2050");
+        assertThat(noticeOfHearingCafcassData.getHearingVenue())
+                .isEqualTo("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH");
+        assertThat(noticeOfHearingCafcassData.getPreHearingTime())
+                .isEqualTo("1 hour before the hearing");
+        assertThat(noticeOfHearingCafcassData.getHearingTime())
+                .isEqualTo("1:00pm - 2:00pm");
     }
 
     @Test

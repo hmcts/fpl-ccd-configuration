@@ -58,6 +58,7 @@ java:
         - cafcass-notification-recipient-new-application
         - cafcass-notification-recipient-new-document
         - cafcass-notification-recipient-additional-document
+        - cafcass-notification-recipient-noticeofhearing
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox
