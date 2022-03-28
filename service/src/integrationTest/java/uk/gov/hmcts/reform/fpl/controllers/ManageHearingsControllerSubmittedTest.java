@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
@@ -190,6 +191,9 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     private DocumentDownloadService documentDownloadService;
 
     @MockBean
+    private DocumentConversionService documentConversionService;
+
+    @MockBean
     private DocmosisCoverDocumentsService documentService;
 
     @MockBean
@@ -322,6 +326,9 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
             .willReturn(NOTICE_OF_HEARING_BINARY);
+
+        given(documentConversionService.convertToPdf(noticeOfHearing))
+            .willReturn(noticeOfHearing);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
