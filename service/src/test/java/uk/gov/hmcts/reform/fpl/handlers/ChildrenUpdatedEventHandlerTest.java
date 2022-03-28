@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
@@ -17,11 +19,13 @@ import uk.gov.hmcts.reform.fpl.service.email.content.representative.Unregistered
 import uk.gov.hmcts.reform.fpl.service.representative.diff.ChildRepresentativeDiffCalculator;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.CHANGE_OF_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -69,6 +73,17 @@ class ChildrenUpdatedEventHandlerTest {
         registeredContentProvider, unregisteredContentProvider, calculator, notificationService,
         childrenService, cafcassNotificationService, cafcassLookupConfiguration
     );
+
+    void notifyChangeOfAddress() {
+        when(childrenService.hasAddressChange(children, children)).thenReturn(true);
+        when(cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority())).thenReturn(
+            Optional.of(new CafcassLookupConfiguration.Cafcass(caseData.getCaseLocalAuthority(), ""))
+        );
+        underTest.notifyChangeOfAddress(new ChildrenUpdated(caseData, caseDataBefore));
+
+        verify(cafcassNotificationService).sendEmail(caseData,
+            CHANGE_OF_ADDRESS, ChangeOfAddressData.builder().build());
+    }
 
     @Test
     void notifyRegisteredSolicitors() {
@@ -149,7 +164,7 @@ class ChildrenUpdatedEventHandlerTest {
     @Test
     void shouldExecuteAsynchronously() {
         assertClass(ChildrenUpdatedEventHandler.class).hasAsyncMethods(
-            "notifyRegisteredSolicitors", "notifyUnRegisteredSolicitors"
+            "notifyChangeOfAddress", "notifyRegisteredSolicitors", "notifyUnRegisteredSolicitors"
         );
     }
 }
