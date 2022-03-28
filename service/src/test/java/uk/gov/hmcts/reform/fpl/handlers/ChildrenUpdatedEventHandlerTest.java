@@ -73,10 +73,15 @@ class ChildrenUpdatedEventHandlerTest {
         childrenService, cafcassNotificationService, cafcassLookupConfiguration
     );
 
+    @Test
     void notifyChangeOfAddress() {
+        when(caseData.getCaseLocalAuthority()).thenReturn("SW");
+        when(caseData.getAllChildren()).thenReturn(children);
+        when(caseDataBefore.getAllChildren()).thenReturn(children);
         when(childrenService.hasAddressChange(children, children)).thenReturn(true);
-        when(cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority())).thenReturn(
-            Optional.of(new CafcassLookupConfiguration.Cafcass(caseData.getCaseLocalAuthority(), ""))
+        when(cafcassLookupConfiguration.getCafcassEngland("SW"))
+            .thenReturn(
+            Optional.of(new CafcassLookupConfiguration.Cafcass("SW", ""))
         );
         underTest.notifyChangeOfAddress(new ChildrenUpdated(caseData, caseDataBefore));
 
