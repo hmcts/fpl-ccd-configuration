@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -424,6 +425,79 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
 
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl572 {
+        private final String migrationId = "DFPL-572";
+        private final long validCaseId = 1646391317671957L;
+        private final long invalidCaseId = 1643728359576136L;
+
+        private final UUID validDocId = UUID.fromString("0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+        private final UUID invalidDocId = UUID.randomUUID();
+
+        @Test
+        void shouldPerformMigrationWhenDocIdMatches() {
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getUrgentHearingOrder()).isNull();
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-572, case reference = 1643728359576136},"
+                    + " expected case id 1646391317671957");
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", invalidDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-572, case reference = 1646391317671957},"
+                    + " expected urgent hearing order document id 0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+        }
+
+
+    }
+
 
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
