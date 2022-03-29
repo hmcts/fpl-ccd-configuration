@@ -207,6 +207,18 @@ class PeopleInCaseHelperTest {
     }
 
     @Test
+    void shouldReturnTrueWhenRespondentAddressNoChange() {
+        List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Respondent>> respondentsAfter = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        assertThat(hasAddressChange(Collections.unmodifiableList(respondentsAfter),
+            Collections.unmodifiableList(respondentsBefore))).isFalse();
+    }
+
+    @Test
     void shouldReturnTrueWhenChildAddressChange() {
         List<Element<Child>> childrenBefore = wrapElements(Child.builder()
             .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
@@ -216,5 +228,17 @@ class PeopleInCaseHelperTest {
                 .addressLine2("Testing").postcode("KK1 BBB").build()).build()).build());
         assertThat(hasAddressChange(Collections.unmodifiableList(childrenAfter),
             Collections.unmodifiableList(childrenBefore))).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenChildAddressNoChange() {
+        List<Element<Child>> childrenBefore = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Child>> childrenAfter = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        assertThat(hasAddressChange(Collections.unmodifiableList(childrenAfter),
+            Collections.unmodifiableList(childrenBefore))).isFalse();
     }
 }
