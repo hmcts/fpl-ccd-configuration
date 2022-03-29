@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.docmosis.generator;
 
 import org.apache.commons.lang3.tuple.Pair;
+import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -206,6 +208,16 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersEndDateTime(LocalDateTime.of(2018, 9, 1, 13, 20, 4))
+                        .build()
+                );
+            case ORDER_PLACED_CHILD_IN_CUSTODY:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
+                        .manageOrdersOrderCreatedDate(LocalDate.of(2021, 8, 20))
+                        .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY, C29ActionsPermitted.REMOVE))
+                        .manageOrdersIsExParte("Yes")
+                        .manageOrdersOfficerName("Officer Barbrady")
                         .build()
                 );
             case CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS:
