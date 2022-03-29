@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 class ChildrenUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
-    private static final String CASE_NAME = "FPL c  ase test";
+    private static final String CASE_NAME = "FPL case test";
     private static final String CHILD_FIRST_NAME = "Sherlock";
     private static final String CHILD_LAST_NAME = "Holmes";
     private static final String SOLICITOR_FIRST_NAME = "John";
