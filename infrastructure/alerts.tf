@@ -11,6 +11,7 @@ module "fpl-action-group" {
   short_name             = "${var.product}-support"
   email_receiver_name    = "FPL Support Mailing List"
   email_receiver_address = data.azurerm_key_vault_secret.fpl_support_email_secret.value
+  common_tags            = var.common_tags
 }
 
 module "fpl-performance-alert" {
@@ -29,6 +30,7 @@ module "fpl-performance-alert" {
   trigger_threshold          = 2
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  common_tags                = var.common_tags
 }
 
 module "fpl-exceptions-alert" {
@@ -47,6 +49,7 @@ module "fpl-exceptions-alert" {
   trigger_threshold          = 0
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  common_tags                = var.common_tags
 }
 
 module "fpl-health-failure-alert" {
@@ -65,6 +68,7 @@ module "fpl-health-failure-alert" {
   trigger_threshold          = 3
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  common_tags                = var.common_tags
 }
 
 module "fpl-upcoming-hearings-job-alert" {
@@ -83,6 +87,7 @@ module "fpl-upcoming-hearings-job-alert" {
   trigger_threshold          = 0
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  common_tags                = var.common_tags
 }
 
 module "fpl-summary-tab-job-alert" {
@@ -101,4 +106,5 @@ module "fpl-summary-tab-job-alert" {
   trigger_threshold          = 0
   resourcegroup_name         = local.alert_resource_group_name
   enabled                    = var.enable_alerts
+  common_tags                = var.common_tags
 }
