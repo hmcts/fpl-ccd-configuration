@@ -11,7 +11,6 @@ module "fpl-action-group" {
   short_name             = "${var.product}-support"
   email_receiver_name    = "FPL Support Mailing List"
   email_receiver_address = data.azurerm_key_vault_secret.fpl_support_email_secret.value
-  common_tags            = var.common_tags
 }
 
 module "fpl-performance-alert" {
