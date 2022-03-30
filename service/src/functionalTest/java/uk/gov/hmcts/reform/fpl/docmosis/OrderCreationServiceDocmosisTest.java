@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C21BlankOrderDocumentPar
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPOAdditionalDocumentsCollector;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPODocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C26SecureAccommodationOrderDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C29RecoveryOfAChildDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32CareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32bDischargeOfCareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C33InterimCareOrderDocumentParameterGenerator;
@@ -70,44 +71,44 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ContextConfiguration(classes = {
-    OrderCreationService.class,
-    OrderDocumentGenerator.class,
-    DocumentGenerator.class,
-    DocmosisDocumentGeneratorService.class,
-    OrderDocumentGeneratorHolder.class,
-    DocmosisCommonElementDecorator.class,
-    CaseDataExtractionService.class,
-    AppointedGuardianFormatter.class,
-    A70PlacementOrderDocumentParameterGenerator.class,
     A206PlacementOrderNotificationParameterGenerator.class,
+    A70PlacementOrderDocumentParameterGenerator.class,
+    AppointedGuardianFormatter.class,
     C21BlankOrderDocumentParameterGenerator.class,
-    C32CareOrderDocumentParameterGenerator.class,
+    C23EPOAdditionalDocumentsCollector.class,
     C23EPODocumentParameterGenerator.class,
     C26SecureAccommodationOrderDocumentParameterGenerator.class,
+    C29RecoveryOfAChildDocumentParameterGenerator.class,
     C32bDischargeOfCareOrderDocumentParameterGenerator.class,
-    C35aSupervisionOrderDocumentParameterGenerator.class,
-    C43ChildArrangementOrderDocumentParameterGenerator.class,
-    C47AAppointmentOfAChildrensGuardianParameterGenerator.class,
+    C32CareOrderDocumentParameterGenerator.class,
     C33InterimCareOrderDocumentParameterGenerator.class,
-    C23EPOAdditionalDocumentsCollector.class,
+    C35aSupervisionOrderDocumentParameterGenerator.class,
     C35bISODocumentParameterGenerator.class,
-    ManageOrderDocumentService.class,
-    OrderMessageGenerator.class,
     C43aSpecialGuardianshipOrderDocumentParameterGenerator.class,
-    ManageOrderDocumentService.class,
-    OrderMessageGenerator.class,
+    C43ChildArrangementOrderDocumentParameterGenerator.class,
     C43ChildArrangementOrderTitleGenerator.class,
     C45aParentalResponsibilityOrderDocumentParameterGenerator.class,
-    OrderDetailsWithEndTypeGenerator.class,
-    UploadedOrderDocumentGenerator.class,
-    DocumentSealingService.class,
+    C47AAppointmentOfAChildrensGuardianParameterGenerator.class,
+    CaseConverter.class,
+    CaseDataExtractionService.class,
     ChildrenSmartSelector.class,
-    DocmosisHelper.class,
     ChildSelectionUtils.class,
-    PlacementService.class,
+    DocmosisCommonElementDecorator.class,
+    DocmosisDocumentGeneratorService.class,
+    DocmosisHelper.class,
+    DocumentGenerator.class,
+    DocumentSealingService.class,
     FixedTimeConfiguration.class,
+    ManageOrderDocumentService.class,
+    OrderCreationService.class,
+    OrderDetailsWithEndTypeGenerator.class,
+    OrderDocumentGenerator.class,
+    OrderDocumentGeneratorHolder.class,
+    OrderMessageGenerator.class,
+    OrderMessageGenerator.class,
     PbaNumberService.class,
-    CaseConverter.class
+    PlacementService.class,
+    UploadedOrderDocumentGenerator.class
 })
 @MockBeans({@MockBean(DocumentDownloadService.class), @MockBean(FeeService.class)})
 class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {

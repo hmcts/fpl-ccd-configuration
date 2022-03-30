@@ -109,7 +109,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .appointedGuardian(NO)
             .orderIsByConsent(NO)
             .parentResponsible(NO)
-            .parentResponsible(NO)
+            .orderPlacedChildInCustody(NO)
             .childPlacementApplications(NO)
             .childPlacementQuestions(NO)
             .build()
@@ -170,6 +170,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .parentResponsible(NO)
             .childPlacementApplications(NO)
             .childPlacementQuestions(NO)
+            .orderPlacedChildInCustody(NO)
             .build()
         );
     }
