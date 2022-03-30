@@ -209,6 +209,7 @@
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-legal-counsel/about-to-submit_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-legal-counsel/mid-event_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-legal-counsel/submitted_POST": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-local-authorities/about-to-start_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-local-authorities/submitted_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-local-authorities/transfer/la-details/mid-event_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-local-authorities/transfer/la-selection/mid-event_POST": "ignore",
@@ -251,6 +252,10 @@
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/child-selection/mid-event_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/documents-upload/mid-event_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/payment-details/mid-event_POST": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placementNotice/about-to-submit_POST": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placementNotice/notice-details/mid-event_POST": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placementNotice/placement-application/mid-event_POST": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placementNotice/submitted_POST": "ignore",
   "100001_Unexpected Content-Type was returned_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-note/about-to-submit_POST": "ignore",
   "100001_Unexpected Content-Type was returned_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/approve-draft-orders/mid-event_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/record-final-decisions/mid-event_POST": "ignore",
@@ -343,5 +348,6 @@
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/approve-draft-orders/validate-review-decision/mid-event_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/mid-event_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-initiation/submitted_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-case-flag/submitted_POST": "ignore",
   "10062_PII Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-start_POST": "ignore"
 }
