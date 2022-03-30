@@ -87,7 +87,6 @@ public class PeopleInCaseHelper {
     public static boolean hasAddressChange(List<Element<? extends ConfidentialParty<?>>> after,
                                            List<Element<? extends ConfidentialParty<?>>> before) {
         Map<UUID, Address> beforeChildAddresses = addressByConfidentialPartyId(before);
-        String delimiter = ",";
         for (Element<? extends ConfidentialParty> a : after) {
             Address beforeAddress = beforeChildAddresses.get(a.getId());
             if (beforeAddress != null) {
