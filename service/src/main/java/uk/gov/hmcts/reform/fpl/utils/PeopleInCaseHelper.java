@@ -20,7 +20,6 @@ import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 public class PeopleInCaseHelper {

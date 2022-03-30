@@ -8,4 +8,6 @@ import lombok.Data;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChangeOfAddressData implements CafcassData {
+    private boolean respondents;
+    private boolean children;
 }

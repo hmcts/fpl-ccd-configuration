@@ -47,7 +47,7 @@ public class RespondentsUpdatedEventHandler {
         if (recipientIsEngland.isPresent() && respondentService.hasAddressChange(caseData.getAllRespondents(),
             caseDataBefore.getAllRespondents())) {
             cafcassNotificationService.sendEmail(caseData, CHANGE_OF_ADDRESS,
-                ChangeOfAddressData.builder().build());
+                ChangeOfAddressData.builder().respondents(true).build());
         }
     }
 

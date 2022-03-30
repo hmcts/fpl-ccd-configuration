@@ -422,7 +422,7 @@ class CafcassNotificationServiceTest {
     }
 
     @Test
-    void shouldNotifyChangeOfAddress() {
+    void shouldNotifyChangeOfAddressOfChildren() {
         when(configuration.getRecipientForChangeOfAddress()).thenReturn(RECIPIENT_EMAIL);
 
         CaseData caseData = CaseData.builder()
@@ -432,13 +432,36 @@ class CafcassNotificationServiceTest {
 
         underTest.sendEmail(caseData,
             CHANGE_OF_ADDRESS,
-            ChangeOfAddressData.builder().build()
+            ChangeOfAddressData.builder().children(true).build()
         );
 
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- change of address");
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- change of address - child solicitor");
+        assertThat(data.getMessage()).isEqualTo(
+            String.join(" ","A change of address has been added to this case",
+                "which was uploaded to the Public Law Portal entitled", "[GU1234]."));
+    }
+
+    @Test
+    void shouldNotifyChangeOfAddressOfRespondents() {
+        when(configuration.getRecipientForChangeOfAddress()).thenReturn(RECIPIENT_EMAIL);
+
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber(FAMILY_MAN)
+            .caseName("GU1234")
+            .build();
+
+        underTest.sendEmail(caseData,
+            CHANGE_OF_ADDRESS,
+            ChangeOfAddressData.builder().respondents(true).build()
+        );
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- change of address - respondent solicitor");
         assertThat(data.getMessage()).isEqualTo(
             String.join(" ","A change of address has been added to this case",
                 "which was uploaded to the Public Law Portal entitled", "[GU1234]."));

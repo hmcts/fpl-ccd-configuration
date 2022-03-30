@@ -52,7 +52,7 @@ public class ChildrenUpdatedEventHandler {
         if (recipientIsEngland.isPresent() && childrenService.hasAddressChange(caseData.getAllChildren(),
             caseDataBefore.getAllChildren())) {
             cafcassNotificationService.sendEmail(caseData, CHANGE_OF_ADDRESS,
-                ChangeOfAddressData.builder().build());
+                ChangeOfAddressData.builder().children(true).build());
         }
     }
 
