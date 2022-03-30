@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
@@ -200,6 +201,12 @@ class OrderTest {
             Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
                 OTHER_DETAILS,
                 Optional.empty()),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C29_RECOVERY_OF_A_CHILD, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),

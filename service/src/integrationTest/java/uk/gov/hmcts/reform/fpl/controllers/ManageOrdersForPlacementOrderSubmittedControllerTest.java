@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -102,6 +103,9 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     private NotificationClient notificationClient;
 
     @MockBean
+    private DocumentConversionService documentConversionService;
+
+    @MockBean
     private DocumentDownloadService documentDownloadService;
 
     @MockBean
@@ -143,6 +147,10 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             .thenReturn(ORDER_BINARY);
         when(documentDownloadService.downloadDocument(ORDER_NOTIFICATION_DOCUMENT_REFERENCE.getBinaryUrl()))
             .thenReturn(ORDER_NOTIFICATION_BINARY);
+        when(documentConversionService.convertToPdf(ORDER_DOCUMENT_REFERENCE))
+            .thenReturn(ORDER_DOCUMENT_REFERENCE);
+        when(documentConversionService.convertToPdf(ORDER_NOTIFICATION_DOCUMENT_REFERENCE))
+            .thenReturn(ORDER_NOTIFICATION_DOCUMENT_REFERENCE);
         when(uploadDocumentService.uploadPDF(ORDER_NOTIFICATION_BINARY,
             ORDER_NOTIFICATION_DOCUMENT_REFERENCE.getFilename()))
             .thenReturn(ORDER_NOTIFICATION_DOCUMENT);

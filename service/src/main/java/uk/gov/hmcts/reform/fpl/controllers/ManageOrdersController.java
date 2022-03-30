@@ -102,7 +102,7 @@ public class ManageOrdersController extends CallbackController {
             (Map<String, Object>) data.get("manageOrdersAmendedOrder");
         if (manageOrdersAmendedOrder != null) {
             String uploadedFilename = (String) manageOrdersAmendedOrder.get("document_filename");
-            if (PDF.equalsIgnoreCase(getExtension(uploadedFilename)) == false) {
+            if (!PDF.equalsIgnoreCase(getExtension(uploadedFilename))) {
                 String userMessage = MessageFormat.format(
                     "Can only amend documents that are {0}, requested document was of type: {1}", PDF,
                     getExtension(uploadedFilename));

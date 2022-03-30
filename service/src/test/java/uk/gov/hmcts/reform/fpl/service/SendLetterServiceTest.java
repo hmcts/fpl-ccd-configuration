@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -73,6 +74,9 @@ class SendLetterServiceTest {
     private SendLetterApi sendLetterApi;
 
     @MockBean
+    private DocumentConversionService documentConversionService;
+
+    @MockBean
     private DocumentDownloadService documentDownloadService;
 
     @MockBean
@@ -106,6 +110,8 @@ class SendLetterServiceTest {
         given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, RECIPIENTS.get(1),
             Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(1)));
+        given(documentConversionService.convertToPdf(MAIN_DOCUMENT_REFERENCE))
+            .willReturn(MAIN_DOCUMENT_REFERENCE);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 

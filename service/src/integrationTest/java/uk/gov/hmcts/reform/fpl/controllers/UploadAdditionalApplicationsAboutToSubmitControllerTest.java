@@ -30,10 +30,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -71,10 +70,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final String ADMIN_ROLE = "caseworker-publiclaw-courtadmin";
 
     private static final DocumentReference UPLOADED_DOCUMENT = testDocumentReference();
-    private static final DocumentReference SEALED_DOCUMENT = testDocumentReference();
+    private static final DocumentReference PDF_DOCUMENT = testDocumentReference();
 
     @MockBean
-    private DocumentSealingService documentSealingService;
+    private DocumentConversionService documentConversionService;
 
     @MockBean
     private RequestData requestData;
@@ -91,7 +90,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(requestData.userRoles()).willReturn(Set.of(ADMIN_ROLE));
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(documentSealingService.sealDocument(UPLOADED_DOCUMENT, SealType.ENGLISH)).willReturn(SEALED_DOCUMENT);
+        given(documentConversionService.convertToPdf(UPLOADED_DOCUMENT)).willReturn(PDF_DOCUMENT);
     }
 
     @Test
@@ -258,7 +257,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertDocument(existingC2Document.getDocument(), buildFromDocument(document()));
-        assertDocument(appendedC2Document.getDocument(), SEALED_DOCUMENT);
+        assertDocument(appendedC2Document.getDocument(), PDF_DOCUMENT);
 
         assertThat(returnedCaseData.getTemporaryC2Document()).isNull();
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
@@ -327,7 +326,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
 
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
-        assertDocument(uploadedC2DocumentBundle.getDocument(), SEALED_DOCUMENT);
+        assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
     }
@@ -344,7 +343,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
 
-        assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(SEALED_DOCUMENT);
+        assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(PDF_DOCUMENT);
     }
 
     private void assertTemporaryFieldsAreRemoved(CaseData caseData) {
@@ -396,7 +395,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             SupplementType.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),
-            SEALED_DOCUMENT,
+            PDF_DOCUMENT,
             USER_NAME
         );
     }
