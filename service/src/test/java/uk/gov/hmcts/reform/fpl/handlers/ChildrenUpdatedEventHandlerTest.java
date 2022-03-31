@@ -84,7 +84,7 @@ class ChildrenUpdatedEventHandlerTest {
         underTest.notifyChangeOfAddress(new ChildrenUpdated(caseData, caseDataBefore));
 
         verify(cafcassNotificationService).sendEmail(caseData,
-            CHANGE_OF_ADDRESS, ChangeOfAddressData.builder().build());
+            CHANGE_OF_ADDRESS, ChangeOfAddressData.builder().children(true).build());
     }
 
     @Test

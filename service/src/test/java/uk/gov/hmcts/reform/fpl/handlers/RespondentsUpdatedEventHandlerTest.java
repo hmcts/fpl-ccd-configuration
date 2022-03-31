@@ -188,6 +188,6 @@ class RespondentsUpdatedEventHandlerTest {
         underTest.notifyChangeOfAddress(new RespondentsUpdated(caseData, caseDataBefore));
 
         verify(cafcassNotificationService).sendEmail(caseData,
-            CHANGE_OF_ADDRESS, ChangeOfAddressData.builder().build());
+            CHANGE_OF_ADDRESS, ChangeOfAddressData.builder().respondents(true).build());
     }
 }
