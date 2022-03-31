@@ -37,7 +37,6 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
@@ -435,7 +434,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         } catch (RuntimeException e) {
             String exceptionText = e.getMessage();
-            assertThat(exceptionText.contains("IllegalStateException") && exceptionText.contains("Unexpected null manage document LA."));
+            assertThat(exceptionText.contains("IllegalStateException") 
+                && exceptionText.contains("Unexpected null manage document LA."));
         }
     }
 

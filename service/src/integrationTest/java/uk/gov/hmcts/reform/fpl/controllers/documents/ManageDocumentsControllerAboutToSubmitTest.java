@@ -331,7 +331,8 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         } catch (RuntimeException e) {
             String exceptionText = e.getMessage();
-            assertThat(exceptionText.contains("IllegalStateException") && exceptionText.contains("Unexpected null manage document."));
+            assertThat(exceptionText.contains("IllegalStateException") 
+                && exceptionText.contains("Unexpected null manage document."));
         }
     }
 
