@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.Jurisdiction;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -89,6 +91,13 @@ public class ManageOrdersEventData {
     String manageOrdersBirthCertificateRegistrationDistrict;
     String manageOrdersBirthCertificateRegistrationSubDistrict;
     String manageOrdersBirthCertificateRegistrationCounty;
+    PlacedUnderOrder manageOrdersPlacedUnderOrder;
+    String manageOrdersIsExParte;
+    List<C29ActionsPermitted> manageOrdersActionsPermitted;
+    Address manageOrdersActionsPermittedAddress;
+    String manageOrdersOfficerName;
+    LocalDate manageOrdersOrderCreatedDate;
+
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
