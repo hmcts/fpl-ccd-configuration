@@ -82,5 +82,12 @@
     "ListElementCode": "C35A_SUPERVISION_ORDER",
     "ListElement": "Supervision order (C35A)",
     "DisplayOrder": 13
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C34B_AUTHORITY_TO_REFUSE_CONTACT",
+    "ListElement": "Authority to refuse contact with a child in care (C34B)",
+    "DisplayOrder": 14
   }
 ]

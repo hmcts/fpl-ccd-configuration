@@ -9,7 +9,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\" OR orderTempQuestions.orderDetails=\"YES\" OR orderTempQuestions.needSealing=\"YES\" OR orderTempQuestions.uploadOrderFile=\"YES\" OR orderTempQuestions.childPlacementQuestions=\"YES\"",
+    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\" OR orderTempQuestions.orderDetails=\"YES\" OR orderTempQuestions.needSealing=\"YES\" OR orderTempQuestions.uploadOrderFile=\"YES\" OR orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.refuseContactQuestions=\"YES\"",
     "FieldShowCondition": "manageOrdersOperation=\"CREATE\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/order-details/mid-event",
     "ShowSummaryChangeOption": "N"

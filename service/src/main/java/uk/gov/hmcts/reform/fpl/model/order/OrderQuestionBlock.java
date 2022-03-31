@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.order;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -89,7 +90,8 @@ public enum OrderQuestionBlock {
     ORDER_TO_AMEND("orderToAmend", OrderSection.AMEND_DOWNLOAD,
         List.of("manageOrdersOrderToAmend")),
     UPLOAD_AMENDED_ORDER("uploadAmendedOrder", OrderSection.AMEND_DOWNLOAD,
-        List.of("manageOrdersAmendedOrder"));
+        List.of("manageOrdersAmendedOrder")),
+    REFUSE_CONTACT_ORDER("refuseContactQuestions", OrderSection.ORDER_DETAILS, Collections.emptyList());
 
     private final String showHideField;
     private final OrderSection section;
