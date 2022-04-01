@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtBundleTabHeading",
     "FieldType": "Label",
-    "Label": "## Court bundle",
+    "Label": "## Hearing documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
