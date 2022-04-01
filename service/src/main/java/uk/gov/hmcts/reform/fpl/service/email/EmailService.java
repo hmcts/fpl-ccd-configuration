@@ -39,6 +39,8 @@ public class EmailService {
             }
 
             message.setHeader("X-Priority", "1");
+            message.setHeader("Importance", "High");
+            message.setHeader("X-MSMail-Priority", "High");
 
             mailSender.send(message);
 
