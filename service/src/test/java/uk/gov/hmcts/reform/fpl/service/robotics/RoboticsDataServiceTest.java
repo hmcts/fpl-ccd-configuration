@@ -783,7 +783,7 @@ class RoboticsDataServiceTest {
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-            assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
+            assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, false);
         }
 
         @Test
@@ -798,7 +798,7 @@ class RoboticsDataServiceTest {
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-            assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, true);
+            assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, false);
         }
 
         @Test
