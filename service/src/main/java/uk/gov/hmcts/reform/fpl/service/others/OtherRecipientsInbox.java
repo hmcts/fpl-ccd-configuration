@@ -42,7 +42,7 @@ public class OtherRecipientsInbox {
 
         return othersSelectedElements.stream()
             .map(Element::getValue)
-            .filter(other -> other.hasAddressAdded() && !other.isRepresented())
+            .filter(other -> other.hasAddressAdded() && !other.isRepresented() && !other.isDeceasedOrNFA())
             .map(Other::toParty)
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
