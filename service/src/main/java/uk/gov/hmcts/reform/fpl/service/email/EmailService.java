@@ -38,6 +38,8 @@ public class EmailService {
                 }
             }
 
+            message.setHeader("X-Priority", "1");
+
             mailSender.send(message);
 
         } catch (MessagingException | MailException e) {
