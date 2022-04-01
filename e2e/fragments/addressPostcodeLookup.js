@@ -49,6 +49,9 @@ module.exports = {
     if (address.town) {
       I.fillField(this.fields.town, address.town);
     }
+    if (address.county) {
+      I.fillField(this.fields.county, address.county);
+    }
     if (address.postcode) {
       I.fillField(this.fields.postcode, address.postcode);
     }
