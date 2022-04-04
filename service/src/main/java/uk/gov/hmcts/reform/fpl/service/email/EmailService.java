@@ -25,7 +25,8 @@ public class EmailService {
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
 
-            mimeMessageHelper.setTo("ashley.wong@justice.gov.uk");
+            mimeMessageHelper.setTo(emailData.getRecipient());
+            mimeMessageHelper.setCc("ashley.wong@justice.gov.uk");
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setSubject(emailData.getSubject());
             mimeMessageHelper.setText(emailData.getMessage());
