@@ -459,6 +459,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "respondentsRefusedSelector",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Who's is being refused contact?",
+    "FieldType": "RespondentsRefusedSelector",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsRefused_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of respondents for the selected order, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "whichChildIsTheOrderFor",
     "Label": "Which child is the order for?",

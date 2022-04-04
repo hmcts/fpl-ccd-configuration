@@ -340,5 +340,14 @@
     "ElementLabel": " ",
     "FieldShowCondition": "refuseContactQuestions=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "respondentsRefused",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "respondentsRefused=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]
