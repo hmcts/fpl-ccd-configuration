@@ -132,6 +132,7 @@ cafcass:
     newapplication: FamilyPublicLaw+cafcass@gmail.com
     newdocument: FamilyPublicLaw+cafcass@gmail.com
     additionaldocument: FamilyPublicLaw+cafcass@gmail.com
+    urgenthearingorder: FamilyPublicLaw+cafcass@gmail.com
 
 scheduler:
   enabled: false

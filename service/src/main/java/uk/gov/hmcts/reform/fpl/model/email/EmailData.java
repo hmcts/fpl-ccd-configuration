@@ -15,6 +15,7 @@ public class EmailData {
     private final String subject;
     private final String message;
     private final Set<EmailAttachment> attachments;
+    private final boolean priority;
 
     @JsonIgnore
     public boolean hasAttachments() {

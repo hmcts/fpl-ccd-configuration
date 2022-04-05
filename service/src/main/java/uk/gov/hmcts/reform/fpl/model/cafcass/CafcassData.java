@@ -48,4 +48,8 @@ public interface CafcassData {
     default String getCaseUrl()  {
         throw new UnsupportedOperationException();
     }
+
+    default boolean isUrgent() {
+        return false;
+    }
 }

@@ -10,11 +10,14 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.UrgentHearingOrderAndNopData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
@@ -23,6 +26,10 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -34,17 +41,30 @@ public class GatekeepingOrderEventHandler {
     private final SDOIssuedCafcassContentProvider cafcassContentProvider;
     private final SDOIssuedContentProvider standardContentProvider;
     private final TranslationRequestService translationRequestService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @Async
     @EventListener
     public void notifyCafcass(GatekeepingOrderEvent event) {
         CaseData caseData = event.getCaseData();
 
-        NotifyData parameters = cafcassContentProvider.getNotifyData(caseData, event.getOrder());
+        SDONotifyData parameters = cafcassContentProvider.getNotifyData(caseData, event.getOrder());
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService
-            .sendEmail(event.getNotificationGroup().getCafcassTemplate(), recipient, parameters, caseData.getId());
+        if (URGENT_AND_NOP == event.getNotificationGroup()) {
+            cafcassNotificationService.sendEmail(
+                caseData,
+                Set.of(event.getOrder()),
+                URGENT_HEARING_ORDER_AND_NOP,
+                UrgentHearingOrderAndNopData.builder()
+                    .callout(parameters.getCallout())
+                    .leadRespondentsName(parameters.getLastName())
+                    .build()
+            );
+        } else {
+            notificationService
+                .sendEmail(event.getNotificationGroup().getCafcassTemplate(), recipient, parameters, caseData.getId());
+        }
     }
 
     @Async
