@@ -16,14 +16,27 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsLA",
-    "CaseFieldID": "courtBundleHearingList",
+    "CaseFieldID": "manageDocumentsHearingDocumentType",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "ManageDocumentType",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentLA.type=\"COURT_BUNDLE\" AND manageDocumentLA.hasHearings=\"Yes\""
+    "FieldShowCondition": "manageDocumentLA.type=\"HEARING_DOCUMENTS\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "hearingDocumentsHearingList",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocumentLA.type=\"HEARING_DOCUMENTS\" AND manageDocumentLA.hasHearings=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -36,7 +49,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentLA.type=\"COURT_BUNDLE\" AND manageDocumentLA.hasHearings=\"No\""
+    "FieldShowCondition": "manageDocumentLA.type=\"HEARING_DOCUMENTS\" AND manageDocumentLA.hasHearings=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -220,7 +233,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "manageDocumentLA.type=\"COURT_BUNDLE\""
+    "PageShowCondition": "manageDocumentLA.type=\"HEARING_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",

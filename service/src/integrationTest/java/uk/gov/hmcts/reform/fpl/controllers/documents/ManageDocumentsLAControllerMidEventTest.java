@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
@@ -144,8 +144,8 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
             .courtBundleList(courtBundleList)
-            .courtBundleHearingList(hearingList)
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .hearingDocumentsHearingList(hearingList)
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
@@ -155,7 +155,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
-            .type(COURT_BUNDLE)
+            .type(HEARING_DOCUMENTS)
             .hasHearings("Yes")
             .hasC2s("No")
             .build());
@@ -349,7 +349,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
     @Test
     void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
         CaseData caseData = CaseData.builder()
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,

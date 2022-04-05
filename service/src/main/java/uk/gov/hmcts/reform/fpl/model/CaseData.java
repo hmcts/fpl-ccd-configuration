@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -98,6 +99,13 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasTimeNotMidnight;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -112,13 +120,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.Valid;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
@@ -682,7 +683,7 @@ public class CaseData {
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
-    private final Object courtBundleHearingList;
+    private final Object hearingDocumentsHearingList;
     private final Object respondentStatementList;
 
     private final CourtBundle manageDocumentsCourtBundle;
@@ -1129,4 +1130,6 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
+
+    private final HearingDocumentType manageDocumentsHearingDocumentType;
 }

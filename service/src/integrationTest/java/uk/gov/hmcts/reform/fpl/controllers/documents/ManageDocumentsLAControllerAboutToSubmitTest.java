@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -169,13 +169,13 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
-            .courtBundleHearingList(DynamicList.builder()
+            .hearingDocumentsHearingList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(hearingId)
                     .build())
                 .build())
             .manageDocumentsCourtBundle(courtBundle)
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));

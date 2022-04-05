@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,7 +32,7 @@ public class ManageDocumentLAService {
     private final ObjectMapper mapper;
 
     public static final String MANAGE_DOCUMENT_LA_KEY = "manageDocumentLA";
-    public static final String COURT_BUNDLE_HEARING_LIST_KEY = "courtBundleHearingList";
+    public static final String HEARING_DOCUMENT_HEARING_LIST_KEY = "hearingDocumentsHearingList";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY = "furtherEvidenceDocumentsLA";
     public static final String DOCUMENT_SUB_TYPE = "manageDocumentSubtypeListLA";
     public static final String RELATED_TO_HEARING = "manageDocumentsRelatedToHearing";
@@ -54,7 +55,7 @@ public class ManageDocumentLAService {
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
 
         if (isNotEmpty(caseData.getHearingDetails())) {
-            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+            listAndLabel.put(HEARING_DOCUMENT_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
         }
 
         if (caseData.hasApplicationBundles()) {
@@ -68,17 +69,21 @@ public class ManageDocumentLAService {
         return listAndLabel;
     }
 
-    public Map<String, Object> initialiseCourtBundleFields(CaseData caseData) {
+    public Map<String, Object> initialiseHearingDocumentFields(CaseData caseData) {
         Map<String, Object> map = new HashMap<>();
-        map.put(COURT_BUNDLE_HEARING_LIST_KEY, initialiseCourtBundleHearingList((caseData)));
-        map.put(COURT_BUNDLE_KEY, getCourtBundleForHearing((caseData)));
+        map.put(HEARING_DOCUMENT_HEARING_LIST_KEY, initialiseHearingDocumentsHearingList((caseData)));
+        switch (caseData.getManageDocumentsHearingDocumentType()) {
+            case COURT_BUNDLE :
+                map.put(COURT_BUNDLE_KEY, getCourtBundleForHearing((caseData)));
+                break;
+        }
         return map;
     }
 
     public List<Element<CourtBundle>> buildCourtBundleList(CaseData caseData) {
         List<Element<CourtBundle>> courtBundleList = caseData.getCourtBundleList();
 
-        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
 
         if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle()));
@@ -93,8 +98,8 @@ public class ManageDocumentLAService {
         return courtBundleList;
     }
 
-    private DynamicList initialiseCourtBundleHearingList(CaseData caseData) {
-        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
+    private DynamicList initialiseHearingDocumentsHearingList(CaseData caseData) {
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
         Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(
             selectedHearingId);
 
@@ -107,7 +112,7 @@ public class ManageDocumentLAService {
     private CourtBundle getCourtBundleForHearing(CaseData caseData) {
         List<Element<CourtBundle>> bundles = caseData.getCourtBundleList();
 
-        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
 
         Optional<Element<CourtBundle>> bundle = findElement(selectedHearingId, bundles);
 

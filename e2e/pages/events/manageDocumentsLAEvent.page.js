@@ -21,7 +21,7 @@ module.exports = {
     },
     respondentStatementList: '#respondentStatementList',
     hearingList: '#manageDocumentsHearingList',
-    courtBundleHearingList: '#courtBundleHearingList',
+    hearingDocumentsHearingList: '#hearingDocumentsHearingList',
     courtBundleDocument: '#manageDocumentsCourtBundle_document',
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
@@ -71,8 +71,8 @@ module.exports = {
   },
 
   async selectCourtBundleHearing(hearingDate) {
-    I.waitForElement(this.fields.courtBundleHearingList);
-    I.selectOption(this.fields.courtBundleHearingList, `Case management hearing, ${hearingDate}`);
+    I.waitForElement(this.fields.hearingDocumentsHearingList);
+    I.selectOption(this.fields.hearingDocumentsHearingList, `Case management hearing, ${hearingDate}`);
   },
 
   async attachCourtBundle(document) {
