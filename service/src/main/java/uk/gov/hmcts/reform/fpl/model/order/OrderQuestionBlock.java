@@ -91,7 +91,10 @@ public enum OrderQuestionBlock {
     UPLOAD_AMENDED_ORDER("uploadAmendedOrder", OrderSection.AMEND_DOWNLOAD,
         List.of("manageOrdersAmendedOrder")),
     EDUCATION_SUPERVISION("manageOrdersEducationSupervision", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersLeaName","manageOrdersEndDateWithEducationAge"));
+        List.of("manageOrdersLeaName","manageOrdersEndDateWithEducationAge")),
+    ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
+            "manageOrdersIsExParte"));
 
     private final String showHideField;
     private final OrderSection section;
