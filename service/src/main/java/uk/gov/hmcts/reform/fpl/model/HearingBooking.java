@@ -26,6 +26,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import javax.validation.constraints.Future;
 
@@ -125,7 +126,10 @@ public class HearingBooking implements TranslatableItem {
     }
 
     public String toLabel() {
-        String type = OTHER == this.type ? capitalize(typeDetails) : this.type.getLabel();
+        HearingType hearingType = Optional.ofNullable(this.type)
+            .orElseThrow(() -> new IllegalStateException("Unexpected null hearing type. " + this));
+
+        String type = hearingType == OTHER ? capitalize(typeDetails) : hearingType.getLabel();
         String label = format("%s hearing, %s", type, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
         String status = isAdjourned() ? "adjourned" : isVacated() ? "vacated" : null;
 
