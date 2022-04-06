@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -32,6 +34,24 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
         super(eventName);
     }
 
+    protected CallbackRequest buildCallbackRequestWithApplicationDocument(final String bundleName,
+                                                   final boolean confidential) {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(TEST_CASE_ID)
+            .data(buildData(bundleName, buildApplicationDocument(confidential)))
+            .build();
+
+        CaseDetails caseDetailsBefore = CaseDetails.builder()
+            .data(Map.of("dummy", "some dummy data"))
+            .id(TEST_CASE_ID)
+            .build();
+
+        return CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+    }
+
     protected CallbackRequest buildCallbackRequest(final String bundleName,
                                                    final boolean confidential) {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -50,6 +70,22 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .build();
     }
 
+    protected static ApplicationDocument buildApplicationDocument(
+        boolean confidential) {
+        ApplicationDocument.ApplicationDocumentBuilder document
+            = ApplicationDocument.builder()
+            .documentType(ApplicationDocumentType.BIRTH_CERTIFICATE)
+            .uploadedBy("user who uploaded")
+            .dateTimeUploaded(LocalDateTime.now())
+            .document(TestDataHelper.testDocumentReference());
+
+        if (confidential) {
+            document.confidential(List.of(CONFIDENTIAL_MARKER));
+        }
+
+        return document.build();
+    }
+
     protected static SupportingEvidenceBundle buildEvidenceBundle(
         boolean confidential) {
         SupportingEvidenceBundle.SupportingEvidenceBundleBuilder document
@@ -65,6 +101,29 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
         }
 
         return document.build();
+    }
+
+    protected Map<String, Object> buildData(String bundleName, ApplicationDocument applicationDocument) {
+        return Map.of(
+            "localAuthorities", wrapElements(
+                LocalAuthority.builder()
+                    .designated(YES.getValue())
+                    .email(LOCAL_AUTHORITY_1_INBOX)
+                    .build(),
+                LocalAuthority.builder()
+                    .designated(NO.getValue())
+                    .email(LOCAL_AUTHORITY_2_INBOX)
+                    .build()),
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+            "representatives", wrapElements(Representative.builder()
+                .email(REP_1_EMAIL)
+                .fullName("Representative Snow")
+                .role(REPRESENTING_RESPONDENT_1)
+                .servingPreferences(DIGITAL_SERVICE)
+                .build()),
+            "respondents1", createRespondents(),
+            bundleName, wrapElements(applicationDocument)
+        );
     }
 
     protected Map<String, Object> buildData(String bundleName, SupportingEvidenceBundle supportingEvidenceBundle) {

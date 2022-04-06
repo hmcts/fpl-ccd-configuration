@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
-import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.DocumentUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -234,7 +234,7 @@ public class ManageDocumentsController extends CallbackController {
             || this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
             UserDetails userDetails = userService.getUserDetails();
 
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
+            publishEvent(new DocumentUploadedEvent(getCaseData(request),
                 getCaseDataBefore(request), userType, userDetails));
         }
     }
