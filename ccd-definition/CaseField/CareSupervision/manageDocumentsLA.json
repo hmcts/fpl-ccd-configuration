@@ -38,6 +38,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsCaseSummary",
+    "FieldType": "CaseSummaryV2",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDocumentsHearingList",
     "FieldType": "DynamicList",
     "Label": "Which hearing?",

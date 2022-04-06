@@ -686,8 +686,11 @@ public class CaseData {
     private final Object hearingDocumentsHearingList;
     private final Object respondentStatementList;
 
+    private final HearingDocumentType manageDocumentsHearingDocumentType;
     private final CourtBundle manageDocumentsCourtBundle;
+    private final CaseSummary manageDocumentsCaseSummary;
     private final List<Element<CourtBundle>> courtBundleList;
+    private final List<Element<CaseSummary>> caseSummaryList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
@@ -695,6 +698,10 @@ public class CaseData {
 
     public List<Element<CourtBundle>> getCourtBundleList() {
         return defaultIfNull(courtBundleList, new ArrayList<>());
+    }
+
+    public List<Element<CaseSummary>> getCaseSummaryList() {
+        return defaultIfNull(caseSummaryList, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
@@ -1130,6 +1137,4 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
-
-    private final HearingDocumentType manageDocumentsHearingDocumentType;
 }

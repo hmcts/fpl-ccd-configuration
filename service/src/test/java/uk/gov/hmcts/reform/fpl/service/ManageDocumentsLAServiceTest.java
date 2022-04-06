@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -33,6 +34,7 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
@@ -149,20 +151,21 @@ class ManageDocumentsLAServiceTest {
     }
 
     @Test
-    void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
+    void shouldReturnNewHearingDocumentListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(CourtBundle.builder().hearing("Test hearing").build())
             .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
-        assertThat(manageDocumentLAService.buildCourtBundleList(caseData))
+        assertThat(manageDocumentLAService.buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY))
             .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle())));
     }
 
     @Test
-    void shouldReturnEditedCourtBundleListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
+    void shouldReturnEditedHearingDocumentListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         List<Element<CourtBundle>> courtBundleList = new ArrayList<>();
         courtBundleList.add(element(selectedHearingId, CourtBundle.builder().hearing("Test hearing").build()));
@@ -172,9 +175,12 @@ class ManageDocumentsLAServiceTest {
             .courtBundleList(courtBundleList)
             .manageDocumentsCourtBundle(editedBundle)
             .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
-        assertThat(unwrapElements(manageDocumentLAService.buildCourtBundleList(caseData)))
+        assertThat(unwrapElements((List<Element<CourtBundle>>) manageDocumentLAService
+                .buildHearingDocumentList(caseData)
+                .get(COURT_BUNDLE_LIST_KEY)))
             .containsExactly(editedBundle);
     }
 

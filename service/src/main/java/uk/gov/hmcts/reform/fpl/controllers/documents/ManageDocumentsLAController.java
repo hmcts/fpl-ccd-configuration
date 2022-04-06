@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICAT
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CASE_SUMMARY_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_KEY;
@@ -209,15 +210,15 @@ public class ManageDocumentsLAController extends CallbackController {
                     manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData, NOT_SOLICITOR));
                 break;
             case HEARING_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, manageDocumentLAService
-                    .buildCourtBundleList(caseData));
+                caseDetailsMap.putIfNotEmpty(manageDocumentLAService
+                    .buildHearingDocumentList(caseData));
                 break;
         }
 
         removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, HEARING_DOCUMENT_HEARING_LIST_KEY,
-            COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENTS_LIST_KEY);
+            COURT_BUNDLE_KEY, CASE_SUMMARY_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENTS_LIST_KEY);
 
         CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
         caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
