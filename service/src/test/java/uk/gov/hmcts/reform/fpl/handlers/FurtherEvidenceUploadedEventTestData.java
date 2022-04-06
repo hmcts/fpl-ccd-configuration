@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,6 +48,17 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
 
     private FurtherEvidenceUploadedEventTestData() {
+    }
+
+    public static CaseData buildSubmittedCaseData() {
+        return commonCaseBuilder()
+            .applicationDocuments(new ArrayList<>())
+            .furtherEvidenceDocuments(new ArrayList<>())
+            .furtherEvidenceDocumentsLA(new ArrayList<>())
+            .furtherEvidenceDocumentsSolicitor(new ArrayList<>())
+            .hearingFurtherEvidenceDocuments(new ArrayList<>())
+            .respondentStatements(new ArrayList<>())
+            .build();
     }
 
     public static CaseData buildCaseDataWithNonConfidentialLADocuments() {
@@ -136,8 +149,8 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
                 .applicationDocuments(
                     wrapElements(
-                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1),
-                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1)
+                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, false, PDF_DOCUMENT_1),
+                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, false, PDF_DOCUMENT_1)
                     )
                 )
             .build();
@@ -179,14 +192,19 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
-                                                                     DocumentReference docRef) {
-        return ApplicationDocument.builder()
-                .documentName(name)
-                .documentType(BIRTH_CERTIFICATE)
-                .uploadedBy(uploadedBy)
-                .document(docRef)
-                .dateTimeUploaded(LocalDateTime.now())
-                .build();
+                                                                     boolean confidential, DocumentReference docRef) {
+        ApplicationDocument.ApplicationDocumentBuilder document = ApplicationDocument.builder()
+            .documentName(name)
+            .documentType(BIRTH_CERTIFICATE)
+            .uploadedBy(uploadedBy)
+            .document(docRef)
+            .dateTimeUploaded(LocalDateTime.now());
+
+
+        if (confidential) {
+            document.confidential(List.of(CONFIDENTIAL_MARKER));
+        }
+        return document.build();
     }
 
     public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
@@ -212,7 +230,16 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
-    private static List<Element<RespondentStatement>> buildRespondentStatementsList(
+    public static List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> bundle
+    ) {
+        return wrapElements(HearingFurtherEvidenceBundle.builder()
+            .hearingName(UUID.randomUUID().toString())
+            .supportingEvidenceBundle(bundle)
+            .build());
+    }
+
+    public static List<Element<RespondentStatement>> buildRespondentStatementsList(
         List<Element<SupportingEvidenceBundle>> bundle
     ) {
         return wrapElements(RespondentStatement.builder()

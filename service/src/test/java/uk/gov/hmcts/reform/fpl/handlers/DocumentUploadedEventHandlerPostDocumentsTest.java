@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.DocumentUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
+class DocumentUploadedEventHandlerPostDocumentsTest {
 
     private static final List<Recipient> RECIPIENTS_LIST = createRecipientsList();
 
@@ -75,7 +75,7 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
 
     @InjectMocks
-    private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
+    private DocumentUploadedEventHandler documentUploadedEventHandler;
 
 
     @Test
@@ -84,13 +84,13 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocuments(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsByPost(documentUploadedEvent);
 
         List<DocumentReference> documents = List.of(PDF_DOCUMENT_1, PDF_DOCUMENT_2);
         verify(sendDocumentService).sendDocuments(caseData, documents, RECIPIENTS_LIST);
@@ -101,13 +101,13 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     void shouldNotSendDocumentByPostWhenPDFUploadedByLA() {
         final CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialLADocuments(),
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsByPost(documentUploadedEvent);
 
         verify(sendDocumentService, never()).sendDocuments(any(), any(), any());
     }
@@ -118,13 +118,13 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocuments(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsByPost(documentUploadedEvent);
 
         verify(sendDocumentService).sendDocuments(caseData, new ArrayList<>(), RECIPIENTS_LIST);
     }
@@ -135,13 +135,13 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsByPost(documentUploadedEvent);
 
         List<DocumentReference> documents = List.of(PDF_DOCUMENT_1, PDF_DOCUMENT_2);
         verify(sendDocumentService).sendDocuments(caseData, documents, RECIPIENTS_LIST);
@@ -153,13 +153,13 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsByPost(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsByPost(documentUploadedEvent);
 
         verify(sendDocumentService).sendDocuments(caseData, new ArrayList<>(), RECIPIENTS_LIST);
     }
@@ -179,14 +179,14 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             "LA");
         CaseData caseDataBefore = commonCaseBuilder().build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 caseDataBefore,
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
 
         List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
         Set<DocumentReference> documentReferences = courtBundles.stream()
@@ -219,14 +219,14 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             .courtBundleList(caseData.getCourtBundleList())
             .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 caseDataBefore,
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
             any(),
@@ -254,14 +254,14 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             .courtBundleList(List.of(existingBundle))
             .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 caseDataBefore,
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
         Set<DocumentReference> documentReferences = courtBundleList.stream()
             .map(courtBundle -> courtBundle.getValue().getDocument())
             .collect(toSet());
@@ -307,14 +307,14 @@ class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             .courtBundleList(oldHearing)
             .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 caseDataBefore,
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA()
             );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        documentUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
         List<Element<CourtBundle>> expectedBundle = new ArrayList<>(hearing1);
         expectedBundle.addAll(hearing2);
 

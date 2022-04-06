@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
-import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -20,11 +19,10 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class FurtherEvidenceNotificationService {
+public class DocumentUploadedNotificationService {
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final NotificationService notificationService;
@@ -58,15 +56,12 @@ public class FurtherEvidenceNotificationService {
         return localAuthorityRecipients.getRecipients(recipientsRequest);
     }
 
-    public Set<String> getRepresentativeEmails(CaseData caseData, DocumentUploaderType userType) {
+    public Set<String> getRepresentativeEmails(CaseData caseData) {
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
         HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, roles);
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
-
-        if (userType == SOLICITOR) {
-            emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
-        }
+        emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
         return emails;
     }
 
