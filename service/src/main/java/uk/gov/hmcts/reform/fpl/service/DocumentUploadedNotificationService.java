@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SO
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class FurtherEvidenceNotificationService {
+public class DocumentUploadedNotificationService {
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final NotificationService notificationService;

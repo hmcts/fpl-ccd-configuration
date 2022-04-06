@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.DocumentUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.DocumentUploadedNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DE
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.CONFIDENTIAL_1;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.LA_USER;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialLADocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFDocumentsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialPdfDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.commonCaseBuilder;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyEvidenceBundle;
@@ -77,10 +79,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class FurtherEvidenceUploadedEventHandlerTest {
+class DocumentUploadedEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final String CONFIDENTIAL_MARKER = "CONFIDENTIAL";
-    private static final String LA_USER = "LA";
     private static final String HMCTS_USER = "HMCTS";
     private static final String REP_USER = "REP";
     private static final String LA_USER_EMAIL = "la@examaple.com";
@@ -101,7 +102,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private static final List<String> CONFIDENTIAL = buildConfidentialDocumentsNamesList();
 
     @Mock
-    private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
+    private DocumentUploadedNotificationService documentUploadedNotificationService;
 
     @Mock
     private TranslationRequestService translationRequestService;
@@ -113,7 +114,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private CafcassNotificationService cafcassNotificationService;
 
     @InjectMocks
-    private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
+    private DocumentUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
     @Captor
     private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
@@ -125,50 +126,27 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Test
-    void shouldSendNotificationWhenNonConfidentialDocIsUploadedByLA() {
-        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
+    void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByLA() {
+        // Further documents for main application -> Any other document
+        CaseData caseDataBefore = buildCaseDataWithConfidentialDocuments(LA_USER);
+        CaseData caseData = buildCaseDataWithConfidentialDocuments(LA_USER);
+        caseData.getFurtherEvidenceDocuments().addAll(buildNonConfidentialPdfDocumentList(LA_USER));
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA());
-
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
-            .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
-
-        verify(furtherEvidenceNotificationService).sendNotification(
-            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER,
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenDocIsMadeNonConfidentialByLA() {
-        CaseData caseDataBefore = buildCaseDataWithConfidentialLADocuments();
-
-        // buildCaseDataWithConfidentialLADocuments() has a "confidential-doc-1" marked as confidential
-        // so we are creating a new list with "confidential-doc-1" not marked as confidential
-        CaseData caseData = commonCaseBuilder().furtherEvidenceDocumentsLA(
-            wrapElements(createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, false, PDF_DOCUMENT_1))
-        ).build();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 caseDataBefore,
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
+        when(documentUploadedNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService).sendNotification(
-            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER, CONFIDENTIAL);
+        verify(documentUploadedNotificationService).sendNotification(
+            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER,
+            NON_CONFIDENTIAL);
     }
 
     @Test
@@ -181,20 +159,20 @@ class FurtherEvidenceUploadedEventHandlerTest {
             wrapElements(createDummyEvidenceBundle(CONFIDENTIAL_1, HMCTS_USER, false, PDF_DOCUMENT_1))
         ).build();
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, HMCTS))
+        when(documentUploadedNotificationService.getRepresentativeEmails(caseData, HMCTS))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
+        when(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 caseDataBefore,
                 HMCTS,
                 userDetailsHMCTS());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService).sendNotification(
+        verify(documentUploadedNotificationService).sendNotification(
             caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
             CONFIDENTIAL);
     }
@@ -202,69 +180,69 @@ class FurtherEvidenceUploadedEventHandlerTest {
     @Test
     void shouldNotSendNotificationWhenConfidentialDocIsUploadedByLA() {
         CaseData caseData = buildCaseDataWithConfidentialLADocuments();
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithNonConfidentialLADocuments(),
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
+        verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
     void shouldNotSendNotificationWhenDocumentsAreRemoved() {
         CaseData caseData = commonCaseBuilder().build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithNonConfidentialLADocuments(),
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
+        verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
     void shouldNotSendNotificationWhenDocumentsAreSame() {
         CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 caseData,
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
+        verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByHMCTS() {
         CaseData caseData = buildCaseDataWithNonConfidentialDocuments(HMCTS_USER);
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, HMCTS))
+        when(documentUploadedNotificationService.getRepresentativeEmails(caseData, HMCTS))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
+        when(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocuments(HMCTS_USER),
                 HMCTS,
                 userDetailsHMCTS());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService).sendNotification(
+        verify(documentUploadedNotificationService).sendNotification(
             caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER, NON_CONFIDENTIAL);
     }
 
@@ -272,36 +250,36 @@ class FurtherEvidenceUploadedEventHandlerTest {
     void shouldNotSendNotificationWhenConfidentialDocIsUploadedByHMCTS() {
         CaseData caseData = buildCaseDataWithConfidentialDocuments(HMCTS_USER);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithNonConfidentialDocuments(HMCTS_USER),
                 HMCTS,
                 userDetailsHMCTS());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
+        verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByRespSolicitor() {
         CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, SOLICITOR))
+        when(documentUploadedNotificationService.getRepresentativeEmails(caseData, SOLICITOR))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
+        when(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocuments(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService)
+        verify(documentUploadedNotificationService)
             .sendNotification(caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
                 NON_CONFIDENTIAL);
     }
@@ -309,36 +287,36 @@ class FurtherEvidenceUploadedEventHandlerTest {
     @Test
     void shouldNotSendNotificationWhenConfidentialDocIsUploadedByRespSolicitor() {
         CaseData caseData = buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER);
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithNonConfidentialDocuments(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
+        verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
     void shouldSendNotificationWhenNonConfidentialResponseStatementIsUploadedByRespSolicitor() {
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, SOLICITOR))
+        when(documentUploadedNotificationService.getRepresentativeEmails(caseData, SOLICITOR))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
-        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
+        when(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL));
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService)
+        verify(documentUploadedNotificationService)
             .sendNotification(caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
                 NON_CONFIDENTIAL);
     }
@@ -348,22 +326,22 @@ class FurtherEvidenceUploadedEventHandlerTest {
         // Not possible in journey but can happen in code.
         CaseData caseData = buildCaseDataWithConfidentialRespondentStatementsSolicitor();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
                 caseData,
                 buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
+        verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
 
     @Test
     void shouldNotNotifyTranslationTeamWhenNoChange() {
         when(calculator.calculate(CASE_DATA, CASE_DATA_BEFORE)).thenReturn(List.of());
 
-        furtherEvidenceUploadedEventHandler.notifyTranslationTeam(new FurtherEvidenceUploadedEvent(CASE_DATA,
+        furtherEvidenceUploadedEventHandler.notifyTranslationTeam(new DocumentUploadedEvent(CASE_DATA,
             CASE_DATA_BEFORE,
             null,
             null)
@@ -384,7 +362,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .build())
         ));
 
-        furtherEvidenceUploadedEventHandler.notifyTranslationTeam(new FurtherEvidenceUploadedEvent(CASE_DATA,
+        furtherEvidenceUploadedEventHandler.notifyTranslationTeam(new DocumentUploadedEvent(CASE_DATA,
             CASE_DATA_BEFORE,
             null,
             null)
@@ -408,14 +386,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .courtBundleList(caseData.getCourtBundleList())
                 .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         caseDataBefore,
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
                 any(),
@@ -443,14 +421,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .courtBundleList(List.of(existingBundle))
                 .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         caseDataBefore,
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
         Set<DocumentReference> documentReferences = courtBundleList.stream()
                 .map(courtBundle -> courtBundle.getValue().getDocument())
                 .collect(toSet());
@@ -496,14 +474,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .courtBundleList(oldHearing)
                 .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         caseDataBefore,
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
         List<Element<CourtBundle>> expectedBundle = new ArrayList<>(hearing1);
         expectedBundle.addAll(hearing2);
 
@@ -543,14 +521,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         buildCaseDataWithConfidentialLADocuments(),
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsLA())
                 .stream()
@@ -582,14 +560,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         buildCaseDataWithConfidentialLADocuments(),
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getRespondentStatements())
                 .stream()
@@ -621,14 +599,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseData = buildCaseDataWithApplicationDocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         buildCaseDataWithConfidentialLADocuments(),
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
@@ -660,14 +638,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseData = buildCaseDataWithApplicationDocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         caseData,
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
@@ -692,15 +670,15 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         caseData,
 
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
                 any(),
@@ -718,14 +696,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         caseData,
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
                 any(),
@@ -760,14 +738,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
                         )
             );
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         buildCaseDataWithConfidentialLADocuments(),
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(correspondence)
                 .stream()
@@ -799,14 +777,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
+        DocumentUploadedEvent documentUploadedEvent =
+                new DocumentUploadedEvent(
                         caseData,
                         caseData,
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
                 any(),

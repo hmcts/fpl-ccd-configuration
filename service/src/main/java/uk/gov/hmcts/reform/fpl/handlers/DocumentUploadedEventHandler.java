@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
-import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.DocumentUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -21,7 +21,8 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
+import uk.gov.hmcts.reform.fpl.service.DocumentUploadedNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
@@ -38,6 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +50,6 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
@@ -59,10 +60,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class FurtherEvidenceUploadedEventHandler {
+public class DocumentUploadedEventHandler {
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
     public static final String CORRESPONDENCE = "Correspondence";
-    private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
+    private final DocumentUploadedNotificationService documentUploadedNotificationService;
     private final FurtherEvidenceUploadDifferenceCalculator furtherEvidenceDifferenceCalculator;
     private final TranslationRequestService translationRequestService;
     private final SendDocumentService sendDocumentService;
@@ -72,44 +73,35 @@ public class FurtherEvidenceUploadedEventHandler {
     private static final String LIST = "•";
 
     @EventListener
-    public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+    public void sendDocumentsUploadedNotification(final DocumentUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
 
         DocumentUploaderType userType = event.getUserType();
-        var newNonConfidentialDocuments = getDocuments(caseData,
+        var newNonConfidentialDocuments = getNewUploadedFurtherDocuments(caseData,
             caseDataBefore,
-            userType,
-            (oldBundle, newDoc) -> !newDoc.isConfidentialDocument() && !unwrapElements(oldBundle).contains(newDoc));
+            (oldBundle, newDoc) -> !newDoc.isConfidentialDocument() && !oldBundle.contains(newDoc));
 
         final Set<String> recipients = new HashSet<>();
 
         if (!newNonConfidentialDocuments.isEmpty()) {
-            recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, userType));
-
-            if (userType == SECONDARY_LOCAL_AUTHORITY) {
-                recipients.addAll(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
-            }
-
-            if (userType == SOLICITOR || userType == HMCTS) {
-                recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
-            }
+            recipients.addAll(documentUploadedNotificationService.getRepresentativeEmails(caseData, userType));
+            recipients.addAll(documentUploadedNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
+            recipients.addAll(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData));
         }
-
-        recipients.removeIf(email -> Objects.equals(email, uploader.getEmail()));
 
         if (isNotEmpty(recipients)) {
 
             List<String> newDocumentNames = getDocumentNames(newNonConfidentialDocuments);
 
-            furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
+            documentUploadedNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
                 newDocumentNames);
         }
     }
 
     @EventListener
-    public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
+    public void sendDocumentsByPost(final DocumentUploadedEvent event) {
         DocumentUploaderType userType = event.getUserType();
 
         if (userType == SOLICITOR) {
@@ -128,7 +120,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     @EventListener
-    public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
+    public void sendCourtBundlesToCafcass(final DocumentUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
@@ -158,7 +150,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     @EventListener
-    public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
+    public void sendDocumentsToCafcass(final DocumentUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
@@ -289,9 +281,25 @@ public class FurtherEvidenceUploadedEventHandler {
         return newDocs;
     }
 
+    private List<FurtherDocument> getNewUploadedFurtherDocuments(
+        CaseData caseData, CaseData caseDataBefore,
+        BiPredicate<List<FurtherDocument>, FurtherDocument> biPredicate) {
 
-    private List<String> getDocumentNames(List<SupportingEvidenceBundle> documentBundle) {
-        return documentBundle.stream().map(SupportingEvidenceBundle::getName).collect(toList());
+        var newBundle = getFurtherDocumentsForMainApplication(caseData);
+        var oldBundle = getFurtherDocumentsForMainApplication(caseDataBefore);
+
+        List<FurtherDocument> newDocs = new ArrayList<>();
+
+        newBundle.forEach(newDoc -> {
+            if (biPredicate.test(oldBundle, newDoc)) {
+                newDocs.add(newDoc);
+            }
+        });
+        return newDocs;
+    }
+
+    private List<String> getDocumentNames(List<FurtherDocument> documentBundle) {
+        return documentBundle.stream().map(FurtherDocument::getName).collect(toList());
     }
 
     private List<DocumentReference> getDocumentReferences(List<SupportingEvidenceBundle> documentBundle) {
@@ -321,6 +329,49 @@ public class FurtherEvidenceUploadedEventHandler {
         } else {
             return caseData.getFurtherEvidenceDocuments();
         }
+    }
+
+    private List<FurtherDocument> getFurtherDocumentsForMainApplication(CaseData caseData) {
+        List<FurtherDocument> ret = new ArrayList<>();
+
+        Function<Element<? extends FurtherDocument>, FurtherDocument> mapper = (ad) -> (FurtherDocument) ad.getValue();
+
+        // Further application documents - for example the SWET or care plan
+        List<Element<ApplicationDocument>> applicationDocuments = defaultIfNull(
+            caseData.getApplicationDocuments(), List.of());
+        ret.addAll(applicationDocuments.stream().map(mapper).collect(toList()));
+
+        // Respondent Statement
+        List<Element<SupportingEvidenceBundle>> respondentStatements = defaultIfNull(
+            getEvidenceBundleFromRespondentStatements(caseData), List.of());
+        ret.addAll(respondentStatements.stream().map(mapper).collect(toList()));
+
+        // Any other documents
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsLA = defaultIfNull(
+            caseData.getFurtherEvidenceDocumentsLA(), List.of());
+        ret.addAll(anyOtherDocsLA.stream().map(mapper).collect(toList()));
+
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsSol = defaultIfNull(
+            caseData.getFurtherEvidenceDocumentsSolicitor(), List.of());
+        ret.addAll(anyOtherDocsSol.stream().map(mapper).collect(toList()));
+
+        List<Element<SupportingEvidenceBundle>> anyOtherDocs = defaultIfNull(
+            caseData.getFurtherEvidenceDocuments(), List.of());
+        ret.addAll(anyOtherDocs.stream().map(mapper).collect(toList()));
+
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsLinkedHearings = defaultIfNull(
+            getEvidenceBundleFromHearings(caseData), List.of());
+        ret.addAll(anyOtherDocsLinkedHearings.stream().map(mapper).collect(toList()));
+
+        return ret;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromHearings(CaseData caseData) {
+        List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
+        caseData.getHearingFurtherEvidenceDocuments().forEach(hearingFurtherDocuments ->
+            evidenceBundle.addAll(hearingFurtherDocuments.getValue().getSupportingEvidenceBundle())
+        );
+        return evidenceBundle;
     }
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
@@ -386,7 +437,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @Async
     @EventListener
-    public void notifyTranslationTeam(FurtherEvidenceUploadedEvent event) {
+    public void notifyTranslationTeam(DocumentUploadedEvent event) {
         furtherEvidenceDifferenceCalculator.calculate(event.getCaseData(), event.getCaseDataBefore())
             .forEach(bundle -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(bundle.getValue().getTranslationRequirements()),
