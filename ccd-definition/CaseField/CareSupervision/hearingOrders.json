@@ -912,7 +912,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "refusedHearingOrders",
-    "Label": "Hearing",
+    "Label": "Refused Order",
     "FieldType": "Collection",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
     "SecurityClassification": "Public",
