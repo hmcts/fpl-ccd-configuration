@@ -43,7 +43,7 @@ public class CafcassNotificationService {
                                       CafcassEmailConfiguration configuration,
                                       CaseUrlService caseUrlService,
                                       DocumentMetadataDownloadService documentMetadataDownloadService,
-                                      @Value("${cafcass.notification.maxMbAttachementSize:1}")
+                                      @Value("${cafcass.notification.maxMbAttachementSize:25}")
                                       long maxAttachementSize) {
         this.emailService = emailService;
         this.documentDownloadService = documentDownloadService;

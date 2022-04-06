@@ -15,4 +15,5 @@ public class Respondent {
     private final String relationshipToChild;
     private final String dob;
     private final boolean confidential;
+    private final String addressNotKnowReason;
 }
