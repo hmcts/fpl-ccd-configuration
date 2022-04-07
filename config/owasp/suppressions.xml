@@ -75,4 +75,11 @@
     <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
     <cve>CVE-2022-21724</cve>
   </suppress>
+  <suppress>
+   <notes><![CDATA[
+   file name: spring-beans-5.3.12.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-beans@.*$</packageUrl>
+   <vulnerabilityName>CVE-2022-22965</vulnerabilityName>
+</suppress>
 </suppressions>
