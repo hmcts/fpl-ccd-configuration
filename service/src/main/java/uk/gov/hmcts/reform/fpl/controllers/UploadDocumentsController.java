@@ -34,11 +34,15 @@ public class UploadDocumentsController extends CallbackController {
 
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
 
-        List<Element<ApplicationDocument>> currentDocuments = Optional.ofNullable(caseData.getApplicationDocuments())
-            .orElseThrow(() -> new IllegalStateException("Unexpected null current application documents. " + caseData));
+        List<Element<ApplicationDocument>> currentDocuments = Optional.ofNullable(
+            caseData.getApplicationDocuments())
+            .orElseThrow(() -> new IllegalStateException(
+                "Unexpected null current application documents. " + caseData));
 
-        List<Element<ApplicationDocument>> previousDocuments = Optional.ofNullable(caseDataBefore.getApplicationDocuments())
-            .orElseThrow(() -> new IllegalStateException("Unexpected null previous application documents. " + caseDataBefore));;
+        List<Element<ApplicationDocument>> previousDocuments = Optional.ofNullable(
+            caseDataBefore.getApplicationDocuments())
+            .orElseThrow(() -> new IllegalStateException(
+                "Unexpected null previous application documents. " + caseDataBefore));;
 
         caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
             currentDocuments, previousDocuments));
