@@ -10,9 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
+
+import java.util.List;
+import java.util.Optional;
 
 @Api
 @RestController
@@ -29,8 +34,14 @@ public class UploadDocumentsController extends CallbackController {
 
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
 
+        List<Element<ApplicationDocument>> currentDocuments = Optional.ofNullable(caseData.getApplicationDocuments())
+            .orElseThrow(() -> new IllegalStateException("Unexpected null current application documents. " + caseData));
+
+        List<Element<ApplicationDocument>> previousDocuments = Optional.ofNullable(caseDataBefore.getApplicationDocuments())
+            .orElseThrow(() -> new IllegalStateException("Unexpected null previous application documents. " + caseDataBefore));;
+
         caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
-            caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()));
+            currentDocuments, previousDocuments));
 
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         return respond(caseDetails);
