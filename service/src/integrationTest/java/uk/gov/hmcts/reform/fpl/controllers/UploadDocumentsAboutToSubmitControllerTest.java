@@ -115,4 +115,82 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
         assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
     }
+
+    @Test
+    void shouldThrowIllegalStateExceptionIfCurrentDocumentsIsNull() {
+        when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
+
+        CaseDetails caseDetailsBefore = CaseDetails.builder().data(
+            Map.of(
+                "applicationDocuments", List.of(
+                    Map.of(
+                        "id", UUID_1,
+                        "value", Map.of(
+                            "document", Map.of(
+                                "document_url", FILE_URL,
+                                "document_filename", FILE_NAME,
+                                "document_binary_url", FILE_BINARY_URL
+                            ),
+                            "uploadedBy", USER,
+                            "dateTimeUploaded", "2020-12-03T02:03:04.000010",
+                            "documentType", "SOCIAL_WORK_STATEMENT"
+                        )
+                    )
+                )
+            )).build();
+
+        CaseDetails caseDetails = CaseDetails.builder().build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+
+        try {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+        } catch (RuntimeException e) {
+            String exceptionText = e.getMessage();
+            assertThat(exceptionText.contains("IllegalStateException")
+                && exceptionText.contains("Unexpected null current application documents."));
+        }
+    }
+
+    @Test
+    void shouldThrowIllegalStateExceptionIfPreviousDocumentsIsNull() {
+        when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
+
+        CaseDetails caseDetailsBefore = CaseDetails.builder().build();
+
+        CaseDetails caseDetails = CaseDetails.builder().data(
+            Map.of(
+                "applicationDocuments", List.of(
+                    Map.of(
+                        "id", UUID_1,
+                        "value", Map.of(
+                            "document", Map.of(
+                                "document_url", ANOTHER_FILE_URL,
+                                "document_filename", FILE_NAME,
+                                "document_binary_url", FILE_BINARY_URL
+                            ),
+                            "documentType", "SOCIAL_WORK_STATEMENT"
+                        )
+                    )
+                )
+            )).build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+
+        try {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+        } catch (RuntimeException e) {
+            String exceptionText = e.getMessage();
+            assertThat(exceptionText.contains("IllegalStateException")
+                && exceptionText.contains("Unexpected null previous application documents."));
+        }
+    }
 }
