@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,6 +47,13 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
 
     private FurtherEvidenceUploadedEventTestData() {
+    }
+
+    public static CaseData buildSubmittedCaseData() {
+        return commonCaseBuilder()
+            .applicationDocuments(new ArrayList<>())
+            .furtherEvidenceDocuments(new ArrayList<>())
+            .build();
     }
 
     public static CaseData buildCaseDataWithNonConfidentialLADocuments() {

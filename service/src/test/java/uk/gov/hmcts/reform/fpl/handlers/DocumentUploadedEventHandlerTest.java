@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentUploadedNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
@@ -50,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildSubmittedCaseData;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithApplicationDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialDocumentsSolicitor;
@@ -66,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialPdfDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.commonCaseBuilder;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyApplicationDocument;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsHMCTS;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsLA;
@@ -114,7 +119,7 @@ class DocumentUploadedEventHandlerTest {
     private CafcassNotificationService cafcassNotificationService;
 
     @InjectMocks
-    private DocumentUploadedEventHandler furtherEvidenceUploadedEventHandler;
+    private DocumentUploadedEventHandler documentUploadedEventHandler;
 
     @Captor
     private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
@@ -125,27 +130,47 @@ class DocumentUploadedEventHandlerTest {
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    @Test
-    void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByLA() {
-        // Further documents for main application -> Any other document
-        CaseData caseDataBefore = buildCaseDataWithConfidentialDocuments(LA_USER);
-        CaseData caseData = buildCaseDataWithConfidentialDocuments(LA_USER);
-        caseData.getFurtherEvidenceDocuments().addAll(buildNonConfidentialPdfDocumentList(LA_USER));
+    private void runSendNotificationFurtherDocumentsTemplate(final UserDetails uploadedBy,
+                                                             Predicate<CaseData> predicate,
+                                                             List<String> documentNames) {
+        CaseData caseDataBefore = buildSubmittedCaseData();
+        CaseData caseData = buildSubmittedCaseData();
+        predicate.test(caseData);
 
         DocumentUploadedEvent documentUploadedEvent =
             new DocumentUploadedEvent(
                 caseData,
                 caseDataBefore,
                 DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA());
+                uploadedBy);
 
         when(documentUploadedNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
             .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService).sendNotification(
             caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER,
+            documentNames
+            );
+    }
+
+    @Test
+    void shouldSendNotificationWhenNonConfidentialApplicationDocumentIsUploadedByLA() {
+        // Further documents for main application -> Further application documents
+        runSendNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getApplicationDocuments().addAll(
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1))),
+            List.of(BIRTH_CERTIFICATE.getLabel()));
+    }
+
+    @Test
+    void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByLA() {
+        // Further documents for main application -> Any other document
+        runSendNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(buildNonConfidentialPdfDocumentList(LA_USER)),
             NON_CONFIDENTIAL);
     }
 
@@ -170,7 +195,7 @@ class DocumentUploadedEventHandlerTest {
                 caseDataBefore,
                 HMCTS,
                 userDetailsHMCTS());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService).sendNotification(
             caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
@@ -187,7 +212,7 @@ class DocumentUploadedEventHandlerTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
@@ -203,7 +228,7 @@ class DocumentUploadedEventHandlerTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
@@ -219,7 +244,7 @@ class DocumentUploadedEventHandlerTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
@@ -240,7 +265,7 @@ class DocumentUploadedEventHandlerTest {
                 HMCTS,
                 userDetailsHMCTS());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService).sendNotification(
             caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER, NON_CONFIDENTIAL);
@@ -257,7 +282,7 @@ class DocumentUploadedEventHandlerTest {
                 HMCTS,
                 userDetailsHMCTS());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
@@ -277,7 +302,7 @@ class DocumentUploadedEventHandlerTest {
                 buildCaseDataWithConfidentialDocuments(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService)
             .sendNotification(caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
@@ -294,7 +319,7 @@ class DocumentUploadedEventHandlerTest {
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
@@ -314,7 +339,7 @@ class DocumentUploadedEventHandlerTest {
                 buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService)
             .sendNotification(caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL), SENDER,
@@ -332,7 +357,7 @@ class DocumentUploadedEventHandlerTest {
                 buildCaseDataWithConfidentialDocumentsSolicitor(REP_USER),
                 SOLICITOR,
                 userDetailsRespondentSolicitor());
-        furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
         verify(documentUploadedNotificationService, never()).sendNotification(any(), any(), any(), any());
     }
@@ -341,7 +366,7 @@ class DocumentUploadedEventHandlerTest {
     void shouldNotNotifyTranslationTeamWhenNoChange() {
         when(calculator.calculate(CASE_DATA, CASE_DATA_BEFORE)).thenReturn(List.of());
 
-        furtherEvidenceUploadedEventHandler.notifyTranslationTeam(new DocumentUploadedEvent(CASE_DATA,
+        documentUploadedEventHandler.notifyTranslationTeam(new DocumentUploadedEvent(CASE_DATA,
             CASE_DATA_BEFORE,
             null,
             null)
@@ -362,7 +387,7 @@ class DocumentUploadedEventHandlerTest {
                 .build())
         ));
 
-        furtherEvidenceUploadedEventHandler.notifyTranslationTeam(new DocumentUploadedEvent(CASE_DATA,
+        documentUploadedEventHandler.notifyTranslationTeam(new DocumentUploadedEvent(CASE_DATA,
             CASE_DATA_BEFORE,
             null,
             null)
@@ -393,7 +418,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
                 any(),
@@ -428,7 +453,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
         Set<DocumentReference> documentReferences = courtBundleList.stream()
                 .map(courtBundle -> courtBundle.getValue().getDocument())
                 .collect(toSet());
@@ -481,7 +506,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendCourtBundlesToCafcass(documentUploadedEvent);
         List<Element<CourtBundle>> expectedBundle = new ArrayList<>(hearing1);
         expectedBundle.addAll(hearing2);
 
@@ -528,7 +553,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsLA())
                 .stream()
@@ -567,7 +592,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getRespondentStatements())
                 .stream()
@@ -606,7 +631,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
@@ -645,7 +670,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
@@ -678,7 +703,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
                 any(),
@@ -703,7 +728,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
                 any(),
@@ -745,7 +770,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         Set<DocumentReference> documentReferences = unwrapElements(correspondence)
                 .stream()
@@ -784,7 +809,7 @@ class DocumentUploadedEventHandlerTest {
                         DESIGNATED_LOCAL_AUTHORITY,
                         userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
+        documentUploadedEventHandler.sendDocumentsToCafcass(documentUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
                 any(),
