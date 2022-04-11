@@ -126,22 +126,8 @@ public class SealedOrderHistoryService {
         DocumentReference sealedPDForder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
 
-        GeneratedOrder sealedOrder = GeneratedOrder.builder()
-            .orderType(order.getOrderType()) // hidden field, to store the type
-            .title(order.getTitle())
-            .type(order.getType())
-            .markedFinal(order.getMarkedFinal())
-            .children(order.getChildren())
-            .others(order.getOthers()) // hidden field, to store the selected others for notify
-            .judgeAndLegalAdvisor(order.getJudgeAndLegalAdvisor())
-            .dateTimeIssued(order.getDateTimeIssued())
-            .approvalDate(order.getApprovalDate())
-            .approvalDateTime(order.getApprovalDateTime())
-            .childrenDescription(order.getChildrenDescription())
-            .specialGuardians(order.getSpecialGuardians())
-            .othersNotified(order.getOthersNotified())
+        GeneratedOrder sealedOrder = order.toBuilder()
             .document(sealedPDForder)
-            .translationRequirements(order.getTranslationRequirements())
             .unsealedDocumentCopy(plainWordOrder)
             .build();
 
