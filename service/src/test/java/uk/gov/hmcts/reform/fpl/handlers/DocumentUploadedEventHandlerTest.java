@@ -160,7 +160,8 @@ class DocumentUploadedEventHandlerTest {
         runSendNotificationFurtherDocumentsTemplate(
             userDetailsLA(),
             (caseData) ->  caseData.getApplicationDocuments().addAll(
-                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1))),
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, false,
+                    PDF_DOCUMENT_1))),
             List.of(BIRTH_CERTIFICATE.getLabel()));
     }
 
