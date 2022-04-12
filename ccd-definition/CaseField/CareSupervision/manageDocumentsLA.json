@@ -39,7 +39,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsCaseSummary",
-    "FieldType": "CaseSummaryV2",
+    "FieldType": "CaseSummary",
     "Label": " ",
     "SecurityClassification": "Public",
     "Searchable": "N"

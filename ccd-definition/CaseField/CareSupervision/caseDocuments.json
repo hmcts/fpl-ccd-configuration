@@ -138,7 +138,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CaseSummaryV2",
+    "FieldTypeParameter": "CaseSummary",
     "Label": "Case summary",
     "SecurityClassification": "Public",
     "Searchable": "N"

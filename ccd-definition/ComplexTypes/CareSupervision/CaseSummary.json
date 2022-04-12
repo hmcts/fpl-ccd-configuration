@@ -12,7 +12,7 @@
     "ID": "CaseSummary",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Upload a file",
+    "ElementLabel": "Case summary",
     "SecurityClassification": "Public"
   },
   {
