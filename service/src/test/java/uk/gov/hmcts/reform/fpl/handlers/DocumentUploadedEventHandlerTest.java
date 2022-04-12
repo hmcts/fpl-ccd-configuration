@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentUploadedNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -66,7 +67,10 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialLADocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFDocumentsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildHearingFurtherEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialPdfDocumentList;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildRespondentStatementsList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildSubmittedCaseData;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.commonCaseBuilder;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
@@ -130,9 +134,13 @@ class DocumentUploadedEventHandlerTest {
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    private void runSendNotificationFurtherDocumentsTemplate(final UserDetails uploadedBy,
+    @Mock
+    private NotificationService notificationService;
+
+    private void verifyNotificationFurtherDocumentsTemplate(final UserDetails uploadedBy,
                                                              Predicate<CaseData> predicate,
-                                                             List<String> documentNames) {
+                                                             List<String> documentNames,
+                                                             boolean isHavingNotification) {
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData();
         predicate.test(caseData);
@@ -144,34 +152,102 @@ class DocumentUploadedEventHandlerTest {
                 DESIGNATED_LOCAL_AUTHORITY,
                 uploadedBy);
 
-        when(documentUploadedNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
-            .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
+        if (isHavingNotification) {
+            when(documentUploadedNotificationService.getRepresentativeEmails(caseData, DESIGNATED_LOCAL_AUTHORITY))
+                .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
+        }
 
         documentUploadedEventHandler.sendDocumentsUploadedNotification(documentUploadedEvent);
 
-        verify(documentUploadedNotificationService).sendNotification(
-            caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER,
-            documentNames);
+        if (isHavingNotification) {
+            verify(documentUploadedNotificationService).sendNotification(
+                caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER,
+                documentNames);
+        } else {
+            verify(documentUploadedNotificationService, never()).sendNotification(
+                caseData, Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL), SENDER,
+                documentNames);
+        }
     }
 
     @Test
     void shouldSendNotificationWhenNonConfidentialApplicationDocumentIsUploadedByLA() {
         // Further documents for main application -> Further application documents
-        runSendNotificationFurtherDocumentsTemplate(
+        verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(),
             (caseData) ->  caseData.getApplicationDocuments().addAll(
                 wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, false,
                     PDF_DOCUMENT_1))),
-            List.of(BIRTH_CERTIFICATE.getLabel()));
+            List.of(BIRTH_CERTIFICATE.getLabel()), true);
+    }
+
+    @Test
+    void shouldSendNotificationWhenConfidentialApplicationDocumentIsUploadedByLA() {
+        // Further documents for main application -> Further application documents
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getApplicationDocuments().addAll(
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, true,
+                    PDF_DOCUMENT_1))),
+            List.of(BIRTH_CERTIFICATE.getLabel()), false);
+    }
+
+    @Test
+    void shouldSendNotificationWhenNonConfidentialRespondentStatementsIsUploadedByLA() {
+        // Further documents for main application -> Respondent Statement
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getRespondentStatements().addAll(
+                buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(LA_USER))),
+            NON_CONFIDENTIAL, true);
+    }
+
+    @Test
+    void shouldSendNotificationWhenConfidentialRespondentStatementsIsUploadedByLA() {
+        // Further documents for main application -> Respondent Statement
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getRespondentStatements().addAll(
+                buildRespondentStatementsList(buildConfidentialDocumentList(LA_USER))),
+            NON_CONFIDENTIAL, false);
     }
 
     @Test
     void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByLA() {
-        // Further documents for main application -> Any other document
-        runSendNotificationFurtherDocumentsTemplate(
+        // Further documents for main application -> Any other document does not relate to a hearing
+        verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(),
             (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(buildNonConfidentialPdfDocumentList(LA_USER)),
-            NON_CONFIDENTIAL);
+            NON_CONFIDENTIAL, true);
+    }
+
+    @Test
+    void shouldSendNotificationWhenConfidentialAnyOtherDocIsUploadedByLA() {
+        // Further documents for main application -> Any other document does not relate to a hearing
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(buildConfidentialDocumentList(LA_USER)),
+            NON_CONFIDENTIAL, false);
+    }
+
+    @Test
+    void shouldSendNotificationWhenNonConfidentialAnyOtherDocRelatingToHearingIsUploadedByLA() {
+        // Further documents for main application -> Any other document relates to a hearing
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
+                buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))),
+            NON_CONFIDENTIAL, true);
+    }
+
+    @Test
+    void shouldSendNotificationWhenConfidentialAnyOtherDocRelatingToHearingIsUploadedByLA() {
+        // Further documents for main application -> Any other document relates to a hearing
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(),
+            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
+                buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER))),
+            NON_CONFIDENTIAL, false);
     }
 
     @Test

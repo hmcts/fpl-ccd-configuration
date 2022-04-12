@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -53,6 +54,8 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
             .applicationDocuments(new ArrayList<>())
             .furtherEvidenceDocuments(new ArrayList<>())
+            .hearingFurtherEvidenceDocuments(new ArrayList<>())
+            .respondentStatements(new ArrayList<>())
             .build();
     }
 
@@ -225,7 +228,16 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
-    private static List<Element<RespondentStatement>> buildRespondentStatementsList(
+    public static List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> bundle
+    ) {
+        return wrapElements(HearingFurtherEvidenceBundle.builder()
+            .hearingName(UUID.randomUUID().toString())
+            .supportingEvidenceBundle(bundle)
+            .build());
+    }
+
+    public static List<Element<RespondentStatement>> buildRespondentStatementsList(
         List<Element<SupportingEvidenceBundle>> bundle
     ) {
         return wrapElements(RespondentStatement.builder()
