@@ -36,7 +36,9 @@
               "telephone": null,
               "childInformation": null,
               "litigationIssues": "NO",
-              "detailsHidden": "Yes"
+              "detailsHidden": "Yes",
+              "addressKnow": null,
+              "addressNotKnowReason": null
             },
             "additionalOthers": []
           }
@@ -92,9 +94,7 @@
             "detailsHidden": "Yes",
             "detailsHiddenReason": null,
             "representedBy": [],
-            "DOB": "2000-07-12",
-            "addressKnow": null,
-            "addressNotKnowReason": null
+            "DOB": "2000-07-12"
           },
           "additionalOthers": []
         },
@@ -122,9 +122,7 @@
               "detailsHidden": null,
               "detailsHiddenReason": null,
               "representedBy": [],
-              "DOB": null,
-              "addressKnow": null,
-              "addressNotKnowReason": null
+              "DOB": null
             }
           }
         ]
