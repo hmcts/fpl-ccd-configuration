@@ -96,6 +96,7 @@ public class SendDocumentService {
         return unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
                 && hasNoLegalRepresentation(respondent))
+            .filter(respondent -> !respondent.isDeceasedOrNFA())
             .map(Respondent::getParty)
             .collect(toList());
     }

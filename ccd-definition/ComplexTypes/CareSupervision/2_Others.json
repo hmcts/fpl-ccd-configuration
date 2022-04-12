@@ -46,10 +46,29 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
+    "ListElementCode": "addressKnow",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "*Current address known?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "addressKnow=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "addressNotKnowReason",
+    "FieldType": "FixedList",
+    "FieldTypeParameter":  "AddressNotKnowType",
+    "ElementLabel": "*Reason the address is not known",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "addressKnow=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
