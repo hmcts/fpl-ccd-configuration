@@ -16,8 +16,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -33,16 +35,19 @@ public class UploadDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
+        List<String> errors = new ArrayList<>();
 
-        List<Element<ApplicationDocument>> currentDocuments = Optional.ofNullable(
-            caseData.getApplicationDocuments())
-            .orElseThrow(() -> new IllegalStateException(
-                "Unexpected null current application documents. " + caseData));
+        List<Element<ApplicationDocument>> currentDocuments = caseData.getApplicationDocuments();
+        List<Element<ApplicationDocument>> previousDocuments = caseDataBefore.getApplicationDocuments();
 
-        List<Element<ApplicationDocument>> previousDocuments = Optional.ofNullable(
-            caseDataBefore.getApplicationDocuments())
-            .orElseThrow(() -> new IllegalStateException(
-                "Unexpected null previous application documents. " + caseDataBefore));;
+        if (currentDocuments == null || previousDocuments == null) {
+            errors.add("We encountered a problem storing the data, please try again and re-enter all information. " +
+                "Apologies for the inconvenience.");
+        }
+
+        if (isNotEmpty(errors)) {
+            return respond(caseDetails, errors);
+        }
 
         caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
             currentDocuments, previousDocuments));
