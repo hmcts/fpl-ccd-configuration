@@ -96,13 +96,13 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
             anyMap(),
             eq(notificationReference(TEST_CASE_ID)));
 
-        verify(notificationClient, never()).sendEmail(
+        verify(notificationClient).sendEmail(
             any(),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             any());
 
-        verify(notificationClient, never()).sendEmail(
+        verify(notificationClient).sendEmail(
             any(),
             eq(LOCAL_AUTHORITY_2_INBOX),
             anyMap(),
