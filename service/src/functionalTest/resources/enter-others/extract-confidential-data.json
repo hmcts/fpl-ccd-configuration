@@ -36,9 +36,7 @@
               "telephone": null,
               "childInformation": null,
               "litigationIssues": "NO",
-              "detailsHidden": "Yes",
-              "addressKnow": null,
-              "addressNotKnowReason": null
+              "detailsHidden": "Yes"
             },
             "additionalOthers": []
           }
