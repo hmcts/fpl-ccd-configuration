@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ManageDocumentsLAController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsControllerSubmittedBaseTest {
+    private static final String APPLICATION_DOCUMENT_BUNDLE_NAME = "applicationDocuments";
     private static final String BUNDLE_NAME = "furtherEvidenceDocumentsLA";
 
     @MockBean
@@ -80,6 +81,45 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, true));
 
         verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldNotSendEmailsWhenNotificationEnabledAndConfidentialApplicationDocumentUploadedByDesignatedLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+
+        postSubmittedEvent(buildCallbackRequestWithApplicationDocument(APPLICATION_DOCUMENT_BUNDLE_NAME, true));
+
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenNotificationEnabledAndApplicationDocumentUploadedByDesignatedLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+
+        postSubmittedEvent(buildCallbackRequestWithApplicationDocument(APPLICATION_DOCUMENT_BUNDLE_NAME, false));
+
+        verify(notificationClient).sendEmail(
+            eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
+            eq(REP_1_EMAIL),
+            anyMap(),
+            eq(notificationReference(TEST_CASE_ID)));
+
+        verify(notificationClient).sendEmail(
+            any(),
+            eq(LOCAL_AUTHORITY_1_INBOX),
+            anyMap(),
+            any());
+
+        verify(notificationClient).sendEmail(
+            any(),
+            eq(LOCAL_AUTHORITY_2_INBOX),
+            anyMap(),
+            any());
     }
 
     @Test
