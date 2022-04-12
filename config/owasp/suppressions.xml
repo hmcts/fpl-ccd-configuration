@@ -76,7 +76,7 @@
     <cve>CVE-2022-21724</cve>
   </suppress>
   <suppress>
-     <notes><![CDATA[
+    <notes><![CDATA[
    file name: all?
    ]]></notes>
     <cve>CVE-2022-22950</cve>
