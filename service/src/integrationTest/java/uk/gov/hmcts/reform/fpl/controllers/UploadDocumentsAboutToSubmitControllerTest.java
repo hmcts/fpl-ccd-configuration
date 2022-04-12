@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -117,7 +118,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldThrowIllegalStateExceptionIfCurrentDocumentsIsNull() {
+    void shouldThrowErrorIfCurrentDocumentsIsNull() {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
 
@@ -147,17 +148,19 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(caseDetailsBefore)
             .build();
 
+        List<String> errors = new ArrayList<>();
+
         try {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+            errors.addAll(callbackResponse.getErrors());
         } catch (RuntimeException e) {
-            String exceptionText = e.getMessage();
-            assertThat(exceptionText.contains("IllegalStateException")
-                && exceptionText.contains("Unexpected null current application documents."));
+            assertThat(errors.contains("We encountered a problem storing the data, " +
+                "please re-enter all information and try again. Apologies for the inconvenience."));
         }
     }
 
     @Test
-    void shouldThrowIllegalStateExceptionIfPreviousDocumentsIsNull() {
+    void shouldThrowErrorIfPreviousDocumentsIsNull() {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
 
@@ -185,12 +188,14 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(caseDetailsBefore)
             .build();
 
+        List<String> errors = new ArrayList<>();
+
         try {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+            errors.addAll(callbackResponse.getErrors());
         } catch (RuntimeException e) {
-            String exceptionText = e.getMessage();
-            assertThat(exceptionText.contains("IllegalStateException")
-                && exceptionText.contains("Unexpected null previous application documents."));
+            assertThat(errors.contains("We encountered a problem storing the data, " +
+                "please re-enter all information and try again. Apologies for the inconvenience."));
         }
     }
 }
