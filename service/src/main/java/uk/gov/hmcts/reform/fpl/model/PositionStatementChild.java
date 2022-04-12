@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PositionStatementChild extends HearingDocument {

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -41,13 +42,16 @@ public class ManageDocumentLAService {
     public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
     public static final String CASE_SUMMARY_KEY = "manageDocumentsCaseSummary";
     public static final String POSITION_STATEMENT_CHILD_KEY = "manageDocumentsPositionStatementChild";
+    public static final String POSITION_STATEMENT_RESPONDENT_KEY = "manageDocumentsPositionStatementRespondent";
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
     public static final String CASE_SUMMARY_LIST_KEY = "caseSummaryList";
     public static final String POSITION_STATEMENT_CHILD_LIST_KEY = "positionStatementChildList";
+    public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY = "positionStatementRespondentList";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
     public static final String CHILDREN_LIST_KEY = "manageDocumentsChildrenList";
+    public static final String RESPONDENT_LIST_KEY = "manageDocumentsRespondentList";
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
@@ -71,6 +75,7 @@ public class ManageDocumentLAService {
 
         if (isNotEmpty(caseData.getAllRespondents())) {
             listAndLabel.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
+            listAndLabel.put(RESPONDENT_LIST_KEY, caseData.buildRespondentDynamicList());
         }
 
         if (isNotEmpty(caseData.getAllChildren())) {
@@ -92,6 +97,9 @@ public class ManageDocumentLAService {
                 map.put(CASE_SUMMARY_KEY, getCaseSummaryForHearing(caseData, selectedHearingId));
             case POSITION_STATEMENT_CHILD ->
                 map.put(POSITION_STATEMENT_CHILD_KEY, getPositionStatementChildForHearing(caseData, selectedHearingId));
+            case POSITION_STATEMENT_RESPONDENT ->
+                map.put(POSITION_STATEMENT_RESPONDENT_KEY,
+                    getPositionStatementRespondentForHearing(caseData, selectedHearingId));
         }
         return map;
     }
@@ -114,6 +122,13 @@ public class ManageDocumentLAService {
                     caseData.getManageDocumentsPositionStatementChild().toBuilder()
                         .childId(caseData.getManageDocumentsChildrenList().getValueCodeAsUUID())
                         .childName(caseData.getManageDocumentsChildrenList().getValueLabel())
+                        .build()));
+            case POSITION_STATEMENT_RESPONDENT ->
+                map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
+                    caseData.getPositionStatementRespondentList(),
+                    caseData.getManageDocumentsPositionStatementRespondent().toBuilder()
+                        .respondentId(caseData.getManageDocumentsRespondentList().getValueCodeAsUUID())
+                        .respondentName(caseData.getManageDocumentsRespondentList().getValueLabel())
                         .build()));
         }
 
@@ -196,5 +211,17 @@ public class ManageDocumentLAService {
                 .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
         }
         return positionStatementChild;
+    }
+
+    private PositionStatementRespondent getPositionStatementRespondentForHearing(CaseData caseData,
+                                                                                 UUID selectedHearingId) {
+        PositionStatementRespondent positionStatementRespondent = getHearingDocumentForSelectedHearing(caseData,
+            caseData.getPositionStatementRespondentList(),
+            selectedHearingId);
+        if(positionStatementRespondent == null){
+            positionStatementRespondent = PositionStatementRespondent.builder()
+                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
+        }
+        return positionStatementRespondent;
     }
 }

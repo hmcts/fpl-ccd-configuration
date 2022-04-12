@@ -65,6 +65,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsPositionStatementRespondent",
+    "FieldType": "PositionStatementRespondent",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsRespondentList",
+    "FieldType": "DynamicList",
+    "Label": "Which respondent?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDocumentsHearingList",
     "FieldType": "DynamicList",
     "Label": "Which hearing?",

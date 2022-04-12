@@ -8,7 +8,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "hearingDocumentsTabHeading",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "courtBundleList!=\"\" OR caseSummaryList!=\"\" OR positionStatementChildList!=\"\""
+    "TabShowCondition": "courtBundleList!=\"\" OR caseSummaryList!=\"\" OR positionStatementChildList!=\"\" OR positionStatementRespondentList!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,5 +49,15 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "positionStatementChildList",
     "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "HearingDocumentsTab",
+    "TabLabel": "Hearing documents",
+    "TabDisplayOrder": 9,
+    "CaseFieldID": "positionStatementRespondentList",
+    "TabFieldDisplayOrder": 6
   }
 ]

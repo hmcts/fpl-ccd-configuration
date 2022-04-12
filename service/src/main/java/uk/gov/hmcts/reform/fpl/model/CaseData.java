@@ -690,10 +690,13 @@ public class CaseData {
     private final CourtBundle manageDocumentsCourtBundle;
     private final CaseSummary manageDocumentsCaseSummary;
     private final PositionStatementChild manageDocumentsPositionStatementChild;
+    private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
     private final DynamicList manageDocumentsChildrenList;
+    private final DynamicList manageDocumentsRespondentList;
     private final List<Element<CourtBundle>> courtBundleList;
     private final List<Element<CaseSummary>> caseSummaryList;
     private final List<Element<PositionStatementChild>> positionStatementChildList;
+    private final List<Element<PositionStatementRespondent>> positionStatementRespondentList;
 
     public DynamicList buildDynamicChildrenList() {
         return buildDynamicChildrenList(null);
@@ -721,6 +724,10 @@ public class CaseData {
 
     public List<Element<PositionStatementChild>> getPositionStatementChildList() {
         return defaultIfNull(positionStatementChildList, new ArrayList<>());
+    }
+
+    public List<Element<PositionStatementRespondent>> getPositionStatementRespondentList() {
+        return defaultIfNull(positionStatementRespondentList, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
