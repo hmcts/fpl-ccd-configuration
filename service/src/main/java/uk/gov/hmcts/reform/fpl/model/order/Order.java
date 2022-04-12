@@ -211,14 +211,6 @@ public enum Order {
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
-    C34B_REFUSAL_OF_CONTACT_WITH_A_CHILD_IN_CARE(
-        MANUAL_UPLOAD,
-        "Refusal of contact with a child in care (C34B)",
-        "",
-        "Refusal of contact with a child in care (C34B)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
     C34A_CONTACT_WITH_A_CHILD_IN_CARE(
         MANUAL_UPLOAD,
         "Contact with a child in care (C34A)",
@@ -233,7 +225,7 @@ public enum Order {
         "",
         "Authority to refuse contact with a child in care (C34B)",
         IsFinalOrder.MAYBE,
-        List.of(REFUSE_CONTACT_ORDER, RESPONDENTS_REFUSED, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, WHICH_OTHERS, REVIEW_DRAFT_ORDER)
+        List.of(ORDER_BY_CONSENT, REFUSE_CONTACT_ORDER, RESPONDENTS_REFUSED, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, WHICH_OTHERS, REVIEW_DRAFT_ORDER)
     ),
     C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,

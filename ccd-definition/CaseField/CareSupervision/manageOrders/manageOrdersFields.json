@@ -461,7 +461,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "respondentsRefusedSelector",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Label": "Who's is being refused contact?",
+    "Label": "Select person(s) refused contact",
     "FieldType": "RespondentsRefusedSelector",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"

@@ -184,6 +184,9 @@ const section4 = {
   guardianSelector: {
     selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
   },
+  respondentsRefusedSelector: {
+    selector: index => `#respondentsRefusedSelector_option${index}-SELECTED`,
+  },
   parentResponsible: '#manageOrdersParentResponsible',
   relationshipToChild: {
     options: {
@@ -484,6 +487,14 @@ const selectGuardian = async (indexes = []) => {
   await I.runAccessibilityTest();
 };
 
+const selectRespondentsRefused = async (indexes = []) => {
+  indexes.forEach((selectorIndex) => {
+    I.checkOption(section4.respondentsRefusedSelector.selector(selectorIndex));
+  });
+
+  await I.runAccessibilityTest();
+};
+
 const selectSingleChild = async (childName) => {
   I.see('Which child is the order for?');
   I.selectOption('Which child is the order for?', childName);
@@ -531,5 +542,5 @@ module.exports = {
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
-  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, selectPlacementApplication, fillPlacementOrderSpecificFields,
+  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, selectPlacementApplication, fillPlacementOrderSpecificFields, selectRespondentsRefused,
 };

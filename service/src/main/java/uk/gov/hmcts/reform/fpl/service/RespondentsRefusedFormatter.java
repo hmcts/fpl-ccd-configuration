@@ -51,7 +51,6 @@ public class RespondentsRefusedFormatter {
         List<String> selected = getSelectedApplicants(caseData);
 
         selected.forEach(builder::append);
-        appendChildGrammarVerb(builder, selected.size() > 1);
 
         return builder.toString();
     }
@@ -81,7 +80,7 @@ public class RespondentsRefusedFormatter {
         List<String> respondentsAndOthersNames = Stream.concat(respondentsNames, othersNames).collect(
             Collectors.toList());
 
-        List<String> selected = defaultIfNull(caseData.getAppointedGuardianSelector(), Selector.builder().build())
+        List<String> selected = defaultIfNull(caseData.getRespondentsRefusedSelector(), Selector.builder().build())
             .getSelected().stream()
             .map(respondentsAndOthersNames::get)
             .collect(Collectors.toList());
@@ -97,16 +96,4 @@ public class RespondentsRefusedFormatter {
         }
         return selectedApplicants;
     }
-
-    private static void appendChildGrammarVerb(StringBuilder builder, boolean hasMultipleRespondents) {
-        if (builder.toString().isEmpty()) {
-            return;
-        }
-        if (hasMultipleRespondents) {
-            builder.append(" are");
-        } else {
-            builder.append(" is");
-        }
-    }
-
 }

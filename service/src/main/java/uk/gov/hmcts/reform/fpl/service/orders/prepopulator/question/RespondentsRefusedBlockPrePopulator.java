@@ -20,7 +20,7 @@ public class RespondentsRefusedBlockPrePopulator implements QuestionBlockOrderPr
 
     @Override
     public OrderQuestionBlock accept() {
-        return OrderQuestionBlock.APPOINTED_GUARDIAN;
+        return OrderQuestionBlock.RESPONDENTS_REFUSED;
     }
 
     @Override

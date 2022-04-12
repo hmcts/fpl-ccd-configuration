@@ -36,7 +36,7 @@ public class OrderTempQuestions {
     String uploadOrderFile;
     String previewOrder;
     String appointedGuardian;
-    String respondentsRefusedContact;
+    String respondentsRefused;
     String orderIsByConsent;
     String whichOthers;
     String orderToAmend;
