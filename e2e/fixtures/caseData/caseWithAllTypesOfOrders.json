@@ -44,7 +44,7 @@
         "value": {
           "party": {
             "email": {
-              "email": "applicant@email.com"
+              "email": "swansea@test.com"
             },
             "address": {
               "County": "United Kingdom",
@@ -65,7 +65,7 @@
               "telephoneNumber": "00000000000",
               "contactDirection": "Jonathon Walker"
             },
-            "organisationName": "John Smith",
+            "organisationName": "Swansea City Council",
             "customerReference": "Example reference"
           },
           "leadApplicantIndicator": "Yes"
@@ -135,6 +135,38 @@
       }
     ],
     "sendToCtsc": "Yes",
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes"
+        }
+      }
+    ],
     "respondents1": [
       {
         "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
@@ -433,6 +465,15 @@
     "allocationProposal": {
       "proposal": "District judge"
     },
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
     "urgentHearingOrder": {
       "order": {
         "document_url": "${TEST_DOCUMENT_URL}",
