@@ -18,6 +18,7 @@ public class C34BAuthorityToRefuseContactOrderParameterGenerator implements Docm
 
     private final OrderMessageGenerator orderMessageGenerator;
     private final RespondentsRefusedFormatter respondentsRefusedFormatter;
+
     @Override
     public Order accept() {
         return Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
@@ -30,16 +31,20 @@ public class C34BAuthorityToRefuseContactOrderParameterGenerator implements Docm
         return C34BAuthorityToRefuseContactDocmosisParameters.builder()
             .orderTitle(Order.C34B_AUTHORITY_TO_REFUSE_CONTACT.getTitle())
             .childrenAct(Order.C34B_AUTHORITY_TO_REFUSE_CONTACT.getChildrenAct())
-            .orderMessage(orderMessageGenerator.formatOrderMessage(caseData,"The local authority is ${localAuthorityName}"))
+            .orderMessage(orderMessageGenerator
+                .formatOrderMessage(caseData,"The local authority is ${localAuthorityName}"))
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(getRespondentsRefusedMessage(caseData))
             .build();
     }
 
     String getRespondentsRefusedMessage(CaseData caseData) {
-        String applicant = respondentsRefusedFormatter.getRespondentsNamesForDocument(caseData);
+        String applicant = respondentsRefusedFormatter
+            .getRespondentsNamesForDocument(caseData);
 
-        return orderMessageGenerator.formatOrderMessage(caseData,"The Court orders that the local authority is authorised to refuse contact between the ${childOrChildren} and "
+        return orderMessageGenerator.formatOrderMessage(caseData,
+            "The Court orders that the local authority is "
+                + "authorised to refuse contact between the ${childOrChildren} and "
             ) + applicant;
     }
 

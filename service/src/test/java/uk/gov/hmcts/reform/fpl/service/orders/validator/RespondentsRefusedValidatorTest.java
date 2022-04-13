@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
 
 class RespondentsRefusedValidatorTest {

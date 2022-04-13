@@ -6,25 +6,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 import uk.gov.hmcts.reform.fpl.service.RespondentsRefusedFormatter;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C34BAuthorityToRefuseContactDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
@@ -60,9 +53,13 @@ class C34bRefuseContactOrderParameterGeneratorTest {
 
         when(respondentsRefusedFormatter.getRespondentsNamesForDocument(caseData)).thenReturn("Remmy Respondent");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
-        when(orderMessageGenerator.formatOrderMessage(caseData, "The local authority is ${localAuthorityName}")).thenReturn("The local authority is a region");
-        when(orderMessageGenerator.formatOrderMessage(caseData,"The Court orders that the local authority is authorised to refuse contact between the ${childOrChildren} and "
-        )).thenReturn("The Court orders that the local authority is authorised to refuse contact between the child and ");
+        when(orderMessageGenerator.formatOrderMessage(caseData,
+            "The local authority is ${localAuthorityName}")).thenReturn("The local authority is a region");
+        when(orderMessageGenerator.formatOrderMessage(caseData,
+            "The Court orders that the local authority is authorised to refuse "
+            + "contact between the ${childOrChildren} and "
+        )).thenReturn("The Court orders that the local authority is authorised to "
+            + "refuse contact between the child and ");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -74,21 +71,23 @@ class C34bRefuseContactOrderParameterGeneratorTest {
     }
 
     @Test
-    void generateDocumentForMultipleChildrenWithOrderByConsent() {
-        CaseData caseData = getCaseData(true, 1);
+    void generateDocumentForMultipleRespondentsWithOrderByConsent() {
+        CaseData caseData = getCaseData(true, 2);
 
-        when(respondentsRefusedFormatter.getRespondentsNamesForDocument(caseData)).thenReturn("Remmy Respondent");
+        when(respondentsRefusedFormatter.getRespondentsNamesForDocument(caseData))
+            .thenReturn("Remmy Respondent, Robin Refused");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
-        when(orderMessageGenerator.formatOrderMessage(caseData, "The local authority is ${localAuthorityName}")).thenReturn("The local authority is a region");
-
-        String testMessage = "The Court orders that the local authority is authorised to refuse contact between the children and "
-            + respondentsRefusedFormatter.getRespondentsNamesForDocument(caseData);
-
-        when(underTest.getRespondentsRefusedMessage(caseData)).thenReturn(testMessage);
+        when(orderMessageGenerator.formatOrderMessage(caseData,
+            "The local authority is ${localAuthorityName}")).thenReturn("The local authority is a region");
+        when(orderMessageGenerator.formatOrderMessage(caseData,
+            "The Court orders that the local authority is authorised to refuse contact "
+                + "between the ${childOrChildren} and "
+        )).thenReturn("The Court orders that the local authority is "
+            + "authorised to refuse contact between the child and ");
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
-            .orderDetails(getOrderDetailForChildWithSingleRespondent())
+            .orderDetails(getOrderDetailForChildWithMultipleRespondent())
             .orderMessage(getOrderMessageForLocalAuthority())
             .build();
 
@@ -96,7 +95,13 @@ class C34bRefuseContactOrderParameterGeneratorTest {
     }
 
     private String getOrderDetailForChildWithSingleRespondent() {
-        return "The Court orders that the local authority is authorised to refuse contact between the child and Remmy Respondent";
+        return "The Court orders that the local authority is"
+            + " authorised to refuse contact between the child and Remmy Respondent";
+    }
+
+    private String getOrderDetailForChildWithMultipleRespondent() {
+        return "The Court orders that the local authority is authorised to"
+            + " refuse contact between the child and Remmy Respondent, Robin Refused";
     }
 
     private String getOrderMessageForLocalAuthority() {

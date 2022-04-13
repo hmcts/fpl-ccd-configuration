@@ -21,7 +21,8 @@ public class OrderDocumentGeneratorHolder {
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     private final C26SecureAccommodationOrderDocumentParameterGenerator
         c26SecureAccommodationOrderDocumentParameterGenerator;
-    private final C34BAuthorityToRefuseContactOrderParameterGenerator c34BAuthorityToRefuseContactOrderParameterGenerator;
+    private final C34BAuthorityToRefuseContactOrderParameterGenerator
+        c34BAuthorityToRefuseContactOrderParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
     private final C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
