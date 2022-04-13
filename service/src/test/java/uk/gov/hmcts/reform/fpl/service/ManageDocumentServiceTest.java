@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
@@ -57,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADDITIONAL_APPLICATIONS_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
@@ -1519,6 +1522,41 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder().respondentStatementList(dynamicList).build();
 
         assertThat(underTest.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
+    }
+
+    @Test
+    void shouldReturnNewHearingDocumentListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(CourtBundle.builder().hearing("Test hearing").build())
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        assertThat(underTest.buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY))
+            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle())));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnEditedHearingDocumentListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        List<Element<CourtBundle>> courtBundleList = new ArrayList<>();
+        courtBundleList.add(element(selectedHearingId, CourtBundle.builder().hearing("Test hearing").build()));
+
+        CourtBundle editedBundle = CourtBundle.builder().hearing("Edited hearing").build();
+        CaseData caseData = CaseData.builder()
+            .courtBundleList(courtBundleList)
+            .manageDocumentsCourtBundle(editedBundle)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        assertThat(unwrapElements((List<Element<CourtBundle>>) underTest
+            .buildHearingDocumentList(caseData)
+            .get(COURT_BUNDLE_LIST_KEY)))
+            .containsExactly(editedBundle);
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

@@ -5,10 +5,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -25,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,17 +31,15 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -148,40 +143,6 @@ class ManageDocumentsLAServiceTest {
         assertThat(listAndLabel)
             .extracting(RESPONDENTS_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
             .containsExactly(null, expectedManageDocument);
-    }
-
-    @Test
-    void shouldReturnNewHearingDocumentListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
-        UUID selectedHearingId = randomUUID();
-
-        CaseData caseData = CaseData.builder()
-            .manageDocumentsCourtBundle(CourtBundle.builder().hearing("Test hearing").build())
-            .hearingDocumentsHearingList(selectedHearingId.toString())
-            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
-            .build();
-
-        assertThat(manageDocumentLAService.buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY))
-            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle())));
-    }
-
-    @Test
-    void shouldReturnEditedHearingDocumentListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
-        UUID selectedHearingId = randomUUID();
-        List<Element<CourtBundle>> courtBundleList = new ArrayList<>();
-        courtBundleList.add(element(selectedHearingId, CourtBundle.builder().hearing("Test hearing").build()));
-
-        CourtBundle editedBundle = CourtBundle.builder().hearing("Edited hearing").build();
-        CaseData caseData = CaseData.builder()
-            .courtBundleList(courtBundleList)
-            .manageDocumentsCourtBundle(editedBundle)
-            .hearingDocumentsHearingList(selectedHearingId.toString())
-            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
-            .build();
-
-        assertThat(unwrapElements((List<Element<CourtBundle>>) manageDocumentLAService
-                .buildHearingDocumentList(caseData)
-                .get(COURT_BUNDLE_LIST_KEY)))
-            .containsExactly(editedBundle);
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

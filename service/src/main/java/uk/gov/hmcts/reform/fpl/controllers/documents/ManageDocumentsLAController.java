@@ -39,24 +39,24 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICAT
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CASE_SUMMARY_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CHILDREN_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.DOCUMENT_SUB_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.HEARING_DOCUMENT_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.HEARING_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.POSITION_STATEMENT_CHILD_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.POSITION_STATEMENT_RESPONDENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RELATED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CASE_SUMMARY_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_KEY;
@@ -116,7 +116,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
                     return respond(caseDetails, List.of("There are no hearings to associate a hearing document with"));
                 }
-                caseDetails.getData().putAll(manageDocumentLAService.initialiseHearingDocumentFields(caseData));
+                caseDetails.getData().putAll(manageDocumentService.initialiseHearingDocumentFields(caseData));
                 break;
         }
 
@@ -214,7 +214,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData, NOT_SOLICITOR));
                 break;
             case HEARING_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(manageDocumentLAService.buildHearingDocumentList(caseData));
+                caseDetailsMap.putIfNotEmpty(manageDocumentService.buildHearingDocumentList(caseData));
                 break;
         }
 
