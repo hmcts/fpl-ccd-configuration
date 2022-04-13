@@ -14,8 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -139,7 +142,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
             )).build();
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Collections.emptyMap())
+            .data(emptyMap())
             .build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -158,7 +161,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
 
         CaseDetails caseDetailsBefore = CaseDetails.builder()
-            .data(Collections.emptyMap())
+            .data(emptyMap())
             .build();
 
         CaseDetails caseDetails = CaseDetails.builder().data(
