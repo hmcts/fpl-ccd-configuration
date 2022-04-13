@@ -14,10 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -141,22 +138,18 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                 )
             )).build();
 
-        CaseDetails caseDetails = CaseDetails.builder().build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Collections.emptyMap())
+            .build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
             .caseDetailsBefore(caseDetailsBefore)
             .build();
 
-        List<String> errors = new ArrayList<>();
-
-        try {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-            errors.addAll(callbackResponse.getErrors());
-        } catch (RuntimeException e) {
-            assertThat(errors.contains("We encountered a problem storing the data, "
-                + "please re-enter all information and try again. Apologies for the inconvenience."));
-        }
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+        assertThat(callbackResponse.getErrors().contains("We encountered a problem storing the data, "
+            + "please re-enter all information and try again. Apologies for the inconvenience."));
     }
 
     @Test
@@ -164,7 +157,9 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
 
-        CaseDetails caseDetailsBefore = CaseDetails.builder().build();
+        CaseDetails caseDetailsBefore = CaseDetails.builder()
+            .data(Collections.emptyMap())
+            .build();
 
         CaseDetails caseDetails = CaseDetails.builder().data(
             Map.of(
@@ -188,14 +183,9 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(caseDetailsBefore)
             .build();
 
-        List<String> errors = new ArrayList<>();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        try {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-            errors.addAll(callbackResponse.getErrors());
-        } catch (RuntimeException e) {
-            assertThat(errors.contains("We encountered a problem storing the data, "
-                + "please re-enter all information and try again. Apologies for the inconvenience."));
-        }
+        assertThat(callbackResponse.getErrors().contains("We encountered a problem storing the data, "
+            + "please re-enter all information and try again. Apologies for the inconvenience."));
     }
 }
