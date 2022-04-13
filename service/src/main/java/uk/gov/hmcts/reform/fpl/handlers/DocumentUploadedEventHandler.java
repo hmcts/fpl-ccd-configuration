@@ -86,7 +86,7 @@ public class DocumentUploadedEventHandler {
         final Set<String> recipients = new HashSet<>();
 
         if (!newNonConfidentialDocuments.isEmpty()) {
-            recipients.addAll(documentUploadedNotificationService.getRepresentativeEmails(caseData, userType));
+            recipients.addAll(documentUploadedNotificationService.getRepresentativeEmails(caseData));
             recipients.addAll(documentUploadedNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
             recipients.addAll(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData));
         }

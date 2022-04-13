@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -195,8 +194,7 @@ class DocumentUploadedNotificationServiceTest {
         ))
             .thenReturn(newHashSet("rep@example.com", "rep2@example.com", "rep3@example.com",
                 "cafcass2@example.com"));
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(caseData,
-            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(caseData);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             REPRESENTATIVE_WITH_SERVICE_ACCESS_1.getEmail(),
@@ -213,8 +211,7 @@ class DocumentUploadedNotificationServiceTest {
             .thenReturn(newHashSet("sol1@email.com"));
         when(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE))
             .thenReturn(newHashSet("sol2@email.com"));
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(caseData,
-            DocumentUploaderType.SOLICITOR);
+        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(caseData);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             CHILD_1.getSolicitor().getEmail(),
@@ -225,8 +222,7 @@ class DocumentUploadedNotificationServiceTest {
     void shouldReturnEmptyRecipientsWhenCaseHasNotRepresentatives() {
         CaseData emptyCaseData = caseData();
 
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(emptyCaseData,
-            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(emptyCaseData);
 
         assertThat(actualRecipients).isEmpty();
     }
@@ -238,8 +234,7 @@ class DocumentUploadedNotificationServiceTest {
             REPRESENTATIVE_SERVED_BY_EMAIL,
             CAFCASS_SOLICITOR_SERVED_BY_EMAIL);
 
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(emptyCaseData,
-            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(emptyCaseData);
 
         assertThat(actualRecipients).isEmpty();
     }

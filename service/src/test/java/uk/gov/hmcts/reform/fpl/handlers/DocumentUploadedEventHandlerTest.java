@@ -150,7 +150,7 @@ class DocumentUploadedEventHandlerTest {
                 uploadedBy);
 
         if (isHavingNotification) {
-            when(documentUploadedNotificationService.getRepresentativeEmails(caseData, uploadedType))
+            when(documentUploadedNotificationService.getRepresentativeEmails(caseData))
                 .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
             when(documentUploadedNotificationService.getDesignatedLocalAuthorityRecipients(caseData))
                 .thenReturn(Set.of(LA_USER_EMAIL));

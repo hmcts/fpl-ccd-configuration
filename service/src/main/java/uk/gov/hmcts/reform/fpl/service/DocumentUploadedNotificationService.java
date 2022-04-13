@@ -58,15 +58,12 @@ public class DocumentUploadedNotificationService {
         return localAuthorityRecipients.getRecipients(recipientsRequest);
     }
 
-    public Set<String> getRepresentativeEmails(CaseData caseData, DocumentUploaderType userType) {
+    public Set<String> getRepresentativeEmails(CaseData caseData) {
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
         HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, roles);
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
-
-        if (userType == SOLICITOR) {
-            emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
-        }
+        emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
         return emails;
     }
 
