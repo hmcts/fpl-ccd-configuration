@@ -13,7 +13,9 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
@@ -83,9 +85,11 @@ public class FurtherEvidenceUploadedEventHandler {
             userType,
             (oldBundle, newDoc) -> !newDoc.isConfidentialDocument() && !unwrapElements(oldBundle).contains(newDoc));
 
+        List<HearingDocument> newHearingDocument = getHearingDocument(caseData, caseDataBefore);
+
         final Set<String> recipients = new HashSet<>();
 
-        if (!newNonConfidentialDocuments.isEmpty()) {
+        if (!newNonConfidentialDocuments.isEmpty() || !newHearingDocument.isEmpty()) {
             recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, userType));
 
             if (userType == SECONDARY_LOCAL_AUTHORITY) {
@@ -102,9 +106,10 @@ public class FurtherEvidenceUploadedEventHandler {
         if (isNotEmpty(recipients)) {
 
             List<String> newDocumentNames = getDocumentNames(newNonConfidentialDocuments);
+            newDocumentNames.addAll(getHearingDocumentNames(newHearingDocument));
 
             furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                newDocumentNames);
+                    newDocumentNames);
         }
     }
 
@@ -270,6 +275,33 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
+    private List<String> getHearingDocumentNames(List<HearingDocument> documents) {
+        return documents.stream().map(doc -> doc.getDocument().getFilename()).collect(toList());
+    }
+
+    private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents, List<Element<T>> documentsBefore) {
+        List<HearingDocument> newHearingDoc = new ArrayList<>();
+        documents.stream()
+            .filter(doc -> !documentsBefore.contains(doc))
+            .forEach(doc -> newHearingDoc.add(doc.getValue()));
+
+        return newHearingDoc;
+    }
+
+    private List<HearingDocument> getHearingDocument(CaseData caseData, CaseData caseDataBefore) {
+        List<HearingDocument> newHearingDoc = new ArrayList<>();
+
+        newHearingDoc.addAll(getNewHearingDocuments(caseData.getCourtBundleList(),
+            caseDataBefore.getCourtBundleList()));
+        newHearingDoc.addAll(getNewHearingDocuments(caseData.getCaseSummaryList(),
+            caseDataBefore.getCaseSummaryList()));
+        newHearingDoc.addAll(getNewHearingDocuments(caseData.getPositionStatementChildList(),
+            caseDataBefore.getPositionStatementChildList()));
+        newHearingDoc.addAll(getNewHearingDocuments(caseData.getPositionStatementRespondentList(),
+            caseDataBefore.getPositionStatementRespondentList()));
+
+        return newHearingDoc;
+    }
 
     private List<SupportingEvidenceBundle> getDocuments(
         CaseData caseData, CaseData caseDataBefore,
