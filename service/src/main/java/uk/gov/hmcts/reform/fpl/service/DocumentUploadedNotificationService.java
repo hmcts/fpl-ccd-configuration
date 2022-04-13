@@ -8,12 +8,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
+import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_BUNDLE_UPLOADED_NOTIFICATION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
@@ -29,6 +31,8 @@ public class DocumentUploadedNotificationService {
     private final FeatureToggleService featureToggleService;
 
     private final FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
+
+    private final CourtBundleUploadedEmailContentProvider courtBundleUploadedEmailContentProvider;
 
     public Set<String> getLocalAuthoritiesRecipients(CaseData caseData) {
         final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
@@ -63,6 +67,17 @@ public class DocumentUploadedNotificationService {
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
         emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
         return emails;
+    }
+
+    public void sendNotificationForCourtBundleUploaded(CaseData caseData, Set<String> recipients,
+                                                       String hearingDetails) {
+        String notificationTemplate = COURT_BUNDLE_UPLOADED_NOTIFICATION;
+        if (!recipients.isEmpty()) {
+            notificationService.sendEmail(notificationTemplate,
+                recipients,
+                courtBundleUploadedEmailContentProvider.buildParameters(caseData, hearingDetails),
+                caseData.getId().toString());
+        }
     }
 
     public void sendNotification(CaseData caseData, Set<String> recipients,

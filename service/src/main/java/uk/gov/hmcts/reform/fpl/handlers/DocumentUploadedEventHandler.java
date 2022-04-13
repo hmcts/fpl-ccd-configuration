@@ -119,6 +119,35 @@ public class DocumentUploadedEventHandler {
     }
 
     @EventListener
+    public void sendCourtBundlesUploadedNotification(final DocumentUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
+        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+
+        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
+            .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
+            .collect(groupingBy(CourtBundle::getHearing,
+                mapping(CourtBundle::getDocument, toSet())));
+
+        final Set<String> recipients = new HashSet<>();
+
+        if (!newCourtBundles.isEmpty()) {
+            recipients.addAll(documentUploadedNotificationService.getRepresentativeEmails(caseData));
+            recipients.addAll(documentUploadedNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
+            recipients.addAll(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData));
+        }
+
+        if (isNotEmpty(recipients)) {
+            newCourtBundles
+                .forEach((hearingDetails, value) ->
+                    documentUploadedNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients,
+                        hearingDetails));
+        }
+    }
+
+    @EventListener
     public void sendCourtBundlesToCafcass(final DocumentUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
