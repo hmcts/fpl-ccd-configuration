@@ -61,7 +61,7 @@ class RespondentsRefusedFormatterTest {
                 .build();
 
             String formattedNames = underTest.getRespondentsNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy is");
+            assertThat(formattedNames).isEqualTo("Remy Respondy");
         }
 
         @Test
@@ -69,7 +69,7 @@ class RespondentsRefusedFormatterTest {
             CaseData caseData = getMultiplePeopleCaseData();
 
             String formattedNames = underTest.getRespondentsNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers are");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers");
         }
     }
 
