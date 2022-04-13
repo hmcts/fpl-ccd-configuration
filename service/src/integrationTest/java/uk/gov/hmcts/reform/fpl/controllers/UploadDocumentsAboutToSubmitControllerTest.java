@@ -154,8 +154,8 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
             errors.addAll(callbackResponse.getErrors());
         } catch (RuntimeException e) {
-            assertThat(errors.contains("We encountered a problem storing the data, " +
-                "please re-enter all information and try again. Apologies for the inconvenience."));
+            assertThat(errors.contains("We encountered a problem storing the data, "
+                + "please re-enter all information and try again. Apologies for the inconvenience."));
         }
     }
 
@@ -194,8 +194,8 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
             errors.addAll(callbackResponse.getErrors());
         } catch (RuntimeException e) {
-            assertThat(errors.contains("We encountered a problem storing the data, " +
-                "please re-enter all information and try again. Apologies for the inconvenience."));
+            assertThat(errors.contains("We encountered a problem storing the data, "
+                + "please re-enter all information and try again. Apologies for the inconvenience."));
         }
     }
 }
