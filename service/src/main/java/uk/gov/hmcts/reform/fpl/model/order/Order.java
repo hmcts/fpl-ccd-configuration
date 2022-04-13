@@ -58,6 +58,17 @@ public enum Order {
             SECURE_ACCOMMODATION_ORDER_JURISDICTION, MANAGE_ORDER_END_DATE_WITH_MONTH, FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
     ),
+    C29_RECOVERY_OF_A_CHILD(
+        DIGITAL,
+        "Recovery of a child (C29)",
+        "Section 50 Children Act 1989",
+        "Recovery of a child (C29)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
+            ORDER_PLACED_CHILD_IN_CUSTODY, FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER, WHICH_OTHERS
+        )
+    ),
     C32A_CARE_ORDER(
         DIGITAL,
         "Care order",
@@ -184,14 +195,6 @@ public enum Order {
         "Authority to search for another child (C27)",
         "",
         "Authority to search for another child (C27)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    C29_RECOVERY_OF_A_CHILD(
-        MANUAL_UPLOAD,
-        "Recovery of a child (C29)",
-        "",
-        "Recovery of a child (C29)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),

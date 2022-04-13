@@ -86,7 +86,7 @@ public class GeneratedPlacementOrderEventHandler {
         List<Recipient> postRecipients = new ArrayList<>();
         for (Respondent parent : parents) {
             boolean parentNotRepresented = Objects.isNull(parent.getSolicitor());
-            if (parentNotRepresented) {
+            if (parentNotRepresented && !parent.isDeceasedOrNFA()) {
                 postRecipients.add(parent.getParty());
             } else {
                 emailRecipients.add(parent.getSolicitor().getEmail());

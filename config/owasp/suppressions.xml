@@ -68,4 +68,23 @@
   ]]></notes>
     <cve>CVE-2020-36518</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: postgresql-42.2.24.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+    <cve>CVE-2022-21724</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: all?
+   ]]></notes>
+    <cve>CVE-2022-22950</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: all?
+   ]]></notes>
+    <cve>CVE-2022-22965</cve>
+  </suppress>
 </suppressions>

@@ -21,6 +21,7 @@ const orders = {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c26: 'C26_SECURE_ACCOMMODATION_ORDER',
+    c29: 'C29_RECOVERY_OF_A_CHILD',
     c32: 'C32A_CARE_ORDER',
     c32b: 'C32B_DISCHARGE_OF_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
@@ -38,6 +39,7 @@ const orders = {
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
     c26: 'Authority to keep a child in secure accommodation (C26)',
+    c29: 'Recovery of a child (C29)',
     c32: 'Care order (C32A)',
     c32b: 'Discharge of care order (C32B)',
     c33: 'Interim care order (C33)',
@@ -194,6 +196,31 @@ const section4 = {
       second_female_parent: '#manageOrdersRelationshipWithChild-SECOND_FEMALE_PARENT',
     },
   },
+  orderMadeDate: '#manageOrdersOrderCreatedDate',
+  whichOrder: {
+    group: '#manageOrdersPlacedUnderOrder-',
+    options: {
+      careOrder: 'CARE_ORDER',
+      epo: 'EMERGENCY_PROTECTION_ORDER',
+    },
+  },
+  orderPermissions: {
+    group: '#manageOrdersActionsPermitted-',
+    options: {
+      entry: 'ENTRY',
+      inform: 'INFORM',
+      produce: 'PRODUCE',
+      remove: 'REMOVE',
+    },
+  },
+  exParte: {
+    group: '#manageOrdersIsExParte',
+    options: {
+      yes: '#manageOrdersIsExParte_Yes',
+      no: '#manageOrdersIsExParte_No',
+    },
+  },
+  officerName: '#manageOrdersOfficerName',
 };
 
 const whichOthers = {
@@ -522,6 +549,29 @@ const uploadAmendedOrder = amendedOrder => {
   I.attachFile(amendment.upload, amendedOrder);
 };
 
+const enterOrderMadeDate = async (date) => {
+  await I.fillDate(date, section4.orderMadeDate);
+  await I.runAccessibilityTest();
+};
+
+const selectWhichOrder = (order) => {
+  I.click(section4.whichOrder.group + order);
+};
+
+const selectOrderPermissions = (order) => {
+  I.click(section4.orderPermissions.group + order);
+};
+
+const selectIsExparte = () => {
+  I.click(section4.exParte.options.yes);
+};
+
+const enterOfficerName = async (text) => {
+  I.fillField(section4.officerName, text);
+  await I.runAccessibilityTest();
+};
+
+
 const selectPlacementApplication = childName => I.selectOption(placement.application, childName);
 
 function fillPlacementOrderSpecificFields(values) {
@@ -543,4 +593,5 @@ module.exports = {
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
   enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, selectPlacementApplication, fillPlacementOrderSpecificFields, selectRespondentsRefused,
+  enterOfficerName, selectIsExparte, selectWhichOrder, enterOrderMadeDate, selectOrderPermissions,
 };

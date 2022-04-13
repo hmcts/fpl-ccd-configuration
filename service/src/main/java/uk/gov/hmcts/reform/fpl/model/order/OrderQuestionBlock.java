@@ -93,7 +93,11 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersAmendedOrder")),
     REFUSE_CONTACT_ORDER("refuseContactQuestions", OrderSection.ORDER_DETAILS, Collections.emptyList()),
     RESPONDENTS_REFUSED("respondentsRefused", OrderSection.ORDER_DETAILS,
-                       List.of("respondentsRefused_label", "respondentsRefusedSelector"));
+                       List.of("respondentsRefused_label", "respondentsRefusedSelector")),
+    ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
+            "manageOrdersIsExParte"));
+
     private final String showHideField;
     private final OrderSection section;
     private final List<String> transientDataFields;

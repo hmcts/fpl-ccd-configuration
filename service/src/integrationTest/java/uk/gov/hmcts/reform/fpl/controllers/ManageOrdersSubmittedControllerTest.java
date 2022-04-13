@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -168,6 +169,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     private UploadDocumentService uploadDocumentService;
 
     @MockBean
+    private DocumentConversionService documentConversionService;
+
+    @MockBean
     private DocumentDownloadService documentDownloadService;
 
     @MockBean
@@ -197,7 +201,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .thenReturn(ORDER_BINARY);
         when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
             .thenReturn(ORDER_DOCUMENT);
-
+        when(documentConversionService.convertToPdf(ORDER))
+            .thenReturn(ORDER);
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
@@ -208,6 +213,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, COVERSHEET_PDF))
             .thenReturn(COVERSHEET_RESPONDENT);
+
 
         when(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .thenReturn(new SendLetterResponse(LETTER_1_ID), new SendLetterResponse(LETTER_2_ID));
