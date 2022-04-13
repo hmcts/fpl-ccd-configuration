@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -279,7 +278,8 @@ public class FurtherEvidenceUploadedEventHandler {
         return documents.stream().map(doc -> doc.getDocument().getFilename()).collect(toList());
     }
 
-    private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents, List<Element<T>> documentsBefore) {
+    private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents,
+                                                                                     List<Element<T>> documentsBefore) {
         List<HearingDocument> newHearingDoc = new ArrayList<>();
         documents.stream()
             .filter(doc -> !documentsBefore.contains(doc))

@@ -306,14 +306,17 @@ public class ManageDocumentService {
         map.put(HEARING_DOCUMENT_HEARING_LIST_KEY, initialiseHearingDocumentsHearingList((caseData)));
 
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
-        switch(caseData.getManageDocumentsHearingDocumentType()) {
-            case COURT_BUNDLE ->
+        switch (caseData.getManageDocumentsHearingDocumentType()) {
+            case COURT_BUNDLE :
                 map.put(COURT_BUNDLE_KEY, getCourtBundleForHearing(caseData, selectedHearingId));
-            case CASE_SUMMARY ->
+                break;
+            case CASE_SUMMARY :
                 map.put(CASE_SUMMARY_KEY, getCaseSummaryForHearing(caseData, selectedHearingId));
-            case POSITION_STATEMENT_CHILD ->
+                break;
+            case POSITION_STATEMENT_CHILD :
                 map.put(POSITION_STATEMENT_CHILD_KEY, getPositionStatementChildForHearing(caseData, selectedHearingId));
-            case POSITION_STATEMENT_RESPONDENT ->
+                break;
+            case POSITION_STATEMENT_RESPONDENT :
                 map.put(POSITION_STATEMENT_RESPONDENT_KEY,
                     getPositionStatementRespondentForHearing(caseData, selectedHearingId));
         }
@@ -324,21 +327,24 @@ public class ManageDocumentService {
         Map<String, Object> map = new HashMap<>();
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
 
-        switch(caseData.getManageDocumentsHearingDocumentType()) {
-            case COURT_BUNDLE ->
+        switch (caseData.getManageDocumentsHearingDocumentType()) {
+            case COURT_BUNDLE :
                 map.put(COURT_BUNDLE_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
                     caseData.getCourtBundleList(), caseData.getManageDocumentsCourtBundle()));
-            case CASE_SUMMARY ->
+                break;
+            case CASE_SUMMARY :
                 map.put(CASE_SUMMARY_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
                     caseData.getCaseSummaryList(), caseData.getManageDocumentsCaseSummary()));
-            case POSITION_STATEMENT_CHILD ->
+                break;
+            case POSITION_STATEMENT_CHILD :
                 map.put(POSITION_STATEMENT_CHILD_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
                     caseData.getPositionStatementChildList(),
                     caseData.getManageDocumentsPositionStatementChild().toBuilder()
                         .childId(caseData.getManageDocumentsChildrenList().getValueCodeAsUUID())
                         .childName(caseData.getManageDocumentsChildrenList().getValueLabel())
                         .build()));
-            case POSITION_STATEMENT_RESPONDENT ->
+                break;
+            case POSITION_STATEMENT_RESPONDENT :
                 map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
                     caseData.getPositionStatementRespondentList(),
                     caseData.getManageDocumentsPositionStatementRespondent().toBuilder()
@@ -348,17 +354,6 @@ public class ManageDocumentService {
         }
 
         return map;
-    }
-
-    private DynamicList initialiseHearingDocumentsHearingList(CaseData caseData) {
-        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
-        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(
-            selectedHearingId);
-
-        if (hearingBooking.isEmpty()) {
-            throw new NoHearingBookingException(selectedHearingId);
-        }
-        return caseData.buildDynamicHearingList(selectedHearingId);
     }
 
     private <T> List<Element<T>> buildHearingDocumentList(CaseData caseData, UUID selectedHearingId,
@@ -376,15 +371,21 @@ public class ManageDocumentService {
         return hearingDocumentList;
     }
 
-    private <T> T getHearingDocumentForSelectedHearing(CaseData caseData, List<Element<T>> documents,
+    private DynamicList initialiseHearingDocumentsHearingList(CaseData caseData) {
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
+        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(
+            selectedHearingId);
+
+        if (hearingBooking.isEmpty()) {
+            throw new NoHearingBookingException(selectedHearingId);
+        }
+        return caseData.buildDynamicHearingList(selectedHearingId);
+    }
+
+    private <T> T getHearingDocumentForSelectedHearing(List<Element<T>> documents,
                                                        UUID selectedHearingId) {
         Optional<Element<T>> hearingDocument = findElement(selectedHearingId, documents);
-
-        if (hearingDocument.isPresent()) {
-            return hearingDocument.get().getValue();
-        } else {
-            return null;
-        }
+        return hearingDocument.map(Element::getValue).orElse(null);
     }
 
     private HearingBooking getHearingBooking(CaseData caseData, UUID selectedHearingId) {
@@ -398,7 +399,7 @@ public class ManageDocumentService {
     }
 
     private CourtBundle getCourtBundleForHearing(CaseData caseData, UUID selectedHearingId) {
-        CourtBundle courtBundle = getHearingDocumentForSelectedHearing(caseData, caseData.getCourtBundleList(),
+        CourtBundle courtBundle = getHearingDocumentForSelectedHearing(caseData.getCourtBundleList(),
             selectedHearingId);
         if (courtBundle == null) {
             courtBundle = CourtBundle.builder()
@@ -408,9 +409,9 @@ public class ManageDocumentService {
     }
 
     private CaseSummary getCaseSummaryForHearing(CaseData caseData, UUID selectedHearingId) {
-        CaseSummary caseSummary = getHearingDocumentForSelectedHearing(caseData, caseData.getCaseSummaryList(),
+        CaseSummary caseSummary = getHearingDocumentForSelectedHearing(caseData.getCaseSummaryList(),
             selectedHearingId);
-        if(caseSummary == null){
+        if (caseSummary == null) {
             caseSummary = CaseSummary.builder()
                 .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
         }
@@ -418,10 +419,10 @@ public class ManageDocumentService {
     }
 
     private PositionStatementChild getPositionStatementChildForHearing(CaseData caseData, UUID selectedHearingId) {
-        PositionStatementChild positionStatementChild = getHearingDocumentForSelectedHearing(caseData,
+        PositionStatementChild positionStatementChild = getHearingDocumentForSelectedHearing(
             caseData.getPositionStatementChildList(),
             selectedHearingId);
-        if(positionStatementChild == null){
+        if (positionStatementChild == null) {
             positionStatementChild = PositionStatementChild.builder()
                 .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
         }
@@ -430,10 +431,10 @@ public class ManageDocumentService {
 
     private PositionStatementRespondent getPositionStatementRespondentForHearing(CaseData caseData,
                                                                                  UUID selectedHearingId) {
-        PositionStatementRespondent positionStatementRespondent = getHearingDocumentForSelectedHearing(caseData,
+        PositionStatementRespondent positionStatementRespondent = getHearingDocumentForSelectedHearing(
             caseData.getPositionStatementRespondentList(),
             selectedHearingId);
-        if(positionStatementRespondent == null){
+        if (positionStatementRespondent == null) {
             positionStatementRespondent = PositionStatementRespondent.builder()
                 .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
         }
