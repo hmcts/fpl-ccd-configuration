@@ -14,9 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.courtbundle.CourtBundleUploadedData;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
+import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
 import java.util.List;
@@ -29,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_BUNDLE_UPLOADED_NOTIFICATION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
@@ -117,6 +120,9 @@ class DocumentUploadedNotificationServiceTest {
 
     @Mock
     private FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
+
+    @Mock
+    private CourtBundleUploadedEmailContentProvider courtBundleUploadedEmailContentProvider;
 
     @Mock
     private FeatureToggleService featureToggleService;
@@ -288,6 +294,24 @@ class DocumentUploadedNotificationServiceTest {
         documentUploadedNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendNotificationForCourtBundleUploaded() {
+        CaseData caseData = caseData();
+
+        Set<String> recipients = Set.of("test@example.com");
+
+        CourtBundleUploadedData courtBundleUploadedData =
+            CourtBundleUploadedData.builder().hearingDetails("1st Hearing").build();
+
+        when(courtBundleUploadedEmailContentProvider.buildParameters(caseData, "1st Hearing")).thenReturn(
+            courtBundleUploadedData);
+
+        documentUploadedNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients, "1st Hearing");
+
+        verify(notificationService).sendEmail(COURT_BUNDLE_UPLOADED_NOTIFICATION, recipients,
+            courtBundleUploadedData, CASE_ID.toString());
     }
 
     private CaseData caseData() {

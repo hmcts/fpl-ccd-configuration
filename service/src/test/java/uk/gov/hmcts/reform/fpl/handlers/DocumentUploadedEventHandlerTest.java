@@ -813,6 +813,67 @@ class DocumentUploadedEventHandlerTest {
                 any());
     }
 
+    private void verifyNotificationForCourtBundleTemplate(final UserDetails uploadedBy,
+                                                            DocumentUploaderType uploadedType,
+                                                            Consumer<CaseData> beforeCaseDataModifier,
+                                                            Consumer<CaseData> caseDataModifier,
+                                                            List<String> expectedHearingDetails) {
+        CaseData caseDataBefore = buildSubmittedCaseData();
+        beforeCaseDataModifier.accept(caseDataBefore);
+        CaseData caseData = buildSubmittedCaseData();
+        caseDataModifier.accept(caseData);
+        boolean isHavingNotification = expectedHearingDetails != null && !expectedHearingDetails.isEmpty();
+
+        DocumentUploadedEvent documentUploadedEvent =
+            new DocumentUploadedEvent(
+                caseData,
+                caseDataBefore,
+                uploadedType,
+                uploadedBy);
+
+        if (isHavingNotification) {
+            when(documentUploadedNotificationService.getRepresentativeEmails(caseData))
+                .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
+            when(documentUploadedNotificationService.getDesignatedLocalAuthorityRecipients(caseData))
+                .thenReturn(Set.of(LA_USER_EMAIL));
+            when(documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData))
+                .thenReturn(Set.of(LA2_USER_EMAIL));
+        }
+
+        documentUploadedEventHandler.sendCourtBundlesUploadedNotification(documentUploadedEvent);
+
+        if (isHavingNotification) {
+            for (String hearingDetail : expectedHearingDetails) {
+                verify(documentUploadedNotificationService).sendNotificationForCourtBundleUploaded(caseData,
+                    Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, LA_USER_EMAIL, LA2_USER_EMAIL), hearingDetail);
+            }
+        } else {
+            verify(documentUploadedNotificationService, never()).sendNotificationForCourtBundleUploaded(any(),
+                any(), any());
+        }
+    }
+
+    @Test
+    void shouldSendNotificationWhenCourtBundleIsUploadedByLA() {
+        String hearing1 = "1stHearing";
+        String hearing2 = "2ndHearing";
+        String hearing3 = "3rdHearing";
+        List<Element<CourtBundle>> firstHearingBundle = createCourtBundleList(2, hearing1, "LA");
+        List<Element<CourtBundle>> secondHearingBundle = createCourtBundleList(2, hearing2, "LA");
+        List<Element<CourtBundle>> thirdearingBundle = createCourtBundleList(2, hearing3, "LA");
+
+        List<Element<CourtBundle>> totalHearing = new ArrayList<>();
+        totalHearing.addAll(firstHearingBundle);
+        totalHearing.addAll(secondHearingBundle);
+        totalHearing.addAll(thirdearingBundle);
+
+        Collections.shuffle(totalHearing);
+
+        verifyNotificationForCourtBundleTemplate(
+            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
+            (caseData) -> caseData.getCourtBundleList().addAll(totalHearing),
+            List.of(hearing1, hearing2, hearing3));
+    }
 
     private static List<String> buildNonConfidentialDocumentsNamesList() {
         return List.of(NON_CONFIDENTIAL_1, NON_CONFIDENTIAL_2);

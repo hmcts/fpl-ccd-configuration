@@ -53,6 +53,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildSubmittedCaseData() {
         return commonCaseBuilder()
             .applicationDocuments(new ArrayList<>())
+            .courtBundleList(new ArrayList<>())
             .furtherEvidenceDocuments(new ArrayList<>())
             .furtherEvidenceDocumentsLA(new ArrayList<>())
             .furtherEvidenceDocumentsSolicitor(new ArrayList<>())
