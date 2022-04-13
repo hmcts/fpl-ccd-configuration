@@ -324,7 +324,7 @@ class DocumentUploadedEventHandlerTest {
     void shouldSendNotificationWhenNonConfidentialAnyDocIsUploadedByRespSolicitor() {
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
+            (caseData) ->  caseData.getFurtherEvidenceDocumentsSolicitor().addAll(
                 buildNonConfidentialPdfDocumentList(REP_USER)),
             NON_CONFIDENTIAL);
     }
@@ -333,7 +333,7 @@ class DocumentUploadedEventHandlerTest {
     void shouldNotSendNotificationWhenConfidentialAnyDocIsUploadedByRespSolicitor() {
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
+            (caseData) ->  caseData.getFurtherEvidenceDocumentsSolicitor().addAll(
                 buildConfidentialDocumentList(REP_USER)),
             null);
     }
