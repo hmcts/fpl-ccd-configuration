@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.courtbundle.CourtBundleUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.COURT_BUNDLE;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -15,7 +15,7 @@ public class CourtBundleUploadedEmailContentProvider extends AbstractEmailConten
 
     public CourtBundleUploadedData buildParameters(CaseData caseData, String hearingDetails) {
         return CourtBundleUploadedData.builder()
-            .caseUrl(getCaseUrl(caseData.getId(), DOCUMENTS))
+            .caseUrl(getCaseUrl(caseData.getId(), COURT_BUNDLE))
             .hearingDetails(hearingDetails)
             .build();
     }
