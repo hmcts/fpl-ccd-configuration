@@ -107,6 +107,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .caseDetailsBefore(caseDetailsBefore)
             .build();
     }
+
     protected CallbackRequest buildCallbackRequestForAddingEvidenceBundleFromHearings(boolean confidential) {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID)
@@ -123,6 +124,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .caseDetailsBefore(caseDetailsBefore)
             .build();
     }
+
     protected CallbackRequest buildCallbackRequestForAddingRespondentStatement(boolean confidential) {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID)
@@ -176,8 +178,9 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
     }
 
     protected static HearingFurtherEvidenceBundle buildHearingFurtherEvidenceBundle(boolean confidential) {
-        HearingFurtherEvidenceBundle.HearingFurtherEvidenceBundleBuilder builder = HearingFurtherEvidenceBundle.
-            builder().hearingName("Hearing1").supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential)));
+        HearingFurtherEvidenceBundle.HearingFurtherEvidenceBundleBuilder builder
+            = HearingFurtherEvidenceBundle.builder().hearingName("Hearing1")
+            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential)));
         return builder.build();
     }
 

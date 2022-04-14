@@ -130,6 +130,57 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     }
 
     @Test
+    void shouldSendEmailsWhenCourtBundleUploadedByDesignatedLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+        postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
+        verifySendingNotificationToAllParties(notificationClient, COURT_BUNDLE_UPLOADED_NOTIFICATION, TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldSendEmailToCafcassWhenNewCourtBundlePresentByDesignatedLA() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+        postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
+
+        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+            documentReferences.capture(),
+            eq(COURT_BUNDLE),
+            isA(CourtBundleData.class));
+
+        Set<DocumentReference> value = documentReferences.getValue();
+        DocumentReference documentReference = value.stream().findFirst().orElseThrow();
+        assertThat(documentReference.getFilename()).isEqualTo("filename");
+    }
+
+    @Test
+    void shouldNotSendEmailsWhenConfidentialApplicationDocumentUploadedBySecondaryLA() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
+        postSubmittedEvent(buildCallbackRequestForAddingApplicationDocument(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenApplicationDocumentUploadedBySecondaryLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
+        postSubmittedEvent(buildCallbackRequestForAddingApplicationDocument(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendEmailsWhenConfidentialAnyOtherDocumentUploadedBySecondaryLA() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME, true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
     void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
@@ -140,24 +191,52 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     }
 
     @Test
-    void shouldSendEmailsWhenConfidentialAnyOtherDocumentUploadedBySecondaryLA() {
+    void shouldNotSendEmailsWhenConfidentialRespondentStatementUploadedBySecondaryLA() {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
-        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME, true));
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
         verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldSendEmailsWhenCourtBundleUploadedByDesignatedLA()
+    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedBySecondaryLA() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedBySecondaryLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldSendEmailsWhenCourtBundleUploadedBySecondaryLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
         verifySendingNotificationToAllParties(notificationClient, COURT_BUNDLE_UPLOADED_NOTIFICATION, TEST_CASE_ID);
     }
 
     @Test
-    void shouldSendEmailToCafcassWhenNewCourtBundlePresent() {
+    void shouldSendEmailToCafcassWhenNewCourtBundlePresentBySecondaryLA() {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());

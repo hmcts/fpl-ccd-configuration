@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsController.class)
