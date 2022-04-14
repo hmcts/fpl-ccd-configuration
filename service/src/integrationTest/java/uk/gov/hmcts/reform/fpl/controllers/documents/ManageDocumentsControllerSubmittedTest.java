@@ -6,8 +6,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -15,15 +13,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 
@@ -32,7 +24,9 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICA
 @OverrideAutoConfiguration(enabled = true)
 class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSubmittedBaseTest {
 
-    private static final String SOLICITOR_BUNDLE_NAME = "furtherEvidenceDocumentsSolicitor";
+    private static final String ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR = "furtherEvidenceDocumentsSolicitor";
+
+    private static final String ANY_OTHER_DOCUMENTS_BUNDLE_NAME_ADMIN = "furtherEvidenceDocuments";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -53,55 +47,86 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldNotPublishEventLAWhenUploadNotificationFeatureIsDisabled() {
-
+    void shouldNotPublishEventWhenUploadAnyDocumentNotificationFeatureIsDisabled() {
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
-
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
-
-        postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
-
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR, false));
         verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldNotPublishEventWhenConfidentialDocumentsAreUploadedBySolicitor() {
+    void shouldNotSendNotificationWhenConfidentialAnyOtherDocumentUploadedBySolicitor() {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
-
-        postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, true));
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR, true));
         verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldPublishEventWithOtherUserWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
+    void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedBySolicitor() throws NotificationClientException {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
-
-        postSubmittedEvent(buildCallbackRequest(SOLICITOR_BUNDLE_NAME, false));
-
-        verify(notificationClient).sendEmail(
-            eq(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_1_INBOX),
-            anyMap(),
-            eq(notificationReference(TEST_CASE_ID)));
-
-        verify(notificationClient).sendEmail(
-            eq(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE),
-            eq(REP_1_EMAIL),
-            anyMap(),
-            eq(notificationReference(TEST_CASE_ID)));
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR, false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
     }
 
-    private CaseAssignedUserRolesResource buildCaseAssignedUserRole(String role) {
-        return CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
-            CaseAssignedUserRole.builder()
-                .caseRole(role)
-                .userId("USER_1_ID")
-                .caseDataId("123")
-                .build()))
-            .build();
+    @Test
+    void shouldNotSendNotificationWhenConfidentialRespondentStatementUploadedBySolicitor() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedBySolicitor() throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenConfidentialAnyOtherDocumentUploadedByHMCTSAdmin() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID);
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_ADMIN, true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedByHMCTSAdmin() throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID);
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_ADMIN, false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenConfidentialRespondentStatementUploadedByHMCTSAdmin() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByHMCTSAdmin() throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
     }
 }
