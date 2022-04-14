@@ -109,10 +109,11 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     @Test
     void shouldSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedBySolicitor()
         throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
         postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(false));
-        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID);
     }
 
