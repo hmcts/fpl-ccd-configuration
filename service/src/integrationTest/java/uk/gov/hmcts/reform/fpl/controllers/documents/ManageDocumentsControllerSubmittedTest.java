@@ -14,10 +14,13 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsController.class)
@@ -97,6 +100,24 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
+    void shouldNotSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedBySolicitor() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedBySolicitor()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
     void shouldNotSendNotificationWhenConfidentialAnyOtherDocumentUploadedByHmctsAdmin() {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
@@ -127,13 +148,31 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByHmctsSAdmin()
+    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByHmctsAdmin()
         throws NotificationClientException {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);
         postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedByHmctsAdmin() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedByHmctsAdmin()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID);
     }
 }

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -106,7 +107,22 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .caseDetailsBefore(caseDetailsBefore)
             .build();
     }
+    protected CallbackRequest buildCallbackRequestForAddingEvidenceBundleFromHearings(boolean confidential) {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(TEST_CASE_ID)
+            .data(buildData(buildHearingFurtherEvidenceBundle(confidential)))
+            .build();
 
+        CaseDetails caseDetailsBefore = CaseDetails.builder()
+            .data(Map.of("dummy", "some dummy data"))
+            .id(TEST_CASE_ID)
+            .build();
+
+        return CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+    }
     protected CallbackRequest buildCallbackRequestForAddingRespondentStatement(boolean confidential) {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID)
@@ -153,15 +169,21 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
     }
 
     protected static RespondentStatement buildRespondentStatement(boolean confidential) {
-        RespondentStatement.RespondentStatementBuilder document
+        RespondentStatement.RespondentStatementBuilder builder
             = RespondentStatement.builder().respondentName("Timothy Jones")
             .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential)));
-        return document.build();
+        return builder.build();
+    }
+
+    protected static HearingFurtherEvidenceBundle buildHearingFurtherEvidenceBundle(boolean confidential) {
+        HearingFurtherEvidenceBundle.HearingFurtherEvidenceBundleBuilder builder = HearingFurtherEvidenceBundle.
+            builder().hearingName("Hearing1").supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential)));
+        return builder.build();
     }
 
     protected static SupportingEvidenceBundle buildEvidenceBundle(
         boolean confidential) {
-        SupportingEvidenceBundle.SupportingEvidenceBundleBuilder document
+        SupportingEvidenceBundle.SupportingEvidenceBundleBuilder builder
             = SupportingEvidenceBundle.builder()
             .name("dummy document")
             .uploadedBy("user who uploaded")
@@ -170,10 +192,10 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .type(FurtherEvidenceType.GUARDIAN_REPORTS);
 
         if (confidential) {
-            document.confidential(List.of(CONFIDENTIAL_MARKER));
+            builder.confidential(List.of(CONFIDENTIAL_MARKER));
         }
 
-        return document.build();
+        return builder.build();
     }
 
     protected Map<String, Object> buildData(ApplicationDocument applicationDocument) {
@@ -211,6 +233,25 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             "children1", buildChildren1(),
             "respondents1", buildRespondents1(),
             bundleName, wrapElements(supportingEvidenceBundle)
+        );
+    }
+
+    protected Map<String, Object> buildData(HearingFurtherEvidenceBundle... hearingFurtherEvidenceBundle) {
+        return Map.of(
+            "localAuthorities", wrapElements(
+                LocalAuthority.builder()
+                    .designated(YES.getValue())
+                    .email(LOCAL_AUTHORITY_1_INBOX)
+                    .build(),
+                LocalAuthority.builder()
+                    .designated(NO.getValue())
+                    .email(LOCAL_AUTHORITY_2_INBOX)
+                    .build()),
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+            "representatives", buildRepresentatives(),
+            "children1", buildChildren1(),
+            "respondents1", buildRespondents1(),
+            "hearingFurtherEvidenceDocuments", wrapElements(hearingFurtherEvidenceBundle)
         );
     }
 

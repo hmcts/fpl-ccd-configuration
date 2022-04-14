@@ -94,6 +94,42 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     }
 
     @Test
+    void shouldNotSendEmailsWhenConfidentialRespondentStatementUploadedByDesignatedLA() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByDesignatedLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedByDesignatedLA() {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(true));
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedByDesignatedLA()
+        throws NotificationClientException {
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
+        postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    @Test
     void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
@@ -134,23 +170,5 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         Set<DocumentReference> value = documentReferences.getValue();
         DocumentReference documentReference = value.stream().findFirst().orElseThrow();
         assertThat(documentReference.getFilename()).isEqualTo("filename");
-    }
-
-    @Test
-    void shouldNotSendEmailsWhenConfidentialRespondentStatementUploadedByDesignatedLA() {
-        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
-        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
-        verifyNoInteractions(notificationClient);
-    }
-
-    @Test
-    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByDesignatedLA()
-        throws NotificationClientException {
-        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
-        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
-        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
-            TEST_CASE_ID);
     }
 }
