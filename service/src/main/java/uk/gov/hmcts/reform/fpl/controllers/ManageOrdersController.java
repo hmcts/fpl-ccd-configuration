@@ -150,7 +150,6 @@ public class ManageOrdersController extends CallbackController {
             data.putAll(updates);
 
             caseData = getCaseData(updatedDetails);
-            //coreCaseDataService.updateCase(caseData.getId(), data);
         }
         coreCaseDataService.triggerEvent(caseData.getId(),
             "internal-change-manage-order",
@@ -158,6 +157,18 @@ public class ManageOrdersController extends CallbackController {
 
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         publishEvent(eventBuilder.build(caseData, caseDataBefore));
+    }
+
+    @PostMapping("/post-submit-callback/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse postHandleAboutToSubmitEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
+        Map<String, Object> data = updatedDetails.getData();
+
+        fieldsCalculator.calculate().forEach(data::remove);
+
+        return respond(caseDetails);
     }
 
     private CaseData fixAndRetrieveCaseData(CaseDetails caseDetails) {

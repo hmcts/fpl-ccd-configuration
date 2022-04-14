@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -21,6 +23,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentDownloadService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentDownloadClientApi documentDownloadClient;
@@ -29,20 +32,6 @@ public class DocumentDownloadService {
 
     private final SecureDocStoreService secureDocStoreService;
     private final FeatureToggleService featureToggleService;
-
-    public DocumentDownloadService(AuthTokenGenerator authTokenGenerator,
-                                 DocumentDownloadClientApi documentDownloadClient,
-                                 IdamClient idamClient,
-                                 RequestData requestData,
-                                 SecureDocStoreService secureDocStoreService,
-                                 FeatureToggleService featureToggleService) {
-        this.authTokenGenerator = authTokenGenerator;
-        this.documentDownloadClient = documentDownloadClient;
-        this.idamClient = idamClient;
-        this.requestData = requestData;
-        this.secureDocStoreService = secureDocStoreService;
-        this.featureToggleService = featureToggleService;
-    }
 
     public byte[] downloadDocument(final String documentUrlString) {
 

@@ -14,7 +14,8 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.Optional;
 
-import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
+
 
 @Service
 @Slf4j

@@ -74,7 +74,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentedRespondentWithAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondentWithAddress;
 
-@WebMvcTest(ManageOrderPostSubmitController.class)
+@WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallbackTest {
 

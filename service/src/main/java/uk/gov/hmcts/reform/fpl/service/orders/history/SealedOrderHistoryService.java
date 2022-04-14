@@ -65,11 +65,12 @@ public class SealedOrderHistoryService {
         List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
         List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData);
 
-        DocumentReference order;
-        DocumentReference plainWordOrder;
-        if (OrderSourceType.MANUAL_UPLOAD == manageOrdersEventData.getManageOrdersType().getSourceType()) {
-            order = plainWordOrder = caseData.getManageOrdersEventData().getManageOrdersUploadOrderFile();
-        } else {
+        DocumentReference order = null;
+        DocumentReference plainWordOrder = null;
+        // The secure docstore restricted us from accessing documents uploaded by user until the event is submitted.
+        // For those documents uploaded by user, all the processing logic (including sealing) are moved to
+        // submitted stage.
+        if (OrderSourceType.MANUAL_UPLOAD != manageOrdersEventData.getManageOrdersType().getSourceType()) {
             order = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
             plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
         }
@@ -111,17 +112,20 @@ public class SealedOrderHistoryService {
     }
 
     public GeneratedOrder lastGeneratedOrder(CaseData caseData) {
+        return lastGeneratedOrderElement(caseData).getValue();
+    }
+
+    private Element<GeneratedOrder> lastGeneratedOrderElement(CaseData caseData) {
         return caseData.getOrderCollection().stream()
             .min(legacyLastAndThenByDateAndTimeIssuedDesc())
-            .orElseThrow(() -> new IllegalStateException("Element not present"))
-            .getValue();
+            .orElseThrow(() -> new IllegalStateException("Element not present"));
     }
 
     public Map<String, Object> processUploadedOrder(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
         // get the latest order just created in about-to-submit callback;
-        List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
-        GeneratedOrder order = caseData.getOrderCollection().get(0).getValue();
+        Element<GeneratedOrder> orderElm = lastGeneratedOrderElement(caseData);
+        GeneratedOrder order = lastGeneratedOrder(caseData);
 
         DocumentReference sealedPDForder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
@@ -131,7 +135,8 @@ public class SealedOrderHistoryService {
             .unsealedDocumentCopy(plainWordOrder)
             .build();
 
-        pastOrders.set(0, element(sealedOrder));
+        List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
+        pastOrders.set(pastOrders.indexOf(orderElm), element(orderElm.getId(), sealedOrder));
         data.put("orderCollection", pastOrders);
         return data;
     }

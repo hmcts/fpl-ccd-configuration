@@ -56,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@WebMvcTest(ManageOrderPostSubmitController.class)
+@WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersPostSubmitControllerAboutToSubmitTest extends AbstractCallbackTest {
 
