@@ -14,13 +14,16 @@ import uk.gov.hmcts.reform.fpl.enums.Cardinality;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
@@ -31,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 public class PlacementController extends CallbackController {
 
     private final PlacementService placementService;
+    private final RespondentService respondentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -51,6 +55,13 @@ public class PlacementController extends CallbackController {
         caseProperties.putIfNotEmpty("placementChildrenList", eventData.getPlacementChildrenList());
 
         putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+
+        if (isNotEmpty(caseData.getAllRespondents())) {
+            caseProperties.put("hasRespondents", "Yes");
+            caseProperties.put("placementRespondentsLabel",
+                respondentService.buildRespondentLabel(caseData.getAllRespondents()));
+            caseProperties.put("respondentsSelector", newSelector(caseData.getAllRespondents().size()));
+        }
 
         return respond(caseProperties);
     }
@@ -81,24 +92,16 @@ public class PlacementController extends CallbackController {
         return respond(caseProperties, errors);
     }
 
-    @PostMapping("notices-upload/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleNoticesUploaded(@RequestBody CallbackRequest request) {
-
+    @PostMapping("notices-respondents/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleSelectingParties(@RequestBody CallbackRequest request) {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
         final CaseData caseData = getCaseData(caseDetails);
 
-        final List<String> errors = placementService.checkNotices(caseData);
-
-        if (!errors.isEmpty()) {
-            return respond(caseProperties, errors);
-        }
-
-        final PlacementEventData eventData = placementService.preparePayment(caseData);
-
-        caseProperties.putIfNotEmpty("placement", eventData.getPlacement());
-        caseProperties.putIfNotEmpty("placementPaymentRequired", eventData.getPlacementPaymentRequired());
-        caseProperties.putIfNotEmpty("placementFee", eventData.getPlacementFee());
+        PlacementEventData eventData = placementService.preparePayment(caseData);
+        caseProperties.put("placement", eventData.getPlacement());
+        caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
+        caseProperties.put("placementFee", eventData.getPlacementFee());
 
         return respond(caseProperties);
     }

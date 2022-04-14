@@ -1,53 +1,40 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Colleague;
-import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.Solicitor;
+import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
-import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
-import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -84,445 +71,437 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl164 {
-        private final String migrationId = "DFPL-164";
-        private final long validCaseId = 1626258358022834L;
+    class Dfpl451 {
+
+        private final String migrationId = "DFPL-451";
+        private final long validCaseId = 1603370139459131L;
         private final long invalidCaseId = 1626258358022000L;
 
         @Test
-        void shouldPerformMigration() {
+        void shouldThrowAssertionErrorWhenCaseIdIsInvalid() {
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(invalidCaseId)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "hearingOption", HearingOptions.NEW_HEARING,
+                    "migrationId", migrationId))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-451, case reference = 1626258358022000},"
+                    + " Unexpected case reference");
+        }
+
+        @ParameterizedTest
+        @ValueSource(
+            longs = {1603370139459131L, 1618403849028418L, 1592492643062277L, 1615809514849016L, 1605537316992153L})
+        void shouldRemoveHearingOptionIfPresent(Long caseId) {
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(caseId)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "hearingOption", HearingOptions.EDIT_PAST_HEARING,
+                    "migrationId", migrationId))
+                .build();
+
+            Map<String, Object> expected = new HashMap<>(caseDetails.getData());
+            expected.remove("hearingOption");
+            expected.remove("migrationId");
+
+            Map<String, Object> response = postAboutToSubmitEvent(caseDetails).getData();
+
+            assertThat(response).isEqualTo(expected);
+        }
+
+        @Test
+        void shouldRemoveMigrationIdWhenHearingOptionNotPresent() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(validCaseId)
+                .state("Submitted")
+                .data(Map.of(
+                    "name", "Test",
+                    "migrationId", migrationId))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails).getData());
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl500 {
+        private final String migrationId = "DFPL-500";
+        private final long validCaseId = 1643728359576136L;
+        private final long invalidCaseId = 1626258358022000L;
+
+        @Test
+        void shouldPerformMigrationWhenNameMatches() {
+            List<UUID> uuidsToBeRetained = List.of(UUID.randomUUID(), UUID.randomUUID());
             CaseData caseData = CaseData.builder()
                 .id(validCaseId)
                 .state(State.SUBMITTED)
-                .otherCourtAdminDocuments(
+                .documentsSentToParties(
                     wrapElements(
-                        CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE)
-                            .documentTitle("court-document1")
-                            .build(),
-                        CourtAdminDocument.builder()
-                            .document(
-                                DocumentReference.builder()
-                                    .filename("LA Certificate.pdf")
-                                    .build()
-                            )
-                            .documentTitle("court-document1").build())
-                )
-                .build();
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        uuidsToBeRetained.get(0),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRetained.doc")
+                                                    .build()
+                                            ).build()
+                                    ),
+                                    element(
+                                        UUID.fromString("ad5c738e-d7aa-4ccf-b53b-0b1e40a19182"),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRemoved.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build(),
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        uuidsToBeRetained.get(1),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRetained.doc")
+                                                    .build()
+                                            ).build()
+                                    ),
+                                    element(
+                                        UUID.fromString("61f97374-360b-4759-9329-af10fae1317e"),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRemoved.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build()
+                    )
+                ).build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
                 buildCaseDetails(caseData, migrationId)
             );
-            assertThat(response.getData().get("documentViewHMCTS"))
-                .asInstanceOf(InstanceOfAssertFactories.STRING)
-                .doesNotContain("LA Certificate.pdf");
 
             CaseData responseData = extractCaseData(response);
 
-            assertThat(responseData.getOtherCourtAdminDocuments()).hasSize(1)
-                .first()
-                .extracting(doc -> doc.getValue().getDocumentTitle())
-                .isEqualTo("court-document1");
+            List<Element<SentDocuments>> documentsSentToParties = responseData.getDocumentsSentToParties();
+
+            List<UUID> retainedUUIDs = documentsSentToParties.stream()
+                .map(Element::getValue)
+                .flatMap(value -> value.getDocumentsSentToParty().stream())
+                .map(Element::getId)
+                .collect(toList());
+
+            assertThat(retainedUUIDs).isEqualTo(uuidsToBeRetained);
         }
 
         @Test
-        void shouldThrowAssersionError() {
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
             CaseData caseData = CaseData.builder()
                 .id(invalidCaseId)
                 .state(State.SUBMITTED)
-                .otherCourtAdminDocuments(
+                .legalRepresentatives(
                     wrapElements(
-                        CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE)
-                            .documentTitle("court-document1")
+                        LegalRepresentative.builder()
+                            .fullName("First User")
+                            .email("first@gamil.com")
                             .build(),
-                        CourtAdminDocument.builder()
-                            .document(
-                                DocumentReference.builder()
-                                    .filename("LA Certificate.pdf")
-                                    .build()
-                            )
-                            .documentTitle("court-document1").build())
-                )
-                .build();
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-164, case reference = 1626258358022000},"
-                    + " expected case id 1626258358022834");
-        }
-
-        @Test
-        void shouldThrowErrorWhenCertificateNotFound() {
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .state(State.SUBMITTED)
-                .otherCourtAdminDocuments(
-                    wrapElements(
-                        CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE)
-                            .documentTitle("court-document1")
-                            .build(),
-                        CourtAdminDocument.builder()
-                            .document(DOCUMENT_REFERENCE)
-                            .documentTitle("court-document2")
+                        LegalRepresentative.builder()
+                            .fullName("Second User")
+                            .email("second@gamil.com")
                             .build()
                     )
                 )
                 .build();
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-500, case reference = 1626258358022000},"
+                    + " expected case id 1643728359576136");
         }
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl482 {
+        private final String migrationId = "DFPL-482";
+        private final long validCaseId = 1636970654155393L;
+        private final long invalidCaseId = 1643728359576136L;
+
+        @Test
+        void shouldPerformMigrationWhenNameMatches() {
+            List<UUID> uuidsToBeRetained = List.of(UUID.randomUUID(), UUID.randomUUID());
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .documentsSentToParties(
+                    wrapElements(
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        uuidsToBeRetained.get(0),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRetained1.doc")
+                                                    .build()
+                                            ).build()
+                                    ),
+                                    element(
+                                        UUID.fromString("75dcdc34-7f13-4c56-aad6-8dcf7b2261b6"),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRemoved1.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build(),
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        uuidsToBeRetained.get(1),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRetained2.doc")
+                                                    .build()
+                                            ).build()
+                                    ),
+                                    element(
+                                        UUID.fromString("401d9cd0-50ae-469d-b355-d467742d7ef3"),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("ToBeRemoved2.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build()
+                    )
+                ).build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            List<Element<SentDocuments>> documentsSentToParties = responseData.getDocumentsSentToParties();
+
+            List<UUID> retainedUUIDs = documentsSentToParties.stream()
+                .map(Element::getValue)
+                .flatMap(value -> value.getDocumentsSentToParty().stream())
+                .map(Element::getId)
+                .collect(toList());
+
+            assertThat(retainedUUIDs).isEqualTo(uuidsToBeRetained);
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .documentsSentToParties(
+                    wrapElements(
+                        SentDocuments.builder()
+                            .documentsSentToParty(
+                                List.of(
+                                    element(
+                                        UUID.randomUUID(),
+                                        SentDocument.builder()
+                                            .document(
+                                                DocumentReference.builder()
+                                                    .filename("DocSent.doc")
+                                                    .build()
+                                            ).build()
+                                    )
+                                )
+                            ).build()
+                    )
+                ).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-482, case reference = 1643728359576136},"
+                    + " expected case id 1636970654155393");
+        }
+
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl576 {
+        private final String migrationId = "DFPL-576";
+        private final long validCaseId = 1647961407412501L;
+        private final long invalidCaseId = 1643728359576136L;
+
+        private final UUID validDocId = UUID.fromString("2003a762-a9d0-483a-8a40-f4d043e7434c");
+        private final UUID invalidDocId = UUID.randomUUID();
+
+        @Test
+        void shouldPerformMigrationWhenDocIdMatches() {
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .c110A(C110A.builder()
+                    .submittedForm(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getC110A().getSubmittedForm()).isNull();
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .c110A(C110A.builder()
+                    .submittedForm(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-576, case reference = 1643728359576136},"
+                    + " expected case id 1647961407412501");
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .c110A(C110A.builder()
+                    .submittedForm(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", invalidDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-576, case reference = 1647961407412501},"
+                    + " expected c110a document id 2003a762-a9d0-483a-8a40-f4d043e7434c");
+        }
+
+
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl572 {
+        private final String migrationId = "DFPL-572";
+        private final long validCaseId = 1646391317671957L;
+        private final long invalidCaseId = 1643728359576136L;
+
+        private final UUID validDocId = UUID.fromString("0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+        private final UUID invalidDocId = UUID.randomUUID();
+
+        @Test
+        void shouldPerformMigrationWhenDocIdMatches() {
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getUrgentHearingOrder()).isNull();
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", validDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-572, case reference = 1643728359576136},"
+                    + " expected case id 1646391317671957");
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder()
+                        .url(String.format("http://test.com/%s", invalidDocId))
+                        .build())
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-572, case reference = 1646391317671957},"
+                    + " expected urgent hearing order document id 0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+        }
+
+
+    }
+
 
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Fpla3238 {
-
-        private final String migrationId = "FPLA-3238";
-
-        final OrganisationPolicy designatedOrg = organisationPolicy(
-            "ORG1",
-            "Name",
-            LASOLICITOR);
-
-        final ApplicantParty legacyApplicant = ApplicantParty.builder()
-            .organisationName("Applicant org")
-            .email(EmailAddress.builder()
-                .email("applicant@legacy.com")
-                .build())
-            .telephoneNumber(Telephone.builder()
-                .telephoneNumber("0777777777")
-                .build())
-            .mobileNumber(Telephone.builder()
-                .telephoneNumber("0888888888")
-                .build())
-            .address(Address.builder()
-                .addressLine1("Applicant office")
-                .postcode("AP 999")
-                .build())
-            .pbaNumber("PBA7654321")
-            .customerReference("APPLICANT_REF")
-            .clientCode("APPLICANT_CODE")
-            .build();
-
-        final Solicitor legacySolicitor = Solicitor.builder()
-            .name("Applicant solicitor")
-            .mobile("0111111111")
-            .telephone("0222222222")
-            .dx("SOLICITOR_DX")
-            .reference("SOLICITOR_REFERENCE")
-            .email("solicitor@legacy.com")
-            .build();
-
-        final String expectedTaskList = "<h1>Task list</h1>";
-
-        @BeforeEach
-        void init() {
-
-            final List<Task> tasks = List.of(Task.builder()
-                .event(Event.SELECT_COURT)
-                .build());
-
-            final List<EventValidationErrors> tasksErrors = List.of(EventValidationErrors.builder()
-                .errors(List.of("Error1", "Error2"))
-                .event(Event.SELECT_COURT)
-                .build());
-
-            when(taskListService.getTasksForOpenCase(any())).thenReturn(tasks);
-            when(caseSubmissionChecker.validateAsGroups(any())).thenReturn(tasksErrors);
-            when(taskListRenderer.render(tasks, tasksErrors)).thenReturn(expectedTaskList);
-        }
-
-        @Test
-        void shouldMigrateTaskListWhenCaseInOpenState() {
-
-            final CaseData caseData = CaseData.builder()
-                .state(State.OPEN)
-                .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
-                .solicitor(legacySolicitor)
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            Map<String, Object> data = postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)).getData();
-
-            assertThat(data.get("taskList")).isEqualTo(expectedTaskList);
-        }
-
-        @ParameterizedTest
-        @EnumSource(value = State.class, names = {"OPEN"}, mode = EnumSource.Mode.EXCLUDE)
-        void shouldNotMigrateTaskListWhenCaseNotInOpenState(State caseState) {
-
-            final CaseData caseData = CaseData.builder()
-                .state(caseState)
-                .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
-                .solicitor(legacySolicitor)
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            Map<String, Object> data = postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)).getData();
-
-            assertThat(data.get("taskList")).isNull();
-        }
-
-        @Test
-        void shouldMigrateLegacyApplicantAndSolicitor() {
-
-            final CaseData caseData = CaseData.builder()
-                .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
-                .solicitor(legacySolicitor)
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
-                .id(designatedOrg.getOrganisation().getOrganisationID())
-                .name(legacyApplicant.getOrganisationName())
-                .designated("Yes")
-                .address(legacyApplicant.getAddress())
-                .email(legacyApplicant.getEmail().getEmail())
-                .phone(legacyApplicant.getTelephoneNumber().getTelephoneNumber())
-                .pbaNumber(legacyApplicant.getPbaNumber())
-                .customerReference(legacyApplicant.getCustomerReference())
-                .clientCode(legacyApplicant.getClientCode())
-                .colleagues(ElementUtils.wrapElements(
-                    Colleague.builder()
-                        .role(OTHER)
-                        .email(legacyApplicant.getEmail().getEmail())
-                        .title(legacyApplicant.getJobTitle())
-                        .phone("0777777777")
-                        .mainContact("Yes")
-                        .notificationRecipient("Yes")
-                        .build(),
-                    Colleague.builder()
-                        .role(SOLICITOR)
-                        .email(legacySolicitor.getEmail())
-                        .dx(legacySolicitor.getDx())
-                        .reference(legacySolicitor.getReference())
-                        .fullName(legacySolicitor.getName())
-                        .phone(legacySolicitor.getTelephone())
-                        .notificationRecipient("Yes")
-                        .mainContact("No")
-                        .build()))
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getLocalAuthorities())
-                .extracting(Element::getValue)
-                .containsExactly(expectedLocalAuthority);
-        }
-
-        @Test
-        void shouldUseMobileNumberWhenNoTelephoneNumber() {
-
-            final ApplicantParty applicant = legacyApplicant.toBuilder()
-                .telephoneNumber(Telephone.builder()
-                    .telephoneNumber(null)
-                    .build())
-                .build();
-
-            final Solicitor solicitor = legacySolicitor.toBuilder()
-                .telephone("")
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .applicants(wrapElements(Applicant.builder().party(applicant).build()))
-                .solicitor(solicitor)
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
-                .id(designatedOrg.getOrganisation().getOrganisationID())
-                .name(applicant.getOrganisationName())
-                .designated("Yes")
-                .address(applicant.getAddress())
-                .email(applicant.getEmail().getEmail())
-                .phone(applicant.getMobileNumber().getTelephoneNumber())
-                .pbaNumber(applicant.getPbaNumber())
-                .customerReference(applicant.getCustomerReference())
-                .clientCode(applicant.getClientCode())
-                .colleagues(ElementUtils.wrapElements(
-                    Colleague.builder()
-                        .role(OTHER)
-                        .email(applicant.getEmail().getEmail())
-                        .title(applicant.getJobTitle())
-                        .phone(applicant.getMobileNumber().getTelephoneNumber())
-                        .mainContact("Yes")
-                        .notificationRecipient("Yes")
-                        .build(),
-                    Colleague.builder()
-                        .role(SOLICITOR)
-                        .email(solicitor.getEmail())
-                        .dx(solicitor.getDx())
-                        .reference(solicitor.getReference())
-                        .fullName(solicitor.getName())
-                        .phone(solicitor.getMobile())
-                        .notificationRecipient("Yes")
-                        .mainContact("No")
-                        .build()))
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getLocalAuthorities())
-                .extracting(Element::getValue)
-                .containsExactly(expectedLocalAuthority);
-        }
-
-        @Test
-        void shouldMarkSolicitorAsMainContactWhenNoDataForOtherColleague() {
-
-            final ApplicantParty applicant = legacyApplicant.toBuilder()
-                .email(null)
-                .jobTitle(null)
-                .mobileNumber(null)
-                .telephoneNumber(null)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .applicants(wrapElements(Applicant.builder().party(applicant).build()))
-                .solicitor(legacySolicitor)
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
-                .id(designatedOrg.getOrganisation().getOrganisationID())
-                .name(applicant.getOrganisationName())
-                .designated("Yes")
-                .address(applicant.getAddress())
-                .pbaNumber(applicant.getPbaNumber())
-                .customerReference(applicant.getCustomerReference())
-                .clientCode(applicant.getClientCode())
-                .colleagues(ElementUtils.wrapElements(
-                    Colleague.builder()
-                        .role(SOLICITOR)
-                        .email(legacySolicitor.getEmail())
-                        .dx(legacySolicitor.getDx())
-                        .reference(legacySolicitor.getReference())
-                        .fullName(legacySolicitor.getName())
-                        .phone(legacySolicitor.getTelephone())
-                        .notificationRecipient("Yes")
-                        .mainContact("Yes")
-                        .build()))
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getLocalAuthorities())
-                .extracting(Element::getValue)
-                .containsExactly(expectedLocalAuthority);
-        }
-
-        @Test
-        void shouldMigrateLegacyApplicantWithoutSolicitor() {
-
-            final CaseData caseData = CaseData.builder()
-                .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
-                .id(designatedOrg.getOrganisation().getOrganisationID())
-                .name(legacyApplicant.getOrganisationName())
-                .designated("Yes")
-                .address(legacyApplicant.getAddress())
-                .email(legacyApplicant.getEmail().getEmail())
-                .phone(legacyApplicant.getTelephoneNumber().getTelephoneNumber())
-                .pbaNumber(legacyApplicant.getPbaNumber())
-                .customerReference(legacyApplicant.getCustomerReference())
-                .clientCode(legacyApplicant.getClientCode())
-                .colleagues(ElementUtils.wrapElements(
-                    Colleague.builder()
-                        .role(OTHER)
-                        .email(legacyApplicant.getEmail().getEmail())
-                        .title(legacyApplicant.getJobTitle())
-                        .phone("0777777777")
-                        .mainContact("Yes")
-                        .notificationRecipient("Yes")
-                        .build()))
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getLocalAuthorities())
-                .extracting(Element::getValue)
-                .containsExactly(expectedLocalAuthority);
-        }
-
-        @Test
-        void shouldMigrateLegacyApplicantWithoutColleagues() {
-
-            final ApplicantParty applicant = legacyApplicant.toBuilder()
-                .email(null)
-                .jobTitle(null)
-                .mobileNumber(null)
-                .telephoneNumber(null)
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .applicants(wrapElements(Applicant.builder().party(applicant).build()))
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            final LocalAuthority expectedLocalAuthority = LocalAuthority.builder()
-                .id(designatedOrg.getOrganisation().getOrganisationID())
-                .name(applicant.getOrganisationName())
-                .designated("Yes")
-                .address(applicant.getAddress())
-                .pbaNumber(applicant.getPbaNumber())
-                .customerReference(applicant.getCustomerReference())
-                .clientCode(applicant.getClientCode())
-                .colleagues(emptyList())
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getLocalAuthorities())
-                .extracting(Element::getValue)
-                .containsExactly(expectedLocalAuthority);
-        }
-
-        @Test
-        void shouldNotMigrateWhenLocalAuthorityExists() {
-
-            final LocalAuthority initialLocalAuthority = LocalAuthority.builder()
-                .id(designatedOrg.getOrganisation().getOrganisationID())
-                .name("Initial")
-                .build();
-
-            final CaseData caseData = CaseData.builder()
-                .applicants(wrapElements(Applicant.builder().party(legacyApplicant).build()))
-                .solicitor(legacySolicitor)
-                .localAuthorities(wrapElements(initialLocalAuthority))
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getLocalAuthorities())
-                .extracting(Element::getValue)
-                .containsExactly(initialLocalAuthority);
-
-        }
-
-        @Test
-        void shouldNotMigrateWhenNoLegacyApplicant() {
-
-            final CaseData caseData = CaseData.builder()
-                .localAuthorityPolicy(designatedOrg)
-                .build();
-
-            CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)));
-
-            assertThat(responseData.getLocalAuthorities()).isEmpty();
-        }
-
     }
 }

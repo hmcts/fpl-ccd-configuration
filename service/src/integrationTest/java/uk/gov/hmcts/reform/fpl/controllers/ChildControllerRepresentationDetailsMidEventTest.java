@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -53,26 +51,6 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
 
     ChildControllerRepresentationDetailsMidEventTest() {
         super("enter-children");
-    }
-
-    @ParameterizedTest(name = "with role {0}")
-    @ValueSource(strings = {SOLICITOR_ROLE, ADMIN_ROLE})
-    void shouldReturnErrorsIfRepresentativeIsSetFromYesToNo(String role) {
-        CaseData caseData = CaseData.builder()
-            .state(SUBMITTED)
-            .childrenEventData(ChildrenEventData.builder().childrenHaveRepresentation("No").build())
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .state(SUBMITTED)
-            .childrenEventData(ChildrenEventData.builder().childrenHaveRepresentation("Yes").build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-            toCallBackRequest(caseData, caseDataBefore), "representation-details", role
-        );
-
-        assertThat(response.getErrors()).isEqualTo(List.of("You cannot remove the main representative from the case"));
     }
 
     @Test

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +38,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @OverrideAutoConfiguration(enabled = true)
 class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTest {
 
+    private static final String RECIPIENT_LOCAL_AUTHORITY = "Local authority";
+    private static final String TEST_DESCRIPTION = "Test description";
     private final Document sealedDocument = testDocument();
     private final DocumentReference sealedApplication = buildFromDocument(sealedDocument);
     private final DocumentReference application = testDocumentReference("application.doc");
@@ -94,7 +97,8 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
                 .placements(wrapElements(existingPlacement))
                 .placementNoticeForLocalAuthorityRequired(YES)
                 .placementNoticeForLocalAuthority(localAuthorityNotice)
-                .placementNoticeForLocalAuthorityDescription("Test description")
+                .placementNoticeForLocalAuthorityDescription(TEST_DESCRIPTION)
+                .placementRespondentsToNotify(Collections.emptyList())
                 .build())
             .build();
 
@@ -106,11 +110,12 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .application(sealedApplication)
             .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                 .type(LOCAL_AUTHORITY)
-                .recipientName("Local authority")
+                .recipientName(RECIPIENT_LOCAL_AUTHORITY)
                 .notice(localAuthorityNotice)
-                .noticeDescription("Test description")
+                .noticeDescription(TEST_DESCRIPTION)
                 .build()))
             .placementUploadDateTime(now())
+            .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
         final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
@@ -136,6 +141,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .childName("Alex Brown")
             .application(testDocumentReference())
             .placementUploadDateTime(LocalDateTime.of(2020, 10, 10, 12, 0))
+            .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
         final Placement existingApplicationForChild2 = Placement.builder()
@@ -146,6 +152,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
                 .type(ANNEX_B)
                 .document(testDocumentReference())
                 .build()))
+            .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
         final Placement newPlacementForChild1 = existingApplicationForChild1.toBuilder()
@@ -160,7 +167,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
                 .placements(wrapElements(existingApplicationForChild1, existingApplicationForChild2))
                 .placementNoticeForLocalAuthorityRequired(YES)
                 .placementNoticeForLocalAuthority(localAuthorityNotice)
-                .placementNoticeForLocalAuthorityDescription("Test description")
+                .placementNoticeForLocalAuthorityDescription(TEST_DESCRIPTION)
                 .build())
             .build();
 
@@ -171,9 +178,9 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
         final Placement expectedNewPlacementForChild1 = newPlacementForChild1.toBuilder()
             .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                 .type(LOCAL_AUTHORITY)
-                .recipientName("Local authority")
+                .recipientName(RECIPIENT_LOCAL_AUTHORITY)
                 .notice(localAuthorityNotice)
-                .noticeDescription("Test description")
+                .noticeDescription(TEST_DESCRIPTION)
                 .build()))
             .build();
 

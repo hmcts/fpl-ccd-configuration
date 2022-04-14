@@ -57,6 +57,7 @@ java:
         - cafcass-notification-recipient-large-file
         - cafcass-notification-recipient-new-application
         - cafcass-notification-recipient-new-document
+        - cafcass-notification-recipient-additional-document
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox
@@ -209,11 +210,16 @@ ccd:
 
   elasticsearch:
     clusterName: "es"
-    imageTag: "6.4.2"
+    imageTag: "7.11.1"
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
     esJavaOpts: "-Xmx512m -Xms512m"
+    extraEnvs:
+      - name: discovery.type
+        value: single-node
+      - name: cluster.initial_master_nodes
+        value: ""
     persistence:
       enabled: false
     ingress:

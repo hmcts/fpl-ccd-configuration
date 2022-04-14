@@ -24,8 +24,11 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuesti
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.io.FilenameUtils.getExtension;
 
 @Api
 @RestController
@@ -41,6 +44,7 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
     private final AmendableOrderListBuilder amendableOrderListBuilder;
     private final ManageOrdersEventBuilder eventBuilder;
+    private static final String PDF = "pdf";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -91,6 +95,18 @@ public class ManageOrdersController extends CallbackController {
         OrderSection currentSection = OrderSection.from(section);
 
         List<String> errors = orderValidator.validate(order, currentSection, caseData);
+
+        @SuppressWarnings("unchecked") Map<String, Object> manageOrdersAmendedOrder =
+            (Map<String, Object>) data.get("manageOrdersAmendedOrder");
+        if (manageOrdersAmendedOrder != null) {
+            String uploadedFilename = (String) manageOrdersAmendedOrder.get("document_filename");
+            if (!PDF.equalsIgnoreCase(getExtension(uploadedFilename))) {
+                String userMessage = MessageFormat.format(
+                    "Can only amend documents that are {0}, requested document was of type: {1}", PDF,
+                    getExtension(uploadedFilename));
+                errors.add(userMessage);
+            }
+        }
 
         order.nextSection(currentSection).ifPresent(
             nextSection -> {
