@@ -278,7 +278,7 @@ public class ApproveDraftOrdersService {
     }
 
     @SuppressWarnings("unchecked")
-    public void updateRejectedHearingOrders(Map<String, Object> data){
+    public void updateRejectedHearingOrders(Map<String, Object> data) {
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
             List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
 
@@ -289,7 +289,7 @@ public class ApproveDraftOrdersService {
             .filter(bundle -> bundle.getValue().getRequestedChanges() != null)
             .collect(toList()));
 
-        if(!rejectedOrders.isEmpty()) {
+        if (!rejectedOrders.isEmpty()) {
             data.put(REFUSED_ORDERS, rejectedOrders);
         }
     }
