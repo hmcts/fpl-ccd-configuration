@@ -478,8 +478,8 @@ class SealedOrderHistoryServiceTest {
                     "orderCollection", List.of(
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
                             .orderType(Order.OTHER_ORDER.name())
-                            .document(UPLOADED_DOCUMENT)
-                            .unsealedDocumentCopy(UPLOADED_DOCUMENT)
+                            .document(null)
+                            .unsealedDocumentCopy(null)
                             .build())
                     )
                 ));
