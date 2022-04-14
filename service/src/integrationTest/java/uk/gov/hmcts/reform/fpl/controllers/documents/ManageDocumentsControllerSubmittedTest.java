@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsController.class)
@@ -50,8 +49,8 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
 
     @Test
     void shouldNotPublishEventWhenUploadAnyDocumentNotificationFeatureIsDisabled() {
-        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR,
             false));
         verifyNoInteractions(notificationClient);
@@ -100,6 +99,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
 
     @Test
     void shouldNotSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedBySolicitor() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
         postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(true));
@@ -160,6 +160,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
 
     @Test
     void shouldNotSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedByHmctsAdmin() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);
         postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(true));
@@ -169,10 +170,11 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     @Test
     void shouldSendEmailsWhenConfidentialEvidenceBundleFromHearingsUploadedByHmctsAdmin()
         throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);
         postSubmittedEvent(buildCallbackRequestForAddingEvidenceBundleFromHearings(false));
-        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID);
     }
 }
