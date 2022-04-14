@@ -72,7 +72,7 @@ public class UploadDraftOrdersController extends CallbackController {
             caseDetailsMap.put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
             caseDetailsMap.put("othersSelector", newSelector(caseData.getAllOthers().size()));
 
-            caseDetailsMap.put("reviewCMOShowOthers", "Yes");
+            caseDetailsMap.put("uploadCMOShowOthers", "Yes");
         }
 
         return respond(caseDetailsMap);
