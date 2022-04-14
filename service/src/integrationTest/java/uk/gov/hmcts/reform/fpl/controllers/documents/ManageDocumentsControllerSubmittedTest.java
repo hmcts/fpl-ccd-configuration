@@ -50,7 +50,8 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     void shouldNotPublishEventWhenUploadAnyDocumentNotificationFeatureIsDisabled() {
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
-        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR, false));
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR,
+            false));
         verifyNoInteractions(notificationClient);
     }
 
@@ -59,7 +60,8 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
-        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR, true));
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR,
+            true));
         verifyNoInteractions(notificationClient);
     }
 
@@ -68,7 +70,8 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
-        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR, false));
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR,
+            false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID);
     }
@@ -83,7 +86,8 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedBySolicitor() throws NotificationClientException {
+    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedBySolicitor()
+        throws NotificationClientException {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
@@ -93,26 +97,28 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldNotSendNotificationWhenConfidentialAnyOtherDocumentUploadedByHMCTSAdmin() {
+    void shouldNotSendNotificationWhenConfidentialAnyOtherDocumentUploadedByHmctsAdmin() {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);
-        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_ADMIN, true));
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_ADMIN,
+            true));
         verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedByHMCTSAdmin() throws NotificationClientException {
+    void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedByHmctsAdmin() throws NotificationClientException {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);
-        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_ADMIN, false));
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_ADMIN,
+            false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID);
     }
 
     @Test
-    void shouldNotSendNotificationWhenConfidentialRespondentStatementUploadedByHMCTSAdmin() {
+    void shouldNotSendNotificationWhenConfidentialRespondentStatementUploadedByHmctsAdmin() {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);
@@ -121,7 +127,8 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     }
 
     @Test
-    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByHMCTSAdmin() throws NotificationClientException {
+    void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByHmctsSAdmin()
+        throws NotificationClientException {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);

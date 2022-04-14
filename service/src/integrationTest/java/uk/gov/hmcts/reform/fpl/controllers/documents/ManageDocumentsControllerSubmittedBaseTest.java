@@ -252,8 +252,8 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
         );
     }
 
-    protected void verifySendingNotificationToAllParties(NotificationClient notificationClient, String templateId, long caseId)
-        throws NotificationClientException {
+    protected void verifySendingNotificationToAllParties(NotificationClient notificationClient, String templateId,
+                                                         long caseId) throws NotificationClientException {
         verify(notificationClient).sendEmail(
             eq(templateId),
             eq(REP_1_EMAIL),

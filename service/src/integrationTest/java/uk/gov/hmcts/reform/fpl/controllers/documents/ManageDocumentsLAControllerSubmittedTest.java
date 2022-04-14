@@ -89,8 +89,8 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME, false));
-        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE
-            , TEST_CASE_ID);
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
     }
 
     @Test
@@ -140,7 +140,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldNotSendEmailsWhenConfidentialRespondentStatementUploadedByDesignatedLA() {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
-        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement( true));
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
         verifyNoInteractions(notificationClient);
     }
 
@@ -149,8 +149,8 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
-        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement( false));
-        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE
-            , TEST_CASE_ID);
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
+        verifySendingNotificationToAllParties(notificationClient, FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
     }
 }
