@@ -199,7 +199,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "populate-drafts-info");
 
         assertThat(String.valueOf(callbackResponse.getData().get("hasOthers"))).isEqualTo("Yes");
-        assertThat(String.valueOf(callbackResponse.getData().get("reviewCMOShowOthers"))).isEqualTo("Yes");
+        assertThat(String.valueOf(callbackResponse.getData().get("uploadCMOShowOthers"))).isEqualTo("Yes");
         assertThat(String.valueOf(callbackResponse.getData().get("others_label")))
             .contains("Other 1: test1", "Other 2: test2");
         assertThat(extractCaseData(callbackResponse).getOthersSelector()).isEqualTo(Selector.newSelector(2));
