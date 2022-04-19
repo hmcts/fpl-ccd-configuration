@@ -153,7 +153,7 @@ public class ManageOrdersController extends CallbackController {
         }
         coreCaseDataService.triggerEvent(caseData.getId(),
             "internal-change-manage-order",
-            data);
+            updates);
 
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         publishEvent(eventBuilder.build(caseData, caseDataBefore));

@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
 import uk.gov.hmcts.reform.fpl.service.sdo.UrgentGatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -218,26 +219,36 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
 
+        Map<String, Object> updates = new HashMap<>();
         switch (sdoRouter) {
             case URGENT:
-                data.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
+                updates.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
                 break;
             case UPLOAD:
-                data.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+                updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
                 break;
         }
-        coreCaseDataService.triggerEvent(caseData.getId(),
+
+        final CaseData caseDataAfterSealing;
+        if (updates.isEmpty()) {
+            caseDataAfterSealing = caseData;
+        } else {
+            data.putAll(updates);
+            caseDataAfterSealing = getCaseData(caseDetails);
+        }
+
+        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
             "internal-change-add-gatekeeping",
-            data);
+            updates);
 
         CaseData caseDataBefore = getCaseDataBefore(request);
 
-        notificationDecider.buildEventToPublish(caseData, caseDataBefore.getState())
+        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
                     JURISDICTION,
                     CASE_TYPE,
-                    caseData.getId(),
+                    caseDataAfterSealing.getId(),
                     "internal-change-SEND_DOCUMENT",
                     Map.of("documentToBeSent", eventToPublish.getOrder()));
 
