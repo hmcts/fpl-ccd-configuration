@@ -75,4 +75,16 @@
     <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
     <cve>CVE-2022-21724</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: all?
+   ]]></notes>
+    <cve>CVE-2022-22950</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: all?
+   ]]></notes>
+    <cve>CVE-2022-22965</cve>
+  </suppress>
 </suppressions>
