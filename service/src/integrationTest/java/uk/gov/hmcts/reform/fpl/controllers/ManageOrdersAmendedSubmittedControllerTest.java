@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -115,7 +116,10 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
         verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
             updateData.capture());
 
-        CaseData responseData = extractCaseData(updateData.getValue());
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         GeneratedOrder updatedOrder = ORDER.toBuilder().amendedDate(FIXED_DATE).document(AMENDED_ORDER).build();
         assertOrders(responseData, updatedOrder, CMO, SDO, UHO);
     }
@@ -130,7 +134,10 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
         verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
             updateData.capture());
 
-        CaseData responseData = extractCaseData(updateData.getValue());
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         HearingOrder updatedCMO = CMO.toBuilder().amendedDate(FIXED_DATE).order(AMENDED_ORDER).build();
         assertOrders(responseData, ORDER, updatedCMO, SDO, UHO);
     }
@@ -145,7 +152,10 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
         verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
             updateData.capture());
 
-        CaseData responseData = extractCaseData(updateData.getValue());
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         StandardDirectionOrder updatedSDO = SDO.toBuilder().amendedDate(FIXED_DATE).orderDoc(AMENDED_ORDER).build();
         assertOrders(responseData, ORDER, CMO, updatedSDO, UHO);
     }
@@ -160,7 +170,10 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
         verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
             updateData.capture());
 
-        CaseData responseData = extractCaseData(updateData.getValue());
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         UrgentHearingOrder updatedUHO = UHO.toBuilder().amendedDate(FIXED_DATE).order(AMENDED_ORDER).build();
         assertOrders(responseData, ORDER, CMO, SDO, updatedUHO);
     }

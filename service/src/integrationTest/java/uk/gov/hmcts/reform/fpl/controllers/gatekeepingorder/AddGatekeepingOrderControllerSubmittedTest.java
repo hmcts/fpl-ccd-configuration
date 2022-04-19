@@ -134,6 +134,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
         when(sealingService.sealDocument(eq(SDO_DOCUMENT), any())).thenReturn(SEALED_DOCUMENT);
+        when(sealingService.sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any())).thenReturn(SEALED_DOCUMENT);
     }
 
     @Test
@@ -262,7 +263,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             CASE_TYPE,
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", URGENT_HEARING_ORDER_DOCUMENT)
+            Map.of("documentToBeSent", SEALED_DOCUMENT)
         );
     }
 
