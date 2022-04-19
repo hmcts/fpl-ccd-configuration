@@ -311,7 +311,7 @@ public class DocumentUploadedEventHandler {
 
     private List<FurtherDocument> getNewUploadedFurtherDocuments(
         CaseData caseData, CaseData caseDataBefore,
-        BiPredicate<List<FurtherDocument>, FurtherDocument> biPredicate) {
+        BiPredicate<List<FurtherDocument>, FurtherDocument> filter) {
 
         var newBundle = getFurtherDocumentsForMainApplication(caseData);
         var oldBundle = getFurtherDocumentsForMainApplication(caseDataBefore);
@@ -319,7 +319,7 @@ public class DocumentUploadedEventHandler {
         List<FurtherDocument> newDocs = new ArrayList<>();
 
         newBundle.forEach(newDoc -> {
-            if (biPredicate.test(oldBundle, newDoc)) {
+            if (filter.test(oldBundle, newDoc)) {
                 newDocs.add(newDoc);
             }
         });
