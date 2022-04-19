@@ -154,41 +154,4 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors().contains("We encountered a problem storing the data, "
             + "please re-enter all information and try again. Apologies for the inconvenience."));
     }
-
-    @Test
-    void shouldThrowErrorIfPreviousDocumentsIsNull() {
-        when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
-        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
-
-        CaseDetails caseDetailsBefore = CaseDetails.builder()
-            .data(emptyMap())
-            .build();
-
-        CaseDetails caseDetails = CaseDetails.builder().data(
-            Map.of(
-                "applicationDocuments", List.of(
-                    Map.of(
-                        "id", UUID_1,
-                        "value", Map.of(
-                            "document", Map.of(
-                                "document_url", ANOTHER_FILE_URL,
-                                "document_filename", FILE_NAME,
-                                "document_binary_url", FILE_BINARY_URL
-                            ),
-                            "documentType", "SOCIAL_WORK_STATEMENT"
-                        )
-                    )
-                )
-            )).build();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetailsBefore)
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-
-        assertThat(callbackResponse.getErrors().contains("We encountered a problem storing the data, "
-            + "please re-enter all information and try again. Apologies for the inconvenience."));
-    }
 }
