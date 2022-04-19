@@ -40,7 +40,7 @@ public class UploadDocumentsController extends CallbackController {
         List<Element<ApplicationDocument>> currentDocuments = caseData.getApplicationDocuments();
         List<Element<ApplicationDocument>> previousDocuments = caseDataBefore.getApplicationDocuments();
 
-        if (currentDocuments == null || previousDocuments == null) {
+        if (currentDocuments == null) {
             errors.add("We encountered a problem storing the data, please try again and re-enter all information. "
                 + "Apologies for the inconvenience.");
         }
