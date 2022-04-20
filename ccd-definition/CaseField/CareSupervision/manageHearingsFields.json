@@ -241,6 +241,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasPreviousHearingVenue",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Used for show/hide logic surrounding venue+previousVenue dedicated for unexpected missing previous hearings venue in previous hearings."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "proceedingType",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ProceedingType",
