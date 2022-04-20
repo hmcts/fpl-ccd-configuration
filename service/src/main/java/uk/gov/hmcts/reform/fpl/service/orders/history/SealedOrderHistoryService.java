@@ -125,7 +125,7 @@ public class SealedOrderHistoryService {
         Map<String, Object> data = new HashMap<>();
         // get the latest order just created in about-to-submit callback;
         Element<GeneratedOrder> orderElm = lastGeneratedOrderElement(caseData);
-        GeneratedOrder order = lastGeneratedOrder(caseData);
+        GeneratedOrder order = orderElm.getValue();
 
         DocumentReference sealedPDForder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
