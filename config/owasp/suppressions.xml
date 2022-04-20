@@ -87,4 +87,10 @@
    ]]></notes>
     <cve>CVE-2022-22965</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   spring-core-5.3.12.jar (pkg:maven/org.springframework/spring-core@5.3.12, cpe:2.3:a:pivotal_software:spring_framework:5.3.12:*:*:*:*:*:*:*, cpe:2.3:a:springsource:spring_framework:5.3.12:*:*:*:*:*:*:*, cpe:2.3:a:vmware:spring_framework:5.3.12:*:*:*:*:*:*:*, cpe:2.3:a:vmware:springsource_spring_framework:5.3.12:*:*:*:*:*:*:*)
+   ]]></notes>
+    <cve>CVE-2016-1000027</cve>
+  </suppress>
 </suppressions>
