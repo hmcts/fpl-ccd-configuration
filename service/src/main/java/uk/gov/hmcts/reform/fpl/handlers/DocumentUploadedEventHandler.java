@@ -362,34 +362,32 @@ public class DocumentUploadedEventHandler {
     private List<FurtherDocument> getFurtherDocumentsForMainApplication(CaseData caseData) {
         List<FurtherDocument> ret = new ArrayList<>();
 
-        Function<Element<? extends FurtherDocument>, FurtherDocument> mapper = (ad) -> (FurtherDocument) ad.getValue();
-
         // Further application documents - for example the SWET or care plan
         List<Element<ApplicationDocument>> applicationDocuments = defaultIfNull(
             caseData.getApplicationDocuments(), List.of());
-        ret.addAll(applicationDocuments.stream().map(mapper).collect(toList()));
+        ret.addAll(applicationDocuments.stream().map(Element::getValue).collect(toList()));
 
         // Respondent Statement
         List<Element<SupportingEvidenceBundle>> respondentStatements = defaultIfNull(
             getEvidenceBundleFromRespondentStatements(caseData), List.of());
-        ret.addAll(respondentStatements.stream().map(mapper).collect(toList()));
+        ret.addAll(respondentStatements.stream().map(Element::getValue).collect(toList()));
 
         // Any other documents
         List<Element<SupportingEvidenceBundle>> anyOtherDocsLA = defaultIfNull(
             caseData.getFurtherEvidenceDocumentsLA(), List.of());
-        ret.addAll(anyOtherDocsLA.stream().map(mapper).collect(toList()));
+        ret.addAll(anyOtherDocsLA.stream().map(Element::getValue).collect(toList()));
 
         List<Element<SupportingEvidenceBundle>> anyOtherDocsSol = defaultIfNull(
             caseData.getFurtherEvidenceDocumentsSolicitor(), List.of());
-        ret.addAll(anyOtherDocsSol.stream().map(mapper).collect(toList()));
+        ret.addAll(anyOtherDocsSol.stream().map(Element::getValue).collect(toList()));
 
         List<Element<SupportingEvidenceBundle>> anyOtherDocs = defaultIfNull(
             caseData.getFurtherEvidenceDocuments(), List.of());
-        ret.addAll(anyOtherDocs.stream().map(mapper).collect(toList()));
+        ret.addAll(anyOtherDocs.stream().map(Element::getValue).collect(toList()));
 
         List<Element<SupportingEvidenceBundle>> anyOtherDocsLinkedHearings = defaultIfNull(
             getEvidenceBundleFromHearings(caseData), List.of());
-        ret.addAll(anyOtherDocsLinkedHearings.stream().map(mapper).collect(toList()));
+        ret.addAll(anyOtherDocsLinkedHearings.stream().map(Element::getValue).collect(toList()));
 
         return ret;
     }
