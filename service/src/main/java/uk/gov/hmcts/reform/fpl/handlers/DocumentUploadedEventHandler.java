@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,16 +120,9 @@ public class DocumentUploadedEventHandler {
     @EventListener
     public void sendCourtBundlesUploadedNotification(final DocumentUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-
         final CaseData caseDataBefore = event.getCaseDataBefore();
-        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
 
-        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
-            .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
-            .collect(groupingBy(CourtBundle::getHearing,
-                mapping(CourtBundle::getDocument, toSet())));
-
+        Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
         final Set<String> recipients = new HashSet<>();
 
         if (!newCourtBundles.isEmpty()) {
@@ -156,14 +148,7 @@ public class DocumentUploadedEventHandler {
 
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
-            List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-            List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
-
-            Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
-                    .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
-                    .collect(groupingBy(CourtBundle::getHearing,
-                            mapping(CourtBundle::getDocument, toSet())));
-
+            Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
             newCourtBundles
                     .forEach((key, value) ->
                             cafcassNotificationService.sendEmail(
@@ -290,6 +275,14 @@ public class DocumentUploadedEventHandler {
                 );
     }
 
+    private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
+        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
+        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+
+        return courtBundles.stream().filter(newDoc -> !oldCourtBundleList.contains(newDoc))
+            .collect(groupingBy(CourtBundle::getHearing,
+                mapping(CourtBundle::getDocument, toSet())));
+    }
 
     private List<SupportingEvidenceBundle> getDocuments(
         CaseData caseData, CaseData caseDataBefore,
