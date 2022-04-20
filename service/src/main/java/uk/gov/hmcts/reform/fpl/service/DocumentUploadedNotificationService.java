@@ -71,9 +71,8 @@ public class DocumentUploadedNotificationService {
 
     public void sendNotificationForCourtBundleUploaded(CaseData caseData, Set<String> recipients,
                                                        String hearingDetails) {
-        String notificationTemplate = COURT_BUNDLE_UPLOADED_NOTIFICATION;
         if (!recipients.isEmpty()) {
-            notificationService.sendEmail(notificationTemplate,
+            notificationService.sendEmail(COURT_BUNDLE_UPLOADED_NOTIFICATION,
                 recipients,
                 courtBundleUploadedEmailContentProvider.buildParameters(caseData, hearingDetails),
                 caseData.getId().toString());
