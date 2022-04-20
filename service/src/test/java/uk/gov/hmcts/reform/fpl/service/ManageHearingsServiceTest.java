@@ -1910,6 +1910,7 @@ class ManageHearingsServiceTest {
             "noticeOfHearingNotes",
             "previousHearingVenue",
             "firstHearingFlag",
+            "hasPreviousHearingVenue",
             "adjournmentReason",
             "vacatedReason",
             "pastHearingDateList",

@@ -385,6 +385,7 @@ public class ManageHearingsService {
             "noticeOfHearingNotes",
             PREVIOUS_HEARING_VENUE_KEY,
             "firstHearingFlag",
+            "hasPreviousHearingVenue",
             "adjournmentReason",
             "vacatedReason",
             PAST_HEARING_DATE_LIST,
