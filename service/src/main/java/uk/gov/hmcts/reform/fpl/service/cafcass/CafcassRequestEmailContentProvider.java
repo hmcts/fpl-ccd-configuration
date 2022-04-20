@@ -54,7 +54,9 @@ public enum CafcassRequestEmailContentProvider {
 
     LARGE_ATTACHEMENTS((caseData, cafcassData) -> String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
-            "new large document added"),
+            String.join(" - ",
+                    "new large document added",
+                    cafcassData.getNotificationType())),
         CafcassRequestEmailContentProvider::getLargeApplicationMessage,
         CafcassEmailConfiguration::getRecipientForLargeAttachements);
 

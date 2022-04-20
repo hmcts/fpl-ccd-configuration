@@ -409,7 +409,7 @@ class CafcassNotificationServiceTest {
 
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added");
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added - ADDITIONAL_DOCUMENT");
         assertThat(data.getMessage()).isEqualTo(
                 String.join("", "Large document(s) for this case was uploaded to the ",
                         "Public Law Portal entitled fileToSend.pdf. As this could ",
@@ -460,7 +460,7 @@ class CafcassNotificationServiceTest {
                 of(getDocumentReference(), smallDoc),
                 ADDITIONAL_DOCUMENT,
                 NewDocumentData.builder()
-                        .documentTypes("• Additional statement")
+                        .documentTypes("• Additional statement\n • Large statement")
                         .emailSubjectInfo("additional documents")
                         .build()
         );
@@ -473,9 +473,6 @@ class CafcassNotificationServiceTest {
         List<EmailData> emailDataList = emailDataArgumentCaptor.getAllValues();
         System.out.println(emailDataList);
 
-        String attachDocMessage =   String.join(" ",
-                "Types of documents attached:\n\n"
-                        + "• Additional statement");
 
         String largeDocMessage = String.join("", "Large document(s) for this case was uploaded to the ",
                 "Public Law Portal entitled fileToSend.pdf. As this could ",
@@ -489,9 +486,9 @@ class CafcassNotificationServiceTest {
                 .containsExactlyInAnyOrder(
                         tuple("additionalEmail",
                                 "Court Ref. FM1234.- additional documents",
-                                attachDocMessage),
+                                "Document attached is : small.pdf"),
                         tuple(RECIPIENT_EMAIL,
-                                "Court Ref. FM1234.- new large document added",
+                                "Court Ref. FM1234.- new large document added - ADDITIONAL_DOCUMENT",
                                 largeDocMessage));
     }
 }
