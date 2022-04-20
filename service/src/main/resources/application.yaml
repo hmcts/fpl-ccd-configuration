@@ -13,8 +13,6 @@ management:
       enabled: true
 
 spring:
-  main:
-    allow-bean-definition-overriding: false
   application:
     name: fpl-service
   autoconfigure:
