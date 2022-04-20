@@ -148,7 +148,7 @@ public class CafcassNotificationService {
     private LargeFilesNotificationData getLargFileNotificationData(CaseData caseData,
                                                                    DocumentReference documentReference,
                                                                    CaseUrlService caseUrlService,
-                                                                   final String notificationType) {
+                                                                   String notificationType) {
         return LargeFilesNotificationData.builder()
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .documentName(documentReference.getFilename())
