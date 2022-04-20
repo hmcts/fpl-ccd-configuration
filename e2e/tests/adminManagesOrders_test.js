@@ -378,7 +378,6 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
   await I.goToNextPage();
   manageOrdersEventPage.selectOrderByConsent();
   await manageOrdersEventPage.selectGuardian([0]);
-  await manageOrdersEventPage.selectRespondentsRefused([0]);
   await manageOrdersEventPage.enterFurtherDirections('Further special guardianship details.');
   await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();

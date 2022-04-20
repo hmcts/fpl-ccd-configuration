@@ -26,7 +26,7 @@ public class RespondentsRefusedBlockPrePopulator implements QuestionBlockOrderPr
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
         final Selector respondentsRefusedSelector = newSelector(
-            caseData.getAllRespondents().size() + caseData.getAllOthers().size());
+            caseData.getAllRespondents().size());
         return Map.of(
             "respondentsRefusedSelector", respondentsRefusedSelector,
             "respondentsRefused_label",
