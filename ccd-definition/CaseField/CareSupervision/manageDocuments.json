@@ -134,7 +134,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsHearingDocumentNoHearingsLabel",
     "FieldType": "Label",
-    "Label": "There are no hearings to associate a bundle with",
+    "Label": "There are no hearings to associate a hearing document with",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

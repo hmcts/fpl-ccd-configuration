@@ -1,3 +1,4 @@
+
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -175,6 +177,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
                     .build())
                 .build())
             .manageDocumentsCourtBundle(courtBundle)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 

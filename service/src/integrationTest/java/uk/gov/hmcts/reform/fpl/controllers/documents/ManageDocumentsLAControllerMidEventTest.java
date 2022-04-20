@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -145,6 +146,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .hearingDetails(hearingBookings)
             .courtBundleList(courtBundleList)
             .hearingDocumentsHearingList(hearingList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
@@ -349,13 +351,15 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
     @Test
     void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
         CaseData caseData = CaseData.builder()
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
 
-        assertThat(callbackResponse.getErrors()).containsExactly("There are no hearings to associate a bundle with");
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "There are no hearings to associate a hearing document with");
     }
 
     @Test
