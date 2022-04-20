@@ -44,7 +44,11 @@ abstract class ManageHearingsControllerTest extends AbstractCallbackTest {
     }
 
     HearingBooking testHearing(LocalDateTime startDate) {
-        return testHearing(startDate, "96");
+        return testHearing(startDate, false);
+    }
+
+    HearingBooking testHearing(LocalDateTime startDate, boolean nullVenue) {
+        return testHearing(startDate, nullVenue ? "" : "96");
     }
 
     HearingBooking testHearing(LocalDateTime startDate, UUID cmoId) {
