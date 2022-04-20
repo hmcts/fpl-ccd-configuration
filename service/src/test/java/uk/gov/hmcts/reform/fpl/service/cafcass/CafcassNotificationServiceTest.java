@@ -21,11 +21,15 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
+import java.util.List;
+
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
@@ -379,7 +383,10 @@ class CafcassNotificationServiceTest {
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(caseUrlService.getCaseUrl(caseId)).thenReturn(caseLink);
         when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-                .thenReturn(DocumentReference.builder().size(Long.MAX_VALUE).build());
+                .thenReturn(DocumentReference.builder()
+                        .filename(DOCUMENT_FILENAME)
+                        .size(Long.MAX_VALUE)
+                        .build());
 
 
         CaseData caseData = CaseData.builder()
@@ -405,11 +412,86 @@ class CafcassNotificationServiceTest {
         assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added");
         assertThat(data.getMessage()).isEqualTo(
                 String.join("", "Large document(s) for this case was uploaded to the ",
-                    "Public Law Portal entitled fileToSend.pdf. As this could ",
-                    "not be sent by email you will need to download it ",
-                    "from the Portal using this link.",
-                    System.lineSeparator(),
-                    "http://localhost:8080/cases/case-details/200")
+                        "Public Law Portal entitled fileToSend.pdf. As this could ",
+                        "not be sent by email you will need to download it ",
+                        "from the Portal using this link.",
+                        System.lineSeparator(),
+                        "http://localhost:8080/cases/case-details/200")
         );
+    }
+
+    @Test
+    void shouldNotifyWithAttachmentAndLinkWhenThereIsSmallAndLargeDocs() {
+        long caseId = 200L;
+        String caseLink = "http://localhost:8080/cases/case-details/200";
+        String smallDocumentUrl = "smallDocumentUrl";
+
+        when(configuration.getRecipientForAdditionlDocument()).thenReturn("additionalEmail");
+        when(configuration.getRecipientForLargeAttachements()).thenReturn(RECIPIENT_EMAIL);
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(caseUrlService.getCaseUrl(caseId)).thenReturn(caseLink);
+        when(documentMetadataDownloadService.getDocumentMetadata(DOCUMENT_URL))
+                .thenReturn(DocumentReference.builder()
+                        .filename(DOCUMENT_FILENAME)
+                        .size(Long.MAX_VALUE - 100000)
+                        .binaryUrl(DOCUMENT_BINARY_URL)
+                        .build());
+
+        when(documentMetadataDownloadService.getDocumentMetadata(smallDocumentUrl))
+                .thenReturn(DocumentReference.builder()
+                        .filename("small.pdf")
+                        .size(10L)
+                        .binaryUrl(smallDocumentUrl)
+                        .build());
+
+        when(documentDownloadService.downloadDocument(smallDocumentUrl)).thenReturn(
+                DOCUMENT_CONTENT);
+
+        CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(FAMILY_MAN)
+                .id(caseId)
+                .build();
+
+        DocumentReference smallDoc = getDocumentReference().toBuilder()
+                .url(smallDocumentUrl)
+                .build();
+
+        underTest.sendEmail(caseData,
+                of(getDocumentReference(), smallDoc),
+                ADDITIONAL_DOCUMENT,
+                NewDocumentData.builder()
+                        .documentTypes("• Additional statement")
+                        .emailSubjectInfo("additional documents")
+                        .build()
+        );
+
+        verify(documentDownloadService).downloadDocument(smallDocumentUrl);
+        verify(documentDownloadService, never()).downloadDocument(DOCUMENT_BINARY_URL);
+
+        verify(emailService, times(2)).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+
+        List<EmailData> emailDataList = emailDataArgumentCaptor.getAllValues();
+        System.out.println(emailDataList);
+
+        String attachDocMessage =   String.join(" ",
+                "Types of documents attached:\n\n"
+                        + "• Additional statement");
+
+        String largeDocMessage = String.join("", "Large document(s) for this case was uploaded to the ",
+                "Public Law Portal entitled fileToSend.pdf. As this could ",
+                "not be sent by email you will need to download it ",
+                "from the Portal using this link.",
+                System.lineSeparator(),
+                "http://localhost:8080/cases/case-details/200");
+
+        assertThat(emailDataList)
+                .extracting("recipient", "subject", "message")
+                .containsExactlyInAnyOrder(
+                        tuple("additionalEmail",
+                                "Court Ref. FM1234.- additional documents",
+                                attachDocMessage),
+                        tuple(RECIPIENT_EMAIL,
+                                "Court Ref. FM1234.- new large document added",
+                                largeDocMessage));
     }
 }
