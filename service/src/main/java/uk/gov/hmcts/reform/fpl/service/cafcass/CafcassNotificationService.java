@@ -106,9 +106,9 @@ public class CafcassNotificationService {
                                  final CafcassData cafcassData,
                                  final long totalDocSize,
                                  final Map<String, DocumentReference> documentMetaData) {
-        log.info("For case id {}, sum of file size {}",
+        log.info("For case id {}, sum of file size is {} mb",
                 caseData.getId(),
-                totalDocSize);
+                totalDocSize / MEGABYTE );
 
         documentReferences.stream()
                 .map(DocumentReference::getUrl)
@@ -140,9 +140,10 @@ public class CafcassNotificationService {
                 .message(LARGE_ATTACHEMENTS.getContent().apply(caseData, largFileNotificationData))
                 .build()
         );
-        log.info("For case id {} notification sent to Cafcass for {}",
+        log.info("For case id {} notification sent to Cafcass for {} and notification type {}",
                 caseData.getId(),
-                LARGE_ATTACHEMENTS.name());
+                LARGE_ATTACHEMENTS.name(),
+                notificationType);
     }
 
     private LargeFilesNotificationData getLargFileNotificationData(CaseData caseData,
