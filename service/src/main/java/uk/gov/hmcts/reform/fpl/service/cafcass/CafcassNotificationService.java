@@ -108,7 +108,7 @@ public class CafcassNotificationService {
                                  final Map<String, DocumentReference> documentMetaData) {
         log.info("For case id {}, sum of file size is {} mb",
                 caseData.getId(),
-                totalDocSize / MEGABYTE );
+                totalDocSize / MEGABYTE);
 
         documentReferences.stream()
                 .map(DocumentReference::getUrl)
