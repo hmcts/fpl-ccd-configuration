@@ -24,7 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +36,9 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
@@ -63,6 +67,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private ManageDocumentService documentService;
 
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
@@ -382,6 +389,47 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(updatedCased.getSupportingEvidenceDocumentsTemp())
             .isEqualTo(selectedRespondentStatements.getValue().getSupportingEvidenceBundle());
+    }
+
+    @Test
+    public void shouldInitialiseHearingDocumentFields() {
+        CaseData caseData = buildHearingDocumentCaseData();
+
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        DynamicList hearingList = ElementUtils.asDynamicList(hearingBookings,
+            selectedHearingId, HearingBooking::toLabel);
+
+        caseData = caseData.toBuilder()
+            .hearingDetails(hearingBookings)
+            .hearingDocumentsHearingList(hearingList)
+                .build();
+
+        postMidEvent(caseData, "initialise-manage-document-collections", USER_ROLES);
+        verify(documentService).initialiseHearingDocumentFields(any());
+    }
+
+    @Test
+    void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
+        CaseData caseData = buildHearingDocumentCaseData();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections", USER_ROLES);
+
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "There are no hearings to associate a hearing document with");
+    }
+
+    private CaseData buildHearingDocumentCaseData() {
+        return CaseData.builder()
+            .id(CASE_ID)
+            .manageDocument(buildManagementDocument(ManageDocumentType.HEARING_DOCUMENTS))
+            .build();
+
     }
 
     private ManageDocument buildManagementDocument(ManageDocumentType type) {

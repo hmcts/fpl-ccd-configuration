@@ -12,10 +12,14 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -59,10 +63,20 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADDITIONAL_APPLICATIONS_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CASE_SUMMARY_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CASE_SUMMARY_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -71,6 +85,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
@@ -110,6 +125,9 @@ class ManageDocumentServiceTest {
         Element<Respondent> respondent1 = testRespondent("John", "Smith");
         Element<Respondent> respondent2 = testRespondent("Alex", "Williams");
 
+        Element<Child> child1 = testChild("Tom","Smith");
+        Element<Child> child2 = testChild("Mary","Smith");
+
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(List.of(c2Bundle1))
             .additionalApplicationsBundle(wrapElements(
@@ -118,6 +136,7 @@ class ManageDocumentServiceTest {
                     .otherApplicationsBundle(otherApplicationsBundle).build()))
             .hearingDetails(hearingBookings)
             .respondents1(List.of(respondent1, respondent2))
+            .children1(List.of(child1, child2))
             .build();
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
@@ -132,6 +151,11 @@ class ManageDocumentServiceTest {
             Pair.of(respondent1.getId(), "John Smith"),
             Pair.of(respondent2.getId(), "Alex Williams"));
 
+        DynamicList expectedChildrenDynamicList = TestDataHelper.buildDynamicList(
+            Pair.of(child1.getId(), "Tom Smith"),
+            Pair.of(child2.getId(), "Mary Smith")
+        );
+
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
@@ -144,6 +168,10 @@ class ManageDocumentServiceTest {
             .isEqualTo(expectedHearingDynamicList);
 
         assertThat(updates)
+            .extracting(HEARING_DOCUMENT_HEARING_LIST_KEY)
+            .isEqualTo(expectedHearingDynamicList);
+
+        assertThat(updates)
             .extracting(SUPPORTING_C2_LIST_KEY)
             .isEqualTo(expectedC2DocumentsDynamicList);
 
@@ -152,8 +180,16 @@ class ManageDocumentServiceTest {
             .isEqualTo(expectedRespondentsDynamicList);
 
         assertThat(updates)
+            .extracting(RESPONDENT_LIST_KEY)
+            .isEqualTo(expectedRespondentsDynamicList);
+
+        assertThat(updates)
             .extracting(MANAGE_DOCUMENT_KEY)
             .isEqualTo(expectedManageDocument);
+
+        assertThat(updates)
+            .extracting(CHILDREN_LIST_KEY)
+            .isEqualTo(expectedChildrenDynamicList);
     }
 
     @ParameterizedTest
@@ -1557,6 +1593,114 @@ class ManageDocumentServiceTest {
             .buildHearingDocumentList(caseData)
             .get(COURT_BUNDLE_LIST_KEY)))
             .containsExactly(editedBundle);
+    }
+
+    @Test
+    void shouldInitialiseHearingDocumentFields() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        assertThat((CourtBundle) underTest
+            .initialiseHearingDocumentFields(caseData)
+            .get(COURT_BUNDLE_KEY))
+            .isEqualTo(CourtBundle.builder().hearing(selectedHearingBooking.toLabel()).build());
+
+        assertThat((CaseSummary) underTest
+            .initialiseHearingDocumentFields(caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY).build())
+            .get(CASE_SUMMARY_KEY))
+            .isEqualTo(CaseSummary.builder().hearing(selectedHearingBooking.toLabel()).build());
+
+        assertThat((PositionStatementChild) underTest
+            .initialiseHearingDocumentFields(caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD).build())
+            .get(POSITION_STATEMENT_CHILD_KEY))
+            .isEqualTo(PositionStatementChild.builder().hearing(selectedHearingBooking.toLabel()).build());
+
+        assertThat((PositionStatementRespondent) underTest
+            .initialiseHearingDocumentFields(caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT).build())
+            .get(POSITION_STATEMENT_RESPONDENT_KEY))
+            .isEqualTo(PositionStatementRespondent.builder().hearing(selectedHearingBooking.toLabel()).build());
+    }
+
+    @Test
+    void shouldReturnNewCaseSummaryListWhenNoExistingCaseSummaryPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCaseSummary(CaseSummary.builder().hearing("Test hearing").build())
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
+            .build();
+
+        assertThat(underTest.buildHearingDocumentList(caseData).get(CASE_SUMMARY_LIST_KEY))
+            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCaseSummary())));
+    }
+
+    @Test
+    void shouldReturnNewPositionStatementChildListWhenNoExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+
+        UUID selectedChildId = randomUUID();
+        DynamicList childrenDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedChildId, "Tom Smith"),
+            Pair.of(randomUUID(), "Mary Smith")
+        );
+
+        PositionStatementChild positionStatementChild =
+            PositionStatementChild.builder()
+                .hearing("Test hearing")
+                .childId(selectedChildId)
+                .childName("Tom Smith")
+                .build();
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementChild(positionStatementChild)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsChildrenList(childrenDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD)
+            .build();
+
+        assertThat(underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY))
+            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsPositionStatementChild())));
+    }
+
+    @Test
+    void shouldReturnNewPositionStatementRespondentListWhenNoExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+
+        UUID selectedRespondentId = randomUUID();
+        DynamicList respondentDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedRespondentId, "Tom Smith"),
+            Pair.of(randomUUID(), "Mary Smith")
+        );
+
+        PositionStatementRespondent positionStatementRespondent =
+            PositionStatementRespondent.builder()
+                .hearing("Test hearing")
+                .respondentId(selectedRespondentId)
+                .respondentName("Tom Smith")
+                .build();
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementRespondent(positionStatementRespondent)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsRespondentList(respondentDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT)
+            .build();
+
+        assertThat(underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY))
+            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsPositionStatementRespondent())));
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
