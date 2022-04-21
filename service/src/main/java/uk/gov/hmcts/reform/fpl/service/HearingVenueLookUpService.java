@@ -55,6 +55,9 @@ public class HearingVenueLookUpService {
     }
 
     public HearingVenue getHearingVenue(final String venueId) {
+        if (venueId == null) {
+            return HearingVenue.builder().build();
+        }
         return this.hearingVenues.stream()
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()
